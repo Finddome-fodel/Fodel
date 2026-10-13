@@ -41,7 +41,10 @@ export async function migrationDiagnosis(client: any): Promise<string> {
   try {
     host = new URL(import.meta.env.SUPABASE_URL).hostname;
   } catch {}
-  return `Supabase-projekt: ${host}. Az adatbázis válasza: ${error ? `${error.code ?? ''} ${error.message}`.trim() : 'rendben'}.`;
+  // An error can quote a configuration value back (a malformed key did exactly
+  // that). Anything key-shaped is hidden and the text kept short.
+  const answer = error ? `${error.code ?? ''} ${error.message}`.trim().replace(/eyJ[\w.-]+/g, '[kulcs]').replace(/sb_[\w-]{10,}/g, '[kulcs]').slice(0, 220) : 'rendben';
+  return `Supabase-projekt: ${host}. Az adatbázis válasza: ${answer}.`;
 }
 
 /* ── Row ⇄ document ──────────────────────────────────────────────────────── */
