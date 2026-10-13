@@ -8,7 +8,7 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import { icon } from '~/lib/portal/icons';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
-import { isMigrated, toListItem } from '~/lib/invoicing/store';
+import { isMigrated, migrationDiagnosis, toListItem } from '~/lib/invoicing/store';
 import { KIND_LABEL, STATUS_LABEL, countryName, dateHu, eur, huf, hufFromCents, today } from '~/lib/invoicing/model';
 
 const { profile } = Astro.locals;
@@ -21,6 +21,7 @@ const q = (params.get('q') ?? '').trim().toLowerCase();
 const month = /^\d{4}-\d{2}$/.test(params.get('month') ?? '') ? params.get('month')! : '';
 
 const migrated = await isMigrated(admin);
+const diagnosis = migrated ? '' : await migrationDiagnosis(admin);
 const { data } = migrated
   ? await admin.from('invoices').select('*').order('created_at', { ascending: false }).limit(500)
   : { data: [] as any[] };
@@ -97,7 +98,7 @@ const tabs: [string, string][] = [['all', 'Kiállított'], ['open', 'Fizetésre 
   </header>
 
   {!migrated && (
-    <p class="notice error">A számlázás adatbázis-bővítése (<code>0018_invoicing_v2.sql</code>) még nem futott le a Supabase-ben. Futtassa le az SQL Editorban, utána frissítse az oldalt.</p>
+    <p class="notice error">A számlázás adatbázis-bővítése (<code>0018_invoicing_v2.sql</code>) még nem futott le a Supabase-ben. Futtassa le az SQL Editorban, utána frissítse az oldalt.<br /><small>{diagnosis}</small></p>
   )}
 
   <ul class="stats" aria-label="Összesítés">

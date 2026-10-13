@@ -24,7 +24,7 @@ import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
 import { invoiceCatalogue } from '~/lib/invoicing/catalogue';
 import { loadInvoiceSettings } from '~/lib/invoicing/settings';
-import { createDraftFromPayment, currentIssuer, getRow, isMigrated, isUuid, loadDoc } from '~/lib/invoicing/store';
+import { createDraftFromPayment, currentIssuer, getRow, isMigrated, isUuid, loadDoc, migrationDiagnosis } from '~/lib/invoicing/store';
 import { COUNTRIES, VAT_TREATMENTS, addDays, emptyParty, suggestVat, today, type InvoiceDoc } from '~/lib/invoicing/model';
 
 const { profile, user } = Astro.locals;
@@ -33,6 +33,7 @@ if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 const admin = createSupabaseAdminClient();
 const params = Astro.url.searchParams;
 const migrated = await isMigrated(admin);
+const diagnosis = migrated ? '' : await migrationDiagnosis(admin);
 
 let doc: InvoiceDoc | null = null;
 let draftId: string | null = null;
@@ -148,7 +149,7 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
   </header>
 
   {!migrated && (
-    <p class="notice error">A számlázás adatbázis-bővítése (<code>0018_invoicing_v2.sql</code>) még nem futott le a Supabase-ben. Futtassa le az SQL Editorban, utána frissítse ezt az oldalt.</p>
+    <p class="notice error">A számlázás adatbázis-bővítése (<code>0018_invoicing_v2.sql</code>) még nem futott le a Supabase-ben. Futtassa le az SQL Editorban, utána frissítse ezt az oldalt.<br /><small>{diagnosis}</small></p>
   )}
   {loadError && <p class="notice error">{loadError}</p>}
 

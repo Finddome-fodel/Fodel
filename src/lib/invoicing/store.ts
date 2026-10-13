@@ -29,6 +29,21 @@ export async function isMigrated(client: any): Promise<boolean> {
   return !error;
 }
 
+/**
+ * Why the invoice screens think migration 0018 has not run: the database's own
+ * answer, and which Supabase project this deployment is talking to. When the
+ * migration was run in a different project than the one this site uses, the
+ * project address here is what gives it away.
+ */
+export async function migrationDiagnosis(client: any): Promise<string> {
+  const { error } = await client.from('invoices').select('status, buyer').limit(1);
+  let host = '?';
+  try {
+    host = new URL(import.meta.env.SUPABASE_URL).hostname;
+  } catch {}
+  return `Supabase-projekt: ${host}. Az adatbázis válasza: ${error ? `${error.code ?? ''} ${error.message}`.trim() : 'rendben'}.`;
+}
+
 /* ── Row ⇄ document ──────────────────────────────────────────────────────── */
 
 function normaliseLines(raw: any, legacyDiscountCents = 0): InvoiceLine[] {

@@ -9,7 +9,7 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { loadInvoiceSettings, buildIssuer } from '~/lib/invoicing/settings';
-import { isMigrated } from '~/lib/invoicing/store';
+import { isMigrated, migrationDiagnosis } from '~/lib/invoicing/store';
 import { getCompany } from '~/lib/runtime-config';
 
 const { profile } = Astro.locals;
@@ -19,6 +19,7 @@ const admin = createSupabaseAdminClient();
 const saved = Astro.url.searchParams.get('saved');
 const err = Astro.url.searchParams.get('error');
 const migrated = await isMigrated(admin);
+const diagnosis = migrated ? '' : await migrationDiagnosis(admin);
 const [settings, company, counters] = await Promise.all([
   loadInvoiceSettings(admin),
   getCompany(),
@@ -41,7 +42,7 @@ const seriesLabel = (s: string) =>
     <p class="lede">A könyvelő másolata, a fizetési határidő, a számlákra kerülő szöveg és a sorszámozás.</p>
   </div></header>
 
-  {!migrated && <p class="notice error">A számlázás adatbázis-bővítése (0018_invoicing_v2.sql) még nem futott le a Supabase-ben, ezért a mentés nem működik.</p>}
+  {!migrated && <p class="notice error">A számlázás adatbázis-bővítése (0018_invoicing_v2.sql) még nem futott le a Supabase-ben, ezért a mentés nem működik.<br /><small>{diagnosis}</small></p>}
   {saved && <p class="notice ok" data-toast="ok">Mentve.</p>}
   {err && <p class="notice error">{decodeURIComponent(err)}</p>}
 
