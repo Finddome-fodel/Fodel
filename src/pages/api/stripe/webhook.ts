@@ -27,6 +27,7 @@ import { deliver, localeOf, templates } from '~/lib/email/send';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { officeInbox } from '~/lib/email/routing';
 import { SITE_URL } from '~/config/site.mjs';
+import { createDraftFromPayment } from '~/lib/invoicing/store';
 
 export const prerender = false;
 
@@ -54,6 +55,7 @@ export const POST: APIRoute = async ({ request }) => {
       id: string;
       metadata?: { orderId?: string; propertyId?: string; kind?: string; valuationId?: string } | null;
       payment_status?: string;
+      customer_details?: StripeCustomerDetails | null;
     };
 
     // `completed` fires for delayed payment methods before the money is
@@ -64,7 +66,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // A valuation package has no listing to publish: its own, much shorter path.
     if (session.metadata?.kind === 'valuation') {
-      await settleValuationPayment(admin, session.id);
+      await settleValuationPayment(admin, session.id, session.customer_details);
       return new Response(null, { status: 200 });
     }
 
@@ -80,6 +82,8 @@ export const POST: APIRoute = async ({ request }) => {
       console.error(`[stripe] no order found for session ${session.id}`);
       return new Response(null, { status: 200 });
     }
+
+    await keepStripeBilling(admin, order.id, session.customer_details);
 
     // Settling and publishing are separate steps, so a retried delivery can
     // finish a publish that failed the first time without paying twice.
@@ -113,7 +117,11 @@ export const POST: APIRoute = async ({ request }) => {
       await admin.from('payments').update({ refund_required: true }).eq('id', order.id).then(() => {}, () => {});
     }
 
-    if (!alreadySettled) await sendReceipt(admin, order, paidAt);
+    if (!alreadySettled) {
+      await sendReceipt(admin, order, paidAt);
+      // The invoice is prepared (buyer, VAT treatment, lines); an admin issues it.
+      await createDraftFromPayment(admin, order.id, {}).catch((e) => console.warn('[invoice] draft not created', e?.message));
+    }
     return new Response(null, { status: 200 });
   }
 
@@ -182,7 +190,7 @@ async function sendReceipt(
  * Safe to run twice: the receipt and the office note only go out on the first
  * transition from pending, so a retried delivery sends nothing new.
  */
-async function settleValuationPayment(admin: any, sessionId: string): Promise<void> {
+async function settleValuationPayment(admin: any, sessionId: string, details?: StripeCustomerDetails | null): Promise<void> {
   const { data: order } = await admin
     .from('payments')
     .select('id, valuation_id, amount_cents, line_items, status, contact_email, billing_name, locale')
@@ -192,10 +200,13 @@ async function settleValuationPayment(admin: any, sessionId: string): Promise<vo
     console.error(`[stripe] no valuation order found for session ${sessionId}`);
     return;
   }
+  await keepStripeBilling(admin, order.id, details);
   if (['paid', 'manual', 'refunded'].includes(order.status)) return;
 
   const paidAt = new Date();
   await admin.from('payments').update({ status: 'paid', paid_at: paidAt.toISOString() }).eq('id', order.id);
+
+  await createDraftFromPayment(admin, order.id, {}).catch((e) => console.warn('[invoice] draft not created', e?.message));
 
   const lines = (order.line_items ?? []) as OrderLine[];
   const label = lines.map((line) => line.label).join(', ') || 'Értékbecslés';
@@ -224,4 +235,49 @@ async function settleValuationPayment(admin: any, sessionId: string): Promise<vo
       url: `${SITE_URL}/portal/valuations/${order.valuation_id}`,
     })
   );
+}
+
+/* ── The buyer's details, as Checkout collected them ───────────────────────── */
+
+type StripeCustomerDetails = {
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: { line1?: string | null; line2?: string | null; postal_code?: string | null; city?: string | null; country?: string | null } | null;
+  tax_ids?: { type?: string; value?: string }[] | null;
+};
+
+/**
+ * Copies what Stripe collected onto the order, so the invoice is complete
+ * without anyone retyping it. Anything already on the order (from the billing
+ * form in the portal) wins; Stripe only fills the gaps. Best-effort: a failure
+ * here (the column arrives with migration 0018) must never fail the payment.
+ */
+async function keepStripeBilling(admin: any, orderId: string, details?: StripeCustomerDetails | null): Promise<void> {
+  if (!details) return;
+  try {
+    const { data: row } = await admin.from('payments').select('billing').eq('id', orderId).maybeSingle();
+    const have = (row?.billing ?? {}) as Record<string, string>;
+    const tax = details.tax_ids?.find((t) => t.value)?.value ?? '';
+    const street = [details.address?.line1, details.address?.line2].filter(Boolean).join(' ');
+    const fromStripe: Record<string, string> = {
+      type: tax ? 'company' : 'person',
+      name: details.name ?? '',
+      street,
+      postalCode: details.address?.postal_code ?? '',
+      city: details.address?.city ?? '',
+      countryCode: (details.address?.country ?? '').toUpperCase(),
+      email: details.email ?? '',
+      phone: details.phone ?? '',
+      taxNumber: tax,
+    };
+    const merged: Record<string, string> = { ...fromStripe };
+    for (const [k, v] of Object.entries(have)) if (v) merged[k] = v;
+    await admin
+      .from('payments')
+      .update({ billing: merged, ...(merged.name ? { billing_name: merged.name } : {}) })
+      .eq('id', orderId);
+  } catch (error) {
+    console.error('[stripe] could not keep billing details', error);
+  }
 }

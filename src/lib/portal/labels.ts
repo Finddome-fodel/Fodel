@@ -34,6 +34,7 @@ export const EVENT_LABEL: Record<string, string> = {
   'payment.refunded': 'Visszatérítés rögzítve',
   'invoice.issued': 'Számla kiállítva',
   'invoice.credit_note_issued': 'Jóváíró számla kiállítva',
+  'invoice.sent': 'Számla elküldve',
   'blog.published': 'Cikk publikálva',
   'blog.unpublished': 'Cikk visszavonva',
   'auth.login': 'Bejelentkezés',

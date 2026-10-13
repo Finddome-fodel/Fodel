@@ -11,7 +11,7 @@
 import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, localeOf, templates } from '~/lib/email/send';
-import { issueInvoice } from '~/lib/invoice';
+import { createDraftFromPayment } from '~/lib/invoicing/store';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { listingTitle, publishProperty, publicUrl } from '~/lib/portal/publish';
 import { logEvent } from '~/lib/activity';
@@ -93,6 +93,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const { error } = await admin.from('payments').update({ status: 'manual', paid_at: paidAt.toISOString() }).eq('id', id);
     if (error) return json(500, { ok: false, error: error.message });
 
+    await createDraftFromPayment(admin, order.id, { id: user?.id }).catch(() => {});
     await logEvent({ kind: 'payment.manual', actorId: user?.id ?? null, actorEmail: profile?.email ?? null,
       subjectType: 'payment', subjectId: order.id, propertyId: order.property_id, source: 'portal' }).catch(() => {});
 
@@ -118,77 +119,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     return json(200, { ok: true });
   }
 
-  /* ── issue an invoice or a credit note ────────────────────────────────── */
+  /* ── invoices moved to the invoicing screens (invoicing v2) ───────────── */
+  // Issuing, sending and crediting live in /portal/invoices now; creating a
+  // draft from this order is action `from_payment` on /api/portal/invoices/action.
   if (action === 'issue_invoice' || action === 'issue_credit_note') {
-    if (!order.billing_name || !order.billing_address) {
-      return json(422, { ok: false, error: 'billing-missing' });
-    }
-
-    let correctsId: string | null = null;
-    if (action === 'issue_credit_note') {
-      correctsId = typeof body.correctsId === 'string' ? body.correctsId : null;
-      if (!correctsId) return json(422, { ok: false, error: 'corrects-id-required' });
-    }
-
-    let invoice;
-    try {
-      invoice = await issueInvoice(admin, {
-        paymentId: order.id,
-        kind: action === 'issue_credit_note' ? 'credit_note' : 'invoice',
-        propertyId: order.property_id,
-        ownerId: order.owner_id,
-        billingName: order.billing_name,
-        billingAddress: order.billing_address,
-        lineItems: (order.line_items ?? []) as OrderLine[],
-        discountCents: order.discount_cents ?? 0,
-        grossCents: order.amount_cents,
-        correctsId,
-      });
-    } catch (e) {
-      return json(500, { ok: false, error: (e as Error).message });
-    }
-
-    await logEvent({
-      kind: action === 'issue_credit_note' ? 'invoice.credit_note_issued' : 'invoice.issued',
-      actorId: user?.id ?? null,
-      actorEmail: profile?.email ?? null,
-      subjectType: 'invoice',
-      subjectId: invoice.id,
-      propertyId: order.property_id,
-      source: 'portal',
-      payload: { number: invoice.number },
-    }).catch(() => {});
-
-    if (order.owner_id) {
-      const { data: owner } = await admin
-        .from('profiles')
-        .select('email, locale')
-        .eq('id', order.owner_id)
-        .maybeSingle();
-      if (owner?.email && order.property_id) {
-        const locale = localeOf(owner);
-        const { data: property } = await admin.from('properties').select('ref').eq('id', order.property_id).maybeSingle();
-        const title = property ? await listingTitle(admin, order.property_id, locale, property.ref) : '';
-        const viewUrl = `${SITE_URL}/portal/invoices/${invoice.number}?t=${invoice.view_token}`;
-
-        if (action === 'issue_credit_note') {
-          const { data: original } = await admin.from('invoices').select('number').eq('id', correctsId).maybeSingle();
-          await deliver(
-            owner.email,
-            templates.creditNoteIssued(locale, {
-              ref: property?.ref ?? '', title, number: invoice.number, correctsNumber: original?.number ?? '', viewUrl,
-            })
-          );
-        } else {
-          await deliver(
-            owner.email,
-            templates.invoiceIssued(locale, { ref: property?.ref ?? '', title, number: invoice.number, viewUrl })
-          );
-        }
-      }
-    }
-
-    return json(200, { ok: true, number: invoice.number });
+    return json(410, { ok: false, error: 'moved', message: 'A számlázás a Számlák menüben érhető el.' });
   }
 
   /* ── resend the "approved, please pay" email ─────────────────────────── */

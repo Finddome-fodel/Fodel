@@ -92,6 +92,9 @@ export const POST: APIRoute = async ({ request }) => {
     mode: 'payment',
     line_items: [{ price_data: { currency: 'eur', unit_amount: amountCents, product_data: { name: pkg.names[locale] } }, quantity: 1 }],
     customer_email: valuation.contact_email,
+    // The invoice needs the buyer's address and, for a business, the tax id.
+    billing_address_collection: 'required',
+    tax_id_collection: { enabled: true },
     success_url: `${back}?paid=1`,
     cancel_url: back,
     client_reference_id: order.id,

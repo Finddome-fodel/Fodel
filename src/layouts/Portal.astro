@@ -37,9 +37,9 @@ async function count(query: PromiseLike<{ count: number | null }>): Promise<numb
 }
 const head = { count: 'exact', head: true } as const;
 
-let waiting = { inbox: 0, enquiries: 0, valuations: 0, services: 0, payment: 0 };
+let waiting = { inbox: 0, enquiries: 0, valuations: 0, services: 0, payment: 0, invoices: 0 };
 if (!bare && profile && supabase) {
-  const [enquiries, inbox, valuations, services, payment] = await Promise.all([
+  const [enquiries, inbox, valuations, services, payment, invoiceDrafts] = await Promise.all([
     count(supabase.from('enquiries').select('id', head).eq('handled', false)),
     isAdmin ? count(supabase.from('properties').select('id', head).eq('status', 'submitted')) : 0,
     isAdmin
@@ -47,8 +47,9 @@ if (!bare && profile && supabase) {
       : 0,
     isAdmin ? count(supabase.from('service_requests').select('id', head).eq('status', 'requested')) : 0,
     !isAdmin ? count(supabase.from('properties').select('id', head).eq('status', 'awaiting_payment')) : 0,
+    isAdmin ? count(supabase.from('invoices').select('id', head).eq('status', 'draft')) : 0,
   ]);
-  waiting = { inbox, enquiries, valuations, services, payment };
+  waiting = { inbox, enquiries, valuations, services, payment, invoices: invoiceDrafts };
 }
 
 type Item = { href: string; label: string; icon: IconName; count?: number; match?: string[] };
@@ -79,7 +80,8 @@ const GROUPS: Group[] = isAdmin
         items: [
           { href: '/portal/top10', label: 'Top 10', icon: 'star' },
           { href: '/portal/content/blog', label: 'Blog', icon: 'pen' },
-          { href: '/portal/payments', label: 'Fizetések', icon: 'card', match: ['/portal/invoices'] },
+          { href: '/portal/payments', label: 'Fizetések', icon: 'card' },
+          { href: '/portal/invoices', label: 'Számlák', icon: 'invoice', count: waiting.invoices },
         ],
       },
       { items: [{ href: '/portal/settings', label: 'Beállítások', icon: 'gear', match: ['/portal/taxonomy'] }] },

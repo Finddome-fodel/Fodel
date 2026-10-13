@@ -26,6 +26,8 @@ import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
 import { isAiEnabled } from '~/lib/ai/client';
 import { COMPANY } from '~/config/company';
+import BillingForm from '~/components/BillingForm.astro';
+import { billingComplete } from '~/lib/invoicing/model';
 import { COUNTRIES } from '~/config/countries';
 import { SITE_HOST } from '~/config/site.mjs';
 import { MAX_UPLOAD_MB, MAX_EDGE, LOW_RESOLUTION_EDGE } from '~/lib/media';
@@ -60,7 +62,7 @@ const [taxonomy, suggestionsResult, notesResult, orderResult, company, serviceRe
     ? supabase.from('review_notes').select('note, created_at').eq('property_id', property.id).order('created_at', { ascending: false }).limit(1)
     : Promise.resolve({ data: null }),
   // What is outstanding on this listing, if anything.
-  supabase.from('payments').select('amount_cents, line_items, status').eq('property_id', property.id).in('status', ['pending', 'paid', 'manual']).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+  supabase.from('payments').select('id, amount_cents, line_items, status').eq('property_id', property.id).in('status', ['pending', 'paid', 'manual']).order('created_at', { ascending: false }).limit(1).maybeSingle(),
   getCompany(),
   // The on-site service for this listing, if one is open (0015). A read error
   // (migration not yet run) simply hides the section's status.
@@ -98,6 +100,16 @@ const latestNote = notesResult.data?.[0] ?? null;
 
 const order = orderResult.data;
 const awaitingPayment = property.status === 'awaiting_payment';
+// The details the invoice will carry: what was saved on the order, else on the account.
+// Read separately and tolerantly: the columns arrive with migration 0018 and the
+// payment panel must keep working before it has been run.
+const [{ data: billingRow }, { data: orderBilling }] = awaitingPayment && Astro.locals.user && order
+  ? await Promise.all([
+      supabase.from('profiles').select('billing, full_name, phone').eq('id', Astro.locals.user.id).maybeSingle(),
+      supabase.from('payments').select('billing').eq('id', order.id).maybeSingle(),
+    ])
+  : [{ data: null }, { data: null }];
+const payBilling = ((orderBilling as any)?.billing ?? (billingRow as any)?.billing ?? null) as Record<string, string> | null;
 const refundPolicy = company.services.refundPolicy?.hu?.trim();
 const orderLines = (order?.line_items ?? []) as OrderLine[];
 const cardEnabled = isStripeEnabled();
@@ -434,7 +446,15 @@ const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).lengt
           </tr>
         </tfoot>
       </table>
-      <p class="vat-note">Az ár tartalmazza a 21% holland áfát.</p>
+      <p class="vat-note">Az ár tartalmazza a 21% holland áfát. Vállalkozásként, érvényes uniós adószámmal áfa nélküli számlát kaphat.</p>
+
+      <details class="bill" open={!billingComplete(payBilling)}>
+        <summary>
+          <span>Számlázási adatok</span>
+          <em data-ok={billingComplete(payBilling) ? 'yes' : 'no'}>{billingComplete(payBilling) ? 'Megadva' : 'Hiányzik'}</em>
+        </summary>
+        <BillingForm compact billing={payBilling} fallbackName={(billingRow as any)?.full_name ?? ''} fallbackPhone={(billingRow as any)?.phone ?? ''} paymentId={(order as any)?.id} />
+      </details>
       {refundPolicy && <p class="hint"><strong>Visszatérítési szabály:</strong> {refundPolicy}</p>}
 
       {cardEnabled ? (
@@ -945,6 +965,12 @@ const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).lengt
   .status-pill::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: 0.55; }
   .status-pill[data-status='published'] { background: var(--pt-green-bg); color: var(--pt-green); }
   .status-pill[data-status='published']::before { opacity: 1; }
+  .bill { margin: 22px 0; border-radius: var(--r-lg); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .bill > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; cursor: pointer; list-style: none; font-weight: var(--fw-medium); color: var(--ink); }
+  .bill > summary::-webkit-details-marker { display: none; }
+  .bill > summary em { font-style: normal; font-size: 13px; font-weight: var(--fw-medium); padding: 3px 12px; border-radius: var(--r-pill); background: var(--pt-amber-bg); color: var(--pt-amber); }
+  .bill > summary em[data-ok='yes'] { background: var(--pt-green-bg); color: var(--pt-green); }
+  .bill :global(.billing-form) { padding: 4px 20px 20px; }
   .status-pill[data-status='submitted'], .status-pill[data-status='awaiting_payment'] { background: var(--pt-amber-bg); color: var(--pt-amber); }
   .status-pill[data-status='changes_requested'], .status-pill[data-status='rejected'] { background: var(--pt-red-bg); color: var(--pt-red); }
   .review-link { margin-top: 18px; display: inline-flex; }

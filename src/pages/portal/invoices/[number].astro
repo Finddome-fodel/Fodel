@@ -1,150 +1,283 @@
 ---
 /**
- * The print-styled invoice — the one document this whole stage exists to
- * produce. Reachable two ways, deliberately: signed in as the admin or the
- * invoice's own owner (normal portal navigation), or signed out via the
- * one-time-mint, not-single-use `?t=<view_token>` mailed in
- * templates.invoiceIssued/creditNoteIssued — the same posture as
- * invites/password_resets, except this token stays valid on reopen because a
- * customer reasonably revisits an invoice more than once.
- *
- * ⚠️ Not a legally final document — see the header of
- * supabase/migrations/0008_invoicing.sql. KvK is a placeholder dash and the
- * VAT rate is unverified. Rendered anyway, on request, so the mechanics are
- * ready the moment both are confirmed.
+ * One invoice, as the paper it is. Three kinds of visitor:
+ *  - an admin (full control: send, record payment, credit note, copy);
+ *  - the invoice's own owner, signed in (read, download, print);
+ *  - anyone with the emailed link (?t=<view_token>), signed out (read, download, print).
+ * The address carries the invoice's id: the human number contains a slash
+ * (FO-HU-2026/031) and cannot sit in a URL segment. Numbers of the first
+ * version (FD-2026-0001) still resolve.
  */
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
-import { invoiceLines, issuerDetails } from '~/lib/invoice';
-import { formatCents } from '~/lib/orders';
+import '~/styles/invoice-sheet.css';
+import { icon } from '~/lib/portal/icons';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { getRow, loadDoc, toListItem } from '~/lib/invoicing/store';
+import { invoiceSheet } from '~/lib/invoicing/sheet';
+import { loadInvoiceSettings } from '~/lib/invoicing/settings';
+import { KIND_LABEL, STATUS_LABEL, VAT_TREATMENTS, computeTotals, dateHu, eur, huf, hufFromCents } from '~/lib/invoicing/model';
 
-const { supabase, profile, user } = Astro.locals;
-const { number } = Astro.params;
+const { profile, user } = Astro.locals;
+const { number: key } = Astro.params;
 const token = Astro.url.searchParams.get('t');
+const admin = createSupabaseAdminClient();
 
+const row = await getRow(admin, String(key));
 const isAdmin = profile?.role === 'admin';
-const columns =
-  'id, number, kind, corrects_id, payment_id, property_id, owner_id, billing_name, billing_address, line_items, discount_cents, gross_cents, vat_rate, net_cents, vat_cents, currency, view_token, issued_at, supply_date';
-
-// A signed-in admin or the invoice's own owner reads through their own
-// session (RLS decides); anyone else — including a signed-in user who isn't
-// either — needs the exact view_token, checked with the service-role client
-// since a token holder carries no session proving who they are at all.
-let invoice = null;
-if (isAdmin || user) {
-  const { data } = await supabase.from('invoices').select(columns).eq('number', number).maybeSingle();
-  invoice = data;
-}
-if (!invoice && token) {
-  const { data } = await createSupabaseAdminClient().from('invoices').select(columns).eq('number', number).maybeSingle();
-  if (data && data.view_token === token) invoice = data;
+const isOwner = Boolean(user) && row?.owner_id === user!.id;
+const hasToken = Boolean(token) && token === row?.view_token;
+if (!row || !(isAdmin || ((isOwner || hasToken) && row.finalised_at))) {
+  return new Response('Számla nem található.', { status: 404 });
 }
 
-if (!invoice) return new Response('Számla nem található.', { status: 404 });
+const doc = await loadDoc(admin, row);
+const item = toListItem(row);
+const t = computeTotals(doc.lines, doc.vatRate, doc.priceMode);
+const sign = doc.kind === 'credit_note' ? -1 : 1;
+const settings = isAdmin ? await loadInvoiceSettings(admin) : null;
 
-const { data: property } = invoice.property_id
-  ? await createSupabaseAdminClient().from('properties').select('ref').eq('id', invoice.property_id).maybeSingle()
-  : { data: null };
+const [credits, children, payment, property] = isAdmin
+  ? await Promise.all([
+      admin.from('invoices').select('id, number, kind').eq('corrects_id', row.id),
+      admin.from('invoices').select('id, number, kind, status').eq('reference_id', row.id),
+      row.payment_id ? admin.from('payments').select('id, status').eq('id', row.payment_id).maybeSingle() : Promise.resolve({ data: null }),
+      row.property_id ? admin.from('properties').select('id, ref').eq('id', row.property_id).maybeSingle() : Promise.resolve({ data: null }),
+    ])
+  : [{ data: [] }, { data: [] }, { data: null }, { data: null }];
 
-const { data: correctedInvoice } = invoice.corrects_id
-  ? await createSupabaseAdminClient().from('invoices').select('number').eq('id', invoice.corrects_id).maybeSingle()
-  : { data: null };
+if (row.finalised_at === null && isAdmin) return Astro.redirect(`/portal/invoices/new?draft=${row.id}`);
 
-const issuer = issuerDetails();
-const lines = invoiceLines(invoice as any);
-const sign = invoice.kind === 'credit_note' ? -1 : 1;
+const k = KIND_LABEL[doc.kind];
+const status = item.overdue ? 'overdue' : item.status;
+const statusText = item.overdue ? 'Lejárt' : STATUS_LABEL[item.status as keyof typeof STATUS_LABEL] ?? item.status;
+const dt = (iso?: string | null) =>
+  iso ? new Date(iso).toLocaleString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
+const credited = (credits.data ?? [])[0];
+const settled = Boolean(row.paid_at);
+const canCredit = isAdmin && row.kind === 'invoice' && !credited;
+const justIssued = Astro.url.searchParams.get('issued') === '1';
+const pdfHref = `/portal/invoices/pdf/${row.id}${token ? `?t=${token}` : ''}`;
+const back = isAdmin ? '/portal/invoices' : '/portal/settings';
 
-const dateFmt = new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+const timeline = [
+  { done: true, title: `${k.short} kiállítva`, sub: dt(row.finalised_at ?? row.issued_at) },
+  {
+    done: Boolean(row.sent_at),
+    title: row.sent_at ? 'Elküldve az ügyfélnek' : 'Még nem ment el az ügyfélnek',
+    sub: row.sent_at ? `${row.sent_to ?? ''} · ${dt(row.sent_at)}` : null,
+  },
+  {
+    done: Boolean(row.bookkeeper_sent_at),
+    title: row.bookkeeper_sent_at ? 'Elküldve a könyvelőnek' : 'Még nem ment el a könyvelőnek',
+    sub: row.bookkeeper_sent_at ? dt(row.bookkeeper_sent_at) : null,
+  },
+  ...(row.kind === 'credit_note'
+    ? []
+    : [{ done: settled, title: settled ? (row.kind === 'proforma' ? 'Teljesítve' : 'Kifizetve') : `Fizetési határidő: ${dateHu(doc.dueDate)}`, sub: settled ? dt(row.paid_at) : item.overdue ? 'A határidő lejárt' : null }]),
+];
 ---
 
-<Portal title={invoice.number}>
-  <div class="toolbar no-print">
-    <a href="/portal/payments">← Fizetések</a>
-    <button type="button" onclick="window.print()">Nyomtatás / PDF</button>
+<Portal title={doc.number ?? 'Számla'} bare={!user}>
+  {isAdmin || user ? (
+    <header class="ph">
+      <div>
+        <p class="eyebrow"><a href={back}>← {isAdmin ? 'Számlák' : 'Beállítások'}</a></p>
+        <h1><em>{doc.number}</em></h1>
+        <p class="lede">{k.short} · {doc.buyer.name}</p>
+      </div>
+      <div class="ph-side">
+        <span class={`pill pill-inv-${status}`}>{statusText}</span>
+        <a class="btn ghost" href={pdfHref} target="_blank" rel="noopener"><span set:html={icon('download', 17)} /> PDF</a>
+        {isAdmin && (
+          <button type="button" class="btn" id="send-btn"><span set:html={icon('send', 17)} /> Küldés</button>
+        )}
+      </div>
+    </header>
+  ) : (
+    <header class="iv-public">
+      <div><b>FODEL</b><span>{k.short} {doc.number}</span></div>
+      <div class="iv-public-act">
+        <a class="btn ghost" href={pdfHref} target="_blank" rel="noopener">PDF letöltése</a>
+        <button type="button" class="btn" onclick="window.print()">Nyomtatás</button>
+      </div>
+    </header>
+  )}
+
+  {justIssued && isAdmin && <p class="notice ok" data-toast="ok">{k.short} kiállítva: {doc.number}.</p>}
+
+  <div class:list={['iv-view', { solo: !isAdmin }]}>
+    <div class="iv-paper-col">
+      <div class="iv-paper" id="paper-wrap"><div id="paper" set:html={invoiceSheet(doc)} /></div>
+    </div>
+
+    {isAdmin && (
+      <aside class="iv-rail">
+        <section class="set-card rail-card">
+          <h2>Összeg</h2>
+          <dl class="amounts">
+            <div><dt>Nettó</dt><dd>{eur(t.netCents * sign)}</dd></div>
+            <div><dt>ÁFA · {VAT_TREATMENTS[doc.vatTreatment].short}</dt><dd>{eur(t.vatCents * sign)}</dd></div>
+            <div class="g"><dt>Bruttó</dt><dd>{eur(t.grossCents * sign)}</dd></div>
+            {doc.fxRate && <div class="h"><dt>Forintban</dt><dd>{huf(hufFromCents(t.grossCents * sign, doc.fxRate))}</dd></div>}
+          </dl>
+        </section>
+
+        <section class="set-card rail-card">
+          <h2>Állapot</h2>
+          <ol class="steps">
+            {timeline.map((s) => (
+              <li data-done={s.done ? 'yes' : 'no'}>
+                <span class="node" aria-hidden="true" />
+                <div><b>{s.title}</b>{s.sub && <small>{s.sub}</small>}</div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section class="set-card rail-card">
+          <h2>Műveletek</h2>
+          <div class="acts">
+            <button type="button" class="act" id="send-btn-2"><span set:html={icon('send', 18)} /> Küldés az ügyfélnek</button>
+            {settings?.bookkeeperEmail
+              ? <button type="button" class="act" id="book-btn"><span set:html={icon('mail', 18)} /> Másolat a könyvelőnek</button>
+              : <a class="act" href="/portal/settings/invoicing"><span set:html={icon('mail', 18)} /> Könyvelő e-mail-címének megadása</a>}
+            {row.kind !== 'credit_note' && !settled && <button type="button" class="act" id="paid-btn"><span set:html={icon('check', 18)} /> Kifizetettnek jelölés</button>}
+            {row.kind !== 'credit_note' && settled && row.kind === 'invoice' && <button type="button" class="act" id="unpaid-btn"><span set:html={icon('clock', 18)} /> Mégsem fizették ki</button>}
+            {row.kind === 'proforma' && row.status !== 'void' && !(children.data ?? []).some((c: any) => c.kind === 'invoice') && (
+              <button type="button" class="act primary" id="to-invoice-btn"><span set:html={icon('invoice', 18)} /> Számla készítése ebből</button>
+            )}
+            <a class="act" href={`/portal/invoices/new?from=${row.id}`}><span set:html={icon('copy', 18)} /> Másolat új számlához</a>
+            <button type="button" class="act" onclick="window.print()"><span set:html={icon('external', 18)} /> Nyomtatás</button>
+            {row.kind === 'proforma' && row.status !== 'void' && <button type="button" class="act danger" id="void-btn"><span set:html={icon('close', 18)} /> Díjbekérő érvénytelenítése</button>}
+            {canCredit && <button type="button" class="act danger" id="credit-btn"><span set:html={icon('alert', 18)} /> Jóváíró számla (hiba javítása)</button>}
+          </div>
+        </section>
+
+        {(payment.data || property.data || (credits.data ?? []).length > 0 || (children.data ?? []).length > 0 || row.corrects_id || row.reference_id) && (
+          <section class="set-card rail-card">
+            <h2>Kapcsolódó</h2>
+            <ul class="rel">
+              {payment.data && <li><a href={`/portal/payments/${payment.data.id}`}>Megrendelés</a></li>}
+              {property.data && <li><a href={`/portal/properties/${property.data.id}`}>Hirdetés #{property.data.ref}</a></li>}
+              {doc.referenceNumber && <li>{row.corrects_id ? 'Javított számla' : 'Díjbekérő'}: <a href={`/portal/invoices/${row.corrects_id ?? row.reference_id}`}>{doc.referenceNumber}</a></li>}
+              {(credits.data ?? []).map((c: any) => <li>Jóváíró számla: <a href={`/portal/invoices/${c.id}`}>{c.number}</a></li>)}
+              {(children.data ?? []).map((c: any) => <li>Ebből készült: <a href={`/portal/invoices/${c.id}`}>{c.number ?? 'piszkozat'}</a></li>)}
+            </ul>
+          </section>
+        )}
+      </aside>
+    )}
   </div>
 
-  <article class="invoice">
-    <header class="inv-head">
-      <div>
-        <p class="doc-type">{invoice.kind === 'credit_note' ? 'Jóváíró számla' : 'Számla'}</p>
-        <h1>{invoice.number}</h1>
-        {correctedInvoice && <p class="corrects">Korrigálja: {correctedInvoice.number}</p>}
-      </div>
-      <dl class="meta">
-        <div><dt>Kiállítás dátuma</dt><dd>{dateFmt.format(new Date(invoice.issued_at))}</dd></div>
-        <div><dt>Teljesítés dátuma</dt><dd>{dateFmt.format(new Date(invoice.supply_date))}</dd></div>
-        {property && <div><dt>Hirdetés</dt><dd>#{property.ref}</dd></div>}
-      </dl>
-    </header>
+  <script define:vars={{ id: row.id, buyerEmail: doc.buyer.email ?? '', number: doc.number, today: new Date().toISOString().slice(0, 10) }} is:inline>
+    const wrap = document.getElementById('paper-wrap');
+    const paper = document.getElementById('paper');
+    const fit = () => { if (wrap && paper) paper.style.zoom = String(Math.min(1, (wrap.clientWidth - 32) / 794)); };
+    if (wrap) { new ResizeObserver(fit).observe(wrap); fit(); }
+    const pf = () => window.pf;
+    const post = async (payload) => {
+      const res = await fetch('/api/portal/invoices/action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, ...payload }) });
+      return res.json().catch(() => ({ ok: false }));
+    };
+    const reload = () => location.reload();
+    const on = (sel, fn) => document.querySelectorAll(sel).forEach((el) => el.addEventListener('click', fn));
 
-    <section class="parties">
-      <div>
-        <p class="party-label">Kiállító</p>
-        <p class="party-name">{issuer.name}</p>
-        <p>{issuer.address}</p>
-        <p>KvK: {issuer.kvk ?? '—'}</p>
-        <p>BTW-id: {issuer.vat}{!issuer.vatVerified && ' (megerősítésre vár)'}</p>
-      </div>
-      <div>
-        <p class="party-label">Vevő</p>
-        <p class="party-name">{invoice.billing_name}</p>
-        <p>{invoice.billing_address}</p>
-      </div>
-    </section>
-
-    <table class="lines">
-      <thead><tr><th>Tétel</th><th class="right">Összeg</th></tr></thead>
-      <tbody>
-        {lines.map((l) => (
-          <tr><td>{l.label}</td><td class="right">{l.amount}</td></tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr><td>Nettó összeg</td><td class="right">{formatCents(invoice.net_cents * sign)}</td></tr>
-        <tr><td>ÁFA ({invoice.vat_rate}%)</td><td class="right">{formatCents(invoice.vat_cents * sign)}</td></tr>
-        <tr class="total"><td>Végösszeg</td><td class="right">{formatCents(invoice.gross_cents * sign)}</td></tr>
-      </tfoot>
-    </table>
-
-    <p class="disclaimer">
-      Ez a dokumentum tájékoztató jellegű, a végleges számlaformátumot a könyvelővel való egyeztetés
-      után véglegesítjük.
-    </p>
-  </article>
+    on('#send-btn, #send-btn-2', async () => {
+      const to = await pf()?.prompt({ title: 'Küldés az ügyfélnek', body: 'A számla PDF-ben csatolva megy ki, és a levélben online is megnyitható. Ha be van állítva a könyvelő, másolat is megy neki.', label: 'Címzett e-mail-címe', value: buyerEmail, confirmLabel: 'Küldés', required: true });
+      if (!to) return;
+      const res = await post({ action: 'send', to, client: true, bookkeeper: 'auto' });
+      if (res.ok && res.send?.client === 'sent') { pf()?.toast('Elküldve: ' + to + (res.send.bookkeeper === 'sent' ? ' és a könyvelőnek.' : '.'), 'ok'); setTimeout(reload, 700); }
+      else pf()?.toast(res.message || 'A küldés nem sikerült. Ellenőrizze a címet, vagy hogy az e-mail-szolgáltatás be van-e állítva.', 'error');
+    });
+    on('#book-btn', async () => {
+      const ok = await pf()?.confirm({ title: 'Másolat a könyvelőnek', body: 'A számla PDF-ben és az adataival megy ki a beállított könyvelői címre.', confirmLabel: 'Küldés' });
+      if (!ok) return;
+      const res = await post({ action: 'send_bookkeeper' });
+      if (res.ok) { pf()?.toast('A könyvelő megkapta.', 'ok'); setTimeout(reload, 700); } else pf()?.toast('A küldés nem sikerült.', 'error');
+    });
+    on('#paid-btn', async () => {
+      const ok = await pf()?.confirm({ title: 'Kifizetettnek jelöli?', body: 'A mai nap lesz a fizetés napja. Visszavonható.', confirmLabel: 'Kifizetve' });
+      if (!ok) return;
+      const res = await post({ action: 'mark_paid', date: today });
+      if (res.ok) reload(); else pf()?.toast(res.message || 'Nem sikerült.', 'error');
+    });
+    on('#unpaid-btn', async () => { const res = await post({ action: 'mark_unpaid' }); if (res.ok) reload(); });
+    on('#to-invoice-btn', async () => {
+      const res = await post({ action: 'to_invoice' });
+      if (res.ok) location.href = '/portal/invoices/new?draft=' + res.id; else pf()?.toast(res.message || 'Nem sikerült.', 'error');
+    });
+    on('#void-btn', async () => {
+      const ok = await pf()?.confirm({ title: 'Érvénytelenítja a díjbekérőt?', body: 'A díjbekérő nem számla, ezért sorszámát megtartja, de érvénytelennek lesz jelölve.', confirmLabel: 'Érvénytelenítés', danger: true });
+      if (!ok) return;
+      const res = await post({ action: 'void_proforma' });
+      if (res.ok) reload();
+    });
+    on('#credit-btn', async () => {
+      const ok = await pf()?.confirm({ title: 'Jóváíró számlát készít?', body: number + ' számlához teljes összegű jóváíró számla készül és azonnal kiállításra kerül; az eredeti számla érvénytelennek lesz jelölve. Ezt nem lehet visszavonni. Utána új, helyes számlát állíthat ki.', confirmLabel: 'Jóváíró számla kiállítása', danger: true });
+      if (!ok) return;
+      const res = await post({ action: 'credit' });
+      if (res.ok) location.href = '/portal/invoices/' + res.id; else pf()?.toast(res.message || 'Nem sikerült.', 'error');
+    });
+  </script>
 </Portal>
 
 <style>
-  .toolbar { display: flex; justify-content: space-between; margin-bottom: 24px; font-size: var(--fs-small); }
-  .toolbar a { text-decoration: underline; text-underline-offset: 2px; }
-  .toolbar button { padding: 8px 18px; background: var(--ink); color: var(--cream); font-size: var(--fs-micro); letter-spacing: var(--ls-button); text-transform: uppercase; }
+  .ph-side { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .iv-view { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; }
+  .iv-view.solo { grid-template-columns: minmax(0, 840px); justify-content: center; }
+  .iv-paper { padding: 16px; border-radius: var(--r-xl); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); overflow: hidden; }
+  .iv-paper :global(.inv-sheet) { transform-origin: top left; box-shadow: var(--shadow-md); }
+  .iv-rail { display: grid; gap: 16px; position: sticky; top: 20px; }
+  .rail-card { margin: 0; padding: 22px; }
+  .rail-card h2 { font-size: 16px; margin-bottom: 14px; }
+  @media (max-width: 1100px) { .iv-view { grid-template-columns: minmax(0, 1fr); } .iv-rail { position: static; } }
 
-  .invoice { max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid var(--border); padding: 48px; }
-  .inv-head { display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px; border-bottom: 2px solid var(--accent); padding-bottom: 24px; }
-  .doc-type { font-size: var(--fs-eyebrow); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-bottom: 6px; }
-  h1 { font-family: var(--serif); font-weight: var(--fw-display); font-size: 28px; color: var(--ink); }
-  .corrects { font-size: var(--fs-small); color: var(--taupe); margin-top: 4px; }
-  .meta { text-align: right; font-size: var(--fs-small); }
-  .meta div { margin-bottom: 4px; }
-  .meta dt { display: inline; color: var(--taupe); }
-  .meta dt::after { content: ': '; }
-  .meta dd { display: inline; color: var(--ink); }
+  .amounts { margin: 0; display: grid; gap: 2px; }
+  .amounts > div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 14.5px; color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+  .amounts .g { color: var(--ink); font-weight: var(--fw-medium); font-size: 17px; border-top: 1px solid var(--pt-hair); margin-top: 4px; padding-top: 12px; }
+  .amounts .h { color: var(--ink); background: var(--paper); border-radius: var(--r-md); padding: 10px 12px; margin-top: 8px; }
 
-  .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 40px; font-size: var(--fs-small); line-height: 1.7; color: var(--ink); }
-  .party-label { font-size: var(--fs-micro); letter-spacing: 0.06em; text-transform: uppercase; color: var(--taupe); margin-bottom: 6px; }
-  .party-name { font-weight: 600; }
+  .steps { margin: 0; padding: 0; list-style: none; display: grid; }
+  .steps li { position: relative; display: grid; grid-template-columns: 22px 1fr; gap: 12px; padding-bottom: 18px; }
+  .steps li:last-child { padding-bottom: 0; }
+  .steps li::before { content: ''; position: absolute; left: 10px; top: 22px; bottom: 0; width: 1.5px; background: var(--pt-hair); }
+  .steps li:last-child::before { display: none; }
+  .steps .node { width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1.5px var(--pt-hair); margin-top: 1px; transition: all 0.3s; }
+  .steps li[data-done='yes'] .node { background: var(--pt-green); box-shadow: none; }
+  .steps li[data-done='yes'] .node::after { content: ''; display: block; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: translate(7px, 2.5px) rotate(45deg); }
+  .steps b { display: block; font-weight: var(--fw-medium); font-size: 14.5px; color: var(--ink); line-height: 1.35; }
+  .steps li[data-done='no'] b { color: var(--ink-quiet); font-weight: var(--fw-regular); }
+  .steps small { display: block; margin-top: 2px; font-size: 13px; color: var(--ink-quiet); }
 
-  .lines { width: 100%; border-collapse: collapse; font-size: var(--fs-small); margin-bottom: 8px; }
-  .lines th { text-align: left; font-size: var(--fs-micro); text-transform: uppercase; letter-spacing: 0.06em; color: var(--taupe); padding: 8px 0; border-bottom: 1px solid var(--border); }
-  .lines td { padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--ink); }
-  .lines tfoot td { border-bottom: none; padding-top: 8px; }
-  .lines tfoot tr.total td { font-weight: 700; font-size: 17px; border-top: 1px solid var(--ink); padding-top: 12px; }
-  .right { text-align: right; font-variant-numeric: tabular-nums; }
+  .acts { display: grid; gap: 6px; }
+  .act { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: var(--r-md); background: var(--paper); font-size: 14.5px; font-weight: var(--fw-medium); color: var(--ink); text-align: left; transition: background 0.2s, transform 0.2s var(--ease-out); }
+  .act:hover { background: var(--linen); transform: translateX(2px); }
+  .act.primary { background: var(--ink); color: #fff; }
+  .act.primary:hover { background: var(--ink); filter: brightness(1.15); }
+  .act.danger { color: var(--pt-red); }
+  .act :global(svg) { flex: none; color: var(--ink-quiet); }
+  .act.primary :global(svg) { color: #fff; }
+  .rel { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 14.5px; color: var(--ink-quiet); }
+  .rel a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; font-weight: var(--fw-medium); }
 
-  .disclaimer { font-size: var(--fs-micro); color: var(--taupe); margin-top: 32px; }
+  :global(main.pm.pm) .pill.pill-inv-draft { background: var(--linen); color: var(--ink-quiet); }
+  :global(main.pm.pm) .pill.pill-inv-issued, :global(main.pm.pm) .pill.pill-inv-sent { background: var(--pt-amber-bg); color: var(--pt-amber); }
+  :global(main.pm.pm) .pill.pill-inv-paid { background: var(--pt-green-bg); color: var(--pt-green); }
+  :global(main.pm.pm) .pill.pill-inv-overdue { background: var(--pt-red-bg); color: var(--pt-red); }
+  :global(main.pm.pm) .pill.pill-inv-void { background: var(--linen); color: var(--ink-quiet); text-decoration: line-through; }
+  .ph-side :global(.pill) { padding: 7px 16px; border-radius: var(--r-pill); font-size: 14px; font-weight: var(--fw-medium); }
+
+  .iv-public { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; max-width: 840px; margin: 0 auto 20px; }
+  .iv-public b { font-family: var(--serif); letter-spacing: 0.34em; margin-right: 14px; font-weight: 500; }
+  .iv-public span { color: var(--ink-quiet); font-size: 14.5px; }
+  .iv-public-act { display: flex; gap: 10px; }
 
   @media print {
-    .invoice { border: none; padding: 0; }
+    .ph, .iv-rail, .iv-public, .notice { display: none !important; }
+    .iv-view { display: block; }
+    .iv-paper { padding: 0; background: none; box-shadow: none; border-radius: 0; overflow: visible; }
+    .iv-paper :global(#paper) { zoom: 1 !important; }
   }
 </style>

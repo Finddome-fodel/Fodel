@@ -1,0 +1,115 @@
+/* The invoice paper. Used by the invoice screen, the editor preview and print.
+   Laid out at A4 width (794px) and scaled by its container, so what the admin
+   sees is the document the customer receives. */
+
+.inv-sheet {
+  --is-line: #1a2733;
+  --is-hair: rgba(16, 42, 67, 0.16);
+  --is-fill: #f3f4f2;
+  position: relative;
+  width: 794px;
+  min-height: 1123px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #0f1f2c;
+  font-family: var(--sans, 'DM Sans Variable', system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.4;
+  border: 1.5px solid var(--is-line);
+  font-variant-numeric: tabular-nums;
+}
+.inv-sheet * { box-sizing: border-box; }
+.inv-sheet p, .inv-sheet h2, .inv-sheet dl, .inv-sheet dd, .inv-sheet dt { margin: 0; }
+.inv-sheet small { display: block; font-size: 9.5px; font-weight: 400; color: #55636f; line-height: 1.25; }
+.inv-sheet .is-bi { display: block; }
+.inv-sheet .is-bi b { font-weight: 600; }
+.inv-sheet .is-bi small { margin-top: 1px; }
+.inv-sheet .is-inline { display: inline-block; vertical-align: top; margin-right: 8px; text-align: left; }
+
+.is-top {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 14px 16px; background: var(--is-fill); border-bottom: 1.5px solid var(--is-line);
+}
+.is-top h2 { font-family: var(--sans); font-size: 17px; font-weight: 700; letter-spacing: 0.01em; }
+.is-top p { font-size: 13px; }
+.is-top b { font-weight: 700; }
+
+.is-parties { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1.5px solid var(--is-line); }
+.is-party { position: relative; padding: 16px 16px 18px; min-height: 250px; }
+.is-party + .is-party { border-left: 1.5px solid var(--is-line); }
+.is-label { margin-bottom: 14px; }
+.is-label b { font-size: 14px; font-weight: 700; }
+.is-label small { font-size: 12px; color: #0f1f2c; }
+.is-brand { position: absolute; top: 18px; right: 18px; text-align: center; line-height: 1; color: #102a43; }
+.is-brand .w { display: block; margin-right: -0.34em; font-family: var(--serif, 'Jost Variable', serif); font-weight: 500; font-size: 21px; letter-spacing: 0.34em; }
+.is-brand .r { display: block; height: 1px; background: #102a43; margin: 5px 0 4px; }
+.is-brand .s { display: block; font-size: 7.5px; letter-spacing: 0.4em; text-transform: uppercase; color: #55636f; margin-right: -0.4em; }
+.is-name { font-size: 15.5px; font-weight: 700; margin-top: 8px; }
+.is-addr { margin-top: 3px; font-size: 13px; }
+.is-party dl { margin-top: 14px; display: grid; gap: 7px; }
+.is-kv { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: start; }
+.is-kv dt .is-bi b { font-weight: 400; font-size: 12.5px; }
+.is-kv dt small { font-size: 9px; }
+.is-kv dd { font-size: 12.5px; word-break: break-word; }
+
+.is-dates { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1.5px solid var(--is-line); }
+.is-dates > div { text-align: center; }
+.is-dates > div + div { border-left: 1.5px solid var(--is-line); }
+.is-dates .is-h { padding: 8px 6px 7px; background: var(--is-fill); border-bottom: 1px dashed var(--is-line); }
+.is-dates .is-h b { font-size: 13px; font-weight: 700; }
+.is-dates p { padding: 8px 6px; font-size: 13px; font-weight: 600; }
+.is-dates p small { font-weight: 400; }
+
+.is-ref { display: grid; grid-template-columns: 1.4fr 1fr; border-bottom: 1.5px solid var(--is-line); }
+.is-ref > div { padding: 9px 16px; min-height: 40px; }
+.is-ref > div + div { border-left: 1.5px solid var(--is-line); }
+.is-ref .is-bi b { font-size: 13px; font-weight: 700; }
+.is-ref span:not(.is-bi):not(.is-inline) { font-size: 13px; }
+
+.is-lines { width: 100%; border-collapse: collapse; flex: 0 0 auto; }
+.is-lines th {
+  padding: 8px 6px; background: var(--is-fill); border-bottom: 1.5px solid var(--is-line); text-align: center; vertical-align: middle;
+}
+.is-lines th + th { border-left: 1.5px solid var(--is-line); }
+.is-lines th b { font-size: 11.5px; font-weight: 700; line-height: 1.2; }
+.is-lines th small { font-size: 8.5px; }
+.is-lines th.is-left { text-align: center; width: 30%; }
+.is-lines td { padding: 11px 8px; vertical-align: top; font-size: 12.5px; border-bottom: 1px solid var(--is-hair); }
+.is-lines .is-desc b { display: block; font-size: 13px; font-weight: 700; }
+.is-lines .is-c { text-align: center; }
+.is-lines .is-r { text-align: right; white-space: nowrap; }
+.is-lines .is-strong { font-weight: 700; }
+.is-lines .is-empty { text-align: center; color: #7b8791; padding: 40px 16px; }
+
+.is-totals { margin-top: auto; display: flex; justify-content: flex-end; padding: 26px 0 0; }
+.is-totals dl { width: 56%; }
+.is-totals dl > div { display: flex; justify-content: space-between; gap: 18px; padding: 7px 16px; font-size: 13px; }
+.is-totals dl > div + div:not(.is-huf) { border-top: 0; }
+.is-totals .is-grand { border-top: 1.5px solid var(--is-line) !important; margin-top: 4px; padding-top: 11px !important; }
+.is-totals .is-grand dt, .is-totals .is-grand dd { font-weight: 700; }
+.is-totals .is-grand dd { font-size: 17px; }
+.is-totals .is-huf { margin-top: 14px; padding: 12px 16px !important; background: var(--is-fill); align-items: center; }
+.is-totals .is-huf dt { font-weight: 700; }
+.is-totals .is-huf dd { font-weight: 700; font-size: 17px; }
+
+.is-foot { padding: 26px 24px 22px; text-align: center; display: grid; gap: 8px; }
+.is-foot p { font-size: 12.5px; }
+.is-foot .is-blue { color: #14208f; font-weight: 700; }
+.is-foot .is-thanks { font-style: normal; }
+.is-foot .is-small { font-size: 11.5px; color: #3d4a55; }
+.is-foot .is-legal { text-align: left; padding: 11px 14px; margin-bottom: 4px; border: 1px solid var(--is-hair); background: var(--is-fill); font-size: 11.5px; line-height: 1.5; }
+.is-foot .is-note { text-align: left; font-size: 12px; color: #2a3844; }
+
+.is-draft::after, .is-void::after {
+  content: 'PISZKOZAT';
+  position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+  font-family: var(--serif, serif); font-weight: 500; font-size: 120px; letter-spacing: 0.18em;
+  color: rgba(16, 42, 67, 0.06); transform: rotate(-24deg);
+}
+.is-void::after { content: 'ÉRVÉNYTELEN'; font-size: 96px; color: rgba(179, 38, 30, 0.1); }
+
+@media print {
+  @page { size: A4; margin: 8mm; }
+  .inv-sheet { width: 194mm; min-height: 280mm; border: 1.5px solid #000; zoom: 1 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

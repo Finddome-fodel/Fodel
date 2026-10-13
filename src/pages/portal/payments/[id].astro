@@ -35,12 +35,14 @@ const { data: owner } = order.owner_id
 
 const { data: invoices } = await supabase
   .from('invoices')
-  .select('id, number, kind, corrects_id, gross_cents, issued_at, view_token')
+  .select('*')
   .eq('payment_id', id)
-  .order('issued_at', { ascending: true });
+  .order('created_at', { ascending: true });
 
-const latestInvoice = (invoices ?? []).filter((i) => i.kind === 'invoice').at(-1);
-const hasCredit = (invoices ?? []).some((i) => i.kind === 'credit_note' && i.corrects_id === latestInvoice?.id);
+// Since invoicing v2 a document may still be a draft (no number yet) or void.
+const invoiceList = (invoices ?? []).map((i: any) => ({ id: i.id as string, number: (i.number ?? null) as string | null, kind: i.kind as string, status: (i.status ?? 'issued') as string }));
+const liveInvoice = invoiceList.find((i) => i.kind === 'invoice' && i.status !== 'void' && i.status !== 'draft');
+const draftInvoice = invoiceList.find((i) => i.status === 'draft');
 
 const { data: timeline } = order.property_id
   ? await supabase
@@ -127,18 +129,15 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
 
       <section class="actions">
         <h2>Műveletek</h2>
-        {latestInvoice ? (
-          <p class="invoice-line">
-            Számla: <a href={`/portal/invoices/${latestInvoice.number}`}>{latestInvoice.number}</a>
-            {!hasCredit && (
-              <button type="button" class="btn ghost small" id="credit-note-btn" data-corrects={latestInvoice.id}>
-                Jóváírás kiállítása
-              </button>
-            )}
-          </p>
-        ) : (
-          <button type="button" class="btn" id="invoice-btn">Számla kiállítása</button>
-        )}
+        <div class="invoice-line">
+          {invoiceList.filter((i) => i.status !== 'draft').map((i) => (
+            <a class="inv-chip" href={`/portal/invoices/${i.id}`}>{i.number} <small>{i.kind === 'credit_note' ? 'jóváírás' : i.status === 'void' ? 'érvénytelen' : i.status === 'paid' ? 'kifizetve' : ''}</small></a>
+          ))}
+          {!liveInvoice && (draftInvoice
+            ? <a class="btn" href={`/portal/invoices/new?draft=${draftInvoice.id}`}>Számla-piszkozat folytatása</a>
+            : <button type="button" class="btn" id="invoice-btn">Számla készítése</button>)}
+          {liveInvoice && <a class="btn ghost small" href={`/portal/invoices/${liveInvoice.id}`}>Számla megnyitása (küldés, jóváírás)</a>}
+        </div>
         <button type="button" class="btn ghost" id="resend-btn">Díjbekérő e-mail újraküldése</button>
         {order.status === 'pending' && (
           <><button type="button" class="btn" id="mark-paid-btn">Átutalás beérkezett</button>
@@ -201,19 +200,15 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
   });
 
   document.getElementById('invoice-btn')?.addEventListener('click', async () => {
-    actionStatus.textContent = 'Számla kiállítása…';
-    const { ok, json } = await post('issue_invoice');
-    if (ok && json.ok) location.reload();
-    else actionStatus.textContent = json.error === 'billing-missing' ? 'Előbb adja meg a számlázási adatokat.' : 'Nem sikerült kiállítani.';
-  });
-
-  document.getElementById('credit-note-btn')?.addEventListener('click', async (e) => {
-    const correctsId = e.currentTarget.dataset.corrects;
-    if (!(await window.pf.confirm({ title: 'Jóváíró számla kiállítása', body: 'Biztosan kiállítja a jóváíró számlát? A számlát ez nem törli, csak ellentételezi.', confirmLabel: 'Kiállítás' }))) return;
-    actionStatus.textContent = 'Jóváírás kiállítása…';
-    const { ok, json } = await post('issue_credit_note', { correctsId });
-    if (ok && json.ok) location.reload();
-    else actionStatus.textContent = 'Nem sikerült kiállítani.';
+    actionStatus.textContent = 'Piszkozat készítése a megrendelésből…';
+    const res = await fetch('/api/portal/invoices/action', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'from_payment', paymentId: orderId }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (json.ok) location.href = '/portal/invoices/new?draft=' + json.id;
+    else actionStatus.textContent = json.message || 'Nem sikerült.';
   });
 
   document.getElementById('resend-btn')?.addEventListener('click', async () => {
@@ -283,7 +278,8 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
   .btn { margin: 0; }
   .btn.small { margin-left: 10px; }
   .invoice-line { flex-basis: 100%; font-size: var(--fs-small); display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-  .invoice-line a { text-decoration: underline; text-underline-offset: 3px; font-weight: var(--fw-medium); }
+  .inv-chip { display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 14px; border-radius: var(--r-pill); background: var(--paper); font-weight: var(--fw-medium); text-decoration: none; }
+  .inv-chip small { font-weight: var(--fw-regular); color: var(--ink-quiet); }
   .refund { flex-basis: 100%; display: grid; gap: 10px; margin-top: 8px; max-width: 460px; }
   .refund label { display: grid; gap: 7px; font-size: 13.5px; color: var(--ink-quiet); }
   .refund input { width: 100%; padding: 11px 14px; font-size: var(--fs-small); color: var(--ink); }

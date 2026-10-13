@@ -46,13 +46,15 @@ export async function sendEmail(opts: {
   /** Plain-text alternative. Always pass it — see the note in layout.ts. */
   text?: string;
   replyTo?: string;
-}): Promise<void> {
+  /** Files to attach — the invoice PDF. */
+  attachments?: { filename: string; content: Buffer }[];
+}): Promise<boolean> {
   const apiKey = import.meta.env.RESEND_API_KEY;
   const from = senderAddress('portal');
 
   if (!apiKey) {
     console.warn(`[email] RESEND_API_KEY unset — would send "${opts.subject}" to ${opts.to}`);
-    return;
+    return false;
   }
 
   const resend = new Resend(apiKey);
@@ -66,14 +68,15 @@ export async function sendEmail(opts: {
         html: opts.html,
         text: opts.text,
         replyTo: opts.replyTo ?? replyToAddress(),
+        ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
       });
-      if (!error) return;
+      if (!error) return true;
       if (!isRetryable(error) || attempt === MAX_ATTEMPTS) {
         console.error(
           `[email] giving up on "${opts.subject}" to ${opts.to} after ${attempt} attempt(s)`,
           error
         );
-        return;
+        return false;
       }
     } catch (error) {
       if (!isRetryable(error) || attempt === MAX_ATTEMPTS) {
@@ -81,11 +84,12 @@ export async function sendEmail(opts: {
           `[email] giving up on "${opts.subject}" to ${opts.to} after ${attempt} attempt(s)`,
           error
         );
-        return;
+        return false;
       }
     }
     await sleep(RETRY_BASE_MS * 2 ** (attempt - 1));
   }
+  return false;
 }
 
 /** Sends a template's output. The one call site shape every trigger should use. */

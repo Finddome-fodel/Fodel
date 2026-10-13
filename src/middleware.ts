@@ -40,6 +40,8 @@ const ADMIN_ONLY_PREFIXES = [
   '/portal/top10',
   '/portal/services',
   '/portal/settings/estimate',
+  '/portal/settings/invoicing',
+  '/portal/invoices/new',
   // Each of these API prefixes is distinct from its /portal/... counterpart
   // above and would NOT be covered by it — the same easy-to-forget gap the
   // plan calls out for the database export route.
@@ -54,6 +56,8 @@ const ADMIN_ONLY_PREFIXES = [
   '/api/portal/top10',
   '/api/portal/services',
   '/api/portal/settings/estimate',
+  '/api/portal/settings/invoicing',
+  '/api/portal/invoices',
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
@@ -85,7 +89,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
   context.locals.profile = profile;
 
-  const isPublicPortalPath = PUBLIC_PORTAL_PATHS.some((p) => pathname.startsWith(p));
+  // /portal/invoices/new is the admin editor, not a customer's invoice link.
+  const isPublicPortalPath = PUBLIC_PORTAL_PATHS.some((p) => pathname.startsWith(p)) && !pathname.startsWith('/portal/invoices/new');
 
   if (pathname.startsWith('/portal') && !isPublicPortalPath && !user) {
     return context.redirect(`/portal/login?next=${encodeURIComponent(pathname)}`);
@@ -106,7 +111,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     });
   }
 
-  const needsAdmin = ADMIN_ONLY_PREFIXES.some((p) => pathname.startsWith(p));
+  const needsAdmin = ADMIN_ONLY_PREFIXES.some((p) => pathname.startsWith(p)) || pathname === '/portal/invoices' || pathname === '/portal/invoices/';
   if (needsAdmin && profile?.role !== 'admin') {
     if (pathname.startsWith('/api/portal')) {
       return new Response(JSON.stringify({ ok: false, error: 'forbidden' }), {

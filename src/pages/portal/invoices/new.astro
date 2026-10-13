@@ -1,0 +1,841 @@
+---
+/**
+ * The invoice editor — new invoices, drafts, díjbekérők, and invoices made
+ * from an order. The form on the left is the whole job; the paper on the right
+ * is the real document (the same function that renders the invoice screen),
+ * redrawn on every keystroke.
+ *
+ * What it does for you:
+ *  - finds the customer among portal accounts and earlier invoices and fills
+ *    the name, address, e-mail and adószám;
+ *  - normalises the tax number (12345678-1-23 → HU12345678) and can confirm
+ *    it with the EU's VIES service;
+ *  - proposes the Dutch VAT treatment (21%, reverse charge, outside scope) and
+ *    says why — the admin can always override it;
+ *  - prices list items correctly for that treatment (€ 69 → € 57.02 net);
+ *  - adds the forint amount at the ECB rate for Hungarian customers.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import '~/styles/invoice-sheet.css';
+import { icon } from '~/lib/portal/icons';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { getCompany } from '~/lib/runtime-config';
+import { invoiceCatalogue } from '~/lib/invoicing/catalogue';
+import { loadInvoiceSettings } from '~/lib/invoicing/settings';
+import { createDraftFromPayment, currentIssuer, getRow, isMigrated, isUuid, loadDoc } from '~/lib/invoicing/store';
+import { COUNTRIES, VAT_TREATMENTS, addDays, emptyParty, suggestVat, today, type InvoiceDoc } from '~/lib/invoicing/model';
+
+const { profile, user } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const admin = createSupabaseAdminClient();
+const params = Astro.url.searchParams;
+const migrated = await isMigrated(admin);
+
+let doc: InvoiceDoc | null = null;
+let draftId: string | null = null;
+let paymentId: string | null = null;
+let ownerId: string | null = null;
+let referenceId: string | null = null;
+let paidCents: number | null = null;
+let loadError: string | null = null;
+
+const [company, settings, issuer] = await Promise.all([getCompany(), loadInvoiceSettings(admin), currentIssuer(admin)]);
+
+if (migrated) {
+  try {
+    const fromPayment = params.get('payment');
+    if (fromPayment && isUuid(fromPayment)) {
+      const created = await createDraftFromPayment(admin, fromPayment, { id: user?.id });
+      return Astro.redirect(`/portal/invoices/new?draft=${created.id}`);
+    }
+    const draft = params.get('draft');
+    const copyOf = params.get('from');
+    if (draft && isUuid(draft)) {
+      const row = await getRow(admin, draft);
+      if (!row) loadError = 'A piszkozat nem található.';
+      else if (row.finalised_at) return Astro.redirect(`/portal/invoices/${row.id}`);
+      else {
+        doc = await loadDoc(admin, row);
+        draftId = row.id;
+        paymentId = row.payment_id;
+        ownerId = row.owner_id;
+        referenceId = row.reference_id;
+        if (row.payment_id) {
+          const { data } = await admin.from('payments').select('amount_cents').eq('id', row.payment_id).maybeSingle();
+          paidCents = data?.amount_cents ?? null;
+        }
+      }
+    } else if (copyOf && isUuid(copyOf)) {
+      const row = await getRow(admin, copyOf);
+      if (row) {
+        const source = await loadDoc(admin, row);
+        doc = { ...source, number: null, status: 'draft', kind: source.kind === 'credit_note' ? 'invoice' : source.kind, issuer, issuedAt: today(), supplyDate: today(), dueDate: addDays(today(), settings.paymentTermsDays), settled: false, reference: '', referenceNumber: null };
+        ownerId = row.owner_id;
+      }
+    }
+  } catch (error) {
+    loadError = (error as Error).message;
+  }
+}
+
+if (!doc) {
+  const buyer = emptyParty();
+  const ownerParam = params.get('owner');
+  if (migrated && ownerParam && isUuid(ownerParam)) {
+    const { data } = await admin.from('profiles').select('id, full_name, email, phone, locale, billing').eq('id', ownerParam).maybeSingle();
+    if (data) {
+      Object.assign(buyer, data.billing ?? {}, { name: data.billing?.name || data.full_name || data.email, email: data.email, phone: data.billing?.phone || data.phone || '' });
+      ownerId = data.id;
+    }
+  }
+  const vat = suggestVat(buyer);
+  doc = {
+    number: null,
+    kind: params.get('kind') === 'proforma' ? 'proforma' : 'invoice',
+    status: 'draft',
+    issuer,
+    buyer,
+    issuedAt: today(),
+    supplyDate: today(),
+    dueDate: addDays(today(), settings.paymentTermsDays),
+    paymentMethod: 'transfer',
+    vatTreatment: vat.treatment,
+    vatRate: vat.rate,
+    priceMode: vat.rate === 0 ? 'net' : 'gross',
+    lines: [],
+    fxRate: null,
+    reference: '',
+    notes: settings.defaultNotes,
+    locale: 'hu',
+    settled: false,
+  };
+}
+
+const catalogue = invoiceCatalogue(company.services);
+const init = {
+  doc,
+  id: draftId,
+  paymentId,
+  ownerId,
+  referenceId,
+  paidCents,
+  termsDays: settings.paymentTermsDays,
+  bookkeeper: settings.bookkeeperEmail,
+  catalogue,
+  countries: COUNTRIES,
+  treatments: VAT_TREATMENTS,
+};
+const groups = [...new Set(catalogue.map((c) => c.group))];
+const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
+---
+
+<Portal title={title}>
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/invoices">← Számlák</a></p>
+      <h1 id="iv-title">{draftId ? 'Piszkozat: ' : 'Új '}<em id="iv-kind-word">{doc.kind === 'proforma' ? 'díjbekérő' : 'számla'}</em></h1>
+      <p class="lede">Töltse ki a bal oldalt — a jobb oldali lap pontosan az, amit az ügyfél megkap.</p>
+    </div>
+    <div class="ph-side">
+      <div class="iv-seg" role="group" aria-label="Dokumentum típusa" id="kind-seg">
+        <button type="button" data-kind="invoice">Számla</button>
+        <button type="button" data-kind="proforma">Díjbekérő</button>
+      </div>
+    </div>
+  </header>
+
+  {!migrated && (
+    <p class="notice error">A számlázás adatbázis-bővítése (<code>0018_invoicing_v2.sql</code>) még nem futott le a Supabase-ben. Futtassa le az SQL Editorban, utána frissítse ezt az oldalt.</p>
+  )}
+  {loadError && <p class="notice error">{loadError}</p>}
+
+  <div class="iv" id="iv" data-ready={migrated ? 'yes' : 'no'}>
+    <div class="iv-form">
+      <section class="set-card" id="card-buyer">
+        <div class="set-head"><h2>Vevő</h2>
+          <div class="iv-seg small" role="group" aria-label="A vevő típusa" id="type-seg">
+            <button type="button" data-type="person">Magánszemély</button>
+            <button type="button" data-type="company">Vállalkozás</button>
+          </div>
+        </div>
+        <div class="iv-search">
+          <span class="iv-search-ic" set:html={icon('search', 18)} />
+          <input id="cust-q" type="search" placeholder="Keresés a portál felhasználói és a korábbi vevők között…" autocomplete="off" />
+          <ul class="iv-results" id="cust-results" hidden></ul>
+        </div>
+        <div class="set-grid">
+          <label class="wide"><span id="lbl-name">Név</span><input data-f="buyer.name" autocomplete="off" /></label>
+          <label>Ország
+            <select data-f="buyer.countryCode">
+              {COUNTRIES.map((c) => <option value={c.code}>{c.hu}</option>)}
+            </select>
+          </label>
+          <label>Irányítószám<input data-f="buyer.postalCode" autocomplete="off" /></label>
+          <label>Város<input data-f="buyer.city" autocomplete="off" /></label>
+          <label>Utca, házszám<input data-f="buyer.street" autocomplete="off" /></label>
+          <label>E-mail<input type="email" data-f="buyer.email" autocomplete="off" /></label>
+          <label>Telefon<input data-f="buyer.phone" autocomplete="off" /></label>
+          <label class="wide">Adószám
+            <span class="iv-tax">
+              <input data-f="buyer.taxNumber" id="tax" autocomplete="off" placeholder="pl. 12345678-1-23 vagy HU12345678" />
+              <button type="button" class="btn ghost small" id="vies-btn" hidden>Ellenőrzés (VIES)</button>
+            </span>
+            <small class="iv-hint" id="tax-hint"></small>
+            <span class="iv-vies" id="vies-out" hidden></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="set-card" id="card-vat">
+        <div class="set-head"><h2>ÁFA</h2></div>
+        <div class="iv-reason" id="vat-reason"></div>
+        <div class="set-grid">
+          <label class="wide">Kezelés
+            <select data-f="vatTreatment">
+              {Object.entries(VAT_TREATMENTS).map(([k, v]) => <option value={k}>{v.label}</option>)}
+            </select>
+          </label>
+          <label id="custom-rate-wrap" hidden>Egyedi kulcs (%)<input type="number" min="0" max="30" step="0.5" data-f="vatRate" /></label>
+          <div class="wide iv-modeline">
+            <span>Az egységárak</span>
+            <div class="iv-seg small" role="group" aria-label="Árak" id="mode-seg">
+              <button type="button" data-mode="gross">bruttók (ÁFÁ-val)</button>
+              <button type="button" data-mode="net">nettók (ÁFA nélkül)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="set-card" id="card-lines">
+        <div class="set-head"><h2>Tételek</h2>
+          <div class="iv-add">
+            <div class="pt-menu">
+              <button type="button" class="btn small" id="catalog-btn" data-menu aria-haspopup="menu" aria-expanded="false"><span set:html={icon('plus', 16)} /> Árlistából</button>
+              <div class="pt-menu-pop" id="catalog-pop" role="menu" hidden>
+                {groups.map((g) => (
+                  <>
+                    <p class="cap">{g}</p>
+                    {catalogue.filter((c) => c.group === g).map((c) => (
+                      <button type="button" data-cat={c.id}>{c.hu}<span class="iv-cat-price">€ {(c.grossCents / 100).toFixed(0)}</span></button>
+                    ))}
+                  </>
+                ))}
+              </div>
+            </div>
+            <button type="button" class="btn ghost small" id="blank-btn"><span set:html={icon('pen', 16)} /> Szabad tétel</button>
+          </div>
+        </div>
+        <div class="iv-lines" id="lines"></div>
+        <p class="iv-empty" id="lines-empty">Még nincs tétel. Válasszon az árlistából, vagy írjon be egy szabad tételt.</p>
+        <dl class="iv-sum" id="sum"></dl>
+        <p class="iv-warn" id="paid-warn" hidden></p>
+      </section>
+
+      <section class="set-card" id="card-dates">
+        <div class="set-head"><h2>Dátumok és fizetés</h2></div>
+        <div class="set-grid">
+          <label>Számla kelte<input type="date" data-f="issuedAt" /></label>
+          <label>Teljesítés napja<input type="date" data-f="supplyDate" /></label>
+          <label>Fizetési határidő<input type="date" data-f="dueDate" /></label>
+          <div class="iv-field">
+            <span class="iv-fl">Fizetési mód</span>
+            <div class="iv-seg small" role="group" id="method-seg">
+              <button type="button" data-method="transfer">Átutalás</button>
+              <button type="button" data-method="card">Kártya</button>
+              <button type="button" data-method="cash">Készpénz</button>
+            </div>
+          </div>
+          <label class="check wide" id="settled-wrap"><input type="checkbox" data-f="settled" /> A díj már megérkezett — a számlán nem kérünk fizetést</label>
+          <label class="check wide"><input type="checkbox" id="huf-on" /> Forint összeg is a számlán (magyar vevőnek)</label>
+          <div class="wide iv-fx" id="fx-wrap" hidden>
+            <label>Árfolyam (Ft / €)<input type="number" step="0.01" min="0" data-f="fxRate" /></label>
+            <button type="button" class="btn ghost small" id="fx-btn">Aznapi ECB-árfolyam</button>
+            <small class="iv-hint" id="fx-hint"></small>
+          </div>
+          <label class="wide">Hivatkozás<input data-f="reference" placeholder="pl. FO-2026/032 számú díjbekérő" /></label>
+          <label class="wide">Megjegyzés a számlán<textarea rows="2" data-f="notes" maxlength="600"></textarea></label>
+          <div class="iv-field">
+            <span class="iv-fl">A kísérő e-mail nyelve</span>
+            <div class="iv-seg small" role="group" id="locale-seg">
+              <button type="button" data-locale="hu">Magyar</button>
+              <button type="button" data-locale="nl">Nederlands</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="iv-side">
+      <div class="iv-paper" id="paper-wrap"><div id="paper"></div></div>
+    </aside>
+  </div>
+
+  <div class="iv-bar" id="bar">
+    <div class="iv-bar-in">
+      <p class="iv-bar-msg" id="bar-msg"><span class="dot"></span><span id="bar-txt">Új piszkozat</span></p>
+      <div class="iv-bar-act">
+        <label class="iv-opt" title="A vevő e-mail-címére, PDF-fel"><input type="checkbox" id="send-client" checked /> Küldés a vevőnek</label>
+        <label class="iv-opt" id="opt-book" title="Másolat a könyvelőnek"><input type="checkbox" id="send-book" checked /> Másolat a könyvelőnek</label>
+        <button type="button" class="btn ghost" id="discard-btn" hidden>Piszkozat törlése</button>
+        <button type="button" class="btn ghost" id="save-btn">Mentés piszkozatként</button>
+        <button type="button" class="btn" id="issue-btn">Kiállítás</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="iv-init" set:html={JSON.stringify(init).replace(/</g, '\\u003c')} />
+</Portal>
+
+<script>
+  import { invoiceSheet } from '~/lib/invoicing/sheet';
+  import {
+    NL_VAT_RATE, checkTaxId, computeTotals, eur, huf, hufFromCents, isEu, listPriceCents, rateFor, suggestVat, addDays,
+    type InvoiceDoc, type PriceMode, type VatTreatment,
+  } from '~/lib/invoicing/model';
+
+  type Cat = { id: string; group: string; hu: string; nl: string; unitHu: string; unitNl: string; grossCents: number };
+  const init = JSON.parse(document.getElementById('iv-init')!.textContent!) as {
+    doc: InvoiceDoc; id: string | null; paymentId: string | null; ownerId: string | null; referenceId: string | null;
+    paidCents: number | null; termsDays: number; bookkeeper: string; catalogue: Cat[];
+  };
+  const root = document.getElementById('iv') as HTMLElement;
+  if (root.dataset.ready !== 'yes') {
+    document.getElementById('bar')?.remove();
+  } else {
+    boot();
+  }
+
+  function boot() {
+    const doc: InvoiceDoc = init.doc;
+    let draftId = init.id;
+    let ownerId = init.ownerId;
+    let dirty = false;
+    let saving = false;
+    // A saved draft keeps what was chosen; only a blank document is auto-filled.
+    const touched = { vat: Boolean(draftId), due: Boolean(draftId), supply: Boolean(draftId), fx: Boolean(draftId) || Boolean(doc.fxRate) };
+    const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
+    const $$ = <T extends HTMLElement>(sel: string) => [...document.querySelectorAll(sel)] as T[];
+    const toast = (m: string, t?: 'ok' | 'error' | 'warn') => window.pf?.toast(m, t);
+
+    /* ── path helpers ─────────────────────────────────────────────────── */
+    const getPath = (path: string): any => path.split('.').reduce((o: any, k) => o?.[k], doc);
+    const setPath = (path: string, value: any) => {
+      const keys = path.split('.');
+      const last = keys.pop()!;
+      const target = keys.reduce((o: any, k) => o[k], doc);
+      target[last] = value;
+    };
+
+    /* ── totals / preview ─────────────────────────────────────────────── */
+    const paper = $('#paper');
+    const wrap = $('#paper-wrap');
+    const fit = () => {
+      const w = wrap.clientWidth - 28; // minus the paper's own padding
+      (paper as HTMLElement).style.zoom = String(Math.min(1, w / 794));
+    };
+    new ResizeObserver(fit).observe(wrap);
+
+    function repriceCatalogLines() {
+      doc.lines = doc.lines.map((l) =>
+        l.catalogId && l.listCents != null && !l.edited ? { ...l, unitCents: listPriceCents(l.listCents, doc.vatRate, doc.priceMode) } : l
+      );
+    }
+
+    function render(lines = false) {
+      const t = computeTotals(doc.lines, doc.vatRate, doc.priceMode);
+      const sign = doc.kind === 'credit_note' ? -1 : 1;
+      paper.innerHTML = invoiceSheet(doc);
+      fit();
+      $('#sum').innerHTML =
+        `<div><dt>Nettó</dt><dd>${eur(t.netCents * sign)}</dd></div>` +
+        `<div><dt>ÁFA (${doc.vatRate}%)</dt><dd>${eur(t.vatCents * sign)}</dd></div>` +
+        `<div class="g"><dt>Bruttó</dt><dd>${eur(t.grossCents * sign)}</dd></div>` +
+        (doc.fxRate ? `<div class="h"><dt>Forintban</dt><dd>${huf(hufFromCents(t.grossCents * sign, doc.fxRate))}</dd></div>` : '');
+      const warn = $('#paid-warn');
+      if (init.paidCents != null && Math.abs(t.grossCents - init.paidCents) > 1) {
+        warn.hidden = false;
+        warn.textContent = `A megrendelés összege ${eur(init.paidCents)}, a számla végösszege ${eur(t.grossCents)}. Ellenőrizze, hogy ez a szándék.`;
+      } else warn.hidden = true;
+      $('#lines-empty').hidden = doc.lines.length > 0;
+      if (lines) renderLines();
+      syncControls();
+    }
+
+    /* ── lines ────────────────────────────────────────────────────────── */
+    // Shown to the cent; the exact (possibly fractional) value is kept until it is edited.
+    const priceText = (cents: number) => (cents / 100).toFixed(2);
+    function renderLines() {
+      const host = $('#lines');
+      host.innerHTML = doc.lines
+        .map(
+          (l, i) => `<div class="iv-line" data-i="${i}">
+        <div class="iv-line-top">
+          <input data-l="description" value="${esc(l.description)}" placeholder="Megnevezés" aria-label="Megnevezés" />
+          <button type="button" class="iv-icon" data-act="nl" title="Holland megnevezés" aria-label="Holland megnevezés">NL</button>
+          <button type="button" class="iv-icon" data-act="rm" title="Tétel törlése" aria-label="Tétel törlése">×</button>
+        </div>
+        <input class="iv-nl" data-l="descriptionNl" value="${esc(l.descriptionNl ?? '')}" placeholder="Holland megnevezés (Benaming)" ${l.descriptionNl ? '' : 'hidden'} />
+        <div class="iv-line-nums">
+          <label>Menny.<input data-l="quantity" type="number" min="0" step="any" value="${l.quantity}" /></label>
+          <label>Egység<input data-l="unit" value="${esc(l.unit ?? '')}" placeholder="db" /></label>
+          <label>Egységár (${doc.priceMode === 'net' ? 'nettó' : 'bruttó'})<input data-l="price" type="number" step="0.01" value="${priceText(l.unitCents)}" /></label>
+          <output>${eur(Math.round(l.quantity * l.unitCents))}</output>
+        </div>
+      </div>`
+        )
+        .join('');
+    }
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+    $('#lines').addEventListener('input', (e) => {
+      const el = e.target as HTMLInputElement;
+      const row = el.closest('.iv-line') as HTMLElement | null;
+      if (!row) return;
+      const l = doc.lines[Number(row.dataset.i)];
+      const k = el.dataset.l;
+      if (k === 'price') {
+        l.unitCents = Math.round(Number(el.value || 0) * 100000) / 1000;
+        l.edited = true;
+      } else if (k === 'quantity') l.quantity = Number(el.value || 0);
+      else if (k) (l as any)[k] = el.value || undefined;
+      if (k === 'description') l.description = el.value;
+      (row.querySelector('output') as HTMLElement).textContent = eur(Math.round(l.quantity * l.unitCents));
+      markDirty();
+      render();
+    });
+    $('#lines').addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('button[data-act]') as HTMLElement | null;
+      const row = btn?.closest('.iv-line') as HTMLElement | null;
+      if (!btn || !row) return;
+      const i = Number(row.dataset.i);
+      if (btn.dataset.act === 'rm') {
+        doc.lines.splice(i, 1);
+        markDirty();
+        render(true);
+      } else {
+        const nl = row.querySelector('.iv-nl') as HTMLInputElement;
+        nl.hidden = !nl.hidden;
+        if (!nl.hidden) nl.focus();
+      }
+    });
+
+    /* catalogue menu */
+    // Opening, placing and closing the menu is the portal's own (data-menu).
+    const pop = $('#catalog-pop');
+    document.addEventListener('click', (e) => {
+      if (!(e.target as HTMLElement).closest('.iv-search')) $('#cust-results').hidden = true;
+    });
+    pop.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button[data-cat]') as HTMLElement | null;
+      const item = init.catalogue.find((c) => c.id === b?.dataset.cat);
+      if (!item) return;
+      doc.lines.push({
+        description: item.hu, descriptionNl: item.nl, quantity: 1, unit: item.unitHu, unitNl: item.unitNl,
+        unitCents: listPriceCents(item.grossCents, doc.vatRate, doc.priceMode), catalogId: item.id, listCents: item.grossCents,
+      });
+      markDirty();
+      render(true);
+    });
+    $('#blank-btn').addEventListener('click', () => {
+      doc.lines.push({ description: '', quantity: 1, unit: 'db', unitNl: 'stuk', unitCents: 0 });
+      markDirty();
+      render(true);
+      ($$('#lines .iv-line').at(-1)?.querySelector('input') as HTMLInputElement | undefined)?.focus();
+    });
+
+    /* ── VAT ──────────────────────────────────────────────────────────── */
+    function autoVat() {
+      const s = suggestVat(doc.buyer);
+      if (!touched.vat) applyTreatment(s.treatment, s.rate);
+      const reason = $('#vat-reason');
+      const chosen = doc.vatTreatment === s.treatment;
+      reason.className = 'iv-reason' + (s.warning ? ' warn' : '');
+      reason.innerHTML =
+        `<b>${chosen ? 'Javasolt kezelés' : 'Javaslat: ' + treatmentName(s.treatment)}</b> ${esc(s.reason)}` +
+        (s.warning ? `<br><span>${esc(s.warning)}</span>` : '') +
+        (!chosen ? ' <button type="button" class="link" id="use-suggest">Javaslat alkalmazása</button>' : '');
+      $('#use-suggest')?.addEventListener('click', () => { touched.vat = false; autoVat(); markDirty(); render(true); });
+    }
+    const treatmentName = (t: VatTreatment) => ({ nl_standard: 'holland 21%', reverse_charge: 'fordított adózás', outside_scope: 'EU-n kívüli, 0%', custom: 'egyedi kulcs' })[t];
+    function applyTreatment(t: VatTreatment, customRate?: number) {
+      doc.vatTreatment = t;
+      doc.vatRate = rateFor(t, customRate ?? (doc.vatRate || NL_VAT_RATE));
+      if (doc.vatRate === 0) doc.priceMode = 'net';
+      repriceCatalogLines();
+    }
+    $('select[data-f="vatTreatment"]').addEventListener('change', (e) => {
+      touched.vat = true;
+      const t = (e.target as HTMLSelectElement).value as VatTreatment;
+      applyTreatment(t, t === 'custom' ? 27 : undefined);
+      markDirty();
+      autoVat();
+      render(true);
+    });
+    $$('#mode-seg button').forEach((b) => b.addEventListener('click', () => {
+      doc.priceMode = b.dataset.mode as PriceMode;
+      repriceCatalogLines();
+      markDirty();
+      render(true);
+    }));
+
+    /* ── buyer: tax id, VIES, search ──────────────────────────────────── */
+    const taxEl = $<HTMLInputElement>('#tax');
+    function taxHint() {
+      const hint = $('#tax-hint');
+      const btn = $('#vies-btn');
+      const check = checkTaxId(doc.buyer.countryCode, doc.buyer.taxNumber ?? '');
+      btn.hidden = !(check.state === 'valid' && isEu(doc.buyer.countryCode));
+      hint.className = 'iv-hint' + (check.state === 'invalid' ? ' bad' : check.state === 'valid' ? ' ok' : '');
+      hint.textContent =
+        check.state === 'valid' ? `✓ ${check.value}${check.hint ? ' · ' + check.hint : ''}` : check.state === 'invalid' ? check.hint : 'Magánszemélynél üresen hagyható. Vállalkozásnál ez dönti el, jár-e ÁFA.';
+    }
+    taxEl.addEventListener('blur', () => {
+      const check = checkTaxId(doc.buyer.countryCode, doc.buyer.taxNumber ?? '');
+      if (check.state === 'valid' && check.value !== taxEl.value) {
+        taxEl.value = check.value;
+        doc.buyer.taxNumber = check.value;
+        autoVat();
+        render();
+      }
+    });
+    $('#vies-btn').addEventListener('click', async () => {
+      const out = $('#vies-out');
+      out.hidden = false;
+      out.className = 'iv-vies';
+      out.textContent = 'Ellenőrzés…';
+      try {
+        const res = await (await fetch(`/api/portal/invoices/lookup?type=vies&cc=${doc.buyer.countryCode}&id=${encodeURIComponent(doc.buyer.taxNumber ?? '')}`)).json();
+        if (res.ok && res.valid) {
+          out.className = 'iv-vies ok';
+          out.innerHTML = `✓ Érvényes uniós adószám${res.name ? ` — <b>${esc(res.name)}</b>` : ''}${res.address ? `<br><small>${esc(res.address)}</small>` : ''}`;
+          if (res.name && !doc.buyer.name) { doc.buyer.name = res.name; (document.querySelector('[data-f="buyer.name"]') as HTMLInputElement).value = res.name; render(); }
+        } else if (res.ok) {
+          out.className = 'iv-vies bad';
+          out.textContent = 'A VIES szerint ez az adószám nem érvényes. Fordított adózás ezzel nem alkalmazható.';
+        } else {
+          out.className = 'iv-vies';
+          out.textContent = 'A VIES most nem érhető el. Később újra próbálhatja, a számla addig is elkészíthető.';
+        }
+      } catch {
+        out.textContent = 'A VIES most nem érhető el.';
+      }
+    });
+
+    let searchTimer: number | undefined;
+    const results = $('#cust-results');
+    $('#cust-q').addEventListener('input', (e) => {
+      const q = (e.target as HTMLInputElement).value;
+      clearTimeout(searchTimer);
+      if (q.trim().length < 2) { results.hidden = true; return; }
+      searchTimer = window.setTimeout(async () => {
+        try {
+          const res = await (await fetch(`/api/portal/invoices/lookup?type=customers&q=${encodeURIComponent(q)}`)).json();
+          const list = (res.results ?? []) as any[];
+          results.innerHTML = list.length
+            ? list.map((r, i) => `<li><button type="button" data-i="${i}"><b>${esc(r.name || r.email)}</b><span>${esc([r.email, r.city, r.source === 'account' ? 'portál fiók' : 'korábbi vevő'].filter(Boolean).join(' · '))}</span></button></li>`).join('')
+            : '<li class="none">Nincs találat. Töltse ki kézzel.</li>';
+          results.hidden = false;
+          (results as any)._list = list;
+        } catch { results.hidden = true; }
+      }, 220);
+    });
+    results.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button[data-i]') as HTMLElement | null;
+      if (!b) return;
+      const r = (results as any)._list[Number(b.dataset.i)];
+      Object.assign(doc.buyer, { type: r.type ?? 'person', name: r.name ?? '', street: r.street ?? '', postalCode: r.postalCode ?? '', city: r.city ?? '', countryCode: r.countryCode || 'HU', email: r.email ?? '', phone: r.phone ?? '', taxNumber: r.taxNumber ?? '' });
+      if (r.ownerId) ownerId = r.ownerId;
+      if (r.locale) doc.locale = r.locale;
+      results.hidden = true;
+      ($('#cust-q') as HTMLInputElement).value = '';
+      touched.vat = false;
+      syncInputs();
+      afterBuyerChange();
+      markDirty();
+      render(true);
+    });
+
+    function afterBuyerChange() {
+      autoVat();
+      taxHint();
+      // The forint amount follows the customer's country until someone decides otherwise.
+      if (!touched.fx) {
+        const on = ($('#huf-on') as HTMLInputElement).checked;
+        if (doc.buyer.countryCode === 'HU' && !on && doc.kind === 'invoice') enableHuf(true);
+        else if (doc.buyer.countryCode !== 'HU' && on) enableHuf(false);
+      }
+      $('#lbl-name').textContent = doc.buyer.type === 'company' ? 'Cégnév' : 'Név';
+    }
+
+    /* ── forint amount ────────────────────────────────────────────────── */
+    async function fetchFx() {
+      const hint = $('#fx-hint');
+      hint.textContent = 'Árfolyam lekérése…';
+      try {
+        const res = await (await fetch(`/api/portal/invoices/lookup?type=fx&date=${doc.supplyDate}`)).json();
+        if (res.ok) {
+          doc.fxRate = res.rate;
+          ($('[data-f="fxRate"]') as HTMLInputElement).value = String(res.rate);
+          hint.textContent = `ECB referenciaárfolyam, ${res.date}`;
+          render();
+        } else hint.textContent = 'Az árfolyam most nem érhető el, írja be kézzel.';
+      } catch { hint.textContent = 'Az árfolyam most nem érhető el, írja be kézzel.'; }
+    }
+    function enableHuf(on: boolean) {
+      ($('#huf-on') as HTMLInputElement).checked = on;
+      $('#fx-wrap').hidden = !on;
+      if (!on) { doc.fxRate = null; }
+      else if (!doc.fxRate) void fetchFx();
+      render();
+    }
+    $('#huf-on').addEventListener('change', (e) => { touched.fx = true; enableHuf((e.target as HTMLInputElement).checked); markDirty(); });
+    $('#fx-btn').addEventListener('click', () => { void fetchFx(); markDirty(); });
+
+    /* ── generic inputs ───────────────────────────────────────────────── */
+    function syncInputs() {
+      $$<HTMLInputElement>('[data-f]').forEach((el) => {
+        const v = getPath(el.dataset.f!);
+        if (el.type === 'checkbox') el.checked = Boolean(v);
+        else el.value = v == null ? '' : String(v);
+      });
+    }
+    function syncControls() {
+      $$('#kind-seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === doc.kind)));
+      $$('#type-seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.type === doc.buyer.type)));
+      $$('#mode-seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === doc.priceMode)));
+      $$('#method-seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.method === doc.paymentMethod)));
+      $$('#locale-seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.locale === doc.locale)));
+      const sel = $<HTMLSelectElement>('select[data-f="vatTreatment"]');
+      if (sel.value !== doc.vatTreatment) sel.value = doc.vatTreatment;
+      const rate = $<HTMLInputElement>('input[data-f="vatRate"]');
+      if (doc.vatTreatment === 'custom' && document.activeElement !== rate) rate.value = String(doc.vatRate);
+      $('#custom-rate-wrap').hidden = doc.vatTreatment !== 'custom';
+      $('#settled-wrap').hidden = doc.kind !== 'invoice';
+      $('#iv-kind-word').textContent = doc.kind === 'proforma' ? 'díjbekérő' : 'számla';
+      $('#issue-btn').textContent = doc.kind === 'proforma' ? 'Díjbekérő kiállítása' : 'Kiállítás';
+      $('#opt-book').hidden = !init.bookkeeper;
+      ($('#discard-btn') as HTMLElement).hidden = !draftId;
+    }
+    $$<HTMLInputElement>('[data-f]').forEach((el) => {
+      const path = el.dataset.f!;
+      const handler = () => {
+        let v: any = el.type === 'checkbox' ? el.checked : el.type === 'number' ? Number(el.value || 0) : el.value;
+        setPath(path, v);
+        markDirty();
+        if (path === 'buyer.countryCode' || path === 'buyer.taxNumber') { afterBuyerChange(); }
+        else if (path === 'vatRate') { doc.vatRate = Number(el.value || 0); repriceCatalogLines(); render(true); return; }
+        else if (path === 'issuedAt') {
+          if (!touched.supply) { doc.supplyDate = doc.issuedAt; ($('[data-f="supplyDate"]') as HTMLInputElement).value = doc.supplyDate; }
+          if (!touched.due) setDue();
+        } else if (path === 'supplyDate') touched.supply = true;
+        else if (path === 'dueDate') touched.due = true;
+        else if (path === 'settled') { setDue(true); }
+        render();
+      };
+      el.addEventListener(el.tagName === 'SELECT' || el.type === 'checkbox' || el.type === 'date' ? 'change' : 'input', handler);
+    });
+    function setDue(force = false) {
+      if (touched.due && !force) return;
+      doc.dueDate = doc.settled ? doc.issuedAt : addDays(doc.issuedAt, init.termsDays);
+      ($('[data-f="dueDate"]') as HTMLInputElement).value = doc.dueDate;
+      if (force) touched.due = false;
+    }
+    $$('#type-seg button').forEach((b) => b.addEventListener('click', () => { doc.buyer.type = b.dataset.type as 'person' | 'company'; afterBuyerChange(); markDirty(); render(); }));
+    $$('#method-seg button').forEach((b) => b.addEventListener('click', () => { doc.paymentMethod = b.dataset.method as any; markDirty(); render(); }));
+    $$('#locale-seg button').forEach((b) => b.addEventListener('click', () => { doc.locale = b.dataset.locale as 'hu' | 'nl'; markDirty(); render(); }));
+    $$('#kind-seg button').forEach((b) => b.addEventListener('click', () => {
+      doc.kind = b.dataset.kind as 'invoice' | 'proforma';
+      if (doc.kind === 'proforma') doc.settled = false;
+      syncInputs();
+      markDirty();
+      render();
+    }));
+
+    /* ── saving, issuing ──────────────────────────────────────────────── */
+    const barTxt = $('#bar-txt');
+    const bar = $('#bar');
+    function markDirty() {
+      dirty = true;
+      bar.dataset.state = 'dirty';
+      barTxt.textContent = draftId ? 'Nem mentett módosítások' : 'Új piszkozat — még nincs mentve';
+    }
+    window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+    async function post(payload: Record<string, unknown>) {
+      const res = await fetch('/api/portal/invoices/action', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      return { status: res.status, json: await res.json().catch(() => ({})) };
+    }
+    const base = () => ({ doc, id: draftId, paymentId: init.paymentId, ownerId, referenceId: init.referenceId });
+
+    async function save(quiet = false) {
+      if (saving) return false;
+      saving = true;
+      const btn = $<HTMLButtonElement>('#save-btn');
+      btn.disabled = true;
+      const { json } = await post({ action: 'save', ...base() });
+      btn.disabled = false;
+      saving = false;
+      if (!json.ok) { toast(json.message ?? 'A mentés nem sikerült.', 'error'); return false; }
+      draftId = json.id;
+      history.replaceState(null, '', `/portal/invoices/new?draft=${draftId}`);
+      dirty = false;
+      bar.dataset.state = 'clean';
+      barTxt.textContent = `Piszkozat mentve · ${new Date().toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' })}`;
+      syncControls();
+      if (!quiet) toast('Piszkozat mentve.', 'ok');
+      return true;
+    }
+    $('#save-btn').addEventListener('click', () => void save());
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); void save(); }
+    });
+
+    $('#discard-btn').addEventListener('click', async () => {
+      if (!draftId) return;
+      const ok = await window.pf?.confirm({ title: 'Törli a piszkozatot?', body: 'A piszkozat végleg törlődik. Sorszámot még nem kapott, ezért semmi nem marad ki a számlák sorából.', confirmLabel: 'Törlés', danger: true });
+      if (!ok) return;
+      await post({ action: 'delete_draft', id: draftId });
+      dirty = false;
+      location.href = '/portal/invoices';
+    });
+
+    $('#issue-btn').addEventListener('click', async () => {
+      const sendClient = ($('#send-client') as HTMLInputElement).checked && Boolean(doc.buyer.email);
+      const sendBook = ($('#send-book') as HTMLInputElement).checked && Boolean(init.bookkeeper);
+      const t = computeTotals(doc.lines, doc.vatRate, doc.priceMode);
+      const kind = doc.kind === 'proforma' ? 'díjbekérő' : 'számla';
+      const to: string[] = [];
+      if (sendClient) to.push(`a vevőnek (${doc.buyer.email})`);
+      if (sendBook) to.push(`a könyvelőnek (${init.bookkeeper})`);
+      const ok = await window.pf?.confirm({
+        title: `Kiállítja a ${kind}t?`,
+        body: `${doc.buyer.name || 'A vevő'} · ${eur(t.grossCents)}${doc.fxRate ? ' (' + huf(hufFromCents(t.grossCents, doc.fxRate)) + ')' : ''}. A ${kind} sorszámot kap, és utána már nem módosítható (egy hiba jóváíró számlával javítható).${doc.issuer.kvk ? '' : ' Figyelem: a cég KvK-száma még nincs megadva a Cégadatoknál, holland számlán ez kötelező.'} ${to.length ? 'Elküldjük ' + to.join(' és ') + ', PDF-ben.' : 'E-mailt most nem küldünk.'}`,
+        confirmLabel: to.length ? 'Kiállítás és küldés' : 'Kiállítás',
+      });
+      if (!ok) return;
+      const btn = $<HTMLButtonElement>('#issue-btn');
+      btn.disabled = true;
+      btn.textContent = 'Kiállítás…';
+      const { status, json } = await post({ action: 'issue', ...base(), send: sendClient || sendBook ? { client: sendClient, bookkeeper: sendBook } : null });
+      btn.disabled = false;
+      syncControls();
+      if (status === 422 && json.problems) {
+        await window.pf?.alert({ title: 'Még hiányzik valami', body: (json.problems as string[]).map((p) => '• ' + p).join('\n') });
+        return;
+      }
+      if (!json.ok) { toast(json.message ?? 'A kiállítás nem sikerült.', 'error'); return; }
+      dirty = false;
+      location.href = `/portal/invoices/${json.id}?issued=1`;
+    });
+
+    /* ── go ───────────────────────────────────────────────────────────── */
+    syncInputs();
+    ($('#huf-on') as HTMLInputElement).checked = Boolean(doc.fxRate);
+    $('#fx-wrap').hidden = !doc.fxRate;
+    afterBuyerChange();
+    render(true);
+    bar.dataset.state = draftId ? 'clean' : 'new';
+    if (draftId) barTxt.textContent = 'Piszkozat betöltve';
+  }
+</script>
+
+<style>
+  .ph-side { display: flex; align-items: center; }
+  .iv { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: 28px; align-items: start; padding-bottom: 110px; }
+  :global(.iv [hidden]) { display: none !important; }
+  .iv-form { display: grid; gap: 20px; min-width: 0; }
+  .iv-form .set-card { margin: 0; }
+  .iv-side { position: sticky; top: 20px; min-width: 0; }
+  .iv-paper {
+    padding: 14px; border-radius: var(--r-xl); background: var(--paper);
+    box-shadow: inset 0 0 0 1px var(--pt-hair); overflow: hidden;
+  }
+  .iv-paper :global(.inv-sheet) { transform-origin: top left; margin: 0; box-shadow: var(--shadow-md); }
+  @media (max-width: 1180px) { .iv { grid-template-columns: minmax(0, 1fr); } .iv-side { position: static; } }
+
+  .set-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+  .set-head h2 { margin: 0; }
+
+  /* segmented control */
+  .iv-seg { max-width: 100%; display: inline-flex; flex-wrap: wrap; padding: 4px; gap: 2px; border-radius: var(--r-pill); background: var(--linen); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .iv-seg button { padding: 9px 18px; border-radius: var(--r-pill); font-size: 14px; font-weight: var(--fw-medium); color: var(--ink-quiet); transition: background 0.25s var(--ease-out), color 0.25s, box-shadow 0.25s; }
+  .iv-seg.small button { padding: 7px 14px; font-size: 13.5px; }
+  .iv-seg button:hover { color: var(--ink); }
+  .iv-seg button[aria-pressed='true'] { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(16, 42, 67, 0.12), 0 4px 12px -4px rgba(16, 42, 67, 0.18); }
+  .iv-field { display: grid; gap: 8px; align-content: start; }
+  .iv-fl { font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
+  .iv-modeline { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: var(--fs-small); color: var(--ink); font-weight: var(--fw-medium); }
+
+  /* customer search */
+  .iv-search { position: relative; margin-bottom: 20px; }
+  .iv-search input { width: 100%; min-height: 52px; padding: 12px 16px 12px 46px; border-radius: var(--r-pill); font: inherit; background: var(--paper); }
+  .iv-search-ic { position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color: var(--ink-quiet); display: grid; }
+  :global(.iv-results) { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 8px); margin: 0; padding: 6px; list-style: none; border-radius: var(--r-lg); background: #fff; box-shadow: var(--shadow-lg), 0 0 0 1px var(--pt-hair); max-height: 340px; overflow: auto; }
+  :global(.iv-results button) { display: grid; width: 100%; text-align: left; gap: 2px; padding: 11px 14px; border-radius: var(--r-md); }
+  :global(.iv-results button):hover, :global(.iv-results button):focus-visible { background: var(--linen); }
+  :global(.iv-results b) { font-weight: var(--fw-medium); color: var(--ink); }
+  :global(.iv-results span) { font-size: 13px; color: var(--ink-quiet); }
+  :global(.iv-results .none) { padding: 14px; font-size: 14px; color: var(--ink-quiet); }
+
+  /* tax id */
+  .iv-tax { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .iv-tax input { min-width: 0; }
+  .iv-tax input { flex: 1; }
+  .iv-hint { font-weight: var(--fw-regular); color: var(--ink-quiet); font-size: 13px; }
+  .iv-hint.ok { color: var(--pt-green); }
+  .iv-hint.bad { color: var(--pt-red); }
+  .iv-vies { padding: 12px 14px; border-radius: var(--r-md); background: var(--paper); font-size: 14px; font-weight: var(--fw-regular); color: var(--ink); line-height: 1.5; }
+  .iv-vies.ok { background: var(--pt-green-bg); color: var(--pt-green); }
+  .iv-vies.bad { background: var(--pt-red-bg); color: var(--pt-red); }
+  :global(.iv-vies small) { font-size: 12.5px; opacity: 0.85; }
+
+  .iv-reason { margin-bottom: 18px; padding: 14px 16px; border-radius: var(--r-md); background: var(--paper); font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+  .iv-reason.warn { background: var(--pt-amber-bg); }
+  :global(.iv-reason b) { font-weight: var(--fw-medium); margin-right: 4px; }
+  :global(.iv-reason span) { color: var(--ink-quiet); font-size: 13.5px; }
+  :global(.iv-reason .link) { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); font-weight: var(--fw-medium); }
+
+  /* lines */
+  .iv-add { display: flex; gap: 8px; flex-wrap: wrap; }
+  :global(.iv-lines) { display: grid; gap: 12px; }
+  :global(.iv-line) { padding: 14px; border-radius: var(--r-lg); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); display: grid; gap: 10px; }
+  :global(.iv-line-top) { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+  :global(.iv-line input) { width: 100%; min-height: 46px; padding: 10px 14px; font: inherit; background: #fff; }
+  :global(.iv-line-nums) { display: grid; grid-template-columns: 80px 90px minmax(0, 1fr) auto; gap: 10px; align-items: end; }
+  :global(.iv-line-nums label) { display: grid; gap: 5px; font-size: 12.5px; color: var(--ink-quiet); }
+  :global(.iv-line-nums output) { align-self: center; padding: 0 6px 0 4px; font-weight: var(--fw-medium); font-variant-numeric: tabular-nums; min-width: 92px; text-align: right; color: var(--ink); }
+  :global(.iv-icon) { width: 40px; height: 40px; border-radius: 50%; font-size: 13px; font-weight: var(--fw-medium); color: var(--ink-quiet); background: #fff; box-shadow: inset 0 0 0 1px var(--pt-hair); transition: background 0.2s, color 0.2s; }
+  :global(.iv-icon:hover) { background: var(--ink); color: #fff; }
+  .iv-empty { margin: 4px 0 0; padding: 22px; text-align: center; border-radius: var(--r-lg); background: var(--paper); color: var(--ink-quiet); font-size: 14.5px; }
+  .iv-cat-price { float: right; color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+  .iv-sum { margin: 18px 0 0; display: grid; gap: 2px; padding: 6px 4px 0; }
+  :global(.iv-sum > div) { display: flex; justify-content: space-between; padding: 6px 12px; font-size: 14.5px; color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+  :global(.iv-sum .g) { color: var(--ink); font-weight: var(--fw-medium); font-size: 17px; border-top: 1px solid var(--pt-hair); margin-top: 4px; padding-top: 12px; }
+  :global(.iv-sum .h) { color: var(--ink); background: var(--paper); border-radius: var(--r-md); }
+  .iv-warn { margin: 12px 0 0; padding: 12px 14px; border-radius: var(--r-md); background: var(--pt-amber-bg); color: var(--pt-amber); font-size: 14px; }
+
+  .iv-fx { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; }
+  .iv-fx label { flex: 0 0 200px; }
+
+  /* action bar */
+  .iv-bar { position: sticky; bottom: 18px; z-index: 30; height: 0; }
+  .iv-bar-in {
+    position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 1120px);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    padding: 12px 14px 12px 24px; border-radius: var(--r-pill); background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-lg), 0 0 0 1px var(--pt-hair);
+  }
+  .iv-bar-msg { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; color: var(--ink-quiet); }
+  .iv-bar-msg .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pt-green); transition: background 0.3s; }
+  .iv-bar[data-state='dirty'] .dot, .iv-bar[data-state='new'] .dot { background: var(--pt-amber); }
+  .iv-bar-act { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .iv-opt { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ink-quiet); cursor: pointer; }
+  @media (max-width: 760px) {
+    .iv-bar-in { border-radius: var(--r-xl); padding: 14px; }
+    :global(.iv-line-nums) { grid-template-columns: 1fr 1fr; }
+    :global(.iv-line-nums output) { text-align: left; }
+  }
+</style>

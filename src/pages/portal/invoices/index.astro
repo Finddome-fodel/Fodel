@@ -1,0 +1,224 @@
+---
+/**
+ * Invoices — every document FODEL has issued, and what each one still needs:
+ * sending, paying, a copy to the bookkeeper. Admin only (src/middleware.ts).
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { icon } from '~/lib/portal/icons';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { isMigrated, toListItem } from '~/lib/invoicing/store';
+import { KIND_LABEL, STATUS_LABEL, countryName, dateHu, eur, huf, hufFromCents, today } from '~/lib/invoicing/model';
+
+const { profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const admin = createSupabaseAdminClient();
+const params = Astro.url.searchParams;
+const tab = ['draft', 'open', 'overdue', 'paid', 'proforma'].includes(params.get('tab') ?? '') ? params.get('tab')! : 'all';
+const q = (params.get('q') ?? '').trim().toLowerCase();
+const month = /^\d{4}-\d{2}$/.test(params.get('month') ?? '') ? params.get('month')! : '';
+
+const migrated = await isMigrated(admin);
+const { data } = migrated
+  ? await admin.from('invoices').select('*').order('created_at', { ascending: false }).limit(500)
+  : { data: [] as any[] };
+const all = (data ?? []).map(toListItem);
+
+const thisMonth = today().slice(0, 7);
+const real = all.filter((i) => i.status !== 'draft');
+const monthInvoices = real.filter((i) => i.kind === 'invoice' && i.issuedAt.startsWith(thisMonth));
+const stat = {
+  issued: monthInvoices.reduce((s, i) => s + i.grossCents, 0),
+  open: real.filter((i) => i.kind === 'invoice' && ['issued', 'sent'].includes(i.status)).reduce((s, i) => s + i.grossCents, 0),
+  overdue: real.filter((i) => i.overdue).length,
+  unbooked: real.filter((i) => i.kind !== 'proforma' && !i.bookkeeperSentAt && i.status !== 'void').length,
+};
+
+const counts = {
+  all: all.filter((i) => i.status !== 'draft').length,
+  draft: all.filter((i) => i.status === 'draft').length,
+  open: real.filter((i) => ['issued', 'sent'].includes(i.status) && i.kind === 'invoice').length,
+  overdue: stat.overdue,
+  paid: real.filter((i) => i.status === 'paid' && i.kind === 'invoice').length,
+  proforma: real.filter((i) => i.kind === 'proforma').length,
+};
+
+const rows = all
+  .filter((i) => {
+    if (tab === 'draft') return i.status === 'draft';
+    if (i.status === 'draft') return false;
+    if (tab === 'open') return ['issued', 'sent'].includes(i.status) && i.kind === 'invoice';
+    if (tab === 'overdue') return i.overdue;
+    if (tab === 'paid') return i.status === 'paid' && i.kind === 'invoice';
+    if (tab === 'proforma') return i.kind === 'proforma';
+    return true;
+  })
+  .filter((i) => !month || i.issuedAt.startsWith(month))
+  .filter((i) => !q || `${i.number ?? ''} ${i.buyerName}`.toLowerCase().includes(q));
+
+// Months that have invoices, for the export menu.
+const months = [...new Set(real.map((i) => i.issuedAt.slice(0, 7)))].sort().reverse().slice(0, 12);
+const hu = (ym: string) => {
+  const [y, m] = ym.split('-').map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
+};
+const tabHref = (t: string) => {
+  const u = new URLSearchParams();
+  if (t !== 'all') u.set('tab', t);
+  if (q) u.set('q', q);
+  if (month) u.set('month', month);
+  const s = u.toString();
+  return `/portal/invoices${s ? `?${s}` : ''}`;
+};
+const href = (i: (typeof rows)[number]) => (i.status === 'draft' ? `/portal/invoices/new?draft=${i.id}` : `/portal/invoices/${i.id}`);
+const tabs: [string, string][] = [['all', 'Kiállított'], ['open', 'Fizetésre vár'], ['overdue', 'Lejárt'], ['paid', 'Kifizetett'], ['proforma', 'Díjbekérők'], ['draft', 'Piszkozatok']];
+---
+
+<Portal title="Számlák">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">Pénz</p>
+      <h1>Számlák és <em>díjbekérők</em></h1>
+      <p class="lede">Minden kiállított dokumentum egy helyen: ki kapta meg, kifizették-e, és tud-e róla a könyvelő.</p>
+    </div>
+    <div class="ph-side">
+      <div class="pt-menu">
+        <button type="button" class="btn ghost" data-menu aria-haspopup="menu" aria-expanded="false"><Fragment set:html={icon('download', 16)} /> Könyvelői export</button>
+        <div class="pt-menu-pop" role="menu" hidden>
+          <p class="cap">CSV a könyvelőnek</p>
+          <a href="/api/portal/invoices/export" role="menuitem"><Fragment set:html={icon('download', 17)} />Az összes számla</a>
+          {months.map((m) => <a href={`/api/portal/invoices/export?month=${m}`} role="menuitem"><Fragment set:html={icon('download', 17)} />{hu(m)}</a>)}
+        </div>
+      </div>
+      <a class="btn" href="/portal/invoices/new"><Fragment set:html={icon('plus', 16)} /> Új számla</a>
+    </div>
+  </header>
+
+  {!migrated && (
+    <p class="notice error">A számlázás adatbázis-bővítése (<code>0018_invoicing_v2.sql</code>) még nem futott le a Supabase-ben. Futtassa le az SQL Editorban, utána frissítse az oldalt.</p>
+  )}
+
+  <ul class="stats" aria-label="Összesítés">
+    <li><b>{eur(stat.issued)}</b><span>Kiállítva ebben a hónapban</span></li>
+    <li><b>{eur(stat.open)}</b><span>Fizetésre vár</span></li>
+    <li data-tone={stat.overdue ? 'warn' : ''}><b>{stat.overdue}</b><span>Lejárt számla</span></li>
+    <li data-tone={stat.unbooked ? 'warn' : ''}><b>{stat.unbooked}</b><span>Még nem ment a könyvelőnek</span></li>
+  </ul>
+
+  <div class="bar">
+    <nav class="tabs" aria-label="Szűrés">
+      {tabs.map(([key, label]) => (
+        <a href={tabHref(key)} aria-current={tab === key ? 'page' : undefined}>{label}<span>{counts[key as keyof typeof counts]}</span></a>
+      ))}
+    </nav>
+    <form class="search" method="get" action="/portal/invoices">
+      {tab !== 'all' && <input type="hidden" name="tab" value={tab} />}
+      <Fragment set:html={icon('search', 17)} />
+      <input type="search" name="q" value={q} placeholder="Sorszám vagy vevő…" aria-label="Keresés" />
+    </form>
+  </div>
+
+  {rows.length === 0 ? (
+    <div class="empty">
+      <Fragment set:html={icon('invoice', 30)} />
+      <b>{q ? 'Nincs találat' : tab === 'draft' ? 'Nincs piszkozat' : 'Még nincs számla ezen a listán'}</b>
+      <span>{q ? 'Próbáljon másik névvel vagy sorszámmal.' : 'Új számlát az „Új számla” gombbal, vagy egy megrendelésből készíthet.'}</span>
+      <a class="btn" href="/portal/invoices/new">Új számla</a>
+    </div>
+  ) : (
+    <ul class="inv-list">
+      {rows.map((i) => {
+        const st = i.overdue ? 'overdue' : i.status;
+        return (
+          <li class="inv" data-status={st}>
+            <a class="inv-main" href={href(i)}>
+              <span class="ic" data-kind={i.kind}><Fragment set:html={icon('invoice', 20)} /></span>
+              <span class="who">
+                <b>{i.number ?? 'Piszkozat'}<em>{KIND_LABEL[i.kind].short}</em></b>
+                <span>{i.buyerName}{i.buyerCountry && i.buyerCountry !== 'HU' ? ` · ${countryName(i.buyerCountry)}` : ''}</span>
+              </span>
+              <span class="when"><b>{dateHu(i.issuedAt)}</b><small>{i.status === 'paid' && i.paidAt ? `Kifizetve ${dateHu(i.paidAt.slice(0, 10))}` : i.dueDate && i.kind !== 'credit_note' ? `Határidő ${dateHu(i.dueDate)}` : ''}</small></span>
+              <span class="amount"><b>{eur(i.grossCents)}</b><small>{i.fxRate ? huf(hufFromCents(i.grossCents, i.fxRate)) : `Nettó ${eur(i.netCents)}`}</small></span>
+            </a>
+            <span class="deliv" aria-label="Kézbesítés">
+              <i data-on={i.sentAt ? 'yes' : 'no'} title={i.sentAt ? 'Elküldve az ügyfélnek' : 'Még nem ment az ügyfélnek'}><Fragment set:html={icon('mail', 15)} /></i>
+              <i data-on={i.bookkeeperSentAt ? 'yes' : 'no'} title={i.bookkeeperSentAt ? 'A könyvelő megkapta' : 'A könyvelő még nem kapta meg'}><Fragment set:html={icon('building', 15)} /></i>
+            </span>
+            <span class={`pill pill-inv-${st}`}>{i.overdue ? 'Lejárt' : STATUS_LABEL[i.status as keyof typeof STATUS_LABEL] ?? i.status}</span>
+            <div class="pt-menu">
+              <button type="button" class="pt-icon-btn" data-menu aria-haspopup="menu" aria-expanded="false" aria-label={`Műveletek: ${i.number ?? 'piszkozat'}`}><Fragment set:html={icon('dots', 18)} /></button>
+              <div class="pt-menu-pop" role="menu" hidden>
+                <a href={href(i)} role="menuitem"><Fragment set:html={icon(i.status === 'draft' ? 'edit' : 'eye', 17)} />{i.status === 'draft' ? 'Szerkesztés' : 'Megnyitás'}</a>
+                {i.status !== 'draft' && <a href={`/portal/invoices/pdf/${i.id}`} target="_blank" rel="noopener" role="menuitem"><Fragment set:html={icon('download', 17)} />PDF megnyitása</a>}
+                <a href={`/portal/invoices/new?from=${i.id}`} role="menuitem"><Fragment set:html={icon('copy', 17)} />Másolat új számlához</a>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+</Portal>
+
+<style>
+  .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 40px; margin-bottom: 30px; }
+  .ph-side { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .btn :global(svg) { width: 16px; height: 16px; }
+  .stats { list-style: none; margin: 0 0 28px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .stats li { display: grid; gap: 4px; padding: 16px 20px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .stats b { font-family: var(--serif); font-weight: var(--fw-display); font-size: 26px; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stats span { font-size: 13px; color: var(--ink-quiet); }
+  .stats li[data-tone='warn'] b { color: var(--pt-red); }
+
+  .bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--r-pill); background: var(--linen); flex-wrap: wrap; }
+  .tabs a { padding: 8px 16px; border-radius: var(--r-pill); font-size: 14.5px; color: var(--ink-quiet); text-decoration: none; transition: background-color 0.25s var(--ease-out), color 0.25s, box-shadow 0.25s; }
+  .tabs a:hover { color: var(--ink); }
+  .tabs a[aria-current='page'] { background: var(--white); color: var(--ink); font-weight: var(--fw-medium); box-shadow: var(--shadow-xs); }
+  .tabs span { margin-left: 6px; padding: 1px 8px; border-radius: var(--r-pill); background: rgba(16, 42, 67, 0.07); font-size: 12.5px; }
+  .search { position: relative; display: flex; align-items: center; }
+  .search :global(svg) { position: absolute; left: 16px; color: var(--ink-quiet); pointer-events: none; }
+  .search input { width: 260px; max-width: 100%; min-height: 46px; padding: 10px 16px 10px 42px; border-radius: var(--r-pill); font: inherit; font-size: 14.5px; }
+
+  .inv-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .inv { display: grid; grid-template-columns: minmax(0, 1fr) auto auto 40px; align-items: center; gap: 16px; padding: 6px 14px 6px 6px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); transition: box-shadow 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
+  .inv:hover { box-shadow: var(--shadow-md), 0 0 0 1px rgba(16, 42, 67, 0.14); transform: translateY(-1px); }
+  .inv-main { display: grid; grid-template-columns: 44px minmax(0, 1.5fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr); align-items: center; gap: 16px; padding: 10px; border-radius: var(--r-md); text-decoration: none; color: inherit; }
+  .ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--linen); color: var(--ink); }
+  .ic[data-kind='proforma'] { background: var(--pt-amber-bg); color: var(--pt-amber); }
+  .ic[data-kind='credit_note'] { background: var(--pt-red-bg); color: var(--pt-red); }
+  .who { display: grid; gap: 2px; min-width: 0; }
+  .who b { font-weight: var(--fw-medium); font-size: 16px; color: var(--ink); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .who b em { font-style: normal; font-weight: var(--fw-regular); font-size: 12px; color: var(--ink-quiet); padding: 1px 9px; border-radius: var(--r-pill); background: var(--linen); }
+  .who > span { font-size: 14px; color: var(--ink-quiet); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .when, .amount { display: grid; gap: 1px; }
+  .when b, .amount b { font-weight: var(--fw-medium); font-size: 15px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .amount { text-align: right; }
+  small { font-size: 12.5px; color: var(--ink-quiet); }
+
+  .deliv { display: inline-flex; gap: 6px; }
+  .deliv i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--paper); color: rgba(16, 42, 67, 0.28); }
+  .deliv i[data-on='yes'] { background: var(--pt-green-bg); color: var(--pt-green); }
+  .pill { padding: 5px 14px; border-radius: var(--r-pill); font-size: 13.5px; font-weight: var(--fw-medium); white-space: nowrap; }
+  :global(main.pm.pm) .pill.pill-inv-draft, :global(main.pm.pm) .pill.pill-inv-void { background: var(--linen); color: var(--ink-quiet); }
+  :global(main.pm.pm) .pill.pill-inv-issued, :global(main.pm.pm) .pill.pill-inv-sent { background: var(--pt-amber-bg); color: var(--pt-amber); }
+  :global(main.pm.pm) .pill.pill-inv-paid { background: var(--pt-green-bg); color: var(--pt-green); }
+  :global(main.pm.pm) .pill.pill-inv-overdue { background: var(--pt-red-bg); color: var(--pt-red); }
+  .inv[data-status='void'] .inv-main { opacity: 0.55; }
+
+  .empty { display: grid; justify-items: center; gap: 10px; padding: 56px 24px; text-align: center; border-radius: var(--r-xl); background: var(--paper); color: var(--ink-quiet); }
+  .empty b { color: var(--ink); font-size: 18px; font-weight: var(--fw-medium); }
+  .empty .btn { margin-top: 10px; }
+
+  @media (max-width: 1060px) {
+    .inv { grid-template-columns: minmax(0, 1fr) 40px; row-gap: 4px; }
+    .inv-main { grid-template-columns: 44px minmax(0, 1fr) auto; grid-column: 1; }
+    .when { display: none; }
+    .deliv, .pill { grid-row: 2; grid-column: 1; margin: 0 0 8px 62px; justify-self: start; }
+    .deliv { display: none; }
+    .inv > .pt-menu { grid-row: 1; grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) { .inv { transition: none; } .inv:hover { transform: none; } }
+</style>

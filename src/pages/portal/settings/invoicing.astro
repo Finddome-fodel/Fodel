@@ -1,0 +1,137 @@
+---
+/**
+ * Invoicing settings: who gets the bookkeeper's copy, payment terms, the
+ * wording printed on every document, and the numbering — including where the
+ * old system's numbers left off.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { loadInvoiceSettings, buildIssuer } from '~/lib/invoicing/settings';
+import { isMigrated } from '~/lib/invoicing/store';
+import { getCompany } from '~/lib/runtime-config';
+
+const { profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const admin = createSupabaseAdminClient();
+const saved = Astro.url.searchParams.get('saved');
+const err = Astro.url.searchParams.get('error');
+const migrated = await isMigrated(admin);
+const [settings, company, counters] = await Promise.all([
+  loadInvoiceSettings(admin),
+  getCompany(),
+  migrated ? admin.from('invoice_counters').select('series, n').order('series') : Promise.resolve({ data: [] as { series: string; n: number }[] }),
+]);
+const issuer = buildIssuer(company, settings);
+const year = new Date().getFullYear();
+// The series that will be used this year, shown even before their first number exists.
+const wanted = [`FO-HU-${year}`, `FO-NL-${year}`, `FO-${year}`, `FO-CN-${year}`];
+const have = new Map((counters.data ?? []).filter((c) => /^FO-/.test(c.series)).map((c) => [c.series, c.n]));
+for (const s of wanted) if (!have.has(s)) have.set(s, 0);
+const seriesLabel = (s: string) =>
+  s.startsWith('FO-HU-') ? 'Számla — magyar vevő' : s.startsWith('FO-NL-') ? 'Számla — egyéb vevő' : s.startsWith('FO-CN-') ? 'Jóváíró számla' : 'Díjbekérő';
+---
+
+<Portal title="Számlázás beállításai">
+  <header class="ph"><div>
+    <p class="eyebrow"><a href="/portal/settings">← Beállítások</a></p>
+    <h1>Számlázás <em>beállításai</em></h1>
+    <p class="lede">A könyvelő másolata, a fizetési határidő, a számlákra kerülő szöveg és a sorszámozás.</p>
+  </div></header>
+
+  {!migrated && <p class="notice error">A számlázás adatbázis-bővítése (0018_invoicing_v2.sql) még nem futott le a Supabase-ben, ezért a mentés nem működik.</p>}
+  {saved && <p class="notice ok" data-toast="ok">Mentve.</p>}
+  {err && <p class="notice error">{decodeURIComponent(err)}</p>}
+
+  <form method="POST" action="/api/portal/settings/invoicing" class="set-stack" data-savebar>
+    <section class="set-card">
+      <h2>Könyvelő</h2>
+      <p class="set-sub">Minden kiküldött számláról ide is megy egy másolat, a PDF-fel együtt. Kézzel is újraküldhető bármelyik számla oldaláról.</p>
+      <div class="set-grid">
+        <label class="wide">A könyvelő e-mail-címe
+          <input type="email" name="bookkeeperEmail" value={settings.bookkeeperEmail} placeholder="konyvelo@pelda.nl" autocomplete="off" />
+        </label>
+        <label class="check wide">
+          <input type="checkbox" name="autoBookkeeperCopy" value="yes" checked={settings.autoBookkeeperCopy} />
+          Másolat küldése automatikusan, amikor egy számlát elküldök az ügyfélnek
+        </label>
+      </div>
+    </section>
+
+    <section class="set-card">
+      <h2>Fizetés és szövegek</h2>
+      <div class="set-grid">
+        <label>Fizetési határidő (nap)
+          <input type="number" name="paymentTermsDays" min="0" max="120" value={settings.paymentTermsDays} />
+          <small>A ki nem fizetett számlák kiállítás + ennyi nap határidőt kapnak. A már kifizetetteké a kiállítás napja.</small>
+        </label>
+        <label class="wide">Minden számlán megjelenő megjegyzés
+          <textarea name="defaultNotes" rows="3" maxlength="600" placeholder="pl. Reklamáció esetén kérjük, hivatkozzon a számla sorszámára.">{settings.defaultNotes}</textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="set-card">
+      <h2>Kibocsátó adatai</h2>
+      <p class="set-sub">Alapból a <a href="/portal/settings/company">Cégadatok</a> oldalról jönnek. Itt csak akkor adjon meg mást, ha a számlán eltérő név, telefon vagy e-mail kell.</p>
+      <div class="set-grid">
+        <label>Név a számlán<input name="issuerName" value={settings.issuerName} placeholder={company.names.legal} /></label>
+        <label>Telefon a számlán<input name="issuerPhone" value={settings.issuerPhone} placeholder={buildIssuer(company, { ...settings, issuerPhone: '' }).phone} /></label>
+        <label>E-mail a számlán<input name="issuerEmail" value={settings.issuerEmail} placeholder={company.email.primary} /></label>
+      </div>
+      <dl class="facts">
+        <div><dt>Cím</dt><dd>{issuer.street}, {issuer.postalCode} {issuer.city}</dd></div>
+        <div><dt>BTW-id (adószám)</dt><dd>{issuer.vatId}</dd></div>
+        <div><dt>KvK (cégjegyzékszám)</dt><dd>{issuer.kvk ?? <span class="warn">hiányzik — holland számlán kötelező</span>}</dd></div>
+        <div><dt>IBAN</dt><dd>{issuer.iban} · {issuer.bic}</dd></div>
+        <div><dt>Forint számla</dt><dd>{issuer.huAccount}</dd></div>
+      </dl>
+    </section>
+
+    <section class="set-card">
+      <h2>Sorszámozás</h2>
+      <p class="set-sub">
+        A számok megszakítás nélkül, sorban követik egymást; ezt az adatbázis garantálja. Ha az előző rendszer ott
+        hagyta abba, itt megadhatja a következő sorszámot (csak növelhető, hogy ne keletkezzen duplikált szám).
+      </p>
+      <div class="series">
+        {[...have.entries()].map(([series, n]) => (
+          <label>
+            <span>{seriesLabel(series)}</span>
+            <span class="series-row">
+              <code>{series}/</code>
+              <input type="number" name={`next:${series}`} min={n + 1} value={n + 1} />
+            </span>
+            <small>{n ? `Utoljára kiadott: ${series}/${String(n).padStart(3, '0')}` : 'Még nem készült ilyen számla.'}</small>
+          </label>
+        ))}
+      </div>
+    </section>
+
+    <div class="pt-savebar" id="savebar" data-state="clean">
+      <div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span>Nem mentett módosítások</span></p><button class="btn">Mentés</button></div>
+    </div>
+  </form>
+</Portal>
+
+<script>
+  const bar = document.getElementById('savebar');
+  document.querySelector('form[data-savebar]')?.addEventListener('input', () => bar?.setAttribute('data-state', 'dirty'));
+</script>
+
+<style>
+  .facts { margin: 22px 0 0; display: grid; gap: 0; border-radius: var(--r-md); background: var(--paper); overflow: hidden; }
+  .facts > div { display: grid; grid-template-columns: 180px 1fr; gap: 12px; padding: 11px 16px; font-size: var(--fs-small); }
+  .facts > div + div { border-top: 1px solid var(--pt-hair); }
+  .facts dt { color: var(--ink-quiet); }
+  .facts dd { margin: 0; color: var(--ink); }
+  .warn { color: var(--pt-red); }
+  .series { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .series label { display: grid; gap: 8px; font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
+  .series-row { display: flex; align-items: center; gap: 8px; }
+  .series-row code { font-size: 13px; color: var(--ink-quiet); white-space: nowrap; }
+  .series input { width: 100%; min-height: 48px; padding: 10px 14px; font: inherit; }
+  .series small { font-weight: var(--fw-regular); color: var(--ink-quiet); }
+</style>

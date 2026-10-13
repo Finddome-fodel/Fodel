@@ -129,4 +129,11 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'always',
   },
+
+  // The invoice PDF library (and its CommonJS dependencies) is loaded by the
+  // server at run time instead of being re-bundled — pdfkit is not written for
+  // a bundler, and Vercel's file tracing ships the package with the function.
+  vite: {
+    ssr: { external: ['pdfmake'] },
+  },
 });

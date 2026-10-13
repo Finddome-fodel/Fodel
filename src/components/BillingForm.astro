@@ -1,0 +1,130 @@
+---
+/**
+ * The customer's billing details, entered once and reused: on every order, on
+ * every invoice. Used in Settings and, with an order id, right inside the
+ * payment panel so nobody has to leave the page they are paying on.
+ *
+ * The tax number is read the way people write it (12345678-1-23), shown in
+ * its EU form (HU12345678) and decides whether VAT is charged: a business
+ * with a valid EU VAT id is invoiced without Dutch VAT (reverse charge).
+ */
+import { COUNTRIES, type Party } from '~/lib/invoicing/model';
+
+interface Props {
+  billing?: Partial<Party> | null;
+  fallbackName?: string;
+  fallbackPhone?: string;
+  paymentId?: string;
+  compact?: boolean;
+}
+const { billing, fallbackName = '', fallbackPhone = '', paymentId, compact = false } = Astro.props;
+const b = { type: 'person', countryCode: 'HU', ...(billing ?? {}) } as Partial<Party>;
+const uid = `bf-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<form class:list={['billing-form', { compact }]} data-billing data-payment={paymentId} id={uid}>
+  <div class="bf-type" role="group" aria-label="Számlázás típusa">
+    <label><input type="radio" name="type" value="person" checked={b.type !== 'company'} /><span>Magánszemély</span></label>
+    <label><input type="radio" name="type" value="company" checked={b.type === 'company'} /><span>Vállalkozás</span></label>
+  </div>
+  <div class="bf-grid">
+    <label class="wide"><span data-name-label>{b.type === 'company' ? 'Cégnév' : 'Név a számlán'}</span><input name="name" value={b.name ?? fallbackName} autocomplete="name" required /></label>
+    <label>Ország
+      <select name="countryCode">
+        {COUNTRIES.map((c) => <option value={c.code} selected={c.code === b.countryCode}>{c.hu}</option>)}
+      </select>
+    </label>
+    <label>Irányítószám<input name="postalCode" value={b.postalCode ?? ''} autocomplete="postal-code" /></label>
+    <label>Város<input name="city" value={b.city ?? ''} autocomplete="address-level2" required /></label>
+    <label>Utca, házszám<input name="street" value={b.street ?? ''} autocomplete="street-address" required /></label>
+    <label>Telefon<input name="phone" value={b.phone ?? fallbackPhone} autocomplete="tel" /></label>
+    <label><span>Adószám <em>(nem kötelező)</em></span>
+      <input name="taxNumber" value={b.taxNumber ?? ''} placeholder="pl. 12345678-1-23" autocomplete="off" />
+      <small data-tax-hint>Ha vállalkozásként vásárol, az adószámával áfa nélküli (fordított adózású) számlát kaphat.</small>
+    </label>
+  </div>
+  <div class="bf-actions">
+    <button type="submit" class="btn">Számlázási adatok mentése</button>
+    <span class="bf-status" role="status"></span>
+  </div>
+</form>
+
+<script>
+  import { checkTaxId } from '~/lib/invoicing/model';
+
+  document.querySelectorAll<HTMLFormElement>('form[data-billing]').forEach((form) => {
+    if (form.dataset.bound) return;
+    form.dataset.bound = '1';
+    const cc = form.elements.namedItem('countryCode') as HTMLSelectElement;
+    const tax = form.elements.namedItem('taxNumber') as HTMLInputElement;
+    const hint = form.querySelector<HTMLElement>('[data-tax-hint]')!;
+    const status = form.querySelector<HTMLElement>('.bf-status')!;
+    const label = form.querySelector<HTMLElement>('[data-name-label]')!;
+    const base = hint.textContent ?? '';
+
+    const check = () => {
+      const r = checkTaxId(cc.value, tax.value);
+      hint.dataset.state = r.state;
+      hint.textContent = r.state === 'valid' ? `✓ ${r.value}${r.hint ? ' · ' + r.hint : ''}` : r.state === 'invalid' ? r.hint : base;
+      return r;
+    };
+    tax.addEventListener('input', check);
+    tax.addEventListener('blur', () => {
+      const r = check();
+      if (r.state === 'valid') tax.value = r.value;
+    });
+    cc.addEventListener('change', check);
+    const syncLabel = () => {
+      const company = form.querySelector<HTMLInputElement>('input[name="type"]:checked')?.value === 'company';
+      label.textContent = company ? 'Cégnév' : 'Név a számlán';
+    };
+    form.querySelectorAll('input[name="type"]').forEach((r) => r.addEventListener('change', syncLabel));
+    check();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      status.textContent = 'Mentés…';
+      try {
+        const res = await fetch('/api/portal/settings/billing', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ billing: data, paymentId: form.dataset.payment }),
+        });
+        const json = await res.json().catch(() => ({}));
+        status.textContent = '';
+        if (json.ok) {
+          window.pf?.toast('Számlázási adatok mentve.', 'ok');
+          if (json.billing?.taxNumber) tax.value = json.billing.taxNumber;
+          form.dispatchEvent(new CustomEvent('billing:saved', { bubbles: true }));
+        } else window.pf?.toast(json.message ?? 'A mentés nem sikerült.', 'error');
+      } catch {
+        status.textContent = '';
+        window.pf?.toast('A mentés nem sikerült.', 'error');
+      }
+    });
+  });
+</script>
+
+<style>
+  .billing-form { display: grid; gap: 18px; }
+  .bf-type { display: inline-flex; padding: 4px; gap: 2px; border-radius: var(--r-pill); background: var(--linen); box-shadow: inset 0 0 0 1px var(--pt-hair); justify-self: start; }
+  .bf-type label { position: relative; cursor: pointer; }
+  .bf-type input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .bf-type span { display: block; padding: 9px 18px; border-radius: var(--r-pill); font-size: 14px; font-weight: var(--fw-medium); color: var(--ink-quiet); transition: background 0.25s var(--ease-out), color 0.25s, box-shadow 0.25s; }
+  .bf-type input:checked + span { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(16, 42, 67, 0.12), 0 4px 12px -4px rgba(16, 42, 67, 0.18); }
+  .bf-type input:focus-visible + span { outline: var(--focus-ring); outline-offset: 2px; }
+  .bf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; }
+  .bf-grid .wide { grid-column: 1 / -1; }
+  .bf-grid label { display: grid; gap: 8px; font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); align-content: start; }
+  .bf-grid label em { font-style: normal; font-weight: var(--fw-regular); color: var(--ink-quiet); }
+  .bf-grid input, .bf-grid select { width: 100%; min-height: 50px; padding: 12px 16px; font: inherit; font-weight: var(--fw-body); font-size: var(--fs-body); color: var(--ink); }
+  .bf-grid small { font-weight: var(--fw-regular); font-size: 13px; line-height: 1.5; color: var(--ink-quiet); }
+  .bf-grid small[data-state='valid'] { color: var(--pt-green); }
+  .bf-grid small[data-state='invalid'] { color: var(--pt-red); }
+  .bf-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .bf-status { font-size: 14px; color: var(--ink-quiet); }
+  .compact .bf-grid { gap: 12px 14px; }
+  .compact .bf-grid input, .compact .bf-grid select { min-height: 46px; padding: 10px 14px; }
+  @media (max-width: 620px) { .bf-grid { grid-template-columns: 1fr; } }
+</style>
