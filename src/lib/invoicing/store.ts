@@ -12,7 +12,7 @@ import { logEvent } from '~/lib/activity';
 import { invoiceToBookkeeper, invoiceToCustomer } from './emails';
 import { invoiceCatalogue, invoiceLineFromOrder } from './catalogue';
 import {
-  addDays, computeTotals, emptyParty, listPriceCents, rateFor, suggestVat, today,
+  addDays, computeTotals, emptyParty, isOverdue, listPriceCents, rateFor, suggestVat, today,
   type DocKind, type InvoiceDoc, type InvoiceLine, type Issuer, type Party, type PaymentMethod, type PriceMode, type VatTreatment,
 } from './model';
 import { renderInvoicePdf } from './pdf';
@@ -451,7 +451,7 @@ export function toListItem(row: InvoiceRow): InvoiceListItem {
     issuedAt: String(row.issued_at).slice(0, 10), dueDate: due,
     grossCents: row.gross_cents * sign, netCents: row.net_cents * sign, vatCents: row.vat_cents * sign, vatRate: Number(row.vat_rate),
     fxRate: row.fx_rate ? Number(row.fx_rate) : null, sentAt: row.sent_at ?? null, bookkeeperSentAt: row.bookkeeper_sent_at ?? null, paidAt: row.paid_at ?? null,
-    overdue: Boolean(due) && due! < today() && ['issued', 'sent'].includes(status) && row.kind !== 'credit_note',
+    overdue: isOverdue({ status, kind: row.kind, dueDate: due }),
   };
 }
 

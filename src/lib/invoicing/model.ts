@@ -192,6 +192,17 @@ export const dateHu = (iso: string): string => {
 };
 
 export const today = (): string => new Date().toISOString().slice(0, 10);
+
+/**
+ * "Lejárt" (overdue) is derived, never stored — the status constraint stays
+ * draft / issued / sent / paid / void. An invoice or proforma that was issued
+ * or sent, is not paid, and whose due date is before today. Credit notes are
+ * never overdue: nobody owes FODEL money on one.
+ */
+export function isOverdue(doc: { status?: string | null; kind?: string | null; dueDate?: string | null }, onDay: string = today()): boolean {
+  const due = doc.dueDate ? String(doc.dueDate).slice(0, 10) : '';
+  return Boolean(due) && due < onDay && ['issued', 'sent'].includes(doc.status ?? 'issued') && doc.kind !== 'credit_note';
+}
 export const addDays = (iso: string, days: number): string => {
   const d = new Date(`${iso}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
