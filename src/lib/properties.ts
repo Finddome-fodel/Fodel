@@ -24,6 +24,7 @@ import type { Locale, PlannedLocale } from '~/i18n/ui';
 import { LOCALES, propertyPath } from '~/i18n/ui';
 import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
 import type { ImageMetadata } from 'astro';
+import { approximateCentre, isExpired } from '~/lib/listing-rules';
 
 type LocalisedText = { hu: string; nl?: string; de?: string; en?: string; fr?: string };
 
@@ -58,6 +59,8 @@ export type Property = {
       condition?: LocalisedText;
       heating?: LocalisedText;
       epcClass: string;
+      /** Wall material term (migration 0019); undefined when not given. */
+      wall?: { key: string; labels: TaxonomyTerm['labels'] };
     };
     features: string[];
     media: {
@@ -134,6 +137,7 @@ type PropertyRow = {
   year_built: number | null;
   renovated_in: number | null;
   epc_class: string;
+  wall_key?: string | null;
   features: string[];
   video_url: string | null;
   seller_contact_visible: boolean;
@@ -186,6 +190,10 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
     .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
 
   const category: TaxonomyTerm | undefined = taxonomy.category.find((term) => term.key === row.category);
+  const wall = row.wall_key ? taxonomy.wall.find((term) => term.key === row.wall_key) : undefined;
+  // An approximate listing never carries its real point into a page, the map
+  // feed or structured data: everything public gets the offset centre.
+  const point = row.precision === 'exact' ? { lat: row.lat, lng: row.lng } : approximateCentre(row.id, row.lat, row.lng);
   const fallbackLabels = { hu: row.category, nl: row.category };
   return {
     id: row.id,
@@ -210,8 +218,8 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         settlement: row.settlement,
         county: row.county,
         region: row.region,
-        lat: row.lat,
-        lng: row.lng,
+        lat: point.lat,
+        lng: point.lng,
         precision: row.precision,
         country: row.country,
       },
@@ -226,6 +234,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         condition: localisedField(translations, 'condition'),
         heating: localisedField(translations, 'heating'),
         epcClass: row.epc_class,
+        wall: wall ? { key: wall.key, labels: wall.labels } : undefined,
       },
       features: row.features,
       media: {
@@ -291,7 +300,22 @@ async function fetchAll(): Promise<Property[]> {
     .select('*, property_translations(*), property_media(*)')
     .in('status', ['published', 'sold']);
   if (error) throw new Error(`Failed to load properties from Supabase: ${error.message}`);
-  return ((data ?? []) as PropertyRow[]).map((row) => mapRow(row, taxonomy)).sort(sortByFeaturedThenDate);
+  return ((data ?? []) as PropertyRow[])
+    .filter((row) => isPubliclyListed(row))
+    .map((row) => mapRow(row, taxonomy))
+    .sort(sortByFeaturedThenDate);
+}
+
+/**
+ * The one public visibility rule, applied to every listing query on the site
+ * (lists, map, sitemap, Top 10, homepage, detail pages): published and not
+ * past its expiry, or sold (the sold archive keeps sold listings whatever
+ * their date). The daily cron archives an expired listing; this filter is
+ * what hides it in the hours between expiry and that run.
+ */
+export function isPubliclyListed(row: { status: string; expires_at?: string | null }, now: Date = new Date()): boolean {
+  if (row.status === 'sold') return true;
+  return row.status === 'published' && !isExpired(row.expires_at, now);
 }
 
 export async function allProperties(): Promise<Property[]> {
@@ -314,6 +338,8 @@ export type SearchParams = {
   plotMax?: number;
   bedroomsMin?: number;
   bargain?: boolean;
+  /** "Exclude adobe houses": drops only listings whose wall material is adobe. */
+  excludeAdobe?: boolean;
   /** [west, south, east, north] from the browse map's "search this area". */
   bbox?: [number, number, number, number];
   sort?: 'featured' | 'price-asc' | 'price-desc' | 'area-desc' | 'bargain';
@@ -337,7 +363,7 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
   const perPage = params.perPage ?? 24;
   const page = Math.max(1, params.page ?? 1);
 
-  const { data: matches, error: rpcError } = await getSupabase().rpc('search_properties', {
+  const args: Record<string, unknown> = {
     p_locale: params.locale,
     p_query: params.q || null,
     p_category: params.category || null,
@@ -357,7 +383,16 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
     p_sort: params.sort ?? 'featured',
     p_limit: perPage,
     p_offset: (page - 1) * perPage,
+  };
+  let { data: matches, error: rpcError } = await getSupabase().rpc('search_properties', {
+    ...args,
+    p_exclude_adobe: params.excludeAdobe ?? null,
   });
+  // Before migration 0019 the function has no p_exclude_adobe (and no listing
+  // has a wall material, so there is nothing to exclude): call the old one.
+  if (rpcError && /p_exclude_adobe|PGRST202|function/i.test(`${rpcError.code} ${rpcError.message}`)) {
+    ({ data: matches, error: rpcError } = await getSupabase().rpc('search_properties', args));
+  }
   if (rpcError) throw new Error(`Search failed: ${rpcError.message}`);
 
   const ids = (matches ?? []).map((m: { id: string }) => m.id);
@@ -372,7 +407,9 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
 
   const taxonomy = await getTaxonomy();
   const byId = new Map(((data ?? []) as PropertyRow[]).map((row) => [row.id, mapRow(row, taxonomy)]));
+  const live = new Set(((data ?? []) as PropertyRow[]).filter((row) => isPubliclyListed(row)).map((row) => row.id));
   const properties = ids
+    .filter((id: string) => live.has(id))
     .map((id: string) => byId.get(id))
     .filter((p: Property | undefined): p is Property => Boolean(p));
 

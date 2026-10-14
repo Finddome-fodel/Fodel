@@ -25,6 +25,7 @@ import { extractYouTubeId } from '~/lib/video';
 import WhatsApp from '~/components/WhatsApp.astro';
 import { getCompany } from '~/lib/runtime-config';
 import { abs } from '~/lib/seo';
+import { listingRules, showSellerPhone } from '~/lib/listing-rules';
 
 interface Props {
   locale: Locale;
@@ -78,6 +79,7 @@ const specs = [
   { label: ui.property.land, value: area(d.areas.plotM2, locale) },
   { label: ui.property.epc, value: epc.value },
   d.building.yearBuilt && { label: ui.property.yearBuilt, value: String(d.building.yearBuilt) },
+  d.building.wall && d.building.wall.key !== 'nem-tudom' && { label: locale === 'hu' ? 'Falazat' : 'Muurwerk', value: d.building.wall.labels[locale] ?? d.building.wall.labels.hu },
 ].filter(Boolean) as { label: string; value: string }[];
 
 const all = await activeProperties();
@@ -101,7 +103,15 @@ const videoId = d.media.videoUrl ? extractYouTubeId(d.media.videoUrl) : null;
 
 // WhatsApp (brief §9): the chat opens with the listing named and linked, so
 // FODEL knows which house is meant. The visitor edits and sends it.
-const { whatsapp } = await getCompany();
+const { whatsapp, services } = await getCompany();
+
+// The seller's own block appears only when their package includes a public
+// phone number (Beállítások → Szolgáltatások) and they agreed to publish it.
+// Otherwise the enquiry / callback form beside it is the contact path.
+const sellerPhone = showSellerPhone(
+  { package: d.listing.package, contactVisible: d.seller.contactVisible, phone: d.seller.phone },
+  listingRules(services)
+);
 const whatsappMessage =
   locale === 'hu'
     ? `Jó napot! Érdeklődöm a(z) „${title}” (#${d.ref}) hirdetés iránt: ${abs(pageUrl)}`
@@ -286,11 +296,11 @@ const whatsappMessage =
 
       {/* FODEL's actual USP, as a data-driven block rather than a slogan. */}
       {
-        d.seller.contactVisible && d.seller.name && (
+        sellerPhone && (
           <aside class="owner">
             <Eyebrow space="10px">{ui.property.ownerContact}</Eyebrow>
             <p class="owner-note">{ui.property.ownerContactNote}</p>
-            <p class="owner-name">{d.seller.name}</p>
+            {d.seller.name && <p class="owner-name">{d.seller.name}</p>}
             {d.seller.phone && (
               <p class="owner-phone">
                 <a href={`tel:${d.seller.phone.replace(/\s/g, '')}`}>

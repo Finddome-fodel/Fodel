@@ -372,15 +372,22 @@ console.log('\nJavaScript budget');
   // before (raw bytes), since that promise predates maps and nothing here
   // should have made it worse.
   const isMapChunk = (name) => /Map\.astro/i.test(name);
+  // MapLibre's tile worker (bundled since 0019 — before that it was never
+  // emitted, so every map stayed empty). Fetched only by map pages and run
+  // off the main thread, so it is measured on its own line.
+  const isMapWorker = (name) => /^maplibre-gl-worker/i.test(name);
   let coreBytes = 0;
   let mapRawBytes = 0;
   let mapGzipBytes = 0;
+  let workerGzipBytes = 0;
   const walkAll = async (dir) => {
     for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) await walkAll(full);
       else if (entry.name.endsWith('.js')) {
-        if (isMapChunk(entry.name)) {
+        if (isMapWorker(entry.name)) {
+          workerGzipBytes += gzipSync(await fs.readFile(full)).byteLength;
+        } else if (isMapChunk(entry.name)) {
           const buf = await fs.readFile(full);
           mapRawBytes += buf.byteLength;
           mapGzipBytes += gzipSync(buf).byteLength;
@@ -395,6 +402,11 @@ console.log('\nJavaScript budget');
     await walkAll(astroDir);
   } catch {
     /* no _astro JS at all */
+  }
+  if (workerGzipBytes > 0) {
+    const workerKb = workerGzipBytes / 1024;
+    if (workerKb > 160) fail(`map tile worker is ${workerKb.toFixed(1)} kB gzipped (budget 160 kB, map pages only, off the main thread)`);
+    else pass(`map tile worker ${workerKb.toFixed(1)} kB gzipped (budget 160 kB, map pages only, off the main thread)`);
   }
   const coreKb = coreBytes / 1024;
   if (coreKb > 100) fail(`non-map client JS is ${coreKb.toFixed(1)} kB (budget 100 kB)`);

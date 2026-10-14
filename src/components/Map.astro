@@ -1,22 +1,26 @@
 ---
 /**
- * Shared MapLibre GL map — self-hosted vector tiles from a single Hungary
- * PMTiles file (see scripts/build-pmtiles.mjs), no third party ever sees a
- * visitor's map interaction.
+ * Shared MapLibre GL map.
+ *
+ * Basemap: the self-hosted Hungary PMTiles file when PMTILES_URL is set (see
+ * scripts/build-pmtiles.mjs) — no third party sees a visitor's map use. Until
+ * then, OpenFreeMap's free "liberty" style (no key, no account). Before this
+ * fallback an unset PMTILES_URL rendered "the map is unavailable" on every
+ * map, which is what the live /hu/terkep/ showed.
  *
  * Two modes:
- *  - "pin": one property, detail page. Respects `precision` — an exact
- *    location gets a real pin; an approximate one gets a soft circle, so the
- *    map never shows more precision than the seller agreed to publish.
- *  - "browse": every active listing, clustered, with a "search this area"
- *    action that re-runs the Stage 6 search scoped to the visible bounds.
+ *  - "pin": one property, detail page. An exact location gets a pin; an
+ *    approximate one a soft circle and no pin. The coordinates that reach this
+ *    component are already offset for approximate listings (mapRow in
+ *    src/lib/properties.ts), so the real address is never in the page.
+ *  - "browse": every live listing, clustered; single listings are rounded
+ *    price pills with the category pictogram, plus "search this area".
  *
- * MapLibre is a real ~200 kB library — a deliberate, plan-specified
- * exception to this site's near-zero-JS budget, loaded only on the pages
- * that actually show a map, never site-wide. See the note in
- * scripts/verify-ssg.mjs's JS budget check.
+ * MapLibre is a real ~200 kB library — a deliberate exception to this site's
+ * near-zero-JS budget, loaded only on pages that show a map.
  */
 import type { Locale } from '~/i18n/ui';
+import { APPROX_RADIUS_M } from '~/lib/listing-rules';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface Props {
@@ -33,103 +37,162 @@ const { mode, lat, lng, precision = 'approximate', zoom = mode === 'pin' ? 13 : 
   Astro.props;
 
 // Runtime lookup: Vercel environment changes must not require rebuilding the
-// server bundle merely to turn the basemap on.
+// server bundle merely to switch the basemap.
 const pmtilesUrl = process.env.PMTILES_URL ?? '';
+const label = locale === 'hu'
+  ? mode === 'pin' ? 'Az ingatlan helye a térképen' : 'Ingatlanok térképe'
+  : mode === 'pin' ? 'Ligging van de woning op de kaart' : 'Kaart met woningen';
 ---
 
 <div
   id={id}
   class="fodel-map"
+  role="region"
+  aria-label={label}
+  data-fodel-map
   data-mode={mode}
   data-lat={lat}
   data-lng={lng}
   data-precision={precision}
+  data-radius={APPROX_RADIUS_M}
   data-zoom={zoom}
   data-locale={locale}
   data-pmtiles={pmtilesUrl}
 >
-  {!pmtilesUrl && (
-    <p class="map-unavailable">
-      {locale === 'hu'
-        ? 'A térkép jelenleg nem elérhető.'
-        : 'De kaart is momenteel niet beschikbaar.'}
-    </p>
-  )}
 </div>
 
 <script>
   // maplibre-gl v6 has no default export — everything is named.
-  import { Map as MapLibreMap, Marker, NavigationControl, addProtocol, type GeoJSONSource } from 'maplibre-gl';
+  import { Map as MapLibreMap, Marker, NavigationControl, AttributionControl, addProtocol, setWorkerUrl, type GeoJSONSource, type StyleSpecification } from 'maplibre-gl';
+  // MapLibre 6 looks for its worker next to its own module file. Vite moves
+  // that module (dev: .vite/deps, build: /_astro/…) without the worker, so no
+  // tile was ever decoded: an empty map. Vite bundles the worker here instead.
+  import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
   import { Protocol } from 'pmtiles';
-  import { mapStyle } from '~/lib/map-style';
+  import { mapStyle, FALLBACK_STYLE_URL, PMTILES_ATTRIBUTION } from '~/lib/map-style';
 
-  const protocol = new Protocol();
-  addProtocol('pmtiles', protocol.tile);
+  setWorkerUrl(workerUrl);
 
-  document.querySelectorAll<HTMLElement>('.fodel-map[data-pmtiles]').forEach((el) => {
+  let protocolAdded = false;
+
+  /** A circle of `radius` metres as a polygon, so it scales with the map like a real area. */
+  function circle(lng: number, lat: number, radius: number, steps = 64) {
+    const coords: [number, number][] = [];
+    const dLat = radius / 111_320;
+    const dLng = radius / (111_320 * Math.cos((lat * Math.PI) / 180));
+    for (let i = 0; i <= steps; i++) {
+      const a = (i / steps) * 2 * Math.PI;
+      coords.push([lng + dLng * Math.sin(a), lat + dLat * Math.cos(a)]);
+    }
+    return { type: 'Feature' as const, properties: {}, geometry: { type: 'Polygon' as const, coordinates: [coords] } };
+  }
+
+  /** 16px line pictograms per category key; unknown keys get the house. */
+  const ICON: Record<string, string> = {
+    house: '<path d="M3 8.2 9 3.5l6 4.7"/><path d="M4.5 7.3V14.5h9V7.3"/><path d="M7.6 14.5v-3.6h2.8v3.6"/>',
+    holiday: '<path d="M3 14.5h12"/><path d="M5 14.5V9l4-4 4 4v5.5"/><circle cx="13.6" cy="4.2" r="1.6"/>',
+    farm: '<path d="M2.5 14.5h13"/><path d="M4 14.5V8l3.5-3 3.5 3v6.5"/><path d="M11 9.5h3.5v5"/><path d="M6 14.5v-3h3v3"/>',
+    land: '<path d="M2.5 13.5c2.2-2.2 4.2-2.2 6.5 0s4.3 2.2 6.5 0"/><path d="M2.5 9.5c2.2-2.2 4.2-2.2 6.5 0s4.3 2.2 6.5 0"/>',
+    commercial: '<rect x="3" y="5" width="12" height="9.5" rx="1"/><path d="M3 8h12M7.5 14.5V11h3v3.5"/>',
+    industrial: '<path d="M2.5 14.5V8l4 2.5V8l4 2.5V4.5h4v10z"/>',
+    agricultural: '<path d="M9 15V6.5"/><path d="M9 9.5c-2.6 0-4-1.6-4-4 2.6 0 4 1.6 4 4zM9 8c2.6 0 4-1.6 4-4-2.6 0-4 1.6-4 4z"/>',
+    mansion: '<path d="M2.5 14.5h13"/><path d="M3.5 14.5V7h11v7.5"/><path d="M2.5 7 9 3l6.5 4"/><path d="M7.6 14.5v-3.5h2.8v3.5"/>',
+    apartment: '<rect x="4.5" y="2.8" width="9" height="11.7" rx="1"/><path d="M7 5.8h1M10 5.8h1M7 8.6h1M10 8.6h1M8 14.5v-2.6h2v2.6"/>',
+  };
+  const pictogram = (key: string) =>
+    `<svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[key] ?? ICON.house}</svg>`;
+
+  function setup(el: HTMLElement) {
+    if (el.dataset.ready) return;
+    el.dataset.ready = '1';
+
     const pmtilesUrl = el.dataset.pmtiles;
-    if (!pmtilesUrl) return; // no tileset configured yet — the "unavailable" message already shows
+    if (pmtilesUrl && !protocolAdded) {
+      addProtocol('pmtiles', new Protocol().tile);
+      protocolAdded = true;
+    }
 
     const mode = el.dataset.mode;
     const zoom = Number(el.dataset.zoom ?? 7);
     const lat = el.dataset.lat ? Number(el.dataset.lat) : 47.1625;
     const lng = el.dataset.lng ? Number(el.dataset.lng) : 19.5033;
+    const locale = el.dataset.locale === 'nl' ? 'nl' : 'hu';
 
     const map = new MapLibreMap({
       container: el,
-      style: mapStyle(pmtilesUrl) as any,
+      style: pmtilesUrl ? (mapStyle(pmtilesUrl) as StyleSpecification) : FALLBACK_STYLE_URL,
       center: [lng, lat],
       zoom,
-      attributionControl: { compact: true },
+      attributionControl: false,
+      cooperativeGestures: mode === 'pin',
+      locale: locale === 'hu'
+        ? { 'CooperativeGesturesHandler.WindowsHelpText': 'A nagyításhoz használja a Ctrl + görgetést', 'CooperativeGesturesHandler.MacHelpText': 'A nagyításhoz használja a ⌘ + görgetést', 'CooperativeGesturesHandler.MobileHelpText': 'Két ujjal mozgathatja a térképet', 'NavigationControl.ZoomIn': 'Nagyítás', 'NavigationControl.ZoomOut': 'Kicsinyítés' }
+        : { 'CooperativeGesturesHandler.WindowsHelpText': 'Gebruik Ctrl + scroll om te zoomen', 'CooperativeGesturesHandler.MacHelpText': 'Gebruik ⌘ + scroll om te zoomen', 'CooperativeGesturesHandler.MobileHelpText': 'Gebruik twee vingers om de kaart te verplaatsen', 'NavigationControl.ZoomIn': 'Inzoomen', 'NavigationControl.ZoomOut': 'Uitzoomen' },
     });
+    // OpenFreeMap's style carries its own OSM/OpenMapTiles credit; the
+    // self-hosted tileset has none, so it is added here.
+    map.addControl(new AttributionControl({ compact: true, ...(pmtilesUrl ? { customAttribution: PMTILES_ATTRIBUTION } : {}) }));
     map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
 
     if (mode === 'pin') {
       if (el.dataset.precision === 'exact') {
-        new Marker({ color: '#102A43' }).setLngLat([lng, lat]).addTo(map);
+        const pin = document.createElement('span');
+        pin.className = 'map-pin';
+        pin.setAttribute('aria-hidden', 'true');
+        new Marker({ element: pin, anchor: 'bottom' }).setLngLat([lng, lat]).addTo(map);
       } else {
-        // Approximate: a soft ~600m circle rather than a house-level pin —
-        // never shows more precision than the seller agreed to publish.
+        // Approximate: a soft area and no pin — never more precision than the
+        // seller agreed to publish.
+        const radius = Number(el.dataset.radius ?? 900);
         map.on('load', () => {
-          map.addSource('approx', {
-            type: 'geojson',
-            data: { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [lng, lat] } },
-          });
-          map.addLayer({
-            id: 'approx-circle',
-            type: 'circle',
-            source: 'approx',
-            paint: {
-              'circle-radius': 22,
-              'circle-color': '#102A43',
-              'circle-opacity': 0.18,
-              'circle-stroke-width': 1.5,
-              'circle-stroke-color': '#102A43',
-            },
-          });
+          map.addSource('approx', { type: 'geojson', data: circle(lng, lat, radius) });
+          map.addLayer({ id: 'approx-fill', type: 'fill', source: 'approx', paint: { 'fill-color': '#102A43', 'fill-opacity': 0.12 } });
+          map.addLayer({ id: 'approx-line', type: 'line', source: 'approx', paint: { 'line-color': '#102A43', 'line-opacity': 0.45, 'line-width': 1.5 } });
         });
       }
       return;
     }
 
-    // Browse mode: clustered listing markers + "search this area".
-    const locale = el.dataset.locale === 'nl' ? 'nl' : 'hu';
+    // Browse mode: clusters as circles, single listings as HTML price pills.
     const listUrl = locale === 'hu' ? '/hu/ingatlanok/' : '/nl/woningen/';
+    const feedUrl = (bounds = map.getBounds()) => {
+      const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
+      const filters = new URLSearchParams(window.location.search);
+      const extra = filters.get('no_adobe') === '1' ? '&no_adobe=1' : '';
+      return `/api/map/properties.geojson?locale=${locale}&bbox=${encodeURIComponent(bbox)}${extra}`;
+    };
+
+    const markers = new Map<string, Marker>();
+    const syncMarkers = () => {
+      if (!map.getSource('listings')) return;
+      const seen = new Set<string>();
+      for (const feature of map.querySourceFeatures('listings', { filter: ['!', ['has', 'point_count']] })) {
+        const p = feature.properties as Record<string, string>;
+        if (!p?.ref || seen.has(p.ref)) continue;
+        seen.add(p.ref);
+        if (markers.has(p.ref)) continue;
+        const a = document.createElement('a');
+        a.className = 'map-pill';
+        a.href = p.url;
+        a.dataset.precision = p.precision;
+        a.setAttribute('aria-label', `${p.title} — ${p.category}, ${p.price}`);
+        a.innerHTML = `<span class="map-pill-ic">${pictogram(p.cat)}</span><span class="map-pill-price">${p.priceShort}</span>`;
+        const [x, y] = (feature.geometry as GeoJSON.Point).coordinates;
+        markers.set(p.ref, new Marker({ element: a, anchor: 'bottom' }).setLngLat([x, y]).addTo(map));
+      }
+      for (const [ref, marker] of markers) {
+        if (!seen.has(ref)) {
+          marker.remove();
+          markers.delete(ref);
+        }
+      }
+    };
 
     map.on('load', async () => {
-      const bounds = map.getBounds();
-      const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
-      const res = await fetch(`/api/map/properties.geojson?locale=${locale}&bbox=${encodeURIComponent(bbox)}`);
-      const data = await res.json();
+      const res = await fetch(feedUrl());
+      const data = res.ok ? await res.json() : { type: 'FeatureCollection', features: [] };
 
-      map.addSource('listings', {
-        type: 'geojson',
-        data,
-        cluster: true,
-        clusterMaxZoom: 13,
-        clusterRadius: 44,
-      });
-
+      map.addSource('listings', { type: 'geojson', data, cluster: true, clusterMaxZoom: 13, clusterRadius: 48 });
       map.addLayer({
         id: 'clusters',
         type: 'circle',
@@ -137,7 +200,9 @@ const pmtilesUrl = process.env.PMTILES_URL ?? '';
         filter: ['has', 'point_count'],
         paint: {
           'circle-color': '#102A43',
-          'circle-radius': ['step', ['get', 'point_count'], 16, 10, 20, 30, 26],
+          'circle-radius': ['step', ['get', 'point_count'], 18, 10, 22, 30, 28],
+          'circle-stroke-width': 3,
+          'circle-stroke-color': 'rgba(244, 244, 242, 0.9)',
         },
       });
       map.addLayer({
@@ -145,20 +210,8 @@ const pmtilesUrl = process.env.PMTILES_URL ?? '';
         type: 'symbol',
         source: 'listings',
         filter: ['has', 'point_count'],
-        layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-size': 12 },
+        layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-size': 13, 'text-font': ['Noto Sans Regular'] },
         paint: { 'text-color': '#F4F4F2' },
-      });
-      map.addLayer({
-        id: 'unclustered',
-        type: 'circle',
-        source: 'listings',
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-radius': 7,
-          'circle-color': '#F4F4F2',
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#102A43',
-        },
       });
 
       map.on('click', 'clusters', (e) => {
@@ -166,53 +219,49 @@ const pmtilesUrl = process.env.PMTILES_URL ?? '';
         const clusterId = features[0]?.properties?.cluster_id;
         const source = map.getSource('listings') as GeoJSONSource;
         source.getClusterExpansionZoom(clusterId).then((z) => {
-          map.easeTo({ center: (features[0].geometry as any).coordinates, zoom: z });
+          map.easeTo({ center: (features[0].geometry as GeoJSON.Point).coordinates as [number, number], zoom: z });
         });
       });
+      map.on('mouseenter', 'clusters', () => (map.getCanvas().style.cursor = 'pointer'));
+      map.on('mouseleave', 'clusters', () => (map.getCanvas().style.cursor = ''));
 
-      map.on('click', 'unclustered', (e) => {
-        const feature = e.features?.[0];
-        const url = feature?.properties?.url;
-        if (url) window.location.href = url;
-      });
+      map.on('render', syncMarkers);
 
-      map.on('mouseenter', 'unclustered', () => (map.getCanvas().style.cursor = 'pointer'));
-      map.on('mouseleave', 'unclustered', () => (map.getCanvas().style.cursor = ''));
-
-      // Keep the clustered payload bounded after a pan as well as on first
-      // load. A short debounce prevents a burst of requests while the camera
-      // is still easing after a cluster click.
+      // Keep the payload bounded after a pan as well as on first load. A short
+      // debounce prevents a burst of requests while the camera still eases.
       let refreshTimer: ReturnType<typeof setTimeout> | undefined;
       map.on('moveend', () => {
         clearTimeout(refreshTimer);
         refreshTimer = setTimeout(async () => {
-          const nextBounds = map.getBounds();
-          const nextBbox = [
-            nextBounds.getWest(), nextBounds.getSouth(), nextBounds.getEast(), nextBounds.getNorth(),
-          ].join(',');
-          const response = await fetch(`/api/map/properties.geojson?locale=${locale}&bbox=${encodeURIComponent(nextBbox)}`);
+          const response = await fetch(feedUrl());
           if (!response.ok) return;
-          const source = map.getSource('listings') as GeoJSONSource | undefined;
-          source?.setData(await response.json());
+          (map.getSource('listings') as GeoJSONSource | undefined)?.setData(await response.json());
         }, 180);
       });
     });
 
-    const searchBtn = document.getElementById('search-this-area');
-    searchBtn?.addEventListener('click', () => {
+    document.getElementById('search-this-area')?.addEventListener('click', () => {
       const b = map.getBounds();
-      // Keep whatever filters the visitor arrived with and add the bounds to
-      // them. Replacing the query string instead of extending it would quietly
-      // discard the type/price/region choices they made on the list.
+      // Keep the filters the visitor arrived with and add the bounds to them.
       const params = new URLSearchParams(window.location.search);
       params.delete('page');
-      params.set(
-        'bbox',
-        [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()].map((n) => n.toFixed(4)).join(',')
-      );
+      params.set('bbox', [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()].map((n) => n.toFixed(4)).join(','));
       window.location.href = `${listUrl}?${params}`;
     });
-  });
+  }
+
+  // A map below the fold is only built once it comes near the viewport.
+  const io = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            io?.unobserve(entry.target);
+            setup(entry.target as HTMLElement);
+          }
+        }
+      }, { rootMargin: '400px' })
+    : null;
+  document.querySelectorAll<HTMLElement>('[data-fodel-map]').forEach((el) => (io ? io.observe(el) : setup(el)));
 </script>
 
 <style>
@@ -223,18 +272,72 @@ const pmtilesUrl = process.env.PMTILES_URL ?? '';
     min-height: 320px;
     background: var(--mist);
   }
-  .map-unavailable {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--fs-small);
-    color: var(--taupe);
-    text-align: center;
-    padding: 20px;
-  }
   :global(.maplibregl-ctrl-attrib) {
     font-size: 10px;
+  }
+  :global(.fodel-map .maplibregl-ctrl-group) {
+    border-radius: var(--r-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Single listing: a compact rounded pill — pictogram + price. */
+  :global(.map-pill) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px 5px 6px;
+    border-radius: var(--r-pill);
+    background: var(--white);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: var(--fw-semibold);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(16, 42, 67, 0.12), 0 4px 14px rgba(16, 42, 67, 0.16);
+    transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  }
+  :global(.map-pill-ic) {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--linen);
+    color: var(--ink);
+  }
+  :global(.map-pill:hover),
+  :global(.map-pill:focus-visible) {
+    background: var(--ink);
+    color: var(--cream);
+    transform: translateY(-2px);
+    z-index: 2;
+  }
+  :global(.map-pill:hover .map-pill-ic),
+  :global(.map-pill:focus-visible .map-pill-ic) {
+    background: rgba(244, 244, 242, 0.16);
+    color: var(--cream);
+  }
+  :global(.map-pill:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  /* Exact location on the detail page. */
+  :global(.map-pin) {
+    display: block;
+    width: 26px;
+    height: 26px;
+    border-radius: 50% 50% 50% 0;
+    background: var(--ink);
+    border: 3px solid var(--white);
+    box-shadow: var(--shadow-md);
+    transform: rotate(-45deg) translate(2px, -2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.map-pill) { transition: none; }
   }
 </style>

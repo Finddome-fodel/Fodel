@@ -9,6 +9,17 @@
  * actual tileset uses different layer names, these `source-layer` values are
  * the first thing to check.
  */
+/**
+ * Used whenever PMTILES_URL is unset: OpenFreeMap's free hosted style (no API
+ * key). The style's own sources carry the OpenFreeMap / OpenMapTiles /
+ * OpenStreetMap credit, which MapLibre's attribution control displays.
+ */
+export const FALLBACK_STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
+
+/** Credit for the self-hosted OpenMapTiles-schema tileset built from OSM data. */
+export const PMTILES_ATTRIBUTION =
+  '<a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>';
+
 export function mapStyle(pmtilesUrl: string) {
   return {
     version: 8 as const,
