@@ -47,7 +47,9 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
   </button>
   <ul class="switcher-menu" id={menuId} inert>
     {
-      SWITCHER_LOCALES.map(({ code, status }) => {
+      // Markets without a site yet (it, es) are not listed at all: a menu of
+      // "coming soon" rows read as unfinished.
+      SWITCHER_LOCALES.filter(({ status }) => status !== 'soon').map(({ code, status }) => {
         const meta = LOCALE_META[code];
         const href = hrefFor(code, status);
         const active = code === locale;

@@ -1,4 +1,5 @@
 ---
+import { officeHours, callbackHours } from '~/lib/hours';
 /**
  * Contact. Ported from the prototype's split layout.
  *
@@ -34,9 +35,7 @@ const whatsappHref = COMPANY.whatsapp ? `https://wa.me/${COMPANY.whatsapp.replac
 // would otherwise sit alone.
 const tilesBeforeHours = COMPANY.phones.filter((p) => p.public).length + 1 + (whatsappHref ? 1 : 0);
 const hoursWide = tilesBeforeHours % 2 === 0;
-const weekdayHours = hu
-  ? `Hétfő–Péntek · ${COMPANY.hours.weekdays.from}–${COMPANY.hours.weekdays.to}`
-  : `Maandag–vrijdag · ${COMPANY.hours.weekdays.from}–${COMPANY.hours.weekdays.to}`;
+const weekdayHours = officeHours(COMPANY.hours, locale);
 ---
 
 <Base
@@ -114,11 +113,7 @@ const weekdayHours = hu
             <span class="tile-label">{ui.footer.hours}</span>
             <span class="tile-value">{weekdayHours}</span>
             <span class="tile-note">
-              {
-                hu
-                  ? `Visszahívás ${COMPANY.hours.callback.to}-ig, hétvégén is.`
-                  : `Terugbellen tot ${COMPANY.hours.callback.to} uur, ook in het weekend.`
-              }
+              {callbackHours(COMPANY.hours, locale)}
             </span>
           </div>
         </li>

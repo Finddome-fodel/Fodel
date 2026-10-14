@@ -12,6 +12,8 @@ import Button from '~/components/Button.astro';
 import { path as routePath, type Locale, type RouteKey } from '~/i18n/ui';
 import type { ContentPageData } from '~/lib/content-sections';
 import { alternatesFor } from '~/lib/page';
+import { getCompany } from '~/lib/runtime-config';
+import { fillHours } from '~/lib/hours';
 
 interface Props {
   locale: Locale;
@@ -22,6 +24,7 @@ interface Props {
 
 const { locale, routeKey, data, noindex = false } = Astro.props;
 const path = (key: RouteKey) => routePath(locale, key);
+const { hours } = await getCompany();
 
 /** Stable anchors for every titled section, and the index built from them —
  *  shown beside the text on wide screens once a page has enough sections to
@@ -148,7 +151,7 @@ const showIndex = index.length >= 3;
             return (
               <section class="cta" data-bg="dark">
                 <h2>{section.title}</h2>
-                {section.body && <p>{section.body}</p>}
+                {section.body && <p>{fillHours(section.body, hours, locale)}</p>}
                 <div class="cta-actions">
                   <Button variant="dark" light href={path(section.primary.to)}>{section.primary.label}</Button>
                   {section.secondary && (

@@ -9,10 +9,13 @@ import Base from '~/layouts/Base.astro';
 import Eyebrow from '~/components/Eyebrow.astro';
 import Button from '~/components/Button.astro';
 import { UI, path } from '~/i18n/ui';
+import { getCompany } from '~/lib/runtime-config';
+import { fillHours } from '~/lib/hours';
 import { COMPANY, formatHours } from '~/config/company';
 
 const locale = 'nl' as const;
 const ui = UI[locale];
+const { hours } = await getCompany();
 const hu = false;
 ---
 
@@ -30,7 +33,7 @@ const hu = false;
     </span>
     <Eyebrow center space="18px">{hu ? 'Elküldve' : 'Verzonden'}</Eyebrow>
     <h1>{ui.form.successTitle}</h1>
-    <p class="body">{ui.form.successBody}</p>
+    <p class="body">{fillHours(ui.form.successBody, hours, locale)}</p>
 
     <p class="hours">{formatHours(locale)}</p>
     <p class="phones">

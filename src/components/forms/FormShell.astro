@@ -18,6 +18,7 @@
 import Button from '~/components/Button.astro';
 import { UI, path, type Locale } from '~/i18n/ui';
 import { getCompany } from '~/lib/runtime-config';
+import { fillHours } from '~/lib/hours';
 
 interface Props {
   locale: Locale;
@@ -60,7 +61,7 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
       </svg>
     </span>
     <h3 tabindex="-1">{successTitle ?? ui.form.successTitle}</h3>
-    <p>{successBody ?? ui.form.successBody}</p>
+    <p>{successBody ?? fillHours(ui.form.successBody, company.hours, locale)}</p>
   </div>
 
   <form
@@ -78,9 +79,11 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
     {Object.entries(meta).map(([k, v]) => <input type="hidden" name={k} value={v} />)}
 
     {/* Honeypot — hidden from people, irresistible to bots. */}
-    <div class="hp" aria-hidden="true">
-      <label for={`${formId}-company`}>Company</label>
-      <input id={`${formId}-company`} type="text" name="company" tabindex="-1" autocomplete="off" />
+    {/* No visible label at all, and hidden inline so it stays hidden even if
+        this component's stylesheet arrives late or not at all (a stale
+        style module once let a stray "Company" label show on the homepage). */}
+    <div class="hp" aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">
+      <input id={`${formId}-company`} type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
     </div>
     {/* Time-trap: submissions faster than a human can type are rejected. */}
     <input type="hidden" name="renderedAt" value={Date.now()} />

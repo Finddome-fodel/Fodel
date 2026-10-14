@@ -90,7 +90,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
         {
           type: 'cta',
           title: 'Kérdése van a folyamatról?',
-          body: 'Munkanapokon 09:00 és 18:00 között hívjon minket, vagy kérjen ingyenes visszahívást.',
+          body: '{hours} Kérjen ingyenes visszahívást, vagy írjon nekünk.',
           primary: { label: 'Kapcsolatfelvétel', to: 'contact' },
           secondary: { label: 'Gyakori kérdések', to: 'faq' },
         },
@@ -340,7 +340,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
         {
           type: 'cta',
           title: 'Vragen over het traject?',
-          body: 'Bel ons op werkdagen tussen 09:00 en 18:00, of vraag om teruggebeld te worden.',
+          body: '{hours} Vraag gratis om teruggebeld te worden, of schrijf ons.',
           primary: { label: 'Contact opnemen', to: 'contact' },
           secondary: { label: 'Veelgestelde vragen', to: 'faq' },
         },

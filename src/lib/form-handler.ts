@@ -172,17 +172,17 @@ function buildEmail(def: FormDefinition, values: Record<string, string>, extras:
 const ACK = {
   hu: {
     subject: 'Köszönjük megkeresését — FODEL',
-    body: (name: string, phones: string) =>
+    body: (name: string, phones: string, hours: string) =>
       `<p>Kedves ${escapeHtml(name || 'Érdeklődőnk')}!</p>
-       <p>Köszönjük, hogy felvette velünk a kapcsolatot. Üzenetét megkaptuk, és munkanapokon 09:00 és 18:00 között válaszolunk.</p>
+       <p>Köszönjük, hogy felvette velünk a kapcsolatot. Üzenetét megkaptuk, munkatársunk hamarosan jelentkezik. ${escapeHtml(hours)}</p>
        <p>Ha sürgős, hívjon minket: ${escapeHtml(phones)}.</p>
        <p>Üdvözlettel,<br>FODEL Ingatlan</p>`,
   },
   nl: {
     subject: 'Bedankt voor uw bericht — FODEL',
-    body: (name: string, phones: string) =>
+    body: (name: string, phones: string, hours: string) =>
       `<p>Beste ${escapeHtml(name || 'bezoeker')},</p>
-       <p>Bedankt voor uw bericht. Wij hebben het ontvangen en reageren op werkdagen tussen 09:00 en 18:00 uur.</p>
+       <p>Bedankt voor uw bericht. Wij hebben het ontvangen; een medewerker neemt spoedig contact met u op. ${escapeHtml(hours)}</p>
        <p>Heeft u haast? Bel ons op ${escapeHtml(phones)}.</p>
        <p>Met vriendelijke groet,<br>FODEL Vastgoed</p>`,
   },
@@ -319,13 +319,14 @@ export async function handleForm(
     if (result.values.email && !def.skipAck) {
       const ack = ACK[locale];
       const { getCompany } = await import('~/lib/runtime-config');
+      const { hoursSentence } = await import('~/lib/hours');
       const company = await getCompany();
       const phones = company.phones.filter((phone) => phone.public).map((phone) => phone.display).join(' / ');
       await resend.emails.send({
         from,
         to: result.values.email,
         subject: ack.subject,
-        html: ack.body(result.values.name ?? '', phones),
+        html: ack.body(result.values.name ?? '', phones, hoursSentence(company.hours, locale)),
         replyTo: replyToAddress(),
       });
     }
