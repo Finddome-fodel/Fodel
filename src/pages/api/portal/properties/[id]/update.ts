@@ -14,6 +14,8 @@ import { extractYouTubeId } from '~/lib/video';
 import { logEvent } from '~/lib/activity';
 import { boundsFor, COUNTRIES } from '~/config/countries';
 import { friendlyError } from '~/lib/portal/labels';
+import { getCompany } from '~/lib/runtime-config';
+import { listingCatalog, packageOf } from '~/lib/listing-packages';
 
 export const prerender = false;
 
@@ -34,7 +36,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
 
   const { data: existing, error: fetchError } = await supabase
     .from('properties')
-    .select('id, owner_id, status, bargain, bargain_since')
+    .select('id, owner_id, status, package, bargain, bargain_since')
     .eq('id', id)
     .maybeSingle();
   if (fetchError || !existing) return back('error=not-found');
@@ -106,6 +108,10 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   // extractor the public page uses decides — so if it passes here, the player
   // on the listing will work. Otherwise the seller pays €36 for a video
   // placement and finds out weeks later that nothing renders.
+  // A package without video (admin setting) takes no video from the owner.
+  if (!isAdmin && patch.video_url && packageOf(listingCatalog((await getCompany()).services), existing.package).video === 'none') {
+    return back('error=' + encodeURIComponent('a választott csomag nem tartalmaz videót — kérjen nagyobb csomagot munkatársunktól'));
+  }
   if (patch.video_url && !extractYouTubeId(patch.video_url)) {
     return back(
       'error=' +

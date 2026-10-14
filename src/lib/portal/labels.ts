@@ -24,6 +24,8 @@ export const EVENT_LABEL: Record<string, string> = {
   'listing.reject': 'Hirdetés elutasítva',
   'listing.mark_sold': 'Eladottnak jelölve',
   'listing.archive': 'Archiválva',
+  'listing.reactivate': 'Újra aktiválva',
+  'settings.packages': 'Hirdetési csomagok módosítva',
   'listing.delete': 'Hirdetés törölve',
   'listing.edited': 'Hirdetés szerkesztve',
   'listing.published': 'Hirdetés élesítve',

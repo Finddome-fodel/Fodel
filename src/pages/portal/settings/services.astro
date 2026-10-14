@@ -12,7 +12,6 @@ import Portal from '~/layouts/Portal.astro';
 import { valuationPackages } from '~/lib/valuation/packages';
 import { SERVICES_DEFAULT, AUTOMATION_DEFAULT, type Services, type Automation } from '~/lib/runtime-config';
 import { listingRules } from '~/lib/listing-rules';
-import { LISTING_PACKAGES } from '~/config/company';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -98,14 +97,11 @@ const err = Astro.url.searchParams.get('error');
       <label class="check"><input type="checkbox" name="instant_valuation" value="yes" checked={services.instantValuation} /><span><strong>Azonnali becslés megjelenítése</strong>Alapállapotban kikapcsolva. Csak megfelelő adatbázis és szakmai jóváhagyás után kapcsolja be.</span></label>
       </section>
       <section class="set-card" id="listing-rules">
-      <h2>Hirdetési csomagok</h2>
-      <p class="hint">A hirdető telefonszáma csak akkor jelenik meg a hirdetésben, ha a csomag engedi <em>és</em> a hirdető is hozzájárult. Egyébként az érdeklődő a visszahívás-űrlapon keresztül ér el minket.</p>
-      {LISTING_PACKAGES.map((pkg) => (
-        <label class="check">
-          <input type="checkbox" name={`phone_${pkg.id}`} value="yes" checked={rules.packagePhone[pkg.id]} />
-          <span><strong>{pkg.names.hu}: telefonszám a hirdetésben</strong>Alapértelmezés: {pkg.id === 'normal-12m' ? 'igen' : 'nem'}.</span>
-        </label>
-      ))}
+      <h2>Hirdetések lejárata</h2>
+      <a class="pkg-link" href="/portal/settings/packages">
+        <span><strong>Hirdetési csomagok, árak és tartalom</strong>Név, ár, időtartam, képszám, videó, telefonszám és a kiegészítők árai — külön oldalon.</span>
+        <span aria-hidden="true">→</span>
+      </a>
 
       <h3>Lejárat és hosszabbítás</h3>
       <p class="hint">A napi ütemezett feladat két emlékeztetőt küld a lejárat előtt, és egy levelet a lejáratkor. Minden levélben ott a hosszabbítás linkje (6 hónap). Lejáratkor a hirdetés lekerül az oldalról, az admin kézzel is meghosszabbíthatja.</p>
@@ -202,6 +198,10 @@ const err = Astro.url.searchParams.get('error');
   .pkg .check { background: var(--white); }
   #listing-rules .pkg-row { grid-template-columns: 1fr 1fr; }
   #listing-rules .pkg-row.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pkg-link { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-radius: var(--r-md); background: var(--paper); color: var(--ink-quiet); font-size: 14.5px; line-height: 1.6; text-decoration: none; transition: background-color 0.2s var(--ease-out); }
+  .pkg-link:hover { background: var(--linen); }
+  .pkg-link strong { display: block; color: var(--ink); font-size: var(--fs-small); font-weight: var(--fw-medium); }
+  .pkg-link > span:last-child { font-size: 20px; color: var(--ink); }
   .hint em { font-style: normal; font-weight: var(--fw-medium); color: var(--ink); }
   @media (max-width: 960px) { #listing-rules .pkg-row.four { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 720px) { .pkg-row, #listing-rules .pkg-row, #listing-rules .pkg-row.four { grid-template-columns: 1fr; } }

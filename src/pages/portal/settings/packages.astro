@@ -1,0 +1,311 @@
+---
+/**
+ * Hirdetési csomagok — the package editor the quote promises
+ * ("csomagonként eltérő képszám, videó és adattartalom … telefonszám
+ * megjelenítése a választott csomag szerint; csomagok és díjak admin oldali
+ * kezelése").
+ *
+ * One card per package with a live preview of what sellers see, and the
+ * extras' prices underneath. Saved to site_settings.services; the price list,
+ * the submit form, approval, checkout, renewal, invoices and the photo
+ * uploader all read the same values (src/lib/listing-packages.ts).
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { listingCatalog, packageCard, IMAGES_MAX, PRICE_MAX, type ExtraId } from '~/lib/listing-packages';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const catalog = listingCatalog(row?.services);
+const previews = Object.fromEntries(catalog.packages.map((pkg) => [pkg.id, packageCard(pkg, catalog, 'hu')]));
+
+const saved = Astro.url.searchParams.has('saved');
+const err = Astro.url.searchParams.get('error');
+
+const tierLabel: Record<string, string> = { 'cheap-6m': 'Basic', 'normal-12m': 'Prémium' };
+const videoOptions = [
+  { value: 'included', label: 'Benne van' },
+  { value: 'extra', label: 'Külön díjért' },
+  { value: 'none', label: 'Nincs' },
+];
+const extraMeta: Record<ExtraId, { label: string; unit: string; note?: string }> = {
+  translation: { label: 'Fordítás', unit: '€ / nyelv' },
+  'category-highlight': { label: 'Kiemelés a kategóriában', unit: '€ / hó', note: 'min. 3 hónap' },
+  'homepage-highlight': { label: 'Kiemelés a főoldalon', unit: '€ / hó', note: 'min. 3 hónap' },
+  video: { label: 'Videós bemutató', unit: '€ egyszeri', note: 'ha a csomagban „külön díjért”' },
+  'retro-images': { label: 'Utólagos képfeltöltés', unit: '€ egyszeri' },
+  'renewal-6m': { label: 'Hosszabbítás 6 hónappal', unit: '€ egyszeri', note: 'a lejárati levelekben is' },
+};
+---
+
+<Portal title="Hirdetési csomagok">
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/settings">← Beállítások</a></p>
+      <h1>Hirdetési <em>csomagok</em></h1>
+      <p class="lede">Ár, időtartam és tartalom csomagonként. Mentés után az árlista, a hirdetésfeladás, a jóváhagyás és a fizetés is ezeket használja — a már elkészült rendelések nem változnak.</p>
+    </div>
+  </header>
+
+  {!migrated && <p class="notice error">Ehhez a beállításhoz futtassa le a 0014-es migrációt.</p>}
+  {saved && <p class="notice ok" data-toast="ok">Mentve. A nyilvános oldalak néhány percen belül frissülnek.</p>}
+  {err && <p class="notice error">{err}</p>}
+
+  <form method="POST" action="/api/portal/settings/packages" id="pkg-form" class="pk-form">
+    <fieldset disabled={!migrated}>
+      <div class="pk-grid">
+        {catalog.packages.map((pkg) => {
+          const k = (field: string) => `${pkg.id}_${field}`;
+          const preview = previews[pkg.id];
+          return (
+            <section class="set-card pk" data-pkg={pkg.id}>
+              <header class="pk-head">
+                <span class="pk-tier">{tierLabel[pkg.id] ?? pkg.id}</span>
+                <label class="pk-rec">
+                  <input type="radio" name="recommended" value={pkg.id} checked={pkg.recommended} />
+                  <span>Ajánlott</span>
+                </label>
+              </header>
+
+              <div class="pk-block">
+                <p class="pk-label">Név</p>
+                <div class="pk-row two">
+                  <label class="f"><span>Magyar</span><input type="text" name={k('name_hu')} maxlength="80" value={pkg.names.hu} data-bind="name" required /></label>
+                  <label class="f"><span>Holland</span><input type="text" name={k('name_nl')} maxlength="80" value={pkg.names.nl} required /></label>
+                </div>
+              </div>
+
+              <div class="pk-block">
+                <p class="pk-label">Ár és időtartam</p>
+                <div class="pk-row two">
+                  <label class="f"><span>Ár</span><span class="unit"><input type="number" name={k('price')} min="0" max={PRICE_MAX} step="1" value={pkg.priceEur} data-bind="price" required /><i>€</i></span></label>
+                  <label class="f"><span>Időtartam</span><span class="unit"><input type="number" name={k('months')} min="1" max="36" step="1" value={pkg.months} data-bind="months" required /><i>hónap</i></span></label>
+                </div>
+                <label class="sw">
+                  <input type="checkbox" name={k('tiered')} value="yes" checked={pkg.priceEurAbove !== null} data-toggle="tier" />
+                  <span class="sw-ui" aria-hidden="true"></span>
+                  <span><strong>Magasabb ár drágább ingatlanoknál</strong>Az irányár alapján automatikusan számolva.</span>
+                </label>
+                <div class="pk-row two tier" hidden={pkg.priceEurAbove === null}>
+                  <label class="f"><span>Magasabb ár</span><span class="unit"><input type="number" name={k('price_above')} min="0" max={PRICE_MAX} step="1" value={pkg.priceEurAbove ?? ''} data-bind="above" /><i>€</i></span></label>
+                  <label class="f"><span>Ha az irányár több mint</span><span class="unit"><input type="number" name={k('threshold_m')} min="1" max="100000" step="1" value={pkg.thresholdHuf !== null ? Math.round(pkg.thresholdHuf / 1_000_000) : ''} data-bind="threshold" /><i>M Ft</i></span></label>
+                </div>
+              </div>
+
+              <div class="pk-block">
+                <p class="pk-label">Tartalom</p>
+                <div class="pk-photos">
+                  <label class="f"><span>Képek száma</span><span class="unit"><input type="number" name={k('max_images')} min="1" max={IMAGES_MAX} step="1" value={pkg.maxImages ?? 20} disabled={pkg.maxImages === null} data-bind="images" /><i>kép</i></span></label>
+                  <label class="sw compact">
+                    <input type="checkbox" name={k('unlimited')} value="yes" checked={pkg.maxImages === null} data-toggle="unlimited" />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Korlátlan</strong></span>
+                  </label>
+                </div>
+
+                <div class="f">
+                  <span>Videó</span>
+                  <div class="seg" role="radiogroup" aria-label="Videó">
+                    {videoOptions.map((option) => (
+                      <label>
+                        <input type="radio" name={k('video')} value={option.value} checked={pkg.video === option.value} data-bind="video" />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div class="sw-list">
+                  <label class="sw">
+                    <input type="checkbox" name={k('phone')} value="yes" checked={pkg.phone} data-bind="phone" />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Telefonszám a hirdetésben</strong>Csak ha a hirdető is hozzájárult. Különben visszahívás-űrlap.</span>
+                  </label>
+                  <label class="sw">
+                    <input type="checkbox" name={k('edited_images')} value="yes" checked={pkg.editedImages} data-bind="editedImages" />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Képek szakszerű feldolgozása</strong>Mi javítjuk a fényképeket.</span>
+                  </label>
+                  <label class="sw">
+                    <input type="checkbox" name={k('edited_text')} value="yes" checked={pkg.editedText} data-bind="editedText" />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Szöveg szerkesztése</strong>Mi szerkesztjük a leírást.</span>
+                  </label>
+                </div>
+              </div>
+
+              <aside class="pk-preview" aria-label="Előnézet">
+                <p class="pk-label">Így látja a hirdető</p>
+                <div class:list={['pv', { rec: pkg.recommended }]}>
+                  <p class="pv-top"><b data-out="name">{preview.name}</b><span class="pv-badge">Ajánlott</span></p>
+                  <p class="pv-price"><b data-out="price">{preview.price}</b> <span data-out="duration">{preview.duration}</span></p>
+                  <p class="pv-alt" data-out="alt" hidden={!preview.priceAlt}>{preview.priceAlt} {preview.priceAltNote}</p>
+                  <ul data-out="features">{preview.features.map((line) => <li>{line}</li>)}</ul>
+                </div>
+              </aside>
+            </section>
+          );
+        })}
+      </div>
+
+      <section class="set-card pk-extras">
+        <h2>Kiegészítők árai</h2>
+        <p class="set-sub">Ezek jelennek meg az árlistán és a hirdetésfeladásnál, és ezekből készül a rendelés.</p>
+        <div class="ex-grid">
+          {catalog.extras.map((extra) => (
+            <label class="ex">
+              <span class="ex-name"><strong>{extraMeta[extra.id].label}</strong>{extraMeta[extra.id].note && <small>{extraMeta[extra.id].note}</small>}</span>
+              <span class="unit"><input type="number" name={`extra_${extra.id}`} min="0" max={PRICE_MAX} step="1" value={extra.priceEur} data-extra={extra.id} required /><i>{extraMeta[extra.id].unit}</i></span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn">Mentés</button></div></div>
+    </fieldset>
+  </form>
+</Portal>
+
+<script>
+  // Live preview — display only; the server builds the real wording from the
+  // saved values (packageCard in src/lib/listing-packages.ts).
+  const form = document.getElementById('pkg-form') as HTMLFormElement | null;
+  const bar = document.getElementById('savebar');
+  const txt = document.getElementById('savebar-txt');
+
+  const extraPrice = (id: string) => (form?.querySelector<HTMLInputElement>(`[data-extra="${id}"]`)?.value ?? '0');
+
+  function render(card: HTMLElement) {
+    const val = (bind: string) => card.querySelector<HTMLInputElement>(`[data-bind="${bind}"]`);
+    const on = (bind: string) => Boolean(val(bind)?.checked);
+    const tiered = Boolean(card.querySelector<HTMLInputElement>('[data-toggle="tier"]')?.checked);
+    const unlimited = Boolean(card.querySelector<HTMLInputElement>('[data-toggle="unlimited"]')?.checked);
+    const video = card.querySelector<HTMLInputElement>('[data-bind="video"]:checked')?.value;
+    const months = val('months')?.value || '–';
+
+    card.querySelector<HTMLElement>('.tier')!.hidden = !tiered;
+    const images = val('images')!;
+    images.disabled = unlimited;
+
+    const out = (name: string) => card.querySelector<HTMLElement>(`[data-out="${name}"]`)!;
+    out('name').textContent = val('name')?.value || '—';
+    out('price').textContent = `${val('price')?.value || 0} €`;
+    out('duration').textContent = `${months} hónap`;
+    out('alt').hidden = !tiered;
+    out('alt').textContent = tiered ? `${val('above')?.value || 0} € ${val('threshold')?.value || '–'} millió Ft feletti ingatlan esetén` : '';
+
+    const lines = [
+      unlimited ? 'Korlátlan számú kép' : `Legfeljebb ${images.value || '–'} kép`,
+      on('editedImages') ? 'A képeket szakszerűen feldolgozzuk' : 'A képek az eredeti állapotban jelennek meg',
+      on('editedText') ? 'A szöveget szakszerűen megszerkesztjük' : 'A szöveg a beküldött formában jelenik meg',
+      video === 'included' ? 'Videós bemutató a csomag része' : video === 'extra' ? `Videós bemutató külön kérhető (${extraPrice('video')} €)` : '',
+      on('phone') ? 'Az Ön telefonszáma megjelenhet a hirdetésben' : 'Az érdeklődők a FODEL-en keresztül érik el',
+    ].filter(Boolean);
+    const list = out('features');
+    list.replaceChildren(...lines.map((line) => Object.assign(document.createElement('li'), { textContent: line })));
+  }
+
+  function renderRecommended() {
+    document.querySelectorAll<HTMLElement>('[data-pkg]').forEach((card) => {
+      const rec = Boolean(card.querySelector<HTMLInputElement>('input[name="recommended"]')?.checked);
+      card.querySelector('.pv')?.classList.toggle('rec', rec);
+    });
+  }
+
+  form?.addEventListener('input', (event) => {
+    const card = (event.target as Element).closest<HTMLElement>('[data-pkg]');
+    if (card) render(card);
+    else document.querySelectorAll<HTMLElement>('[data-pkg]').forEach(render);
+    renderRecommended();
+    if (bar && txt) {
+      bar.dataset.state = 'dirty';
+      txt.textContent = 'Nem mentett módosítások';
+    }
+  });
+</script>
+
+<style>
+  .pk-form fieldset { display: grid; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
+  .pk-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+  .pk { display: grid; gap: 22px; }
+
+  .pk-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .pk-tier { font-family: var(--serif); font-weight: var(--fw-display); font-size: 24px; letter-spacing: var(--ls-heading); color: var(--ink); }
+  .pk-rec { position: relative; cursor: pointer; }
+  .pk-rec input { position: absolute; opacity: 0; pointer-events: none; }
+  .pk-rec span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: var(--r-pill); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); font-size: 14px; font-weight: var(--fw-medium); color: var(--ink-quiet); transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out); }
+  .pk-rec span::before { content: ''; width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; }
+  .pk-rec input:checked + span { background: var(--ink); color: var(--cream); box-shadow: none; }
+  .pk-rec input:checked + span::before { background: currentColor; }
+  .pk-rec input:focus-visible + span { outline: var(--focus-ring); outline-offset: 3px; }
+
+  .pk-block { display: grid; gap: 14px; padding-top: 20px; border-top: 1px solid var(--pt-hair); }
+  .pk-label { margin: 0; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: var(--fw-medium); color: var(--ink-quiet); }
+  .pk-row { display: grid; gap: 14px; }
+  .pk-row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pk-row[hidden] { display: none; }
+
+  .f { display: grid; gap: 8px; align-content: start; font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); min-width: 0; }
+  .f input[type='text'], .unit input { width: 100%; min-height: 50px; padding: 12px 16px; font: inherit; font-weight: var(--fw-body); font-size: var(--fs-body); color: var(--ink); }
+  .unit { position: relative; display: block; }
+  .unit input { padding-right: 76px; font-variant-numeric: tabular-nums; }
+  .unit i { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 14px; font-weight: var(--fw-body); color: var(--ink-quiet); pointer-events: none; white-space: nowrap; }
+  .unit input:disabled { opacity: 0.45; }
+
+  .pk-photos { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: end; }
+
+  .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 4px; border-radius: var(--r-pill); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .seg label { position: relative; cursor: pointer; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg span { display: block; padding: 10px 8px; border-radius: var(--r-pill); text-align: center; font-size: 14.5px; font-weight: var(--fw-medium); color: var(--ink-quiet); transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out); }
+  .seg input:checked + span { background: var(--white); color: var(--ink); box-shadow: var(--shadow-sm); }
+  .seg input:focus-visible + span { outline: var(--focus-ring); outline-offset: 2px; }
+
+  .sw-list { display: grid; gap: 4px; }
+  .sw { position: relative; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; padding: 12px 14px; border-radius: var(--r-md); font-size: 14px; line-height: 1.55; color: var(--ink-quiet); cursor: pointer; transition: background-color 0.2s var(--ease-out); }
+  .sw:hover { background: var(--paper); }
+  .sw input { position: absolute; opacity: 0; pointer-events: none; }
+  .sw strong { display: block; color: var(--ink); font-size: var(--fs-small); font-weight: var(--fw-medium); }
+  .sw-ui { position: relative; width: 44px; height: 26px; margin-top: 1px; border-radius: var(--r-pill); background: var(--mist); transition: background-color 0.25s var(--ease-out); }
+  .sw-ui::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--white); box-shadow: var(--shadow-xs); transition: transform 0.3s var(--ease-out); }
+  .sw input:checked + .sw-ui { background: var(--ink); }
+  .sw input:checked + .sw-ui::after { transform: translateX(18px); }
+  .sw input:focus-visible + .sw-ui { outline: var(--focus-ring); outline-offset: 2px; }
+  .sw.compact { align-items: center; padding: 12px 6px; min-height: 50px; }
+
+  .pk-preview { display: grid; gap: 12px; padding-top: 20px; border-top: 1px solid var(--pt-hair); }
+  .pv { padding: 22px 22px 20px; border-radius: var(--r-lg); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out); }
+  .pv p { margin: 0; }
+  .pv-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--fs-small); color: var(--ink); }
+  .pv-top b { font-weight: var(--fw-medium); }
+  .pv-badge { display: none; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(244, 244, 242, 0.14); font-size: 12px; font-weight: var(--fw-medium); }
+  .pv-price { margin-top: 10px !important; color: var(--ink-quiet); font-size: 14.5px; }
+  .pv-price b { font-family: var(--serif); font-weight: var(--fw-display); font-size: 32px; letter-spacing: var(--ls-display); color: var(--ink); margin-right: 6px; }
+  .pv-alt { margin-top: 4px !important; font-size: 13.5px; color: var(--ink-quiet); }
+  .pv ul { display: grid; gap: 8px; margin: 16px 0 0; padding: 16px 0 0; list-style: none; border-top: 1px solid var(--pt-hair); font-size: 14px; line-height: 1.5; color: var(--taupe); }
+  .pv li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; }
+  .pv li::before { content: ''; width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+  .pv.rec { background: var(--ink); box-shadow: none; }
+  .pv.rec .pv-top, .pv.rec .pv-price b { color: var(--cream); }
+  .pv.rec .pv-price, .pv.rec .pv-alt, .pv.rec ul { color: var(--on-dark-body); }
+  .pv.rec ul { border-color: var(--on-dark-rule); }
+  .pv.rec .pv-badge { display: inline-block; color: var(--cream); }
+
+  .pk-extras { max-width: none; }
+  .ex-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .ex { display: grid; gap: 12px; align-content: space-between; padding: 16px; border-radius: var(--r-md); background: var(--paper); cursor: text; }
+  .ex-name { font-size: 14px; line-height: 1.45; color: var(--ink-quiet); }
+  .ex-name strong { display: block; color: var(--ink); font-size: var(--fs-small); font-weight: var(--fw-medium); }
+  .ex-name small { font-size: 13px; }
+  .ex .unit input { background: var(--white); padding-right: 96px; }
+
+  @media (max-width: 1180px) { .pk-grid { grid-template-columns: 1fr; } .ex-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) {
+    .pk-row.two, .ex-grid { grid-template-columns: 1fr; }
+    .seg span { padding: 10px 4px; font-size: 13.5px; }
+  }
+</style>

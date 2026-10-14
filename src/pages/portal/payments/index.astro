@@ -18,7 +18,8 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import { loadLedger, ledgerFilters, totalsByCurrency, money } from '~/lib/portal/payments';
 import { PAYMENT_STATUS_LABEL as STATUS_LABEL, friendlyError } from '~/lib/portal/labels';
-import { LISTING_PACKAGES, ONSITE_SERVICES } from '~/config/company';
+import { ONSITE_SERVICES } from '~/config/company';
+import { listingCatalog } from '~/lib/listing-packages';
 import { getCompany } from '~/lib/runtime-config';
 import { valuationPackages, isPayable } from '~/lib/valuation/packages';
 import { formatCents } from '~/lib/orders';
@@ -56,7 +57,7 @@ const ONSITE_IDS = new Set<string>(ONSITE_SERVICES.map((service) => service.id))
 const soldKind = (line: { kind: string; id: string }): SoldKind =>
   line.kind === 'package' ? 'package' : line.kind === 'service' || ONSITE_IDS.has(line.id) ? 'service' : 'extra';
 const seed = (kind: SoldKind, id: string, label: string) => sold.set(`${kind}:${id}`, { key: id, label, kind, qty: 0, cents: 0 });
-for (const pkg of LISTING_PACKAGES) seed('package', pkg.id, pkg.names.hu);
+for (const pkg of listingCatalog((await getCompany()).services).packages) seed('package', pkg.id, pkg.names.hu);
 for (const service of ONSITE_SERVICES) seed('service', service.id, service.names.hu);
 // A paid valuation package gets its box the moment an admin gives it a price.
 for (const pkg of valuationPackages((await getCompany()).services).filter((entry) => entry.enabled && isPayable(entry))) {

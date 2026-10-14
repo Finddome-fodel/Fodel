@@ -25,7 +25,7 @@ import { ownerLink, RENEW_LINK_DAYS } from '~/lib/owner-links';
 import { logEvent } from '~/lib/activity';
 import { eur } from '~/lib/format';
 import { formatCents } from '~/lib/orders';
-import { RENEWAL_PRICE_CENTS } from '~/lib/portal/renewal';
+import { renewalPriceCents } from '~/lib/portal/renewal';
 
 export const prerender = false;
 
@@ -35,14 +35,13 @@ const MAX_EMAILS = 80;
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
-const RENEWAL_PRICE = formatCents(RENEWAL_PRICE_CENTS);
-
 export const GET: APIRoute = async ({ request }) => {
   if (!cronAuthorised(request.headers.get('authorization'), process.env.CRON_SECRET ?? import.meta.env.CRON_SECRET)) {
     return json(401, { ok: false });
   }
 
   const admin = createSupabaseAdminClient();
+  const RENEWAL_PRICE = formatCents(await renewalPriceCents());
   const now = new Date();
   const company = await getCompany();
   const rules = listingRules(company.services);

@@ -8,7 +8,7 @@
  * Two rules run through this file:
  *
  * 1. **A price is never taken from the client.** Everything resolves against
- *    the catalogue in src/config/company.ts by id. The browser sends "the
+ *    the admin-edited catalogue (src/lib/listing-packages.ts) by id. The browser sends "the
  *    12-month package and two translations", never "€179".
  *
  * 2. **A stored order is denormalised on purpose.** The label and unit price
@@ -18,8 +18,9 @@
  *    changed twice. Re-deriving a 2026 total from the 2029 price list would
  *    quietly rewrite history.
  */
-import { LISTING_PACKAGES, LISTING_EXTRAS, ONSITE_SERVICES } from '~/config/company';
+import { ONSITE_SERVICES } from '~/config/company';
 import type { RequestedExtras } from '~/lib/portal/requested-extras';
+import { listingCatalog, packageOf, isAboveThreshold as tierApplies, type ListingCatalog } from '~/lib/listing-packages';
 
 /**
  * Everything that can be a line after the package: the listing extras plus
@@ -27,8 +28,12 @@ import type { RequestedExtras } from '~/lib/portal/requested-extras';
  * is made, an on-site service is charged the existing way — on the listing's
  * order at approval — so it lives in the same catalogue.
  */
-const ORDER_EXTRAS: readonly { id: string; priceEur: number; unit?: string; minMonths?: number }[] = [
-  ...LISTING_EXTRAS,
+/**
+ * Prices come from the admin-edited catalogue (src/lib/listing-packages.ts);
+ * every function below takes it, defaulting to the published tariff.
+ */
+const orderExtras = (cat: ListingCatalog): readonly { id: string; priceEur: number; unit?: string; minMonths?: number }[] => [
+  ...cat.extras,
   ...ONSITE_SERVICES.map((service) => ({ id: service.id, priceEur: service.priceEur, unit: 'once' })),
 ];
 
@@ -60,7 +65,6 @@ export type OrderSelection = {
 // own marketing copy for these. These are the invoice wordings — shorter,
 // literal, and safe to sit on a payment record for years.
 
-const PACKAGE_LABEL = Object.fromEntries(LISTING_PACKAGES.map((pkg) => [pkg.id, pkg.names])) as Record<string, Record<OrderLocale, string>>;
 
 const EXTRA_LABEL: Record<string, Record<OrderLocale, string>> = {
   translation: { hu: 'Fordítás', nl: 'Vertaling' },
@@ -120,17 +124,18 @@ export function formatCents(cents: number): string {
  * screen's checkboxes; `minMonths` is surfaced so the form can enforce
  * FODEL's own three-month minimum on highlighting rather than reinventing it.
  */
-export function catalogue(locale: OrderLocale) {
+export function catalogue(locale: OrderLocale, cat: ListingCatalog = listingCatalog()) {
   return {
-    packages: LISTING_PACKAGES.map((pkg) => ({
+    packages: cat.packages.map((pkg) => ({
       id: pkg.id,
-      label: PACKAGE_LABEL[pkg.id]?.[locale] ?? pkg.id,
+      label: pkg.names[locale],
       priceEur: pkg.priceEur,
-      priceEurAbove: 'priceEurAbove' in pkg ? pkg.priceEurAbove : undefined,
-      thresholdHuf: 'thresholdHuf' in pkg ? pkg.thresholdHuf : undefined,
+      priceEurAbove: pkg.priceEurAbove ?? undefined,
+      thresholdHuf: pkg.thresholdHuf ?? undefined,
       months: pkg.months,
+      video: pkg.video,
     })),
-    extras: ORDER_EXTRAS.map((extra) => ({
+    extras: orderExtras(cat).map((extra) => ({
       id: extra.id,
       label: EXTRA_LABEL[extra.id]?.[locale] ?? extra.id,
       unit: EXTRA_UNIT[extra.id]?.[locale]?.one ?? '',
@@ -153,12 +158,12 @@ export class OrderError extends Error {
  * Throws rather than silently skipping an unknown id: an order that quietly
  * drops a line the admin ticked is worse than one that refuses to save.
  */
-export function buildOrderLines(selection: OrderSelection, locale: OrderLocale): OrderLine[] {
-  const pkg = LISTING_PACKAGES.find((p) => p.id === selection.packageId);
+export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, cat: ListingCatalog = listingCatalog()): OrderLine[] {
+  const pkg = cat.packages.find((p) => p.id === selection.packageId);
   if (!pkg) throw new OrderError('unknown-package');
 
   const packagePriceEur =
-    'priceEurAbove' in pkg && selection.aboveThreshold ? pkg.priceEurAbove! : pkg.priceEur;
+    pkg.priceEurAbove !== null && selection.aboveThreshold ? pkg.priceEurAbove : pkg.priceEur;
 
   const lines: OrderLine[] = [
     {
@@ -166,7 +171,7 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale):
       id: pkg.id,
       quantity: 1,
       unitCents: packagePriceEur * 100,
-      label: PACKAGE_LABEL[pkg.id]?.[locale] ?? pkg.id,
+      label: pkg.names[locale],
     },
   ];
 
@@ -175,7 +180,7 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale):
   }
 
   for (const chosen of selection.extras) {
-    const extra = ORDER_EXTRAS.find((e) => e.id === chosen.id);
+    const extra = orderExtras(cat).find((e) => e.id === chosen.id);
     if (!extra) throw new OrderError('unknown-extra');
 
     const quantity = Math.floor(chosen.quantity);
@@ -234,10 +239,9 @@ export function linesForEmail(lines: OrderLine[]): { label: string; amount: stri
  * so the admin never has to remember where the line sits — and so two admins
  * reviewing similar listings can't price them differently.
  */
-export function isAboveThreshold(priceHuf: number): boolean {
-  const tiered = LISTING_PACKAGES.find((p) => 'thresholdHuf' in p);
-  const threshold = tiered && 'thresholdHuf' in tiered ? tiered.thresholdHuf : null;
-  return threshold != null && priceHuf > threshold;
+export function isAboveThreshold(priceHuf: number, cat: ListingCatalog = listingCatalog(), packageId?: string): boolean {
+  const tiered = packageId ? packageOf(cat, packageId) : cat.packages.find((p) => p.thresholdHuf !== null);
+  return tiered ? tierApplies(tiered, priceHuf) : false;
 }
 
 /**
@@ -261,7 +265,7 @@ export type SuggestInput = {
   requested?: RequestedExtras;
 };
 
-export function suggestSelection(property: SuggestInput): OrderSelection {
+export function suggestSelection(property: SuggestInput, cat: ListingCatalog = listingCatalog()): OrderSelection {
   const requested = property.requested ?? {};
   // Languages written, or asked to be translated — whichever is more; a
   // language counts once even when both apply.
@@ -272,7 +276,8 @@ export function suggestSelection(property: SuggestInput): OrderSelection {
   const extras: { id: string; quantity: number }[] = [];
 
   if (languages.size > 0) extras.push({ id: 'translation', quantity: languages.size });
-  if (property.video_url || requested.video) extras.push({ id: 'video', quantity: 1 });
+  // A package with video included charges nothing for it; one without video offers none.
+  if ((property.video_url || requested.video) && packageOf(cat, property.package).video === 'extra') extras.push({ id: 'video', quantity: 1 });
   // FODEL's own minimum for highlighting is three months.
   if (property.homepage_featured || requested.homepageHighlight) extras.push({ id: 'homepage-highlight', quantity: 3 });
   if (property.featured || requested.categoryHighlight) extras.push({ id: 'category-highlight', quantity: 3 });
@@ -280,7 +285,7 @@ export function suggestSelection(property: SuggestInput): OrderSelection {
 
   return {
     packageId: property.package,
-    aboveThreshold: isAboveThreshold(property.price_huf),
+    aboveThreshold: isAboveThreshold(property.price_huf, cat, property.package),
     extras,
   };
 }

@@ -9,10 +9,13 @@
  */
 import { buildOrderLines, orderTotalCents, type OrderLine } from '~/lib/orders';
 import { getStripe } from '~/lib/stripe';
-import { LISTING_EXTRAS } from '~/config/company';
+import { getCompany } from '~/lib/runtime-config';
+import { listingCatalog, extraPrice } from '~/lib/listing-packages';
 
-/** The 6-month renewal's price, from the published tariff (src/config/company.ts). */
-export const RENEWAL_PRICE_CENTS = (LISTING_EXTRAS.find((extra) => extra.id === 'renewal-6m')?.priceEur ?? 0) * 100;
+/** The 6-month renewal's price, as the admin set it (Szolgáltatások → Hirdetési csomagok). */
+export async function renewalPriceCents(): Promise<number> {
+  return extraPrice(listingCatalog((await getCompany()).services), 'renewal-6m') * 100;
+}
 
 export type RenewalOrder = { id: string; amount_cents: number; line_items: OrderLine[]; stripe_session_id: string | null };
 
@@ -33,7 +36,8 @@ export async function openRenewalOrder(
 
   // The package line is required by buildOrderLines' shape but not charged:
   // only the renewal extra goes on the order.
-  const lines = buildOrderLines({ packageId: 'cheap-6m', extras: [{ id: 'renewal-6m', quantity: 1 }] }, locale).filter((line) => line.id === 'renewal-6m');
+  const catalog = listingCatalog((await getCompany()).services);
+  const lines = buildOrderLines({ packageId: catalog.packages[0].id, extras: [{ id: 'renewal-6m', quantity: 1 }] }, locale, catalog).filter((line) => line.id === 'renewal-6m');
   const base = {
     property_id: property.id,
     owner_id: property.owner_id,

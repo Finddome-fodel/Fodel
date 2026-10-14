@@ -14,6 +14,7 @@ import { FEATURES, COUNTIES } from '~/data/features';
 import { getSupabase } from '~/lib/supabase';
 import { WALL_MATERIALS } from '~/data/wall-materials';
 import type { ListingRules } from '~/lib/listing-rules';
+import type { StoredListingPackage } from '~/lib/listing-packages';
 
 export type TaxonomyGroup =
   | 'category'
@@ -66,6 +67,9 @@ export type Services = {
   packagePhone?: Partial<ListingRules['packagePhone']>;
   expiry?: Partial<ListingRules['expiry']>;
   ownerRefresh?: Partial<ListingRules['ownerRefresh']>;
+  /** Listing package content and prices, and the extras' prices — see src/lib/listing-packages.ts. */
+  listingPackages?: Partial<Record<'cheap-6m' | 'normal-12m', StoredListingPackage>>;
+  listingExtras?: Partial<Record<string, { priceEur?: number }>>;
 };
 
 export type StoredValuationPackage = {

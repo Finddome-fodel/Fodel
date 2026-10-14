@@ -79,7 +79,8 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     // Listing rules: listingRules() clamps every number to a sane range.
     ...(() => {
       const rules = listingRules({
-        packagePhone: { 'cheap-6m': form.get('phone_cheap-6m') === 'yes', 'normal-12m': form.get('phone_normal-12m') === 'yes' },
+        // Phone per package is edited on the Hirdetési csomagok page; keep it.
+        packagePhone: (existing?.services ?? {}).packagePhone,
         expiry: { firstReminderDays: Number(form.get('expiry_first')), lastReminderDays: Number(form.get('expiry_last')) },
         ownerRefresh: {
           enabled: form.get('refresh_enabled') === 'yes',

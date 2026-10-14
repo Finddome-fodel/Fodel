@@ -85,6 +85,11 @@ const LIVE_ROUTES = [
   ['nl/nieuws/wat-kost-een-huis-in-hongarije/index.html', '/nl/nieuws/wat-kost-een-huis-in-hongarije/'],
   ['hu/top-10/index.html', '/hu/top-10/'],
   ['nl/top-10/index.html', '/nl/top-10/'],
+  // Prices come from the admin's package settings (src/lib/listing-packages.ts).
+  ['hu/arlista/index.html', '/hu/arlista/'],
+  ['nl/tarieven/index.html', '/nl/tarieven/'],
+  ['hu/eladoknak/index.html', '/hu/eladoknak/'],
+  ['nl/adverteren/index.html', '/nl/adverteren/'],
 ];
 
 async function fetchLivePages() {

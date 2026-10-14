@@ -13,7 +13,8 @@ import Eyebrow from '~/components/Eyebrow.astro';
 import Button from '~/components/Button.astro';
 import PackageCard from '~/components/PackageCard.astro';
 import { path, type Locale } from '~/i18n/ui';
-import { COMMISSION, CONTRACT_PRICES, LISTING_PACKAGES, ONSITE_SERVICES } from '~/config/company';
+import { COMMISSION, CONTRACT_PRICES, ONSITE_SERVICES } from '~/config/company';
+import { listingCatalog, packageCard, priceFacts, extraPrice, type ExtraId } from '~/lib/listing-packages';
 import { alternatesFor } from '~/lib/page';
 import { listingServiceSchema } from '~/lib/seo';
 import { getCompany } from '~/lib/runtime-config';
@@ -24,13 +25,28 @@ interface Props {
 
 const { locale } = Astro.props;
 const hu = locale === 'hu';
-const refundPolicy = (await getCompany()).services.refundPolicy?.[locale]?.trim();
+const company = await getCompany();
+const refundPolicy = company.services.refundPolicy?.[locale]?.trim();
+// Package content and every price below come from the admin's settings
+// (Szolgáltatások → Hirdetési csomagok), so this page always matches checkout.
+const catalog = listingCatalog(company.services);
+const from = priceFacts(catalog).from;
+const fmt = (n: number) => (hu ? `${n} €` : `€ ${n}`);
+const xp = (id: ExtraId) => fmt(extraPrice(catalog, id));
+const pkgSummary = catalog.packages
+  .map((p) => {
+    const price = p.priceEurAbove !== null ? `${fmt(p.priceEur)} ${hu ? 'vagy' : 'of'} ${fmt(p.priceEurAbove)}` : fmt(p.priceEur);
+    return hu ? `${p.months} hónapos ${price}` : `${p.months} maanden ${price}`;
+  })
+  .join(', ');
+const hl = [extraPrice(catalog, 'category-highlight'), extraPrice(catalog, 'homepage-highlight')].sort((a, b) => a - b);
+const hlRange = hl[0] === hl[1] ? `${hl[0]}` : `${hl[0]}–${hl[1]}`;
 
 const t = hu
   ? {
-      metaTitle: 'Árlista — Hirdetési díjak 69 €-tól',
+      metaTitle: `Árlista — Hirdetési díjak ${from} €-tól`,
       metaDescription:
-        'FODEL hirdetési árlista: 6 hónapos hirdetés 69 €, 12 hónapos 129 € vagy 179 €. Fordítás 25 €/nyelv, kiemelés 15–25 €/hó. Minden ár tartalmazza a 21% holland áfát.',
+        `FODEL hirdetési árlista: ${pkgSummary}. Fordítás ${extraPrice(catalog, 'translation')} €/nyelv, kiemelés ${hlRange} €/hó. Minden ár tartalmazza a 21% holland áfát.`,
       eyebrow: 'Árlista',
       title: 'Átlátható díjak,',
       titleEm: 'rejtett költségek nélkül',
@@ -43,40 +59,13 @@ const t = hu
       per: { language: '/ nyelv', month: '/ hó', once: 'egyszeri' },
       cta: 'Hirdetés feladása',
       ctaNote: 'A jóváhagyáskor közzétesszük a hirdetést, és e-mailben küldjük a díjbekérőt.',
-      packages: [
-        {
-          price: '69 €',
-          duration: '6 hónap',
-          features: [
-            'Legfeljebb 20 kép',
-            'A képek az eredeti állapotban jelennek meg',
-            'A szöveg a beküldött formában jelenik meg',
-            'Igény szerint idegen nyelvű fordítás (25 €/nyelv)',
-            'Kiemelés és videó külön kérhető',
-          ],
-        },
-        {
-          price: '129 €',
-          priceAlt: '179 €',
-          priceAltNote: '150 millió Ft feletti ingatlan esetén',
-          duration: '12 hónap',
-          featured: true,
-          features: [
-            'Korlátlan számú kép',
-            'A képeket szakszerűen feldolgozzuk',
-            'A szöveget szakszerűen megszerkesztjük',
-            'Igény szerint idegen nyelvű fordítás (25 €/nyelv)',
-            'Kiemelés és videó külön kérhető',
-          ],
-        },
-      ],
       extras: [
-        { name: 'Idegen nyelvű szöveg (holland, német, angol, francia)', price: '25 €', unit: '/ nyelv' },
-        { name: 'Kategórián belüli kiemelés (min. 3 hónap)', price: '15 €', unit: '/ hó' },
-        { name: 'Főoldali kiemelés (min. 3 hónap)', price: '25 €', unit: '/ hó' },
-        { name: 'Videó megjelenítése (az Ön által készített videó elhelyezése)', price: '36 €', unit: 'egyszeri' },
-        { name: 'Utólagos képfeltöltés', price: '30 €', unit: 'egyszeri' },
-        { name: 'Standard hirdetés megújítása 6 hónapra', price: '25 €', unit: 'egyszeri' },
+        { name: 'Idegen nyelvű szöveg (holland, német, angol, francia)', price: xp('translation'), unit: '/ nyelv' },
+        { name: 'Kategórián belüli kiemelés (min. 3 hónap)', price: xp('category-highlight'), unit: '/ hó' },
+        { name: 'Főoldali kiemelés (min. 3 hónap)', price: xp('homepage-highlight'), unit: '/ hó' },
+        { name: 'Videó megjelenítése (az Ön által készített videó elhelyezése)', price: xp('video'), unit: 'egyszeri' },
+        { name: 'Utólagos képfeltöltés', price: xp('retro-images'), unit: 'egyszeri' },
+        { name: 'Standard hirdetés megújítása 6 hónapra', price: xp('renewal-6m'), unit: 'egyszeri' },
       ],
       // Professional photography and drone now have fixed prices — see the
       // on-site rows in the extras table (brief 3 §F).
@@ -89,9 +78,9 @@ const t = hu
         'Jutalékot kizárólag akkor számítunk fel, ha a vevőt a FODEL hozta, írásos adásvételi szerződés jött létre és a foglaló megfizetésre került. Ha a vevő közvetlenül Önnél jelentkezik és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie.',
     }
   : {
-      metaTitle: 'Tarieven — Adverteren vanaf € 69',
+      metaTitle: `Tarieven — Adverteren vanaf € ${from}`,
       metaDescription:
-        'Tarieven van FODEL: advertentie van 6 maanden € 69, 12 maanden € 129 of € 179. Vertaling € 25 per taal, uitlichten € 15–25 per maand. Alle prijzen inclusief 21% btw.',
+        `Tarieven van FODEL: advertentie van ${pkgSummary}. Vertaling € ${extraPrice(catalog, 'translation')} per taal, uitlichten € ${hlRange} per maand. Alle prijzen inclusief 21% btw.`,
       eyebrow: 'Tarieven',
       title: 'Heldere tarieven,',
       titleEm: 'geen verborgen kosten',
@@ -104,40 +93,13 @@ const t = hu
       per: { language: '/ taal', month: '/ maand', once: 'eenmalig' },
       cta: 'Advertentie plaatsen',
       ctaNote: 'Bij goedkeuring publiceren wij direct en ontvangt u per e-mail het betaalverzoek.',
-      packages: [
-        {
-          price: '€ 69',
-          duration: '6 maanden',
-          features: [
-            'Maximaal 20 foto’s',
-            'Foto’s worden ongewijzigd geplaatst',
-            'Tekst wordt geplaatst zoals aangeleverd',
-            'Vertaling op verzoek (€ 25 per taal)',
-            'Uitlichten en video op verzoek',
-          ],
-        },
-        {
-          price: '€ 129',
-          priceAlt: '€ 179',
-          priceAltNote: 'bij een vraagprijs boven 150 miljoen HUF',
-          duration: '12 maanden',
-          featured: true,
-          features: [
-            'Onbeperkt aantal foto’s',
-            'Foto’s worden professioneel bewerkt',
-            'Tekst wordt professioneel geredigeerd',
-            'Vertaling op verzoek (€ 25 per taal)',
-            'Uitlichten en video op verzoek',
-          ],
-        },
-      ],
       extras: [
-        { name: 'Vertaling (Nederlands, Duits, Engels, Frans)', price: '€ 25', unit: '/ taal' },
-        { name: 'Uitlichten binnen de categorie (min. 3 maanden)', price: '€ 15', unit: '/ maand' },
-        { name: 'Uitlichten op de homepage (min. 3 maanden)', price: '€ 25', unit: '/ maand' },
-        { name: 'Video plaatsen (uw eigen video)', price: '€ 36', unit: 'eenmalig' },
-        { name: 'Foto’s achteraf toevoegen', price: '€ 30', unit: 'eenmalig' },
-        { name: 'Verlenging standaard advertentie, 6 maanden', price: '€ 25', unit: 'eenmalig' },
+        { name: 'Vertaling (Nederlands, Duits, Engels, Frans)', price: xp('translation'), unit: '/ taal' },
+        { name: 'Uitlichten binnen de categorie (min. 3 maanden)', price: xp('category-highlight'), unit: '/ maand' },
+        { name: 'Uitlichten op de homepage (min. 3 maanden)', price: xp('homepage-highlight'), unit: '/ maand' },
+        { name: 'Video plaatsen (uw eigen video)', price: xp('video'), unit: 'eenmalig' },
+        { name: 'Foto’s achteraf toevoegen', price: xp('retro-images'), unit: 'eenmalig' },
+        { name: 'Verlenging standaard advertentie, 6 maanden', price: xp('renewal-6m'), unit: 'eenmalig' },
       ],
       services: ['Aanvragen van het energieprestatiecertificaat'],
       onsiteUnit: 'eenmalig, ter plaatse',
@@ -154,18 +116,15 @@ const contractLabels: Record<string, { hu: string; nl: string }> = {
   'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars' },
   'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars' },
 };
-const packageCards = t.packages.map((pkg: any, index: number) => ({
-  ...pkg,
-  name: LISTING_PACKAGES[index].names[locale],
-}));
+const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
 
 const packageSchema = listingServiceSchema(locale, {
   name: t.packagesHead,
   description: t.metaDescription,
   url: path(locale, 'priceList'),
-  packages: LISTING_PACKAGES.map((cfg) => ({
-    name: cfg.names[locale],
-    priceEur: cfg.priceEur,
+  packages: catalog.packages.map((pkg) => ({
+    name: pkg.names[locale],
+    priceEur: pkg.priceEur,
   })),
 });
 ---

@@ -5,7 +5,7 @@
  * included); model.listPriceCents() turns them into the right figure for the
  * invoice at hand.
  */
-import { LISTING_PACKAGES } from '~/config/company';
+import { listingCatalog } from '~/lib/listing-packages';
 import { catalogue as orderCatalogue, type OrderLine } from '~/lib/orders';
 import { valuationPackages, isPayable } from '~/lib/valuation/packages';
 import type { Services } from '~/lib/runtime-config';
@@ -22,20 +22,22 @@ export type CatalogueItem = {
   grossCents: number;
 };
 
-export function invoiceCatalogue(services?: Pick<Services, 'valuationPackages'>): CatalogueItem[] {
-  const hu = orderCatalogue('hu');
-  const nl = orderCatalogue('nl');
+export function invoiceCatalogue(services?: Services): CatalogueItem[] {
+  const listing = listingCatalog(services);
+  const hu = orderCatalogue('hu', listing);
+  const nl = orderCatalogue('nl', listing);
   const items: CatalogueItem[] = [];
 
   hu.packages.forEach((pkg, i) => {
-    const months = LISTING_PACKAGES.find((p) => p.id === pkg.id)?.months ?? 0;
+    const months = pkg.months;
+    const above = pkg.thresholdHuf ? Math.round(pkg.thresholdHuf / 1_000_000) : 0;
     items.push({
       id: pkg.id, group: 'Hirdetési csomagok', hu: `${pkg.label} — ${months} hónap`, nl: `${nl.packages[i].label} — ${months} maanden`,
       unitHu: 'db', unitNl: 'stuk', grossCents: pkg.priceEur * 100,
     });
     if (pkg.priceEurAbove) {
       items.push({
-        id: `${pkg.id}:above`, group: 'Hirdetési csomagok', hu: `${pkg.label} — ${months} hónap (150 M Ft felett)`, nl: `${nl.packages[i].label} — ${months} maanden (boven HUF 150 mln)`,
+        id: `${pkg.id}:above`, group: 'Hirdetési csomagok', hu: `${pkg.label} — ${months} hónap (${above} M Ft felett)`, nl: `${nl.packages[i].label} — ${months} maanden (boven HUF ${above} mln)`,
         unitHu: 'db', unitNl: 'stuk', grossCents: pkg.priceEurAbove * 100,
       });
     }

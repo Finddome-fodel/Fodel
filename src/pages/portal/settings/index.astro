@@ -41,7 +41,8 @@ const billing = (billingRow as { billing?: Record<string, string> } | null)?.bil
       {[
         ['/portal/settings/company', 'Cégadatok', 'Elérhetőségek, WhatsApp, nyilvános adatok', 'building'],
         ['/portal/settings/invoicing', 'Számlázás', 'Könyvelő, fizetési határidő, sorszámozás', 'invoice'],
-        ['/portal/settings/services', 'Szolgáltatások', 'Árak, automatizmusok, visszatérítési szöveg', 'gear'],
+        ['/portal/settings/packages', 'Hirdetési csomagok', 'Árak, időtartam, képszám, videó, telefonszám', 'card'],
+        ['/portal/settings/services', 'Szolgáltatások', 'Értékbecslés, lejárat, automatizmusok', 'gear'],
         ['/portal/settings/templates', 'Meghívólevelek', 'A tulajdonosoknak küldött levelek szövege', 'mail'],
         ['/portal/taxonomy', 'Szótár', 'Ingatlantípusok, jellemzők, blogkategóriák fordításai', 'pen'],
       ].map(([href, title, text, ic]) => (

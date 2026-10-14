@@ -14,8 +14,8 @@
  */
 import { SITE_URL } from '~/config/site.mjs';
 import { ROUTES } from '~/i18n/ui';
-import { getTaxonomy } from '~/lib/runtime-config';
-import { LISTING_PACKAGES } from '~/config/company';
+import { getTaxonomy, getCompany } from '~/lib/runtime-config';
+import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { logEvent } from '~/lib/activity';
 import { addMonths, renewedExpiry } from '~/lib/listing-rules';
@@ -31,9 +31,9 @@ export async function publicUrl(
   return `${SITE_URL}/${locale}/${ROUTES[locale].detail(slug, property.ref)}/`;
 }
 
-/** How long a package buys, from the published tariff rather than a magic number. */
-export function monthsForPackage(packageId: string): number {
-  return LISTING_PACKAGES.find((p) => p.id === packageId)?.months ?? 6;
+/** How long a package buys, as the admin set it (Szolgáltatások → Hirdetési csomagok). */
+export async function monthsForPackage(packageId: string): Promise<number> {
+  return packageOf(listingCatalog((await getCompany()).services), packageId).months;
 }
 
 export type PublishResult =
@@ -69,7 +69,7 @@ export async function publishProperty(
   if (property.status === 'published') return { ok: true, alreadyPublished: true };
 
   const now = new Date();
-  const expires = addMonths(now, monthsForPackage(property.package));
+  const expires = addMonths(now, await monthsForPackage(property.package));
 
   const { error: updateError } = await client
     .from('properties')

@@ -26,7 +26,7 @@ import { lifecycleEmails } from '~/lib/email/lifecycle';
 import { eur, huf } from '~/lib/format';
 import { formatCents } from '~/lib/orders';
 import { isStripeEnabled } from '~/lib/stripe';
-import { openRenewalOrder, renewalCheckoutUrl, RENEWAL_PRICE_CENTS } from '~/lib/portal/renewal';
+import { openRenewalOrder, renewalCheckoutUrl, renewalPriceCents } from '~/lib/portal/renewal';
 import { getCompany } from '~/lib/runtime-config';
 import { SITE_URL } from '~/config/site.mjs';
 import { ownerLink, RENEW_LINK_DAYS } from '~/lib/owner-links';
@@ -252,7 +252,7 @@ if (valid) {
 const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur)}` : `${eur(property.price_eur)} · ${huf(property.price_huf, 'nl')}`) : '';
 const expiry = property?.expires_at ? new Date(property.expires_at) : null;
 const expiryText = expiry ? expiry.toLocaleDateString(hu ? 'hu-HU' : 'nl-NL', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
-const renewalPrice = formatCents(RENEWAL_PRICE_CENTS);
+const renewalPrice = formatCents(await renewalPriceCents());
 const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ? T.priceTitle : view.kind === 'sold' ? T.soldTitle : T.renewTitle;
 ---
 

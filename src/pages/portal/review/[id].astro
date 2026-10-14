@@ -21,6 +21,8 @@ import { getProperty, STATUS_LABEL } from '~/lib/portal/properties';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { resolveImage } from '~/lib/property-images';
 import { catalogue, suggestSelection, isAboveThreshold, REFERRAL_DISCOUNT_PERCENT } from '~/lib/orders';
+import { getCompany } from '~/lib/runtime-config';
+import { listingCatalog, packageOf, isAboveThreshold as tierApplies } from '~/lib/listing-packages';
 import { eur, huf } from '~/lib/format';
 import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/requested-extras';
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
@@ -76,9 +78,10 @@ const requested = readRequestedExtras(property.requested_extras);
 if (openService?.service_id && !requested.service) requested.service = openService.service_id;
 const requestLines = describeRequestedExtras(requested);
 
-// The order the owner will be asked to pay. Prices come from
-// src/config/company.ts via the catalogue — never typed in here.
-const cat = catalogue('hu');
+// The order the owner will be asked to pay. Prices come from the admin's
+// package settings (src/lib/listing-packages.ts) — never typed in here.
+const listing = listingCatalog((await getCompany()).services);
+const cat = catalogue('hu', listing);
 const suggested = suggestSelection({
   requested,
   package: property.package,
@@ -87,9 +90,10 @@ const suggested = suggestSelection({
   homepage_featured: property.homepage_featured,
   featured: property.featured,
   locales: property.translations.map((t) => t.locale),
-});
+}, listing);
 const suggestedExtras = new Map(suggested.extras.map((e) => [e.id, e.quantity]));
-const aboveThreshold = isAboveThreshold(property.price_huf);
+const aboveThreshold = isAboveThreshold(property.price_huf, listing, suggested.packageId);
+const tieredPackage = listing.packages.find((pkg) => tierApplies(pkg, property.price_huf));
 
 const reviewable = property.status === 'submitted';
 const awaitingPayment = property.status === 'awaiting_payment';
@@ -174,7 +178,8 @@ const { data: creditableReferral } = property.owner_id
       <div><dt>Ár</dt><dd>{eur(property.price_eur)} / {huf(property.price_huf, 'hu')}</dd></div>
       <div><dt>Alapterület</dt><dd>{property.floor_m2 ?? '—'} m² / {property.plot_m2} m² telek</dd></div>
       <div><dt>Fotók</dt><dd>
-        {property.media.length} db
+        {property.media.length} db{packageOf(listing, property.package).maxImages !== null && ` / max. ${packageOf(listing, property.package).maxImages}`}
+        {packageOf(listing, property.package).maxImages !== null && property.media.length > packageOf(listing, property.package).maxImages! && <span class="flag"> · több, mint amit a csomag enged</span>}
         {hints.tooFew && <span class="flag"> · kevesebb, mint {MIN_PHOTOS}</span>}
         {hints.portrait > 0 && <span class="flag"> · {hints.portrait} álló</span>}
         {hints.lowResolution > 0 && <span class="flag"> · {hints.lowResolution} kis felbontású</span>}
@@ -258,7 +263,7 @@ const { data: creditableReferral } = property.owner_id
       <fieldset class="pkg">
         <legend>Csomag</legend>
         {cat.packages.map((pkg) => {
-          const price = pkg.id === 'normal-12m' && aboveThreshold ? pkg.priceEurAbove! : pkg.priceEur;
+          const price = tierApplies(packageOf(listing, pkg.id), property.price_huf) ? pkg.priceEurAbove! : pkg.priceEur;
           return (
             <label class="radio">
               <input
@@ -272,9 +277,9 @@ const { data: creditableReferral } = property.owner_id
             </label>
           );
         })}
-        {aboveThreshold && (
+        {tieredPackage && (
           <p class="threshold">
-            Az irányár meghaladja a 150 M Ft-ot, ezért a 12 hónapos csomag a magasabb sávba esik.
+            Az irányár meghaladja a {Math.round(tieredPackage.thresholdHuf! / 1_000_000)} M Ft-ot, ezért a(z) {tieredPackage.names.hu} a magasabb sávba esik.
           </p>
         )}
       </fieldset>

@@ -26,6 +26,7 @@ import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
 import { isAiEnabled } from '~/lib/ai/client';
 import { COMPANY } from '~/config/company';
+import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import BillingForm from '~/components/BillingForm.astro';
 import { billingComplete } from '~/lib/invoicing/model';
 import { COUNTRIES } from '~/config/countries';
@@ -170,6 +171,12 @@ const showLifecycle = isAdmin && (property.status === 'published' || expiredList
 const left = property.expires_at ? daysLeft(property.expires_at) : null;
 const hd = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' }) : '—');
 const unresponsive = property.status === 'published' && isUnresponsive(property, listingRules(company.services));
+
+// The package's photo limit (admin-set in Szolgáltatások). Admins may exceed it.
+const listingPackage = packageOf(listingCatalog(company.services), property.package);
+const photoLimit = listingPackage.maxImages;
+const photoCount = property.media.length;
+const photosFull = photoLimit !== null && photoCount >= photoLimit;
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
@@ -538,11 +545,27 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
     {property.status === 'published' && (
       <button type="button" class="btn ghost" id="sold-btn">Megjelölés eladottként</button>
     )}
+    {isAdmin && ['archived', 'sold'].includes(property.status) && !expiredListing && (
+      <div class="wf-life">
+        <p class="wf-title">{property.status === 'sold' ? 'Eladottként jelölve' : 'Inaktív hirdetés'}</p>
+        <p class="wf-note">A hirdetés most nem látható a nyilvános oldalon. Újraaktiváláskor azonnal visszakerül; ha az időszaka már lejárt, a csomagjának megfelelő új időszakot kap.</p>
+        <button type="button" class="btn" id="reactivate-btn">Újraaktiválás</button>
+      </div>
+    )}
+    {isAdmin && property.status === 'published' && (
+      <button type="button" class="btn ghost" id="archive-btn">Inaktiválás</button>
+    )}
     <p class="workflow-status" id="workflow-status" role="status"></p>
   </section>
 
   <section id="media" class="media-section ed-card">
-    <header class="card-head"><div><h2>Fényképek</h2><p>Az első kép a címlapkép — a többit húzás nélkül, a „Címlapképnek” gombbal cserélheti.</p></div></header>
+    <header class="card-head media-head">
+      <div><h2>Fényképek</h2><p>Az első kép a címlapkép — a többit húzás nélkül, a „Címlapképnek” gombbal cserélheti.</p></div>
+      <p class:list={['photo-meter', { full: photosFull }]} title={`${listingPackage.names.hu} csomag`}>
+        <b>{photoCount}{photoLimit !== null && <span> / {photoLimit}</span>}</b>
+        <span>{photoLimit === null ? 'kép · korlátlan' : 'kép a csomagban'}</span>
+      </p>
+    </header>
     <p class="hint">
       Húzza ide a képeket, vagy kattintson a tallózáshoz. Formátum: JPG, PNG vagy WebP ·
       legfeljebb {MAX_UPLOAD_MB} MB képenként (a nagy fájlokat a böngésző feltöltés előtt
@@ -599,7 +622,12 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
       ))}
     </div>
 
-    <label class="dropzone" id="dropzone">
+    {photosFull && (
+      <p class="soft-warn">
+        A(z) {listingPackage.names.hu} legfeljebb {photoLimit} képet tartalmaz. {isAdmin ? 'Adminként ennél többet is feltölthet.' : 'Újabb kép előtt töröljön egyet, vagy kérjen nagyobb csomagot munkatársunktól.'}
+      </p>
+    )}
+    <label class="dropzone" id="dropzone" hidden={photosFull && !isAdmin}>
       <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" multiple hidden />
       <span class="dz-ic" aria-hidden="true">+</span><span class="dz-t">Fotók hozzáadása</span><span class="dz-s">Húzza ide a képeket, vagy kattintson</span>
     </label>
@@ -756,7 +784,7 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
   }
 </script>
 
-<script define:vars={{ propertyId: property.id }}>
+<script define:vars={{ propertyId: property.id, photoLimit }}>
   // Locale tabs — plain show/hide, no framework.
   document.querySelectorAll('[data-locale-tab]').forEach((tab) => {
     tab.addEventListener('click', () => {
@@ -837,6 +865,7 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
     'unreadable-image': 'a fájl nem olvasható képként',
     'storage-failed': 'a tárolás nem sikerült, próbálja újra',
     'not-editable': 'a hirdetés jelenleg nem szerkeszthető',
+    'photo-limit': photoLimit ? `elérte a csomagban foglalt ${photoLimit} képet` : 'elérte a csomag képkeretét',
     forbidden: 'nincs jogosultsága',
   };
 
@@ -926,6 +955,12 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
       return;
     }
     location.reload();
+  });
+  document.getElementById('reactivate-btn')?.addEventListener('click', async () => {
+    if (await window.pf.confirm({ title: 'Újra aktiválja?', body: 'A hirdetés azonnal újra megjelenik a nyilvános oldalon. A lépés naplózásra kerül; díjat nem számol fel.', confirmLabel: 'Újraaktiválás' })) doAction('reactivate');
+  });
+  document.getElementById('archive-btn')?.addEventListener('click', async () => {
+    if (await window.pf.confirm({ title: 'Inaktiválja?', body: 'A hirdetés lekerül a nyilvános oldalról, de minden adata megmarad. Bármikor újraaktiválhatja.', confirmLabel: 'Inaktiválás' })) doAction('archive');
   });
   document.getElementById('sold-btn')?.addEventListener('click', async () => {
     if (await window.pf.confirm({ title: 'Megjelöli eladottként?', body: 'A hirdetés lekerül az élő listáról, és az eladott ingatlanok közé kerül.', confirmLabel: 'Megjelölés eladottként' })) doAction('mark_sold');
@@ -1052,6 +1087,13 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
   .ed-card { padding: clamp(22px, 3vw, 36px); border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); scroll-margin-top: 24px; transition: box-shadow 0.4s var(--ease-out); }
   .ed-card:focus-within { box-shadow: var(--shadow-md), 0 0 0 1px rgba(16, 42, 67, 0.14); }
   .card-head { margin-bottom: 26px; }
+  .media-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+  .photo-meter { display: grid; justify-items: end; gap: 2px; margin: 0; padding: 10px 18px; border-radius: var(--r-md); background: var(--paper); text-align: right; }
+  .photo-meter b { font-size: 24px; line-height: 1.1; font-weight: var(--fw-medium); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .photo-meter b span { color: var(--ink-quiet); font-weight: var(--fw-body); }
+  .photo-meter > span { font-size: 13px; color: var(--ink-quiet); }
+  .photo-meter.full { background: var(--linen); }
+  @media (max-width: 560px) { .photo-meter { justify-items: start; text-align: left; } }
   .ed-card h2 { font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; letter-spacing: var(--ls-heading); color: var(--ink); }
   .card-head p { margin-top: 6px; font-size: 14.5px; line-height: 1.6; color: var(--ink-quiet); max-width: 62ch; }
   .ed-card h3 { margin: 28px 0 12px; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-quiet); font-weight: var(--fw-medium); }
@@ -1112,6 +1154,7 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
   .wf-facts div { display: grid; grid-template-columns: minmax(150px, auto) 1fr; gap: 12px; align-items: center; font-size: 14.5px; }
   .wf-facts dt { color: var(--ink-quiet); }
   .wf-facts dd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ink); }
+  .wf-note { font-size: 14.5px; line-height: 1.6; color: var(--ink-quiet); margin: 0; }
   .wf-extend { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
   .wf-extend select { min-height: 46px; padding: 8px 40px 8px 16px; border-radius: var(--r-pill); font: inherit; font-size: 14.5px; }
   @media (max-width: 560px) { .wf-facts div { grid-template-columns: 1fr; gap: 2px; } }

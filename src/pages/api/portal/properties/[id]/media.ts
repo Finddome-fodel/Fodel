@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import { processAndUploadImage, MediaUploadError, LOW_RESOLUTION_EDGE } from '~/lib/media';
 import { OWNER_EDITABLE } from '~/lib/portal/properties';
 import { logEvent } from '~/lib/activity';
+import { getCompany } from '~/lib/runtime-config';
+import { listingCatalog, packageOf } from '~/lib/listing-packages';
 
 export const prerender = false;
 
@@ -13,7 +15,7 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
 
   const { data: property } = await supabase
     .from('properties')
-    .select('id, owner_id, status')
+    .select('id, owner_id, status, package')
     .eq('id', id)
     .maybeSingle();
   if (!property) return json(404, { ok: false, error: 'not-found' });
@@ -31,12 +33,19 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
   const file = form.get('file');
   if (!(file instanceof File)) return json(400, { ok: false, error: 'no-file' });
 
+  const { count } = await supabase
+    .from('property_media')
+    .select('id', { count: 'exact', head: true })
+    .eq('property_id', id);
+  // The package's photo limit (admin-set). An admin may go over it, e.g.
+  // after the owner bought the extra photo upload.
+  const maxImages = packageOf(listingCatalog((await getCompany()).services), property.package).maxImages;
+  if (!isAdmin && maxImages !== null && (count ?? 0) >= maxImages) {
+    return json(409, { ok: false, error: 'photo-limit', max: maxImages });
+  }
+
   try {
     const uploaded = await processAndUploadImage(supabase, id!, file);
-    const { count } = await supabase
-      .from('property_media')
-      .select('id', { count: 'exact', head: true })
-      .eq('property_id', id);
     const isFirst = (count ?? 0) === 0;
 
     const { data, error } = await supabase

@@ -9,7 +9,7 @@
  * `normal-12m`) — buildOrderLines() threw OrderError('unknown-package') on
  * the admin's review screen every time. Packages are now selected inline as
  * real PackageCard radio cards whose values come straight off
- * LISTING_PACKAGES, so a mismatch is no longer possible by construction; the
+ * the package catalogue, so a mismatch is no longer possible by construction; the
  * €179 tier is still decided server-side from the listing's own forint price
  * (isAboveThreshold(), in src/lib/orders.ts) — never something the client
  * asserts.
@@ -28,7 +28,8 @@ import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
 import { UI, LOCALE_META, path, type Locale } from '~/i18n/ui';
 import { getTaxonomy, getCompany, termLabel } from '~/lib/runtime-config';
-import { LISTING_PACKAGES, LISTING_EXTRAS, TRANSLATION_LANGUAGES } from '~/config/company';
+import { TRANSLATION_LANGUAGES } from '~/config/company';
+import { listingCatalog, packageCard, priceFacts } from '~/lib/listing-packages';
 import { alternatesFor } from '~/lib/page';
 import { formatCents } from '~/lib/orders';
 import { listingServiceSchema } from '~/lib/seo';
@@ -42,12 +43,14 @@ const ui = UI[locale];
 const hu = locale === 'hu';
 const COMPANY = await getCompany();
 const refundPolicy = COMPANY.services.refundPolicy?.[locale]?.trim();
+const catalog = listingCatalog(COMPANY.services);
+const fromEur = priceFacts(catalog).from;
 
 const t = hu
   ? {
       metaTitle: 'Hirdetés feladása — Hirdesse ingatlanát Nyugat-Európában',
       metaDescription:
-        `Adja fel ingatlanhirdetését 69 €-tól. Jóváhagyás után azonnal megjelenik ${COMPANY.reach.languages} nyelven, ${COMPANY.reach.countries} országban — előrefizetés és kizárólagosság nélkül.`,
+        `Adja fel ingatlanhirdetését ${fromEur} €-tól. Jóváhagyás után azonnal megjelenik ${COMPANY.reach.languages} nyelven, ${COMPANY.reach.countries} országban — előrefizetés és kizárólagosság nélkül.`,
       eyebrow: 'Hirdetésfeladás',
       title: 'Hirdesse ingatlanát',
       titleEm: 'Nyugat-Európában',
@@ -63,29 +66,6 @@ const t = hu
       ],
       packagesHead: 'Válasszon csomagot',
       recommended: 'Ajánlott',
-      packages: [
-        {
-          price: '69 €',
-          duration: '6 hónap',
-          features: [
-            'Legfeljebb 20 kép',
-            'A képek az eredeti állapotban jelennek meg',
-            'A szöveg a beküldött formában jelenik meg',
-          ],
-        },
-        {
-          price: '129 €',
-          priceAlt: '179 €',
-          priceAltNote: '150 millió Ft feletti ingatlan esetén',
-          duration: '12 hónap',
-          featured: true,
-          features: [
-            'Korlátlan számú kép',
-            'A képeket szakszerűen feldolgozzuk',
-            'A szöveget szakszerűen megszerkesztjük',
-          ],
-        },
-      ],
       extrasHead: 'Kiegészítők',
       extraCategoryHighlight: 'Kiemelés a kategóriában',
       extraHomepageHighlight: 'Kiemelés a főoldalon',
@@ -113,7 +93,7 @@ const t = hu
   : {
       metaTitle: 'Advertentie plaatsen — Uw woning in West-Europa',
       metaDescription:
-        `Plaats uw advertentie vanaf € 69. Na goedkeuring verschijnt deze direct in ${COMPANY.reach.languages} talen en ${COMPANY.reach.countries} landen — zonder vooruitbetaling of exclusiviteit.`,
+        `Plaats uw advertentie vanaf € ${fromEur}. Na goedkeuring verschijnt deze direct in ${COMPANY.reach.languages} talen en ${COMPANY.reach.countries} landen — zonder vooruitbetaling of exclusiviteit.`,
       eyebrow: 'Adverteren',
       title: 'Plaats uw woning',
       titleEm: 'in West-Europa',
@@ -129,29 +109,6 @@ const t = hu
       ],
       packagesHead: 'Kies een pakket',
       recommended: 'Aanbevolen',
-      packages: [
-        {
-          price: '€ 69',
-          duration: '6 maanden',
-          features: [
-            'Maximaal 20 foto’s',
-            'Foto’s worden ongewijzigd geplaatst',
-            'Tekst wordt geplaatst zoals aangeleverd',
-          ],
-        },
-        {
-          price: '€ 129',
-          priceAlt: '€ 179',
-          priceAltNote: 'bij een vraagprijs boven 150 miljoen HUF',
-          duration: '12 maanden',
-          featured: true,
-          features: [
-            'Onbeperkt aantal foto’s',
-            'Foto’s worden professioneel bewerkt',
-            'Tekst wordt professioneel geredigeerd',
-          ],
-        },
-      ],
       extrasHead: 'Aanvullende opties',
       extraCategoryHighlight: 'Uitlichten in de categorie',
       extraHomepageHighlight: 'Uitlichten op de homepage',
@@ -195,19 +152,17 @@ const countyOptions = taxonomy.county.filter((term) => term.enabled).map((term) 
 /**
  * Package cards, ids straight off the catalogue — this zip is what makes the
  * old id bug impossible: the value posted by the radio input can only ever
- * be a real LISTING_PACKAGES id, never a hand-typed string.
+ * be a real package id (src/lib/listing-packages.ts), never a hand-typed string.
  */
-const packageCards = LISTING_PACKAGES.map((cfg, i) => ({
-  id: cfg.id,
-  priceCents: cfg.priceEur * 100,
-  ...t.packages[i],
-  name: cfg.names[locale],
-}));
+const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale));
 
-const categoryHighlight = LISTING_EXTRAS.find((e) => e.id === 'category-highlight')!;
-const homepageHighlight = LISTING_EXTRAS.find((e) => e.id === 'homepage-highlight')!;
-const videoExtra = LISTING_EXTRAS.find((e) => e.id === 'video')!;
-const translationExtra = LISTING_EXTRAS.find((e) => e.id === 'translation')!;
+const extra = (id: string) => catalog.extras.find((e) => e.id === id)!;
+const categoryHighlight = extra('category-highlight');
+const homepageHighlight = extra('homepage-highlight');
+const videoExtra = extra('video');
+const translationExtra = extra('translation');
+// The video chip is offered only when some package sells video as an extra.
+const videoSold = catalog.packages.some((pkg) => pkg.video === 'extra');
 
 const defaultPackage = packageCards.find((p) => p.featured) ?? packageCards[0];
 
@@ -329,12 +284,14 @@ const packageSchema = listingServiceSchema(locale, {
               {formatCents(homepageHighlight.priceEur * 100)} {t.perMonth} · {t.minMonths(homepageHighlight.minMonths!)}
             </span>
           </label>
-          <label class="chip">
-            <input type="checkbox" data-extra="video" data-price-cents={videoExtra.priceEur * 100} data-months="1" />
-                <span class="box" aria-hidden="true"></span>
-            <span class="chip-name">{t.extraVideo}</span>
-            <span class="chip-price">{formatCents(videoExtra.priceEur * 100)} {t.once}</span>
-          </label>
+          {videoSold && (
+            <label class="chip">
+              <input type="checkbox" data-extra="video" data-price-cents={videoExtra.priceEur * 100} data-months="1" />
+              <span class="box" aria-hidden="true"></span>
+              <span class="chip-name">{t.extraVideo}</span>
+              <span class="chip-price">{formatCents(videoExtra.priceEur * 100)} {t.once}</span>
+            </label>
+          )}
         </div>
       </section>
 
