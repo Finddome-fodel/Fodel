@@ -46,7 +46,8 @@ import {
 import { SITE_URL } from '~/config/site.mjs';
 import { eur } from '~/lib/format';
 import { paymentGatesPublishing } from '~/config/flags';
-import { LISTING_PACKAGES } from '~/config/company';
+import { listingCatalog, packageOf, isAboveThreshold } from '~/lib/listing-packages';
+import { addMonths } from '~/lib/listing-rules';
 
 export const prerender = false;
 
@@ -141,7 +142,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // all, whatever PAYMENT_GATES_PUBLISHING says — there is nothing to pay.
     if (property.free_listing) {
       const requested = String(body.order?.packageId ?? property.package);
-      const packageId = LISTING_PACKAGES.some((pkg) => pkg.id === requested) ? requested : property.package;
+      const packageId = listingCatalog().packages.some((pkg) => pkg.id === requested) ? requested : property.package;
       const { error } = await supabase
         .from('properties')
         .update({ package: packageId, approved_at: new Date().toISOString(), approved_by: user!.id })
@@ -167,7 +168,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     // The admin's confirmed order, or — if the review screen sent nothing —
     // what the listing itself implies. Either way the prices come from the
-    // catalogue, never from the request body.
+    // admin's package settings, never from the request body.
+    const listing = listingCatalog((await getCompany()).services);
     const selection: OrderSelection = body.order
       ? {
           packageId: String(body.order.packageId ?? property.package),
@@ -190,11 +192,13 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           // thrown the first time an admin approved without the review
           // screen's order panel.
           locales: (property.property_translations ?? []).map((t: { locale: string }) => t.locale),
-        });
+        }, listing);
+    // The higher tier is decided from the listing's own price, never the browser.
+    selection.aboveThreshold = isAboveThreshold(packageOf(listing, selection.packageId), property.price_huf);
 
     let lines;
     try {
-      lines = buildOrderLines(selection, locale);
+      lines = buildOrderLines(selection, locale, listing);
     } catch (e) {
       if (e instanceof OrderError) return json(422, { ok: false, error: e.code });
       throw e;
@@ -587,6 +591,39 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       months, source: 'admin', actorId: user!.id, actorEmail: profile?.email ?? null, notifyOwner: body.notify === true,
     });
     return result.ok ? json(200, { ok: true, expiresAt: result.expiresAt }) : json(409, { ok: false, error: result.error });
+  }
+
+  /* ── reactivate (admin): back online after an archive or a sale ─────── */
+  // The opposite of archive. A listing whose period is still running keeps
+  // its expiry date; one without a future date gets a fresh period of its
+  // package's length, so the daily job does not take it straight down again.
+  if (action === 'reactivate') {
+    if (!isAdmin) return json(403, { ok: false });
+    if (!['archived', 'sold'].includes(property.status)) return json(409, { ok: false, error: 'not-inactive' });
+    const { data: row } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
+    const now = new Date();
+    const running = row?.expires_at && new Date(row.expires_at) > now;
+    const months = packageOf(listingCatalog((await getCompany()).services), property.package).months;
+    const base = {
+      status: 'published',
+      ...(running ? {} : { expires_at: addMonths(now, months).toISOString() }),
+      ...(row?.published_at ? {} : { published_at: now.toISOString() }),
+    };
+    // 0019 columns: clear the expiry/sale markers and re-arm the reminders.
+    const lifecycle = { expired_at: null, sold_at: null, expiry_first_reminder_sent_at: null, expiry_last_reminder_sent_at: null, expiry_notice_sent_at: null };
+    const { error } = await supabase.from('properties').update({ ...base, ...(row && 'expired_at' in row ? lifecycle : {}) }).eq('id', id);
+    if (error) return json(500, { ok: false, error: error.message });
+    await logEvent({
+      kind: 'listing.reactivate',
+      actorId: user!.id,
+      actorEmail: profile?.email ?? null,
+      subjectType: 'property',
+      subjectId: id,
+      propertyId: id,
+      source: 'portal',
+      payload: { from: property.status, expiresAt: running ? row!.expires_at : base.expires_at },
+    }).catch(() => {});
+    return json(200, { ok: true });
   }
 
   if (action === 'archive') {

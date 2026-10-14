@@ -191,7 +191,19 @@ const chips: [string, string][] = isAdmin
                             Eladottnak jelölöm
                           </button>
                         )}
-                        {isAdmin && ['published', 'sold'].includes(p.status) && (
+                        {isAdmin && ['archived', 'sold'].includes(p.status) && (
+                          <button type="button" role="menuitem" data-act="reactivate" data-id={p.id} data-name={name}>
+                            <Fragment set:html={icon('up', 17)} />
+                            Újraaktiválás
+                          </button>
+                        )}
+                        {isAdmin && ['archived', 'sold'].includes(p.status) && (
+                      <button type="button" role="menuitem" data-act="reactivate" data-id={p.id} data-name={name}>
+                        <Fragment set:html={icon('up', 17)} />
+                        Újraaktiválás
+                      </button>
+                    )}
+                    {isAdmin && ['published', 'sold'].includes(p.status) && (
                           <button type="button" role="menuitem" data-act="archive" data-id={p.id} data-name={name}>
                             <Fragment set:html={icon('archive', 17)} />
                             Archiválás
@@ -259,6 +271,12 @@ const chips: [string, string][] = isAdmin
                       <button type="button" role="menuitem" data-act="mark_sold" data-id={p.id} data-name={name}>
                         <Fragment set:html={icon('check', 17)} />
                         Eladottnak jelölöm
+                      </button>
+                    )}
+                    {isAdmin && ['archived', 'sold'].includes(p.status) && (
+                      <button type="button" role="menuitem" data-act="reactivate" data-id={p.id} data-name={name}>
+                        <Fragment set:html={icon('up', 17)} />
+                        Újraaktiválás
                       </button>
                     )}
                     {isAdmin && ['published', 'sold'].includes(p.status) && (
@@ -383,7 +401,9 @@ const chips: [string, string][] = isAdmin
     const copy =
       act === 'mark_sold'
         ? { title: 'Eladottnak jelöli?', body: `A(z) „${name}” lekerül az élő listáról, és az eladott ingatlanok közé kerül.`, confirmLabel: 'Eladottnak jelölöm' }
-        : { title: 'Archiválja?', body: `A(z) „${name}” eltűnik a nyilvános oldalról, de az adatai megmaradnak.`, confirmLabel: 'Archiválom' };
+        : act === 'reactivate'
+          ? { title: 'Újra aktiválja?', body: `A(z) „${name}” azonnal újra megjelenik a nyilvános oldalon. Ha a hirdetési időszaka már lejárt, a csomagjának megfelelő új időszakot kap. Díjat nem számol fel.`, confirmLabel: 'Újraaktiválás' }
+          : { title: 'Archiválja?', body: `A(z) „${name}” eltűnik a nyilvános oldalról, de az adatai megmaradnak.`, confirmLabel: 'Archiválom' };
     if (!(await pf().confirm(copy))) return;
     statusLine.textContent = 'Mentés…';
     if (await post(id, act)) location.reload();
