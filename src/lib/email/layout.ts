@@ -114,6 +114,11 @@ export function linkFallback(label: string, url: string): string {
   return `<p style="margin:0 0 14px;font-family:${SANS};font-size:13px;line-height:1.7;color:${TAUPE};">${esc(label)}<br><span style="word-break:break-all;">${esc(url)}</span></p>`;
 }
 
+/** A secondary action under the main button: an underlined link, not a second filled button. */
+export function textLink(label: string, href: string): string {
+  return `<p style="margin:0 0 12px;font-family:${SANS};font-size:15px;line-height:1.6;"><a href="${esc(href)}" style="color:${INK};text-decoration:underline;text-underline-offset:3px;">${esc(label)} &rarr;</a></p>`;
+}
+
 export function small(text: string): string {
   return `<p style="margin:0 0 14px;font-family:${SANS};font-size:13px;line-height:1.7;color:${TAUPE};">${paragraphs(text)}</p>`;
 }
@@ -221,6 +226,8 @@ export function shell(opts: {
   locale: ShellLocale;
   preheader: string;
   body: string;
+  /** Replaces the "why you get this" line (HTML allowed — the newsletter puts its unsubscribe link here). */
+  whyHtml?: string;
 }): string {
   const { locale, preheader, body } = opts;
   const footer = FOOTER_COPY[locale];
@@ -274,7 +281,7 @@ export function shell(opts: {
               <a href="mailto:${mail}" style="color:${TAUPE};text-decoration:underline;">${mail}</a> &nbsp;·&nbsp; ${esc(COMPANY.phones[0].display)}
             </p>
             <p style="margin:14px 0 0;font-family:${SANS};font-size:11px;line-height:1.6;color:${TAUPE};">
-              ${esc(footer.why)}
+              ${opts.whyHtml ?? esc(footer.why)}
             </p>
           </td>
         </tr>
@@ -296,7 +303,7 @@ export function shell(opts: {
  * than stripping tags from the HTML, because a good plain-text email is
  * written, not generated — the button becomes a labelled URL on its own line.
  */
-export function textShell(opts: { locale: ShellLocale; body: string }): string {
+export function textShell(opts: { locale: ShellLocale; body: string; why?: string }): string {
   const { locale, body } = opts;
   const mail = locale === 'hu' ? COMPANY.email.hu : COMPANY.email.primary;
   const sub = BRAND[locale].name.replace('FODEL', '').trim();
@@ -309,6 +316,6 @@ ${'—'.repeat(24)}
 ${BRAND[locale].name}
 ${COMPANY.address.oneLine}
 ${mail} · ${COMPANY.phones[0].display}
-${FOOTER_COPY[locale].why}
+${opts.why ?? FOOTER_COPY[locale].why}
 `;
 }

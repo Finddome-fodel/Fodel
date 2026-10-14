@@ -22,7 +22,7 @@
 import type { APIRoute } from 'astro';
 import { isStripeEnabled, getStripe } from '~/lib/stripe';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
-import { publishProperty, listingTitle } from '~/lib/portal/publish';
+import { publishProperty, listingTitle, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { officeInbox } from '~/lib/email/routing';
@@ -94,6 +94,27 @@ export const POST: APIRoute = async ({ request }) => {
         .from('payments')
         .update({ status: 'paid', paid_at: paidAt.toISOString() })
         .eq('id', order.id);
+    }
+
+    // A renewal (the 'renewal-6m' order from a reminder email) extends the
+    // listing and, if it had expired, puts it back online. It never publishes
+    // a listing that was not live before.
+    if (isRenewalOrder(order.line_items as OrderLine[]) && order.property_id) {
+      // A retry after a successful renewal must not add another six months:
+      // the renewal is logged under the order's own key, checked first.
+      const { data: done } = await admin.from('activity_events').select('id').eq('dedupe_key', `order-${order.id}:renewed`).maybeSingle();
+      if (done) return new Response(null, { status: 200 });
+      const renewed = await renewProperty(admin, order.property_id, { months: 6, source: 'stripe-webhook', dedupeKey: `order-${order.id}`, notifyOwner: !alreadySettled });
+      if (!renewed.ok && renewed.error !== 'not-renewable') {
+        console.error(`[stripe] renewal paid but not applied for ${order.property_id}`, renewed.error);
+        return new Response('renewal failed', { status: 500 });
+      }
+      if (!renewed.ok) await admin.from('payments').update({ refund_required: true }).eq('id', order.id).then(() => {}, () => {});
+      if (!alreadySettled) {
+        await sendReceipt(admin, order, paidAt);
+        await createDraftFromPayment(admin, order.id, {}).catch((e) => console.warn('[invoice] draft not created', e?.message));
+      }
+      return new Response(null, { status: 200 });
     }
 
     // Money never publishes on its own (brief §7). Only a listing an admin

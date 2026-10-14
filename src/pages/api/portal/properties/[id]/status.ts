@@ -30,7 +30,7 @@ import type { APIRoute } from 'astro';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
-import { publishProperty, listingTitle, publicUrl } from '~/lib/portal/publish';
+import { publishProperty, listingTitle, publicUrl, renewProperty } from '~/lib/portal/publish';
 import { deleteImage } from '~/lib/media';
 import { logEvent } from '~/lib/activity';
 import {
@@ -562,6 +562,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     if (property.status !== 'published') return json(409, { ok: false, error: 'not-published' });
     const { error } = await supabase.from('properties').update({ status: 'sold' }).eq('id', id);
     if (error) return json(500, { ok: false, error: error.message });
+    // When it was sold, for the archive (migration 0019; ignored before it).
+    await supabase.from('properties').update({ sold_at: new Date().toISOString() }).eq('id', id).then(() => {}, () => {});
     await logEvent({
       kind: 'listing.mark_sold',
       actorId: user!.id,
@@ -572,6 +574,19 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       source: 'portal',
     }).catch(() => {});
     return json(200, { ok: true });
+  }
+
+  /* ── extend (admin): a manual renewal, logged ─────────────────────────── */
+  // Same function as a paid renewal: counts from the current expiry while
+  // live, from today once expired, and republishes an expired listing.
+  if (action === 'extend') {
+    if (!isAdmin) return json(403, { ok: false });
+    const months = Number(body.months ?? 6);
+    if (![1, 3, 6, 12].includes(months)) return json(422, { ok: false, error: 'bad-months' });
+    const result = await renewProperty(createSupabaseAdminClient(), id!, {
+      months, source: 'admin', actorId: user!.id, actorEmail: profile?.email ?? null, notifyOwner: body.notify === true,
+    });
+    return result.ok ? json(200, { ok: true, expiresAt: result.expiresAt }) : json(409, { ok: false, error: result.error });
   }
 
   if (action === 'archive') {

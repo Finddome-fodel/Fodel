@@ -1,0 +1,532 @@
+---
+/**
+ * One-click owner actions from the lifecycle emails — no sign-in needed:
+ *
+ *   /listing/still-available  confirms the listing (applies on open)
+ *   /listing/price            a small form; the new price applies at once
+ *   /listing/sold             asks once, then moves it to the sold archive
+ *   /listing/renew            pay the 6-month renewal by card or transfer
+ *
+ * The link is the credential: ?p=<listing id>&t=<signed token>&l=<hu|nl>,
+ * bound to exactly this action and listing and expiring on its own (see
+ * src/lib/owner-links.ts). "Sold" and the price change ask for one button
+ * press, so an email scanner that opens links cannot mark a house sold.
+ * Writes use the service-role client; every change is in the activity log.
+ */
+export const prerender = false;
+
+import Base from '~/layouts/Base.astro';
+import ArrowChip from '~/components/ArrowChip.astro';
+import { verifyAction, type ActionPurpose } from '~/lib/valuation/action-token';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { listingTitle, publicUrl } from '~/lib/portal/publish';
+import { logEvent } from '~/lib/activity';
+import { deliver, adminRecipients } from '~/lib/email/send';
+import { lifecycleEmails } from '~/lib/email/lifecycle';
+import { eur, huf } from '~/lib/format';
+import { formatCents } from '~/lib/orders';
+import { isStripeEnabled } from '~/lib/stripe';
+import { openRenewalOrder, renewalCheckoutUrl, RENEWAL_PRICE_CENTS } from '~/lib/portal/renewal';
+import { getCompany } from '~/lib/runtime-config';
+import { SITE_URL } from '~/config/site.mjs';
+import { ownerLink, RENEW_LINK_DAYS } from '~/lib/owner-links';
+
+const ACTIONS = ['still-available', 'price', 'sold', 'renew'] as const;
+type Action = (typeof ACTIONS)[number];
+
+const action = Astro.params.action as Action;
+if (!ACTIONS.includes(action)) return new Response('Not found', { status: 404 });
+
+const url = Astro.url;
+const id = url.searchParams.get('p') ?? '';
+const token = url.searchParams.get('t') ?? '';
+const locale: 'hu' | 'nl' = url.searchParams.get('l') === 'nl' ? 'nl' : 'hu';
+const hu = locale === 'hu';
+Astro.response.headers.set('cache-control', 'no-store');
+Astro.response.headers.set('referrer-policy', 'no-referrer');
+
+const T = {
+  hu: {
+    invalidTitle: 'Ez a link már nem érvényes',
+    invalidBody: 'A link lejárt, vagy nem teljes. Írjon nekünk egy választ arra a levélre, amelyben kapta, és segítünk.',
+    goneTitle: 'Ez a hirdetés már nem aktív',
+    goneBody: 'A hirdetés közben eladottként, lejártként vagy levéve szerepel, ezért ezt a lépést nem lehet elvégezni.',
+    stillTitle: 'Köszönjük, rögzítettük!',
+    stillBody: 'A hirdetés továbbra is aktívként szerepel. Egy hónap múlva ismét rákérdezünk.',
+    priceTitle: 'Új irányár',
+    priceBody: 'Adja meg az új árat. A hirdetésben azonnal frissül, újbóli elbírálás nélkül.',
+    priceLabel: 'Új ár (Ft)',
+    current: 'Jelenlegi ár',
+    priceSave: 'Új ár mentése',
+    priceDone: 'Az új ár megjelent a hirdetésben',
+    priceBad: 'Kérjük, pozitív egész számot adjon meg.',
+    soldTitle: 'Eladta az ingatlant?',
+    soldBody: 'Megerősítés után a hirdetés lekerül a kínálatból, és az eladott ingatlanok közé kerül. Gratulálunk!',
+    soldConfirm: 'Igen, eladtam',
+    soldDone: 'Gratulálunk az eladáshoz!',
+    soldDoneBody: 'A hirdetés átkerült az eladott ingatlanok közé. Munkatársunk hamarosan jelentkezik, ha bármi teendő maradt.',
+    view: 'Hirdetés megtekintése',
+    renewTitle: 'Hirdetés meghosszabbítása',
+    renewBody: (price: string) => `6 hónap további megjelenés: ${price}. A hosszabbítás a lejárat napjától számít; ha a hirdetés már lejárt, a fizetés után azonnal újra online lesz.`,
+    expires: 'Lejárat',
+    expired: 'Lejárt',
+    payCard: 'Fizetés bankkártyával',
+    payBank: 'Fizetés átutalással',
+    bankTitle: 'Átutalás adatai',
+    bankBody: 'Az összeg jóváírása után munkatársunk rögzíti a hosszabbítást, és e-mailben értesítjük. Ugyanezeket az adatokat elküldtük e-mailben is.',
+    amount: 'Összeg',
+    account: 'Bankszámla',
+    reference: 'Közlemény',
+    paidTitle: 'Köszönjük a fizetést!',
+    paidBody: 'A hosszabbítás néhány percen belül rögzül, és e-mailben visszaigazoljuk.',
+    notRenewable: 'Ez a hirdetés nem hosszabbítható (eladva vagy levéve). Ha kérdése van, írjon nekünk.',
+    error: 'Valami hiba történt. Kérjük, próbálja újra, vagy írjon nekünk.',
+  },
+  nl: {
+    invalidTitle: 'Deze link is niet meer geldig',
+    invalidBody: 'De link is verlopen of onvolledig. Beantwoord de e-mail waarin u hem ontving, dan helpen wij u verder.',
+    goneTitle: 'Deze advertentie is niet meer actief',
+    goneBody: 'De advertentie staat inmiddels als verkocht, verlopen of offline, dus deze stap kan niet meer.',
+    stillTitle: 'Dank u, genoteerd!',
+    stillBody: 'De advertentie blijft actief. Over een maand vragen wij het opnieuw.',
+    priceTitle: 'Nieuwe vraagprijs',
+    priceBody: 'Vul de nieuwe prijs in. De advertentie wordt direct bijgewerkt, zonder nieuwe beoordeling.',
+    priceLabel: 'Nieuwe prijs (€)',
+    current: 'Huidige prijs',
+    priceSave: 'Nieuwe prijs opslaan',
+    priceDone: 'De nieuwe prijs staat in de advertentie',
+    priceBad: 'Vul een positief geheel getal in.',
+    soldTitle: 'Heeft u de woning verkocht?',
+    soldBody: 'Na bevestiging verdwijnt de advertentie uit het aanbod en komt ze bij de verkochte woningen. Gefeliciteerd!',
+    soldConfirm: 'Ja, verkocht',
+    soldDone: 'Gefeliciteerd met de verkoop!',
+    soldDoneBody: 'De advertentie staat nu bij de verkochte woningen. Een medewerker neemt contact op als er nog iets te regelen valt.',
+    view: 'Advertentie bekijken',
+    renewTitle: 'Advertentie verlengen',
+    renewBody: (price: string) => `6 maanden extra zichtbaarheid: ${price}. De verlenging gaat in op de vervaldatum; is de advertentie al verlopen, dan staat ze na betaling direct weer online.`,
+    expires: 'Vervaldatum',
+    expired: 'Verlopen',
+    payCard: 'Betalen per kaart',
+    payBank: 'Betalen per overboeking',
+    bankTitle: 'Gegevens voor de overboeking',
+    bankBody: 'Zodra het bedrag binnen is, verlengen wij de advertentie en krijgt u een e-mail. Dezelfde gegevens staan ook in uw mailbox.',
+    amount: 'Bedrag',
+    account: 'Rekening',
+    reference: 'Omschrijving',
+    paidTitle: 'Dank u voor uw betaling!',
+    paidBody: 'De verlenging wordt binnen enkele minuten verwerkt en per e-mail bevestigd.',
+    notRenewable: 'Deze advertentie kan niet worden verlengd (verkocht of offline). Vragen? Schrijf ons.',
+    error: 'Er ging iets mis. Probeer het opnieuw of schrijf ons.',
+  },
+}[locale];
+
+type View =
+  | { kind: 'message'; title: string; body: string; tone?: 'ok' | 'warn'; link?: { href: string; label: string } }
+  | { kind: 'price'; error?: string }
+  | { kind: 'sold' }
+  | { kind: 'renew'; bank?: { amount: string; account: string; reference: string } };
+
+let view: View = { kind: 'message', title: T.invalidTitle, body: T.invalidBody, tone: 'warn' };
+let property: any = null;
+let title = '';
+let listingUrl = '';
+
+const valid = /^[0-9a-f-]{36}$/.test(id) && (() => { try { return verifyAction(action as ActionPurpose, id, token); } catch { return false; } })();
+
+if (valid) {
+  const admin = createSupabaseAdminClient();
+  const { data } = await admin.from('properties').select('*').eq('id', id).maybeSingle();
+  property = data;
+  if (property) {
+    title = await listingTitle(admin, id, locale, property.ref);
+    listingUrl = await publicUrl(property, locale);
+  }
+  const live = property?.status === 'published';
+  const renewable = property && (live || (property.status === 'archived' && property.expired_at));
+  const post = Astro.request.method === 'POST' ? await Astro.request.formData() : null;
+  const now = new Date().toISOString();
+  const log = (kind: string, payload: Record<string, unknown> = {}) =>
+    logEvent({ kind, subjectType: 'property', subjectId: id, propertyId: id, source: 'owner-link', locale, payload }).catch(() => {});
+  const notifyOffice = async (email: ReturnType<typeof lifecycleEmails.adminOwnerUpdate>) => {
+    for (const to of await adminRecipients(admin)) await deliver(to, email);
+  };
+  const owner = property?.owner_id
+    ? (await admin.from('profiles').select('full_name, email').eq('id', property.owner_id).maybeSingle()).data
+    : null;
+  const ownerName = owner?.full_name || owner?.email || (hu ? 'A tulajdonos' : 'De eigenaar');
+
+  if (!property) {
+    view = { kind: 'message', title: T.invalidTitle, body: T.invalidBody, tone: 'warn' };
+  } else if (action === 'renew') {
+    if (url.searchParams.get('paid') === '1') {
+      view = { kind: 'message', title: T.paidTitle, body: T.paidBody, tone: 'ok' };
+    } else if (!renewable) {
+      view = { kind: 'message', title: T.goneTitle, body: T.notRenewable, tone: 'warn' };
+    } else if (post) {
+      try {
+        const order = await openRenewalOrder(admin, property, locale, owner?.email);
+        if (post.get('method') === 'card' && isStripeEnabled()) {
+          const back = ownerLink('renew', id, locale, RENEW_LINK_DAYS).replace(SITE_URL, url.origin);
+          return Astro.redirect(await renewalCheckoutUrl(admin, order, property, back), 303);
+        }
+        const company = await getCompany();
+        const bank = {
+          amount: formatCents(order.amount_cents),
+          account: `${company.banks.nl.iban} · BIC ${company.banks.nl.bic}`,
+          reference: `#${property.ref} ${hu ? 'hosszabbítás' : 'verlenging'}`,
+        };
+        if (post.get('method') === 'bank' && owner?.email) {
+          await deliver(owner.email, lifecycleEmails.renewalTransfer(locale, { ref: property.ref, title, ...bank, payUrl: ownerLink('renew', id, locale, RENEW_LINK_DAYS) }));
+          await log('listing.renewal_requested', { method: 'bank', orderId: order.id });
+        }
+        view = { kind: 'renew', bank };
+      } catch (error) {
+        console.error('[renew] could not open order', error);
+        view = { kind: 'message', title: T.error, body: '', tone: 'warn' };
+      }
+    } else {
+      view = { kind: 'renew' };
+    }
+  } else if (!live) {
+    view = { kind: 'message', title: T.goneTitle, body: T.goneBody, tone: 'warn' };
+  } else if (action === 'still-available') {
+    // Harmless on open: confirming twice changes nothing but the date.
+    const { error } = await admin.from('properties').update({ confirmed_at: now }).eq('id', id);
+    if (!error) await log('listing.confirmed_available');
+    view = error
+      ? { kind: 'message', title: T.error, body: '', tone: 'warn' }
+      : { kind: 'message', title: T.stillTitle, body: T.stillBody, tone: 'ok', link: { href: listingUrl, label: T.view } };
+  } else if (action === 'sold') {
+    if (post) {
+      const { error } = await admin.from('properties').update({ status: 'sold', sold_at: now, confirmed_at: now }).eq('id', id).eq('status', 'published');
+      if (error) {
+        view = { kind: 'message', title: T.error, body: '', tone: 'warn' };
+      } else {
+        await log('listing.sold_by_owner');
+        await notifyOffice(lifecycleEmails.adminOwnerUpdate({ kind: 'sold', ref: property.ref, title, owner: ownerName, editUrl: `${SITE_URL}/portal/properties/${id}` }));
+        view = { kind: 'message', title: T.soldDone, body: T.soldDoneBody, tone: 'ok' };
+      }
+    } else {
+      view = { kind: 'sold' };
+    }
+  } else if (action === 'price') {
+    if (post) {
+      const raw = String(post.get('price') ?? '').replace(/[\s.,]/g, '');
+      const amount = Number(raw);
+      if (!/^\d{1,12}$/.test(raw) || amount <= 0) {
+        view = { kind: 'price', error: T.priceBad };
+      } else {
+        // Hungarian owners type forints, Dutch owners euros; the other
+        // currency follows at the listing's own existing ratio — no new rate.
+        const ratio = property.price_huf / property.price_eur;
+        const next = hu
+          ? { price_huf: Math.round(amount), price_eur: Math.max(1, Math.round(amount / ratio)) }
+          : { price_eur: Math.round(amount), price_huf: Math.max(1, Math.round(amount * ratio)) };
+        const { error } = await admin
+          .from('properties')
+          .update({ ...next, price_asof: now.slice(0, 10), confirmed_at: now })
+          .eq('id', id).eq('status', 'published');
+        if (error) {
+          view = { kind: 'message', title: T.error, body: '', tone: 'warn' };
+        } else {
+          const history = await admin.from('property_price_history').insert({
+            property_id: id, old_eur: property.price_eur, new_eur: next.price_eur, old_huf: property.price_huf, new_huf: next.price_huf, source: 'owner-refresh',
+          });
+          if (history.error) console.warn('[price] history not stored (migration 0019?)', history.error.message);
+          await log('listing.price_changed_by_owner', { old_eur: property.price_eur, new_eur: next.price_eur, old_huf: property.price_huf, new_huf: next.price_huf });
+          await notifyOffice(lifecycleEmails.adminOwnerUpdate({
+            kind: 'price', ref: property.ref, title, owner: ownerName,
+            oldPrice: `${eur(property.price_eur)} / ${huf(property.price_huf, 'hu')}`,
+            newPrice: `${eur(next.price_eur)} / ${huf(next.price_huf, 'hu')}`,
+            editUrl: `${SITE_URL}/portal/properties/${id}`,
+          }));
+          view = { kind: 'message', title: T.priceDone, body: hu ? `${huf(next.price_huf, 'hu')} (${eur(next.price_eur)})` : `${eur(next.price_eur)} (${huf(next.price_huf, 'nl')})`, tone: 'ok', link: { href: listingUrl, label: T.view } };
+        }
+      }
+    } else {
+      view = { kind: 'price' };
+    }
+  }
+}
+
+const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur)}` : `${eur(property.price_eur)} · ${huf(property.price_huf, 'nl')}`) : '';
+const expiry = property?.expires_at ? new Date(property.expires_at) : null;
+const expiryText = expiry ? expiry.toLocaleDateString(hu ? 'hu-HU' : 'nl-NL', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+const renewalPrice = formatCents(RENEWAL_PRICE_CENTS);
+const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ? T.priceTitle : view.kind === 'sold' ? T.soldTitle : T.renewTitle;
+---
+
+<Base locale={locale} title={pageTitle} description={pageTitle} noindex>
+  <section class="owner-act">
+    <div class="act-card">
+      {title && (
+        <p class="act-listing">
+          <span class="ref num">#{property.ref}</span>
+          <span>{title}</span>
+        </p>
+      )}
+
+      {view.kind === 'message' && (
+        <>
+          <span class:list={['act-mark', view.tone]} aria-hidden="true">
+            {view.tone === 'ok'
+              ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              : <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 7v6M12 16.8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>}
+          </span>
+          <h1>{view.title}</h1>
+          {view.body && <p class="act-body">{view.body}</p>}
+          {view.link && (
+            <a class="act-btn" href={view.link.href}>{view.link.label}<ArrowChip /></a>
+          )}
+        </>
+      )}
+
+      {view.kind === 'price' && (
+        <form method="POST" class="act-form">
+          <h1>{T.priceTitle}</h1>
+          <p class="act-body">{T.priceBody}</p>
+          <p class="act-meta"><span>{T.current}</span><b class="num">{currentPrice}</b></p>
+          <label class="act-field">
+            <span>{T.priceLabel}</span>
+            <input type="text" name="price" inputmode="numeric" autocomplete="off" required pattern="[0-9 .,]{1,20}" aria-invalid={view.error ? 'true' : undefined} aria-describedby={view.error ? 'price-error' : undefined} />
+          </label>
+          {view.error && <p class="act-error" id="price-error" role="alert">{view.error}</p>}
+          <button class="act-btn" type="submit">{T.priceSave}<ArrowChip /></button>
+        </form>
+      )}
+
+      {view.kind === 'sold' && (
+        <form method="POST" class="act-form">
+          <h1>{T.soldTitle}</h1>
+          <p class="act-body">{T.soldBody}</p>
+          <button class="act-btn" type="submit">{T.soldConfirm}<ArrowChip /></button>
+        </form>
+      )}
+
+      {view.kind === 'renew' && (
+        <>
+          <h1>{T.renewTitle}</h1>
+          <p class="act-body">{T.renewBody(renewalPrice)}</p>
+          <p class="act-meta">
+            <span>{property.status === 'published' ? T.expires : T.expired}</span>
+            <b class="num">{expiryText}</b>
+          </p>
+          {view.bank ? (
+            <div class="act-bank" role="status">
+              <h2>{T.bankTitle}</h2>
+              <dl>
+                <div><dt>{T.amount}</dt><dd class="num">{view.bank.amount}</dd></div>
+                <div><dt>{T.account}</dt><dd class="num">{view.bank.account}</dd></div>
+                <div><dt>{T.reference}</dt><dd>{view.bank.reference}</dd></div>
+              </dl>
+              <p>{T.bankBody}</p>
+            </div>
+          ) : (
+            <form method="POST" class="act-choices">
+              {isStripeEnabled() && <button class="act-btn" type="submit" name="method" value="card">{T.payCard}<ArrowChip /></button>}
+              <button class:list={['act-btn', isStripeEnabled() && 'ghost']} type="submit" name="method" value="bank">{T.payBank}{!isStripeEnabled() && <ArrowChip />}</button>
+            </form>
+          )}
+        </>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .owner-act {
+    display: grid;
+    place-items: center;
+    min-height: 70vh;
+    padding: calc(var(--nav-h, 88px) + 40px) var(--pad-x) 96px;
+  }
+  .act-card {
+    width: 100%;
+    max-width: 560px;
+    padding: clamp(28px, 5vw, 48px);
+    border-radius: var(--r-2xl);
+    background: var(--white);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(16, 42, 67, 0.06);
+  }
+  .act-listing {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    margin-bottom: 22px;
+    font-size: var(--fs-small);
+    color: var(--taupe);
+    min-width: 0;
+  }
+  .act-listing span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ref {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border-radius: var(--r-pill);
+    background: var(--linen);
+    color: var(--ink);
+    font-size: 13px;
+  }
+  .act-mark {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    border-radius: 50%;
+    background: var(--linen);
+    color: var(--ink);
+  }
+  .act-mark.ok {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: var(--fw-display);
+    font-size: clamp(28px, 4vw, 38px);
+    letter-spacing: var(--ls-heading);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  h2 {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: var(--fw-semibold);
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .act-body {
+    margin-top: 14px;
+    font-size: var(--fs-body-lg);
+    line-height: 1.65;
+    color: var(--taupe);
+  }
+  .act-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+    padding: 14px 18px;
+    border-radius: var(--r-lg);
+    background: var(--cream);
+    font-size: var(--fs-small);
+    color: var(--taupe);
+  }
+  .act-meta b {
+    color: var(--ink);
+    font-weight: var(--fw-semibold);
+  }
+  .act-form,
+  .act-choices {
+    display: grid;
+    gap: 14px;
+  }
+  .act-choices {
+    margin-top: 26px;
+  }
+  .act-field {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: var(--fs-small);
+    font-weight: var(--fw-medium);
+    color: var(--ink);
+  }
+  .act-field input {
+    min-height: 56px;
+    padding: 12px 18px;
+    border-radius: var(--r-md);
+    border: 1px solid var(--border);
+    background: var(--white);
+    font: inherit;
+    font-size: 20px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .act-field input:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .act-error {
+    color: #b42318;
+    font-size: var(--fs-small);
+  }
+  .act-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    min-height: 58px;
+    margin-top: 12px;
+    padding: 8px 8px 8px 26px;
+    border: 0;
+    border-radius: var(--r-pill);
+    background: var(--ink);
+    color: var(--cream);
+    font: inherit;
+    font-size: var(--fs-body);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s var(--ease-out);
+  }
+  .act-btn:hover {
+    background: var(--ink-soft);
+  }
+  .act-btn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .act-btn.ghost {
+    justify-content: center;
+    padding: 8px 26px;
+    background: transparent;
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1.5px var(--border);
+  }
+  .act-btn.ghost:hover {
+    background: var(--cream);
+  }
+  .act-bank {
+    margin-top: 24px;
+    padding: 22px;
+    border-radius: var(--r-xl);
+    background: var(--cream);
+  }
+  .act-bank dl {
+    display: grid;
+    gap: 10px;
+  }
+  .act-bank dl div {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+    gap: 12px;
+  }
+  .act-bank dt {
+    font-size: var(--fs-small);
+    color: var(--taupe);
+  }
+  .act-bank dd {
+    color: var(--ink);
+    font-weight: var(--fw-medium);
+    overflow-wrap: anywhere;
+  }
+  .act-bank p {
+    margin-top: 16px;
+    font-size: var(--fs-small);
+    line-height: 1.65;
+    color: var(--taupe);
+  }
+  @media (max-width: 480px) {
+    .act-bank dl div {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>

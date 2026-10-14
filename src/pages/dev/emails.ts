@@ -27,6 +27,7 @@ import { SITE_URL } from '~/config/site.mjs';
 import { createSupabaseServerClient } from '~/lib/supabase-server';
 import { buildInvite } from '~/lib/portal/invites';
 import { HU_OWNER_INVITE } from '~/data/invite-letter';
+import { lifecycleEmails } from '~/lib/email/lifecycle';
 
 export const prerender = false;
 
@@ -237,6 +238,61 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
   // gets it, an admin still gets the built-in admin wording (the role bug).
   inviteOwnerAfterApproval: () => buildInvite(approvedStub, 'hu', 'owner', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
   inviteAdminAfterApproval: (l) => buildInvite(approvedStub, l, 'admin', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
+  // Quote completion (0019): expiry, renewal, the monthly owner check, newsletter.
+  expiryReminder: (l) => lifecycleEmails.expiryReminder(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, days: 14, price: '€ 25',
+    expiresOn: l === 'nl' ? '28 oktober 2026' : '2026. október 28.',
+    renewUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+  }),
+  expiryReminderLast: (l) => lifecycleEmails.expiryReminder(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, days: 3, price: '€ 25',
+    expiresOn: l === 'nl' ? '28 oktober 2026' : '2026. október 28.',
+    renewUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+  }),
+  listingExpired: (l) => lifecycleEmails.listingExpired(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, price: '€ 25', renewUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+  }),
+  listingRenewed: (l) => lifecycleEmails.renewed(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, expiresOn: l === 'nl' ? '28 april 2027' : '2027. április 28.',
+  }),
+  renewalTransfer: (l) => lifecycleEmails.renewalTransfer(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, amount: '€ 25', account: 'NL35 RABO 0360284973 · BIC RABONL2U',
+    reference: `#${SAMPLE_REF} ${l === 'nl' ? 'verlenging' : 'hosszabbítás'}`, payUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+  }),
+  ownerRefresh: (l) => lifecycleEmails.ownerRefresh(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, price: '€ 178 000',
+    stillUrl: `${SITE_URL}/listing/still-available?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    priceUrl: `${SITE_URL}/listing/price?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    soldUrl: `${SITE_URL}/listing/sold?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    validUntil: l === 'nl' ? '13 november 2026' : '2026. november 13.',
+  }),
+  ownerRefreshReminder: (l) => lifecycleEmails.ownerRefresh(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, price: '€ 178 000', reminder: true,
+    stillUrl: `${SITE_URL}/listing/still-available?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    priceUrl: `${SITE_URL}/listing/price?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    soldUrl: `${SITE_URL}/listing/sold?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    validUntil: l === 'nl' ? '13 november 2026' : '2026. november 13.',
+  }),
+  // Office notices are Hungarian whatever the preview locale.
+  adminOwnerPriceChange: () => lifecycleEmails.adminOwnerUpdate({
+    kind: 'price', ref: SAMPLE_REF, title: SAMPLE_TITLE, owner: 'Kovács Anna',
+    oldPrice: '€ 178 000 / 71 200 000 Ft', newPrice: '€ 165 000 / 66 000 000 Ft', editUrl: `${SITE_URL}/portal/properties/sample`,
+  }),
+  adminOwnerSold: () => lifecycleEmails.adminOwnerUpdate({
+    kind: 'sold', ref: SAMPLE_REF, title: SAMPLE_TITLE, owner: 'Kovács Anna', editUrl: `${SITE_URL}/portal/properties/sample`,
+  }),
+  newsletterConfirm: (l) => lifecycleEmails.newsletterConfirm(l, {
+    confirmUrl: `${SITE_URL}/newsletter/confirm?s=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    unsubscribeUrl: `${SITE_URL}/newsletter/unsubscribe?s=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+  }),
+  newsletterConfirmEn: () => lifecycleEmails.newsletterConfirm('en', {
+    confirmUrl: `${SITE_URL}/newsletter/confirm?s=sample&t=${SAMPLE_TOKEN}&l=en`,
+    unsubscribeUrl: `${SITE_URL}/newsletter/unsubscribe?s=sample&t=${SAMPLE_TOKEN}&l=en`,
+  }),
+  newsletterConfirmDe: () => lifecycleEmails.newsletterConfirm('de', {
+    confirmUrl: `${SITE_URL}/newsletter/confirm?s=sample&t=${SAMPLE_TOKEN}&l=de`,
+    unsubscribeUrl: `${SITE_URL}/newsletter/unsubscribe?s=sample&t=${SAMPLE_TOKEN}&l=de`,
+  }),
   creditNoteIssued: (l) =>
     templates.creditNoteIssued(l, {
       ref: SAMPLE_REF,

@@ -13,7 +13,7 @@ import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
-import { listingTitle, publishProperty, publicUrl } from '~/lib/portal/publish';
+import { listingTitle, publishProperty, publicUrl, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
 import { logEvent } from '~/lib/activity';
 import { SITE_URL } from '~/config/site.mjs';
 
@@ -99,7 +99,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     if (order.property_id) {
       const { data: property } = await admin.from('properties').select('ref, status').eq('id', order.property_id).maybeSingle();
-      if (property?.status === 'awaiting_payment') {
+      if (isRenewalOrder(order.line_items as OrderLine[])) {
+        // A renewal paid by transfer: extend (and, if expired, republish).
+        const renewed = await renewProperty(admin, order.property_id, { months: 6, source: 'portal', actorId: user?.id, actorEmail: profile?.email, dedupeKey: `order-${order.id}` });
+        if (!renewed.ok && renewed.error !== 'not-renewable') return json(500, { ok: false, error: renewed.error });
+      } else if (property?.status === 'awaiting_payment') {
         const published = await publishProperty(admin, order.property_id);
         if (!published.ok) return json(500, { ok: false, error: published.error });
       }

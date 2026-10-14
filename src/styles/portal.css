@@ -1569,22 +1569,22 @@ main.pm.pm .pill::before {
   background: currentColor;
   opacity: 0.85;
 }
-main.pm.pm :is(.pill-published, .pill-paid, .pill-manual, .pill-live, .pill-approved) {
+main.pm.pm :is(.pill-published, .pill-paid, .pill-manual, .pill-live, .pill-approved, .pill-ok, .pill-confirmed) {
   background: var(--pt-green-bg);
   color: var(--pt-green);
   border: 0;
 }
-main.pm.pm :is(.pill-submitted, .pill-awaiting_payment, .pill-pending, .pill-needs_review, .pill-queued) {
+main.pm.pm :is(.pill-submitted, .pill-awaiting_payment, .pill-pending, .pill-needs_review, .pill-queued, .pill-warn) {
   background: var(--pt-amber-bg);
   color: var(--pt-amber);
   border: 0;
 }
-main.pm.pm :is(.pill-changes_requested, .pill-rejected, .pill-refunded, .pill-refund) {
+main.pm.pm :is(.pill-changes_requested, .pill-rejected, .pill-refunded, .pill-refund, .pill-bad, .pill-overdue) {
   background: var(--pt-red-bg);
   color: var(--pt-red);
   border: 0;
 }
-main.pm.pm :is(.pill-sold, .pill-archived, .pill-draft, .pill-off, .pill-cancelled) {
+main.pm.pm :is(.pill-sold, .pill-archived, .pill-draft, .pill-off, .pill-cancelled, .pill-unsubscribed) {
   background: rgba(16, 42, 67, 0.07);
   color: var(--ink-quiet);
   border: 0;

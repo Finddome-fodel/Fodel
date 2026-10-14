@@ -19,6 +19,8 @@ import { publicUrl } from '~/lib/portal/publish';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { icon } from '~/lib/portal/icons';
 import { listingName } from '~/lib/portal/time';
+import { getCompany } from '~/lib/runtime-config';
+import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
 
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
@@ -32,12 +34,21 @@ if (isAdmin && statusFilter && !REVIEWED.includes(statusFilter)) {
   return Astro.redirect('/portal/inbox');
 }
 
-const [all, taxonomy] = await Promise.all([listProperties(supabase, statusFilter ? { status: statusFilter } : {}), getTaxonomy()]);
+const [all, taxonomy, company] = await Promise.all([listProperties(supabase, statusFilter ? { status: statusFilter } : {}), getTaxonomy(), getCompany()]);
+const rules = listingRules(company.services);
 const scoped = isAdmin && !statusFilter ? all.filter((p) => REVIEWED.includes(p.status)) : all;
+// "Hamarosan lejár": live and ending within 30 days. "Nem válaszolt": the
+// monthly owner check went unanswered past the threshold (never unpublished).
+const expiringSoon = (p: (typeof all)[number]) => p.status === 'published' && p.expires_at != null && daysLeft(p.expires_at) <= 30;
+const silent = (p: (typeof all)[number]) => p.status === 'published' && isUnresponsive(p, rules);
 const properties =
   view === 'curation'
     ? scoped.filter((p) => p.editors_pick || p.bargain).sort((a, b) => a.editors_pick_order - b.editors_pick_order)
-    : scoped;
+    : view === 'expiring'
+      ? scoped.filter(expiringSoon).sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)))
+      : view === 'silent'
+        ? scoped.filter(silent)
+        : scoped;
 
 const categoryLabel = (key: string) => termLabel(taxonomy.category.find((term) => term.key === key), 'hu') || key;
 
@@ -86,10 +97,12 @@ const chips: [string, string][] = isAdmin
   <div class="bar">
     <div class="filters">
       {isAdmin && <a href="/portal/properties?view=curation" aria-current={view === 'curation' ? 'page' : undefined}>Top 10 és alkalmi vételek</a>}
+      {isAdmin && <a href="/portal/properties?view=expiring" aria-current={view === 'expiring' ? 'page' : undefined}>Hamarosan lejár</a>}
+      {isAdmin && <a href="/portal/properties?view=silent" aria-current={view === 'silent' ? 'page' : undefined}>Nem válaszolt</a>}
       {chips.map(([value, label]) => (
         <a
           href={value ? `/portal/properties?status=${value}` : '/portal/properties'}
-          aria-current={view !== 'curation' && statusFilter === value ? 'page' : undefined}
+          aria-current={!view && statusFilter === value ? 'page' : undefined}
         >
           {label}
         </a>
@@ -150,7 +163,11 @@ const chips: [string, string][] = isAdmin
                   <td>{categoryLabel(p.category)}</td>
                   <td>{p.settlement}</td>
                   <td class="price">€{p.price_eur.toLocaleString('de-DE')}</td>
-                  <td><span class:list={['pill', `pill-${p.status}`]}>{STATUS_LABEL[p.status] ?? p.status}</span></td>
+                  <td class="st">
+                    <span class:list={['pill', `pill-${p.status}`]}>{p.status === 'archived' && p.expired_at ? 'Lejárt' : STATUS_LABEL[p.status] ?? p.status}</span>
+                    {isAdmin && silent(p) && <span class="pill pill-bad">Nem válaszolt</span>}
+                    {isAdmin && expiringSoon(p) && <span class="pill pill-warn">{Math.max(0, daysLeft(p.expires_at!))} nap</span>}
+                  </td>
                   {isAdmin && <td class="owner">{flags(p).join(' · ') || '—'}</td>}
                   <td class="actions-col">
                     <div class="pt-menu">
@@ -375,6 +392,8 @@ const chips: [string, string][] = isAdmin
 </script>
 
 <style>
+  .st { white-space: nowrap; }
+  .st .pill + .pill { margin-left: 6px; }
   .head {
     display: flex;
     align-items: flex-end;

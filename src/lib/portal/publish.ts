@@ -18,6 +18,8 @@ import { getTaxonomy } from '~/lib/runtime-config';
 import { LISTING_PACKAGES } from '~/config/company';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { logEvent } from '~/lib/activity';
+import { addMonths, renewedExpiry } from '~/lib/listing-rules';
+import { lifecycleEmails } from '~/lib/email/lifecycle';
 
 /** The public URL of a listing, in the owner's own language. */
 export async function publicUrl(
@@ -67,8 +69,7 @@ export async function publishProperty(
   if (property.status === 'published') return { ok: true, alreadyPublished: true };
 
   const now = new Date();
-  const expires = new Date(now);
-  expires.setMonth(expires.getMonth() + monthsForPackage(property.package));
+  const expires = addMonths(now, monthsForPackage(property.package));
 
   const { error: updateError } = await client
     .from('properties')
@@ -148,4 +149,77 @@ export async function listingTitle(
   const preferred = rows.find((row) => row.locale === locale)?.title;
   const hungarian = rows.find((row) => row.locale === 'hu')?.title;
   return preferred || hungarian || `#${ref}`;
+}
+
+/* ── Renewal ──────────────────────────────────────────────────────────────
+   A paid 'renewal-6m' (card or bank transfer) or an admin's "Extend" lands
+   here. The new expiry counts from the current one when the listing is still
+   live (renewing early never loses days), from today once it has expired.
+   An expired listing (archived by the daily cron, `expired_at` set) goes
+   back online. A sold, rejected or otherwise withdrawn listing is never
+   republished by a renewal. */
+
+export type RenewResult =
+  | { ok: true; expiresAt: string; republished: boolean }
+  | { ok: false; error: string };
+
+export async function renewProperty(
+  client: any,
+  propertyId: string,
+  opts: { months: number; source: 'stripe-webhook' | 'portal' | 'admin'; actorId?: string | null; actorEmail?: string | null; dedupeKey?: string | null; notifyOwner?: boolean }
+): Promise<RenewResult> {
+  const { data: property, error } = await client
+    .from('properties')
+    .select('*')
+    .eq('id', propertyId)
+    .maybeSingle();
+  if (error) return { ok: false, error: error.message };
+  if (!property) return { ok: false, error: 'not-found' };
+
+  const expiredArchive = property.status === 'archived' && Boolean(property.expired_at);
+  if (property.status !== 'published' && !expiredArchive) return { ok: false, error: 'not-renewable' };
+
+  const now = new Date();
+  const next = renewedExpiry(property.expires_at ? new Date(property.expires_at) : null, now, opts.months);
+  const base = { status: 'published', expires_at: next.toISOString(), ...(property.published_at ? {} : { published_at: now.toISOString() }) };
+  // The 0019 columns reset with the new period, so its reminders go out again.
+  const lifecycle = { expired_at: null, expiry_first_reminder_sent_at: null, expiry_last_reminder_sent_at: null, expiry_notice_sent_at: null };
+
+  let { error: updateError } = await client.from('properties').update({ ...base, ...lifecycle }).eq('id', propertyId);
+  if (updateError && /expired_at|expiry_|column/i.test(updateError.message)) {
+    ({ error: updateError } = await client.from('properties').update(base).eq('id', propertyId));
+  }
+  if (updateError) return { ok: false, error: updateError.message };
+
+  await logEvent({
+    kind: 'listing.renewed',
+    actorId: opts.actorId ?? null,
+    actorEmail: opts.actorEmail ?? null,
+    subjectType: 'property',
+    subjectId: propertyId,
+    propertyId,
+    source: opts.source,
+    dedupeKey: opts.dedupeKey ? `${opts.dedupeKey}:renewed` : null,
+    payload: { months: opts.months, from: property.expires_at, to: next.toISOString(), republished: expiredArchive },
+  }).catch(() => {});
+
+  if (opts.notifyOwner !== false && property.owner_id) {
+    const { data: owner } = await client.from('profiles').select('email, locale').eq('id', property.owner_id).maybeSingle();
+    if (owner?.email) {
+      const locale = localeOf(owner);
+      await deliver(owner.email, lifecycleEmails.renewed(locale, {
+        ref: property.ref,
+        title: await listingTitle(client, propertyId, locale, property.ref),
+        url: await publicUrl(property, locale),
+        expiresOn: next.toLocaleDateString(locale === 'nl' ? 'nl-NL' : 'hu-HU', { year: 'numeric', month: 'long', day: 'numeric' }),
+      }));
+    }
+  }
+
+  return { ok: true, expiresAt: next.toISOString(), republished: expiredArchive };
+}
+
+/** True when an order is a listing renewal rather than a first publication. */
+export function isRenewalOrder(lines: { id?: string }[] | null | undefined): boolean {
+  return (lines ?? []).some((line) => line.id === 'renewal-6m');
 }

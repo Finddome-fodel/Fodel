@@ -18,6 +18,9 @@ import { STATUS_LABEL } from '~/lib/portal/properties';
 import { formatCents } from '~/lib/orders';
 import { icon } from '~/lib/portal/icons';
 import { greeting, longDate, timeAgo, hoursSince, listingName } from '~/lib/portal/time';
+import { getCompany } from '~/lib/runtime-config';
+import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
+import { toListItem } from '~/lib/invoicing/store';
 
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
@@ -28,7 +31,7 @@ const [{ data: rows }, { data: openEnquiryRows }] = await Promise.all([
 supabase
   .from('properties')
   .select(
-    'id, ref, status, settlement, price_eur, owner_id, created_at, submitted_at, property_translations(locale, title), property_media(storage_path, is_hero, sort_order)'
+    '*, property_translations(locale, title), property_media(storage_path, is_hero, sort_order)'
   ),
 supabase
   .from('enquiries')
@@ -61,16 +64,30 @@ let settledCents = 0;
 let outstandingCents = 0;
 let pendingValuations = 0;
 let requestedServices = 0;
+let overdueCount = 0;
+let overdueCents = 0;
+let openInvoiceCents = 0;
 const ownerName = new Map<string, string>();
 
 if (isAdmin) {
-  const [owners, orders, valuations, services, people] = await Promise.all([
+  const [owners, orders, valuations, services, people, invoices] = await Promise.all([
     supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'owner'),
     supabase.from('payments').select('status, amount_cents, currency'),
     supabase.from('valuations').select('id', { count: 'exact', head: true }).in('status', ['queued', 'needs_review', 'insufficient_data']),
     supabase.from('service_requests').select('id', { count: 'exact', head: true }).eq('status', 'requested'),
     supabase.from('profiles').select('id, full_name, email'),
+    // Before migration 0018 this fails quietly and the card shows zeros.
+    supabase.from('invoices').select('*').in('status', ['issued', 'sent']).limit(1000),
   ]);
+  // "Lejárt": issued or sent, unpaid, past its due date — derived, never stored.
+  for (const inv of (invoices.data ?? []).map(toListItem)) {
+    if (inv.kind !== 'invoice') continue;
+    openInvoiceCents += inv.grossCents;
+    if (inv.overdue) {
+      overdueCount++;
+      overdueCents += inv.grossCents;
+    }
+  }
   ownerCount = owners.count ?? 0;
   pendingValuations = valuations.count ?? 0;
   requestedServices = services.count ?? 0;
@@ -89,6 +106,17 @@ const thumb = (p: (typeof properties)[number]) => {
   const media = [...(p.property_media ?? [])].sort((a: any, b: any) => a.sort_order - b.sort_order);
   return (media.find((m: any) => m.is_hero) ?? media[0])?.storage_path as string | undefined;
 };
+
+// Live listings ending within 30 days, soonest first; and owners who left the
+// monthly check unanswered (flag only — nothing is unpublished automatically).
+const rules = isAdmin ? listingRules((await getCompany()).services) : null;
+const expiring = isAdmin
+  ? properties
+      .filter((p: any) => p.status === 'published' && p.expires_at && daysLeft(p.expires_at) <= 30)
+      .sort((a: any, b: any) => String(a.expires_at).localeCompare(String(b.expires_at)))
+  : [];
+const silent = isAdmin && rules ? properties.filter((p: any) => p.status === 'published' && isUnresponsive(p, rules)) : [];
+const hu = (iso: string) => new Date(iso).toLocaleDateString('hu-HU', { month: 'long', day: 'numeric' });
 
 const todo = waiting.length + openEnquiries.length + pendingValuations + requestedServices;
 const myAwaitingPayment = !isAdmin ? counts.awaiting_payment : 0;
@@ -261,6 +289,51 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
             <span class="k-n">{ownerCount}</span>
             <span class="k-sub">{counts.sold} eladott ingatlan</span>
           </a>
+        </section>
+
+        <section class="life" aria-label="Lejáratok és visszaigazolások">
+          <div class="life-card">
+            <div class="life-head">
+              <h2>Hamarosan lejár <span>30 napon belül</span></h2>
+              {expiring.length > 0 && <span class="count">{expiring.length}</span>}
+            </div>
+            {expiring.length === 0 ? (
+              <p class="life-empty">A következő 30 napban egy hirdetés sem jár le.</p>
+            ) : (
+              <ul class="life-list">
+                {expiring.slice(0, 6).map((p: any) => {
+                  const left = daysLeft(p.expires_at);
+                  return (
+                    <li>
+                      <a href={`/portal/properties/${p.id}`}>
+                        <span class="l-name"><b>{listingName(p)}</b><span>#{p.ref} · {p.settlement || '—'}</span></span>
+                        <span class="l-when">{hu(p.expires_at)}</span>
+                        <span class:list={['pill', left <= 7 ? 'pill-bad' : 'pill-warn']}>{Math.max(0, left)} nap</span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {expiring.length > 6 && <a class="more ink" href="/portal/properties?view=expiring">Mind a {expiring.length} →</a>}
+          </div>
+
+          <div class="life-side">
+            <a class="life-tile" href="/portal/properties?view=silent">
+              <span class="lt-text">
+                <b>Nem válaszolt</b>
+                <span>{silent.length > 0 ? `${silent.length} hirdető nem erősítette meg a havi levelet` : 'Minden hirdető válaszolt'}</span>
+              </span>
+              {silent.length > 0 && <span class="count">{silent.length}</span>}
+            </a>
+            <a class="life-tile" href="/portal/invoices?tab=overdue">
+              <span class="lt-text">
+                <b>Lejárt számlák</b>
+                <span>{overdueCount > 0 ? `${formatCents(overdueCents)} lejárt · ${formatCents(openInvoiceCents)} nyitott összesen` : openInvoiceCents > 0 ? `Nincs lejárt · ${formatCents(openInvoiceCents)} nyitott` : 'Nincs nyitott számla'}</span>
+              </span>
+              {overdueCount > 0 && <span class="count">{overdueCount}</span>}
+            </a>
+          </div>
         </section>
       </>
     ) : (
@@ -652,6 +725,124 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
     color: var(--taupe);
   }
 
+  /* ── Expiry, silent owners, overdue invoices ── */
+  .life {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .life-card,
+  .life-tile {
+    border-radius: var(--r-lg);
+    background: var(--white);
+    border: 1px solid var(--pt-hair);
+    box-shadow: var(--shadow-xs);
+  }
+  .life-card {
+    padding: 24px;
+  }
+  .life-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .life-head h2 {
+    font-family: var(--serif);
+    font-weight: var(--fw-display);
+    font-size: 20px;
+    color: var(--ink);
+  }
+  .life-head h2 span {
+    margin-left: 8px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: var(--fw-regular);
+    color: var(--ink-quiet);
+  }
+  .life-empty {
+    font-size: 15px;
+    color: var(--ink-quiet);
+  }
+  .life-list {
+    display: grid;
+    gap: 2px;
+  }
+  .life-list a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    margin: 0 -12px;
+    border-radius: var(--r-md);
+    transition: background-color 0.25s var(--ease-out);
+  }
+  .life-list a:hover {
+    background: var(--paper);
+  }
+  .l-name {
+    min-width: 0;
+  }
+  .l-name b,
+  .l-name span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .l-name b {
+    font-weight: var(--fw-medium);
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .l-name span,
+  .l-when {
+    font-size: 13.5px;
+    color: var(--ink-quiet);
+  }
+  .life-side {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+  .life-tile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 22px;
+    transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+  }
+  .life-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+  .lt-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .lt-text b {
+    display: block;
+    font-size: 16px;
+    font-weight: var(--fw-semibold);
+    color: var(--ink);
+  }
+  .lt-text span {
+    display: block;
+    margin-top: 2px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-quiet);
+  }
+  .more.ink {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
   /* ── Owner callouts ── */
   .callout {
     display: flex;
@@ -784,6 +975,9 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
     .kpis {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    .life {
+      grid-template-columns: 1fr;
+    }
   }
   @media (max-width: 560px) {
     .attn-main {
@@ -800,6 +994,15 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
     }
     .path {
       padding: 22px 18px;
+    }
+    .life-card {
+      padding: 20px 18px;
+    }
+    .life-list a {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .l-when {
+      display: none;
     }
   }
 </style>

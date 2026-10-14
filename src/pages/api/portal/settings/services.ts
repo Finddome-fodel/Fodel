@@ -12,6 +12,7 @@ import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
 import { PACKAGE_KINDS, valuationPackages } from '~/lib/valuation/packages';
 import type { StoredValuationPackage } from '~/lib/runtime-config';
+import { listingRules } from '~/lib/listing-rules';
 
 export const prerender = false;
 
@@ -75,6 +76,21 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     eurHufRateDate: /^\d{4}-\d{2}-\d{2}$/.test(eurHufRateDate) ? eurHufRateDate : null,
     valuationPackages: valuationPackagesStored,
     instantValuation: instantRequested && valuationBandPercent !== null && valuationMinCount !== null,
+    // Listing rules: listingRules() clamps every number to a sane range.
+    ...(() => {
+      const rules = listingRules({
+        packagePhone: { 'cheap-6m': form.get('phone_cheap-6m') === 'yes', 'normal-12m': form.get('phone_normal-12m') === 'yes' },
+        expiry: { firstReminderDays: Number(form.get('expiry_first')), lastReminderDays: Number(form.get('expiry_last')) },
+        ownerRefresh: {
+          enabled: form.get('refresh_enabled') === 'yes',
+          intervalDays: Number(form.get('refresh_interval')),
+          reminderAfterDays: Number(form.get('refresh_reminder')),
+          flagAfterDays: Number(form.get('refresh_flag')),
+          linkDays: Number(form.get('refresh_link_days')),
+        },
+      });
+      return { packagePhone: rules.packagePhone, expiry: rules.expiry, ownerRefresh: rules.ownerRefresh };
+    })(),
   };
   const automation = { registrationReminder: false, inviteAutomation: false };
 

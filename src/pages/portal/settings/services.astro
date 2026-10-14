@@ -11,6 +11,8 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import { valuationPackages } from '~/lib/valuation/packages';
 import { SERVICES_DEFAULT, AUTOMATION_DEFAULT, type Services, type Automation } from '~/lib/runtime-config';
+import { listingRules } from '~/lib/listing-rules';
+import { LISTING_PACKAGES } from '~/config/company';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -20,6 +22,7 @@ const migrated = Boolean(row && 'services' in row);
 const services: Services = { ...SERVICES_DEFAULT, ...(row?.services ?? {}) };
 const automation: Automation = { ...AUTOMATION_DEFAULT, ...(row?.automation ?? {}) };
 const packages = valuationPackages(services);
+const rules = listingRules(services);
 const packageHint: Record<string, string> = {
   indicative: 'Az ingyenes, AI-támogatott tájékoztató becslés. Az ára nem módosítható.',
   expert_visit: 'Helyszíni látogatás. Üresen hagyott ár esetén „árajánlat alapján” jelenik meg.',
@@ -93,6 +96,35 @@ const err = Astro.url.searchParams.get('error');
       <label class="text">EUR/HUF árfolyam (1 EUR = HUF)<input type="number" name="eur_huf_rate" min="1" step="0.01" value={services.eurHufRate ?? ''} /></label>
       <label class="text">Árfolyam dátuma<input type="date" name="eur_huf_rate_date" value={services.eurHufRateDate ?? ''} /></label>
       <label class="check"><input type="checkbox" name="instant_valuation" value="yes" checked={services.instantValuation} /><span><strong>Azonnali becslés megjelenítése</strong>Alapállapotban kikapcsolva. Csak megfelelő adatbázis és szakmai jóváhagyás után kapcsolja be.</span></label>
+      </section>
+      <section class="set-card" id="listing-rules">
+      <h2>Hirdetési csomagok</h2>
+      <p class="hint">A hirdető telefonszáma csak akkor jelenik meg a hirdetésben, ha a csomag engedi <em>és</em> a hirdető is hozzájárult. Egyébként az érdeklődő a visszahívás-űrlapon keresztül ér el minket.</p>
+      {LISTING_PACKAGES.map((pkg) => (
+        <label class="check">
+          <input type="checkbox" name={`phone_${pkg.id}`} value="yes" checked={rules.packagePhone[pkg.id]} />
+          <span><strong>{pkg.names.hu}: telefonszám a hirdetésben</strong>Alapértelmezés: {pkg.id === 'normal-12m' ? 'igen' : 'nem'}.</span>
+        </label>
+      ))}
+
+      <h3>Lejárat és hosszabbítás</h3>
+      <p class="hint">A napi ütemezett feladat két emlékeztetőt küld a lejárat előtt, és egy levelet a lejáratkor. Minden levélben ott a hosszabbítás linkje (6 hónap). Lejáratkor a hirdetés lekerül az oldalról, az admin kézzel is meghosszabbíthatja.</p>
+      <div class="pkg-row">
+        <label class="text">Első emlékeztető (nappal előtte)<input type="number" name="expiry_first" min="1" max="90" step="1" value={rules.expiry.firstReminderDays} /></label>
+        <label class="text">Második emlékeztető (nappal előtte)<input type="number" name="expiry_last" min="1" max="90" step="1" value={rules.expiry.lastReminderDays} /></label>
+      </div>
+
+      <h3>Havi visszaigazolás a hirdetőtől</h3>
+      <label class="check">
+        <input type="checkbox" name="refresh_enabled" value="yes" checked={rules.ownerRefresh.enabled} />
+        <span><strong>Havi „Még eladó?” levél bekapcsolva</strong>Egy kattintásos linkek: még eladó / változott az ár / eladva. Belépés nem kell. Automatikus levétel soha nincs — a nem válaszolókat az Áttekintés és az Ingatlanok szűrő jelzi.</span>
+      </label>
+      <div class="pkg-row four">
+        <label class="text">Gyakoriság (nap)<input type="number" name="refresh_interval" min="7" max="365" step="1" value={rules.ownerRefresh.intervalDays} /></label>
+        <label class="text">Emlékeztető (nap után)<input type="number" name="refresh_reminder" min="1" max="60" step="1" value={rules.ownerRefresh.reminderAfterDays} /></label>
+        <label class="text">„Nem válaszolt” (nap után)<input type="number" name="refresh_flag" min="1" max="90" step="1" value={rules.ownerRefresh.flagAfterDays} /></label>
+        <label class="text">Link érvényessége (nap)<input type="number" name="refresh_link_days" min="1" max="90" step="1" value={rules.ownerRefresh.linkDays} /></label>
+      </div>
       </section>
       <section class="set-card">
       <h2>Becslési szempontok</h2>
@@ -168,5 +200,9 @@ const err = Astro.url.searchParams.get('error');
   .pkg-row { display: grid; grid-template-columns: 1fr 1fr 130px; gap: 14px; }
   .pkg-row input { width: 100%; }
   .pkg .check { background: var(--white); }
-  @media (max-width: 720px) { .pkg-row { grid-template-columns: 1fr; } }
+  #listing-rules .pkg-row { grid-template-columns: 1fr 1fr; }
+  #listing-rules .pkg-row.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .hint em { font-style: normal; font-weight: var(--fw-medium); color: var(--ink); }
+  @media (max-width: 960px) { #listing-rules .pkg-row.four { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 720px) { .pkg-row, #listing-rules .pkg-row, #listing-rules .pkg-row.four { grid-template-columns: 1fr; } }
 </style>
