@@ -42,6 +42,7 @@ const ADMIN_ONLY_PREFIXES = [
   '/portal/settings/estimate',
   '/portal/settings/invoicing',
   '/portal/invoices/new',
+  '/portal/newsletter',
   // Each of these API prefixes is distinct from its /portal/... counterpart
   // above and would NOT be covered by it — the same easy-to-forget gap the
   // plan calls out for the database export route.
@@ -58,6 +59,7 @@ const ADMIN_ONLY_PREFIXES = [
   '/api/portal/settings/estimate',
   '/api/portal/settings/invoicing',
   '/api/portal/invoices',
+  '/api/portal/newsletter',
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {

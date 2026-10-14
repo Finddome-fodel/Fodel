@@ -1,0 +1,242 @@
+---
+/**
+ * Compact newsletter sign-up: one email field and a pill button. Double
+ * opt-in (src/pages/api/newsletter.ts): nothing is sent until the address is
+ * confirmed. Works as a plain form post without JavaScript; with it, the
+ * answer appears in place.
+ */
+import ArrowChip from './ArrowChip.astro';
+import { path } from '~/i18n/ui';
+
+interface Props {
+  locale: 'hu' | 'nl' | 'en' | 'de';
+  /** "dark" for the footer, "light" on cream or white sections. */
+  tone?: 'dark' | 'light';
+  source: string;
+  id: string;
+}
+
+const { locale, tone = 'light', source, id } = Astro.props;
+
+const T = {
+  hu: { label: 'E-mail-cím', placeholder: 'Az Ön e-mail-címe', submit: 'Feliratkozom', note: 'Havonta legfeljebb egy-két levél. Megerősítő e-mailt küldünk, és bármikor leiratkozhat.', privacy: 'Adatvédelem', ok: 'Majdnem kész! Küldtünk egy megerősítő e-mailt — kattintson a benne lévő gombra.', error: 'Nem sikerült. Ellenőrizze a címet, és próbálja újra.', email: 'Kérjük, érvényes e-mail-címet adjon meg.', sending: 'Küldés…' },
+  nl: { label: 'E-mailadres', placeholder: 'Uw e-mailadres', submit: 'Inschrijven', note: 'Hooguit een of twee e-mails per maand. U ontvangt eerst een bevestigingsmail en kunt zich altijd uitschrijven.', privacy: 'Privacy', ok: 'Bijna klaar! Wij stuurden u een bevestigingsmail — klik op de knop daarin.', error: 'Dat lukte niet. Controleer het adres en probeer het opnieuw.', email: 'Vul een geldig e-mailadres in.', sending: 'Bezig…' },
+  en: { label: 'Email address', placeholder: 'Your email address', submit: 'Subscribe', note: 'One or two emails a month at most. We send a confirmation first; unsubscribe any time.', privacy: 'Privacy', ok: 'Almost done! We have sent you a confirmation email — click the button in it.', error: 'That did not work. Check the address and try again.', email: 'Please enter a valid email address.', sending: 'Sending…' },
+  de: { label: 'E-Mail-Adresse', placeholder: 'Ihre E-Mail-Adresse', submit: 'Abonnieren', note: 'Höchstens ein bis zwei E-Mails im Monat. Wir senden zuerst eine Bestätigung; Abmeldung jederzeit.', privacy: 'Datenschutz', ok: 'Fast geschafft! Wir haben Ihnen eine Bestätigungs-E-Mail gesendet — klicken Sie auf den Button darin.', error: 'Das hat nicht geklappt. Prüfen Sie die Adresse und versuchen Sie es erneut.', email: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.', sending: 'Wird gesendet…' },
+}[locale];
+
+const privacyHref = locale === 'hu' || locale === 'nl' ? path(locale, 'privacy') : '/nl/privacy/';
+---
+
+<form
+  class="nl-form"
+  data-tone={tone}
+  data-newsletter
+  data-ok={T.ok}
+  data-error={T.error}
+  data-email={T.email}
+  data-sending={T.sending}
+  method="POST"
+  action="/api/newsletter"
+  novalidate
+>
+  <input type="hidden" name="locale" value={locale} />
+  <input type="hidden" name="source" value={source} />
+  <input type="hidden" name="renderedAt" value="" data-rendered-at />
+  <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">
+    <input type="text" name="company" tabindex="-1" autocomplete="off" />
+  </div>
+  <label class="nl-label" for={id}>{T.label}</label>
+  <div class="nl-row">
+    <input class="nl-input" id={id} type="email" name="email" required autocomplete="email" inputmode="email" placeholder={T.placeholder} aria-describedby={`${id}-note ${id}-status`} />
+    <button class="nl-btn" type="submit">
+      <span>{T.submit}</span>
+      <ArrowChip size={34} />
+    </button>
+  </div>
+  <p class="nl-note" id={`${id}-note`}>{T.note} <a href={privacyHref}>{T.privacy}</a></p>
+  <p class="nl-status" id={`${id}-status`} role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form[data-newsletter]').forEach((form) => {
+    const stamp = form.querySelector<HTMLInputElement>('[data-rendered-at]');
+    if (stamp) stamp.value = String(Date.now());
+    const status = form.querySelector<HTMLElement>('.nl-status')!;
+    const input = form.querySelector<HTMLInputElement>('input[name="email"]')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const label = button.querySelector('span')!;
+    const original = label.textContent;
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.dataset.state = '';
+      if (!input.checkValidity()) {
+        status.textContent = form.dataset.email ?? '';
+        status.dataset.state = 'error';
+        input.setAttribute('aria-invalid', 'true');
+        input.focus();
+        return;
+      }
+      input.removeAttribute('aria-invalid');
+      button.disabled = true;
+      label.textContent = form.dataset.sending ?? '';
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { accept: 'application/json' } });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.ok) throw new Error(json.error ?? 'failed');
+        form.dataset.done = '';
+        status.textContent = form.dataset.ok ?? '';
+        status.dataset.state = 'ok';
+      } catch (error) {
+        status.textContent = (error as Error).message === 'email' ? form.dataset.email ?? '' : form.dataset.error ?? '';
+        status.dataset.state = 'error';
+        button.disabled = false;
+        label.textContent = original;
+      }
+    });
+  });
+</script>
+
+<style>
+  .nl-form {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    max-width: 520px;
+    --nl-field: var(--white);
+    --nl-text: var(--ink);
+    --nl-quiet: var(--taupe);
+    --nl-ring: rgba(16, 42, 67, 0.12);
+  }
+  .nl-form[data-tone='dark'] {
+    --nl-field: rgba(244, 244, 242, 0.08);
+    --nl-text: var(--cream);
+    --nl-quiet: var(--on-dark-muted);
+    --nl-ring: rgba(244, 244, 242, 0.16);
+  }
+  .nl-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .nl-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: var(--r-pill);
+    background: var(--nl-field);
+    box-shadow: inset 0 0 0 1px var(--nl-ring);
+    transition: box-shadow 0.3s var(--ease-out);
+  }
+  .nl-row:focus-within {
+    box-shadow: inset 0 0 0 1.5px var(--nl-text);
+  }
+  .nl-input {
+    flex: 1;
+    min-width: 0;
+    min-height: 46px;
+    padding: 0 8px 0 18px;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: var(--fs-body);
+    color: var(--nl-text);
+  }
+  .nl-input::placeholder {
+    color: var(--nl-quiet);
+    opacity: 0.85;
+  }
+  .nl-input:focus-visible {
+    outline: none;
+  }
+  .nl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    min-height: 46px;
+    padding: 6px 6px 6px 20px;
+    border: 0;
+    border-radius: var(--r-pill);
+    background: var(--ink);
+    color: var(--cream);
+    font: inherit;
+    font-size: 15px;
+    font-weight: var(--fw-medium);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.3s var(--ease-out);
+  }
+  .nl-form[data-tone='dark'] .nl-btn {
+    background: var(--cream);
+    color: var(--ink);
+    --chip-bg: var(--ink);
+    --chip-fg: var(--cream);
+  }
+  .nl-btn:hover {
+    background: var(--ink-soft);
+  }
+  .nl-form[data-tone='dark'] .nl-btn:hover {
+    background: var(--white);
+  }
+  .nl-btn:focus-visible {
+    outline: 2px solid var(--nl-text);
+    outline-offset: 3px;
+  }
+  .nl-btn:disabled {
+    opacity: 0.7;
+    cursor: progress;
+  }
+  .nl-note {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--nl-quiet);
+  }
+  .nl-note a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .nl-status:empty {
+    display: none;
+  }
+  .nl-status {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--nl-text);
+  }
+  .nl-status[data-state='error'] {
+    color: var(--nl-text);
+    font-weight: var(--fw-medium);
+  }
+  .nl-form[data-done] .nl-row,
+  .nl-form[data-done] .nl-note {
+    display: none;
+  }
+  .nl-form[data-done] .nl-status {
+    padding: 14px 18px;
+    border-radius: var(--r-lg);
+    background: var(--nl-field);
+    box-shadow: inset 0 0 0 1px var(--nl-ring);
+  }
+  /* Narrow phones: the field takes the row, the button sits under it. */
+  @media (max-width: 400px) {
+    .nl-row {
+      flex-direction: column;
+      align-items: stretch;
+      border-radius: var(--r-xl);
+    }
+    .nl-input {
+      padding: 0 12px;
+    }
+    .nl-btn {
+      justify-content: space-between;
+    }
+  }
+</style>

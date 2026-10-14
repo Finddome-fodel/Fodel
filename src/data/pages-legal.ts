@@ -123,6 +123,12 @@ export const LEGAL: Record<Locale, Record<string, ContentPageData>> = {
           title: 'Az ingatlanhirdetésekről',
           body: 'Ha Ön hirdetőként hozzájárul, a hirdetésben megjelenítjük a nevét és telefonszámát, hogy a külföldi érdeklődő közvetlenül felvehesse Önnel a kapcsolatot. Ez a hozzájárulás bármikor visszavonható, ilyenkor az adatokat eltávolítjuk a hirdetésből.',
         },
+        // TERVEZET — jogi felülvizsgálatra vár (hírlevél, 2026-10).
+        {
+          type: 'callout',
+          title: 'Hírlevél',
+          body: 'Ha feliratkozik a hírlevelünkre, az e-mail-címét, a választott nyelvet, valamint a feliratkozás és a megerősítés időpontját kezeljük, kizárólag a hírlevél küldése céljából, az Ön hozzájárulása alapján. A feliratkozás kétlépcsős: csak a megerősítő e-mailben lévő gomb megnyomása után küldünk levelet. Minden levélben egy kattintással leiratkozhat; ekkor a küldést azonnal leállítjuk. A levelek kiküldéséhez a Resend szolgáltatást használjuk.',
+        },
         {
           type: 'list',
           title: 'Az Ön jogai',
@@ -408,6 +414,12 @@ export const LEGAL: Record<Locale, Record<string, ContentPageData>> = {
           type: 'callout',
           title: 'Over de advertenties',
           body: 'Als adverteerder kunt u ons toestemming geven om uw naam en telefoonnummer bij de advertentie te tonen, zodat geïnteresseerden u rechtstreeks kunnen benaderen. U kunt die toestemming altijd intrekken; wij verwijderen de gegevens dan uit de advertentie.',
+        },
+        // CONCEPT — wacht op juridische controle (nieuwsbrief, 2026-10).
+        {
+          type: 'callout',
+          title: 'Nieuwsbrief',
+          body: 'Als u zich inschrijft voor onze nieuwsbrief, verwerken wij uw e-mailadres, de gekozen taal en het tijdstip van inschrijving en bevestiging, uitsluitend om u de nieuwsbrief te sturen, op basis van uw toestemming. De inschrijving gaat in twee stappen: wij sturen pas iets nadat u op de knop in de bevestigingsmail heeft geklikt. In elke e-mail kunt u zich met één klik uitschrijven; wij stoppen dan direct. Voor het verzenden gebruiken wij de dienst Resend.',
         },
         {
           type: 'list',

@@ -1,0 +1,159 @@
+---
+/**
+ * Newsletter landing pages:
+ *   /newsletter/confirm      the double opt-in click: pending → confirmed, consent stamped
+ *   /newsletter/unsubscribe  one click, no questions (GET or RFC 8058 one-click POST)
+ *   /newsletter/sent|error   where the no-JavaScript form post lands
+ *
+ * ?s=<subscriber id>&t=<signed token>&l=<hu|nl|en|de>. The token is bound to
+ * the action and the subscriber; the unsubscribe token does not expire.
+ */
+export const prerender = false;
+
+import Base from '~/layouts/Base.astro';
+import Bridge from '~/layouts/Bridge.astro';
+import { verifyAction } from '~/lib/valuation/action-token';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { asNewsletterLocale, syncAudience } from '~/lib/newsletter';
+import { logEvent } from '~/lib/activity';
+
+const action = Astro.params.action ?? '';
+if (!['confirm', 'unsubscribe', 'sent', 'error'].includes(action)) return new Response('Not found', { status: 404 });
+
+const locale = asNewsletterLocale(Astro.url.searchParams.get('l'));
+const id = Astro.url.searchParams.get('s') ?? '';
+const token = Astro.url.searchParams.get('t') ?? '';
+Astro.response.headers.set('cache-control', 'no-store');
+Astro.response.headers.set('referrer-policy', 'no-referrer');
+
+const T = {
+  hu: { sent: ['Nézze meg a postafiókját', 'Küldtünk egy megerősítő e-mailt. A feliratkozás a benne lévő gombra kattintva válik érvényessé.'], error: ['Nem sikerült', 'Kérjük, ellenőrizze az e-mail-címet, és próbálja újra.'], confirmed: ['Feliratkozott!', 'Köszönjük. A következő hírlevelünket már Önnek is elküldjük.'], unsub: ['Leiratkozott', 'Több hírlevelet nem küldünk erre a címre. Ha meggondolja magát, bármikor újra feliratkozhat az oldal alján.'], invalid: ['Ez a link már nem érvényes', 'A megerősítő link 14 napig érvényes. Iratkozzon fel újra az oldal alján, és küldünk egy újat.'], home: 'Vissza a főoldalra' },
+  nl: { sent: ['Kijk in uw mailbox', 'Wij stuurden u een bevestigingsmail. Uw inschrijving is pas geldig na een klik op de knop daarin.'], error: ['Dat lukte niet', 'Controleer het e-mailadres en probeer het opnieuw.'], confirmed: ['U bent ingeschreven!', 'Dank u. De volgende nieuwsbrief ontvangt u ook.'], unsub: ['Uitgeschreven', 'Wij sturen geen nieuwsbrieven meer naar dit adres. Toch weer interesse? Onderaan elke pagina kunt u zich opnieuw inschrijven.'], invalid: ['Deze link is niet meer geldig', 'De bevestigingslink is 14 dagen geldig. Schrijf u opnieuw in onderaan de pagina, dan sturen wij een nieuwe.'], home: 'Naar de homepage' },
+  en: { sent: ['Check your inbox', 'We have sent you a confirmation email. Your subscription starts once you click the button in it.'], error: ['That did not work', 'Please check the email address and try again.'], confirmed: ['You are subscribed!', 'Thank you. You will receive our next newsletter.'], unsub: ['Unsubscribed', 'We will send no more newsletters to this address. Changed your mind? You can subscribe again at any time.'], invalid: ['This link is no longer valid', 'Confirmation links are valid for 14 days. Subscribe again and we will send you a new one.'], home: 'Back to the homepage' },
+  de: { sent: ['Bitte prüfen Sie Ihr Postfach', 'Wir haben Ihnen eine Bestätigungs-E-Mail gesendet. Ihr Abonnement gilt, sobald Sie auf den Button darin klicken.'], error: ['Das hat nicht geklappt', 'Bitte prüfen Sie die E-Mail-Adresse und versuchen Sie es erneut.'], confirmed: ['Sie sind angemeldet!', 'Vielen Dank. Unseren nächsten Newsletter erhalten Sie auch.'], unsub: ['Abgemeldet', 'Wir senden keine Newsletter mehr an diese Adresse. Sie können sich jederzeit wieder anmelden.'], invalid: ['Dieser Link ist nicht mehr gültig', 'Bestätigungslinks gelten 14 Tage. Melden Sie sich erneut an, dann senden wir Ihnen einen neuen.'], home: 'Zur Startseite' },
+}[locale];
+
+let message: [string, string] = action === 'sent' ? (T.sent as [string, string]) : (T.error as [string, string]);
+let ok = action === 'sent';
+
+if (action === 'confirm' || action === 'unsubscribe') {
+  const purpose = action === 'confirm' ? 'newsletter-confirm' : 'newsletter-unsubscribe';
+  const valid = /^[0-9a-f-]{36}$/.test(id) && (() => { try { return verifyAction(purpose, id, token); } catch { return false; } })();
+  message = T.invalid as [string, string];
+  ok = false;
+  if (valid) {
+    const admin = createSupabaseAdminClient();
+    const { data: row } = await admin.from('newsletter_subscribers').select('id, email, status, locale').eq('id', id).maybeSingle();
+    const now = new Date().toISOString();
+    if (row && action === 'confirm') {
+      if (row.status !== 'confirmed') {
+        // Consent is the click itself: its time and the language it was given in.
+        const contactId = await syncAudience(row.email, false);
+        await admin.from('newsletter_subscribers')
+          .update({ status: 'confirmed', consent_at: now, unsubscribed_at: null, locale, ...(contactId ? { resend_contact_id: contactId } : {}) })
+          .eq('id', id);
+        await logEvent({ kind: 'newsletter.confirmed', subjectType: 'newsletter', subjectId: id, locale, source: 'web' }).catch(() => {});
+      }
+      message = T.confirmed as [string, string];
+      ok = true;
+    } else if (row && action === 'unsubscribe') {
+      if (row.status !== 'unsubscribed') {
+        await admin.from('newsletter_subscribers').update({ status: 'unsubscribed', unsubscribed_at: now }).eq('id', id);
+        await syncAudience(row.email, true);
+        await logEvent({ kind: 'newsletter.unsubscribed', subjectType: 'newsletter', subjectId: id, locale, source: 'web' }).catch(() => {});
+      }
+      message = T.unsub as [string, string];
+      ok = true;
+    } else if (!row && action === 'unsubscribe') {
+      // Already deleted by an admin: there is nothing left to unsubscribe.
+      message = T.unsub as [string, string];
+      ok = true;
+    }
+  }
+  // RFC 8058 one-click unsubscribe from a mail client: no page needed.
+  if (Astro.request.method === 'POST') return new Response(null, { status: ok ? 200 : 400 });
+}
+
+const homeHref = `/${locale}/`;
+// Base speaks hu/nl, Bridge en/de; both take the same props used here.
+const Layout: any = locale === 'hu' || locale === 'nl' ? Base : Bridge;
+---
+
+<Layout locale={locale} title={message[0]} description={message[1]} noindex>
+  <section class="nl-page">
+    <div class="nl-card">
+      <span class:list={['nl-mark', ok && 'ok']} aria-hidden="true">
+        {ok
+          ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          : <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 7v6M12 16.8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>}
+      </span>
+      <h1>{message[0]}</h1>
+      <p>{message[1]}</p>
+      <a class="nl-home" href={homeHref}>{T.home}</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .nl-page {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    padding: calc(var(--nav-h, 88px) + 32px) var(--pad-x) 96px;
+  }
+  .nl-card {
+    width: 100%;
+    max-width: 520px;
+    padding: clamp(28px, 5vw, 48px);
+    border-radius: var(--r-2xl);
+    background: var(--white);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(16, 42, 67, 0.06);
+  }
+  .nl-mark {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    border-radius: 50%;
+    background: var(--linen);
+    color: var(--ink);
+  }
+  .nl-mark.ok {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: var(--fw-display);
+    font-size: clamp(28px, 4vw, 36px);
+    letter-spacing: var(--ls-heading);
+    line-height: 1.12;
+    color: var(--ink);
+  }
+  p {
+    margin-top: 12px;
+    font-size: var(--fs-body-lg);
+    line-height: 1.65;
+    color: var(--taupe);
+  }
+  .nl-home {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    margin-top: 24px;
+    padding: 0 24px;
+    border-radius: var(--r-pill);
+    background: var(--ink);
+    color: var(--cream);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+  }
+  .nl-home:hover {
+    background: var(--ink-soft);
+  }
+  .nl-home:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+</style>

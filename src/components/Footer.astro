@@ -14,6 +14,8 @@ import ArrowChip from './ArrowChip.astro';
 import { UI, BRAND, CATEGORY_FALLBACK, path, type Locale, type RouteKey } from '~/i18n/ui';
 import { getCompany } from '~/lib/runtime-config';
 import { slugify } from '~/lib/properties';
+import { officeHours, callbackHours } from '~/lib/hours';
+import NewsletterForm from './NewsletterForm.astro';
 
 interface Props {
   locale: Locale;
@@ -24,9 +26,7 @@ const ui = UI[locale];
 const brand = BRAND[locale];
 const year = new Date().getFullYear();
 const COMPANY = await getCompany();
-const weekdayHours = locale === 'hu'
-  ? `Hétfő–Péntek · ${COMPANY.hours.weekdays.from}–${COMPANY.hours.weekdays.to}`
-  : `Maandag–vrijdag · ${COMPANY.hours.weekdays.from}–${COMPANY.hours.weekdays.to}`;
+const weekdayHours = officeHours(COMPANY.hours, locale);
 const foundedPlace = locale === 'hu' ? 'Hága, Hollandia' : 'Den Haag, Nederland';
 
 const navItems: { key: RouteKey; label: string }[] = [
@@ -123,14 +123,18 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
       </ul>
       <p class="hours">
         {weekdayHours}<br />
-        {
-          locale === 'hu'
-            ? `Visszahívás ${COMPANY.hours.callback.to}-ig, hétvégén is.`
-            : `Terugbellen tot ${COMPANY.hours.callback.to} uur, ook in het weekend.`
-        }
+        {callbackHours(COMPANY.hours, locale)}
       </p>
       <p class="callback-note">{ui.footer.callbackNote}</p>
     </div>
+  </div>
+
+  <div class="news">
+    <div class="news-copy">
+      <h2 class="news-title">{locale === 'hu' ? 'Új ingatlanok elsőként' : 'Nieuw aanbod als eerste'}</h2>
+      <p>{locale === 'hu' ? 'Havi hírlevél a friss hirdetésekről és a magyar ingatlanpiacról.' : 'Maandelijkse nieuwsbrief met nieuwe woningen en nieuws over de Hongaarse markt.'}</p>
+    </div>
+    <NewsletterForm locale={locale} tone="dark" source="footer" id={`nl-footer-${locale}`} />
   </div>
 
   <div class="legal-block">
@@ -298,6 +302,35 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
   }
   .callback-note {
     margin-top: 8px;
+  }
+
+  .news {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+    align-items: center;
+    gap: 24px 56px;
+    padding: 40px 0;
+    border-bottom: 1px solid var(--on-dark-rule);
+  }
+  .news-title {
+    font-family: var(--serif);
+    font-weight: var(--fw-display);
+    font-size: clamp(22px, 2.2vw, 28px);
+    letter-spacing: var(--ls-heading);
+    line-height: 1.2;
+    color: var(--cream);
+  }
+  .news-copy p {
+    margin-top: 8px;
+    max-width: 46ch;
+    font-size: var(--fs-small);
+    line-height: 1.65;
+    color: var(--on-dark-muted);
+  }
+  @media (max-width: 900px) {
+    .news {
+      grid-template-columns: 1fr;
+    }
   }
 
   .legal-block {

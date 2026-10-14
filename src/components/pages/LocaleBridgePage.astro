@@ -32,6 +32,7 @@ import { abs } from '~/lib/seo';
 import PostCard from '~/components/PostCard.astro';
 import { BLOG_PATH, type BlogPost } from '~/lib/blog';
 import '~/styles/global.css';
+import NewsletterForm from '~/components/NewsletterForm.astro';
 
 interface Props {
   locale: Extract<PlannedLocale, 'de' | 'en' | 'fr'>;
@@ -138,6 +139,14 @@ const STRINGS = {
         <a href={`mailto:${COMPANY.email.primary}`}>{COMPANY.email.primary}</a>
         <p class="address">{COMPANY.address.oneLine}</p>
       </section>
+
+      {(locale === 'en' || locale === 'de') && (
+        <section class="bridge-news" aria-labelledby="bridge-news-title">
+          <h2 id="bridge-news-title">{locale === 'de' ? 'Neue Immobilien zuerst' : 'New listings first'}</h2>
+          <p>{locale === 'de' ? 'Der monatliche Newsletter mit neuen Angeboten und Nachrichten vom ungarischen Markt.' : 'The monthly newsletter with new listings and news from the Hungarian market.'}</p>
+          <NewsletterForm locale={locale} source="bridge-home" id={`nl-bridge-home-${locale}`} />
+        </section>
+      )}
     </main>
 
     {LATEST && posts.length > 0 && (locale === 'en' || locale === 'de') && (
@@ -155,6 +164,28 @@ const STRINGS = {
 </html>
 
 <style>
+  .bridge-news {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    margin-top: 40px;
+    padding-top: 36px;
+    border-top: 1px solid var(--border);
+  }
+  .bridge-news h2 {
+    font-family: var(--serif);
+    font-weight: var(--fw-display);
+    font-size: 24px;
+    color: var(--ink);
+  }
+  .bridge-news p {
+    max-width: 44ch;
+    color: var(--taupe);
+    margin-bottom: 8px;
+  }
+  .bridge-news :global(.nl-note) {
+    text-align: left;
+  }
   .bridge {
     max-width: 720px;
     margin: 40px auto;
