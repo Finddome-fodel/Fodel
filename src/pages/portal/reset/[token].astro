@@ -41,7 +41,7 @@ const usable = reset && !reset.used_at && new Date(reset.expires_at) >= new Date
           </div>
           <button type="submit" class="submit">Jelszó mentése</button>
         </form>
-        <p class="hint">Legalább 8 karakter.</p>
+        <p class="hint">Legalább 8 karakter. <a href="/portal/login">Vissza a bejelentkezéshez</a></p>
       </>
     ) : (
       <>
@@ -49,7 +49,7 @@ const usable = reset && !reset.used_at && new Date(reset.expires_at) >= new Date
           Ez a jelszó-visszaállító link lejárt, vagy már felhasználták. A biztonság kedvéért
           minden link csak egyszer és csak egy óráig működik.
         </p>
-        <p class="hint"><a href="/portal/forgot">Új link kérése</a></p>
+        <p class="hint"><a href="/portal/forgot">Új link kérése</a> · <a href="/portal/login">Vissza a bejelentkezéshez</a></p>
       </>
     )
   }
