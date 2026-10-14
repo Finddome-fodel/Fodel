@@ -12,6 +12,8 @@ import { COMPANY } from '~/config/company';
 import { CATEGORY_FALLBACK, PLANNED_LOCALES, type PlannedLocale } from '~/i18n/ui';
 import { FEATURES, COUNTIES } from '~/data/features';
 import { getSupabase } from '~/lib/supabase';
+import { WALL_MATERIALS } from '~/data/wall-materials';
+import type { ListingRules } from '~/lib/listing-rules';
 
 export type TaxonomyGroup =
   | 'category'
@@ -20,7 +22,8 @@ export type TaxonomyGroup =
   | 'heating'
   | 'county'
   | 'region'
-  | 'blog_category';
+  | 'blog_category'
+  | 'wall';
 
 export type TaxonomyTerm = {
   id?: string;
@@ -59,6 +62,10 @@ export type Services = {
   eurHufRateDate?: string | null;
   /** Admin-edited names and prices of the three valuation packages; see src/lib/valuation/packages.ts. */
   valuationPackages?: Partial<Record<'indicative' | 'expert_visit' | 'judicial', StoredValuationPackage>>;
+  /** Phone visibility per package, expiry reminders, monthly owner refresh — see src/lib/listing-rules.ts. */
+  packagePhone?: Partial<ListingRules['packagePhone']>;
+  expiry?: Partial<ListingRules['expiry']>;
+  ownerRefresh?: Partial<ListingRules['ownerRefresh']>;
 };
 
 export type StoredValuationPackage = {
@@ -91,7 +98,7 @@ export type Company = Omit<typeof COMPANY, 'phones'> & {
 };
 
 const groups: TaxonomyGroup[] = [
-  'category', 'feature', 'condition', 'heating', 'county', 'region', 'blog_category',
+  'category', 'feature', 'condition', 'heating', 'county', 'region', 'blog_category', 'wall',
 ];
 
 function emptyTaxonomy(): Taxonomy {
@@ -120,8 +127,15 @@ export const TAXONOMY_FALLBACK: Taxonomy = (() => {
     labels: { hu: label, nl: label },
     slugs: {}, sortOrder: (index + 1) * 10, enabled: true,
   }));
+  taxonomy.wall = wallFallback();
   return taxonomy;
 })();
+
+function wallFallback(): TaxonomyTerm[] {
+  return WALL_MATERIALS.map((term, index) => ({
+    groupKey: 'wall', key: term.key, labels: term.labels, slugs: {}, sortOrder: (index + 1) * 10, enabled: true,
+  }));
+}
 
 export const COMPANY_FALLBACK: Company = {
   ...COMPANY,
@@ -177,6 +191,8 @@ export async function getTaxonomy(): Promise<Taxonomy> {
         enabled: row.enabled,
       });
     }
+    // Before migration 0019 the database has no wall terms: keep the vocabulary.
+    if (taxonomy.wall.length === 0) taxonomy.wall = wallFallback();
     return taxonomy;
   }, TAXONOMY_FALLBACK);
 }

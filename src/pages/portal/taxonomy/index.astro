@@ -5,14 +5,15 @@ import Portal from '~/layouts/Portal.astro';
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 const { data: terms } = await supabase.from('taxonomy_terms').select('*').order('group_key').order('sort_order');
-const { data: properties } = await supabase.from('properties').select('category, features, condition_key, heating_key, status');
+const { data: properties } = await supabase.from('properties').select('*');
 const { data: blogPosts } = await supabase.from('blog_posts').select('locale, category, published');
-const groups = ['category','feature','condition','heating','county','region','blog_category'];
+const groups = ['category','feature','condition','heating','wall','county','region','blog_category'];
 const GROUP_LABEL: Record<string, string> = {
   category: 'Ingatlantípusok',
   feature: 'Jellemzők',
   condition: 'Állapot',
   heating: 'Fűtés',
+  wall: 'Falazat',
   county: 'Megyék',
   region: 'Régiók',
   blog_category: 'Blogkategóriák',
@@ -23,7 +24,7 @@ function counts(term: any) {
     return { total: matches.length, live: matches.filter((post: any) => post.published).length };
   }
   const labels = Object.values(term.labels ?? {});
-  const matches = (properties ?? []).filter((p: any) => term.group_key === 'category' ? p.category === term.key : term.group_key === 'feature' ? p.features?.includes(term.key) : term.group_key === 'condition' ? p.condition_key === term.key : term.group_key === 'heating' ? p.heating_key === term.key : term.group_key === 'county' ? labels.includes(p.county) : term.group_key === 'region' ? labels.includes(p.region) : false);
+  const matches = (properties ?? []).filter((p: any) => term.group_key === 'category' ? p.category === term.key : term.group_key === 'feature' ? p.features?.includes(term.key) : term.group_key === 'condition' ? p.condition_key === term.key : term.group_key === 'heating' ? p.heating_key === term.key : term.group_key === 'wall' ? p.wall_key === term.key : term.group_key === 'county' ? labels.includes(p.county) : term.group_key === 'region' ? labels.includes(p.region) : false);
   return { total: matches.length, live: matches.filter((p: any) => ['published','sold'].includes(p.status)).length };
 }
 ---

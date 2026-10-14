@@ -72,6 +72,7 @@ const floorMax = params.get('floor_max') ?? '';
 const plotMin = params.get('plot_min') ?? '';
 const plotMax = params.get('plot_max') ?? '';
 const bargain = params.get('bargain') === '1';
+const excludeAdobe = params.get('no_adobe') === '1';
 const sort = (params.get('sort') as 'featured' | 'price-asc' | 'price-desc' | 'area-desc' | 'bargain') || 'featured';
 const page = Math.max(1, Number(params.get('page') ?? '1') || 1);
 
@@ -98,6 +99,7 @@ const { properties, total, perPage } = await searchProperties({
   plotMax: plotMax ? Number(plotMax) : undefined,
   bedroomsMin: beds ? Number(beds) : undefined,
   bargain: bargain || undefined,
+  excludeAdobe: excludeAdobe || undefined,
   bbox,
   sort,
   page,
@@ -155,6 +157,7 @@ const active = [
   plotMin && { key: 'plot_min', label: `${ui.filters.land} ≥ ${plotMin} m²` },
   plotMax && { key: 'plot_max', label: `${ui.filters.land} ≤ ${plotMax} m²` },
   bargain && { key: 'bargain', label: ui.filters.bargain },
+  excludeAdobe && { key: 'no_adobe', label: ui.filters.excludeAdobe },
   bbox && { key: 'bbox', label: hu ? 'Térképterület' : 'Kaartgebied' },
 ].filter(Boolean) as { key: string; label: string }[];
 
@@ -413,6 +416,13 @@ const labels = {
           <label class="switch-row">
             <span>{ui.filters.bargain}</span>
             <input type="checkbox" role="switch" name="bargain" value="1" checked={bargain} data-auto />
+            <span class="switch" aria-hidden="true"></span>
+          </label>
+
+          {/* Adobe (vályog) houses: only listings known to be adobe are hidden; unknown stays. */}
+          <label class="switch-row">
+            <span>{ui.filters.excludeAdobe}</span>
+            <input type="checkbox" role="switch" name="no_adobe" value="1" checked={excludeAdobe} data-auto />
             <span class="switch" aria-hidden="true"></span>
           </label>
 

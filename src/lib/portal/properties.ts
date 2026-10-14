@@ -84,6 +84,13 @@ export type PortalProperty = {
   approved_at: string | null;
   /** Migration 0015; `{}` for older rows, absent before it runs. */
   requested_extras?: RequestedExtras;
+  /** Migration 0019; absent before it runs. */
+  wall_key?: string | null;
+  expired_at?: string | null;
+  confirmed_at?: string | null;
+  refresh_requested_at?: string | null;
+  refresh_reminder_sent_at?: string | null;
+  sold_at?: string | null;
   translations: PortalTranslation[];
   media: PortalMedia[];
 };
@@ -186,6 +193,10 @@ export type ListingIntake = {
   billingAddress?: string;
   /** Package, extras and on-site service chosen on the form (brief 3, migration 0015). */
   requestedExtras?: RequestedExtras;
+  /** 'exact' | 'approximate' — how precisely the map may show it (default approximate). */
+  precision?: string;
+  /** A `wall` taxonomy key (migration 0019). Optional on the form. */
+  wallMaterial?: string;
 };
 
 /**
@@ -272,6 +283,7 @@ export async function applyIntake(
     patch.seller_contact_visible = /^(igen|ja|yes|true)$/i.test(intake.ownerVisible.trim());
   }
   if (intake.phone) patch.seller_phone = intake.phone.slice(0, 40);
+  if (intake.precision === 'exact' || intake.precision === 'approximate') patch.precision = intake.precision;
 
   if (Object.keys(patch).length > 0) {
     const { error } = await supabase.from('properties').update(patch).eq('id', propertyId);
@@ -286,6 +298,12 @@ export async function applyIntake(
       .update({ requested_extras: readRequestedExtras(intake.requestedExtras) })
       .eq('id', propertyId);
     if (error) console.error('[intake] requested_extras not stored (migration 0015?)', error.message);
+  }
+
+  // Own statement for the same reason: the column arrives with migration 0019.
+  if (intake.wallMaterial && /^[a-z0-9-]{1,40}$/.test(intake.wallMaterial)) {
+    const { error } = await supabase.from('properties').update({ wall_key: intake.wallMaterial }).eq('id', propertyId);
+    if (error) console.error('[intake] wall_key not stored (migration 0019?)', error.message);
   }
 
   if (intake.description) {

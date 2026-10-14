@@ -21,6 +21,7 @@ async function usage(supabase: any, term: any) {
   else if (term.group_key === 'feature') query = query.contains('features', [term.key]);
   else if (term.group_key === 'condition') query = query.eq('condition_key', term.key);
   else if (term.group_key === 'heating') query = query.eq('heating_key', term.key);
+  else if (term.group_key === 'wall') query = query.eq('wall_key', term.key);
   else if (term.group_key === 'county') query = query.in('county', Object.values(term.labels ?? {}).filter(Boolean));
   else if (term.group_key === 'region') query = query.in('region', Object.values(term.labels ?? {}).filter(Boolean));
   else return { total: 0, live: 0 };

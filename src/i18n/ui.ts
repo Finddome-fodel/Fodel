@@ -333,6 +333,7 @@ export const UI = {
       landTo: 'Telek eddig',
       entireCountry: 'Egész ország',
       bargain: 'Alkalmi vételek',
+      excludeAdobe: 'Vályogházak nélkül',
       viewMap: 'Megtekintés térképen',
       viewList: 'Vissza a listához',
       /** Shown on the map page when a bounding box came from "search this area". */
@@ -355,7 +356,7 @@ export const UI = {
       sending: 'Küldés…',
       successTitle: 'Köszönjük!',
       successBody:
-        'Üzenetét megkaptuk. Munkatársunk munkanapokon 09:00 és 18:00 között veszi fel Önnel a kapcsolatot.',
+        'Üzenetét megkaptuk. Munkatársunk hamarosan felveszi Önnel a kapcsolatot. {hours}',
       errorTitle: 'Nem sikerült elküldeni',
       errorBody: 'Kérjük próbálja újra, vagy hívjon minket a +36 70 225 5255 számon.',
       errorRequired: 'Kérjük töltse ki ezt a mezőt.',
@@ -481,6 +482,7 @@ export const UI = {
       landTo: 'Perceel tot',
       entireCountry: 'Heel Hongarije',
       bargain: 'Buitenkansen',
+      excludeAdobe: 'Zonder leemhuizen',
       viewMap: 'Op de kaart bekijken',
       viewList: 'Terug naar de lijst',
       areaFiltered: 'Gefilterd op het gekozen kaartgebied',
@@ -502,7 +504,7 @@ export const UI = {
       sending: 'Versturen…',
       successTitle: 'Dank u wel!',
       successBody:
-        'Wij hebben uw bericht ontvangen. Op werkdagen tussen 09:00 en 18:00 nemen wij contact met u op.',
+        'Wij hebben uw bericht ontvangen. Een medewerker neemt spoedig contact met u op. {hours}',
       errorTitle: 'Versturen mislukt',
       errorBody: 'Probeer het opnieuw, of bel ons op +31 6 4400 5550.',
       errorRequired: 'Vul dit veld in.',

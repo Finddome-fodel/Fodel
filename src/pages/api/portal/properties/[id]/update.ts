@@ -118,6 +118,13 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   const { error: updateError } = await supabase.from('properties').update(patch).eq('id', id);
   if (updateError) return back('error=' + encodeURIComponent(friendlyError(updateError.message)));
 
+  // Wall material: its own statement, because the column arrives with
+  // migration 0019 and must not cost the owner the rest of the save before it.
+  if (form.has('wall_key')) {
+    const { error: wallError } = await supabase.from('properties').update({ wall_key: str(form, 'wall_key') || null }).eq('id', id);
+    if (wallError) console.warn('[update] wall_key not saved (migration 0019?)', wallError.message);
+  }
+
   for (const { value: locale } of LOCALE_OPTIONS) {
     const title = str(form, `title_${locale}`);
     const description = str(form, `description_${locale}`);

@@ -183,6 +183,11 @@ const categoryOptions = taxonomy.category.filter((term) => term.enabled).map((te
 }));
 // County is stored as free-text on properties (no FK — see 0011's rationale),
 // so the option value is the label itself, not the taxonomy key.
+// Optional; "not given" is the default so nobody has to guess a material.
+const wallOptions = [
+  { value: '', label: hu ? 'Nem adom meg' : 'Niet opgeven' },
+  ...taxonomy.wall.filter((term) => term.enabled).map((term) => ({ value: term.key, label: termLabel(term, locale) })),
+];
 const countyOptions = taxonomy.county.filter((term) => term.enabled).map((term) => ({
   value: termLabel(term, locale), label: termLabel(term, locale),
 }));
@@ -427,6 +432,29 @@ const packageSchema = listingServiceSchema(locale, {
             span="full" onDark
           />
 
+          <Field
+            locale={locale}
+            name="wallMaterial"
+            label={hu ? 'Falazat' : 'Muurwerk'}
+            hint={hu ? 'Nem kötelező. A vevők a keresőben kizárhatják a vályogházakat.' : 'Optioneel. Kopers kunnen bij het zoeken leemhuizen uitsluiten.'}
+            type="select"
+            options={wallOptions}
+            span="full" onDark
+          />
+          <Field
+            locale={locale}
+            name="precision"
+            label={hu ? 'Mennyire pontosan mutassuk a helyet a térképen?' : 'Hoe nauwkeurig tonen we de ligging op de kaart?'}
+            hint={hu
+              ? 'Közelítőnél csak egy kb. 1 km-es kört mutatunk, eltolt középponttal — a pontos cím nem derül ki. Később is módosítható.'
+              : 'Bij „bij benadering” tonen we alleen een cirkel van ca. 1 km met een verschoven middelpunt — het exacte adres blijft verborgen. Later te wijzigen.'}
+            type="select"
+            options={[
+              { value: 'approximate', label: hu ? 'Közelítőleg (ajánlott)' : 'Bij benadering (aanbevolen)' },
+              { value: 'exact', label: hu ? 'Pontosan, tűvel' : 'Exact, met een speld' },
+            ]}
+            span="full" onDark
+          />
           <Field
             locale={locale}
             name="ownerVisible"

@@ -31,6 +31,7 @@ import { billingComplete } from '~/lib/invoicing/model';
 import { COUNTRIES } from '~/config/countries';
 import { SITE_HOST } from '~/config/site.mjs';
 import { MAX_UPLOAD_MB, MAX_EDGE, LOW_RESOLUTION_EDGE } from '~/lib/media';
+import { listingRules, daysLeft, isUnresponsive } from '~/lib/listing-rules';
 
 /** A demo photo (bare filename) needs Astro's asset pipeline to become a real URL; a real upload already is one. */
 function mediaSrc(storagePath: string): string {
@@ -162,6 +163,13 @@ const photoHintCounts = photoHints(property.media);
 
 /** Not a blocker — but it costs the listing real search traffic. */
 const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).length;
+
+// Expiry and the monthly owner check (admin view of a live or expired listing).
+const expiredListing = property.status === 'archived' && Boolean(property.expired_at);
+const showLifecycle = isAdmin && (property.status === 'published' || expiredListing);
+const left = property.expires_at ? daysLeft(property.expires_at) : null;
+const hd = (iso?: string | null) => (iso ? new Date(iso).toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' }) : '—');
+const unresponsive = property.status === 'published' && isUnresponsive(property, listingRules(company.services));
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
@@ -270,7 +278,8 @@ const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).lengt
             options={countyOptions} />
           <Field locale="hu" name="region" label="Régió" required value={property.region} />
           <Field locale="hu" name="precision" label="Pontosság" type="select" value={property.precision}
-            options={[{ value: 'approximate', label: 'Közelítő (a pontos cím rejtve marad)' }, { value: 'exact', label: 'Pontos' }]} />
+            options={[{ value: 'approximate', label: 'Közelítő — puha kör, a pontos cím rejtve marad' }, { value: 'exact', label: 'Pontos — tű a pontos helyen' }]}
+            hint="Közelítőnél a térkép egy kb. 1 km-es kört mutat, eltolt középponttal, így a cím nem következtethető ki." />
           <Field locale="hu" name="lat" label="Szélesség (lat)" type="number" required value={String(property.lat)}
             min={-90} max={90}
             hint="Google Maps-en jobb klikk a helyre megadja. A kiválasztott ország határain belül legyen." />
@@ -300,6 +309,9 @@ const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).lengt
             options={[{value:'',label:'Nincs kiválasztva'}, ...taxonomy.condition.filter((term) => term.enabled).map((term) => ({value:term.key,label:termLabel(term,'hu')}))]} />
           <Field locale="hu" name="heating_key" label="Fűtés (szótár)" type="select" value={property.heating_key ?? ''}
             options={[{value:'',label:'Nincs kiválasztva'}, ...taxonomy.heating.filter((term) => term.enabled).map((term) => ({value:term.key,label:termLabel(term,'hu')}))]} />
+          <Field locale="hu" name="wall_key" label="Falazat" type="select" value={property.wall_key ?? ''}
+            options={[{value:'',label:'Nincs kiválasztva'}, ...taxonomy.wall.filter((term) => term.enabled || term.key === property.wall_key).map((term) => ({value:term.key,label:termLabel(term,'hu')}))]}
+            hint="A „vályogház kizárása” keresőszűrő ez alapján dolgozik." />
         </div>
         <label class="checkbox">
           <input type="checkbox" name="price_negotiable" value="yes" checked={property.price_negotiable} />
@@ -503,6 +515,25 @@ const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).lengt
           </p>
         )}
       </>
+    )}
+    {showLifecycle && (
+      <div class="wf-life">
+        <p class="wf-title">Lejárat és hosszabbítás</p>
+        <dl class="wf-facts">
+          <div><dt>Lejárat</dt><dd>{hd(property.expires_at)} {left !== null && (left > 0 ? <span class:list={['pill', left <= 30 ? 'pill-warn' : 'pill-ok']}>{left} nap</span> : <span class="pill pill-bad">Lejárt</span>)}</dd></div>
+          <div><dt>Utolsó visszaigazolás</dt><dd>{hd(property.confirmed_at)} {unresponsive && <span class="pill pill-bad">Nem válaszolt</span>}</dd></div>
+        </dl>
+        <div class="wf-extend">
+          <label class="sr-only" for="extend-months">Időtartam</label>
+          <select id="extend-months">
+            <option value="1">1 hónap</option>
+            <option value="3">3 hónap</option>
+            <option value="6" selected>6 hónap</option>
+            <option value="12">12 hónap</option>
+          </select>
+          <button type="button" class="btn ghost" id="extend-btn">{expiredListing ? 'Meghosszabbítás és újra online' : 'Meghosszabbítás'}</button>
+        </div>
+      </div>
     )}
     {property.status === 'published' && (
       <button type="button" class="btn ghost" id="sold-btn">Megjelölés eladottként</button>
@@ -876,6 +907,26 @@ const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).lengt
   document.getElementById('submit-btn')?.addEventListener('click', async () => {
     if (await window.pf.confirm({ title: 'Beküldi elbírálásra?', body: 'Munkatársunk átnézi a hirdetést. Amíg az elbírálás tart, a mezők nem szerkeszthetők.', confirmLabel: 'Beküldés' })) doAction('submit');
   });
+  document.getElementById('extend-btn')?.addEventListener('click', async () => {
+    const months = Number(document.getElementById('extend-months')?.value ?? 6);
+    const ok = await window.pf.confirm({
+      title: `Meghosszabbítja ${months} hónappal?`,
+      body: 'A lejárat a mostani lejárattól számít (ha már lejárt, a mai naptól), és a hirdetés online marad vagy újra megjelenik. A lépés naplózásra kerül; díjat nem számol fel.',
+      confirmLabel: 'Meghosszabbítás',
+    });
+    if (!ok) return;
+    const res = await fetch(`/api/portal/properties/${propertyId}/status`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'extend', months }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) {
+      workflowStatus.textContent = json.error === 'not-renewable' ? 'Ez a hirdetés nem hosszabbítható.' : 'Nem sikerült meghosszabbítani.';
+      return;
+    }
+    location.reload();
+  });
   document.getElementById('sold-btn')?.addEventListener('click', async () => {
     if (await window.pf.confirm({ title: 'Megjelöli eladottként?', body: 'A hirdetés lekerül az élő listáról, és az eladott ingatlanok közé kerül.', confirmLabel: 'Megjelölés eladottként' })) doAction('mark_sold');
   });
@@ -1056,6 +1107,14 @@ const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).lengt
   .steps li[data-done='true'] .tick { background: var(--pt-green); border-color: var(--pt-green); }
   .steps li[data-done='true'] .tick::after { transform: rotate(45deg) scale(1); }
   .workflow:not(:has(button, ul)) { display: none; }
+  .wf-life { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--pt-hair); }
+  .wf-facts { display: grid; gap: 8px; margin-bottom: 14px; }
+  .wf-facts div { display: grid; grid-template-columns: minmax(150px, auto) 1fr; gap: 12px; align-items: center; font-size: 14.5px; }
+  .wf-facts dt { color: var(--ink-quiet); }
+  .wf-facts dd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ink); }
+  .wf-extend { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .wf-extend select { min-height: 46px; padding: 8px 40px 8px 16px; border-radius: var(--r-pill); font: inherit; font-size: 14.5px; }
+  @media (max-width: 560px) { .wf-facts div { grid-template-columns: 1fr; gap: 2px; } }
   .workflow-status { min-height: 1.4em; margin-top: 12px; font-size: 14px; color: var(--ink-quiet); }
   .soft-warn { max-width: 68ch; margin-top: 16px; padding: 12px 16px; border-radius: var(--r-md); background: var(--pt-amber-bg); font-size: 14px; line-height: 1.65; color: var(--pt-amber); }
 
