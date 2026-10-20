@@ -18,6 +18,8 @@ interface ImportMetaEnv {
   /** Optional: where new enquiries are POSTed as JSON (the CRM's incoming webhook). */
   readonly CRM_WEBHOOK_URL?: string;
   readonly CRM_WEBHOOK_TOKEN?: string;
+  /** `capture` writes every email to .e2e/outbox/ instead of sending it (end-to-end tests only). */
+  readonly EMAIL_TRANSPORT?: string;
 }
 
 interface ImportMeta {

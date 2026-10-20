@@ -17,6 +17,11 @@ import {
 import { isOverdue } from '../src/lib/invoicing/model.ts';
 import { signWith, verifyWith } from '../src/lib/valuation/action-token.ts';
 import { cronAuthorised } from '../src/lib/cron-auth.ts';
+import {
+  validateField, normalizePhone, normalizePostcode, normalizeNumber, parseLocaleNumber, errorMessage,
+  defaultPhoneCountry, countryOfNumber, formatPhoneAsYouType,
+} from '../src/lib/validation.ts';
+import { withRetry, isRetryable } from '../src/lib/email/retry.ts';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -148,5 +153,88 @@ test('compact prices', () => {
   assert.equal(compactEur(12_000_000), '€12M');
   assert.equal(compactEur(950), '€950');
 });
+
+console.log('Phone numbers');
+test('Hungarian national number → E.164', () => assert.equal(normalizePhone('06 30 123 4567', 'HU').e164, '+36301234567'));
+test('Dutch mobile with the picker on NL', () => assert.equal(normalizePhone('06 12345678', 'NL').e164, '+31612345678'));
+test('an international prefix wins over the picked country', () => {
+  const r = normalizePhone('+31 6 12345678', 'HU');
+  assert.equal(r.e164, '+31612345678');
+  assert.equal(r.country, 'NL');
+});
+test('00 prefix is read as +', () => assert.equal(normalizePhone('0036 30 123 4567', 'NL').e164, '+36301234567'));
+test('too short is rejected', () => assert.equal(normalizePhone('12345', 'HU').ok, false));
+test('letters are rejected', () => assert.equal(normalizePhone('abc', 'HU').ok, false));
+test('required and optional', () => {
+  assert.equal(validateField({ rule: 'phone', required: true }, '', 'HU')?.code, 'required');
+  assert.equal(validateField({ rule: 'phone' }, '', 'HU'), null);
+});
+test('the error names the country and gives an example', () => {
+  const e = validateField({ rule: 'phone' }, '123', 'NL');
+  assert.match(errorMessage(e, 'hu'), /holland/);
+  assert.match(errorMessage(e, 'nl'), /\+31/);
+});
+test('default country follows the language', () => {
+  assert.equal(defaultPhoneCountry('hu'), 'HU');
+  assert.equal(defaultPhoneCountry('nl'), 'NL');
+  assert.equal(countryOfNumber('+4915112345678'), 'DE');
+});
+test('as-you-type formatting', () => assert.equal(formatPhoneAsYouType('+31612345678', 'NL'), '+31 6 12345678'));
+
+console.log('Postcodes, numbers and the rest');
+test('Hungarian postcode is four digits', () => {
+  assert.equal(validateField({ rule: 'postcode' }, '1051', 'HU'), null);
+  assert.equal(validateField({ rule: 'postcode' }, '10511', 'HU')?.code, 'postcode');
+});
+test('Dutch postcode is normalised', () => assert.equal(normalizePostcode('1234ab', 'NL'), '1234 AB'));
+test('Dutch postcode needs letters', () => assert.equal(validateField({ rule: 'postcode' }, '1234', 'NL')?.code, 'postcode'));
+test('price written the way people write it', () => {
+  assert.equal(parseLocaleNumber('64.000.000'), 64000000);
+  assert.equal(parseLocaleNumber('1 200 000'), 1200000);
+  assert.equal(parseLocaleNumber('12,5'), 12.5);
+  assert.equal(parseLocaleNumber('12 abc'), null);
+});
+test('normalizeNumber gives the machine form', () => {
+  assert.equal(normalizeNumber('250.000'), '250000');
+  assert.equal(normalizeNumber('250 000'), '250000');
+  assert.equal(normalizeNumber('47.1625'), '47.1625');
+  assert.equal(normalizeNumber('x'), 'x');
+});
+test('number limits', () => {
+  assert.equal(validateField({ rule: 'number', min: 1000 }, '999', 'HU')?.code, 'min');
+  assert.equal(validateField({ rule: 'number', max: 10 }, '11', 'HU')?.code, 'max');
+});
+test('email and url', () => {
+  assert.equal(validateField({ rule: 'email' }, 'a@b.hu'), null);
+  assert.equal(validateField({ rule: 'email' }, 'a@b')?.code, 'email');
+  assert.equal(validateField({ rule: 'url' }, 'https://fodel.eu'), null);
+  assert.equal(validateField({ rule: 'url' }, 'fodel')?.code, 'url');
+});
+
+console.log('Email retries');
+const NO_WAIT = async () => {};
+const waits = [];
+test('429 and 5xx are retried, a 422 is not', () => {
+  assert.equal(isRetryable({ statusCode: 429 }), true);
+  assert.equal(isRetryable({ statusCode: 503 }), true);
+  assert.equal(isRetryable({ statusCode: 422 }), false);
+  assert.equal(isRetryable(new Error('network')), true);
+});
+await (async () => {
+  const first = await withRetry(async () => null, NO_WAIT);
+  test('delivered first time', () => assert.deepEqual(first, { sent: true, attempts: 1 }));
+  let n = 0;
+  const r = await withRetry(async () => (++n < 3 ? { statusCode: 503 } : null), async (ms) => { waits.push(ms); });
+  test('two failures then success: 3 attempts, doubling waits', () => {
+    assert.deepEqual(r, { sent: true, attempts: 3 });
+    assert.deepEqual(waits, [400, 800]);
+  });
+  let m = 0;
+  const bad = await withRetry(async () => { m++; return { statusCode: 422 }; }, NO_WAIT);
+  test('a bad payload is tried once', () => assert.deepEqual([bad.sent, bad.attempts, m], [false, 1, 1]));
+  let k = 0;
+  const down = await withRetry(async () => { k++; throw new Error('down'); }, NO_WAIT);
+  test('gives up after three attempts', () => assert.deepEqual([down.sent, down.attempts, k], [false, 3, 3]));
+})();
 
 console.log(process.exitCode ? '\nFAILED' : `\nAll ${passed} checks passed.`);

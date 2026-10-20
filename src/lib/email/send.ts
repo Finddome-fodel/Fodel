@@ -22,22 +22,28 @@ import { Resend } from 'resend';
 import type { BuiltEmail } from './templates';
 import type { EmailLocale } from './layout';
 import { senderAddress, officeInbox, replyToAddress } from './routing';
+import { withRetry } from './retry';
 
 export type { EmailLocale } from './layout';
 export { templates } from './templates';
 
-const MAX_ATTEMPTS = 3;
-const RETRY_BASE_MS = 400;
+/**
+ * `EMAIL_TRANSPORT=capture` (end-to-end tests only): every message is written
+ * as one JSON file to `.e2e/outbox/` and nothing is sent. The Playwright suite
+ * reads invite and reset links from there, so a full registration can run
+ * without a mailbox and without ever reaching Resend. Unset means the normal
+ * Resend path below; production never sets it.
+ */
+const CAPTURE_DIR = '.e2e/outbox';
 
-/** Resend rejects outright on a bad payload; retrying that just wastes time. */
-function isRetryable(error: unknown): boolean {
-  const status = (error as { statusCode?: number; status?: number } | null)?.statusCode
-    ?? (error as { status?: number } | null)?.status;
-  if (typeof status !== 'number') return true; // network-level failure — worth another go
-  return status === 429 || status >= 500;
+async function capture(message: Record<string, unknown>): Promise<boolean> {
+  const { mkdir, writeFile } = await import('node:fs/promises');
+  const { join } = await import('node:path');
+  await mkdir(CAPTURE_DIR, { recursive: true });
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`;
+  await writeFile(join(CAPTURE_DIR, name), JSON.stringify(message, null, 2));
+  return true;
 }
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function sendEmail(opts: {
   to: string;
@@ -48,9 +54,24 @@ export async function sendEmail(opts: {
   replyTo?: string;
   /** Files to attach — the invoice PDF. */
   attachments?: { filename: string; content: Buffer }[];
+  /** Defaults to the portal sender; the public forms pass `senderAddress('website')`. */
+  from?: string;
 }): Promise<boolean> {
   const apiKey = import.meta.env.RESEND_API_KEY;
-  const from = senderAddress('portal');
+  const from = opts.from ?? senderAddress('portal');
+
+  if (import.meta.env.EMAIL_TRANSPORT === 'capture') {
+    return capture({
+      from,
+      to: opts.to,
+      replyTo: opts.replyTo ?? replyToAddress(),
+      subject: opts.subject,
+      html: opts.html,
+      text: opts.text,
+      attachments: (opts.attachments ?? []).map((a) => a.filename),
+      at: new Date().toISOString(),
+    });
+  }
 
   if (!apiKey) {
     console.warn(`[email] RESEND_API_KEY unset — would send "${opts.subject}" to ${opts.to}`);
@@ -59,37 +80,25 @@ export async function sendEmail(opts: {
 
   const resend = new Resend(apiKey);
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    try {
-      const { error } = await resend.emails.send({
-        from,
-        to: opts.to,
-        subject: opts.subject,
-        html: opts.html,
-        text: opts.text,
-        replyTo: opts.replyTo ?? replyToAddress(),
-        ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
-      });
-      if (!error) return true;
-      if (!isRetryable(error) || attempt === MAX_ATTEMPTS) {
-        console.error(
-          `[email] giving up on "${opts.subject}" to ${opts.to} after ${attempt} attempt(s)`,
-          error
-        );
-        return false;
-      }
-    } catch (error) {
-      if (!isRetryable(error) || attempt === MAX_ATTEMPTS) {
-        console.error(
-          `[email] giving up on "${opts.subject}" to ${opts.to} after ${attempt} attempt(s)`,
-          error
-        );
-        return false;
-      }
-    }
-    await sleep(RETRY_BASE_MS * 2 ** (attempt - 1));
+  const result = await withRetry(async () => {
+    const { error } = await resend.emails.send({
+      from,
+      to: opts.to,
+      subject: opts.subject,
+      html: opts.html,
+      text: opts.text,
+      replyTo: opts.replyTo ?? replyToAddress(),
+      ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
+    });
+    return error;
+  });
+  if (!result.sent) {
+    console.error(
+      `[email] giving up on "${opts.subject}" to ${opts.to} after ${result.attempts} attempt(s)`,
+      result.error
+    );
   }
-  return false;
+  return result.sent;
 }
 
 /** Sends a template's output. The one call site shape every trigger should use. */

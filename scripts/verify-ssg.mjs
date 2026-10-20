@@ -381,6 +381,11 @@ console.log('\nJavaScript budget');
   // emitted, so every map stayed empty). Fetched only by map pages and run
   // off the main thread, so it is measured on its own line.
   const isMapWorker = (name) => /^maplibre-gl-worker/i.test(name);
+  // The form validation module (src/lib/validation.ts, with libphonenumber's
+  // metadata): imported dynamically the first time someone touches a form
+  // field, so no page loads it up front. Measured on its own line, gzipped.
+  const isValidationChunk = (name) => /^validation\./i.test(name);
+  let validationGzipBytes = 0;
   let coreBytes = 0;
   let mapRawBytes = 0;
   let mapGzipBytes = 0;
@@ -392,6 +397,8 @@ console.log('\nJavaScript budget');
       else if (entry.name.endsWith('.js')) {
         if (isMapWorker(entry.name)) {
           workerGzipBytes += gzipSync(await fs.readFile(full)).byteLength;
+        } else if (isValidationChunk(entry.name)) {
+          validationGzipBytes += gzipSync(await fs.readFile(full)).byteLength;
         } else if (isMapChunk(entry.name)) {
           const buf = await fs.readFile(full);
           mapRawBytes += buf.byteLength;
@@ -412,6 +419,11 @@ console.log('\nJavaScript budget');
     const workerKb = workerGzipBytes / 1024;
     if (workerKb > 160) fail(`map tile worker is ${workerKb.toFixed(1)} kB gzipped (budget 160 kB, map pages only, off the main thread)`);
     else pass(`map tile worker ${workerKb.toFixed(1)} kB gzipped (budget 160 kB, map pages only, off the main thread)`);
+  }
+  if (validationGzipBytes > 0) {
+    const validationKb = validationGzipBytes / 1024;
+    if (validationKb > 60) fail(`form validation chunk is ${validationKb.toFixed(1)} kB gzipped (budget 60 kB, loaded only when a form field is used)`);
+    else pass(`form validation chunk ${validationKb.toFixed(1)} kB gzipped (budget 60 kB, loaded only when a form field is used)`);
   }
   const coreKb = coreBytes / 1024;
   if (coreKb > 100) fail(`non-map client JS is ${coreKb.toFixed(1)} kB (budget 100 kB)`);

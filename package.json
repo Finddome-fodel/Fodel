@@ -20,7 +20,9 @@
     "seed:demo": "node scripts/seed-demo.mjs",
     "verify:rls": "node scripts/verify-rls.mjs",
     "verify:workflow": "node scripts/verify-workflow.mjs",
-    "test:rules": "node scripts/test-rules.mjs"
+    "test:rules": "node scripts/test-rules.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:webkit": "playwright test --project=webkit --project=mobile-safari"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -31,6 +33,7 @@
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.45.4",
     "astro": "^5.16.2",
+    "libphonenumber-js": "^1.13.15",
     "maplibre-gl": "^6.5.0",
     "marked": "^18.0.12",
     "pdfmake": "^0.2.20",
@@ -41,6 +44,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.64.1",
     "typescript": "^5.9.3"
   }
 }
