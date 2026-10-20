@@ -10,15 +10,17 @@
 interface Props {
   url: string;
   title: string;
-  locale: 'hu' | 'nl';
+  locale: Locale;
 }
 
 import { extractYouTubeId } from '~/lib/video';
+import { CHROME } from '~/i18n/chrome';
+import type { Locale } from '~/i18n/ui';
 
 const { url, title, locale } = Astro.props;
 const videoId = extractYouTubeId(url);
 const poster = videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null;
-const playLabel = locale === 'hu' ? 'Videó lejátszása' : 'Video afspelen';
+const playLabel = CHROME[locale].playVideo;
 ---
 
 {videoId && poster ? (

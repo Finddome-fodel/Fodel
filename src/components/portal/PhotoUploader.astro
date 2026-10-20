@@ -16,6 +16,7 @@
  * supports.
  */
 import PhotoTips from '~/components/PhotoTips.astro';
+import type { PortalLang } from '~/lib/portal/auth-copy';
 import { isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { resolveImage } from '~/lib/property-images';
 import { MAX_UPLOAD_MB, MAX_EDGE, LOW_RESOLUTION_EDGE } from '~/lib/media';
@@ -29,13 +30,12 @@ interface Props {
   packageName: string;
   editable: boolean;
   isAdmin: boolean;
-  locale?: 'hu' | 'nl';
+  locale?: PortalLang;
   /** Show the card heading (the editor); the setup has its own step heading. */
   withHeading?: boolean;
 }
 
 const { propertyId, media, photoLimit, packageName, editable, isAdmin, locale = 'hu', withHeading = true } = Astro.props;
-const hu = locale === 'hu';
 
 /** A demo photo (bare filename) needs Astro's asset pipeline to become a real URL; a real upload already is one. */
 function mediaSrc(storagePath: string): string {
@@ -50,8 +50,8 @@ const photoCount = media.length;
 const photosFull = photoLimit !== null && photoCount >= photoLimit;
 const hints = photoHints(media);
 
-const t = hu
-  ? {
+const t = {
+  hu: {
       heading: 'Fényképek',
       sub: 'Az első kép a címlapkép. Bármelyik másikat a „Címlapképnek” gombbal teheti az első helyre.',
       meterOf: 'kép a csomagban',
@@ -73,8 +73,8 @@ const t = hu
       full: `A(z) ${packageName} csomag legfeljebb ${photoLimit} képet tartalmaz. ${isAdmin ? 'Adminként ennél többet is feltölthet.' : 'Újabb kép előtt töröljön egyet, vagy válasszon nagyobb csomagot.'}`,
       add: 'Fotók hozzáadása',
       addSub: 'Húzza ide a képeket, vagy kattintson',
-    }
-  : {
+    },
+  nl: {
       heading: 'Foto’s',
       sub: 'De eerste foto is de hoofdfoto. Met ‘Als hoofdfoto’ zet u een andere vooraan.',
       meterOf: 'foto’s in het pakket',
@@ -96,11 +96,35 @@ const t = hu
       full: `Het pakket ${packageName} bevat maximaal ${photoLimit} foto’s. ${isAdmin ? 'Als beheerder kunt u er meer uploaden.' : 'Verwijder eerst een foto, of kies een groter pakket.'}`,
       add: 'Foto’s toevoegen',
       addSub: 'Sleep foto’s hierheen of klik',
-    };
+    },
+  en: {
+      heading: 'Photos',
+      sub: 'The first photo is the cover photo. Use ‘Make cover’ to move another one to the front.',
+      meterOf: 'photos in the package',
+      meterUnlimited: 'photos · unlimited',
+      rules: `Drag your photos here or click to browse. JPG, PNG or WebP, up to ${MAX_UPLOAD_MB} MB per photo (your browser shrinks large files automatically before uploading). The longest side is stored at up to ${MAX_EDGE} pixels. We recommend at least ${LOW_RESOLUTION_EDGE} pixels on the longest side. We accept smaller photos too, but they can look blurry on a large screen.`,
+      tipsHeading: 'How to take good photos',
+      flags: (portrait: number, low: number) =>
+        `${portrait ? `${portrait} ${portrait === 1 ? 'photo is' : 'photos are'} in portrait orientation. ` : ''}${low ? `${low} ${low === 1 ? 'photo has' : 'photos have'} a low resolution. ` : ''}You can still submit, but landscape photos in high resolution show the property better. Replace the marked photos if you can.`,
+      captions: 'Give each photo a short description (for example ‘Living room with a tiled stove’). A screen reader reads it out to visitors with impaired vision, and Google Images uses it to find the listing.',
+      cover: 'Cover photo',
+      makeCover: 'Make cover',
+      portrait: 'Portrait',
+      portraitTitle: 'This photo is in portrait orientation. Landscape photos work better.',
+      low: 'Low resolution',
+      lowTitle: 'It can look blurry on a large screen.',
+      remove: 'Delete photo',
+      captionLabel: 'Photo description',
+      captionPlaceholder: 'What can be seen in the photo?',
+      full: `The ${packageName} package includes up to ${photoLimit} photos. ${isAdmin ? 'As an administrator you can upload more.' : 'Delete a photo first, or choose a larger package.'}`,
+      add: 'Add photos',
+      addSub: 'Drag photos here or click',
+    },
+}[locale];
 
 /** What the script says, in the same language. */
-const scriptStrings = hu
-  ? {
+const scriptStrings = {
+  hu: {
       uploading: 'Feltöltés: {name}…',
       failed: 'Nem sikerült feltölteni: {name}',
       tooBig: 'Nem sikerült feltölteni: {name}. A kép túl nagy (JPG, PNG vagy WebP formátumban próbálja).',
@@ -119,8 +143,8 @@ const scriptStrings = hu
         'photo-limit': photoLimit ? `elérte a csomagban foglalt ${photoLimit} képet` : 'elérte a csomag képkeretét',
         forbidden: 'nincs jogosultsága',
       },
-    }
-  : {
+    },
+  nl: {
       uploading: 'Uploaden: {name}…',
       failed: 'Uploaden mislukt: {name}',
       tooBig: 'Uploaden mislukt: {name}. De foto is te groot (probeer JPG, PNG of WebP).',
@@ -139,7 +163,28 @@ const scriptStrings = hu
         'photo-limit': photoLimit ? `het maximum van ${photoLimit} foto’s in uw pakket is bereikt` : 'het maximum aantal foto’s is bereikt',
         forbidden: 'geen toegang',
       },
-    };
+    },
+  en: {
+      uploading: 'Uploading: {name}…',
+      failed: 'Upload failed: {name}',
+      tooBig: 'Upload failed: {name}. The photo is too large (try JPG, PNG or WebP).',
+      done: 'Done, the page is refreshing…',
+      lowRes: 'Uploaded. Low resolution: {names}. If you have a larger version, please upload that.',
+      captionFailed: 'The description could not be saved.',
+      confirmTitle: 'Delete this photo?',
+      confirmBody: 'The photo will be removed from the listing for good.',
+      confirmLabel: 'Delete',
+      errors: {
+        'unsupported-type': 'this format is not supported (use JPG, PNG or WebP)',
+        'too-large': 'the file is too large',
+        'unreadable-image': 'the file cannot be read as a photo',
+        'storage-failed': 'saving failed, please try again',
+        'not-editable': 'the listing cannot be edited right now',
+        'photo-limit': photoLimit ? `you have reached the ${photoLimit} photos in your package` : 'you have reached the photo limit',
+        forbidden: 'no access',
+      },
+    },
+}[locale];
 ---
 
 <section

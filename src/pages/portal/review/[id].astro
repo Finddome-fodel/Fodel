@@ -17,6 +17,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { portalLang } from '~/lib/portal/auth-copy';
 import { getProperty, STATUS_LABEL } from '~/lib/portal/properties';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { resolveImage } from '~/lib/property-images';
@@ -103,7 +104,7 @@ const awaitingPayment = property.status === 'awaiting_payment';
 const { data: ownerProfile } = property.owner_id
   ? await supabase.from('profiles').select('locale').eq('id', property.owner_id).maybeSingle()
   : { data: null };
-const ownerLocale: 'hu' | 'nl' = ownerProfile?.locale === 'nl' ? 'nl' : 'hu';
+const ownerLocale = portalLang(ownerProfile?.locale);
 
 // Automatic hints (brief 3 §G.2) — pre-tick what can be measured; everything
 // else (people in photos, darkness, sharpness) stays a human judgement.
@@ -360,7 +361,7 @@ const { data: creditableReferral } = property.owner_id
         <legend>Ellenőrzőlista</legend>
         <p class="hint">
           Jelölje be, ami <strong>nem</strong> megfelelő. A jelölésekből a rendszer megírja a javítási
-          kérést a hirdető nyelvén ({ownerLocale === 'nl' ? 'hollandul' : 'magyarul'}) — küldés előtt
+          kérést a hirdető nyelvén ({{ hu: 'magyarul', nl: 'hollandul', en: 'angolul' }[ownerLocale]}) — küldés előtt
           szabadon átírhatja. Az automatikusan felismert hiányosságok előre be vannak jelölve.
         </p>
         <div class="checklist-groups">

@@ -1,28 +1,55 @@
 /**
  * The signed-out portal screens (sign in, register, forgotten and new
- * password) in Hungarian and Dutch.
+ * password) in all five languages.
  *
- * Until the launch round these screens were Hungarian only, so a Dutch buyer
- * who clicked "Inloggen" on the Dutch site landed on "Portál bejelentkezés".
- * The public nav now links with `?lang=hu|nl`; failing that, the language
- * last picked in the switcher (the `fodel_lang` cookie) decides, and
- * Hungarian — the office's language — is the default. A visitor whose cookie
- * says en/de/fr gets Dutch: the bridge pages point into the Dutch site.
+ * The public nav links with `?lang=<code>`; failing that, the language last
+ * picked in the switcher (the `fodel_lang` cookie) decides, and Hungarian,
+ * the office's language, is the default.
+ *
+ * Once signed in, the seller's own screens speak Hungarian, Dutch or English
+ * (see portalLang): a seller registered in German or French sees Dutch there,
+ * because the portal itself is not translated further in this round.
  */
 import type { AstroCookies } from 'astro';
+import { localeFrom, type Locale } from '~/i18n/ui';
 
-export type AuthLang = 'hu' | 'nl';
+export type AuthLang = Locale;
 
 export function authLang(url: URL, cookies: AstroCookies): AuthLang {
   const asked = url.searchParams.get('lang');
-  if (asked === 'hu' || asked === 'nl') return asked;
-  const remembered = cookies.get('fodel_lang')?.value;
-  if (remembered === 'hu') return 'hu';
-  if (remembered === 'nl' || remembered === 'en' || remembered === 'de' || remembered === 'fr') return 'nl';
-  return 'hu';
+  if (asked) return localeFrom(asked, localeFrom(cookies.get('fodel_lang')?.value, 'hu'));
+  return localeFrom(cookies.get('fodel_lang')?.value, 'hu');
 }
 
-export const AUTH_COPY = {
+/**
+ * The language of the seller's screens after sign-in. English has its own;
+ * German and French fall back to Dutch, the closest language we have written
+ * those screens in.
+ */
+export type PortalLang = 'hu' | 'nl' | 'en';
+
+export function portalLang(locale: unknown): PortalLang {
+  const l = localeFrom(locale, 'hu');
+  return l === 'hu' ? 'hu' : l === 'en' ? 'en' : 'nl';
+}
+
+export interface AuthStrings {
+  tabs: { label: string; login: string; register: string };
+  login: {
+    title: string; heading: string; email: string; password: string; submit: string; forgot: string; justReset: string;
+    errors: { invalid: string; 'rate-limited': string; other: string };
+    invited: string;
+  };
+  register: { title: string; heading: string; intro: string };
+  forgot: { title: string; heading: string; body: string; email: string; submit: string; sent: string; validity: string; back: string };
+  reset: {
+    title: string; heading: string; headingInvalid: string; password: string; password2: string; submit: string; rule: string;
+    invalid: string; newLink: string; back: string;
+    errors: { short: string; mismatch: string; invalid: string; failed: string };
+  };
+}
+
+export const AUTH_COPY: Record<Locale, AuthStrings> = {
   hu: {
     tabs: { label: 'Fiók', login: 'Bejelentkezés', register: 'Regisztráció' },
     login: {
@@ -125,4 +152,157 @@ export const AUTH_COPY = {
       },
     },
   },
-} as const;
+  en: {
+    tabs: { label: 'Account', login: 'Sign in', register: 'Register' },
+    login: {
+      title: 'Sign in',
+      heading: 'Welcome back',
+      email: 'Email address',
+      password: 'Password',
+      submit: 'Sign in',
+      forgot: 'Forgotten your password?',
+      justReset: 'Your password has been changed. Sign in with your new password.',
+      errors: {
+        invalid: 'Incorrect email address or password.',
+        'rate-limited': 'Too many attempts. Wait a minute and try again.',
+        other: 'We could not sign you in. Please try again.',
+      },
+      invited: 'Invited by FODEL? Use the link in the invitation to set your password.',
+    },
+    register: {
+      title: 'Register',
+      heading: 'Advertise with FODEL',
+      intro: 'Enter your name and contact details. We send you a link to set a password; after that you put your listing together step by step.',
+    },
+    forgot: {
+      title: 'Forgotten password',
+      heading: 'Forgotten password',
+      body: 'Enter your email address and we will send you a link to set a new password.',
+      email: 'Email address',
+      submit: 'Send link',
+      sent: 'If an account exists for this email address, we have sent a link to it. Check your inbox, and your spam folder too.',
+      validity: 'The link is valid for one hour.',
+      back: 'Back to sign in',
+    },
+    reset: {
+      title: 'New password',
+      heading: 'Set a new password',
+      headingInvalid: 'The link is not valid',
+      password: 'New password',
+      password2: 'New password again',
+      submit: 'Save password',
+      rule: 'At least 8 characters.',
+      invalid: 'This link has expired or has already been used. For your security every link works once, and for one hour.',
+      newLink: 'Request a new link',
+      back: 'Back to sign in',
+      errors: {
+        short: 'The password must be at least 8 characters.',
+        mismatch: 'The two passwords do not match.',
+        invalid: 'This link is no longer valid. Request a new one.',
+        failed: 'Saving failed. Please try again.',
+      },
+    },
+  },
+  de: {
+    tabs: { label: 'Konto', login: 'Anmelden', register: 'Registrieren' },
+    login: {
+      title: 'Anmelden',
+      heading: 'Willkommen zurück',
+      email: 'E-Mail-Adresse',
+      password: 'Passwort',
+      submit: 'Anmelden',
+      forgot: 'Passwort vergessen?',
+      justReset: 'Ihr Passwort wurde geändert. Melden Sie sich mit dem neuen Passwort an.',
+      errors: {
+        invalid: 'Falsche E-Mail-Adresse oder falsches Passwort.',
+        'rate-limited': 'Zu viele Versuche. Warten Sie eine Minute und versuchen Sie es erneut.',
+        other: 'Die Anmeldung hat nicht geklappt. Bitte versuchen Sie es erneut.',
+      },
+      invited: 'Von FODEL eingeladen? Über den Link in der Einladung legen Sie Ihr Passwort fest.',
+    },
+    register: {
+      title: 'Registrieren',
+      heading: 'Bei FODEL inserieren',
+      intro: 'Geben Sie Ihren Namen und Ihre Kontaktdaten an. Wir senden Ihnen einen Link zum Festlegen eines Passworts; danach stellen Sie Schritt für Schritt Ihr Inserat zusammen.',
+    },
+    forgot: {
+      title: 'Passwort vergessen',
+      heading: 'Passwort vergessen',
+      body: 'Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen Link, mit dem Sie ein neues Passwort festlegen.',
+      email: 'E-Mail-Adresse',
+      submit: 'Link senden',
+      sent: 'Falls zu dieser E-Mail-Adresse ein Konto gehört, haben wir einen Link dorthin gesendet. Schauen Sie in Ihr Postfach und auch in den Spam-Ordner.',
+      validity: 'Der Link ist eine Stunde gültig.',
+      back: 'Zurück zur Anmeldung',
+    },
+    reset: {
+      title: 'Neues Passwort',
+      heading: 'Neues Passwort festlegen',
+      headingInvalid: 'Der Link ist ungültig',
+      password: 'Neues Passwort',
+      password2: 'Neues Passwort wiederholen',
+      submit: 'Passwort speichern',
+      rule: 'Mindestens 8 Zeichen.',
+      invalid: 'Dieser Link ist abgelaufen oder wurde bereits verwendet. Zu Ihrer Sicherheit funktioniert jeder Link nur einmal und eine Stunde lang.',
+      newLink: 'Neuen Link anfordern',
+      back: 'Zurück zur Anmeldung',
+      errors: {
+        short: 'Das Passwort muss mindestens 8 Zeichen haben.',
+        mismatch: 'Die beiden Passwörter stimmen nicht überein.',
+        invalid: 'Dieser Link ist nicht mehr gültig. Fordern Sie einen neuen an.',
+        failed: 'Das Speichern hat nicht geklappt. Bitte versuchen Sie es erneut.',
+      },
+    },
+  },
+  fr: {
+    tabs: { label: 'Compte', login: 'Connexion', register: 'Inscription' },
+    login: {
+      title: 'Connexion',
+      heading: 'Bon retour',
+      email: 'Adresse e-mail',
+      password: 'Mot de passe',
+      submit: 'Se connecter',
+      forgot: 'Mot de passe oublié\u202f?',
+      justReset: 'Votre mot de passe a été modifié. Connectez-vous avec le nouveau.',
+      errors: {
+        invalid: 'Adresse e-mail ou mot de passe incorrect.',
+        'rate-limited': 'Trop de tentatives. Attendez une minute, puis réessayez.',
+        other: 'La connexion a échoué. Veuillez réessayer.',
+      },
+      invited: 'Invité par FODEL\u202f? Le lien de l’invitation vous permet de définir votre mot de passe.',
+    },
+    register: {
+      title: 'Inscription',
+      heading: 'Publiez chez FODEL',
+      intro: 'Indiquez votre nom et vos coordonnées. Nous vous envoyons un lien pour définir un mot de passe\u00a0; vous composez ensuite votre annonce étape par étape.',
+    },
+    forgot: {
+      title: 'Mot de passe oublié',
+      heading: 'Mot de passe oublié',
+      body: 'Indiquez votre adresse e-mail et nous vous envoyons un lien pour définir un nouveau mot de passe.',
+      email: 'Adresse e-mail',
+      submit: 'Envoyer le lien',
+      sent: 'Si un compte existe pour cette adresse e-mail, nous y avons envoyé un lien. Regardez dans votre boîte de réception, et aussi dans vos courriers indésirables.',
+      validity: 'Le lien est valable une heure.',
+      back: 'Retour à la connexion',
+    },
+    reset: {
+      title: 'Nouveau mot de passe',
+      heading: 'Définir un nouveau mot de passe',
+      headingInvalid: 'Le lien n’est pas valable',
+      password: 'Nouveau mot de passe',
+      password2: 'Nouveau mot de passe, encore une fois',
+      submit: 'Enregistrer le mot de passe',
+      rule: '8 caractères au minimum.',
+      invalid: 'Ce lien a expiré ou a déjà été utilisé. Pour votre sécurité, chaque lien ne fonctionne qu’une fois et pendant une heure.',
+      newLink: 'Demander un nouveau lien',
+      back: 'Retour à la connexion',
+      errors: {
+        short: 'Le mot de passe doit comporter au moins 8 caractères.',
+        mismatch: 'Les deux mots de passe ne correspondent pas.',
+        invalid: 'Ce lien n’est plus valable. Demandez-en un nouveau.',
+        failed: 'L’enregistrement a échoué. Veuillez réessayer.',
+      },
+    },
+  },
+};

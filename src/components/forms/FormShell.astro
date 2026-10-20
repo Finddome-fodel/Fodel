@@ -30,7 +30,7 @@
  * passes it in the `success` slot.
  */
 import Button from '~/components/Button.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
 import { getCompany } from '~/lib/runtime-config';
 import { fillHours } from '~/lib/hours';
 
@@ -62,9 +62,12 @@ const {
 } = Astro.props;
 
 const ui = UI[locale];
+const x = localizer(locale);
 const company = await getCompany();
 const publicPhones = company.phones.filter((phone) => phone.public);
-const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.startsWith('tel:+36')) ?? publicPhones[0]) : (publicPhones.find((phone) => phone.href.startsWith('tel:+31')) ?? publicPhones[0]);
+// A Hungarian visitor is shown the Hungarian number, everyone else the Dutch one.
+const contactPhone = publicPhones.find((phone) => phone.href.startsWith(locale === 'hu' ? 'tel:+36' : 'tel:+31')) ?? publicPhones[0];
+const phoneDisplay = contactPhone?.display ?? '';
 ---
 
 <div class:list={['form-shell', { 'on-dark': onDark }]}>
@@ -94,6 +97,8 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
     enctype={multipart ? 'multipart/form-data' : undefined}
     novalidate
     data-locale={locale}
+    data-sending={ui.form.sending}
+    data-send-error={ui.form.sendError}
   >
     <input type="hidden" name="locale" value={locale} />
     <input type="hidden" name="formId" value={formId} />
@@ -136,11 +141,13 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
 
     <noscript>
       <p class="noscript">
-        {
-          locale === 'hu'
-            ? `Ha az űrlap nem működne, hívjon minket a ${contactPhone?.display ?? ''} számon vagy írjon az ${company.email.primary} címre.`
-            : `Werkt het formulier niet? Bel ons op ${contactPhone?.display ?? ''} of mail naar ${company.email.primary}.`
-        }
+        {x(
+          `Ha az űrlap nem működne, hívjon minket a ${phoneDisplay} számon vagy írjon az ${company.email.primary} címre.`,
+          `Werkt het formulier niet? Bel ons op ${phoneDisplay} of mail naar ${company.email.primary}.`,
+          `If the form does not work, call us on ${phoneDisplay} or email ${company.email.primary}.`,
+          `Funktioniert das Formular nicht? Rufen Sie uns an unter ${phoneDisplay} oder schreiben Sie an ${company.email.primary}.`,
+          `Si le formulaire ne fonctionne pas, appelez-nous au ${phoneDisplay} ou écrivez à ${company.email.primary}.`
+        )}
       </p>
     </noscript>
   </form>
@@ -154,15 +161,20 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
   // a blur or a submit — never with the page.
   let lib: typeof import('~/lib/validation') | null = null;
   const loadLib = async () => (lib ??= await import('~/lib/validation'));
-
-  const sendError = {
-    hu: 'Nem sikerült elküldeni. Kérjük, próbálja újra, vagy hívjon minket.',
-    nl: 'Versturen is niet gelukt. Probeer het opnieuw, of bel ons.',
+  // The wording is one small file per language, fetched for this page's own.
+  const wording = async (locale: string) => {
+    const [{ loadValidationCopy }, messages] = await Promise.all([import('~/lib/validation-client'), import('~/lib/validation-messages')]);
+    const copy = await loadValidationCopy(locale);
+    return {
+      errorMessage: (error: never) => messages.errorMessageIn(copy, error),
+      summaryHeading: (count: number) => messages.summaryHeadingIn(copy, count),
+    };
   };
-  const sending = { hu: 'Küldés…', nl: 'Versturen…' };
 
   document.querySelectorAll<HTMLFormElement>('form.form').forEach((form) => {
-    const locale = (form.dataset.locale === 'nl' ? 'nl' : 'hu') as 'hu' | 'nl';
+    const locale = form.dataset.locale ?? 'nl';
+    const sendError = form.dataset.sendError ?? '';
+    const sendingText = form.dataset.sending ?? '';
     const formId = form.id;
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     // The label lives in its own span beside the arrow chip; only it changes.
@@ -204,9 +216,9 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
     };
 
     const check = async (control: Control): Promise<string | null> => {
-      const { validateField, errorMessage } = await loadLib();
+      const [{ validateField }, { errorMessage }] = await Promise.all([loadLib(), wording(locale)]);
       if (control instanceof HTMLInputElement && control.type === 'checkbox') {
-        return control.required && !control.checked ? errorMessage({ code: 'consent' }, locale) : null;
+        return control.required && !control.checked ? errorMessage({ code: 'consent' } as never) : null;
       }
       const error = validateField(
         {
@@ -220,7 +232,7 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
         control.value,
         countryOf(control)
       );
-      return error ? errorMessage(error as never, locale) : null;
+      return error ? errorMessage(error as never) : null;
     };
 
     const validateOne = async (control: Control) => {
@@ -269,8 +281,8 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
       control.name;
 
     const showSummary = async (invalid: { control: Control; message: string }[]) => {
-      const { summaryHeading } = await loadLib();
-      summary.querySelector('.error-summary-head')!.textContent = summaryHeading(invalid.length, locale);
+      const { summaryHeading } = await wording(locale);
+      summary.querySelector('.error-summary-head')!.textContent = summaryHeading(invalid.length);
       const list = summary.querySelector('ul')!;
       list.innerHTML = '';
       for (const { control, message } of invalid) {
@@ -311,7 +323,7 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
       }
 
       submit.disabled = true;
-      submitLabel.textContent = sending[locale];
+      submitLabel.textContent = sendingText;
 
       try {
         const response = await fetch(form.action, {
@@ -323,7 +335,7 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
 
         // The server's own checks failed: show them exactly like the browser's.
         if (response.status === 422 && data?.errors) {
-          const { errorMessage } = await loadLib();
+          const { errorMessage } = await wording(locale);
           const serverInvalid: { control: Control; message: string }[] = [];
           for (const [name, raw] of Object.entries(data.errors as Record<string, FieldError | string>)) {
             const error = typeof raw === 'string' ? { code: raw } : raw;
@@ -331,7 +343,7 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
               ? form.querySelector<Control>('input[name="consent"]')
               : form.querySelector<Control>(`[name="${CSS.escape(name)}"]`));
             if (!control) continue;
-            const message = errorMessage(error as never, locale);
+            const message = errorMessage(error as never);
             show(control, message);
             serverInvalid.push({ control, message });
           }
@@ -354,7 +366,7 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
         success.scrollIntoView({ behavior: 'smooth', block: 'center' });
         (success.querySelector('h3, h2, [tabindex="-1"]') as HTMLElement | null)?.focus?.();
       } catch {
-        formError.textContent = sendError[locale];
+        formError.textContent = sendError;
         formError.hidden = false;
         submit.disabled = false;
         submitLabel.textContent = originalLabel;

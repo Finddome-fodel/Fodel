@@ -8,21 +8,24 @@
  * panel, so a row of three never has one card shorter than the others.
  */
 import ArrowChip from '~/components/ArrowChip.astro';
-import { postPath, type BlogPost, type BlogLocale } from '~/lib/blog';
+import { postPath, type BlogPost } from '~/lib/blog';
+import { intlTag } from '~/lib/format';
+import { CHROME } from '~/i18n/chrome';
+import type { Locale } from '~/i18n/ui';
 
 interface Props {
   post: BlogPost;
-  locale: BlogLocale;
+  locale: Locale;
+  /** Set when the post is shown in a language other than its own (Dutch standing in); adds a small note. */
+  note?: string;
   class?: string;
   style?: string;
 }
 
-const { post, locale, class: className, style } = Astro.props;
-const LANG_TAG = { hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB', de: 'de-DE' } as const;
-const MINUTES = { hu: 'perc', nl: 'min.', en: 'min read', de: 'Min. Lesezeit' } as const;
-const CASE = { hu: 'Esettanulmány', nl: 'Casestudy', en: 'Case study', de: 'Fallstudie' } as const;
+const { post, locale, note, class: className, style } = Astro.props;
+const chrome = CHROME[locale].post;
 const date = post.published_at
-  ? new Intl.DateTimeFormat(LANG_TAG[locale], { year: 'numeric', month: 'long', day: 'numeric' }).format(post.published_at)
+  ? new Intl.DateTimeFormat(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }).format(post.published_at)
   : null;
 ---
 
@@ -37,15 +40,16 @@ const date = post.published_at
     </div>
     <div class="post-copy">
       <div class="post-top">
-        <span class="post-pill">{post.kind === 'case_study' ? CASE[locale] : post.category}</span>
+        <span class="post-pill">{post.kind === 'case_study' ? chrome.caseStudy : post.category}</span>
         <ArrowChip size={40} class="post-chip" />
       </div>
       <h3>{post.title}</h3>
       <p class="post-excerpt">{post.excerpt}</p>
+      {note && <p class="post-note">{note}</p>}
       <p class="post-meta">
         {date && post.published_at && <time datetime={post.published_at.toISOString()}>{date}</time>}
         <span aria-hidden="true">·</span>
-        <span>{post.reading_minutes} {MINUTES[locale]}</span>
+        <span>{post.reading_minutes} {chrome.minutes}</span>
       </p>
     </div>
   </a>
@@ -147,6 +151,13 @@ const date = post.published_at
     font-size: var(--fs-small);
     line-height: 1.6;
     color: var(--taupe);
+  }
+  /* "Article in Dutch": a quiet pill-less line, never louder than the excerpt. */
+  .post-note {
+    font-size: 13px;
+    font-weight: var(--fw-medium);
+    color: var(--ink);
+    opacity: 0.7;
   }
   .post-meta {
     display: flex;

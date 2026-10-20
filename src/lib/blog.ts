@@ -15,28 +15,32 @@
  * formatDate() take a real `Date` — coerced once here, at the query boundary.
  */
 import { getSupabase } from '~/lib/supabase';
+import { LOCALES, isLocale, path, type Locale } from '~/i18n/ui';
 
-export const BLOG_LOCALES = ['hu', 'nl', 'en', 'de'] as const;
-export type BlogLocale = (typeof BLOG_LOCALES)[number];
+/** Every site language can hold posts (the `locale_code` enum has had all five from the start). */
+export const BLOG_LOCALES = LOCALES;
+export type BlogLocale = Locale;
 export type BlogKind = 'article' | 'case_study';
 
 /** Title of a language version that exists only as a slot, waiting for its own text. Never publishable. */
 export const PLACEHOLDER_PREFIX = '[Fordításra vár]';
 
 export function isBlogLocale(value: unknown): value is BlogLocale {
-  return (BLOG_LOCALES as readonly unknown[]).includes(value);
+  return typeof value === 'string' && isLocale(value);
 }
 
-/** Public index per language. hu/nl live inside the full site; en/de beside their bridge pages. */
-export const BLOG_PATH: Record<BlogLocale, string> = {
-  hu: '/hu/blog/',
-  nl: '/nl/nieuws/',
-  en: '/en/blog/',
-  de: '/de/blog/',
-};
+/** Public index per language, from the route table: /hu/blog/, /nl/nieuws/, /en/blog/ … */
+export const BLOG_PATH: Record<BlogLocale, string> = Object.fromEntries(
+  LOCALES.map((locale) => [locale, path(locale, 'blog')])
+) as Record<BlogLocale, string>;
 
 export function postPath(post: { locale: BlogLocale; slug: string }): string {
   return `${BLOG_PATH[post.locale]}${post.slug}/`;
+}
+
+/** Where a post is read in `locale`: its own page, or the language's stand-in for it. */
+export function postPathIn(locale: BlogLocale, slug: string): string {
+  return `${BLOG_PATH[locale]}${slug}/`;
 }
 
 export type BlogPost = {
@@ -125,4 +129,68 @@ export async function siblingPost(post: BlogPost, siblingLocale: BlogLocale): Pr
     getSupabase().from('blog_posts').select('*').eq('group_id', post.group_id).eq('locale', siblingLocale)
   ).maybeSingle();
   return data ? coerce(data) : null;
+}
+
+/* ── Showing a post in a language it was not written in ───────────────────
+   Posts are written, linked (group_id) and published per language. English,
+   German and French have few of their own, so rather than hiding the Dutch
+   (or Hungarian) articles from those readers, the page lists them in the
+   reader's language with a note saying which language the text is in. Hungarian
+   and Dutch never borrow: a missing translation there is simply a missing row.
+   ----------------------------------------------------------------------- */
+
+/** A post as one language's reader sees it. `from` is the language of the text. */
+export type LocalizedPost = { post: BlogPost; from: BlogLocale };
+
+const groupOf = (post: BlogPost) => post.group_id ?? post.id;
+
+/** Every live post a `locale` reader can open: its own, then Dutch, then Hungarian ones with no better version. */
+export async function localizedPosts(locale: BlogLocale, opts: { kind?: BlogKind } = {}): Promise<LocalizedPost[]> {
+  const own = await publishedPosts(locale, opts);
+  const result: LocalizedPost[] = own.map((post) => ({ post, from: locale }));
+  if (locale === 'hu' || locale === 'nl') return result;
+
+  const covered = new Set(own.map(groupOf));
+  for (const source of ['nl', 'hu'] as const) {
+    for (const post of await publishedPosts(source, opts)) {
+      if (covered.has(groupOf(post))) continue;
+      covered.add(groupOf(post));
+      result.push({ post, from: source });
+    }
+  }
+  const time = (entry: LocalizedPost) => (entry.post.published_at ?? entry.post.updated_at).getTime();
+  return result.sort((a, b) => time(b) - time(a));
+}
+
+export async function latestLocalizedArticles(locale: BlogLocale, limit = 3): Promise<LocalizedPost[]> {
+  return (await localizedPosts(locale, { kind: 'article' })).slice(0, limit);
+}
+
+/** The post at `slug` as a `locale` reader sees it: own language first, then Dutch, then Hungarian. */
+export async function localizedPostBySlug(locale: BlogLocale, slug: string): Promise<LocalizedPost | null> {
+  const own = await postBySlug(locale, slug);
+  if (own) return { post: own, from: locale };
+  if (locale === 'hu' || locale === 'nl') return null;
+  for (const source of ['nl', 'hu'] as const) {
+    const post = await postBySlug(source, slug);
+    if (!post) continue;
+    // A version in the reader's own language wins: the stand-in is only for
+    // posts that have none.
+    if (post.group_id && (await siblingPost(post, locale))) return null;
+    return { post, from: source };
+  }
+  return null;
+}
+
+/** Every live language version of a post, for hreflang: one query, keyed by language. */
+export async function siblingPosts(post: BlogPost): Promise<Partial<Record<BlogLocale, BlogPost>>> {
+  if (!post.group_id) return { [post.locale]: post };
+  const { data } = await live(getSupabase().from('blog_posts').select('*').eq('group_id', post.group_id));
+  const found: Partial<Record<BlogLocale, BlogPost>> = {};
+  for (const row of data ?? []) {
+    const version = coerce(row);
+    if (isBlogLocale(version.locale)) found[version.locale] = version;
+  }
+  found[post.locale] = post;
+  return found;
 }

@@ -6,10 +6,11 @@
  * answer appears in place.
  */
 import ArrowChip from './ArrowChip.astro';
-import { path } from '~/i18n/ui';
+import { path, type Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 
 interface Props {
-  locale: 'hu' | 'nl' | 'en' | 'de';
+  locale: Locale;
   /** "dark" for the footer, "light" on cream or white sections. */
   tone?: 'dark' | 'light';
   source: string;
@@ -18,14 +19,8 @@ interface Props {
 
 const { locale, tone = 'light', source, id } = Astro.props;
 
-const T = {
-  hu: { label: 'E-mail-cím', placeholder: 'Az Ön e-mail-címe', submit: 'Feliratkozom', note: 'Havonta legfeljebb egy-két levél. Megerősítő e-mailt küldünk, és bármikor leiratkozhat.', privacy: 'Adatvédelem', ok: 'Majdnem kész! Küldtünk egy megerősítő e-mailt. Kattintson a benne lévő gombra.', error: 'Nem sikerült. Ellenőrizze a címet, és próbálja újra.', email: 'Kérjük, érvényes e-mail-címet adjon meg.', sending: 'Küldés…' },
-  nl: { label: 'E-mailadres', placeholder: 'Uw e-mailadres', submit: 'Inschrijven', note: 'Hooguit een of twee e-mails per maand. U ontvangt eerst een bevestigingsmail en kunt zich altijd uitschrijven.', privacy: 'Privacy', ok: 'Bijna klaar! Wij hebben u een bevestigingsmail gestuurd. Klik op de knop daarin.', error: 'Dat lukte niet. Controleer het adres en probeer het opnieuw.', email: 'Vul een geldig e-mailadres in.', sending: 'Bezig…' },
-  en: { label: 'Email address', placeholder: 'Your email address', submit: 'Subscribe', note: 'One or two emails a month at most. We send a confirmation first; unsubscribe any time.', privacy: 'Privacy', ok: 'Almost done! We have sent you a confirmation email. Click the button in it.', error: 'That did not work. Check the address and try again.', email: 'Please enter a valid email address.', sending: 'Sending…' },
-  de: { label: 'E-Mail-Adresse', placeholder: 'Ihre E-Mail-Adresse', submit: 'Abonnieren', note: 'Höchstens ein bis zwei E-Mails im Monat. Wir senden zuerst eine Bestätigung; Abmeldung jederzeit.', privacy: 'Datenschutz', ok: 'Fast geschafft! Wir haben Ihnen eine Bestätigungs-E-Mail gesendet. Klicken Sie auf den Button darin.', error: 'Das hat nicht geklappt. Prüfen Sie die Adresse und versuchen Sie es erneut.', email: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.', sending: 'Wird gesendet…' },
-}[locale];
-
-const privacyHref = locale === 'hu' || locale === 'nl' ? path(locale, 'privacy') : '/nl/privacy/';
+const T = CHROME[locale].newsletter;
+const privacyHref = path(locale, 'privacy');
 ---
 
 <form

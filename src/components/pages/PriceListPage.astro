@@ -12,10 +12,11 @@ import PageHeader from '~/components/PageHeader.astro';
 import Eyebrow from '~/components/Eyebrow.astro';
 import Button from '~/components/Button.astro';
 import PackageCard from '~/components/PackageCard.astro';
-import { path, type Locale } from '~/i18n/ui';
-import { COMMISSION, CONTRACT_PRICES, ONSITE_SERVICES } from '~/config/company';
-import { listingCatalog, packageCard, priceFacts, extraPrice, type ExtraId } from '~/lib/listing-packages';
+import { path, localizer, type L10n, type Locale } from '~/i18n/ui';
+import { COMMISSION, CONTRACT_PRICES, ONSITE_SERVICES, LISTING_VAT_PERCENT } from '~/config/company';
+import { listingCatalog, packageCard, priceFacts, extraPrice, eurText, type ExtraId } from '~/lib/listing-packages';
 import { alternatesFor } from '~/lib/page';
+import { approvedWording } from '~/lib/approved-text';
 import { listingServiceSchema } from '~/lib/seo';
 import { getCompany } from '~/lib/runtime-config';
 
@@ -24,26 +25,33 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const hu = locale === 'hu';
+const x = localizer(locale);
 const company = await getCompany();
-const refundPolicy = company.services.refundPolicy?.[locale]?.trim();
+// The refund wording is approved per language by the admin; English, German
+// and French readers see the Dutch text (if there is one), marked as Dutch.
+const refund = approvedWording(company.services.refundPolicy, locale);
+const refundPolicy = refund?.text;
+const refundLang = refund?.lang ?? locale;
 // Package content and every price below come from the admin's settings
 // (Szolgáltatások → Hirdetési csomagok), so this page always matches checkout.
 const catalog = listingCatalog(company.services);
 const from = priceFacts(catalog).from;
-const fmt = (n: number) => (hu ? `${n} €` : `€ ${n}`);
+const fmt = (n: number) => eurText(locale, n);
 const xp = (id: ExtraId) => fmt(extraPrice(catalog, id));
+const vat = LISTING_VAT_PERCENT;
+const pct = (n: number) => (locale === 'de' || locale === 'fr' ? `${n}\u00a0%` : `${n}%`);
 const pkgSummary = catalog.packages
   .map((p) => {
-    const price = p.priceEurAbove !== null ? `${fmt(p.priceEur)} ${hu ? 'vagy' : 'of'} ${fmt(p.priceEurAbove)}` : fmt(p.priceEur);
-    return hu ? `${p.months} hónapos ${price}` : `${p.months} maanden ${price}`;
+    const price = p.priceEurAbove !== null ? `${fmt(p.priceEur)} ${x('vagy', 'of', 'or', 'oder', 'ou')} ${fmt(p.priceEurAbove)}` : fmt(p.priceEur);
+    return x(`${p.months} hónapos ${price}`, `${p.months} maanden ${price}`, `${p.months}-month listing ${price}`, `${p.months}-monatiges Inserat ${price}`, `annonce de ${p.months} mois à ${price}`);
   })
   .join(', ');
 const hl = [extraPrice(catalog, 'category-highlight'), extraPrice(catalog, 'homepage-highlight')].sort((a, b) => a - b);
 const hlRange = hl[0] === hl[1] ? `${hl[0]}` : `${hl[0]}–${hl[1]}`;
+const translationPrice = extraPrice(catalog, 'translation');
 
-const t = hu
-  ? {
+const copies = {
+  hu: {
       metaTitle: `Árlista: hirdetési díjak ${from} €-tól`,
       metaDescription:
         `FODEL hirdetési árlista: ${pkgSummary}. Fordítás ${extraPrice(catalog, 'translation')} €/nyelv, kiemelés ${hlRange} €/hó. Minden ár tartalmazza a 21% holland áfát.`,
@@ -76,8 +84,8 @@ const t = hu
       contractNote: 'Szerződésfordítás nyelvpáronként, tájékoztató jellegű ártól.',
       commissionBody:
         'Jutalékot kizárólag akkor számítunk fel, ha a vevőt a FODEL hozta, írásos adásvételi szerződés jött létre és a foglaló megfizetésre került. Ha a vevő közvetlenül Önnél jelentkezik és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie.',
-    }
-  : {
+    },
+  nl: {
       metaTitle: `Tarieven: adverteren vanaf € ${from}`,
       metaDescription:
         `Tarieven van FODEL: advertentie van ${pkgSummary}. Vertaling € ${extraPrice(catalog, 'translation')} per taal, uitlichten € ${hlRange} per maand. Alle prijzen inclusief 21% btw.`,
@@ -108,13 +116,118 @@ const t = hu
       contractNote: 'Vertaling van de koopovereenkomst per talencombinatie, vanafprijs.',
       commissionBody:
         'Courtage brengen wij uitsluitend in rekening wanneer FODEL de koper heeft aangebracht, er een schriftelijke koopovereenkomst is en de aanbetaling is voldaan. Neemt de koper rechtstreeks contact met u op en heeft u onze hulp niet nodig, dan betaalt u niets bovenop de advertentiekosten.',
-    };
+    },
+  en: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FODEL listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      { name: 'Highlighting on the homepage (min. 3 months)', price: xp('homepage-highlight'), unit: '/ month' },
+      { name: 'Video placement (your own video)', price: xp('video'), unit: 'one-off' },
+      { name: 'Adding photos later', price: xp('retro-images'), unit: 'one-off' },
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FODEL has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
+  de: {
+    metaTitle: `Preise: Inserieren ab ${eurText(locale, from)}`,
+    metaDescription: `FODEL-Inseratspreise: ${pkgSummary}. Übersetzung ${eurText(locale, translationPrice)} pro Sprache, Hervorhebung ${hlRange}\u00a0€ pro Monat. Alle Preise inklusive ${pct(vat)} niederländischer USt.`,
+    eyebrow: 'Preise',
+    title: 'Klare Preise,',
+    titleEm: 'keine versteckten Kosten',
+    body: `Alle Preise enthalten ${pct(vat)} niederländische USt. Die Inseratskosten zahlen Sie einmalig nach der Freigabe; ein freigegebenes Inserat geht sofort online. Provision berechnen wir nur, wenn wir den Käufer vermitteln.`,
+    packagesHead: 'Inseratspakete',
+    extrasHead: 'Zusatzoptionen',
+    contractsHead: 'Zweisprachiger Kaufvertrag',
+    commissionHead: 'Provision',
+    vatNote: `Alle Preise enthalten ${pct(vat)} niederländische USt.`,
+    cta: 'Inserat aufgeben',
+    ctaNote: 'Bei Freigabe veröffentlichen wir sofort, und Sie erhalten die Zahlungsaufforderung per E-Mail.',
+    extras: [
+      { name: 'Übersetzung (Niederländisch, Deutsch, Englisch, Französisch)', price: xp('translation'), unit: '/ Sprache' },
+      { name: 'Hervorhebung innerhalb der Kategorie (mind. 3 Monate)', price: xp('category-highlight'), unit: '/ Monat' },
+      { name: 'Hervorhebung auf der Startseite (mind. 3 Monate)', price: xp('homepage-highlight'), unit: '/ Monat' },
+      { name: 'Video einbinden (Ihr eigenes Video)', price: xp('video'), unit: 'einmalig' },
+      { name: 'Fotos nachträglich hinzufügen', price: xp('retro-images'), unit: 'einmalig' },
+      { name: 'Verlängerung eines Standard-Inserats, 6 Monate', price: xp('renewal-6m'), unit: 'einmalig' },
+    ],
+    services: ['Beantragung des Energieausweises'],
+    onsiteUnit: 'einmalig, vor Ort',
+    servicesHead: 'Weitere Leistungen',
+    servicesNote: 'Dafür erstellen wir ein individuelles Angebot. Fragen Sie uns gern.',
+    contractNote: 'Übersetzung des Kaufvertrags je Sprachkombination, Ab-Preise.',
+    commissionBody:
+      'Provision berechnen wir ausschließlich, wenn FODEL den Käufer vermittelt hat, ein schriftlicher Kaufvertrag vorliegt und die Anzahlung geleistet ist. Nimmt der Käufer direkt Kontakt mit Ihnen auf und benötigen Sie unsere Hilfe nicht, zahlen Sie nichts über die Inseratskosten hinaus.',
+    refundHead: 'Erstattungsregel',
+    commissionTitle: `${pct(COMMISSION.percent)} netto, mind. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `ab ${eurText(locale, n)}`,
+  },
+  fr: {
+    metaTitle: `Tarifs\u00a0: annonces à partir de ${eurText(locale, from)}`,
+    metaDescription: `Tarifs des annonces FODEL\u00a0: ${pkgSummary}. Traduction ${eurText(locale, translationPrice)} par langue, mise en avant ${hlRange}\u00a0€ par mois. Tous les prix incluent ${pct(vat)} de TVA néerlandaise.`,
+    eyebrow: 'Tarifs',
+    title: 'Des tarifs clairs,',
+    titleEm: 'sans frais cachés',
+    body: `Tous les prix incluent ${pct(vat)} de TVA néerlandaise. Les frais d’annonce se paient une seule fois, après validation\u00a0; une annonce validée est en ligne aussitôt. Nous ne prélevons de commission que si nous amenons l’acheteur.`,
+    packagesHead: 'Forfaits d’annonce',
+    extrasHead: 'Options complémentaires',
+    contractsHead: 'Contrat de vente bilingue',
+    commissionHead: 'Commission',
+    vatNote: `Tous les prix incluent ${pct(vat)} de TVA néerlandaise.`,
+    cta: 'Déposer une annonce',
+    ctaNote: 'À la validation, nous publions aussitôt et vous recevez la demande de paiement par e-mail.',
+    extras: [
+      { name: 'Traduction (néerlandais, allemand, anglais, français)', price: xp('translation'), unit: '/ langue' },
+      { name: 'Mise en avant dans la catégorie (min. 3 mois)', price: xp('category-highlight'), unit: '/ mois' },
+      { name: 'Mise en avant sur la page d’accueil (min. 3 mois)', price: xp('homepage-highlight'), unit: '/ mois' },
+      { name: 'Mise en ligne d’une vidéo (la vôtre)', price: xp('video'), unit: 'unique' },
+      { name: 'Ajout de photos après coup', price: xp('retro-images'), unit: 'unique' },
+      { name: 'Renouvellement d’une annonce standard, 6 mois', price: xp('renewal-6m'), unit: 'unique' },
+    ],
+    services: ['Obtention du certificat de performance énergétique'],
+    onsiteUnit: 'unique, sur place',
+    servicesHead: 'Autres services',
+    servicesNote: 'Pour ceux-ci, nous établissons un devis sur mesure. N’hésitez pas à demander.',
+    contractNote: 'Traduction du contrat de vente par combinaison de langues, prix «\u00a0à partir de\u00a0».',
+    commissionBody:
+      'Nous ne facturons de commission que si FODEL a amené l’acheteur, qu’un contrat de vente écrit existe et que l’acompte a été versé. Si l’acheteur vous contacte directement et que vous n’avez pas besoin de notre aide, vous ne payez rien en plus des frais d’annonce.',
+    refundHead: 'Politique de remboursement',
+    commissionTitle: `${pct(COMMISSION.percent)} net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `à partir de ${eurText(locale, n)}`,
+  },
+};
 
-const contractLabels: Record<string, { hu: string; nl: string }> = {
-  hu: { hu: 'Magyar', nl: 'Hongaars' },
-  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars' },
-  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars' },
-  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars' },
+type Copy = (typeof copies)['en'];
+const huExtra = { refundHead: 'Visszatérítési szabály', commissionTitle: `${COMMISSION.percent}% nettó, min. ${COMMISSION.minimumEur} €`, contractFrom: (n: number) => `${n} €-tól` };
+const nlExtra = { refundHead: 'Terugbetalingsbeleid', commissionTitle: `${COMMISSION.percent}% netto, min. € ${COMMISSION.minimumEur}`, contractFrom: (n: number) => `vanaf € ${n}` };
+const t = { ...copies[locale], ...(locale === 'hu' ? huExtra : locale === 'nl' ? nlExtra : {}) } as Copy;
+
+const contractLabels: Record<string, L10n> = {
+  hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois' },
+  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars', en: 'German–Hungarian', de: 'Deutsch–Ungarisch', fr: 'Allemand–hongrois' },
+  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois' },
+  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois' },
 };
 const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
 
@@ -176,7 +289,7 @@ const packageSchema = listingServiceSchema(locale, {
           ONSITE_SERVICES.map((service) => (
             <tr>
               <th scope="row">{service.names[locale]}</th>
-              <td class="amount">{locale === 'hu' ? `${service.priceEur} €` : `€ ${service.priceEur}`}</td>
+              <td class="amount">{fmt(service.priceEur)}</td>
               <td class="unit">{t.onsiteUnit}</td>
             </tr>
           ))
@@ -195,9 +308,7 @@ const packageSchema = listingServiceSchema(locale, {
             CONTRACT_PRICES.map((cp) => (
               <tr>
                 <th scope="row">{contractLabels[cp.id][locale]}</th>
-                <td class="amount">
-                  {locale === 'hu' ? `${cp.fromEur} €-tól` : `vanaf € ${cp.fromEur}`}
-                </td>
+                <td class="amount">{t.contractFrom(cp.fromEur)}</td>
               </tr>
             ))
           }
@@ -225,17 +336,11 @@ const packageSchema = listingServiceSchema(locale, {
   </div>
 
   {/* ── Commission ── */}
-  {refundPolicy && <section class="slab"><h2>{hu ? 'Visszatérítési szabály' : 'Terugbetalingsbeleid'}</h2><p>{refundPolicy}</p></section>}
+  {refundPolicy && <section class="slab"><h2>{t.refundHead}</h2><p lang={refundLang}>{refundPolicy}</p></section>}
   <section class="commission slab surface-ink" data-bg="dark">
     <div class="commission-copy">
       <Eyebrow space="24px">{t.commissionHead}</Eyebrow>
-      <h2>
-        {
-          locale === 'hu'
-            ? `${COMMISSION.percent}% nettó, min. ${COMMISSION.minimumEur} €`
-            : `${COMMISSION.percent}% netto, min. € ${COMMISSION.minimumEur}`
-        }
-      </h2>
+      <h2>{t.commissionTitle}</h2>
       <p>{t.commissionBody}</p>
     </div>
     <div class="commission-cta">
@@ -326,6 +431,12 @@ const packageSchema = listingServiceSchema(locale, {
   .contracts th,
   .contracts td {
     background: rgba(16, 42, 67, 0.04);
+  }
+  /* "à partir de 300 €" is longer than the Hungarian "300 €-tól": let it wrap on a phone. */
+  .contracts .amount {
+    white-space: normal;
+    padding-left: 12px;
+    font-size: var(--fs-body);
   }
   .contracts tr:hover > * {
     background: rgba(16, 42, 67, 0.07);

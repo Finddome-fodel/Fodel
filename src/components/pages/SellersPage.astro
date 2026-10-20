@@ -13,9 +13,10 @@ import Button from '~/components/Button.astro';
 import PointsList from '~/components/PointsList.astro';
 import NumberedColumns from '~/components/NumberedColumns.astro';
 import FaqAccordion from '~/components/FaqAccordion.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
 import { COMMISSION } from '~/config/company';
-import { listingCatalog, priceFacts } from '~/lib/listing-packages';
+import { listingCatalog, priceFacts, extraPrice } from '~/lib/listing-packages';
+import { eur } from '~/lib/format';
 import { getCompany } from '~/lib/runtime-config';
 import { copy } from '~/data/copy';
 import { alternatesFor } from '~/lib/page';
@@ -29,10 +30,14 @@ interface Props {
 
 const { locale } = Astro.props;
 const ui = UI[locale];
+const x = localizer(locale);
 const c = copy(locale).sellers;
 const steps = copy(locale).steps;
 
-const cheapest = priceFacts(listingCatalog((await getCompany()).services)).from;
+const catalog = listingCatalog((await getCompany()).services);
+const cheapest = priceFacts(catalog).from;
+const translationFee = extraPrice(catalog, 'translation');
+const space = locale === 'de' || locale === 'fr' ? '\u00a0' : '';
 
 // The seller FAQ doubles as FAQPage markup — this is the content answer
 // engines quote when someone asks how selling to foreign buyers works.
@@ -57,7 +62,7 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
     titleEm={c.hero.titleEm}
     body={c.hero.body}
     image={vineyard}
-    imageAlt={locale === 'hu' ? 'Szőlőbirtok a Dunántúlon' : 'Wijngaard in Transdanubië'}
+    imageAlt={x('Szőlőbirtok a Dunántúlon', 'Wijngaard in Transdanubië', 'Vineyard in Transdanubia', 'Weingut in Transdanubien', 'Vignoble en Transdanubie')}
     primary={{ label: c.hero.cta, href: path(locale, 'submitAd'), emphasis: true }}
     secondary={{ label: c.hero.secondary, href: path(locale, 'priceList') }}
   />
@@ -100,7 +105,13 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
     <div class="commission-figure reveal">
       <span class="pct num">{COMMISSION.percent}<span class="pct-sign">%</span></span>
       <span class="pct-note">
-        {locale === 'hu' ? `min. ${COMMISSION.minimumEur} € + ${COMMISSION.vatPercent}% áfa` : `min. € ${COMMISSION.minimumEur} + ${COMMISSION.vatPercent}% btw`}
+        {x(
+          `min. ${COMMISSION.minimumEur} € + ${COMMISSION.vatPercent}% áfa`,
+          `min. € ${COMMISSION.minimumEur} + ${COMMISSION.vatPercent}% btw`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}% VAT`,
+          `mind. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% USt.`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% de TVA`
+        )}
       </span>
     </div>
   </section>
@@ -108,18 +119,20 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
   {/* ── Pricing summary ── */}
   <section class="pricing slab">
     <SectionHead
-      eyebrow={locale === 'hu' ? 'Hirdetési csomagok' : 'Advertentiepakketten'}
-      title={locale === 'hu' ? `Hirdetés már ${cheapest} €-tól` : `Adverteren vanaf € ${cheapest}`}
+      eyebrow={x('Hirdetési csomagok', 'Advertentiepakketten', 'Listing packages', 'Inseratspakete', 'Forfaits d’annonce')}
+      title={x(`Hirdetés már ${cheapest} €-tól`, `Adverteren vanaf € ${cheapest}`, `Listings from ${eur(cheapest, locale)}`, `Inserieren ab ${eur(cheapest, locale)}`, `Annonces dès ${eur(cheapest, locale)}`)}
       size="large"
       class="reveal"
     />
     <div class="pricing-side reveal">
       <p>
-        {
-          locale === 'hu'
-            ? 'A hirdetési díj tartalmazza a szöveg szerkesztését, a képfeldolgozást és a hirdetés összeállítását. Idegen nyelvű fordítás nyelvenként 25 €.'
-            : 'De advertentieprijs omvat het redigeren van de tekst, de beeldbewerking en het opmaken van de advertentie. Vertaling kost € 25 per taal.'
-        }
+        {x(
+          `A hirdetési díj tartalmazza a szöveg szerkesztését, a képfeldolgozást és a hirdetés összeállítását. Idegen nyelvű fordítás nyelvenként ${translationFee} €.`,
+          `De advertentieprijs omvat het redigeren van de tekst, de beeldbewerking en het opmaken van de advertentie. Vertaling kost € ${translationFee} per taal.`,
+          `The listing fee covers editing the text, processing the photos and putting the listing together. A translation costs ${eur(translationFee, locale)} per language.`,
+          `Die Inseratsgebühr umfasst das Redigieren des Textes, die Bildbearbeitung und das Zusammenstellen des Inserats. Eine Übersetzung kostet ${eur(translationFee, locale)} pro Sprache.`,
+          `Les frais d’annonce comprennent la relecture du texte, le traitement des photos et la mise en forme de l’annonce. Une traduction coûte ${eur(translationFee, locale)} par langue.`
+        )}
       </p>
       <div class="pricing-actions">
         <Button variant="dark" href={path(locale, 'priceList')}>{c.commission.cta}</Button>
@@ -130,11 +143,11 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
 
   {/* ── Seller FAQ ── */}
   <FaqAccordion
-    eyebrow={locale === 'hu' ? 'Gyakori kérdések' : 'Veelgestelde vragen'}
-    title={locale === 'hu' ? 'Amit az eladók kérdezni szoktak' : 'Wat verkopers ons vragen'}
+    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes')}
+    title={x('Amit az eladók kérdezni szoktak', 'Wat verkopers ons vragen', 'What sellers ask us', 'Was Verkäufer uns fragen', 'Ce que nous demandent les vendeurs')}
     entries={sellerFaq}
     moreHref={path(locale, 'faq')}
-    moreLabel={locale === 'hu' ? 'Összes kérdés és válasz' : 'Alle vragen en antwoorden'}
+    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses')}
   />
 </Base>
 

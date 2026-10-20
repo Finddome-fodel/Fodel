@@ -28,15 +28,24 @@ import { createSupabaseServerClient } from '~/lib/supabase-server';
 import { buildInvite } from '~/lib/portal/invites';
 import { HU_OWNER_INVITE } from '~/data/invite-letter';
 import { lifecycleEmails } from '~/lib/email/lifecycle';
+import { LOCALES, localizer, path, type Locale } from '~/i18n/ui';
 
 export const prerender = false;
 
 const SAMPLE_REF = '7213';
 const SAMPLE_TITLE = 'Felújított parasztház a Balaton-felvidéken';
-const SAMPLE_URL = `${SITE_URL}/hu/haz-elado-${SAMPLE_REF}/`;
 const SAMPLE_TOKEN = 'a'.repeat(64);
+const sampleUrl = (l: Locale) => `${SITE_URL}/${l}/${l === 'hu' ? 'haz-elado' : 'house-for-sale'}-${SAMPLE_REF}/`;
 
-type Locale = 'hu' | 'nl';
+/** One sample sentence per language: `say(l)(hu, nl, en, de, fr)`. */
+const say = (locale: Locale) => localizer(locale);
+const TITLES: Record<Locale, string> = {
+  hu: SAMPLE_TITLE,
+  nl: 'Gerenoveerde boerderij in het Balatonhoogland',
+  en: 'Renovated farmhouse in the Balaton Uplands',
+  de: 'Renoviertes Bauernhaus im Balaton-Oberland',
+  fr: 'Ferme rénovée dans les hauts plateaux du Balaton',
+};
 
 /**
  * Order lines are stored in the *owner's* language (see buildOrderLines in
@@ -54,6 +63,21 @@ const SAMPLE_ORDER: Record<Locale, { label: string; amount: string }[]> = {
     { label: 'Advertentie — 12 maanden', amount: '€ 129' },
     { label: 'Vertaling — 2 talen', amount: '€ 50' },
     { label: 'Videopresentatie', amount: '€ 36' },
+  ],
+  en: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
+  ],
+  de: [
+    { label: 'Inserat — 12 Monate', amount: '129 €' },
+    { label: 'Übersetzung — 2 Sprachen', amount: '50 €' },
+    { label: 'Videopräsentation', amount: '36 €' },
+  ],
+  fr: [
+    { label: 'Annonce — 12 mois', amount: '129 €' },
+    { label: 'Traduction — 2 langues', amount: '50 €' },
+    { label: 'Présentation vidéo', amount: '36 €' },
   ],
 };
 
@@ -91,11 +115,11 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
     templates.invite(l, { role: 'owner', acceptUrl: `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}` }),
   welcome: (l) =>
     templates.welcome(l, { name: 'Kovács Anna', portalUrl: `${SITE_URL}/portal/dashboard` }),
-  submissionReceived: (l) => templates.submissionReceived(l, { ref: SAMPLE_REF, title: SAMPLE_TITLE }),
+  submissionReceived: (l) => templates.submissionReceived(l, { ref: SAMPLE_REF, title: TITLES[l] }),
   adminNewSubmission: (l) =>
     templates.adminNewSubmission(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       ownerName: 'Kovács Anna',
       ownerEmail: 'anna.kovacs@example.com',
       location: 'Csemő, Pest',
@@ -107,16 +131,16 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
   changesRequested: (l) =>
     templates.changesRequested(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
-      note: 'A fényképek nagy része sötét, kérjük napos időben készítse el őket újra.\n\nAz alapterület sem stimmel: a leírásban 140 m² szerepel, a mezőben 104 m².',
+      title: TITLES[l],
+      note: say(l)('A fényképek nagy része sötét, kérjük napos időben készítse el őket újra.\n\nAz alapterület sem stimmel: a leírásban 140 m² szerepel, a mezőben 104 m².', 'Veel foto’s zijn donker. Maak ze alstublieft opnieuw bij zonnig weer.\n\nDe woonoppervlakte klopt ook niet: de omschrijving noemt 140 m², het veld 104 m².', 'Many of the photos are dark. Please retake them in sunny weather.\n\nThe floor area does not match either: the description says 140 m², the field says 104 m².', 'Viele Fotos sind dunkel. Bitte nehmen Sie sie bei sonnigem Wetter neu auf.\n\nAuch die Wohnfläche stimmt nicht: Die Beschreibung nennt 140 m², das Feld 104 m².', 'Beaucoup de photos sont sombres. Veuillez les reprendre par temps ensoleillé.\n\nLa surface habitable ne correspond pas non plus : la description indique 140 m², le champ 104 m².'),
       editUrl: `${SITE_URL}/portal/properties/sample`,
     }),
   approvedAwaitingPayment: (l) =>
     templates.approvedAwaitingPayment(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       items: SAMPLE_ORDER[l],
-      total: '€ 215',
+      total: say(l)('215 €', '€ 215', '€215', '215 €', '215 €'),
       payUrl: `${SITE_URL}/portal/properties/sample`,
     }),
   // The same email with card payment switched off — the state FODEL launches
@@ -124,24 +148,24 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
   approvedAwaitingPaymentBankOnly: (l) =>
     templates.approvedAwaitingPayment(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       items: SAMPLE_ORDER[l],
-      total: '€ 215',
+      total: say(l)('215 €', '€ 215', '€215', '215 €', '215 €'),
       payUrl: null,
     }),
   paymentReceipt: (l) =>
     templates.paymentReceipt(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       items: SAMPLE_ORDER[l],
-      total: '€ 215',
-      paidAt: l === 'nl' ? '26 augustus 2026' : '2026. augusztus 26.',
+      total: say(l)('215 €', '€ 215', '€215', '215 €', '215 €'),
+      paidAt: say(l)('2026. augusztus 26.', '26 augustus 2026', '26 August 2026', '26. August 2026', '26 août 2026'),
     }),
-  published: (l) => templates.published(l, { ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL }),
+  published: (l) => templates.published(l, { ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l) }),
   newEnquiry: (l) =>
     templates.newEnquiry(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       name: 'Jan de Vries',
       email: 'jan.devries@example.nl',
       phone: '+31 6 1234 5678',
@@ -156,9 +180,9 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
   approvedAwaitingPaymentWithDiscount: (l) =>
     templates.approvedAwaitingPayment(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       items: SAMPLE_ORDER[l],
-      discount: '−€ 13',
+      discount: say(l)('−13 €', '−€ 13', '−€13', '−13 €', '−13 €'),
       total: '€ 202',
       payUrl: `${SITE_URL}/portal/properties/sample`,
     }),
@@ -173,58 +197,65 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
   invoiceIssued: (l) =>
     templates.invoiceIssued(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       number: 'FD-2026-0001',
       viewUrl: `${SITE_URL}/portal/invoices/FD-2026-0001`,
     }),
   rejected: (l) =>
     templates.rejected(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
-      note: 'A hirdetett ingatlan nem az Ön tulajdona, és a tulajdonos hozzájárulását nem csatolta.',
+      title: TITLES[l],
+      note: say(l)('A hirdetett ingatlan nem az Ön tulajdona, és a tulajdonos hozzájárulását nem csatolta.', 'De geadverteerde woning is niet uw eigendom en de toestemming van de eigenaar is niet bijgevoegd.', 'The property advertised is not yours, and the owner’s consent was not attached.', 'Die inserierte Immobilie gehört nicht Ihnen, und die Zustimmung des Eigentümers liegt nicht bei.', 'Le bien annoncé ne vous appartient pas et l’accord du propriétaire n’était pas joint.'),
       refundRequired: true,
     }),
   rejectedNoRefund: (l) =>
     templates.rejected(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
-      note: 'A hirdetett ingatlan nem az Ön tulajdona, és a tulajdonos hozzájárulását nem csatolta.',
+      title: TITLES[l],
+      note: say(l)('A hirdetett ingatlan nem az Ön tulajdona, és a tulajdonos hozzájárulását nem csatolta.', 'De geadverteerde woning is niet uw eigendom en de toestemming van de eigenaar is niet bijgevoegd.', 'The property advertised is not yours, and the owner’s consent was not attached.', 'Die inserierte Immobilie gehört nicht Ihnen, und die Zustimmung des Eigentümers liegt nicht bei.', 'Le bien annoncé ne vous appartient pas et l’accord du propriétaire n’était pas joint.'),
       refundRequired: false,
     }),
   valuationReady: (l) =>
     templates.valuationReady(l, {
-      range: '€ 142 000 – € 168 000',
-      mid: '€ 155 000', basis: l === 'nl' ? '11 vergelijkbare FODEL-advertenties' : '11 hasonló FODEL-hirdetés',
-      factors: [{ text: 'Panorámás kilátás', direction: 'plus' }],
-      notice: l === 'hu' ? 'Tájékoztató, piaci alapú értékmeghatározás.' : 'Indicatieve, marktgebaseerde waardebepaling.',
+      range: say(l)('42 000 000 – 54 000 000 Ft', '€ 142.000 – € 168.000', '€142,000 – €168,000', '142.000 € – 168.000 €', '142 000 € – 168 000 €'),
+      mid: say(l)('48 000 000 Ft', '€ 155.000', '€155,000', '155.000 €', '155 000 €'),
+      basis: say(l)('11 hasonló FODEL-hirdetés', '11 vergelijkbare FODEL-advertenties', '11 comparable FODEL listings', '11 vergleichbare FODEL-Inserate', '11 annonces FODEL comparables'),
+      factors: [{ text: say(l)('Panorámás kilátás', 'Panoramisch uitzicht', 'Panoramic view', 'Panoramablick', 'Vue panoramique'), direction: 'plus' }],
+      notice: say(l)('Tájékoztató, piaci alapú értékmeghatározás.', 'Indicatieve, marktgebaseerde waardebepaling.', 'Indicative, market-based valuation.', 'Unverbindliche, marktbasierte Wertermittlung.', 'Estimation indicative, fondée sur le marché.'),
       compCount: 11,
-      submitAdUrl: `${SITE_URL}${l === 'nl' ? '/nl/advertentie-plaatsen/' : '/hu/hirdetes-feladasa/'}`,
+      submitAdUrl: `${SITE_URL}${path(l, 'submitAd')}`,
     }),
   valuationReadyKsh: (l) => templates.valuationReady(l, {
-    range: l === 'hu' ? '42 000 000 – 54 000 000 Ft' : '€ 105 000 – € 135 000',
-    mid: l === 'hu' ? '48 000 000 Ft' : '€ 120 000',
-    compCount: 0, basis: l === 'nl' ? 'KSH Ingatlanadattár, 2024 (plaats, 18 gegevens)' : 'KSH Ingatlanadattár, 2024 (település, 18 adat)',
-    sourceUrl: 'https://www.ksh.hu/s/ingatlanadattar/', sourceDate: l === 'nl' ? '2024, opgehaald 2026-09-29' : '2024, letöltve 2026-09-29', rateDate: l === 'nl' ? '2026-09-29' : undefined,
-    factors: [{ text: 'Felújított tető', direction: 'plus' }, { text: 'Forgalmas út', direction: 'minus' }],
-    notice: l === 'hu' ? 'Tájékoztató, piaci alapú értékmeghatározás.' : 'Indicatieve, marktgebaseerde waardebepaling.',
-    submitAdUrl: `${SITE_URL}${l === 'nl' ? '/nl/advertentie-plaatsen/' : '/hu/hirdetes-feladasa/'}`,
-    visitUrl: `${SITE_URL}${l === 'nl' ? '/nl/waardebepaling/' : '/hu/ertekbecsles/'}?service=onsite-visit`,
-    judicialUrl: `${SITE_URL}${l === 'nl' ? '/nl/waardebepaling/' : '/hu/ertekbecsles/'}?service=judicial`,
+    range: say(l)('42 000 000 – 54 000 000 Ft', '€ 105.000 – € 135.000', '€105,000 – €135,000', '105.000 € – 135.000 €', '105 000 € – 135 000 €'),
+    mid: say(l)('48 000 000 Ft', '€ 120.000', '€120,000', '120.000 €', '120 000 €'),
+    compCount: 0,
+    basis: say(l)('KSH Ingatlanadattár, 2024 (település, 18 adat)', 'KSH Ingatlanadattár, 2024 (plaats, 18 gegevens)', 'KSH Ingatlanadattár, 2024 (settlement, 18 records)', 'KSH Ingatlanadattár, 2024 (Ort, 18 Datensätze)', 'KSH Ingatlanadattár, 2024 (localité, 18 données)'),
+    sourceUrl: 'https://www.ksh.hu/s/ingatlanadattar/',
+    sourceDate: say(l)('2024, letöltve 2026-09-29', '2024, opgehaald 2026-09-29', '2024, retrieved 2026-09-29', '2024, abgerufen 2026-09-29', '2024, consulté le 2026-09-29'),
+    rateDate: l === 'hu' ? undefined : '2026-09-29',
+    factors: [
+      { text: say(l)('Felújított tető', 'Vernieuwd dak', 'Renovated roof', 'Erneuertes Dach', 'Toit rénové'), direction: 'plus' },
+      { text: say(l)('Forgalmas út', 'Drukke weg', 'Busy road', 'Verkehrsreiche Straße', 'Route passante'), direction: 'minus' },
+    ],
+    notice: say(l)('Tájékoztató, piaci alapú értékmeghatározás.', 'Indicatieve, marktgebaseerde waardebepaling.', 'Indicative, market-based valuation.', 'Unverbindliche, marktbasierte Wertermittlung.', 'Estimation indicative, fondée sur le marché.'),
+    submitAdUrl: `${SITE_URL}${path(l, 'submitAd')}`,
+    visitUrl: `${SITE_URL}${path(l, 'valuation')}?service=onsite-visit`,
+    judicialUrl: `${SITE_URL}${path(l, 'valuation')}?service=judicial`,
   }),
   valuationReceived: (l) => templates.valuationReceived(l),
   // Priced by hand by an admin: no comparable count to cite.
   valuationReadyManual: (l) =>
     templates.valuationReady(l, {
-      range: '€ 142 000 – € 168 000',
+      range: say(l)('42 000 000 – 54 000 000 Ft', '€ 142.000 – € 168.000', '€142,000 – €168,000', '142.000 € – 168.000 €', '142 000 € – 168 000 €'),
       compCount: 0,
-      submitAdUrl: `${SITE_URL}${l === 'nl' ? '/nl/advertentie-plaatsen/' : '/hu/hirdetes-feladasa/'}`,
+      submitAdUrl: `${SITE_URL}${path(l, 'submitAd')}`,
     }),
   valuationDeclined: (l) => templates.valuationDeclined(l),
   valuationNeedsInfo: (l) =>
     templates.valuationNeedsInfo(l, {
-      note: 'Kérjük, küldjön néhány fényképet a ház külsejéről, és írja meg, mikor cserélték a tetőt.',
+      note: say(l)('Kérjük, küldjön néhány fényképet a ház külsejéről, és írja meg, mikor cserélték a tetőt.', 'Stuur ons alstublieft enkele foto’s van de buitenkant van het huis en laat weten wanneer het dak is vervangen.', 'Please send us a few photos of the outside of the house and tell us when the roof was replaced.', 'Bitte senden Sie uns einige Fotos der Außenansicht des Hauses und teilen Sie uns mit, wann das Dach erneuert wurde.', 'Veuillez nous envoyer quelques photos de l’extérieur de la maison et nous indiquer quand le toit a été remplacé.'),
     }),
-  serviceRequested: (l) => templates.serviceRequested(l, { service: l === 'hu' ? 'Gábor helyszíni látogatása' : 'Bezoek van Gábor', price: '€ 200' }),
+  serviceRequested: (l) => templates.serviceRequested(l, { service: say(l)('Gábor helyszíni látogatása', 'Bezoek van Gábor', 'Visit by Gábor', 'Besuch durch Gábor', 'Visite de Gábor'), price: say(l)('200 €', '€ 200', '€200', '200 €', '200 €') }),
   judicialRequested: (l) => templates.judicialRequested(l),
   adminServiceRequested: (l) => templates.adminServiceRequested(l, {
     service: 'Helyszíni fotózás, videó és drónfelvétel', name: 'Kovács Anna',
@@ -234,8 +265,6 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
   // The admin-edited invite text (Beállítások → Meghívólevelek). The body here
   // is a visible sample, not approved copy.
   inviteFromTemplate: (l) => templates.inviteFromTemplate(l, SAMPLE_INVITE, `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
-  inviteFromTemplateEn: () => templates.inviteFromTemplate('en', SAMPLE_INVITE, `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
-  inviteFromTemplateDe: () => templates.inviteFromTemplate('de', SAMPLE_INVITE, `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
   // Brief 3 §B: the client's Hungarian owner letter, exactly as migration 0015
   // seeds it (approved). Hungarian only — there is no NL client text.
   inviteOwnerApprovedHu: () =>
@@ -246,38 +275,38 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
   inviteAdminAfterApproval: (l) => buildInvite(approvedStub, l, 'admin', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
   // Quote completion (0019): expiry, renewal, the monthly owner check, newsletter.
   expiryReminder: (l) => lifecycleEmails.expiryReminder(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, days: 14, price: '€ 25',
-    expiresOn: l === 'nl' ? '28 oktober 2026' : '2026. október 28.',
+    ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), days: 14, price: say(l)('25 €', '€ 25', '€25', '25 €', '25 €'),
+    expiresOn: say(l)('2026. október 28.', '28 oktober 2026', '28 October 2026', '28. Oktober 2026', '28 octobre 2026'),
     renewUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
   }),
   expiryReminderLast: (l) => lifecycleEmails.expiryReminder(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, days: 3, price: '€ 25',
-    expiresOn: l === 'nl' ? '28 oktober 2026' : '2026. október 28.',
+    ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), days: 3, price: say(l)('25 €', '€ 25', '€25', '25 €', '25 €'),
+    expiresOn: say(l)('2026. október 28.', '28 oktober 2026', '28 October 2026', '28. Oktober 2026', '28 octobre 2026'),
     renewUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
   }),
   listingExpired: (l) => lifecycleEmails.listingExpired(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, price: '€ 25', renewUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    ref: SAMPLE_REF, title: TITLES[l], price: say(l)('25 €', '€ 25', '€25', '25 €', '25 €'), renewUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
   }),
   listingRenewed: (l) => lifecycleEmails.renewed(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, expiresOn: l === 'nl' ? '28 april 2027' : '2027. április 28.',
+    ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), expiresOn: say(l)('2027. április 28.', '28 april 2027', '28 April 2027', '28. April 2027', '28 avril 2027'),
   }),
   renewalTransfer: (l) => lifecycleEmails.renewalTransfer(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, amount: '€ 25', account: 'NL35 RABO 0360284973 · BIC RABONL2U',
-    reference: `#${SAMPLE_REF} ${l === 'nl' ? 'verlenging' : 'hosszabbítás'}`, payUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
+    ref: SAMPLE_REF, title: TITLES[l], amount: say(l)('25 €', '€ 25', '€25', '25 €', '25 €'), account: 'NL35 RABO 0360284973 · BIC RABONL2U',
+    reference: `#${SAMPLE_REF} ${say(l)('hosszabbítás', 'verlenging', 'extension', 'Verlängerung', 'prolongation')}`, payUrl: `${SITE_URL}/listing/renew?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
   }),
   ownerRefresh: (l) => lifecycleEmails.ownerRefresh(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, price: '€ 178 000',
+    ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), price: say(l)('178 000 €', '€ 178.000', '€178,000', '178.000 €', '178 000 €'),
     stillUrl: `${SITE_URL}/listing/still-available?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
     priceUrl: `${SITE_URL}/listing/price?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
     soldUrl: `${SITE_URL}/listing/sold?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
-    validUntil: l === 'nl' ? '13 november 2026' : '2026. november 13.',
+    validUntil: say(l)('2026. november 13.', '13 november 2026', '13 November 2026', '13. November 2026', '13 novembre 2026'),
   }),
   ownerRefreshReminder: (l) => lifecycleEmails.ownerRefresh(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, url: SAMPLE_URL, price: '€ 178 000', reminder: true,
+    ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), price: say(l)('178 000 €', '€ 178.000', '€178,000', '178.000 €', '178 000 €'), reminder: true,
     stillUrl: `${SITE_URL}/listing/still-available?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
     priceUrl: `${SITE_URL}/listing/price?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
     soldUrl: `${SITE_URL}/listing/sold?p=sample&t=${SAMPLE_TOKEN}&l=${l}`,
-    validUntil: l === 'nl' ? '13 november 2026' : '2026. november 13.',
+    validUntil: say(l)('2026. november 13.', '13 november 2026', '13 November 2026', '13. November 2026', '13 novembre 2026'),
   }),
   // Office notices are Hungarian whatever the preview locale.
   adminOwnerPriceChange: () => lifecycleEmails.adminOwnerUpdate({
@@ -291,18 +320,10 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
     confirmUrl: `${SITE_URL}/newsletter/confirm?s=sample&t=${SAMPLE_TOKEN}&l=${l}`,
     unsubscribeUrl: `${SITE_URL}/newsletter/unsubscribe?s=sample&t=${SAMPLE_TOKEN}&l=${l}`,
   }),
-  newsletterConfirmEn: () => lifecycleEmails.newsletterConfirm('en', {
-    confirmUrl: `${SITE_URL}/newsletter/confirm?s=sample&t=${SAMPLE_TOKEN}&l=en`,
-    unsubscribeUrl: `${SITE_URL}/newsletter/unsubscribe?s=sample&t=${SAMPLE_TOKEN}&l=en`,
-  }),
-  newsletterConfirmDe: () => lifecycleEmails.newsletterConfirm('de', {
-    confirmUrl: `${SITE_URL}/newsletter/confirm?s=sample&t=${SAMPLE_TOKEN}&l=de`,
-    unsubscribeUrl: `${SITE_URL}/newsletter/unsubscribe?s=sample&t=${SAMPLE_TOKEN}&l=de`,
-  }),
   creditNoteIssued: (l) =>
     templates.creditNoteIssued(l, {
       ref: SAMPLE_REF,
-      title: SAMPLE_TITLE,
+      title: TITLES[l],
       number: 'FD-2026-0002',
       correctsNumber: 'FD-2026-0001',
       viewUrl: `${SITE_URL}/portal/invoices/FD-2026-0002`,
@@ -314,8 +335,8 @@ function index(): string {
     .map(
       (key) => `<tr>
         <td>${key}</td>
-        <td><a href="/dev/emails?t=${key}&locale=hu">HU</a> · <a href="/dev/emails?t=${key}&locale=nl">NL</a></td>
-        <td><a href="/dev/emails?t=${key}&locale=hu&format=text">HU text</a> · <a href="/dev/emails?t=${key}&locale=nl&format=text">NL text</a></td>
+        <td>${LOCALES.map((code) => `<a href="/dev/emails?t=${key}&locale=${code}">${code.toUpperCase()}</a>`).join(' · ')}</td>
+        <td>${LOCALES.map((code) => `<a href="/dev/emails?t=${key}&locale=${code}&format=text">${code.toUpperCase()} text</a>`).join(' · ')}</td>
       </tr>`
     )
     .join('');
@@ -357,7 +378,8 @@ export const GET: APIRoute = async ({ url, request, cookies }) => {
   const build = CASES[key];
   if (!build) return new Response(`Unknown template: ${key}`, { status: 404 });
 
-  const locale: Locale = url.searchParams.get('locale') === 'nl' ? 'nl' : 'hu';
+  const asked = url.searchParams.get('locale') ?? '';
+  const locale: Locale = (LOCALES as readonly string[]).includes(asked) ? (asked as Locale) : 'hu';
   const email = await build(locale);
   if (!email) return new Response(`No email for ${key} in ${locale}`, { status: 404 });
 

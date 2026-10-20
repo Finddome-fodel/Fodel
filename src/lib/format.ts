@@ -1,33 +1,85 @@
 /**
- * Number, currency and area formatting.
+ * Number, currency, area and date formatting, one house style per language.
  *
- * The prototype formatted prices inline with `toLocaleString('de-DE')` and
- * stored the forint figure as a hardcoded string ('64 000 000 Ft') that would
- * silently go stale. Here HUF is a real number carried with the date it was
- * set, so the page can say when it was last checked.
+ *   hu  € 178 000      2 000 €-style sums keep the no-break space   1,5 ha
+ *   nl  € 178.000      dot for thousands, comma for decimals       1,5 ha
+ *   en  €178,000       comma for thousands, point for decimals     1.5 ha
+ *   de  178.000 €      dot for thousands, comma for decimals       1,5 ha
+ *   fr  178 000 €      narrow no-break space for thousands         1,5 ha
+ *
+ * ICU's own grouping differs from these in places (hu-HU leaves four digits
+ * ungrouped, fr-FR uses U+202F but nl-NL's "€ 1.200,00" carries cents we do not
+ * want), so the whole part is grouped by hand and only dates go through Intl.
+ * The prototype formatted prices inline and stored the forint figure as a
+ * string; here HUF is a real number, so the page can say when it was checked.
  */
 
 import type { Locale } from '~/i18n/ui';
 
-const NBSP = ' ';
+const NBSP = '\u00a0';
+const NARROW_NBSP = '\u202f';
 
-const LOCALE_TAG: Record<Locale, string> = { hu: 'hu-HU', nl: 'nl-NL' };
+const LOCALE_TAG: Record<Locale, string> = {
+  hu: 'hu-HU',
+  nl: 'nl-NL',
+  en: 'en-GB',
+  de: 'de-DE',
+  fr: 'fr-FR',
+};
+
+/** The BCP 47 tag Intl wants for each page language. */
+export const intlTag = (locale: Locale): string => LOCALE_TAG[locale];
+
+type NumberStyle = {
+  group: string;
+  decimal: string;
+  /** Where the euro sign sits, and whether a space separates it from the digits. */
+  euro: 'prefix-spaced' | 'prefix-tight' | 'suffix';
+};
+
+const STYLE: Record<Locale, NumberStyle> = {
+  hu: { group: NBSP, decimal: ',', euro: 'prefix-spaced' },
+  nl: { group: '.', decimal: ',', euro: 'prefix-spaced' },
+  en: { group: ',', decimal: '.', euro: 'prefix-tight' },
+  de: { group: '.', decimal: ',', euro: 'suffix' },
+  fr: { group: NARROW_NBSP, decimal: ',', euro: 'suffix' },
+};
+
+/** Decimal separator and thousands separator for a language, for client scripts and tests. */
+export const separators = (locale: Locale) => ({ group: STYLE[locale].group, decimal: STYLE[locale].decimal });
 
 /**
- * Thousands the way each language writes them: a no-break space in Hungarian
- * ("1 200 000", also for four digits, which ICU's hu-HU leaves ungrouped),
- * a dot in Dutch ("1.200.000").
+ * Thousands the way each language writes them, also for four digits:
+ * "1 200 000" (hu, no-break space), "1.200.000" (nl, de), "1,200,000" (en),
+ * "1 200 000" (fr, narrow no-break space). Up to two decimals, trailing
+ * zeros dropped.
  */
 export function grouped(amount: number, locale: Locale): string {
-  const whole = Math.trunc(Math.abs(amount)).toString();
-  const sign = amount < 0 ? '-' : '';
-  const sep = locale === 'hu' ? NBSP : '.';
-  return sign + whole.replace(/\B(?=(\d{3})+(?!\d))/g, sep) + (amount % 1 ? String(Math.abs(amount) % 1).slice(1).replace('.', ',') : '');
+  const { group, decimal } = STYLE[locale];
+  const fixed = Math.abs(amount).toFixed(2);
+  const [whole, fraction] = fixed.split('.');
+  const sign = amount < 0 && Number(fixed) !== 0 ? '-' : '';
+  const digits = whole.replace(/\B(?=(\d{3})+(?!\d))/g, group);
+  const decimals = fraction.replace(/0+$/, '');
+  return sign + digits + (decimals ? decimal + decimals : '');
 }
 
-/** € 178 000 (hu) or € 178.000 (nl). */
+/** € 178 000 (hu), € 178.000 (nl), €178,000 (en), 178.000 € (de), 178 000 € (fr). */
 export function eur(amount: number, locale: Locale = 'nl'): string {
-  return `€${NBSP}${grouped(amount, locale)}`;
+  const body = grouped(amount, locale);
+  switch (STYLE[locale].euro) {
+    case 'prefix-spaced':
+      return `€${NBSP}${body}`;
+    case 'prefix-tight':
+      return `€${body}`;
+    case 'suffix':
+      return `${body}${NBSP}€`;
+  }
+}
+
+/** The same, from cents ("€ 1.200" or "€ 1.234,50"), for orders and package prices. */
+export function eurCents(cents: number, locale: Locale = 'nl'): string {
+  return eur(Math.round(cents) / 100, locale);
 }
 
 export function huf(amount: number, locale: Locale): string {
@@ -37,7 +89,7 @@ export function huf(amount: number, locale: Locale): string {
 /** Plots switch to hectares above 1 ha, matching the prototype's threshold. */
 export function area(m2: number, locale: Locale): string {
   if (m2 >= 10000) {
-    const ha = (m2 / 10000).toFixed(2).replace('.', locale === 'hu' ? ',' : ',');
+    const ha = (m2 / 10000).toFixed(2).replace('.', STYLE[locale].decimal);
     return `${ha}${NBSP}ha`;
   }
   return `${grouped(m2, locale)}${NBSP}m²`;
@@ -55,7 +107,7 @@ export function floorArea(m2: number, locale: Locale = 'nl'): string {
 export function areaWithAlternates(m2: number, locale: Locale): string {
   const parts = [area(m2, locale)];
   if (m2 >= 10000) {
-    const hold = (m2 / 5754.6).toFixed(1).replace('.', ',');
+    const hold = (m2 / 5754.6).toFixed(1).replace('.', STYLE[locale].decimal);
     if (locale === 'hu') parts.push(`${hold}${NBSP}hold`);
     else parts.push(`${grouped(m2, locale)}${NBSP}m²`);
   }

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import { handleForm } from '~/lib/form-handler';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 
@@ -41,7 +42,7 @@ export const POST: APIRoute = (context) =>
         budget_min: values.budgetMin ? Number(values.budgetMin) : null,
         budget_max: values.budgetMax ? Number(values.budgetMax) : null,
         requirements: values.requirements || null,
-        locale: extras.Locale === 'nl' ? 'nl' : 'hu',
+        locale: localeFrom(extras.Locale, 'hu'),
       });
     },
   });

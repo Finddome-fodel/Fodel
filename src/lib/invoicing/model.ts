@@ -17,6 +17,8 @@
  * only proposes the usual one, and the editor lets the admin override it.
  */
 
+import type { Locale } from '~/i18n/ui';
+
 export type DocKind = 'invoice' | 'proforma' | 'credit_note';
 export type DocStatus = 'draft' | 'issued' | 'sent' | 'paid' | 'void';
 export type VatTreatment = 'nl_standard' | 'reverse_charge' | 'outside_scope' | 'custom';
@@ -94,7 +96,7 @@ export type InvoiceDoc = {
   referenceNumber?: string | null;
   notes: string;
   /** The language of the covering email; the document itself is always bilingual. */
-  locale: 'hu' | 'nl';
+  locale: Locale;
   /** True when the money has already arrived: no payment instructions are printed. */
   settled: boolean;
 };

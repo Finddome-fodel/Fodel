@@ -9,6 +9,8 @@
  * is null, because Dutch law requires the KvK number on the website.
  */
 
+import type { Locale } from '~/i18n/ui';
+
 export const COMPANY = {
   /** Legal / trading names, per market. All verbatim from their own sites. */
   names: {
@@ -57,26 +59,29 @@ export const COMPANY = {
 
   phones: [
     {
-      label: { hu: 'Holland szám', nl: 'Nederlands nummer' },
+      label: { hu: 'Holland szám', nl: 'Nederlands nummer', en: 'Dutch number', de: 'Niederländische Nummer', fr: 'Numéro néerlandais' },
       /** Dutch mobile 06 44005550. The old build mis-grouped this as +31-644-005-550. */
       display: '+31 6 4400 5550',
       href: 'tel:+31644005550',
       note: {
         hu: 'Magyarul beszélő munkatársunk ezen a számon is elérhető',
         nl: 'Ook bereikbaar voor Hongaarstalige klanten',
+        en: 'Also open to Hungarian-speaking callers',
+        de: 'Auch für ungarischsprachige Kunden erreichbar',
+        fr: 'Joignable aussi pour les clients hongrophones',
       },
     },
     {
-      label: { hu: 'Magyar szám', nl: 'Hongaars nummer' },
+      label: { hu: 'Magyar szám', nl: 'Hongaars nummer', en: 'Hungarian number', de: 'Ungarische Nummer', fr: 'Numéro hongrois' },
       display: '+36 70 225 5255',
       href: 'tel:+36702255255',
-      note: { hu: 'Ingatlanos munkatárs', nl: 'Makelaar' },
+      note: { hu: 'Ingatlanos munkatárs', nl: 'Makelaar', en: 'Estate agent', de: 'Makler', fr: 'Agent immobilier' },
     },
     {
-      label: { hu: 'Magyar információs vonal', nl: 'Hongaarse infolijn' },
+      label: { hu: 'Magyar információs vonal', nl: 'Hongaarse infolijn', en: 'Hungarian information line', de: 'Ungarische Infoleitung', fr: 'Ligne d’information hongroise' },
       display: '+36 70 231 0031',
       href: 'tel:+36702310031',
-      note: { hu: 'Általános információ', nl: 'Algemene informatie' },
+      note: { hu: 'Általános információ', nl: 'Algemene informatie', en: 'General information', de: 'Allgemeine Informationen', fr: 'Informations générales' },
     },
   ],
 
@@ -140,7 +145,7 @@ export const LISTING_VAT_PERCENT = 21;
 export const LISTING_PACKAGES = [
   {
     id: 'cheap-6m',
-    names: { hu: 'Standard hirdetés', nl: 'Standaard advertentie' },
+    names: { hu: 'Standard hirdetés', nl: 'Standaard advertentie', en: 'Standard listing', de: 'Standard-Inserat', fr: 'Annonce standard' },
     priceEur: 69,
     months: 6,
     maxImages: 20,
@@ -149,7 +154,7 @@ export const LISTING_PACKAGES = [
   },
   {
     id: 'normal-12m',
-    names: { hu: 'Kiemelt hirdetés', nl: 'Uitgelichte advertentie' },
+    names: { hu: 'Kiemelt hirdetés', nl: 'Uitgelichte advertentie', en: 'Featured listing', de: 'Hervorgehobenes Inserat', fr: 'Annonce mise en avant' },
     priceEur: 129,
     priceEurAbove: 179,
     /** The €179 tier applies above 150M HUF. */
@@ -191,10 +196,16 @@ export const ONSITE_SERVICES = [
     names: {
       hu: 'Helyszíni profi fotózás, videó és drónfelvétel',
       nl: 'Professionele foto’s, video en dronebeelden ter plaatse',
+      en: 'Professional photos, video and drone footage on site',
+      de: 'Professionelle Fotos, Video und Drohnenaufnahmen vor Ort',
+      fr: 'Photos professionnelles, vidéo et images de drone sur place',
     },
     includes: {
       hu: ['Profi fotók az ingatlanról', 'Videós bemutató', 'Drónfelvétel'],
       nl: ['Professionele foto’s van de woning', 'Videopresentatie', 'Dronebeelden'],
+      en: ['Professional photos of the property', 'Video presentation', 'Drone footage'],
+      de: ['Professionelle Fotos der Immobilie', 'Videopräsentation', 'Drohnenaufnahmen'],
+      fr: ['Photos professionnelles du bien', 'Présentation vidéo', 'Images de drone'],
     },
   },
   {
@@ -203,10 +214,16 @@ export const ONSITE_SERVICES = [
     names: {
       hu: 'Gábor helyszíni látogatása: profi fotózás és videó, részletes személyes értékbecslés',
       nl: 'Bezoek van Gábor ter plaatse: professionele foto’s en video, uitgebreide persoonlijke waardebepaling',
+      en: 'A visit from Gábor on site: professional photos and video, and a detailed personal valuation',
+      de: 'Besuch von Gábor vor Ort: professionelle Fotos und Video sowie eine ausführliche persönliche Bewertung',
+      fr: 'Visite de Gábor sur place\u00a0: photos et vidéo professionnelles, estimation personnelle détaillée',
     },
     includes: {
       hu: ['Profi fotók az ingatlanról', 'Videós bemutató', 'Részletes, személyes értékbecslés'],
       nl: ['Professionele foto’s van de woning', 'Videopresentatie', 'Uitgebreide persoonlijke waardebepaling'],
+      en: ['Professional photos of the property', 'Video presentation', 'Detailed personal valuation'],
+      de: ['Professionelle Fotos der Immobilie', 'Videopräsentation', 'Ausführliche persönliche Bewertung'],
+      fr: ['Photos professionnelles du bien', 'Présentation vidéo', 'Estimation personnelle détaillée'],
     },
   },
 ] as const;
@@ -244,22 +261,62 @@ export const AGRI_HECTARE_LIMIT = 300;
 
 /* ── Derived helpers ──────────────────────────────────────────────────── */
 
-export function formatHours(locale: 'hu' | 'nl'): string {
+export function formatHours(locale: Locale): string {
   const { from, to } = COMPANY.hours.weekdays;
-  return locale === 'hu' ? `Hétfő–Péntek · ${from}–${to}` : `Maandag–vrijdag · ${from}–${to}`;
+  const days: Record<Locale, string> = {
+    hu: 'Hétfő–Péntek',
+    nl: 'Maandag–vrijdag',
+    en: 'Monday–Friday',
+    de: 'Montag–Freitag',
+    fr: 'Lundi–vendredi',
+  };
+  return `${days[locale]} · ${from}–${to}`;
 }
 
 /**
- * The founding city, localised for display — Hungarian uses the exonym
- * ("Hága"), Dutch and the legal/imprint spelling stay "Den Haag". Reads
- * `foundedIn` rather than hardcoding the city so the correction stays a
- * one-field change (see the field's own comment for the 1.3 background).
+ * The founding city, localised for display. Hungarian, English and French use
+ * their own names for the city ("Hága", "The Hague", "La Haye"); Dutch, German
+ * and the legal/imprint spelling stay "Den Haag". Reads `foundedIn` rather
+ * than hardcoding the city so the correction stays a one-field change (see the
+ * field's own comment for the 1.3 background).
  */
-const HU_CITY_EXONYMS: Record<string, string> = { 'Den Haag': 'Hága' };
-export function foundedInLabel(locale: 'hu' | 'nl'): string {
-  // Display-only (eyebrows): a no-break space keeps "Den Haag" on one line.
-  if (locale === 'nl') return `${COMPANY.foundedIn.replace(/ /g, '\u00a0')}, Nederland`;
-  return `${HU_CITY_EXONYMS[COMPANY.foundedIn] ?? COMPANY.foundedIn}, Hollandia`;
+const CITY_NAMES: Record<string, Record<Locale, string>> = {
+  'Den Haag': { hu: 'Hága', nl: 'Den Haag', en: 'The Hague', de: 'Den Haag', fr: 'La Haye' },
+};
+const COUNTRY_NAMES: Record<Locale, string> = {
+  hu: 'Hollandia',
+  nl: 'Nederland',
+  en: 'the Netherlands',
+  de: 'Niederlande',
+  fr: 'Pays-Bas',
+};
+export function foundedInLabel(locale: Locale): string {
+  const city = CITY_NAMES[COMPANY.foundedIn]?.[locale] ?? COMPANY.foundedIn;
+  // Display-only (eyebrows): no-break spaces keep the city on one line.
+  return `${city.replace(/ /g, '\u00a0')}, ${COUNTRY_NAMES[locale].replace(/ /g, '\u00a0')}`;
+}
+
+/** The country of an address in the page's language ("Niederlande", "Pays-Bas", "The Netherlands"). */
+export function countryName(code: string, locale: Locale): string {
+  try {
+    return new Intl.DisplayNames([locale === 'en' ? 'en-GB' : locale], { type: 'region' }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
+/** "Seinpostduin 168, 2586 EC Den Haag, Niederlande": street and city stay local, the country follows the language. */
+export function addressLine(
+  address: { street: string; postalCode: string; city: string; countryCode?: string },
+  locale: Locale
+): string {
+  const place = `${address.street}, ${address.postalCode} ${address.city}`;
+  return address.countryCode ? `${place}, ${countryName(address.countryCode, locale)}` : place;
+}
+
+/** A phone line's label in the page's language; lines an admin typed only in hu/nl fall back to Dutch, then Hungarian. */
+export function phoneText(texts: Partial<Record<string, string>> | undefined, locale: Locale): string {
+  return texts?.[locale] ?? texts?.nl ?? texts?.hu ?? '';
 }
 
 /** True once every legally-required identifier is present. */

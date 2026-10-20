@@ -14,10 +14,11 @@ import Map from '~/components/Map.astro';
 import VideoEmbed from '~/components/VideoEmbed.astro';
 import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
+import { sourceNote } from '~/i18n/fallback';
 import { COMPANY } from '~/config/company';
 import { featureLabel } from '~/data/features';
-import { activeProperties, similarTo, text, url as propUrl, type Property } from '~/lib/properties';
+import { activeProperties, similarTo, text, resolveText, url as propUrl, type Property } from '~/lib/properties';
 import { propertyAlternates, crumbs } from '~/lib/page';
 import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
 import { eur, huf, area, floorArea, epcLabel, formatDate } from '~/lib/format';
@@ -36,11 +37,17 @@ interface Props {
 const { locale, property } = Astro.props;
 const d = property.data;
 const ui = UI[locale];
+const x = localizer(locale);
+const colon = locale === 'fr' ? '\u00a0:' : ':';
 
 const title = text(d.title, locale);
 const subtitle = d.subtitle ? text(d.subtitle, locale) : '';
-const description = text(d.description, locale);
-const category = d.categoryLabels[locale] ?? d.categoryLabels.hu;
+// English, German and French pages show the Dutch (or Hungarian) text the
+// seller wrote, and say so; the facts around it are in the visitor's language.
+const resolvedDescription = resolveText(d.description, locale);
+const description = resolvedDescription.text;
+const languageNote = sourceNote(locale, resolvedDescription.from, 'description');
+const category = d.categoryLabels[locale] ?? d.categoryLabels.nl ?? d.categoryLabels.hu;
 const tag = d.tag ? text(d.tag, locale) : null;
 
 const gallery = [
@@ -80,7 +87,7 @@ const specs = [
   { label: ui.property.land, value: area(d.areas.plotM2, locale) },
   { label: ui.property.epc, value: epc.value },
   d.building.yearBuilt && { label: ui.property.yearBuilt, value: String(d.building.yearBuilt) },
-  d.building.wall && d.building.wall.key !== 'nem-tudom' && { label: locale === 'hu' ? 'Falazat' : 'Muurwerk', value: d.building.wall.labels[locale] ?? d.building.wall.labels.hu },
+  d.building.wall && d.building.wall.key !== 'nem-tudom' && { label: x('Falazat', 'Muurwerk', 'Wall material', 'Wandmaterial', 'Matériau des murs'), value: d.building.wall.labels[locale] ?? d.building.wall.labels.nl ?? d.building.wall.labels.hu },
 ].filter(Boolean) as { label: string; value: string }[];
 
 const all = await activeProperties();
@@ -97,9 +104,7 @@ const mapUrl = `https://www.openstreetmap.org/?mlat=${d.location.lat}&mlon=${d.l
 // A stored E.164 number is shown the way it is dialled from abroad.
 const dialled = d.seller.phone ? normalizePhone(d.seller.phone, 'HU') : { ok: false as const };
 
-const metaDescription = `${title} · ${d.location.settlement}, ${d.location.county}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}, ${area(d.areas.plotM2, locale)}. ${
-  locale === 'hu' ? 'Azonosító' : 'Referentie'
-} ${d.ref}.`;
+const metaDescription = `${title} · ${d.location.settlement}, ${d.location.county}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}, ${area(d.areas.plotM2, locale)}. ${x('Azonosító', 'Referentie', 'Reference', 'Referenz', 'Référence')} ${d.ref}.`;
 
 const videoId = d.media.videoUrl ? extractYouTubeId(d.media.videoUrl) : null;
 
@@ -114,10 +119,13 @@ const sellerPhone = showSellerPhone(
   { package: d.listing.package, contactVisible: d.seller.contactVisible, phone: d.seller.phone },
   listingRules(services)
 );
-const whatsappMessage =
-  locale === 'hu'
-    ? `Jó napot! Érdeklődöm a(z) „${title}” (#${d.ref}) hirdetés iránt: ${abs(pageUrl)}`
-    : `Goedendag, ik heb interesse in „${title}” (#${d.ref}): ${abs(pageUrl)}`;
+const whatsappMessage = x(
+  `Jó napot! Érdeklődöm a(z) „${title}” (#${d.ref}) hirdetés iránt: ${abs(pageUrl)}`,
+  `Goedendag, ik heb interesse in „${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  `Guten Tag, ich interessiere mich für „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  `Bonjour, je m’intéresse à «\u00a0${title}\u00a0» (#${d.ref})\u00a0: ${abs(pageUrl)}`
+);
 ---
 
 <Base
@@ -233,7 +241,7 @@ const whatsappMessage =
             <path d="M10 18s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
             <circle cx="10" cy="8" r="2.2" stroke="currentColor" stroke-width="1.6" />
           </svg>
-          {locale === 'hu' ? 'OpenStreetMap-en' : 'Op OpenStreetMap'}
+          {x('OpenStreetMap-en', 'Op OpenStreetMap', 'On OpenStreetMap', 'Auf OpenStreetMap', 'Sur OpenStreetMap')}
         </a>
       </p>
 
@@ -241,7 +249,7 @@ const whatsappMessage =
         <span class="price">{eur(d.price.eur, locale)}</span>
         <span class="price-huf">{huf(d.price.huf, locale)}</span>
         <span class="price-asof">
-          {locale === 'hu' ? 'Árfolyam' : 'Koers'}: {formatDate(d.price.asOf, locale)}
+          {x('Árfolyam', 'Koers', 'Exchange rate', 'Wechselkurs', 'Taux de change')}{colon} {formatDate(d.price.asOf, locale)}
         </span>
       </div>
 
@@ -262,12 +270,13 @@ const whatsappMessage =
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M4 6V1.75h8V6M4 12H2.25A1.25 1.25 0 0 1 1 10.75v-3.5A1.25 1.25 0 0 1 2.25 6h11.5A1.25 1.25 0 0 1 15 7.25v3.5A1.25 1.25 0 0 1 13.75 12H12M4 9.5h8v4.75H4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
           </svg>
-          {locale === 'hu' ? 'Nyomtatás' : 'Afdrukken'}
+          {x('Nyomtatás', 'Afdrukken', 'Print', 'Drucken', 'Imprimer')}
         </button>
       </div>
 
       <div class="prose">
         <h2 class="sr-heading">{ui.property.description}</h2>
+        {languageNote && <p class="lang-note">{languageNote}</p>}
         <p class="lead">{description}</p>
         <slot />
       </div>
@@ -317,7 +326,7 @@ const whatsappMessage =
             )}
             {d.seller.speaks.length > 0 && (
               <p class="owner-speaks">
-                {locale === 'hu' ? 'Beszélt nyelvek' : 'Spreekt'}:{' '}
+                {x('Beszélt nyelvek', 'Spreekt', 'Speaks', 'Spricht', 'Langues parlées')}{colon}{' '}
                 {d.seller.speaks.map((s) => s.toUpperCase()).join(' · ')}
               </p>
             )}
@@ -327,14 +336,16 @@ const whatsappMessage =
 
       <aside class="guarantee">
         <Eyebrow space="8px">
-          {locale === 'hu' ? 'FODEL Garancia' : 'De FODEL-garantie'}
+          {x('FODEL Garancia', 'De FODEL-garantie', 'The FODEL guarantee', 'Die FODEL-Garantie', 'La garantie FODEL')}
         </Eyebrow>
         <p>
-          {
-            locale === 'hu'
-              ? 'Minden hirdető azonosítása megtörtént. Kétnyelvű adásvételi szerződés, meghatalmazásos képviselet és földhivatali ügyintézés igény szerint elérhető.'
-              : 'Elke adverteerder is door ons geïdentificeerd. Tweetalige koopovereenkomst, vertegenwoordiging met volmacht en inschrijving bij het kadaster zijn op verzoek beschikbaar.'
-          }
+          {x(
+            'Minden hirdető azonosítása megtörtént. Kétnyelvű adásvételi szerződés, meghatalmazásos képviselet és földhivatali ügyintézés igény szerint elérhető.',
+            'Elke adverteerder is door ons geïdentificeerd. Tweetalige koopovereenkomst, vertegenwoordiging met volmacht en inschrijving bij het kadaster zijn op verzoek beschikbaar.',
+            'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            'Jeder Inserent wurde von uns identifiziert. Zweisprachiger Kaufvertrag, Vertretung per Vollmacht und Grundbucheintragung sind auf Anfrage verfügbar.',
+            'Chaque annonceur a été identifié par nos soins. Un contrat de vente bilingue, une représentation par procuration et l’inscription au registre foncier sont disponibles sur demande.'
+          )}
         </p>
       </aside>
     </div>
@@ -350,28 +361,30 @@ const whatsappMessage =
         formId="enquiry"
         onDark
         meta={{ propertyRef: d.ref, propertyTitle: title }}
-        submitLabel={locale === 'hu' ? 'Visszahívást kérek' : 'Bel mij terug'}
-        successTitle={locale === 'hu' ? 'Köszönjük, hamarosan hívjuk!' : 'Bedankt, wij bellen u terug!'}
-        successBody={
-          locale === 'hu'
-            ? 'Munkatársunk 24 órán belül felkeresi a megadott elérhetőségen.'
-            : 'Een medewerker neemt binnen 24 uur contact met u op.'
-        }
+        submitLabel={x('Visszahívást kérek', 'Bel mij terug', 'Request a callback', 'Rückruf anfordern', 'Demander un rappel')}
+        successTitle={x('Köszönjük, hamarosan hívjuk!', 'Bedankt, wij bellen u terug!', 'Thank you, we will call you back', 'Vielen Dank, wir rufen Sie zurück', 'Merci, nous vous rappelons')}
+        successBody={x(
+          'Munkatársunk 24 órán belül felkeresi a megadott elérhetőségen.',
+          'Een medewerker neemt binnen 24 uur contact met u op.',
+          'A member of our team will contact you within 24 hours.',
+          'Ein Mitarbeiter meldet sich innerhalb von 24 Stunden bei Ihnen.',
+          'Un collaborateur vous contactera dans les 24 heures.'
+        )}
       >
         <fieldset class="pref" data-required-label={ui.form.required} data-optional-label={ui.form.optional}>
-          <legend>{locale === 'hu' ? 'Hogyan keressük Önt?' : 'Hoe nemen we contact op?'}</legend>
+          <legend>{x('Hogyan keressük Önt?', 'Hoe nemen we contact op?', 'How we should contact you', 'Wie wir Sie erreichen sollen', 'Comment vous contacter')}</legend>
           <label class="opt">
             <input type="radio" name="contact_pref" value="callback" checked />
             <span>
-              <b>{locale === 'hu' ? 'Visszahívást kérek' : 'Terugbellen'}</b>
-              <small>{locale === 'hu' ? '24 órán belül hívjuk' : 'Binnen 24 uur'}</small>
+              <b>{x('Visszahívást kérek', 'Terugbellen', 'Request a callback', 'Rückruf anfordern', 'Demander un rappel')}</b>
+              <small>{x('24 órán belül hívjuk', 'Binnen 24 uur', 'Within 24 hours', 'Innerhalb von 24 Stunden', 'Sous 24\u00a0heures')}</small>
             </span>
           </label>
           <label class="opt">
             <input type="radio" name="contact_pref" value="email" />
             <span>
-              <b>{locale === 'hu' ? 'E-mailben' : 'Per e-mail'}</b>
-              <small>{locale === 'hu' ? 'Írásban válaszolunk' : 'Wij antwoorden schriftelijk'}</small>
+              <b>{x('E-mailben', 'Per e-mail', 'By email', 'Per E-Mail', 'Par e-mail')}</b>
+              <small>{x('Írásban válaszolunk', 'Wij antwoorden schriftelijk', 'We reply in writing', 'Wir antworten schriftlich', 'Nous répondons par écrit')}</small>
             </span>
           </label>
         </fieldset>
@@ -390,7 +403,7 @@ const whatsappMessage =
       </FormShell>
 
       <p class="enq-alt">
-        {locale === 'hu' ? 'Vagy hívjon minket' : 'Of bel ons'}:<br />
+        {x('Vagy hívjon minket', 'Of bel ons', 'Or call us', 'Oder rufen Sie uns an', 'Ou appelez-nous')}{colon}<br />
         {
           COMPANY.phones.slice(0, 2).map((p) => (
             <a href={p.href}>{p.display}</a>
@@ -506,6 +519,18 @@ const whatsappMessage =
 </script>
 
 <style>
+  /* "Description in Dutch": a quiet line above the seller's own words. */
+  .lang-note {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 16px;
+    padding: 6px 14px;
+    border-radius: var(--r-pill);
+    background: rgba(16, 42, 67, 0.06);
+    font-size: 13.5px;
+    font-weight: var(--fw-medium);
+    color: var(--ink);
+  }
   /* ── The photograph: a rounded stage set in from the edges ── */
   .detail-top {
     position: relative;

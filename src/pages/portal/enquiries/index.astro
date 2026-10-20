@@ -16,6 +16,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
 import Ago from '~/components/portal/Ago.astro';
 import { icon } from '~/lib/portal/icons';
 import { hoursSince } from '~/lib/portal/time';
@@ -106,7 +107,7 @@ const initials = (name: string) =>
                   <b>{e.name}</b>
                   <span class="when">
                     <Ago iso={e.created_at} />
-                    {e.locale === 'nl' ? ' · holland' : ''}
+                    {e.locale !== 'hu' ? ` · ${(LOCALE_LABEL[e.locale] ?? e.locale).toLowerCase()}` : ''}
                   </span>
                 </div>
                 <div class="badges">

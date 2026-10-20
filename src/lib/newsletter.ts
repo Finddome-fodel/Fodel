@@ -14,11 +14,12 @@
 import { Resend } from 'resend';
 import { SITE_URL } from '~/config/site.mjs';
 import { signAction } from '~/lib/valuation/action-token';
+import { LOCALES, localeFrom, type Locale } from '~/i18n/ui';
 
-export type NewsletterLocale = 'hu' | 'nl' | 'en' | 'de';
-export const NEWSLETTER_LOCALES: NewsletterLocale[] = ['hu', 'nl', 'en', 'de'];
-export const asNewsletterLocale = (value: unknown): NewsletterLocale =>
-  NEWSLETTER_LOCALES.includes(value as NewsletterLocale) ? (value as NewsletterLocale) : 'hu';
+/** The sign-up forms exist in all five site languages, and so does the confirmation email. */
+export type NewsletterLocale = Locale;
+export const NEWSLETTER_LOCALES: NewsletterLocale[] = [...LOCALES];
+export const asNewsletterLocale = (value: unknown): NewsletterLocale => localeFrom(value);
 
 const CONFIRM_DAYS = 14;
 const UNSUBSCRIBE_DAYS = 3650;

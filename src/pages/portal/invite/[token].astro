@@ -126,10 +126,29 @@ const T = {
       failed: 'Das Konto konnte nicht erstellt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns.',
     },
   },
+  fr: {
+    title: 'Définir le mot de passe', titleInvalid: 'Invitation',
+    heading: 'Définissez votre mot de passe',
+    headingExpired: 'Ce lien a expiré', headingUsed: 'Ce lien a déjà été utilisé', headingInvalid: 'Ce lien n’est pas valide',
+    headingRenewed: 'Consultez votre boîte de réception',
+    intro: 'Dernière étape avant que votre compte soit prêt.',
+    email: 'Adresse e-mail', name: 'Nom complet', password: 'Mot de passe', submit: 'Enregistrer et continuer',
+    rule: 'Au moins 8 caractères', show: 'Afficher', hide: 'Masquer',
+    expired: 'Pour votre sécurité, chaque lien est valable 7 jours. Demandez-en un nouveau : nous l’enverrons à la même adresse.',
+    used: 'Un compte est déjà associé à ce lien. Connectez-vous ou définissez un nouveau mot de passe si vous l’avez oublié.',
+    notFound: 'Vous avez peut-être demandé un lien plus récent, qui remplace celui-ci. Saisissez votre adresse e-mail et nous vous en enverrons un nouveau.',
+    renewedBody: 'Si nous connaissons cette adresse, un nouveau lien est en route. Si rien n’arrive d’ici quelques minutes, vérifiez aussi votre dossier de courrier indésirable.',
+    newLink: 'Demander un nouveau lien', login: 'Se connecter', forgot: 'Mot de passe oublié',
+    errors: {
+      missing: 'Veuillez saisir votre nom et un mot de passe d’au moins 8 caractères.',
+      invalid: 'Ce lien a expiré ou n’est plus valable. Demandez-en un nouveau ci-dessous.',
+      failed: 'Le compte n’a pas pu être créé. Veuillez réessayer ou nous contacter.',
+    },
+  },
 }[lang];
 
 const errorText = err && err in T.errors ? T.errors[err as keyof typeof T.errors] : null;
-const portalLang = lang === 'nl' ? 'nl' : 'hu';
+const portalLang = lang;
 const heading = renewed
   ? T.headingRenewed
   : usable

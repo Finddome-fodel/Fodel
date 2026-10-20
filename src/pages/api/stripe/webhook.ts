@@ -25,6 +25,8 @@ import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { publishProperty, listingTitle, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
+import { intlTag } from '~/lib/format';
+import { localeFrom } from '~/i18n/ui';
 import { officeInbox } from '~/lib/email/routing';
 import { SITE_URL } from '~/config/site.mjs';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
@@ -201,10 +203,10 @@ async function sendReceipt(
     templates.paymentReceipt(locale, {
       ref: property.ref,
       title,
-      items: linesForEmail(order.line_items ?? []),
-      discount: order.discount_cents ? `−${formatCents(order.discount_cents)}` : undefined,
-      total: formatCents(order.amount_cents),
-      paidAt: paidAt.toLocaleDateString(locale === 'nl' ? 'nl-NL' : 'hu-HU', {
+      items: linesForEmail(order.line_items ?? [], locale),
+      discount: order.discount_cents ? `−${formatCents(order.discount_cents, locale)}` : undefined,
+      total: formatCents(order.amount_cents, locale),
+      paidAt: paidAt.toLocaleDateString(intlTag(locale), {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -238,16 +240,16 @@ async function settleValuationPayment(admin: any, sessionId: string, details?: S
 
   const lines = (order.line_items ?? []) as OrderLine[];
   const label = lines.map((line) => line.label).join(', ') || 'Értékbecslés';
-  const locale = order.locale === 'nl' ? 'nl' : 'hu';
+  const locale = localeFrom(order.locale);
 
   if (order.contact_email) {
     await deliver(
       order.contact_email,
       templates.valuationPaid(locale, {
         service: label,
-        items: linesForEmail(lines),
-        total: formatCents(order.amount_cents),
-        paidAt: paidAt.toLocaleDateString(locale === 'nl' ? 'nl-NL' : 'hu-HU', { year: 'numeric', month: 'long', day: 'numeric' }),
+        items: linesForEmail(lines, locale),
+        total: formatCents(order.amount_cents, locale),
+        paidAt: paidAt.toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }),
       })
     );
   }

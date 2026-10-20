@@ -8,11 +8,15 @@
  *
  * Order of preference: the language the visitor last picked in the switcher
  * (the `fodel_lang` cookie, set by LanguageSwitcher.astro), then the
- * browser's own languages, then Dutch. Without JavaScript the meta refresh
- * inside <noscript> sends everyone to Dutch, as before.
+ * browser's own languages (en-GB, de-AT and fr-BE all count), then Dutch.
+ * Without JavaScript the meta refresh sends everyone to Dutch, and the links
+ * below the fold stay usable.
  */
 export const prerender = true;
 import { SITE_URL } from '~/config/site.mjs';
+import { LOCALES, FALLBACK_LOCALE, LOCALE_META } from '~/i18n/ui';
+
+const fallback = FALLBACK_LOCALE;
 ---
 
 <!doctype html>
@@ -20,29 +24,28 @@ import { SITE_URL } from '~/config/site.mjs';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FODEL — Kies uw taal / Válasszon nyelvet</title>
-    <meta name="description" content="Kies uw taal om verder te gaan: Nederlands of Hongaars. Válasszon nyelvet a folytatáshoz." />
+    <title>FODEL — Kies uw taal / Válasszon nyelvet / Choose your language</title>
+    <meta
+      name="description"
+      content="Kies uw taal om verder te gaan. Válasszon nyelvet a folytatáshoz. Choose your language to continue. Wählen Sie Ihre Sprache. Choisissez votre langue."
+    />
     <meta name="robots" content="noindex, follow" />
-    <link rel="canonical" href={`${SITE_URL}/nl/`} />
-    <link rel="alternate" hreflang="nl" href={`${SITE_URL}/nl/`} />
-    <link rel="alternate" hreflang="hu" href={`${SITE_URL}/hu/`} />
-    <link rel="alternate" hreflang="x-default" href={`${SITE_URL}/nl/`} />
-    <noscript><meta http-equiv="refresh" content="0; url=/nl/" /></noscript>
-    <script is:inline>
+    <link rel="canonical" href={`${SITE_URL}/${fallback}/`} />
+    {LOCALES.map((code) => <link rel="alternate" hreflang={LOCALE_META[code].hreflang} href={`${SITE_URL}/${code}/`} />)}
+    <link rel="alternate" hreflang="x-default" href={`${SITE_URL}/${fallback}/`} />
+    <noscript><meta http-equiv="refresh" content={`0; url=/${fallback}/`} /></noscript>
+    <script is:inline define:vars={{ supported: LOCALES, fallback }}>
       // The visitor's own choice first, then their browser's languages.
       (function () {
-        var supported = ['nl', 'hu'];
         var chosen = (document.cookie.match(/(?:^|;\s*)fodel_lang=([a-z]{2})/) || [])[1];
-        if (chosen) {
-          // The bridge languages have their own home page; hu/nl are full sites.
-          if (supported.concat(['en', 'de', 'fr']).indexOf(chosen) !== -1) {
-            location.replace('/' + chosen + '/');
-            return;
-          }
+        if (chosen && supported.indexOf(chosen) !== -1) {
+          location.replace('/' + chosen + '/');
+          return;
         }
-        var languages = navigator.languages || [navigator.language || 'nl'];
-        var match = 'nl';
+        var languages = navigator.languages || [navigator.language || fallback];
+        var match = fallback;
         for (var i = 0; i < languages.length; i++) {
+          // "en-GB", "de-AT", "fr-BE": the primary subtag decides.
           var code = String(languages[i]).slice(0, 2).toLowerCase();
           if (supported.indexOf(code) !== -1) {
             match = code;
@@ -55,8 +58,14 @@ import { SITE_URL } from '~/config/site.mjs';
   </head>
   <body>
     <p>
-      <a href="/nl/">Ga verder in het Nederlands</a> ·
-      <a href="/hu/">Tovább magyarul</a>
+      {
+        LOCALES.map((code, index) => (
+          <>
+            {index > 0 && ' · '}
+            <a href={`/${code}/`} lang={LOCALE_META[code].htmlLang}>{LOCALE_META[code].label}</a>
+          </>
+        ))
+      }
     </p>
   </body>
 </html>

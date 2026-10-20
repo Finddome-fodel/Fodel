@@ -17,6 +17,7 @@
  *    with the same hashed, single-use, expiring design as `invites`.
  */
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import crypto from 'node:crypto';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, localeOf, templates } from '~/lib/email/send';
@@ -41,7 +42,7 @@ function rateLimited(ip: string): boolean {
 export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
   const form = await request.formData();
   const email = String(form.get('email') ?? '').trim().toLowerCase();
-  const lang = form.get('lang') === 'nl' ? 'nl' : 'hu';
+  const lang = localeFrom(form.get('lang')?.toString(), 'hu');
 
   // Identical for every outcome below — see note 1.
   const done = () => redirect(`/portal/forgot?sent=1&lang=${lang}`);

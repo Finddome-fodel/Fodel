@@ -25,6 +25,7 @@ import {
   type FieldError,
   type FieldRule as ValidationRule,
 } from '~/lib/validation';
+import { path, isLocale, localeOfPath, type Locale } from '~/i18n/ui';
 
 export type FieldRule = {
   name: string;
@@ -123,7 +124,7 @@ const RULE_OF: Record<NonNullable<FieldRule['type']>, ValidationRule> = {
 export function validate(form: FormData, def: FormDefinition): ValidationResult {
   const values: Record<string, string> = {};
   const errors: Record<string, FieldError> = {};
-  const locale = form.get('locale') === 'nl' ? 'nl' : 'hu';
+  const locale = formLocale(form);
 
   for (const field of def.fields) {
     const raw = form.get(field.name);
@@ -212,6 +213,19 @@ function buildEmail(def: FormDefinition, values: Record<string, string>, extras:
 </div>`;
 }
 
+/**
+ * The language of a submission: the form's own `locale` field (the page it was
+ * rendered in), else the language in the address of the page it came from,
+ * else Hungarian. A seller's stored language wins over all of these where the
+ * email goes to an account holder (see localeOf in email/send.ts).
+ */
+export function formLocale(form: FormData): Locale {
+  const stated = form.get('locale');
+  if (typeof stated === 'string' && isLocale(stated)) return stated;
+  const from = String(form.get('returnTo') ?? '');
+  return localeOfPath(from.startsWith('/') ? from : '/') ?? 'hu';
+}
+
 const ACK = {
   hu: {
     subject: 'Köszönjük megkeresését | FODEL',
@@ -228,6 +242,30 @@ const ACK = {
        <p>Bedankt voor uw bericht. Wij hebben het ontvangen; een medewerker neemt spoedig contact met u op. ${escapeHtml(hours)}</p>
        <p>Heeft u haast? Bel ons op ${escapeHtml(phones)}.</p>
        <p>Met vriendelijke groet,<br>FODEL Vastgoed</p>`,
+  },
+  en: {
+    subject: 'Thank you for your message | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FODEL Real Estates</p>`,
+  },
+  de: {
+    subject: 'Vielen Dank für Ihre Nachricht | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Guten Tag ${escapeHtml(name)},` : 'Guten Tag,'}</p>
+       <p>vielen Dank für Ihre Nachricht. Wir haben sie erhalten, und ein Mitarbeiter meldet sich in Kürze bei Ihnen. ${escapeHtml(hours)}</p>
+       <p>Eilt es? Rufen Sie uns an: ${escapeHtml(phones)}.</p>
+       <p>Mit freundlichen Grüßen<br>FODEL Immobilien</p>`,
+  },
+  fr: {
+    subject: 'Merci pour votre message | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Bonjour ${escapeHtml(name)},` : 'Bonjour,'}</p>
+       <p>Merci pour votre message. Nous l’avons bien reçu et un collaborateur vous répondra très prochainement. ${escapeHtml(hours)}</p>
+       <p>C’est urgent&#8239;? Appelez-nous au ${escapeHtml(phones)}.</p>
+       <p>Cordialement,<br>FODEL Immobilier</p>`,
   },
 } as const;
 
@@ -262,7 +300,7 @@ export async function handleForm(
   const form = await request.formData();
   const wantsJson = request.headers.get('accept')?.includes('application/json');
 
-  const locale = form.get('locale') === 'nl' ? 'nl' : 'hu';
+  const locale = formLocale(form);
   const returnTo = String(form.get('returnTo') ?? `/${locale}/`);
 
   const respond = (status: number, body: Record<string, unknown>) => {
@@ -274,7 +312,7 @@ export async function handleForm(
     }
     // Without JS: redirect to a real confirmation page. A prerendered page
     // cannot read a query string, so the thank-you state needs its own URL.
-    const thanks = locale === 'hu' ? '/hu/koszonjuk/' : '/nl/bedankt/';
+    const thanks = path(locale, 'thanks');
     const target = status < 400 ? `${thanks}?form=${def.id}` : `${returnTo}?error=1`;
     return new Response(null, { status: 303, headers: { location: target } });
   };

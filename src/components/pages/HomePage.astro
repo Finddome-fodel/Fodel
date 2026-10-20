@@ -37,7 +37,7 @@ import StatsBand from '~/components/StatsBand.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
 import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
-import { UI, BRAND, path, type Locale } from '~/i18n/ui';
+import { UI, BRAND, path, localizer, type Locale } from '~/i18n/ui';
 import { copy } from '~/data/copy';
 import { homeAlternates } from '~/lib/page';
 import { activeProperties, homepageFeatured, editorsPick, regionsOf, text, url } from '~/lib/properties';
@@ -56,6 +56,8 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const x = localizer(locale);
+/** Hungarian is the one language whose second call to action is "sell" rather than "search". */
 const hu = locale === 'hu';
 const ui = UI[locale];
 const c = copy(locale).home;
@@ -70,6 +72,7 @@ const company = await getCompany();
 // Brief 2 (§1/A): the three newest articles in this language — never another
 // language's, never a case study, and no section at all when there are none.
 const latest = await latestArticles(locale, 3);
+const latestTitle = x('Legfrissebb cikkeink', 'Onze nieuwste artikelen', 'Our latest articles', 'Unsere neuesten Artikel', 'Nos derniers articles');
 // The valuation entry point appears only while an admin has confirmed the
 // service is staffed (Beállítások → Szolgáltatások), and says "free" only once
 // that is confirmed too.
@@ -77,8 +80,8 @@ const valuation = company.services.valuationEntry
   ? {
       href: path(locale, 'valuation'),
       label: company.services.valuationFreeConfirmed
-        ? hu ? 'Ingyenes értékbecslés' : 'Gratis waardebepaling'
-        : hu ? 'Mennyit ér az ingatlanom?' : 'Wat is mijn woning waard?',
+        ? x('Ingyenes értékbecslés', 'Gratis waardebepaling', 'Free valuation', 'Kostenlose Bewertung', 'Estimation gratuite')
+        : x('Mennyit ér az ingatlanom?', 'Wat is mijn woning waard?', 'What is my property worth?', 'Was ist meine Immobilie wert?', 'Que vaut mon bien\u202f?'),
     }
   : null;
 // The three packages, named and priced in Beállítások → Szolgáltatások. The free
@@ -233,7 +236,7 @@ const quote = splitOpeningQuote(c.quote);
     <HomeSearch locale={locale} regions={regionsOf(all)} categories={taxonomy.category.filter((term) => term.enabled)}>
       <p class="search-count">
         <span class="search-count-n num" data-count={String(all.length)}>{all.length}</span>
-        <span class="search-count-text">{hu ? 'aktív hirdetés, közvetlenül a tulajdonostól' : 'actieve advertenties, direct van de eigenaar'}</span>
+        <span class="search-count-text">{x('aktív hirdetés, közvetlenül a tulajdonostól', 'actieve advertenties, direct van de eigenaar', 'active listings, direct from the owner', 'aktive Inserate, direkt vom Eigentümer', 'annonces actives, en direct du propriétaire')}</span>
       </p>
     </HomeSearch>
   </section>
@@ -242,15 +245,19 @@ const quote = splitOpeningQuote(c.quote);
   {valuation && (
     <section class="valuation-slab slab reveal" aria-labelledby="valuation-slab-title">
       <div class="vs-copy">
-        <SectionHead eyebrow={hu ? 'Értékmeghatározás' : 'Waardebepaling'} title={hu ? 'Mennyit ér\naz ingatlana?' : 'Wat is uw woning\nwaard?'} size="large" />
+        <SectionHead eyebrow={x('Értékmeghatározás', 'Waardebepaling', 'Valuation', 'Bewertung', 'Estimation')} title={x('Mennyit ér\naz ingatlana?', 'Wat is uw woning\nwaard?', 'What is your\nproperty worth?', 'Was ist Ihre\nImmobilie wert?', 'Que vaut\nvotre bien\u202f?')} size="large" />
         <p class="vs-body">
-          {hu
-            ? 'Adja meg, amit tud az ingatlanról: fotókat, alaprajzot, dokumentumokat is csatolhat. Munkatársunk ellenőrzi az eredményt, és e-mailben küldi. Tájékoztató becslés, nem hivatalos szakvélemény.'
-            : 'Vul in wat u van de woning weet; foto’s, plattegronden en documenten kunt u bijvoegen. Onze medewerker controleert het resultaat en stuurt het per e-mail. Indicatief, geen officieel taxatierapport.'}
+          {x(
+            'Adja meg, amit tud az ingatlanról: fotókat, alaprajzot, dokumentumokat is csatolhat. Munkatársunk ellenőrzi az eredményt, és e-mailben küldi. Tájékoztató becslés, nem hivatalos szakvélemény.',
+            'Vul in wat u van de woning weet; foto’s, plattegronden en documenten kunt u bijvoegen. Onze medewerker controleert het resultaat en stuurt het per e-mail. Indicatief, geen officieel taxatierapport.',
+            'Tell us what you know about the property; you can attach photos, floor plans and documents. One of our team checks the result and sends it by email. Indicative only, not an official valuation report.',
+            'Geben Sie an, was Sie über die Immobilie wissen; Fotos, Grundrisse und Unterlagen können Sie beifügen. Ein Mitarbeiter prüft das Ergebnis und schickt es per E-Mail. Unverbindliche Einschätzung, kein amtliches Gutachten.',
+            'Indiquez ce que vous savez du bien\u202f; vous pouvez joindre des photos, des plans et des documents. Un collaborateur vérifie le résultat et vous l’envoie par e-mail. Estimation indicative, et non une expertise officielle.'
+          )}
         </p>
         <Button variant="dark" href={valuation.href} arrow>{valuation.label}</Button>
       </div>
-      <ul class="vs-tiers" aria-label={hu ? 'Értékmeghatározási csomagok' : 'Waardebepalingspakketten'}>
+      <ul class="vs-tiers" aria-label={x('Értékmeghatározási csomagok', 'Waardebepalingspakketten', 'Valuation packages', 'Bewertungspakete', 'Forfaits d’estimation')}>
         {valuationTiers.map((tier) => (
           <li>
             <span class="vs-name">{tier.name}</span>
@@ -419,19 +426,19 @@ const quote = splitOpeningQuote(c.quote);
         <div class="rail-head">
           <SectionHead
             eyebrow="FODEL Top 10"
-            title={hu ? 'A FODEL ajánlásával' : 'Aanbevolen door FODEL'}
+            title={x('A FODEL ajánlásával', 'Aanbevolen door FODEL', 'Recommended by FODEL', 'Von FODEL empfohlen', 'Recommandé par FODEL')}
             size="large"
             class="reveal"
           />
           <div class="rail-controls">
-            <Button variant="text" href={path(locale, 'top10')}>{hu ? `Mind a ${top.length}` : `Alle ${top.length}`}</Button>
+            <Button variant="text" href={path(locale, 'top10')}>{x(`Mind a ${top.length}`, `Alle ${top.length}`, `View all ${top.length}`, `Alle ${top.length} ansehen`, `Voir les ${top.length}`)}</Button>
             <div class="rail-arrows">
-              <button type="button" class="rail-btn" data-rail="prev" aria-label={hu ? 'Előző' : 'Vorige'}>
+              <button type="button" class="rail-btn" data-rail="prev" aria-label={x('Előző', 'Vorige', 'Previous', 'Zurück', 'Précédent')}>
                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
                   <path d="M15 6H2M6.5 1.5 2 6l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </button>
-              <button type="button" class="rail-btn" data-rail="next" aria-label={hu ? 'Következő' : 'Volgende'}>
+              <button type="button" class="rail-btn" data-rail="next" aria-label={x('Következő', 'Volgende', 'Next', 'Weiter', 'Suivant')}>
                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
                   <path d="M1 6h13M9.5 1.5 14 6l-4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
@@ -455,16 +462,16 @@ const quote = splitOpeningQuote(c.quote);
   {/* ── LATEST ARTICLES ── */}
   {
     latest.length > 0 && (
-      <section class="latest" aria-label={hu ? 'Legfrissebb cikkeink' : 'Onze nieuwste artikelen'}>
+      <section class="latest" aria-label={latestTitle}>
         <div class="latest-head">
           <SectionHead
-            eyebrow={hu ? 'Blog' : 'Nieuws'}
-            title={hu ? 'Legfrissebb cikkeink' : 'Onze nieuwste artikelen'}
+            eyebrow={ui.nav.blog}
+            title={latestTitle}
             size="large"
             class="reveal"
           />
           <Button variant="outline" href={path(locale, 'blog')} class="latest-all" arrow>
-            {hu ? 'Összes cikk' : 'Alle artikelen'}
+            {x('Összes cikk', 'Alle artikelen', 'All articles', 'Alle Artikel', 'Tous les articles')}
           </Button>
         </div>
         <div class:list={['latest-grid', `count-${latest.length}`]}>
@@ -477,17 +484,21 @@ const quote = splitOpeningQuote(c.quote);
   }
 
   {/* ── NEWSLETTER ── a quiet linen slab, same family as the valuation slab */}
-  <section class="news-slab slab reveal" aria-label={hu ? 'Hírlevél' : 'Nieuwsbrief'}>
+  <section class="news-slab slab reveal" aria-label={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information')}>
     <div class="ns-copy">
       <SectionHead
-        eyebrow={hu ? 'Hírlevél' : 'Nieuwsbrief'}
-        title={hu ? 'Új ingatlanok,\nelsőként.' : 'Nieuw aanbod,\nals eerste.'}
+        eyebrow={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information')}
+        title={x('Új ingatlanok,\nelsőként.', 'Nieuw aanbod,\nals eerste.', 'New listings,\nbefore anyone else.', 'Neue Immobilien,\nals Erste.', 'Les nouveaux biens,\nen premier.')}
         size="large"
       />
       <p class="ns-body">
-        {hu
-          ? 'Havonta egyszer a legfrissebb hirdetések és rövid piaci hírek, magyarul. Kéretlen levél nincs, és egy kattintással leiratkozhat.'
-          : 'Eén keer per maand het nieuwste aanbod en kort marktnieuws, in het Nederlands. Geen spam, en uitschrijven kan met één klik.'}
+        {x(
+          'Havonta egyszer a legfrissebb hirdetések és rövid piaci hírek, magyarul. Kéretlen levél nincs, és egy kattintással leiratkozhat.',
+          'Eén keer per maand het nieuwste aanbod en kort marktnieuws, in het Nederlands. Geen spam, en uitschrijven kan met één klik.',
+          'Once a month: the newest listings and short market news, in English. No junk mail, and you can unsubscribe with one click.',
+          'Einmal im Monat die neuesten Angebote und kurze Marktnachrichten, auf Deutsch. Keine unerwünschte Post, und die Abmeldung gelingt mit einem Klick.',
+          'Une fois par mois, les nouveaux biens et de courtes nouvelles du marché, en français. Pas de courrier indésirable, et désabonnement en un clic.'
+        )}
       </p>
     </div>
     <NewsletterForm locale={locale} source="home" id={`nl-home-${locale}`} />

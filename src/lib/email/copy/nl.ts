@@ -188,6 +188,11 @@ export const NL = {
     note: 'De bijschrijving gebeurt handmatig, na betaling door de adverteerder. Onze medewerker laat het u weten zodra dat kan.',
   },
 
+  valuationReceived: {
+    heading: 'Uw aanvraag is ontvangen',
+    body: 'Onze medewerker controleert de woninggegevens en de gegevensbasis en stuurt daarna de indicatieve, marktgebaseerde waardebepaling per e-mail.',
+  },
+
   valuationReady: {
     subject: 'Uw waardebepaling is gereed | FODEL',
     preheader: 'Wij hebben een indicatieve schatting voor uw woning gemaakt.',
@@ -201,6 +206,17 @@ export const NL = {
       'Deze schatting is indicatief, geen taxatierapport, en vervangt geen officiële taxatie.',
     cta: 'Nu adverteren',
     ctaUrl: 'submitAd',
+    introWithBasis: (range: string) => `Op basis van de verstrekte gegevens is de indicatieve, marktgebaseerde waarde: ${range}.`,
+    mid: 'Middenwaarde',
+    basis: 'Gegevensbasis',
+    rateDate: 'Wisselkoersdatum',
+    source: 'Bron',
+    factorsHeading: 'Factoren',
+    dirPlus: 'Waardeverhogend',
+    dirMinus: 'Waardeverlagend',
+    dirUnsure: 'Onzeker',
+    visit: 'Bezoek van Gábor aanvragen',
+    judicial: 'Officiële taxatie aanvragen',
   },
 
   valuationDeclined: {

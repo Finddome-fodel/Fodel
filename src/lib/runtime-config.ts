@@ -9,8 +9,9 @@
  * blip must not turn every public page into a 500.
  */
 import { COMPANY } from '~/config/company';
-import { CATEGORY_FALLBACK, PLANNED_LOCALES, type PlannedLocale } from '~/i18n/ui';
+import { CATEGORY_FALLBACK, LOCALES, type Locale } from '~/i18n/ui';
 import { FEATURES, COUNTIES } from '~/data/features';
+import { overlayLabels } from '~/data/taxonomy-i18n';
 import { getSupabase } from '~/lib/supabase';
 import { WALL_MATERIALS } from '~/data/wall-materials';
 import type { ListingRules } from '~/lib/listing-rules';
@@ -30,8 +31,8 @@ export type TaxonomyTerm = {
   id?: string;
   groupKey: TaxonomyGroup;
   key: string;
-  labels: Partial<Record<PlannedLocale, string>> & { hu: string; nl: string };
-  slugs: Partial<Record<PlannedLocale, string>>;
+  labels: Partial<Record<Locale, string>> & { hu: string; nl: string };
+  slugs: Partial<Record<Locale, string>>;
   schemaType?: string;
   sortOrder: number;
   enabled: boolean;
@@ -101,6 +102,21 @@ export type Company = Omit<typeof COMPANY, 'phones'> & {
   automation: Automation;
 };
 
+/**
+ * English, German and French labels a term is missing, from the checked-in
+ * vocabulary (src/data/taxonomy-i18n.ts). Whatever the database has wins.
+ */
+function withOverlay(group: TaxonomyGroup, key: string, labels: TaxonomyTerm['labels']): TaxonomyTerm['labels'] {
+  return { ...overlayLabels(group, key), ...Object.fromEntries(Object.entries(labels ?? {}).filter(([, v]) => v)) } as TaxonomyTerm['labels'];
+}
+
+/** Category URL slugs in every language, from the checked-in vocabulary. */
+function categorySlugs(key: string): TaxonomyTerm['slugs'] {
+  const entry = CATEGORY_FALLBACK[key as keyof typeof CATEGORY_FALLBACK];
+  if (!entry) return {};
+  return Object.fromEntries(LOCALES.map((locale) => [locale, entry[locale].slug]));
+}
+
 const groups: TaxonomyGroup[] = [
   'category', 'feature', 'condition', 'heating', 'county', 'region', 'blog_category', 'wall',
 ];
@@ -115,15 +131,15 @@ export const TAXONOMY_FALLBACK: Taxonomy = (() => {
     groupKey: 'category',
     key,
     labels: Object.fromEntries(
-      PLANNED_LOCALES.map((locale) => [locale, value[locale].label])
+      LOCALES.map((locale) => [locale, value[locale].label])
     ) as TaxonomyTerm['labels'],
-    slugs: { hu: value.hu.slug, nl: value.nl.slug },
+    slugs: categorySlugs(key),
     schemaType: value.schema,
     sortOrder: (index + 1) * 10,
     enabled: true,
   }));
   taxonomy.feature = Object.entries(FEATURES).map(([key, labels], index) => ({
-    groupKey: 'feature', key, labels, slugs: {}, sortOrder: (index + 1) * 10, enabled: true,
+    groupKey: 'feature', key, labels: withOverlay('feature', key, labels), slugs: {}, sortOrder: (index + 1) * 10, enabled: true,
   }));
   taxonomy.county = COUNTIES.map((label, index) => ({
     groupKey: 'county',
@@ -137,7 +153,7 @@ export const TAXONOMY_FALLBACK: Taxonomy = (() => {
 
 function wallFallback(): TaxonomyTerm[] {
   return WALL_MATERIALS.map((term, index) => ({
-    groupKey: 'wall', key: term.key, labels: term.labels, slugs: {}, sortOrder: (index + 1) * 10, enabled: true,
+    groupKey: 'wall', key: term.key, labels: withOverlay('wall', term.key, term.labels), slugs: {}, sortOrder: (index + 1) * 10, enabled: true,
   }));
 }
 
@@ -188,8 +204,8 @@ export async function getTaxonomy(): Promise<Taxonomy> {
         id: row.id,
         groupKey,
         key: row.key,
-        labels: row.labels,
-        slugs: row.slugs ?? {},
+        labels: groupKey === 'category' ? withCategoryLabels(row.key, row.labels) : withOverlay(groupKey, row.key, row.labels),
+        slugs: groupKey === 'category' ? { ...categorySlugs(row.key), ...(row.slugs ?? {}) } : row.slugs ?? {},
         schemaType: row.schema_type ?? undefined,
         sortOrder: row.sort_order,
         enabled: row.enabled,
@@ -227,10 +243,22 @@ export async function getCompany(): Promise<Company> {
   }, COMPANY_FALLBACK);
 }
 
-export function categoryBySlug(taxonomy: Taxonomy, locale: 'hu' | 'nl', slug: string) {
+/** Category terms: the database labels win, the checked-in ones fill any language it lacks. */
+function withCategoryLabels(key: string, labels: TaxonomyTerm['labels']): TaxonomyTerm['labels'] {
+  const entry = CATEGORY_FALLBACK[key as keyof typeof CATEGORY_FALLBACK];
+  const base = entry ? Object.fromEntries(LOCALES.map((locale) => [locale, entry[locale].label])) : {};
+  return { ...base, ...Object.fromEntries(Object.entries(labels ?? {}).filter(([, v]) => v)) } as TaxonomyTerm['labels'];
+}
+
+export function categoryBySlug(taxonomy: Taxonomy, locale: Locale, slug: string) {
   return taxonomy.category.find((term) => term.slugs[locale] === slug);
 }
 
-export function termLabel(term: TaxonomyTerm | undefined, locale: PlannedLocale): string {
-  return term?.labels[locale] ?? term?.labels.hu ?? term?.key ?? '';
+/**
+ * A term's label in the visitor's language. A language the term has no label
+ * for falls back to Dutch, then Hungarian: place names and the like are the
+ * same in every language anyway.
+ */
+export function termLabel(term: TaxonomyTerm | undefined, locale: Locale): string {
+  return term?.labels[locale] ?? term?.labels.nl ?? term?.labels.hu ?? term?.key ?? '';
 }

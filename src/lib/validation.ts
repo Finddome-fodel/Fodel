@@ -7,7 +7,9 @@
  * accepts, and the error wording is the same sentence in both places.
  *
  * Errors are specific and in the visitor's language — "Adjon meg egy érvényes
- * holland telefonszámot, pl. +31 6 12345678", never "Invalid". Phone numbers
+ * holland telefonszámot, pl. +31 6 12345678", never "Invalid". The words live
+ * in validation-copy/ (one file per language, so a page loads only its own);
+ * this file is the rules. Phone numbers
  * use libphonenumber-js with the small (`min`) metadata, and are stored in
  * E.164 (+31612345678) so the office, the CRM and WhatsApp all read the same
  * string.
@@ -25,7 +27,10 @@ import {
 } from 'libphonenumber-js/min';
 import examples from 'libphonenumber-js/mobile/examples';
 
-export type FormLocale = 'hu' | 'nl';
+import type { Locale } from '~/i18n/ui';
+
+/** Every language a form can be filled in in. The wording lives in validation-copy/. */
+export type FormLocale = Locale;
 
 export type ErrorCode =
   | 'required'
@@ -47,8 +52,20 @@ export type FieldError = { code: ErrorCode; country?: string; example?: string; 
 /** Shown first in the country picker: where FODEL's sellers and buyers live. */
 export const COMMON_PHONE_COUNTRIES = ['HU', 'NL', 'BE', 'DE', 'AT', 'GB', 'FR', 'CH', 'SK', 'RO', 'HR', 'SI'] as const;
 
+/** The country a phone field starts on: where the page's language is spoken. */
 export function defaultPhoneCountry(locale: string): CountryCode {
-  return locale === 'nl' ? 'NL' : 'HU';
+  switch (locale) {
+    case 'nl':
+      return 'NL';
+    case 'en':
+      return 'GB';
+    case 'de':
+      return 'DE';
+    case 'fr':
+      return 'FR';
+    default:
+      return 'HU';
+  }
 }
 
 export function isPhoneCountry(value: unknown): value is CountryCode {
@@ -156,9 +173,11 @@ export type FieldSpec = {
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
 /**
- * Parses a number the way people write it in Hungary and the Netherlands:
- * spaces or dots group thousands ("1 200 000", "1.200.000"), a comma or dot
- * followed by one or two digits at the end is a decimal.
+ * Parses a number the way people write it in Hungary and the Netherlands (and
+ * in German and French, which group the same way): spaces, dots or narrow
+ * spaces group thousands ("1 200 000", "1.200.000"), a comma or dot followed
+ * by one or two digits at the end is a decimal. English "1,200,000" reads the
+ * same way: the commas are dropped.
  */
 export function parseLocaleNumber(value: string): number | null {
   const raw = value.trim();
@@ -217,68 +236,4 @@ export function validateField(spec: FieldSpec, raw: string, country?: string): F
     default:
       return null;
   }
-}
-
-/* ── Wording ───────────────────────────────────────────────────────────── */
-
-/** "holland telefonszámot" / "Nederlands telefoonnummer" — the adjective per country. */
-const ADJECTIVE: Record<string, Record<FormLocale, string>> = {
-  HU: { hu: 'magyar', nl: 'Hongaars' },
-  NL: { hu: 'holland', nl: 'Nederlands' },
-  BE: { hu: 'belga', nl: 'Belgisch' },
-  DE: { hu: 'német', nl: 'Duits' },
-  AT: { hu: 'osztrák', nl: 'Oostenrijks' },
-  GB: { hu: 'brit', nl: 'Brits' },
-  FR: { hu: 'francia', nl: 'Frans' },
-  CH: { hu: 'svájci', nl: 'Zwitsers' },
-  SK: { hu: 'szlovák', nl: 'Slowaaks' },
-  RO: { hu: 'román', nl: 'Roemeens' },
-  HR: { hu: 'horvát', nl: 'Kroatisch' },
-  SI: { hu: 'szlovén', nl: 'Sloveens' },
-  LU: { hu: 'luxemburgi', nl: 'Luxemburgs' },
-  DK: { hu: 'dán', nl: 'Deens' },
-  ES: { hu: 'spanyol', nl: 'Spaans' },
-  IT: { hu: 'olasz', nl: 'Italiaans' },
-  PL: { hu: 'lengyel', nl: 'Pools' },
-  CZ: { hu: 'cseh', nl: 'Tsjechisch' },
-};
-
-const nf = (locale: FormLocale, n: number) => n.toLocaleString(locale === 'hu' ? 'hu-HU' : 'nl-NL');
-
-export function errorMessage(error: FieldError, locale: FormLocale): string {
-  const hu = locale === 'hu';
-  const adj = error.country ? ADJECTIVE[error.country]?.[locale] : undefined;
-  const eg = error.example ? (hu ? `, pl. ${error.example}` : `, bijv. ${error.example}`) : '';
-  switch (error.code) {
-    case 'required':
-      return hu ? 'Kérjük, töltse ki ezt a mezőt.' : 'Vul dit veld in.';
-    case 'email':
-      return hu ? 'Adjon meg egy érvényes e-mail-címet, pl. nev@example.com.' : 'Vul een geldig e-mailadres in, bijv. naam@voorbeeld.nl.';
-    case 'phone':
-      return hu
-        ? `Adjon meg egy érvényes ${adj ? `${adj} ` : ''}telefonszámot${eg}.`
-        : `Vul een geldig ${adj ? `${adj} ` : ''}telefoonnummer in${eg}.`;
-    case 'postcode':
-      return hu ? `Adjon meg egy érvényes irányítószámot${eg}.` : `Vul een geldige postcode in${eg}.`;
-    case 'number':
-      return hu ? 'Csak számot adjon meg, pl. 120.' : 'Vul alleen een getal in, bijv. 120.';
-    case 'min':
-      return hu ? `Legalább ${nf(locale, error.limit ?? 0)} legyen.` : `Minimaal ${nf(locale, error.limit ?? 0)}.`;
-    case 'max':
-      return hu ? `Legfeljebb ${nf(locale, error.limit ?? 0)} lehet.` : `Maximaal ${nf(locale, error.limit ?? 0)}.`;
-    case 'url':
-      return hu ? 'Adjon meg egy teljes webcímet, pl. https://www.youtube.com/…' : 'Vul een volledig webadres in, bijv. https://www.youtube.com/…';
-    case 'too-long':
-      return hu ? `Legfeljebb ${error.limit} karakter lehet.` : `Maximaal ${error.limit} tekens.`;
-    case 'min-length':
-      return hu ? `Legalább ${error.limit} karakter legyen.` : `Minimaal ${error.limit} tekens.`;
-    case 'consent':
-      return hu ? 'A folytatáshoz kérjük, fogadja el az adatkezelési tájékoztatót.' : 'Ga akkoord met de privacyverklaring om verder te gaan.';
-  }
-}
-
-/** The heading of the summary shown above a form that failed to submit. */
-export function summaryHeading(count: number, locale: FormLocale): string {
-  if (locale === 'hu') return count === 1 ? 'Egy mezőt még javítani kell:' : `${count} mezőt még javítani kell:`;
-  return count === 1 ? 'Nog één veld controleren:' : `Nog ${count} velden controleren:`;
 }

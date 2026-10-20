@@ -8,11 +8,12 @@
  * `variant="portal"` matches the admin/owner portal's flatter look;
  * `variant="public"` sits inside the FODEL 2.0 public pages.
  */
-import { TOP_TIPS, WHY_IT_MATTERS, type TipLocale } from '~/data/photo-tips';
-import { path } from '~/i18n/ui';
+import { TOP_TIPS, WHY_IT_MATTERS } from '~/data/photo-tips';
+import { path, type Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 
 interface Props {
-  locale: TipLocale;
+  locale: Locale;
   variant?: 'portal' | 'public';
   heading?: string;
   /** Show the "why it matters" line (default on). */
@@ -20,10 +21,7 @@ interface Props {
 }
 
 const { locale, variant = 'public', heading, why = true } = Astro.props;
-const t =
-  locale === 'hu'
-    ? { heading: 'Mielőtt fotózna', guide: 'A teljes fotózási útmutató', whyLabel: 'Miért számít?' }
-    : { heading: 'Voordat u fotografeert', guide: 'De volledige fotografiegids', whyLabel: 'Waarom het ertoe doet' };
+const t = { heading: CHROME[locale].photoTips.heading, guide: CHROME[locale].photoTips.guide, whyLabel: CHROME[locale].photoTips.why };
 const guideHref = path(locale, 'photoGuide');
 const headingId = `photo-tips-${variant}`;
 ---

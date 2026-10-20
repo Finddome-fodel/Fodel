@@ -8,6 +8,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
 import { icon } from '~/lib/portal/icons';
 import { timeAgo } from '~/lib/portal/time';
 import {
@@ -80,7 +81,7 @@ const FILTERS: [string, string][] = [
               <span class="source">{SERVICE_SOURCE_LABEL[row.source as ServiceSource] ?? row.source}</span>
             </p>
             <h2>{serviceName(row.service_id)} <span class="price">{servicePrice(row.service_id)}</span></h2>
-            <p class="contact"><b>{row.contact_name ?? 'Névtelen'}</b> <span class="muted">· {row.locale === 'nl' ? 'holland' : 'magyar'}</span></p>
+            <p class="contact"><b>{row.contact_name ?? 'Névtelen'}</b> <span class="muted">· {(LOCALE_LABEL[row.locale] ?? row.locale).toLowerCase()}</span></p>
             <div class="reach">
               {row.contact_phone && <a class="chip" href={`tel:${row.contact_phone}`}><Fragment set:html={icon('phone', 16)} />{row.contact_phone}</a>}
               {row.contact_email && <a class="chip" href={`mailto:${row.contact_email}`}><Fragment set:html={icon('mail', 16)} />{row.contact_email}</a>}

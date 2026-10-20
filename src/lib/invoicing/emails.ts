@@ -5,6 +5,8 @@
 import { shell, textShell, h1, lead, small, facts, button } from '~/lib/email/layout';
 import type { BuiltEmail } from '~/lib/email/templates';
 import { COMPANY } from '~/config/company';
+import { localeFrom, type Locale } from '~/i18n/ui';
+import { formatDate, eurCents } from '~/lib/format';
 import { KIND_LABEL, VAT_TREATMENTS, computeTotals, dateHu, eur, huf, hufFromCents, type InvoiceDoc } from './model';
 
 const COPY = {
@@ -34,27 +36,73 @@ const COPY = {
     questions: `Vragen? Beantwoord deze e-mail of schrijf naar ${COMPANY.email.primary}.`,
     sign: 'Met vriendelijke groet,\nFODEL',
   },
+  en: {
+    subject: (kind: string, n: string) => `${kind} ${n} | FODEL`,
+    preheader: 'The invoice is attached as a PDF and can also be viewed online.',
+    heading: (kind: string) => `${kind} ready`,
+    greeting: (name: string) => `Dear ${name},`,
+    body: (kind: string, n: string) => `Please find ${kind.toLowerCase()} ${n} attached as a PDF. You can also view it online with the button below.`,
+    settled: 'Nothing further is due: the amount has already been received. Thank you.',
+    pay: 'Please transfer the amount before the due date, quoting the number.',
+    cta: 'View document',
+    labels: { number: 'Number', amount: 'Amount due', due: 'Due date', account: 'Account', reference: 'Reference' },
+    questions: `Questions? Reply to this email or write to ${COMPANY.email.primary}.`,
+    sign: 'Kind regards,\nFODEL',
+  },
+  de: {
+    subject: (kind: string, n: string) => `${kind} ${n} | FODEL`,
+    preheader: 'Die Rechnung ist als PDF angehängt und auch online einsehbar.',
+    heading: (kind: string) => `${kind} liegt bereit`,
+    greeting: (name: string) => `Guten Tag ${name},`,
+    body: (kind: string, n: string) => `Im Anhang finden Sie die ${kind} ${n} als PDF. Sie können sie auch online über die Schaltfläche unten ansehen.`,
+    settled: 'Es ist nichts mehr zu zahlen: Der Betrag ist bereits eingegangen. Vielen Dank.',
+    pay: 'Bitte überweisen Sie den Betrag bis zum Fälligkeitsdatum und geben Sie die Nummer an.',
+    cta: 'Dokument ansehen',
+    labels: { number: 'Nummer', amount: 'Zu zahlen', due: 'Fälligkeitsdatum', account: 'Konto', reference: 'Verwendungszweck' },
+    questions: `Fragen? Antworten Sie auf diese E-Mail oder schreiben Sie an ${COMPANY.email.primary}.`,
+    sign: 'Mit freundlichen Grüßen\nFODEL',
+  },
+  fr: {
+    subject: (kind: string, n: string) => `${kind} ${n} | FODEL`,
+    preheader: 'La facture est jointe au format PDF et consultable en ligne.',
+    heading: (kind: string) => `${kind} disponible`,
+    greeting: (name: string) => `Bonjour ${name},`,
+    body: (kind: string, n: string) => `Vous trouverez en pièce jointe le document ${n} (${kind.toLowerCase()}) au format PDF. Vous pouvez aussi le consulter en ligne avec le bouton ci-dessous.`,
+    settled: 'Il n’y a plus rien à payer\u00a0: le montant a déjà été reçu. Merci.',
+    pay: 'Merci de virer le montant avant la date d’échéance, en indiquant le numéro.',
+    cta: 'Voir le document',
+    labels: { number: 'Numéro', amount: 'À payer', due: 'Date d’échéance', account: 'Compte', reference: 'Référence' },
+    questions: `Une question\u202f? Répondez à cet e-mail ou écrivez à ${COMPANY.email.primary}.`,
+    sign: 'Cordialement,\nFODEL',
+  },
 };
 
-const NL_KIND = { invoice: 'Factuur', proforma: 'Pro-formafactuur', credit_note: 'Creditnota' } as const;
-const kindName = (doc: InvoiceDoc, locale: 'hu' | 'nl') => (locale === 'hu' ? KIND_LABEL[doc.kind].short : NL_KIND[doc.kind]);
+const KIND_NAMES = {
+  nl: { invoice: 'Factuur', proforma: 'Pro-formafactuur', credit_note: 'Creditnota' },
+  en: { invoice: 'Invoice', proforma: 'Pro forma invoice', credit_note: 'Credit note' },
+  de: { invoice: 'Rechnung', proforma: 'Proforma-Rechnung', credit_note: 'Gutschrift' },
+  fr: { invoice: 'Facture', proforma: 'Facture pro forma', credit_note: 'Avoir' },
+} as const;
+const kindName = (doc: InvoiceDoc, locale: Locale) => (locale === 'hu' ? KIND_LABEL[doc.kind].short : KIND_NAMES[locale][doc.kind]);
 
 export function invoiceToCustomer(doc: InvoiceDoc, viewUrl: string): BuiltEmail {
-  const locale: 'hu' | 'nl' = doc.locale === 'nl' ? 'nl' : 'hu';
+  const locale: Locale = localeFrom(doc.locale);
   const c = COPY[locale];
   const t = computeTotals(doc.lines, doc.vatRate, doc.priceMode);
   const sign = doc.kind === 'credit_note' ? -1 : 1;
   const kind = kindName(doc, locale);
   const number = doc.number ?? '';
   const hasHuf = Boolean(doc.fxRate);
-  const amount = hasHuf ? huf(hufFromCents(t.grossCents * sign, doc.fxRate!)) : eur(t.grossCents * sign);
+  const money = (cents: number) => (locale === 'en' || locale === 'de' || locale === 'fr' ? eurCents(cents, locale) : eur(cents));
+  const when = (iso: string) => (locale === 'en' || locale === 'de' || locale === 'fr' ? formatDate(new Date(iso), locale) : dateHu(iso));
+  const amount = hasHuf ? huf(hufFromCents(t.grossCents * sign, doc.fxRate!)) : money(t.grossCents * sign);
 
   const rows: [string, string][] = [
     [c.labels.number, number],
-    [c.labels.amount, hasHuf ? `${amount} (${eur(t.grossCents * sign)})` : amount],
+    [c.labels.amount, hasHuf ? `${amount} (${money(t.grossCents * sign)})` : amount],
   ];
   if (!doc.settled && doc.kind !== 'credit_note') {
-    rows.push([c.labels.due, dateHu(doc.dueDate)]);
+    rows.push([c.labels.due, when(doc.dueDate)]);
     rows.push([c.labels.account, hasHuf && doc.issuer.huAccount ? doc.issuer.huAccount : `${doc.issuer.iban}${doc.issuer.bic ? ` · ${doc.issuer.bic}` : ''}`]);
     rows.push([c.labels.reference, number]);
   }

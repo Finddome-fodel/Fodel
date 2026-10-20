@@ -22,6 +22,14 @@ interface Props {
   description: string;
   /** Path of the equivalent page in each locale, for hreflang. */
   alternates?: Partial<Record<Locale, string>>;
+  /**
+   * Where the language menu should send the visitor, when that is more than
+   * `alternates` (which is hreflang: only pages that really exist in that
+   * language). Defaults to `alternates`.
+   */
+  switcher?: Partial<Record<Locale, string>>;
+  /** Canonical path when it is not this page: a stand-in page for text written in another language. */
+  canonicalPath?: string;
   ogImage?: string;
   ogType?: 'website' | 'article';
   /** Extra JSON-LD nodes merged into the page @graph. */
@@ -42,6 +50,8 @@ const {
   title,
   description,
   alternates = {},
+  switcher,
+  canonicalPath,
   ogImage,
   ogType = 'website',
   schema = [],
@@ -54,7 +64,7 @@ const meta = LOCALE_META[locale];
 const brand = BRAND[locale];
 const ui = UI[locale];
 
-const canonical = abs(Astro.url.pathname);
+const canonical = abs(canonicalPath ?? Astro.url.pathname);
 const fullTitle = title.includes('FODEL') ? title : `${title} | ${brand.name}`;
 const socialImage = abs(ogImage ?? '/og/fodel-default.jpg');
 
@@ -111,7 +121,7 @@ const jsonLd = graph([organisationSchema(locale, company), ...schema]);
   <body>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
 
-    <Nav locale={locale} alternates={alternates} />
+    <Nav locale={locale} alternates={switcher ?? alternates} />
 
     <div class="site-body" data-flush={flush ? '' : undefined}>
       <main id="main" tabindex="-1">

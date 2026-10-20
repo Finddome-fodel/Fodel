@@ -23,6 +23,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { gzipSync } from 'node:zlib';
+import { LOCALES, LOCALE_META, ROUTES, path as routePath } from '../src/i18n/ui.ts';
 
 const root = path.dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
 
@@ -91,6 +92,13 @@ const LIVE_ROUTES = [
   ['hu/eladoknak/index.html', '/hu/eladoknak/'],
   ['nl/adverteren/index.html', '/nl/adverteren/'],
 ];
+// The three newer languages: the Supabase-backed pages in their own slugs.
+for (const l of ['en', 'de', 'fr']) {
+  for (const key of ['home', 'properties', 'sold', 'submitAd', 'blog', 'priceList', 'sellers', 'top10']) {
+    const p = routePath(l, key);
+    LIVE_ROUTES.push([`${p.slice(1)}index.html`, p]);
+  }
+}
 
 async function fetchLivePages() {
   const proc = spawn('npx', ['astro', 'dev', '--port', String(DEV_PORT)], {
@@ -190,6 +198,12 @@ console.log('Server-rendered content');
     ['nl/nieuws/index.html', ['Wat kost een huis in Hongarije', 'Kopersgids']],
     ['hu/blog/holland-migracio-okai/index.html', ['Ár/érték arány', 'Népsűrűség']],
     ['nl/nieuws/wat-kost-een-huis-in-hongarije/index.html', ['Overdrachtsbelasting', 'Notaris']],
+    ['en/faq/index.html', ['commission', 'Hungary']],
+    ['de/haeufige-fragen/index.html', ['Provision', 'Ungarn']],
+    ['fr/questions-frequentes/index.html', ['commission', 'Hongrie']],
+    ['en/prices/index.html', ['69', '129', '179']],
+    ['de/preise/index.html', ['69', '129', '179']],
+    ['fr/tarifs/index.html', ['69', '129', '179']],
   ];
   for (const [name, needles] of checks) {
     const html = getHtml(name);
@@ -248,7 +262,7 @@ console.log('\nhreflang');
     // need no alternates.
     if (/name="robots" content="noindex/.test(html)) continue;
     const canonical = html.match(/<link rel="canonical" href="(.*?)"/)?.[1];
-    const alts = [...html.matchAll(/<link rel="alternate" hreflang="(hu|nl)" href="(.*?)"/g)].map(
+    const alts = [...html.matchAll(/<link rel="alternate" hreflang="(hu|nl|en|de|fr)" href="(.*?)"/g)].map(
       (m) => m[2]
     );
     if (!canonical) continue;
@@ -276,6 +290,53 @@ console.log('\nhreflang');
     }
   }
   if (!broken) pass(`${graph.size} pages, all hreflang pairs reciprocal`);
+}
+
+/* ── 3b. Five languages ──────────────────────────────────────────────── */
+console.log('\nLanguages');
+{
+  const sitemapRaw = await fs.readdir(dist).then((names) => names.filter((n) => /^sitemap.*\.xml$/.test(n)));
+  let sitemap = '';
+  for (const name of sitemapRaw) sitemap += await read(path.join(dist, name));
+  const perLocale = Object.fromEntries(LOCALES.map((l) => [l, 0]));
+  let checked = 0;
+  for (const { relPath, html } of files) {
+    if (relPath === 'index.html' || relPath === '404.html') continue;
+    const locale = relPath.split('/')[0];
+    if (!LOCALES.includes(locale)) {
+      fail(`${relPath} is outside the five language folders`);
+      continue;
+    }
+    perLocale[locale]++;
+    checked++;
+    const lang = html.match(/<html[^>]*\blang="([^"]+)"/)?.[1];
+    if (lang !== LOCALE_META[locale].htmlLang) fail(`${relPath} has lang="${lang}", expected "${LOCALE_META[locale].htmlLang}"`);
+    const canonical = html.match(/<link rel="canonical" href="(.*?)"/)?.[1] ?? '';
+    // A blog stand-in (an article shown in another language) points at its original.
+    const standIn = /\/(blog|nieuws)\/[^/]+\//.test(relPath);
+    if (!standIn && !canonical.startsWith(`https://fodel.eu/${locale}/`)) fail(`${relPath} canonical is ${canonical}`);
+    if (!/name="robots" content="noindex/.test(html) && !standIn) {
+      const alts = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)"/g)].map((m) => m[1]);
+      const want = [...LOCALES.map((l) => LOCALE_META[l].hreflang), 'x-default'];
+      const missing = want.filter((w) => !alts.includes(w));
+      if (missing.length) fail(`${relPath} lacks hreflang ${missing.join(', ')}`);
+    }
+    const ogLocale = html.match(/property="og:locale" content="([^"]+)"/)?.[1];
+    if (ogLocale && ogLocale.replace('_', '-').slice(0, 2) !== locale) fail(`${relPath} og:locale is ${ogLocale}`);
+  }
+  pass(`${checked} pages: right lang, canonical and the full hreflang set (${LOCALES.map((l) => `${l} ${perLocale[l]}`).join(', ')})`);
+  for (const l of LOCALES) {
+    const home = `https://fodel.eu/${l}/`;
+    if (!sitemap.includes(home)) fail(`sitemap does not list ${home}`);
+  }
+  pass('sitemap lists every language home');
+
+  // A translated legal page must carry the courtesy-translation sentence.
+  for (const [l, needle] of [['en', 'translation for convenience'], ['de', 'Übersetzung'], ['fr', 'traduction']]) {
+    const page = getHtml(`${routePath(l, 'terms').slice(1)}index.html`);
+    if (page && !page.includes(needle)) fail(`${routePath(l, 'terms')} lacks the courtesy-translation note`);
+  }
+  pass('legal pages in en/de/fr carry the courtesy-translation note');
 }
 
 /* ── 4. Structured data ──────────────────────────────────────────────── */

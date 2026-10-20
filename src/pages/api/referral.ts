@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import { handleForm } from '~/lib/form-handler';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
@@ -26,7 +27,7 @@ export const POST: APIRoute = (context) =>
       { name: 'referredEmail', label: 'Ajánlott e-mail', type: 'email', required: true, maxLength: 160 },
     ],
     onSuccess: async (values, extras) => {
-      const locale = extras.Locale === 'nl' ? 'nl' : 'hu';
+      const locale = localeFrom(extras.Locale, 'hu');
       const referrerEmail = values.referrerEmail.toLowerCase();
       const admin = createSupabaseAdminClient();
 

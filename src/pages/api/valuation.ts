@@ -14,6 +14,9 @@ import places from '~/data/market/hu-settlements.json';
 import { SITE_URL } from '~/config/site.mjs';
 import { valuationActionToken } from '~/lib/valuation/action-token';
 import { valuationPackage, isPayable, priceLabel } from '~/lib/valuation/packages';
+import { valuationAmount, valuationBasis, valuationSourceDate, showsEuro, payNowLabel, priceLabels } from '~/lib/valuation/wording';
+import { approvedWording } from '~/lib/approved-text';
+import { localeFrom } from '~/i18n/ui';
 import { readSessionDocuments } from '~/lib/valuation/documents';
 import { isStripeEnabled } from '~/lib/stripe';
 const settlements = places as [string, string, string, number][];
@@ -54,7 +57,7 @@ export const POST: APIRoute = (context) => handleForm(context, {
     if (floorM2 === null) throw new Error('invalid-floor-area');
     const admin = createSupabaseAdminClient();
     const id = crypto.randomUUID();
-    const locale = extras.Locale === 'nl' ? 'nl' : 'hu';
+    const locale = localeFrom(extras.Locale, 'hu');
     const place = settlements.find((entry) => entry[3] !== 0 && entry[1].localeCompare(values.settlement, 'hu', { sensitivity: 'base' }) === 0);
     const county = settlements.find((entry) => entry[3] === 0 && entry[0] === place?.[2]);
     const countyName = county?.[1].replace(' vármegye','') ?? 'Ismeretlen';
@@ -112,7 +115,7 @@ export const POST: APIRoute = (context) => handleForm(context, {
     }
     if (requestKind === 'expert_visit') await createServiceRequest(admin, { serviceId: 'onsite-visit', source: 'valuation', locale,
       valuationId: id, name: values.name, email: values.email, phone: values.phone,
-      priceLabel: visitPrice ? { hu: priceLabel(visitPrice, 'hu'), nl: priceLabel(visitPrice, 'nl') } : undefined });
+      priceLabel: visitPrice ? priceLabels(visitPrice) : undefined });
     if (requestKind === 'judicial') {
       await deliver(values.email, templates.judicialRequested(locale));
       await deliver(officeInbox(), templates.adminServiceRequested('hu', { service: 'Igazságügyi értékbecslési igény', name: values.name,
@@ -121,21 +124,15 @@ export const POST: APIRoute = (context) => handleForm(context, {
     if (requestKind === 'indicative' && !instant) await deliver(values.email, templates.valuationReceived(locale));
     if (instant && estimate.midHuf && estimate.lowHuf && estimate.highHuf) {
       const rate = company.services.eurHufRateDate ? company.services.eurHufRate : null;
-      const display = (amount: number) => locale === 'nl' && rate
-        ? new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(amount / rate)
-        : new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 }).format(amount);
-      const basis = estimate.baseline?.kind === 'ksh'
-        ? locale === 'nl'
-          ? `KSH Ingatlanadattár, ${estimate.baseline.year} (${estimate.baseline.level === 'county' ? 'provincie' : 'plaats'}, ${estimate.baseline.count} gegevens)`
-          : `KSH Ingatlanadattár, ${estimate.baseline.year} (${estimate.baseline.level === 'county' ? 'vármegye' : 'település'}, ${estimate.baseline.count} adat)`
-        : locale === 'nl' ? `${estimate.baseline?.count ?? 0} vergelijkbare FODEL-advertenties` : `${estimate.baseline?.count ?? 0} hasonló FODEL-hirdetés`;
+      const display = (amount: number) => valuationAmount(locale, amount, rate);
+      const basis = valuationBasis(locale, estimate.baseline);
       await deliver(values.email, templates.valuationReady(locale, {
         range: `${display(estimate.lowHuf)} – ${display(estimate.highHuf)}`, mid: display(estimate.midHuf),
         compCount: estimate.baseline?.kind === 'comps' ? estimate.baseline.count : 0,
         basis, sourceUrl: estimate.baseline?.kind === 'ksh' ? estimate.baseline.url : undefined,
-        sourceDate: estimate.baseline?.kind === 'ksh' ? `${estimate.baseline.year}, ${locale === 'nl' ? 'opgehaald' : 'letöltve'} ${estimate.baseline.retrievedAt}` : undefined,
-        rateDate: locale === 'nl' && rate ? company.services.eurHufRateDate ?? undefined : undefined,
-        factors, notice: company.services.valuationNotice?.[locale],
+        sourceDate: estimate.baseline?.kind === 'ksh' ? valuationSourceDate(locale, estimate.baseline) : undefined,
+        rateDate: showsEuro(locale) && rate ? company.services.eurHufRateDate ?? undefined : undefined,
+        factors, notice: approvedWording(company.services.valuationNotice, locale)?.text,
         submitAdUrl: `${SITE_URL}${path(locale, 'submitAd')}`,
         visitUrl: `${SITE_URL}${path(locale, 'valuation')}?service=onsite-visit`,
         judicialUrl: `${SITE_URL}${path(locale, 'valuation')}?service=judicial`,
@@ -143,12 +140,12 @@ export const POST: APIRoute = (context) => handleForm(context, {
     }
     // Card payment is offered, never forced: the request is already saved and the office follows up either way.
     const pay = isStripeEnabled() && requestKind !== 'indicative' && isPayable(pkg)
-      ? { label: locale === 'nl' ? `Nu betalen — ${priceLabel(pkg, 'nl')} (kaart)` : `Fizetés most — ${priceLabel(pkg, 'hu')} (bankkártya)` }
+      ? { label: payNowLabel(locale, pkg) }
       : null;
     return { instant, valuationId: id, actionToken: instant || pay ? valuationActionToken(id) : undefined, pay,
       result: instant ? estimate : undefined,
       rate: company.services.eurHufRateDate ? company.services.eurHufRate ?? null : null,
       rateDate: company.services.eurHufRateDate ?? null,
-      factors, notice: company.services.valuationNotice?.[locale] ?? null };
+      factors, notice: approvedWording(company.services.valuationNotice, locale)?.text ?? null };
   },
 });

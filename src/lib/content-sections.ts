@@ -30,5 +30,7 @@ export interface ContentPageData {
   titleEm?: string;
   intro?: string;
   updated?: string;
+  /** A line above the text, e.g. "this is a translation for convenience" on translated legal pages. */
+  notice?: string;
   sections: Section[];
 }

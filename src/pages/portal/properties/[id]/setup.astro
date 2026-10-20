@@ -3,7 +3,7 @@
  * Guided listing setup — step 4 of the seller flow (launch round).
  *
  * After registering on the public site and setting a password, a seller lands
- * here, in their own language (profiles.locale, hu or nl), and builds the
+ * here, in their own language (profiles.locale: Hungarian, Dutch or English), and builds the
  * listing one calm step at a time: package → the property → description and
  * contact → photos → billing → review and submit. One page; each step is a
  * section revealed on its own, the URL hash says which (#package, #property…)
@@ -38,6 +38,8 @@ import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { TRANSLATION_LANGUAGES, ONSITE_SERVICES } from '~/config/company';
 import { LOCALE_META } from '~/i18n/ui';
 import { DESCRIPTION_MAX } from '~/lib/portal/setup';
+import { SETUP_COPY } from '~/lib/portal/setup-copy';
+import { portalLang } from '~/lib/portal/auth-copy';
 import settlements from '~/data/market/hu-settlements.json';
 
 const { supabase, profile, user } = Astro.locals;
@@ -50,8 +52,9 @@ if (!isAdmin && property.owner_id !== user?.id) return new Response('Forbidden',
 // Submitted, approved or live: the guided setup is over; the editor shows its state.
 if (!OWNER_EDITABLE.includes(property.status)) return Astro.redirect(`/portal/properties/${property.id}`);
 
-const lang: 'hu' | 'nl' = profile?.locale === 'nl' ? 'nl' : 'hu';
+const lang = portalLang(profile?.locale);
 const hu = lang === 'hu';
+const numberTag = { hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB' }[lang];
 
 const [company, taxonomy, { data: billingRow }, serviceResult] = await Promise.all([
   getCompany(),
@@ -86,197 +89,13 @@ if (property.county && !counties.includes(property.county)) counties.push(proper
 
 const blank = (n: number | null | undefined) => (n && n > 1 ? String(n) : '');
 const options = (group: 'category' | 'wall' | 'condition' | 'heating', withNone: boolean) => [
-  ...(withNone ? [{ value: '', label: hu ? 'Nem adom meg' : 'Niet opgeven' }] : []),
+  ...(withNone ? [{ value: '', label: { hu: 'Nem adom meg', nl: 'Niet opgeven', en: 'Not specified' }[lang] }] : []),
   ...taxonomy[group].filter((term) => term.enabled).map((term) => ({ value: term.key, label: termLabel(term, lang) })),
 ];
 
 const STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
 
-const t = hu
-  ? {
-      title: 'Hirdetés összeállítása',
-      eyebrow: 'Hirdetés összeállítása',
-      saveExit: 'Mentés és kilépés',
-      steps: ['Csomag', 'Az ingatlan', 'Leírás és elérhetőség', 'Fotók', 'Számlázás', 'Áttekintés'],
-      intros: [
-        'Válassza ki, hogyan jelenjen meg a hirdetése. Később is módosíthatja, amíg be nem küldi.',
-        'Az alapadatok: ezek alapján szűrnek a vevők.',
-        'Írja le a saját szavaival, mi teszi különlegessé az ingatlant. A szöveget munkatársunk átnézi.',
-        'A fotók adják el az ingatlant. Töltsön fel annyit, amennyit a csomagja enged.',
-        'Kinek állítsuk ki a díjbekérőt és a számlát? Fizetni csak a jóváhagyás után kell.',
-        'Nézze át, és ha minden rendben, küldje be ellenőrzésre.',
-      ],
-      back: 'Vissza',
-      next: 'Tovább',
-      saving: 'Mentés…',
-      saved: 'Mentve',
-      saveFailed: 'Nem sikerült menteni. Ellenőrizze a kapcsolatot, és próbálja újra.',
-      of: 'lépés',
-      extrasHead: 'Kiegészítők',
-      extrasNote: 'Nem kötelező. Most csak jelzi az igényét; a végleges összeget munkatársunk erősíti meg a jóváhagyáskor.',
-      translation: 'Fordítás',
-      perLanguage: '/ nyelv',
-      categoryHighlight: 'Kiemelés a kategóriában',
-      homepageHighlight: 'Kiemelés a főoldalon',
-      video: 'Videós bemutató',
-      perMonth: '/ hó',
-      minMonths: (n: number) => `min. ${n} hó`,
-      once: 'egyszeri',
-      total: 'Becsült összeg',
-      totalNote: 'Tájékoztató jellegű. A végleges díjat az ingatlan ára alapján számoljuk, és a jóváhagyáskor erősítjük meg.',
-      recommended: 'Ajánlott',
-      category: 'Az ingatlan típusa',
-      settlement: 'Település',
-      settlementHint: 'Kezdjen gépelni, és válasszon a listából. Ha nincs benne, szabadon is megadhatja.',
-      county: 'Megye',
-      price: 'Irányár (Ft)',
-      priceHint: 'Forintban, pl. 45 000 000',
-      floor: 'Alapterület (m²)',
-      floorHint: 'pl. 120',
-      plot: 'Telekterület (m²)',
-      plotHint: 'pl. 1 200. Lakásnál hagyja üresen.',
-      wall: 'Falazat',
-      wallHint: 'A vevők a keresőben kizárhatják a vályogházakat.',
-      condition: 'Állapot',
-      heating: 'Fűtés',
-      precision: 'Mennyire pontosan mutassuk a helyet a térképen?',
-      precisionHint: 'Közelítőnél csak egy kb. 1 km-es kört mutatunk, eltolt középponttal; a pontos cím nem derül ki.',
-      approx: 'Közelítőleg (ajánlott)',
-      exact: 'Pontosan, tűvel',
-      description: 'Az ingatlan leírása',
-      descriptionHint: 'Legalább néhány mondat. A szöveget munkatársunk átnézi, és a hirdetés nyelveire lefordíttatja.',
-      chars: 'karakter',
-      goodHead: 'Mitől lesz jó a leírás?',
-      good: [
-        'A szobák száma, az állapot és ami az utóbbi években megújult.',
-        'Ami különlegessé teszi: kert, kilátás, pince, műhely, csend.',
-        'A környék: víz, város, bolt, orvos, autópálya, repülőtér távolsága.',
-        'A bővítés lehetősége, ha van.',
-      ],
-      speaks: 'Milyen nyelven tud kommunikálni?',
-      speaksHint: 'Feltüntetjük a hirdetésben, hogy a külföldi érdeklődő előre tudja.',
-      contact: 'Megjelenjen az elérhetősége a hirdetésben?',
-      contactHint: 'Ha igen, a külföldi érdeklődő közvetlenül Önt is megkeresheti. Ilyenkor, ha nincs szükség a segítségünkre, jutalékot nem számítunk fel.',
-      contactYes: 'Igen, jelenjen meg a nevem és a telefonszámom',
-      contactNo: 'Nem, csak a FODEL elérhetősége jelenjen meg',
-      contactNotInPackage: 'A választott csomagban az érdeklődők a FODEL-en keresztül érik el Önt. A telefonszám megjelenítése nagyobb csomaggal kérhető.',
-      reviewPackage: 'Csomag',
-      reviewProperty: 'Az ingatlan',
-      reviewDescription: 'Leírás',
-      reviewPhotos: 'Fotók',
-      reviewBilling: 'Számlázás',
-      edit: 'Szerkesztés',
-      none: 'Nincs megadva',
-      photosCount: (n: number) => `${n} fotó`,
-      missingHead: 'A beküldéshez még hiányzik:',
-      missing: {
-        photos: 'legalább egy fotó',
-        price: 'az irányár',
-        settlement: 'a település',
-        description: 'a leírás',
-        billing: 'a számlázási adatok',
-      },
-      submit: 'Beküldés ellenőrzésre',
-      submitting: 'Beküldés…',
-      submitFailed: 'Nem sikerült beküldeni. Kérjük, próbálja újra.',
-      noPhotos: 'Legalább egy fotót fel kell tölteni a beküldés előtt.',
-      doneTitle: 'Köszönjük, megkaptuk',
-      doneBody: 'Munkatársunk átnézi a hirdetést. Ha valamit javítani kell, e-mailben jelezzük. Ha minden rendben, jóváhagyjuk, és a hirdetés azonnal megjelenik; a díjbekérőt ekkor küldjük el.',
-      doneCta: 'Tovább az áttekintéshez',
-      required: 'Kérjük, töltse ki ezt a mezőt.',
-    }
-  : {
-      title: 'Advertentie samenstellen',
-      eyebrow: 'Advertentie samenstellen',
-      saveExit: 'Opslaan en sluiten',
-      steps: ['Pakket', 'De woning', 'Omschrijving en contact', 'Foto’s', 'Facturering', 'Overzicht'],
-      intros: [
-        'Kies hoe uw advertentie verschijnt. Tot u indient, kunt u dit nog wijzigen.',
-        'De basisgegevens: hierop filteren kopers.',
-        'Beschrijf in uw eigen woorden wat de woning bijzonder maakt. Onze medewerker leest de tekst na.',
-        'Foto’s verkopen de woning. Upload er zoveel als uw pakket toelaat.',
-        'Op wiens naam sturen wij het betaalverzoek en de factuur? U betaalt pas na goedkeuring.',
-        'Controleer alles en dien de advertentie in voor beoordeling.',
-      ],
-      back: 'Terug',
-      next: 'Verder',
-      saving: 'Opslaan…',
-      saved: 'Opgeslagen',
-      saveFailed: 'Opslaan is niet gelukt. Controleer uw verbinding en probeer het opnieuw.',
-      of: 'stap',
-      extrasHead: 'Aanvullende opties',
-      extrasNote: 'Optioneel. U geeft nu alleen uw wens door; het definitieve bedrag bevestigen wij bij goedkeuring.',
-      translation: 'Vertaling',
-      perLanguage: 'per taal',
-      categoryHighlight: 'Uitlichten in de categorie',
-      homepageHighlight: 'Uitlichten op de homepage',
-      video: 'Video plaatsen',
-      perMonth: '/ mnd',
-      minMonths: (n: number) => `min. ${n} mnd`,
-      once: 'eenmalig',
-      total: 'Geschat bedrag',
-      totalNote: 'Indicatief. Het definitieve bedrag berekenen wij op basis van de vraagprijs en bevestigen wij bij goedkeuring.',
-      recommended: 'Aanbevolen',
-      category: 'Type woning',
-      settlement: 'Plaats',
-      settlementHint: 'Begin te typen en kies uit de lijst. Staat de plaats er niet in, vul hem dan zelf in.',
-      county: 'Comitaat',
-      price: 'Vraagprijs (HUF)',
-      priceHint: 'In forint, bijv. 45.000.000',
-      floor: 'Woonoppervlak (m²)',
-      floorHint: 'bijv. 120',
-      plot: 'Perceeloppervlak (m²)',
-      plotHint: 'bijv. 1.200. Bij een appartement leeg laten.',
-      wall: 'Muurwerk',
-      wallHint: 'Kopers kunnen bij het zoeken leemhuizen uitsluiten.',
-      condition: 'Staat',
-      heating: 'Verwarming',
-      precision: 'Hoe nauwkeurig tonen wij de ligging op de kaart?',
-      precisionHint: 'Bij ‘bij benadering’ tonen wij alleen een cirkel van ca. 1 km met een verschoven middelpunt; het exacte adres blijft verborgen.',
-      approx: 'Bij benadering (aanbevolen)',
-      exact: 'Exact, met een speld',
-      description: 'Omschrijving van de woning',
-      descriptionHint: 'Minstens een paar zinnen. Onze medewerker leest de tekst na en laat hem vertalen in de talen van de advertentie.',
-      chars: 'tekens',
-      goodHead: 'Wat maakt een goede omschrijving?',
-      good: [
-        'Het aantal kamers, de staat en wat de laatste jaren is vernieuwd.',
-        'Wat de woning bijzonder maakt: tuin, uitzicht, kelder, werkplaats, rust.',
-        'De omgeving: water, stad, winkels, huisarts, snelweg en luchthaven.',
-        'Uitbreidingsmogelijkheden, als die er zijn.',
-      ],
-      speaks: 'Welke talen spreekt u?',
-      speaksHint: 'Wij vermelden dit bij de advertentie, zodat geïnteresseerden het vooraf weten.',
-      contact: 'Mogen wij uw contactgegevens bij de advertentie tonen?',
-      contactHint: 'Zo ja, dan kan een buitenlandse geïnteresseerde u rechtstreeks benaderen. Regelt u de koop dan zelf, dan brengen wij geen courtage in rekening.',
-      contactYes: 'Ja, toon mijn naam en telefoonnummer',
-      contactNo: 'Nee, toon alleen de gegevens van FODEL',
-      contactNotInPackage: 'Bij het gekozen pakket bereiken geïnteresseerden u via FODEL. Uw telefoonnummer tonen kan met een groter pakket.',
-      reviewPackage: 'Pakket',
-      reviewProperty: 'De woning',
-      reviewDescription: 'Omschrijving',
-      reviewPhotos: 'Foto’s',
-      reviewBilling: 'Facturering',
-      edit: 'Wijzigen',
-      none: 'Niet ingevuld',
-      photosCount: (n: number) => `${n} foto’s`,
-      missingHead: 'Om in te dienen ontbreekt nog:',
-      missing: {
-        photos: 'minstens één foto',
-        price: 'de vraagprijs',
-        settlement: 'de plaats',
-        description: 'de omschrijving',
-        billing: 'de factuurgegevens',
-      },
-      submit: 'Indienen voor beoordeling',
-      submitting: 'Indienen…',
-      submitFailed: 'Indienen is niet gelukt. Probeer het opnieuw.',
-      noPhotos: 'Upload minstens één foto voordat u indient.',
-      doneTitle: 'Dank u wel, wij hebben hem ontvangen',
-      doneBody: 'Onze medewerker beoordeelt de advertentie. Moet er iets worden aangepast, dan laten wij het u per e-mail weten. Is alles in orde, dan keuren wij hem goed en staat hij direct online; dan sturen wij ook het betaalverzoek.',
-      doneCta: 'Naar het overzicht',
-      required: 'Vul dit veld in.',
-    };
+const t = SETUP_COPY[lang];
 
 const speakOptions = ['hu', 'nl', 'de', 'en', 'fr'] as const;
 const billing = (billingRow as any)?.billing ?? null;
@@ -412,7 +231,7 @@ const strings = {
       <form data-step-form="property" novalidate class="su-grid">
         <Field locale={lang} name="category" label={t.category} type="select" required value={property.category} options={options('category', false)} />
         <div class="field fld span-full su-settlement">
-          <label for="f-settlement">{t.settlement} <span class="req">({hu ? 'kötelező' : 'verplicht'})</span></label>
+          <label for="f-settlement">{t.settlement} <span class="req">({ { hu: 'kötelező', nl: 'verplicht', en: 'required' }[lang] })</span></label>
           <p class="hint" id="f-settlement-hint">{t.settlementHint}</p>
           <input id="f-settlement" name="settlement" required list="su-places" value={property.settlement} autocomplete="address-level2" enterkeyhint="next" maxlength="120" aria-describedby="f-settlement-hint f-settlement-error" data-label={t.settlement} />
           <datalist id="su-places"></datalist>
@@ -447,7 +266,7 @@ const strings = {
           <ul>{t.good.map((line) => <li>{line}</li>)}</ul>
         </aside>
         <Field locale={lang} name="description" label={t.description} type="textarea" rows={10} required hint={t.descriptionHint} value={description} maxlength={DESCRIPTION_MAX} />
-        <p class="su-counter num" aria-live="polite"><span data-counter>{description.length.toLocaleString(hu ? 'hu-HU' : 'nl-NL')}</span> / {DESCRIPTION_MAX.toLocaleString(hu ? 'hu-HU' : 'nl-NL')} {t.chars}</p>
+        <p class="su-counter num" aria-live="polite"><span data-counter>{description.length.toLocaleString(numberTag)}</span> / {DESCRIPTION_MAX.toLocaleString(numberTag)} {t.chars}</p>
 
         <fieldset class="su-fieldset">
           <legend>{t.speaks}</legend>
@@ -564,7 +383,7 @@ const strings = {
 
   const root = document.querySelector<HTMLElement>('[data-setup]')!;
   const id = root.dataset.propertyId!;
-  const lang = (root.dataset.lang === 'nl' ? 'nl' : 'hu') as 'hu' | 'nl';
+  const lang = (root.dataset.lang === 'nl' || root.dataset.lang === 'en' ? root.dataset.lang : 'hu') as 'hu' | 'nl' | 'en';
   const steps = root.dataset.steps!.split(',');
   const s = JSON.parse(root.dataset.strings!);
   const pricing = JSON.parse(root.dataset.pricing!) as Pricing;
@@ -573,11 +392,17 @@ const strings = {
   const backBtn = root.querySelector<HTMLButtonElement>('[data-back]')!;
   const submitBtn = root.querySelector<HTMLButtonElement>('[data-submit]')!;
   const form = (step: string) => root.querySelector<HTMLFormElement>(`[data-step-form="${step}"]`);
-  const nf = new Intl.NumberFormat(lang === 'hu' ? 'hu-HU' : 'nl-NL');
+  const nf = new Intl.NumberFormat({ hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB' }[lang]);
   const money = (cents: number) => `€ ${(cents / 100).toLocaleString('de-DE')}`;
 
   let lib: typeof import('~/lib/validation') | null = null;
   const loadLib = async () => (lib ??= await import('~/lib/validation'));
+  /** The wording for this page's language: one small file, fetched on first use. */
+  const wording = async () => {
+    const [{ loadValidationCopy }, { errorMessageIn }] = await Promise.all([import('~/lib/validation-client'), import('~/lib/validation-messages')]);
+    const copy = await loadValidationCopy(lang);
+    return (error: never) => errorMessageIn(copy, error);
+  };
 
   /* ── Steps ─────────────────────────────────────────────────────────── */
 
@@ -611,7 +436,7 @@ const strings = {
     control.closest('.field, .fld')?.querySelector<HTMLElement>(':scope > .error');
 
   async function validate(scope: HTMLElement): Promise<HTMLElement | null> {
-    const { validateField, errorMessage } = await loadLib();
+    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording()]);
     let first: HTMLElement | null = null;
     scope.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input[name], textarea[name], select[name]').forEach((control) => {
       if (control.type === 'radio' || control.type === 'checkbox' || control.type === 'hidden') return;
@@ -629,7 +454,7 @@ const strings = {
       if (error) {
         control.setAttribute('aria-invalid', 'true');
         if (el) {
-          el.textContent = errorMessage(error, lang);
+          el.textContent = errorMessage(error as never);
           el.hidden = false;
         }
         first ??= control;
@@ -643,7 +468,7 @@ const strings = {
 
   /** The server's own refusals, shown on the fields they belong to. */
   async function showServerErrors(scope: HTMLElement, errors: Record<string, { code: string }>) {
-    const { errorMessage } = await loadLib();
+    const errorMessage = await wording();
     let first: HTMLElement | null = null;
     for (const [name, error] of Object.entries(errors)) {
       const control = scope.querySelector<HTMLElement>(`[name="${name}"]`);
@@ -651,7 +476,7 @@ const strings = {
       control.setAttribute('aria-invalid', 'true');
       const el = fieldError(control);
       if (el) {
-        el.textContent = errorMessage(error as never, lang);
+        el.textContent = errorMessage(error as never);
         el.hidden = false;
       }
       first ??= control;
@@ -694,15 +519,15 @@ const strings = {
   });
 
   /** The billing step saves through its own form (BillingForm.astro). */
-  const saveBilling = () =>
-    new Promise<boolean>((resolve) => {
-      const billing = root.querySelector<HTMLFormElement>('form[data-billing]');
-      if (!billing) return resolve(true);
-      const invalid = (window as any).fodelValidateBilling?.(billing) as HTMLElement | null;
-      if (invalid) {
-        invalid.focus();
-        return resolve(false);
-      }
+  const saveBilling = async () => {
+    const billing = root.querySelector<HTMLFormElement>('form[data-billing]');
+    if (!billing) return true;
+    const invalid = (await (window as any).fodelValidateBilling?.(billing)) as HTMLElement | null;
+    if (invalid) {
+      invalid.focus();
+      return false;
+    }
+    return new Promise<boolean>((resolve) => {
       const done = (ok: boolean) => () => resolve(ok);
       billing.addEventListener('billing:saved', done(true), { once: true });
       billing.addEventListener('billing:failed', done(false), { once: true });
@@ -711,6 +536,7 @@ const strings = {
       if (typeof billing.requestSubmit === 'function') billing.requestSubmit();
       else billing.dispatchEvent(new Event('submit', { cancelable: true }));
     });
+  };
 
   nextBtn.addEventListener('click', async () => {
     const current = root.dataset.active!;

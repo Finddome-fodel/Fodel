@@ -13,6 +13,7 @@
  * the monthly email is only flagged ("Nem válaszolt"); the admin decides.
  * Expiry is different — the owner paid for a period and it ended.
  */
+import { intlTag } from '~/lib/format';
 import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
@@ -41,7 +42,7 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const admin = createSupabaseAdminClient();
-  const RENEWAL_PRICE = formatCents(await renewalPriceCents());
+  const RENEWAL_CENTS = await renewalPriceCents();
   const now = new Date();
   const company = await getCompany();
   const rules = listingRules(company.services);
@@ -93,7 +94,7 @@ export const GET: APIRoute = async ({ request }) => {
           ref: row.ref,
           title: await listingTitle(admin, row.id, locale, row.ref),
           renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-          price: RENEWAL_PRICE,
+          price: formatCents(RENEWAL_CENTS, locale),
         }));
         counts.emails++;
       }
@@ -112,10 +113,10 @@ export const GET: APIRoute = async ({ request }) => {
         ref: row.ref,
         title: await listingTitle(admin, row.id, locale, row.ref),
         url: await publicUrl(row, locale),
-        expiresOn: new Date(row.expires_at).toLocaleDateString(locale === 'nl' ? 'nl-NL' : 'hu-HU', { year: 'numeric', month: 'long', day: 'numeric' }),
+        expiresOn: new Date(row.expires_at).toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }),
         days: Math.max(1, daysLeft(row.expires_at, now)),
         renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-        price: RENEWAL_PRICE,
+        price: formatCents(RENEWAL_CENTS, locale),
       }));
       counts.emails++;
       counts[action === 'first-reminder' ? 'firstReminder' : 'lastReminder']++;
@@ -159,7 +160,7 @@ export const GET: APIRoute = async ({ request }) => {
       ref: row.ref,
       title: await listingTitle(admin, row.id, locale, row.ref),
       renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-      price: RENEWAL_PRICE,
+      price: formatCents(RENEWAL_CENTS, locale),
     }));
     counts.emails++;
   }
@@ -182,7 +183,7 @@ async function sendRefresh(admin: any, row: any, owner: any, rules: ListingRules
     stillUrl: ownerLink('still-available', row.id, locale, days),
     priceUrl: ownerLink('price', row.id, locale, days),
     soldUrl: ownerLink('sold', row.id, locale, days),
-    validUntil: until.toLocaleDateString(locale === 'nl' ? 'nl-NL' : 'hu-HU', { year: 'numeric', month: 'long', day: 'numeric' }),
+    validUntil: until.toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }),
     reminder,
   }));
 }

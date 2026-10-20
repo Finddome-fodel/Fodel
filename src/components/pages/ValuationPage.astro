@@ -9,91 +9,101 @@ import ArrowChip from '~/components/ArrowChip.astro';
 import { UI, path, type Locale } from '~/i18n/ui';
 import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { VALUATION_QUESTIONS, questionField } from '~/data/valuation-questions';
-import { FEATURES } from '~/data/features';
+import { VALUATION_UI } from '~/data/valuation-ui';
+import { featureLabel } from '~/data/features';
 import { valuationPackages, priceLabel } from '~/lib/valuation/packages';
 import { isStripeEnabled } from '~/lib/stripe';
 import { alternatesFor } from '~/lib/page';
 import { serviceSchema } from '~/lib/seo';
+import { intlTag } from '~/lib/format';
+import { approvedWording } from '~/lib/approved-text';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
-const hu = locale === 'hu';
+const v = VALUATION_UI[locale];
 const company = await getCompany();
 const ui = UI[locale];
 const taxonomy = await getTaxonomy();
 const categories = taxonomy.category.filter((term) => term.enabled).map((term) => ({ key: term.key, label: termLabel(term, locale) }));
 const conditions = taxonomy.condition.filter((term) => term.enabled).map((term) => ({ key: term.key, label: termLabel(term, locale) }));
 const heatings = taxonomy.heating.filter((term) => term.enabled).map((term) => ({ key: term.key, label: termLabel(term, locale) }));
-const steps = hu ? ['Ingatlan','Épület és műszaki állapot','Környezet','Extrák és korlátok','Fotók és elérhetőség'] : ['Woning','Gebouw en technische staat','Omgeving','Extra’s en beperkingen','Foto’s en contact'];
-const notice = company.services.valuationNotice?.[locale]?.trim() || (hu ? 'Tájékoztató, piaci alapú értékmeghatározás. Az eredmény nem hivatalos szakvélemény.' : 'Indicatieve, marktgebaseerde waardebepaling. Het resultaat is geen officieel taxatierapport.');
+const steps = v.steps;
+// The approved wording is stored for hu and nl; the other languages show the default below.
+const notice = approvedWording(company.services.valuationNotice, locale)?.text || v.notice;
 const featureKeys = ['garage','carport','storage-building','barn-hall','animal-housing','gazebo','outdoor-oven','cellar','outbuildings','stables','terrace','balcony','pool'];
-const choice = (value: string, huLabel: string, nlLabel: string) => ({ value, label: hu ? huLabel : nlLabel });
-const unknown = choice('nem-tudom','Nem tudom','Weet ik niet');
 const packages = valuationPackages(company.services).filter((pkg) => pkg.enabled);
 const visit = packages.find((pkg) => pkg.kind === 'expert_visit');
 const visitPrice = visit?.priceEur ?? null;
 const cardPayments = isStripeEnabled();
+// Everything the script says, in this page's language only.
+const clientText = JSON.stringify({
+  factor: v.factor, direction: v.direction, removeRow: v.removeRow, dirUnsure: v.dirUnsure, dirPlus: v.dirPlus, dirMinus: v.dirMinus,
+  docMax: v.docMax, docTooBig: v.docTooBig, docFailed: v.docFailed, docPending: v.docPending, docUploaded: v.docUploaded,
+  retry: v.retry, paid: v.paid, resultHeading: v.resultHeading, mid: v.mid, basisCounty: v.basisCounty, basisTown: v.basisTown,
+  basisListings: v.basisListings, source: v.source, rateDate: v.rateDate, noRate: v.noRate, factorsHeading: v.factorsHeading,
+  postAd: v.postAd, visit: v.visit, judicial: v.judicial, received: v.received,
+});
 ---
-<Base locale={locale} title={hu ? 'Értékmeghatározás | FODEL' : 'Waardebepaling | FODEL'} description={hu ? 'Részletes, tájékoztató piaci értékmeghatározás.' : 'Uitgebreide, indicatieve marktwaardebepaling.'} alternates={alternatesFor('valuation')} schema={[serviceSchema(locale, hu ? 'Értékmeghatározás' : 'Waardebepaling', notice)]}>
-  <PageHeader eyebrow={hu ? 'Értékmeghatározás' : 'Waardebepaling'} title={hu ? 'Mennyit ér' : 'Wat is uw woning'} titleEm={hu ? 'az ingatlana?' : 'waard?'} body={hu ? 'Adja meg az ismert adatokat. Munkatársunk ellenőrzi az eredményt, és e-mailben küldi.' : 'Vul in wat u weet. Onze medewerker controleert het resultaat en stuurt het per e-mail.'} compact />
+<Base locale={locale} title={v.metaTitle} description={v.metaDescription} alternates={alternatesFor('valuation')} schema={[serviceSchema(locale, v.serviceName, notice)]}>
+  <PageHeader eyebrow={v.eyebrow} title={v.title} titleEm={v.titleEm} body={v.body} compact />
   <section class="wizard-wrap">
-    <div class="wizard" data-submit-url={path(locale, 'submitAd')} data-valuation-url={path(locale, 'valuation')} data-visit-price={visitPrice ?? ''} data-doc-url="/api/valuation/upload-url" data-next-label={hu ? 'Tovább' : 'Verder'} data-submit-label={hu ? 'Kérelem elküldése' : 'Aanvraag versturen'}>
-      <nav class="progress" aria-label={hu ? 'Űrlap lépései' : 'Formulierstappen'}>
+    <div class="wizard" data-submit-url={path(locale, 'submitAd')} data-valuation-url={path(locale, 'valuation')} data-visit-price={visitPrice ?? ''} data-doc-url="/api/valuation/upload-url" data-next-label={v.next} data-submit-label={v.submit} data-i18n={clientText} data-locale={locale} data-intl={intlTag(locale)}>
+      <nav class="progress" aria-label={v.progress}>
         {steps.map((label, index) => <span class="progress-item" data-progress={index + 1}><b>{index + 1}</b><span>{label}</span></span>)}
       </nav>
-      <FormShell locale={locale} endpoint="/api/valuation" formId="valuation" submitLabel={hu ? 'Kérelem elküldése' : 'Aanvraag versturen'} successTitle={hu ? 'Köszönjük!' : 'Dank u wel!'} successBody={hu ? 'Munkatársunk ellenőrzi az adatokat, és e-mailben küldi a tájékoztató eredményt.' : 'Onze medewerker controleert de gegevens en stuurt de indicatieve uitkomst per e-mail.'} multipart>
+      <FormShell locale={locale} endpoint="/api/valuation" formId="valuation" submitLabel={v.submit} successTitle={v.successTitle} successBody={v.successBody} multipart>
         <section class="step" data-step="1" aria-label={steps[0]}>
-          <h2 tabindex="-1">{steps[0]}</h2><p class="step-intro">{hu ? 'Csak az ingatlan típusa, települése és alapterülete kötelező.' : 'Alleen woningtype, plaats en woonoppervlak zijn verplicht.'}</p>
-          <fieldset class="chips" data-required-group><legend>{hu ? 'Ingatlan típusa' : 'Type woning'} <span aria-hidden="true">*</span></legend>
+          <h2 tabindex="-1">{steps[0]}</h2><p class="step-intro">{v.step1Intro}</p>
+          <fieldset class="chips" data-required-group><legend>{v.typeLegend} <span aria-hidden="true">*</span></legend>
             {categories.map((item) => <label><input type="radio" name="category" value={item.key} required /><span>{item.label}</span></label>)}
           </fieldset>
-          <label class="control">{hu ? 'Település' : 'Plaats'} <span aria-hidden="true">*</span><input id="settlement" name="settlement" required autocomplete="address-level2" list="settlement-options" /><small>{hu ? 'Kezdjen gépelni. Ha nincs a listában, szabadon megadhatja.' : 'Begin te typen. Staat de plaats niet in de lijst, vul hem zelf in.'}</small></label>
+          <label class="control">{v.settlement} <span aria-hidden="true">*</span><input id="settlement" name="settlement" required autocomplete="address-level2" list="settlement-options" /><small>{v.settlementHint}</small></label>
           <datalist id="settlement-options"></datalist><input type="hidden" name="kshCode" id="ksh-code" /><input type="hidden" name="countyCode" id="county-code" /><input type="hidden" name="county" id="county-name" />
-          <label class="control">{hu ? 'Pontos cím (csak munkatársunknak)' : 'Exact adres (alleen voor onze medewerker)'}<input name="addressPrivate" autocomplete="street-address" maxlength="300" /></label>
-          <div class="two"><label class="control">{hu ? 'Hasznos alapterület' : 'Woonoppervlak'} <span aria-hidden="true">*</span><span class="unit"><input name="floorM2" type="number" min="1" max="100000" step="0.1" required /><span>m²</span></span></label><label class="control">{hu ? 'Telekterület' : 'Perceeloppervlak'}<span class="unit"><input name="plotM2" type="number" min="0" step="0.1" /><span>m²</span></span><small id="plot-ha" hidden></small></label></div>
-          <div class="two">{[['bedrooms',hu ? 'Szobák' : 'Kamers'],['bathrooms',hu ? 'Fürdőszobák' : 'Badkamers'],['parcelCount',hu ? 'Helyrajzi számok' : 'Kadastrale percelen']].map(([name,label]) => <div class="control"><label for={`v-${name}`}>{label}</label><div class="stepper"><button type="button" data-stepper={name} data-delta="-1" aria-label={`${label}: −1`}>−</button><input id={`v-${name}`} name={name} type="number" min="0" max="100" step="1" inputmode="numeric" /><button type="button" data-stepper={name} data-delta="1" aria-label={`${label}: +1`}>+</button></div><label class="unknown"><input type="checkbox" name={`unknown_${name}`} value="yes" data-unknown-for={name} />{unknown.label}</label></div>)}</div>
+          <label class="control">{v.addressPrivate}<input name="addressPrivate" autocomplete="street-address" maxlength="300" /></label>
+          <div class="two"><label class="control">{v.floorArea} <span aria-hidden="true">*</span><span class="unit"><input name="floorM2" type="number" min="1" max="100000" step="0.1" required /><span>m²</span></span></label><label class="control">{v.plotArea}<span class="unit"><input name="plotM2" type="number" min="0" step="0.1" /><span>m²</span></span><small id="plot-ha" hidden></small></label></div>
+          <div class="two">{[['bedrooms',v.bedrooms],['bathrooms',v.bathrooms],['parcelCount',v.parcels]].map(([name,label]) => <div class="control"><label for={`v-${name}`}>{label}</label><div class="stepper"><button type="button" data-stepper={name} data-delta="-1" aria-label={`${label}: −1`}>−</button><input id={`v-${name}`} name={name} type="number" min="0" max="100" step="1" inputmode="numeric" /><button type="button" data-stepper={name} data-delta="1" aria-label={`${label}: +1`}>+</button></div><label class="unknown"><input type="checkbox" name={`unknown_${name}`} value="yes" data-unknown-for={name} />{v.unknown}</label></div>)}</div>
         </section>
         <section class="step" data-step="2" aria-label={steps[1]}>
-          <h2 tabindex="-1">{steps[1]}</h2><p class="step-intro">{hu ? 'Minden kérdés kihagyható. A „Nem tudom” külön válasz.' : 'Alle vragen zijn optioneel. “Weet ik niet” wordt apart opgeslagen.'}</p>
-          <div class="two"><label class="control">{hu ? 'Építés éve' : 'Bouwjaar'}<input name="yearBuilt" type="number" min="1500" max="2100" /></label><label class="control">{hu ? 'Felújítás éve' : 'Renovatiejaar'}<input name="renovatedIn" type="number" min="1500" max="2100" /></label></div>
-          <fieldset class="chips"><legend>{hu ? 'Felújítás mértéke' : 'Omvang renovatie'}</legend>{[choice('full','Teljes','Volledig'),choice('partial','Részleges','Gedeeltelijk'),choice('none','Nem volt','Geen'),choice('unknown','Nem tudom','Weet ik niet')].map((item) => <label><input type="radio" name="renovationExtent" value={item.value} /><span>{item.label}</span></label>)}</fieldset>
-          <fieldset class="chips"><legend>{hu ? 'Állapot' : 'Staat'}</legend>{conditions.map((item) => <label><input type="radio" name="conditionKey" value={item.key} /><span>{item.label}</span></label>)}<label><input type="radio" name="conditionKey" value="nem-tudom" /><span>{unknown.label}</span></label></fieldset>
-          <fieldset class="chips"><legend>{hu ? 'Fűtés' : 'Verwarming'}</legend>{heatings.map((item) => <label><input type="radio" name="heatingKey" value={item.key} /><span>{item.label}</span></label>)}<label><input type="radio" name="heatingKey" value="nem-tudom" /><span>{unknown.label}</span></label></fieldset>
-          <fieldset class="chips"><legend>{hu ? 'Energetikai osztály' : 'Energielabel'}</legend>{['A+++','A++','A+','A','B','C','D','E','F','G','H','I','nem-tudom'].map((key) => <label><input type="radio" name="epcClass" value={key} /><span>{key === 'nem-tudom' ? unknown.label : key}</span></label>)}</fieldset>
+          <h2 tabindex="-1">{steps[1]}</h2><p class="step-intro">{v.step2Intro}</p>
+          <div class="two"><label class="control">{v.yearBuilt}<input name="yearBuilt" type="number" min="1500" max="2100" /></label><label class="control">{v.renovatedYear}<input name="renovatedIn" type="number" min="1500" max="2100" /></label></div>
+          <fieldset class="chips"><legend>{v.renovationExtent}</legend>{[{ value: 'full', label: v.extentFull }, { value: 'partial', label: v.extentPartial }, { value: 'none', label: v.extentNone }, { value: 'unknown', label: v.unknown }].map((item) => <label><input type="radio" name="renovationExtent" value={item.value} /><span>{item.label}</span></label>)}</fieldset>
+          <fieldset class="chips"><legend>{v.condition}</legend>{conditions.map((item) => <label><input type="radio" name="conditionKey" value={item.key} /><span>{item.label}</span></label>)}<label><input type="radio" name="conditionKey" value="nem-tudom" /><span>{v.unknown}</span></label></fieldset>
+          <fieldset class="chips"><legend>{v.heating}</legend>{heatings.map((item) => <label><input type="radio" name="heatingKey" value={item.key} /><span>{item.label}</span></label>)}<label><input type="radio" name="heatingKey" value="nem-tudom" /><span>{v.unknown}</span></label></fieldset>
+          <fieldset class="chips"><legend>{v.epc}</legend>{['A+++','A++','A+','A','B','C','D','E','F','G','H','I','nem-tudom'].map((key) => <label><input type="radio" name="epcClass" value={key} /><span>{key === 'nem-tudom' ? v.unknown : key}</span></label>)}</fieldset>
           {VALUATION_QUESTIONS.filter((q) => q.step === 2).map((q) => <fieldset class="chips"><legend>{q.label[locale]}</legend>{q.multiple ? <><input type="hidden" name={questionField(q.id)} data-multi-value={q.id} />{q.options.map((o) => <label><input type="checkbox" data-multi={q.id} value={o.value} /><span>{o.label[locale]}</span></label>)}</> : q.options.map((o) => <label><input type="radio" name={questionField(q.id)} value={o.value} /><span>{o.label[locale]}</span></label>)}</fieldset>)}
         </section>
         <section class="step" data-step="3" aria-label={steps[2]}>
-          <h2 tabindex="-1">{steps[2]}</h2><p class="step-intro">{hu ? 'A környezet területhasználatát és épületeit kérdezzük.' : 'Deze vragen gaan over grondgebruik en gebouwen in de omgeving.'}</p>
+          <h2 tabindex="-1">{steps[2]}</h2><p class="step-intro">{v.step3Intro}</p>
           {VALUATION_QUESTIONS.filter((q) => q.step === 3).map((q) => <fieldset class="chips"><legend>{q.label[locale]}</legend>{q.options.map((o) => <label><input type="radio" name={questionField(q.id)} value={o.value} /><span>{o.label[locale]}</span></label>)}</fieldset>)}
         </section>
         <section class="step" data-step="4" aria-label={steps[3]}>
-          <h2 tabindex="-1">{steps[3]}</h2><p class="step-intro">{hu ? 'Az extrák és korlátozások tájékoztató adatok; ezekből nem számítunk automatikus értékmódosítást.' : 'Extra’s en beperkingen zijn ter informatie; ze leiden niet automatisch tot een prijsaanpassing.'}</p>
-          <fieldset class="chips"><legend>{hu ? 'Melléképületek és extrák' : 'Bijgebouwen en extra’s'}</legend>{featureKeys.map((key) => <label><input type="checkbox" name="features" value={key} /><span>{FEATURES[key]?.[locale] ?? key}</span></label>)}<label><input type="checkbox" name="features" value="nem-tudom" /><span>{unknown.label}</span></label></fieldset>
-          {VALUATION_QUESTIONS.filter((q) => q.step === 4).map((q) => <fieldset class="chips"><legend>{q.label[locale]}</legend>{q.id === 'korlatozasok' && <p class="question-hint">{hu ? 'Csak az Ön által ismert körülményeket jelölje. Ez nem jogi tanács.' : 'Vink alleen aan wat u weet. Dit is geen juridisch advies.'}</p>}{q.multiple ? <><input type="hidden" name={questionField(q.id)} data-multi-value={q.id} />{q.options.map((o) => <label title={o.hint?.[locale]}><input type="checkbox" data-multi={q.id} value={o.value} /><span>{o.label[locale]}</span></label>)}</> : q.options.map((o) => <label><input type="radio" name={questionField(q.id)} value={o.value} /><span>{o.label[locale]}</span></label>)}</fieldset>)}
+          <h2 tabindex="-1">{steps[3]}</h2><p class="step-intro">{v.step4Intro}</p>
+          <fieldset class="chips"><legend>{v.features}</legend>{featureKeys.map((key) => <label><input type="checkbox" name="features" value={key} /><span>{featureLabel(key, locale)}</span></label>)}<label><input type="checkbox" name="features" value="nem-tudom" /><span>{v.unknown}</span></label></fieldset>
+          {VALUATION_QUESTIONS.filter((q) => q.step === 4).map((q) => <fieldset class="chips"><legend>{q.label[locale]}</legend>{q.id === 'korlatozasok' && <p class="question-hint">{v.legalHint}</p>}{q.multiple ? <><input type="hidden" name={questionField(q.id)} data-multi-value={q.id} />{q.options.map((o) => <label title={o.hint?.[locale]}><input type="checkbox" data-multi={q.id} value={o.value} /><span>{o.label[locale]}</span></label>)}</> : q.options.map((o) => <label><input type="radio" name={questionField(q.id)} value={o.value} /><span>{o.label[locale]}</span></label>)}</fieldset>)}
           {VALUATION_QUESTIONS.filter((q) => q.step === 4 && q.options.some((o) => o.hint)).map((q) => <dl class="legal-hints">{q.options.filter((o) => o.hint).map((o) => <div><dt>{o.label[locale]}</dt><dd>{o.hint?.[locale]}</dd></div>)}</dl>)}
-          <label class="control">{hu ? 'Egyéb korlátozás vagy megjegyzés' : 'Andere beperking of opmerking'}<textarea name="restrictionsNote" rows="3" maxlength="1000"></textarea></label>
-          <fieldset class="factors"><legend>{hu ? 'Egyéb értéket befolyásoló szempontok' : 'Andere factoren die de waarde beïnvloeden'}</legend><p class="question-hint">{hu ? 'Adjon hozzá külön sorokat. A besorolás tájékoztató, nem számítás.' : 'Voeg aparte regels toe. De richting is informatief, geen berekening.'}</p><div id="factors-list"></div><button type="button" id="add-factor">{hu ? '+ Szempont hozzáadása' : '+ Factor toevoegen'}</button><input type="hidden" name="factors" id="factors-json" /></fieldset>
+          <label class="control">{v.restrictionsNote}<textarea name="restrictionsNote" rows="3" maxlength="1000"></textarea></label>
+          <fieldset class="factors"><legend>{v.factorsLegend}</legend><p class="question-hint">{v.factorsHint}</p><div id="factors-list"></div><button type="button" id="add-factor">{v.addFactor}</button><input type="hidden" name="factors" id="factors-json" /></fieldset>
         </section>
         <section class="step" data-step="5" aria-label={steps[4]}>
           <h2 tabindex="-1">{steps[4]}</h2>
-          <label class="control">{hu ? 'Fényképek (legfeljebb 6)' : 'Foto’s (maximaal 6)'}<input id="f-photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple /><small>{hu ? 'JPG, PNG vagy WebP. A képeket küldés előtt kicsinyítjük; csak munkatársunk látja.' : 'JPG, PNG of WebP. Foto’s worden vóór verzending verkleind en zijn alleen zichtbaar voor ons team.'}</small></label><p id="photo-status" role="status"></p>
+          <label class="control">{v.photos}<input id="f-photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple /><small>{v.photosHint}</small></label><p id="photo-status" role="status"></p>
           <div class="control docs" id="docs">
-            <span>{hu ? 'Dokumentumok (alaprajz, építési engedély, tulajdoni lap, energetikai tanúsítvány…)' : 'Documenten (plattegrond, bouwvergunning, eigendomsbewijs, energielabel…)'}</span>
+            <span>{v.docs}</span>
             <input type="hidden" name="docSession" id="doc-session" />
             <input id="f-docs" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.tif,.tiff,.doc,.docx,.xls,.xlsx,.zip,.dwg,.dxf" />
-            <small>{hu ? 'Legfeljebb 15 fájl, egyenként 50 MB-ig. Közvetlenül, tömörítés nélkül töltődnek fel; csak munkatársunk látja őket.' : 'Maximaal 15 bestanden van elk 50 MB. Ze worden rechtstreeks en ongecomprimeerd geüpload en zijn alleen zichtbaar voor ons team.'}</small>
+            <small>{v.docsHint}</small>
             <ul class="doc-list" id="doc-list" aria-live="polite"></ul>
           </div>
           <div class="two"><Field locale={locale} name="name" label={ui.form.name} required autocomplete="name" maxlength={120} span="full" /><Field locale={locale} name="email" label={ui.form.email} type="email" required autocomplete="email" maxlength={160} span="full" /></div>
           <PhoneField locale={locale} name="phone" />
-          <fieldset class="chips"><legend>{hu ? 'Milyen értékmeghatározást kér?' : 'Welke waardebepaling wenst u?'}</legend>
+          <fieldset class="chips"><legend>{v.requestLegend}</legend>
             {packages.map((pkg) => <label><input type="radio" name="requestKind" value={pkg.kind} checked={pkg.kind === 'indicative'} /><span>{pkg.names[locale]}{pkg.kind === 'indicative' ? (company.services.valuationFreeConfirmed ? ` · ${priceLabel(pkg, locale)}` : '') : ` · ${priceLabel(pkg, locale)}`}</span></label>)}
           </fieldset>
-          <p class="question-hint">{hu ? 'Helyszíni kérésnél munkatársunk felveszi Önnel a kapcsolatot az időpont egyeztetéséhez.' : 'Bij een bezoek nemen wij contact op om een afspraak te maken.'}{cardPayments ? (hu ? ' Fix árú csomagnál a kérés elküldése után azonnal bankkártyával is fizethet.' : ' Bij een pakket met vaste prijs kunt u na het versturen meteen met kaart betalen.') : ''}{hu ? ' Hivatalos kérésnél árat és határidőt csak árajánlat után vállalunk.' : ' Voor een officiële taxatie geven wij vooraf geen prijs of termijn.'}</p>
+          <p class="question-hint">{v.hintVisit}{cardPayments ? v.hintCard : ''}{v.hintOfficial}</p>
           <p class="notice">{notice}</p>
         </section>
       </FormShell>
-      <div class="wizard-actions"><button type="button" id="wizard-back" hidden>{hu ? 'Vissza' : 'Terug'}</button><button type="button" id="wizard-next"><span>{hu ? 'Tovább' : 'Verder'}</span><ArrowChip size={30} /></button></div>
+      <div class="wizard-actions"><button type="button" id="wizard-back" hidden>{v.back}</button><button type="button" id="wizard-next"><span>{v.next}</span><ArrowChip size={30} /></button></div>
     </div>
   </section>
 </Base>
@@ -108,6 +118,11 @@ const cardPayments = isStripeEnabled();
   const nextText = next?.querySelector('span');
   const actions = document.querySelector<HTMLElement>('.wizard-actions');
   const consent = form?.querySelector<HTMLElement>('.consent');
+  // The page's own language only: one JSON attribute, written by the server.
+  const T = JSON.parse(wizard?.dataset.i18n ?? '{}') as Record<string, string>;
+  const intl = wizard?.dataset.intl ?? 'hu-HU';
+  const isHungarian = wizard?.dataset.locale === 'hu';
+  const fr = wizard?.dataset.locale === 'fr';
   const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   let current = 0;
   const storageKey = 'fodel-valuation-v2';
@@ -204,7 +219,7 @@ const cardPayments = isStripeEnabled();
     const m2 = Number(plotInput?.value);
     if (plotHa && Number.isFinite(m2) && m2 >= 10000) {
       plotHa.hidden = false;
-      plotHa.textContent = `≈ ${(m2 / 10000).toLocaleString(form?.dataset.locale === 'nl' ? 'nl-NL' : 'hu-HU', { maximumFractionDigits: 2 })} ha`;
+      plotHa.textContent = `≈ ${(m2 / 10000).toLocaleString(intl, { maximumFractionDigits: 2 })} ha`;
     } else if (plotHa) plotHa.hidden = true;
   };
   plotInput?.addEventListener('input', updatePlotHa);
@@ -247,7 +262,8 @@ const cardPayments = isStripeEnabled();
   const syncFactors = () => { if (factorJson) { factorJson.value = JSON.stringify([...(factorList?.querySelectorAll<HTMLElement>('.factor-row') ?? [])].map((row) => ({ text: row.querySelector<HTMLInputElement>('input')?.value.trim() ?? '', direction: row.querySelector<HTMLSelectElement>('select')?.value ?? 'unsure' })).filter((item) => item.text)); factorJson.dispatchEvent(new Event('input', { bubbles: true })); } };
   const appendFactor = (text = '', direction = 'unsure') => {
     const row = document.createElement('div'); row.className = 'factor-row';
-    row.innerHTML = `<input type="text" maxlength="300" aria-label="Szempont / Factor"><select aria-label="Irány / Richting"><option value="unsure">Nem tudom / Onzeker</option><option value="plus">Értéknövelő / Verhogend</option><option value="minus">Értékcsökkentő / Verlagend</option></select><button type="button" aria-label="Sor törlése / Rij verwijderen">×</button>`;
+    const esc = (text: string) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
+    row.innerHTML = `<input type="text" maxlength="300" aria-label="${esc(T.factor)}"><select aria-label="${esc(T.direction)}"><option value="unsure">${esc(T.dirUnsure)}</option><option value="plus">${esc(T.dirPlus)}</option><option value="minus">${esc(T.dirMinus)}</option></select><button type="button" aria-label="${esc(T.removeRow)}">×</button>`;
     row.addEventListener('input', syncFactors); row.querySelector('button')?.addEventListener('click', () => { row.remove(); syncFactors(); });
     const input = row.querySelector<HTMLInputElement>('input'); if (input) input.value = text;
     const select = row.querySelector<HTMLSelectElement>('select'); if (select) select.value = direction;
@@ -278,7 +294,6 @@ const cardPayments = isStripeEnabled();
   const docInput = document.querySelector<HTMLInputElement>('#f-docs');
   const docList = document.querySelector<HTMLElement>('#doc-list');
   const docSession = form?.querySelector<HTMLInputElement>('#doc-session');
-  const docText = (hu: string, nl: string) => (form?.dataset.locale === 'nl' ? nl : hu);
   const DOC_MAX = 15, DOC_BYTES = 50 * 1024 * 1024;
   let docCount = 0, docPending = 0;
   if (docSession) docSession.value = crypto.randomUUID();
@@ -291,8 +306,8 @@ const cardPayments = isStripeEnabled();
   };
   const uploadDoc = async (file: File) => {
     const report = docRow(file);
-    if (docCount >= DOC_MAX) return report(docText('Legfeljebb 15 fájl tölthető fel.', 'Maximaal 15 bestanden.'), true);
-    if (file.size > DOC_BYTES) return report(docText('Túl nagy (legfeljebb 50 MB).', 'Te groot (maximaal 50 MB).'), true);
+    if (docCount >= DOC_MAX) return report(T.docMax, true);
+    if (file.size > DOC_BYTES) return report(T.docTooBig, true);
     docCount += 1; docPending += 1; report('0%');
     try {
       const response = await fetch(wizard?.dataset.docUrl ?? '/api/valuation/upload-url', { method: 'POST', headers: { 'content-type': 'application/json' },
@@ -309,10 +324,10 @@ const cardPayments = isStripeEnabled();
         request.onerror = () => reject(new Error('upload-failed'));
         request.send(body);
       });
-      report(docText('Feltöltve', 'Geüpload'));
+      report(T.docUploaded);
     } catch {
       docCount -= 1;
-      report(docText('Nem sikerült. Ellenőrizze a fájltípust, vagy próbálja újra.', 'Mislukt. Controleer het bestandstype of probeer opnieuw.'), true);
+      report(T.docFailed, true);
     } finally { docPending -= 1; }
   };
   docInput?.addEventListener('change', () => {
@@ -325,7 +340,7 @@ const cardPayments = isStripeEnabled();
       event.preventDefault();
       event.stopImmediatePropagation();
       const status = document.querySelector<HTMLElement>('#photo-status');
-      if (status) status.textContent = docText('A dokumentumok még töltődnek fel. Kérjük, várjon.', 'De documenten worden nog geüpload. Even geduld.');
+      if (status) status.textContent = T.docPending;
     }
   }, true);
 
@@ -339,13 +354,13 @@ const cardPayments = isStripeEnabled();
         const reply = await response.json().catch(() => null);
         if (!response.ok || !reply?.url) throw new Error('checkout-failed');
         location.href = reply.url;
-      } catch { button.disabled = false; button.textContent = docText('Nem sikerült, próbálja újra', 'Mislukt, probeer opnieuw'); }
+      } catch { button.disabled = false; button.textContent = T.retry; }
     });
     container.append(button);
   };
   if (new URLSearchParams(location.search).get('paid') === '1') {
     const banner = document.createElement('p'); banner.className = 'notice paid-banner'; banner.setAttribute('role', 'status');
-    banner.textContent = docText('Köszönjük, a fizetés megérkezett. Visszaigazolást e-mailben küldünk.', 'Dank u, uw betaling is ontvangen. U ontvangt een bevestiging per e-mail.');
+    banner.textContent = T.paid;
     wizard?.prepend(banner);
   }
   form?.addEventListener('fodel:success', (event) => {
@@ -362,32 +377,32 @@ const cardPayments = isStripeEnabled();
     if (!success) return;
     const existing = success.querySelector('p'); if (existing) existing.hidden = true;
     const heading = success.querySelector('h3');
-    const locale = form?.dataset.locale === 'nl' ? 'nl' : 'hu';
-    if (heading) heading.textContent = locale === 'hu' ? 'Tájékoztató értékmeghatározás' : 'Indicatieve waardebepaling';
+    if (heading) heading.textContent = T.resultHeading;
     const rate = Number(data.rate);
-    const currency = locale === 'nl' && rate > 0 ? 'EUR' : 'HUF';
-    const format = (value: number) => new Intl.NumberFormat(locale === 'nl' ? 'nl-NL' : 'hu-HU', { style: 'currency', currency, maximumFractionDigits: 0 }).format(currency === 'EUR' ? value / rate : value);
+    // Hungarian readers see forint; every other language sees euro once a rate is set.
+    const currency = !isHungarian && rate > 0 ? 'EUR' : 'HUF';
+    const format = (value: number) => new Intl.NumberFormat(intl, { style: 'currency', currency, maximumFractionDigits: 0 }).format(currency === 'EUR' ? value / rate : value);
     const result = data.result;
     const add = (tag: string, message: string, className?: string) => { const node = document.createElement(tag); node.textContent = message; if (className) node.className = className; success.append(node); return node; };
     add('p', `${format(result.lowHuf)} – ${format(result.highHuf)}`, 'result-range');
-    add('p', `${locale === 'hu' ? 'Középérték' : 'Middenwaarde'}: ${format(result.midHuf)}`, 'result-mid');
+    add('p', `${T.mid}${fr ? '\u00a0' : ''}: ${format(result.midHuf)}`, 'result-mid');
     const basis = result.baseline.kind === 'ksh'
-      ? `KSH Ingatlanadattár, ${result.baseline.year} · ${result.baseline.level === 'county' ? (locale === 'hu' ? 'vármegyei adat' : 'provinciegegevens') : (locale === 'hu' ? 'települési adat' : 'plaatsgegevens')} · ${result.baseline.count}`
-      : `${result.baseline.count} ${locale === 'hu' ? 'hasonló FODEL-hirdetés' : 'vergelijkbare FODEL-advertenties'}`;
+      ? `KSH Ingatlanadattár, ${result.baseline.year} · ${result.baseline.level === 'county' ? T.basisCounty : T.basisTown} · ${result.baseline.count}`
+      : `${result.baseline.count} ${T.basisListings}`;
     add('p', basis, 'result-basis');
-    if (result.baseline.kind === 'ksh' && result.baseline.url) { const link = document.createElement('a'); link.href = result.baseline.url; link.textContent = `Forrás: KSH Ingatlanadattár, ${result.baseline.year}${result.baseline.retrievedAt ? ` · ${result.baseline.retrievedAt}` : ''} · CC BY 4.0`; link.target = '_blank'; link.rel = 'noopener'; link.className = 'result-source'; success.append(link); }
-    if (currency === 'EUR' && data.rateDate) add('p', `${locale === 'hu' ? 'Árfolyam dátuma' : 'Wisselkoersdatum'}: ${data.rateDate}`);
-    if (currency === 'HUF' && locale === 'nl') add('p', 'Geen actuele EUR/HUF koers ingesteld; bedragen worden in HUF getoond.');
+    if (result.baseline.kind === 'ksh' && result.baseline.url) { const link = document.createElement('a'); link.href = result.baseline.url; link.textContent = `${T.source}${fr ? '\u00a0' : ''}: KSH Ingatlanadattár, ${result.baseline.year}${result.baseline.retrievedAt ? ` · ${result.baseline.retrievedAt}` : ''} · CC BY 4.0`; link.target = '_blank'; link.rel = 'noopener'; link.className = 'result-source'; success.append(link); }
+    if (currency === 'EUR' && data.rateDate) add('p', `${T.rateDate}${fr ? '\u00a0' : ''}: ${data.rateDate}`);
+    if (currency === 'HUF' && !isHungarian && T.noRate) add('p', T.noRate);
     if (Array.isArray(data.factors) && data.factors.length) {
-      add('h4', locale === 'hu' ? 'Értéket befolyásoló szempontok' : 'Factoren');
-      for (const factor of data.factors) add('p', `${factor.direction === 'plus' ? (locale === 'hu' ? 'Értéknövelő' : 'Waardeverhogend') : factor.direction === 'minus' ? (locale === 'hu' ? 'Értékcsökkentő' : 'Waardeverlagend') : (locale === 'hu' ? 'Bizonytalan' : 'Onzeker')}: ${factor.text}`);
+      add('h4', T.factorsHeading);
+      for (const factor of data.factors) add('p', `${factor.direction === 'plus' ? T.dirPlus : factor.direction === 'minus' ? T.dirMinus : T.dirUnsure}${fr ? '\u00a0' : ''}: ${factor.text}`);
     }
     if (data.notice) add('p', data.notice, 'notice');
     const actionsWrap = document.createElement('div'); actionsWrap.className = 'result-actions';
-    if (wizard?.dataset.submitUrl) { const link = document.createElement('a'); link.href = wizard.dataset.submitUrl; link.textContent = locale === 'hu' ? 'Hirdetés feladása' : 'Advertentie plaatsen'; link.className = 'result-link'; actionsWrap.append(link); }
+    if (wizard?.dataset.submitUrl) { const link = document.createElement('a'); link.href = wizard.dataset.submitUrl; link.textContent = T.postAd; link.className = 'result-link'; actionsWrap.append(link); }
     for (const [kind, label] of [
-      ['expert_visit', locale === 'hu' ? `Gábor helyszíni látogatása (€ ${wizard?.dataset.visitPrice})` : `Bezoek van Gábor (€ ${wizard?.dataset.visitPrice})`],
-      ['judicial', locale === 'hu' ? 'Igazságügyi értékbecslés kérése' : 'Officiële taxatie aanvragen'],
+      ['expert_visit', `${T.visit} (€ ${wizard?.dataset.visitPrice})`],
+      ['judicial', T.judicial],
     ]) {
       const button = document.createElement('button'); button.type = 'button'; button.textContent = label; button.className = 'result-link';
       button.addEventListener('click', async () => {
@@ -396,10 +411,10 @@ const cardPayments = isStripeEnabled();
           const response = await fetch('/api/valuation/next-step', { method: 'POST', headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ id: data.valuationId, token: data.actionToken, kind }) });
           if (!response.ok) throw new Error('request-failed');
-          button.textContent = locale === 'hu' ? 'Igényét rögzítettük' : 'Aanvraag ontvangen';
+          button.textContent = T.received;
           const reply = await response.json().catch(() => null);
           if (reply?.pay) payButton(actionsWrap, data.valuationId, data.actionToken, reply.pay.label);
-        } catch { button.disabled = false; button.textContent = locale === 'hu' ? 'Nem sikerült, próbálja újra' : 'Mislukt, probeer opnieuw'; }
+        } catch { button.disabled = false; button.textContent = T.retry; }
       });
       actionsWrap.append(button);
     }

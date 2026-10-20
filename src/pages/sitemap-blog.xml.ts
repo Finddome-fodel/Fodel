@@ -2,19 +2,21 @@
  * Sitemap for blog posts and case studies — same reasoning as
  * sitemap-properties.xml.ts: @astrojs/sitemap only sees build-time routes,
  * and posts are looked up from Supabase per request. Declared via a
- * `Sitemap:` line in public/robots.txt.
+ * `Sitemap:` line in robots.txt.
  *
- * hreflang pairs stay inside each page family, exactly as the pages declare
- * them: hu↔nl on the full site, en↔de on the bridge-style pages. Only live
- * siblings are listed; most posts have none.
+ * Only a post's own pages are listed. hreflang pairs are every live language
+ * version of the same article (linked through group_id); most posts have few.
+ * A Dutch article shown in English as a stand-in is not a page of its own, so
+ * it is neither listed nor declared as an alternate: its canonical is the
+ * Dutch original.
  */
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { publishedPosts, siblingPost, postPath, BLOG_LOCALES, type BlogLocale } from '~/lib/blog';
+import { publishedPosts, siblingPosts, postPath, BLOG_LOCALES } from '~/lib/blog';
+import { LOCALE_META } from '~/i18n/ui';
 
 import { SITE_URL as SITE } from '~/config/site.mjs';
-const FAMILY: Record<BlogLocale, BlogLocale> = { hu: 'nl', nl: 'hu', en: 'de', de: 'en' };
 
 export const GET: APIRoute = async () => {
   const posts = (await Promise.all(BLOG_LOCALES.map((locale) => publishedPosts(locale)))).flat();
@@ -22,13 +24,13 @@ export const GET: APIRoute = async () => {
   const urls = await Promise.all(
     posts.map(async (post) => {
       const loc = `${SITE}${postPath(post)}`;
-      const sibling = await siblingPost(post, FAMILY[post.locale]);
-      const links = sibling
-        ? [
-            `<xhtml:link rel="alternate" hreflang="${post.locale}" href="${loc}" />`,
-            `<xhtml:link rel="alternate" hreflang="${sibling.locale}" href="${SITE}${postPath(sibling)}" />`,
-          ].join('')
-        : '';
+      const siblings = post.group_id ? Object.values(await siblingPosts(post)) : [];
+      const links =
+        siblings.length > 1
+          ? siblings
+              .map((version) => `<xhtml:link rel="alternate" hreflang="${LOCALE_META[version!.locale].hreflang}" href="${SITE}${postPath(version!)}" />`)
+              .join('')
+          : '';
       const lastmod = (post.published_at ?? post.updated_at).toISOString().slice(0, 10);
       return `<url><loc>${loc}</loc><lastmod>${lastmod}</lastmod>${links}</url>`;
     })

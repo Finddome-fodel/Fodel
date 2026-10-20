@@ -13,6 +13,7 @@
  *              enquiry panel).
  */
 import type { Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 
 interface Props {
   locale: Locale;
@@ -26,7 +27,7 @@ interface Props {
 const { locale, number, message, variant = 'inline', onDark = false } = Astro.props;
 const digits = (number ?? '').replace(/\D/g, '');
 const href = digits.length >= 8 ? `https://wa.me/${digits}${message ? `?text=${encodeURIComponent(message)}` : ''}` : null;
-const label = locale === 'hu' ? 'Írjon nekünk WhatsAppon' : 'Stuur ons een WhatsApp-bericht';
+const label = CHROME[locale].whatsapp;
 ---
 
 {href && (

@@ -2,6 +2,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { localeFrom } from '~/i18n/ui';
 import { path } from '~/i18n/ui';
 import { SITE_URL } from '~/config/site.mjs';
 import { icon } from '~/lib/portal/icons';
@@ -13,7 +14,7 @@ const { profile, supabase, user } = Astro.locals;
 const saved = Astro.url.searchParams.get('saved');
 const err = Astro.url.searchParams.get('error');
 
-const referralLocale = profile?.locale === 'nl' ? 'nl' : 'hu';
+const referralLocale = localeFrom(profile?.locale, 'hu');
 const referralLink = profile?.referral_code
   ? `${SITE_URL}${path(referralLocale, 'submitAd')}?ref=${profile.referral_code}`
   : null;

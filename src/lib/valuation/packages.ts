@@ -11,14 +11,16 @@
  */
 import { ONSITE_SERVICES } from '~/config/company';
 import type { Services } from '~/lib/runtime-config';
-import { formatCents } from '~/lib/orders';
+import { eurCents } from '~/lib/format';
+import { localizer, type L10n, type Locale } from '~/i18n/ui';
 
 export const PACKAGE_KINDS = ['indicative', 'expert_visit', 'judicial'] as const;
 export type PackageKind = (typeof PACKAGE_KINDS)[number];
 
 export type ValuationPackage = {
   kind: PackageKind;
-  names: Record<'hu' | 'nl', string>;
+  /** hu and nl are editable in the admin; en, de and fr are the names below. */
+  names: L10n;
   /** Whole euros; null = on request (no fixed price). */
   priceEur: number | null;
   enabled: boolean;
@@ -30,19 +32,19 @@ const visit = ONSITE_SERVICES.find((service) => service.id === 'onsite-visit')!;
 
 const DEFAULTS: Record<PackageKind, Omit<ValuationPackage, 'kind'>> = {
   indicative: {
-    names: { hu: 'Tájékoztató, piaci alapú becslés', nl: 'Indicatieve marktwaarde' },
+    names: { hu: 'Tájékoztató, piaci alapú becslés', nl: 'Indicatieve marktwaarde', en: 'Indicative, market-based estimate', de: 'Unverbindliche, marktbasierte Einschätzung', fr: 'Estimation indicative fondée sur le marché' },
     priceEur: 0,
     enabled: true,
     priceLocked: true,
   },
   expert_visit: {
-    names: { hu: 'Gábor helyszíni látogatása', nl: 'Persoonlijk bezoek van Gábor' },
+    names: { hu: 'Gábor helyszíni látogatása', nl: 'Persoonlijk bezoek van Gábor', en: 'A visit from Gábor', de: 'Besuch von Gábor', fr: 'Visite de Gábor' },
     priceEur: visit.priceEur,
     enabled: true,
     priceLocked: false,
   },
   judicial: {
-    names: { hu: 'Igazságügyi / hivatalos értékbecslés', nl: 'Officiële / gerechtelijke taxatie' },
+    names: { hu: 'Igazságügyi / hivatalos értékbecslés', nl: 'Officiële / gerechtelijke taxatie', en: 'Official / court-appointed valuation', de: 'Amtliches / gerichtliches Gutachten', fr: 'Expertise officielle / judiciaire' },
     priceEur: null,
     enabled: true,
     priceLocked: false,
@@ -56,7 +58,7 @@ export function valuationPackages(services: Pick<Services, 'valuationPackages'> 
     const price = base.priceLocked ? base.priceEur : stored && 'priceEur' in stored ? stored.priceEur ?? null : base.priceEur;
     return {
       kind,
-      names: { hu: stored?.names?.hu?.trim() || base.names.hu, nl: stored?.names?.nl?.trim() || base.names.nl },
+      names: { ...base.names, hu: stored?.names?.hu?.trim() || base.names.hu, nl: stored?.names?.nl?.trim() || base.names.nl },
       priceEur: typeof price === 'number' && Number.isFinite(price) && price >= 0 ? price : null,
       enabled: kind === 'indicative' ? true : stored?.enabled ?? base.enabled,
       priceLocked: base.priceLocked,
@@ -74,8 +76,9 @@ export function isPayable(pkg: ValuationPackage | null): pkg is ValuationPackage
 }
 
 /** "€ 200", or the on-request wording in the right language. */
-export function priceLabel(pkg: ValuationPackage, locale: 'hu' | 'nl'): string {
-  if (pkg.priceEur === null) return locale === 'hu' ? 'árajánlat alapján' : 'op offerte';
-  if (pkg.priceEur === 0) return locale === 'hu' ? 'díjmentes' : 'gratis';
-  return formatCents(pkg.priceEur * 100);
+export function priceLabel(pkg: ValuationPackage, locale: Locale): string {
+  const x = localizer(locale);
+  if (pkg.priceEur === null) return x('árajánlat alapján', 'op offerte', 'on request', 'auf Anfrage', 'sur demande');
+  if (pkg.priceEur === 0) return x('díjmentes', 'gratis', 'free', 'kostenlos', 'gratuit');
+  return eurCents(pkg.priceEur * 100, locale === 'hu' ? 'nl' : locale);
 }

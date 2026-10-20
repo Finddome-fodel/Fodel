@@ -19,6 +19,8 @@
  *    quietly rewrite history.
  */
 import { ONSITE_SERVICES } from '~/config/company';
+import type { Locale } from '~/i18n/ui';
+import { eurCents } from '~/lib/format';
 import type { RequestedExtras } from '~/lib/portal/requested-extras';
 import { listingCatalog, packageOf, isAboveThreshold as tierApplies, type ListingCatalog } from '~/lib/listing-packages';
 
@@ -40,7 +42,7 @@ const orderExtras = (cat: ListingCatalog): readonly { id: string; priceEur: numb
 /** The on-site services exclude each other: one visit per listing. */
 const EXCLUSIVE = new Set<string>(ONSITE_SERVICES.map((service) => service.id));
 
-export type OrderLocale = 'hu' | 'nl';
+export type OrderLocale = Locale;
 
 /** One line of a stored order, exactly as it lives in `payments.line_items`. */
 export type OrderLine = {
@@ -67,12 +69,12 @@ export type OrderSelection = {
 
 
 const EXTRA_LABEL: Record<string, Record<OrderLocale, string>> = {
-  translation: { hu: 'Fordítás', nl: 'Vertaling' },
-  'category-highlight': { hu: 'Kiemelés a kategóriában', nl: 'Uitgelicht in de categorie' },
-  'homepage-highlight': { hu: 'Kiemelés a főoldalon', nl: 'Uitgelicht op de homepage' },
-  video: { hu: 'Videós bemutató', nl: 'Videopresentatie' },
-  'retro-images': { hu: 'Fotóretusálás', nl: 'Fotobewerking' },
-  'renewal-6m': { hu: 'Hosszabbítás — 6 hónap', nl: 'Verlenging — 6 maanden' },
+  translation: { hu: 'Fordítás', nl: 'Vertaling', en: 'Translation', de: 'Übersetzung', fr: 'Traduction' },
+  'category-highlight': { hu: 'Kiemelés a kategóriában', nl: 'Uitgelicht in de categorie', en: 'Highlighting in the category', de: 'Hervorhebung in der Kategorie', fr: 'Mise en avant dans la catégorie' },
+  'homepage-highlight': { hu: 'Kiemelés a főoldalon', nl: 'Uitgelicht op de homepage', en: 'Highlighting on the homepage', de: 'Hervorhebung auf der Startseite', fr: 'Mise en avant sur la page d’accueil' },
+  video: { hu: 'Videós bemutató', nl: 'Videopresentatie', en: 'Video presentation', de: 'Videopräsentation', fr: 'Présentation vidéo' },
+  'retro-images': { hu: 'Fotóretusálás', nl: 'Fotobewerking', en: 'Photo editing', de: 'Bildbearbeitung', fr: 'Retouche photo' },
+  'renewal-6m': { hu: 'Hosszabbítás — 6 hónap', nl: 'Verlenging — 6 maanden', en: 'Renewal, 6 months', de: 'Verlängerung, 6 Monate', fr: 'Prolongation, 6 mois' },
   ...Object.fromEntries(ONSITE_SERVICES.map((service) => [service.id, service.names])),
 };
 
@@ -85,32 +87,53 @@ const EXTRA_LABEL: Record<string, Record<OrderLocale, string>> = {
  * correct and "2 nyelvek" is wrong — so this cannot be one string with an "s"
  * bolted on.
  */
+const NO_UNIT: Record<OrderLocale, { one: string; many: string }> = {
+  hu: { one: '', many: '' },
+  nl: { one: '', many: '' },
+  en: { one: '', many: '' },
+  de: { one: '', many: '' },
+  fr: { one: '', many: '' },
+};
 const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; many: string }>> = {
   translation: {
     hu: { one: 'nyelv', many: 'nyelv' },
     nl: { one: 'taal', many: 'talen' },
+    en: { one: 'language', many: 'languages' },
+    de: { one: 'Sprache', many: 'Sprachen' },
+    fr: { one: 'langue', many: 'langues' },
   },
   'category-highlight': {
     hu: { one: 'hónap', many: 'hónap' },
     nl: { one: 'maand', many: 'maanden' },
+    en: { one: 'month', many: 'months' },
+    de: { one: 'Monat', many: 'Monate' },
+    fr: { one: 'mois', many: 'mois' },
   },
   'homepage-highlight': {
     hu: { one: 'hónap', many: 'hónap' },
     nl: { one: 'maand', many: 'maanden' },
+    en: { one: 'month', many: 'months' },
+    de: { one: 'Monat', many: 'Monate' },
+    fr: { one: 'mois', many: 'mois' },
   },
-  video: { hu: { one: '', many: '' }, nl: { one: '', many: '' } },
-  'retro-images': { hu: { one: '', many: '' }, nl: { one: '', many: '' } },
-  'renewal-6m': { hu: { one: '', many: '' }, nl: { one: '', many: '' } },
-  'onsite-media': { hu: { one: '', many: '' }, nl: { one: '', many: '' } },
-  'onsite-visit': { hu: { one: '', many: '' }, nl: { one: '', many: '' } },
+  video: NO_UNIT,
+  'retro-images': NO_UNIT,
+  'renewal-6m': NO_UNIT,
+  'onsite-media': NO_UNIT,
+  'onsite-visit': NO_UNIT,
 };
 
 /* ── Formatting ──────────────────────────────────────────────────────────── */
 
 const NBSP = ' ';
 
-/** €1 234 — matches src/lib/format.ts's `eur()`, but from cents. */
-export function formatCents(cents: number): string {
+/**
+ * "€ 1.234" from cents, for the Hungarian and Dutch screens that have always
+ * used it. Pass the recipient's language to get that language's own style
+ * ("€1,234" in English, "1.234 €" in German, "1 234 €" in French).
+ */
+export function formatCents(cents: number, locale?: Locale): string {
+  if (locale === 'en' || locale === 'de' || locale === 'fr') return eurCents(cents, locale);
   return `€${NBSP}${(cents / 100).toLocaleString('de-DE', {
     minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
     maximumFractionDigits: 2,
@@ -197,7 +220,7 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
       id: extra.id,
       quantity,
       unitCents: extra.priceEur * 100,
-      label: quantity > 1 && unit ? `${base} — ${quantity} ${unit}` : base,
+      label: quantity > 1 && unit ? `${base}${locale === 'hu' || locale === 'nl' ? ' — ' : ': '}${quantity} ${unit}` : base,
     });
   }
 
@@ -225,10 +248,10 @@ export function referralDiscountCents(lines: OrderLine[]): number {
 }
 
 /** Order lines shaped for the email templates' itemised table. */
-export function linesForEmail(lines: OrderLine[]): { label: string; amount: string }[] {
+export function linesForEmail(lines: OrderLine[], locale?: Locale): { label: string; amount: string }[] {
   return lines.map((line) => ({
     label: line.label,
-    amount: formatCents(line.unitCents * line.quantity),
+    amount: formatCents(line.unitCents * line.quantity, locale),
   }));
 }
 

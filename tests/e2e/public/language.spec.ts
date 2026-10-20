@@ -9,8 +9,9 @@
  */
 import { test, expect } from '../support/fixtures';
 import type { Page } from '@playwright/test';
+import { LOCALE_META, type Locale } from '../../../src/i18n/ui';
 
-const ROUTE = ['nl', 'en', 'hu', 'de', 'nl'] as const;
+const ROUTE = ['nl', 'en', 'hu', 'de', 'fr', 'nl'] as const;
 
 /** The switcher the visitor can actually see on this page and viewport. */
 const visibleToggle = (page: Page) => page.locator('.switcher-toggle:visible').first();
@@ -27,7 +28,7 @@ async function pick(page: Page, code: string, how: 'pointer' | 'keyboard') {
     await page.keyboard.press('Enter');
     await expect(root).toHaveAttribute('data-open', '');
     // Arrow down through the rows until the wanted language has focus.
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
       const focused = await page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.lang ?? '');
       if (focused === code) break;
       await page.keyboard.press('ArrowDown');
@@ -36,11 +37,11 @@ async function pick(page: Page, code: string, how: 'pointer' | 'keyboard') {
     await page.keyboard.press('Enter');
   }
   await page.waitForURL(new RegExp(`/${code}/$`));
-  await expect(page.locator('html')).toHaveAttribute('lang', code);
+  await expect(page.locator('html')).toHaveAttribute('lang', LOCALE_META[code as Locale].htmlLang);
 }
 
 for (const how of ['pointer', 'keyboard'] as const) {
-  test(`switches hu → nl → en → hu → de → nl (${how})`, async ({ page, isMobile }) => {
+  test(`switches hu → nl → en → hu → de → fr → nl (${how})`, async ({ page, isMobile }) => {
     test.skip(how === 'keyboard' && isMobile, 'phones have no hardware keyboard');
     await page.goto('/hu/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'hu');
@@ -99,4 +100,29 @@ test('the mobile drawer has the CTA and both account buttons', async ({ page, is
   await page.goBack();
   await expect(page.locator('#nav-drawer')).not.toHaveAttribute('data-open', '');
   await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+});
+
+test('the root page sends each browser language to its own site', async ({ browser }) => {
+  const cases: [string, RegExp][] = [
+    ['hu-HU', /\/hu\/$/], ['nl-BE', /\/nl\/$/], ['en-GB', /\/en\/$/], ['en-US', /\/en\/$/],
+    ['de-AT', /\/de\/$/], ['fr-BE', /\/fr\/$/], ['it-IT', /\/nl\/$/],
+  ];
+  for (const [locale, expected] of cases) {
+    const context = await browser.newContext({ locale });
+    const page = await context.newPage();
+    await page.goto('/');
+    await page.waitForURL(expected);
+    await context.close();
+  }
+});
+
+test('a language picked in the switcher beats the browser language, for every language', async ({ browser, baseURL }) => {
+  for (const code of ['en', 'de', 'fr', 'nl', 'hu'] as const) {
+    const context = await browser.newContext({ locale: 'hu-HU' });
+    await context.addCookies([{ name: 'fodel_lang', value: code, url: baseURL! }]);
+    const page = await context.newPage();
+    await page.goto('/');
+    await page.waitForURL(new RegExp(`/${code}/$`));
+    await context.close();
+  }
 });

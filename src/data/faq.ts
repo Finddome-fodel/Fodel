@@ -18,6 +18,9 @@
 
 import type { Locale } from '~/i18n/ui';
 import { COMPANY } from '~/config/company';
+import { FAQ_EN } from '~/data/faq-en';
+import { FAQ_DE } from '~/data/faq-de';
+import { FAQ_FR } from '~/data/faq-fr';
 
 export type FaqAudience = 'seller' | 'buyer' | 'both';
 
@@ -31,7 +34,7 @@ export interface FaqEntry {
   sourced: boolean;
 }
 
-export const FAQ: Record<Locale, FaqEntry[]> = {
+const HU_NL = {
   hu: [
     {
       id: 'miert-jo-kulfoldi-vasarlo',
@@ -410,7 +413,9 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       sourced: true,
     },
   ],
-};
+} satisfies Record<'hu' | 'nl', FaqEntry[]>;
+
+export const FAQ: Record<Locale, FaqEntry[]> = { ...HU_NL, en: FAQ_EN, de: FAQ_DE, fr: FAQ_FR };
 
 /** FAQPage structured data expects plain text, not markup. */
 export function faqAnswerText(entry: FaqEntry): string {

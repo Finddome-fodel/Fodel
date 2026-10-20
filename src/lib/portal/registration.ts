@@ -23,6 +23,7 @@
  * api/listing-order.ts). Nothing publishes without FODEL approving it.
  */
 import crypto from 'node:crypto';
+import { localeFrom, type Locale } from '~/i18n/ui';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { deliver, templates } from '~/lib/email/send';
 import { buildInvite, isInviteLocale } from '~/lib/portal/invites';
@@ -32,7 +33,7 @@ export const REGISTRATION_DAYS = 7;
 /** What a self-registration invite carries from the form to the account. */
 export type RegistrationPayload = {
   source: 'register';
-  locale: 'hu' | 'nl';
+  locale: Locale;
   name: string;
   /** E.164. */
   phone: string | null;
@@ -86,7 +87,7 @@ export async function rotateRegistration(admin: SupabaseClient, invite: InviteRo
     if (message) await deliver(invite.email, message);
     return Boolean(message);
   }
-  const locale = payload.locale === 'nl' ? 'nl' : 'hu';
+  const locale = localeFrom(payload.locale, 'hu');
   const name = typeof payload.name === 'string' && payload.name ? payload.name : invite.email;
   await deliver(invite.email, templates.registrationConfirm(locale, { name, acceptUrl }));
   return true;
@@ -96,7 +97,7 @@ export type RegistrationOutcome = 'created' | 'rotated' | 'account-exists' | 'sk
 
 export async function register(
   admin: SupabaseClient,
-  input: { name: string; email: string; phone: string | null; locale: 'hu' | 'nl'; referralCode?: string; origin: string }
+  input: { name: string; email: string; phone: string | null; locale: Locale; referralCode?: string; origin: string }
 ): Promise<RegistrationOutcome> {
   const email = input.email.trim().toLowerCase();
 
@@ -106,7 +107,7 @@ export async function register(
     .eq('email', email)
     .maybeSingle();
   if (profile) {
-    const locale = profile.locale === 'nl' ? 'nl' : profile.locale === 'hu' ? 'hu' : input.locale;
+    const locale = localeFrom(profile.locale, input.locale);
     await deliver(
       email,
       templates.accountExists(locale, {

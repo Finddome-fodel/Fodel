@@ -26,7 +26,9 @@
  * status to exactly that one", so that half of the rule lives here — and the
  * half that matters most for security (who owns what) stays in the database.
  */
+import type { Locale } from '~/i18n/ui';
 import type { APIRoute } from 'astro';
+import { approvedWording } from '~/lib/approved-text';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
@@ -44,7 +46,7 @@ import {
   type OrderSelection,
 } from '~/lib/orders';
 import { SITE_URL } from '~/config/site.mjs';
-import { eur } from '~/lib/format';
+import { eur, formatDate } from '~/lib/format';
 import { paymentGatesPublishing } from '~/config/flags';
 import { listingCatalog, packageOf, isAboveThreshold } from '~/lib/listing-packages';
 import { addMonths } from '~/lib/listing-rules';
@@ -54,7 +56,7 @@ export const prerender = false;
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
-type OwnerContact = { email: string; locale: 'hu' | 'nl'; full_name: string | null };
+type OwnerContact = { email: string; locale: Locale; full_name: string | null };
 
 async function ownerContact(supabase: any, ownerId: string | null): Promise<OwnerContact | null> {
   if (!ownerId) return null;
@@ -333,9 +335,9 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       const sharedEmail = {
           ref: property.ref,
           title,
-          items: linesForEmail(lines),
-          discount: discountCents > 0 ? `−${formatCents(discountCents)}` : undefined,
-          total: formatCents(totalCents),
+          items: linesForEmail(lines, locale),
+          discount: discountCents > 0 ? `−${formatCents(discountCents, locale)}` : undefined,
+          total: formatCents(totalCents, locale),
           // The email links to the listing's own page, which is where the pay
           // button lives. A Stripe session is created at the moment they click
           // it — never here, because a session minted now would have expired by
@@ -347,7 +349,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         : templates.approvedPublished(locale, {
             ...sharedEmail,
             viewUrl: await publicUrl(property, locale),
-            dueDate: dueAt.toLocaleDateString(locale === 'hu' ? 'hu-HU' : 'nl-NL'),
+            dueDate: formatDate(dueAt, locale),
           });
       await deliver(owner.email, email);
     }
@@ -541,7 +543,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const owner = await ownerContact(supabase, property.owner_id);
     if (owner) {
       const title = await listingTitle(supabase, property.id, owner.locale, property.ref);
-      const refundPolicy = refundRequired ? (await getCompany()).services.refundPolicy?.[owner.locale]?.trim() : undefined;
+      const refundPolicy = refundRequired ? approvedWording((await getCompany()).services.refundPolicy, owner.locale)?.text : undefined;
       await deliver(owner.email, templates.rejected(owner.locale, { ref: property.ref, title, note, refundRequired, refundPolicy }));
     }
 

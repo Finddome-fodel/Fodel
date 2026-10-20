@@ -18,9 +18,12 @@ import { isOverdue } from '../src/lib/invoicing/model.ts';
 import { signWith, verifyWith } from '../src/lib/valuation/action-token.ts';
 import { cronAuthorised } from '../src/lib/cron-auth.ts';
 import {
-  validateField, normalizePhone, normalizePostcode, normalizeNumber, parseLocaleNumber, errorMessage,
+  validateField, normalizePhone, normalizePostcode, normalizeNumber, parseLocaleNumber,
   defaultPhoneCountry, countryOfNumber, formatPhoneAsYouType,
 } from '../src/lib/validation.ts';
+import { errorMessage } from '../src/lib/validation-server.ts';
+import { LOCALES, ROUTES, path, localizer, localeFrom, isLocale } from '../src/i18n/ui.ts';
+import { eur, huf, area, grouped } from '../src/lib/format.ts';
 import { withRetry, isRetryable } from '../src/lib/email/retry.ts';
 
 let passed = 0;
@@ -177,6 +180,9 @@ test('the error names the country and gives an example', () => {
 test('default country follows the language', () => {
   assert.equal(defaultPhoneCountry('hu'), 'HU');
   assert.equal(defaultPhoneCountry('nl'), 'NL');
+  assert.equal(defaultPhoneCountry('en'), 'GB');
+  assert.equal(defaultPhoneCountry('de'), 'DE');
+  assert.equal(defaultPhoneCountry('fr'), 'FR');
   assert.equal(countryOfNumber('+4915112345678'), 'DE');
 });
 test('as-you-type formatting', () => assert.equal(formatPhoneAsYouType('+31612345678', 'NL'), '+31 6 12345678'));
@@ -209,6 +215,53 @@ test('email and url', () => {
   assert.equal(validateField({ rule: 'email' }, 'a@b')?.code, 'email');
   assert.equal(validateField({ rule: 'url' }, 'https://fodel.eu'), null);
   assert.equal(validateField({ rule: 'url' }, 'fodel')?.code, 'url');
+});
+
+console.log('Five languages');
+const ERROR_CASES = [
+  { code: 'required' }, { code: 'email' }, { code: 'phone', country: 'NL', example: '+31 6 12345678' },
+  { code: 'postcode', country: 'NL', example: '1234 AB' }, { code: 'number' }, { code: 'min', limit: 5 },
+  { code: 'max', limit: 5 }, { code: 'url' }, { code: 'too-long', limit: 10 }, { code: 'min-length', limit: 3 }, { code: 'consent' },
+];
+test('every validation message exists in every language and says something different', () => {
+  for (const e of ERROR_CASES) {
+    const seen = new Set();
+    for (const l of LOCALES) {
+      const text = errorMessage(e, l);
+      assert.ok(typeof text === 'string' && text.length > 3, `${e.code} in ${l}`);
+      assert.ok(!/undefined|\[object|NaN/.test(text), `${e.code} in ${l}: ${text}`);
+      seen.add(text);
+    }
+    assert.equal(seen.size, LOCALES.length, `${e.code} is identical in two languages`);
+  }
+});
+test('routes: same pages, own slugs, unique inside a language', () => {
+  const keys = Object.keys(ROUTES.hu).sort();
+  for (const l of LOCALES) {
+    assert.deepEqual(Object.keys(ROUTES[l]).sort(), keys, `route keys of ${l}`);
+    const slugs = keys.filter((k) => k !== 'detail').map((k) => path(l, k));
+    assert.equal(new Set(slugs).size, slugs.length, `duplicate slug in ${l}`);
+    for (const p of slugs) assert.ok(p.startsWith(`/${l}/`), `${p} outside /${l}/`);
+  }
+});
+test('locale helpers', () => {
+  assert.equal(isLocale('fr'), true);
+  assert.equal(isLocale('xx'), false);
+  assert.equal(localeFrom('de-AT', 'nl'), 'nl');
+  assert.equal(localeFrom('de', 'nl'), 'de');
+  assert.equal(localizer('fr')('a', 'b', 'c', 'd', 'e'), 'e');
+});
+test('money and area in the house style of each language', () => {
+  assert.equal(eur(178000, 'hu'), '€\u00a0178\u00a0000');
+  assert.equal(eur(178000, 'nl'), '€\u00a0178.000');
+  assert.equal(eur(178000, 'en'), '€178,000');
+  assert.equal(eur(178000, 'de'), '178.000\u00a0€');
+  assert.equal(eur(178000, 'fr'), '178\u202f000\u00a0€');
+  assert.equal(huf(64000000, 'fr'), '64\u202f000\u202f000\u00a0Ft');
+  assert.equal(grouped(1200, 'en'), '1,200');
+  assert.match(area(120, 'de'), /^120\u00a0m²$/);
+  assert.match(area(15000, 'en'), /^1\.50\u00a0ha$/);
+  assert.match(area(15000, 'fr'), /^1,50\u00a0ha$/);
 });
 
 console.log('Email retries');

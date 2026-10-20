@@ -7,7 +7,7 @@
  *   /listing/sold             asks once, then moves it to the sold archive
  *   /listing/renew            pay the 6-month renewal by card or transfer
  *
- * The link is the credential: ?p=<listing id>&t=<signed token>&l=<hu|nl>,
+ * The link is the credential: ?p=<listing id>&t=<signed token>&l=<hu|nl|en|de|fr>,
  * bound to exactly this action and listing and expiring on its own (see
  * src/lib/owner-links.ts). "Sold" and the price change ask for one button
  * press, so an email scanner that opens links cannot mark a house sold.
@@ -30,6 +30,8 @@ import { openRenewalOrder, renewalCheckoutUrl, renewalPriceCents } from '~/lib/p
 import { getCompany } from '~/lib/runtime-config';
 import { SITE_URL } from '~/config/site.mjs';
 import { ownerLink, RENEW_LINK_DAYS } from '~/lib/owner-links';
+import { localeFrom, localizer, type Locale } from '~/i18n/ui';
+import { intlTag } from '~/lib/format';
 
 const ACTIONS = ['still-available', 'price', 'sold', 'renew'] as const;
 type Action = (typeof ACTIONS)[number];
@@ -40,12 +42,14 @@ if (!ACTIONS.includes(action)) return new Response('Not found', { status: 404 })
 const url = Astro.url;
 const id = url.searchParams.get('p') ?? '';
 const token = url.searchParams.get('t') ?? '';
-const locale: 'hu' | 'nl' = url.searchParams.get('l') === 'nl' ? 'nl' : 'hu';
+const locale: Locale = localeFrom(url.searchParams.get('l'));
+// Hungarian owners think in forints; everyone else in euros.
 const hu = locale === 'hu';
+const x = localizer(locale);
 Astro.response.headers.set('cache-control', 'no-store');
 Astro.response.headers.set('referrer-policy', 'no-referrer');
 
-const T = {
+const COPY = {
   hu: {
     invalidTitle: 'Ez a link már nem érvényes',
     invalidBody: 'A link lejárt, vagy nem teljes. Írjon nekünk egy választ arra a levélre, amelyben kapta, és segítünk.',
@@ -118,7 +122,116 @@ const T = {
     notRenewable: 'Deze advertentie kan niet worden verlengd (verkocht of offline). Vragen? Schrijf ons.',
     error: 'Er ging iets mis. Probeer het opnieuw of schrijf ons.',
   },
-}[locale];
+  en: {
+    invalidTitle: 'This link is no longer valid',
+    invalidBody: 'The link has expired or is incomplete. Reply to the email you received it in and we will help.',
+    goneTitle: 'This listing is no longer active',
+    goneBody: 'The listing now shows as sold, expired or offline, so this step can no longer be taken.',
+    stillTitle: 'Thank you, noted',
+    stillBody: 'The listing stays active. We will ask again in a month.',
+    priceTitle: 'New asking price',
+    priceBody: 'Enter the new price. The listing is updated at once, without a new review.',
+    priceLabel: 'New price (€)',
+    current: 'Current price',
+    priceSave: 'Save new price',
+    priceDone: 'The new price is now in the listing',
+    priceBad: 'Enter a positive whole number.',
+    soldTitle: 'Have you sold the property',
+    soldBody: 'Once you confirm, the listing leaves our offer and moves to the sold properties. Congratulations.',
+    soldConfirm: 'Yes, it is sold',
+    soldDone: 'Congratulations on the sale',
+    soldDoneBody: 'The listing is now with the sold properties. One of our team will be in touch if anything is left to arrange.',
+    view: 'View listing',
+    renewTitle: 'Extend your listing',
+    renewBody: (price: string) => `6 more months of visibility: ${price}. The extension starts on the expiry date; if the listing has already expired, it is back online straight after payment.`,
+    expires: 'Expiry date',
+    expired: 'Expired',
+    payCard: 'Pay by card',
+    payBank: 'Pay by bank transfer',
+    bankTitle: 'Transfer details',
+    bankBody: 'As soon as the amount arrives we extend the listing and email you. The same details are in your inbox.',
+    amount: 'Amount',
+    account: 'Account',
+    reference: 'Reference',
+    paidTitle: 'Thank you for your payment',
+    paidBody: 'The extension is processed within a few minutes and confirmed by email.',
+    notRenewable: 'This listing cannot be extended (sold or offline). Questions? Write to us.',
+    error: 'Something went wrong. Please try again or write to us.',
+  },
+  de: {
+    invalidTitle: 'Dieser Link ist nicht mehr gültig',
+    invalidBody: 'Der Link ist abgelaufen oder unvollständig. Antworten Sie auf die E-Mail, in der Sie ihn erhalten haben, dann helfen wir Ihnen weiter.',
+    goneTitle: 'Dieses Inserat ist nicht mehr aktiv',
+    goneBody: 'Das Inserat steht inzwischen als verkauft, abgelaufen oder offline, daher ist dieser Schritt nicht mehr möglich.',
+    stillTitle: 'Vielen Dank, notiert',
+    stillBody: 'Das Inserat bleibt aktiv. In einem Monat fragen wir erneut.',
+    priceTitle: 'Neuer Angebotspreis',
+    priceBody: 'Geben Sie den neuen Preis ein. Das Inserat wird sofort aktualisiert, ohne erneute Prüfung.',
+    priceLabel: 'Neuer Preis (€)',
+    current: 'Aktueller Preis',
+    priceSave: 'Neuen Preis speichern',
+    priceDone: 'Der neue Preis steht im Inserat',
+    priceBad: 'Geben Sie eine positive ganze Zahl ein.',
+    soldTitle: 'Haben Sie die Immobilie verkauft',
+    soldBody: 'Nach Ihrer Bestätigung verschwindet das Inserat aus dem Angebot und wird zu den verkauften Immobilien verschoben. Herzlichen Glückwunsch.',
+    soldConfirm: 'Ja, verkauft',
+    soldDone: 'Herzlichen Glückwunsch zum Verkauf',
+    soldDoneBody: 'Das Inserat steht jetzt bei den verkauften Immobilien. Ein Mitarbeiter meldet sich, falls noch etwas zu regeln ist.',
+    view: 'Inserat ansehen',
+    renewTitle: 'Inserat verlängern',
+    renewBody: (price: string) => `6 weitere Monate Sichtbarkeit: ${price}. Die Verlängerung beginnt am Ablauftag; ist das Inserat bereits abgelaufen, ist es nach der Zahlung sofort wieder online.`,
+    expires: 'Ablaufdatum',
+    expired: 'Abgelaufen',
+    payCard: 'Mit Karte zahlen',
+    payBank: 'Per Überweisung zahlen',
+    bankTitle: 'Angaben für die Überweisung',
+    bankBody: 'Sobald der Betrag eingegangen ist, verlängern wir das Inserat und senden Ihnen eine E-Mail. Dieselben Angaben stehen auch in Ihrem Postfach.',
+    amount: 'Betrag',
+    account: 'Konto',
+    reference: 'Verwendungszweck',
+    paidTitle: 'Vielen Dank für Ihre Zahlung',
+    paidBody: 'Die Verlängerung wird in wenigen Minuten verarbeitet und per E-Mail bestätigt.',
+    notRenewable: 'Dieses Inserat kann nicht verlängert werden (verkauft oder offline). Fragen? Schreiben Sie uns.',
+    error: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder schreiben Sie uns.',
+  },
+  fr: {
+    invalidTitle: 'Ce lien n’est plus valable',
+    invalidBody: 'Le lien a expiré ou est incomplet. Répondez à l’e-mail dans lequel vous l’avez reçu et nous vous aiderons.',
+    goneTitle: 'Cette annonce n’est plus active',
+    goneBody: 'L’annonce est désormais vendue, expirée ou hors ligne\u00a0: cette étape n’est plus possible.',
+    stillTitle: 'Merci, c’est noté',
+    stillBody: 'L’annonce reste active. Nous poserons de nouveau la question dans un mois.',
+    priceTitle: 'Nouveau prix demandé',
+    priceBody: 'Indiquez le nouveau prix. L’annonce est mise à jour aussitôt, sans nouvel examen.',
+    priceLabel: 'Nouveau prix (€)',
+    current: 'Prix actuel',
+    priceSave: 'Enregistrer le nouveau prix',
+    priceDone: 'Le nouveau prix figure dans l’annonce',
+    priceBad: 'Saisissez un nombre entier positif.',
+    soldTitle: 'Vous avez vendu le bien',
+    soldBody: 'Après confirmation, l’annonce quitte notre offre et passe dans les biens vendus. Félicitations.',
+    soldConfirm: 'Oui, c’est vendu',
+    soldDone: 'Félicitations pour la vente',
+    soldDoneBody: 'L’annonce figure maintenant parmi les biens vendus. Un collaborateur vous contactera s’il reste quelque chose à régler.',
+    view: 'Voir l’annonce',
+    renewTitle: 'Prolonger l’annonce',
+    renewBody: (price: string) => `6 mois de visibilité supplémentaires\u00a0: ${price}. La prolongation débute à la date d’expiration\u00a0; si l’annonce a déjà expiré, elle est de nouveau en ligne juste après le paiement.`,
+    expires: 'Date d’expiration',
+    expired: 'Expirée',
+    payCard: 'Payer par carte',
+    payBank: 'Payer par virement',
+    bankTitle: 'Coordonnées pour le virement',
+    bankBody: 'Dès que le montant arrive, nous prolongeons l’annonce et vous envoyons un e-mail. Les mêmes informations figurent dans votre boîte de réception.',
+    amount: 'Montant',
+    account: 'Compte',
+    reference: 'Référence',
+    paidTitle: 'Merci pour votre paiement',
+    paidBody: 'La prolongation est traitée en quelques minutes et confirmée par e-mail.',
+    notRenewable: 'Cette annonce ne peut pas être prolongée (vendue ou hors ligne). Une question\u202f? Écrivez-nous.',
+    error: 'Une erreur s’est produite. Veuillez réessayer ou nous écrire.',
+  },
+};
+const T = COPY[locale];
 
 type View =
   | { kind: 'message'; title: string; body: string; tone?: 'ok' | 'warn'; link?: { href: string; label: string } }
@@ -153,7 +266,7 @@ if (valid) {
   const owner = property?.owner_id
     ? (await admin.from('profiles').select('full_name, email').eq('id', property.owner_id).maybeSingle()).data
     : null;
-  const ownerName = owner?.full_name || owner?.email || (hu ? 'A tulajdonos' : 'De eigenaar');
+  const ownerName = owner?.full_name || owner?.email || x('A tulajdonos', 'De eigenaar', 'The owner', 'Der Eigentümer', 'Le propriétaire');
 
   if (!property) {
     view = { kind: 'message', title: T.invalidTitle, body: T.invalidBody, tone: 'warn' };
@@ -171,9 +284,9 @@ if (valid) {
         }
         const company = await getCompany();
         const bank = {
-          amount: formatCents(order.amount_cents),
+          amount: formatCents(order.amount_cents, locale),
           account: `${company.banks.nl.iban} · BIC ${company.banks.nl.bic}`,
-          reference: `#${property.ref} ${hu ? 'hosszabbítás' : 'verlenging'}`,
+          reference: `#${property.ref} ${x('hosszabbítás', 'verlenging', 'extension', 'Verlängerung', 'prolongation')}`,
         };
         if (post.get('method') === 'bank' && owner?.email) {
           await deliver(owner.email, lifecycleEmails.renewalTransfer(locale, { ref: property.ref, title, ...bank, payUrl: ownerLink('renew', id, locale, RENEW_LINK_DAYS) }));
@@ -240,7 +353,7 @@ if (valid) {
             newPrice: `${eur(next.price_eur, 'hu')} / ${huf(next.price_huf, 'hu')}`,
             editUrl: `${SITE_URL}/portal/properties/${id}`,
           }));
-          view = { kind: 'message', title: T.priceDone, body: hu ? `${huf(next.price_huf, 'hu')} (${eur(next.price_eur, 'hu')})` : `${eur(next.price_eur)} (${huf(next.price_huf, 'nl')})`, tone: 'ok', link: { href: listingUrl, label: T.view } };
+          view = { kind: 'message', title: T.priceDone, body: hu ? `${huf(next.price_huf, 'hu')} (${eur(next.price_eur, 'hu')})` : `${eur(next.price_eur, locale)} (${huf(next.price_huf, locale)})`, tone: 'ok', link: { href: listingUrl, label: T.view } };
         }
       }
     } else {
@@ -249,10 +362,10 @@ if (valid) {
   }
 }
 
-const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur, 'hu')}` : `${eur(property.price_eur)} · ${huf(property.price_huf, 'nl')}`) : '';
+const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur, 'hu')}` : `${eur(property.price_eur, locale)} · ${huf(property.price_huf, locale)}`) : '';
 const expiry = property?.expires_at ? new Date(property.expires_at) : null;
-const expiryText = expiry ? expiry.toLocaleDateString(hu ? 'hu-HU' : 'nl-NL', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
-const renewalPrice = formatCents(await renewalPriceCents());
+const expiryText = expiry ? expiry.toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+const renewalPrice = formatCents(await renewalPriceCents(), locale);
 const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ? T.priceTitle : view.kind === 'sold' ? T.soldTitle : T.renewTitle;
 ---
 

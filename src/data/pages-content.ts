@@ -10,25 +10,16 @@
 import type { ContentPageData } from '~/lib/content-sections';
 import type { Locale } from '~/i18n/ui';
 import { AGRI_HECTARE_LIMIT, COMMISSION } from '~/config/company';
-import { TOP_TIPS, GUIDE_SECTIONS, WHY_IT_MATTERS, onsiteServiceLines, type TipLocale } from '~/data/photo-tips';
-import type { Section } from '~/lib/content-sections';
+import { photoGuideSections } from '~/data/photo-tips';
+import { CONTENT_EN } from '~/data/content-en';
+import { CONTENT_DE } from '~/data/content-de';
+import { CONTENT_FR } from '~/data/content-fr';
 
 
-/** The photo guide is built from src/data/photo-tips.ts — the one source the
- *  listing editor and the submit page read too (brief 3 §E). */
-function photoGuideSections(
-  locale: TipLocale,
-  t: { topTitle: string; calloutTitle: string; calloutBody: (lines: string[]) => string; ctaTitle: string; primary: string; secondary: string }
-): Section[] {
-  return [
-    { type: 'list', title: t.topTitle, intro: WHY_IT_MATTERS[locale], items: TOP_TIPS.map((tip) => `${tip.title[locale]}: ${tip.body[locale]}`), ordered: true },
-    ...GUIDE_SECTIONS.map((section): Section => ({ type: 'list', title: section.title[locale], items: section.items[locale] })),
-    { type: 'callout', title: t.calloutTitle, body: t.calloutBody(onsiteServiceLines(locale)) },
-    { type: 'cta', title: t.ctaTitle, primary: { label: t.primary, to: 'submitAd' }, secondary: { label: t.secondary, to: 'priceList' } },
-  ];
-}
+/** The long-form pages, by key. Every language must have all of them. */
+export type ContentKey = 'services' | 'agricultural' | 'photoGuide' | 'buyingGuide' | 'emigration';
 
-export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
+export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
   hu: {
     services: {
       metaTitle: 'Szolgáltatások: ügyintézés, szerződés, fotózás',
@@ -524,4 +515,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
       }),
     },
   },
+  en: CONTENT_EN,
+  de: CONTENT_DE,
+  fr: CONTENT_FR,
 };

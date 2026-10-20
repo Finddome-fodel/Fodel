@@ -1,20 +1,20 @@
 /**
  * Every public page answers, throws no script errors and never scrolls
- * sideways, in both languages, at the widths the brief names.
+ * sideways, in all five languages, at the widths the brief names.
  */
 import { test, expect, expectNoHorizontalOverflow } from '../support/fixtures';
+import { LOCALES, path as routePath, type RouteKey } from '../../../src/i18n/ui';
 
+const KEYS: RouteKey[] = [
+  'home', 'submitAd', 'contact', 'searchRequest', 'properties', 'map', 'priceList', 'sellers', 'buyers',
+  'about', 'faq', 'valuation', 'services', 'top10', 'sold', 'blog', 'photoGuide', 'privacy', 'terms',
+];
 const PATHS = [
-  '/hu/', '/nl/',
-  '/hu/hirdetes-feladasa/', '/nl/advertentie-plaatsen/',
-  '/hu/kapcsolat/', '/nl/contact/',
-  '/hu/kerestetes/', '/nl/zoekdienst/',
-  '/hu/ingatlanok/', '/nl/woningen/',
-  '/hu/terkep/', '/nl/kaart/',
-  '/portal/login?lang=hu', '/portal/login?lang=nl',
-  '/portal/register?lang=hu', '/portal/register?lang=nl',
-  '/portal/forgot?lang=hu',
-  '/portal/invite/not-a-real-token?lang=hu', '/portal/invite/not-a-real-token?lang=nl',
+  ...LOCALES.flatMap((l) => KEYS.map((key) => routePath(l, key))),
+  ...LOCALES.flatMap((l) => [
+    `/portal/login?lang=${l}`, `/portal/register?lang=${l}`, `/portal/forgot?lang=${l}`,
+    `/portal/invite/not-a-real-token?lang=${l}`,
+  ]),
 ];
 const WIDTHS = [320, 375, 390, 768, 1024, 1280, 1440, 1920];
 
@@ -32,7 +32,7 @@ for (const path of PATHS) {
 }
 
 test('the map starts in Safari too (a WebGL canvas appears, no script errors)', async ({ page, consoleErrors }) => {
-  await page.goto('/hu/terkep/');
+  await page.goto(routePath('en', 'map'));
   await expect(page.locator('canvas.maplibregl-canvas, .maplibregl-map canvas').first()).toBeVisible({ timeout: 20_000 });
   expect(consoleErrors).toEqual([]);
 });

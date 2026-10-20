@@ -13,6 +13,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { portalLang } from '~/lib/portal/auth-copy';
 import Ago from '~/components/portal/Ago.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
 import { STATUS_LABEL } from '~/lib/portal/properties';
@@ -126,16 +127,17 @@ const todo = waiting.length + openEnquiries.length + pendingValuations + request
 
 // An owner's drafts that were never submitted: the guided setup picks up
 // where they left off. In the owner's own language (launch round).
-const ownerLang = profile?.locale === 'nl' ? 'nl' : 'hu';
+const ownerLang = portalLang(profile?.locale);
 const unfinished = !isAdmin
   ? properties
       .filter((p: any) => p.status === 'draft' && !p.submitted_at)
       .sort((a: any, b: any) => String(b.created_at).localeCompare(String(a.created_at)) || String(b.id).localeCompare(String(a.id)))
   : [];
-const resume =
-  ownerLang === 'nl'
-    ? { title: 'Ga verder met uw advertentie', body: 'U was bezig uw advertentie samen te stellen. Ga verder waar u gebleven was; niets is verloren gegaan.', cta: 'Verder' }
-    : { title: 'Folytassa a hirdetés összeállítását', body: 'Elkezdte összeállítani a hirdetését. Ott folytathatja, ahol abbahagyta; semmi nem veszett el.', cta: 'Folytatás' };
+const resume = {
+  hu: { title: 'Folytassa a hirdetés összeállítását', body: 'Elkezdte összeállítani a hirdetését. Ott folytathatja, ahol abbahagyta; semmi nem veszett el.', cta: 'Folytatás' },
+  nl: { title: 'Ga verder met uw advertentie', body: 'U was bezig uw advertentie samen te stellen. Ga verder waar u gebleven was; niets is verloren gegaan.', cta: 'Verder' },
+  en: { title: 'Continue building your listing', body: 'You started building your listing. Pick up where you left off. Nothing has been lost.', cta: 'Continue' },
+}[ownerLang];
 const myAwaitingPayment = !isAdmin ? counts.awaiting_payment : 0;
 
 // The path a listing walks, in order, each with the tint it carries elsewhere.

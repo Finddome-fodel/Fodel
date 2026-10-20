@@ -14,6 +14,7 @@ import '~/styles/global.css';
 import '~/styles/portal.css';
 import { icon, type IconName } from '~/lib/portal/icons';
 import FontPreload from '~/components/FontPreload.astro';
+import { isLocale } from '~/i18n/ui';
 
 interface Props {
   title: string;
@@ -117,7 +118,7 @@ const initials =
 
 // The public homepage in the signed-in person's own language. Plain
 // navigation: the session stays, unlike the logout button beside it.
-const homeHref = profile?.locale === 'nl' ? '/nl/' : '/hu/';
+const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.locale) ? profile.locale : 'hu'}/`;
 ---
 
 <!doctype html>

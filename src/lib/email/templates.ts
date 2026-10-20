@@ -14,6 +14,9 @@
 import { COMPANY } from '~/config/company';
 import { HU } from './copy/hu';
 import { NL } from './copy/nl';
+import { EN } from './copy/en';
+import { DE } from './copy/de';
+import { FR } from './copy/fr';
 import {
   shell,
   textShell,
@@ -38,11 +41,20 @@ export type BuiltEmail = { subject: string; html: string; text: string };
 /** A line on an approved listing's order. Amounts are pre-formatted — see src/lib/orders.ts. */
 export type OrderLine = { label: string; amount: string };
 
-const COPY = { hu: HU, nl: NL };
+/**
+ * One entry per language, each checked against the Hungarian shape. The office
+ * notices (adminNewSubmission, adminServiceRequested, referralAdminNotice) are
+ * written for the office, which reads Hungarian: they always use HU, whatever
+ * language the seller writes in.
+ */
+const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR };
 
 function copyFor(locale: EmailLocale) {
   return COPY[locale];
 }
+
+/** The office's copy: Hungarian, in every case. */
+const OFFICE = HU;
 
 /** The signature block, identical in every email. */
 function signOff(locale: EmailLocale): string {
@@ -201,14 +213,9 @@ export type InviteTemplate = { subject: string; heading: string; body: string; c
 export const INVITE_SYSTEM_TEXT: Record<ShellLocale, { linkFallback: string; expiry: string }> = {
   hu: { linkFallback: HU.common.linkFallback, expiry: HU.invite.expiry },
   nl: { linkFallback: NL.common.linkFallback, expiry: NL.invite.expiry },
-  en: {
-    linkFallback: 'If the button does not work, copy this address into your browser:',
-    expiry: 'The link is valid for 7 days and can be used once.',
-  },
-  de: {
-    linkFallback: 'Falls die Schaltfläche nicht funktioniert, kopieren Sie diese Adresse in Ihren Browser:',
-    expiry: 'Der Link ist 7 Tage gültig und kann einmal verwendet werden.',
-  },
+  en: { linkFallback: EN.common.linkFallback, expiry: EN.invite.expiry },
+  de: { linkFallback: DE.common.linkFallback, expiry: DE.invite.expiry },
+  fr: { linkFallback: FR.common.linkFallback, expiry: FR.invite.expiry },
 };
 
 export function inviteFromTemplate(
@@ -336,7 +343,7 @@ export function adminNewSubmission(
     reviewUrl: string;
   }
 ): BuiltEmail {
-  const c = copyFor(locale).adminNewSubmission;
+  const c = OFFICE.adminNewSubmission;
   const L = c.labels;
 
   return {
@@ -563,14 +570,10 @@ ${common.signOff}`,
 /* ── 16. Valuation ready ──────────────────────────────────────────────────── */
 
 export function valuationReceived(locale: EmailLocale): BuiltEmail {
-  const hu = locale === 'hu';
-  const heading = hu ? 'Értékmeghatározási kérését megkaptuk' : 'Uw aanvraag is ontvangen';
-  const body = hu
-    ? 'Munkatársunk ellenőrzi az ingatlan adatait és az adatalapot, majd e-mailben küldi a tájékoztató, piaci alapú értékmeghatározást.'
-    : 'Onze medewerker controleert de woninggegevens en de gegevensbasis en stuurt daarna de indicatieve, marktgebaseerde waardebepaling per e-mail.';
-  return { subject: heading + ' | FODEL',
-    html: shell({ locale, preheader: heading, body: h1(heading) + lead(body) + signOff(locale) }),
-    text: textShell({ locale, body: `${heading}\n\n${body}` }) };
+  const c = copyFor(locale).valuationReceived;
+  return { subject: c.heading + ' | FODEL',
+    html: shell({ locale, preheader: c.heading, body: h1(c.heading) + lead(c.body) + signOff(locale) }),
+    text: textShell({ locale, body: `${c.heading}\n\n${c.body}` }) };
 }
 
 export function valuationReady(
@@ -579,9 +582,11 @@ export function valuationReady(
 ): BuiltEmail {
   const c = copyFor(locale).valuationReady;
   const disclaimer = opts.compCount > 0 ? c.disclaimerWithCount(opts.compCount) : c.disclaimer;
-  const intro = opts.basis
-    ? (locale === 'nl' ? `Op basis van de verstrekte gegevens is de indicatieve, marktgebaseerde waarde: ${opts.range}.` : `A megadott adatok alapján a tájékoztató, piaci alapú értékmeghatározás: ${opts.range}.`)
-    : c.body(opts.range);
+  const intro = opts.basis ? c.introWithBasis(opts.range) : c.body(opts.range);
+  // French puts a no-break space before the colon; the others do not.
+  const colon = locale === 'fr' ? '\u00a0:' : ':';
+  const direction = (d: 'plus' | 'minus' | 'unsure') => (d === 'plus' ? c.dirPlus : d === 'minus' ? c.dirMinus : c.dirUnsure);
+  const sourceLine = opts.sourceUrl ? `${c.source}${colon} KSH Ingatlanadattár${opts.sourceDate ? `, ${opts.sourceDate}` : ''} · CC BY 4.0` : '';
 
   return {
     subject: c.subject,
@@ -591,21 +596,21 @@ export function valuationReady(
       body:
         h1(c.heading) +
         lead(intro) +
-        (opts.mid ? p(`${locale === 'nl' ? 'Middenwaarde' : 'Középérték'}: ${opts.mid}`) : '') +
-        (opts.basis ? p(`${locale === 'nl' ? 'Gegevensbasis' : 'Adatalap'}: ${opts.basis}`) : '') +
-        (opts.rateDate ? p(`${locale === 'nl' ? 'Wisselkoersdatum' : 'Árfolyam dátuma'}: ${opts.rateDate}`) : '') +
-        (opts.sourceUrl ? linkFallback(`${locale === 'nl' ? 'Bron' : 'Forrás'}: KSH Ingatlanadattár${opts.sourceDate ? `, ${opts.sourceDate}` : ''} · CC BY 4.0`, opts.sourceUrl) : '') +
-        (opts.factors?.length ? h2(locale === 'nl' ? 'Factoren' : 'Értéket befolyásoló szempontok') + opts.factors.map((f) => p(`${f.direction === 'plus' ? '+' : f.direction === 'minus' ? '−' : '?'} ${f.text}`)).join('') : '') +
+        (opts.mid ? p(`${c.mid}${colon} ${opts.mid}`) : '') +
+        (opts.basis ? p(`${c.basis}${colon} ${opts.basis}`) : '') +
+        (opts.rateDate ? p(`${c.rateDate}${colon} ${opts.rateDate}`) : '') +
+        (opts.sourceUrl ? linkFallback(sourceLine, opts.sourceUrl) : '') +
+        (opts.factors?.length ? h2(c.factorsHeading) + opts.factors.map((f) => p(`${f.direction === 'plus' ? '+' : f.direction === 'minus' ? '−' : '?'} ${f.text}`)).join('') : '') +
         (opts.notice ? small(opts.notice) : '') +
         small(disclaimer) +
         button(c.cta, opts.submitAdUrl) +
-        (opts.visitUrl ? linkFallback(locale === 'nl' ? 'Bezoek van Gábor aanvragen' : 'Gábor helyszíni látogatása', opts.visitUrl) : '') +
-        (opts.judicialUrl ? linkFallback(locale === 'nl' ? 'Officiële taxatie aanvragen' : 'Igazságügyi értékbecslés kérése', opts.judicialUrl) : '') +
+        (opts.visitUrl ? linkFallback(c.visit, opts.visitUrl) : '') +
+        (opts.judicialUrl ? linkFallback(c.judicial, opts.judicialUrl) : '') +
         signOff(locale),
     }),
     text: textShell({
       locale,
-      body: `${c.heading}\n\n${intro}\n${opts.mid ? `\n${locale === 'nl' ? 'Middenwaarde' : 'Középérték'}: ${opts.mid}` : ''}${opts.basis ? `\n${locale === 'nl' ? 'Gegevensbasis' : 'Adatalap'}: ${opts.basis}` : ''}${opts.rateDate ? `\n${locale === 'nl' ? 'Wisselkoersdatum' : 'Árfolyam dátuma'}: ${opts.rateDate}` : ''}${opts.sourceUrl ? `\n${locale === 'nl' ? 'Bron' : 'Forrás'}: KSH Ingatlanadattár${opts.sourceDate ? `, ${opts.sourceDate}` : ''} · CC BY 4.0 · ${opts.sourceUrl}` : ''}\n${opts.factors?.map((f) => `${f.direction === 'plus' ? (locale === 'nl' ? 'Waardeverhogend' : 'Értéknövelő') : f.direction === 'minus' ? (locale === 'nl' ? 'Waardeverlagend' : 'Értékcsökkentő') : (locale === 'nl' ? 'Onzeker' : 'Bizonytalan')}: ${f.text}`).join('\n') ?? ''}\n${opts.notice ?? ''}\n${disclaimer}\n\n${textCta(c.cta, opts.submitAdUrl)}${opts.visitUrl ? `\n${locale === 'nl' ? 'Bezoek van Gábor aanvragen' : 'Gábor helyszíni látogatása'}: ${opts.visitUrl}` : ''}${opts.judicialUrl ? `\n${locale === 'nl' ? 'Officiële taxatie aanvragen' : 'Igazságügyi értékbecslés kérése'}: ${opts.judicialUrl}` : ''}`,
+      body: `${c.heading}\n\n${intro}\n${opts.mid ? `\n${c.mid}${colon} ${opts.mid}` : ''}${opts.basis ? `\n${c.basis}${colon} ${opts.basis}` : ''}${opts.rateDate ? `\n${c.rateDate}${colon} ${opts.rateDate}` : ''}${opts.sourceUrl ? `\n${sourceLine} · ${opts.sourceUrl}` : ''}\n${opts.factors?.map((f) => `${direction(f.direction)}${colon} ${f.text}`).join('\n') ?? ''}\n${opts.notice ?? ''}\n${disclaimer}\n\n${textCta(c.cta, opts.submitAdUrl)}${opts.visitUrl ? `\n${c.visit}${colon} ${opts.visitUrl}` : ''}${opts.judicialUrl ? `\n${c.judicial}${colon} ${opts.judicialUrl}` : ''}`,
     }),
   };
 }
@@ -702,7 +707,7 @@ export function adminServiceRequested(
   locale: EmailLocale,
   opts: { service: string; name: string; email: string; phone: string; source: string; note: string; url: string }
 ): BuiltEmail {
-  const c = copyFor(locale).adminServiceRequested;
+  const c = OFFICE.adminServiceRequested;
   const L = c.labels;
   const where = c.sources[opts.source] ?? opts.source;
   const rows: [string, string][] = [
@@ -842,7 +847,7 @@ export function referralAdminNotice(
   locale: EmailLocale,
   opts: { referrerName: string; referrerEmail: string; referredName: string; referredEmail: string }
 ): BuiltEmail {
-  const c = copyFor(locale).referralAdminNotice;
+  const c = OFFICE.referralAdminNotice;
   const L = c.labels;
 
   return {

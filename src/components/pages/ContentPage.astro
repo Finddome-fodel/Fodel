@@ -9,11 +9,12 @@ import Base from '~/layouts/Base.astro';
 import PageHeader from '~/components/PageHeader.astro';
 import Eyebrow from '~/components/Eyebrow.astro';
 import Button from '~/components/Button.astro';
-import { path as routePath, type Locale, type RouteKey } from '~/i18n/ui';
+import { path as routePath, localizer, type Locale, type RouteKey } from '~/i18n/ui';
 import type { ContentPageData } from '~/lib/content-sections';
 import { alternatesFor } from '~/lib/page';
 import { getCompany } from '~/lib/runtime-config';
 import { fillHours } from '~/lib/hours';
+import { CHROME } from '~/i18n/chrome';
 
 interface Props {
   locale: Locale;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 const { locale, routeKey, data, noindex = false } = Astro.props;
+const onThisPage = localizer(locale)('Ezen az oldalon', 'Op deze pagina', 'On this page', 'Auf dieser Seite', 'Sur cette page');
 const path = (key: RouteKey) => routePath(locale, key);
 const { hours } = await getCompany();
 
@@ -66,10 +68,11 @@ const showIndex = index.length >= 3;
     {
       data.updated && (
         <p class="updated">
-          {locale === 'hu' ? 'Utolsó frissítés' : 'Laatst bijgewerkt'}: {data.updated}
+          {CHROME[locale].updatedLabel}{locale === 'fr' ? '\u00a0' : ''}: {data.updated}
         </p>
       )
     }
+    {data.notice && <p class="notice">{data.notice}</p>}
 
     {
       data.sections.map((section, i) => {
@@ -169,8 +172,8 @@ const showIndex = index.length >= 3;
 
   {
     showIndex && (
-      <nav class="index no-print" aria-label={locale === 'hu' ? 'Ezen az oldalon' : 'Op deze pagina'}>
-        <p class="index-label">{locale === 'hu' ? 'Ezen az oldalon' : 'Op deze pagina'}</p>
+      <nav class="index no-print" aria-label={onThisPage}>
+        <p class="index-label">{onThisPage}</p>
         <ol>
           {index.map((item) => (
             <li>
@@ -266,6 +269,17 @@ const showIndex = index.length >= 3;
     color: var(--cream);
   }
 
+  /* The "translation for convenience" line on translated legal pages: quiet,
+     in the text's own width, never louder than the date pill above it. */
+  .notice {
+    max-width: 62ch;
+    margin: 0 0 28px;
+    padding-left: 14px;
+    border-left: 2px solid rgba(16, 42, 67, 0.18);
+    font-size: var(--fs-small);
+    line-height: 1.6;
+    color: var(--taupe);
+  }
   .updated {
     display: inline-flex;
     align-items: center;

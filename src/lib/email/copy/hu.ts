@@ -1,10 +1,10 @@
 /**
  * Hungarian email copy.
  *
- * This file is the shape; src/lib/email/copy/nl.ts must match it exactly and
- * is type-checked against it (`satisfies typeof HU`), so adding a template
- * here without translating it there is a compile error rather than a
- * Hungarian email arriving in a Dutch inbox.
+ * This file is the shape. nl.ts, en.ts, de.ts and fr.ts must match it and are
+ * type-checked against it (`satisfies typeof HU` / `PublicEmailCopy`), so adding
+ * a template here without translating it there is a compile error rather than
+ * a Hungarian email arriving in a Dutch, English, German or French inbox.
  *
  * Tone follows FODEL's own published writing: formal "Ön", plain sentences,
  * no exclamation marks, and never more words than the message needs. Their
@@ -192,6 +192,11 @@ export const HU = {
     note: 'A jóváírás a hirdető fizetése után, kézzel történik. Munkatársunk értesíti Önt, amint elérhető.',
   },
 
+  valuationReceived: {
+    heading: 'Értékmeghatározási kérését megkaptuk',
+    body: 'Munkatársunk ellenőrzi az ingatlan adatait és az adatalapot, majd e-mailben küldi a tájékoztató, piaci alapú értékmeghatározást.',
+  },
+
   valuationReady: {
     subject: 'Elkészült az értékbecslése | FODEL',
     preheader: 'Tájékoztató jellegű becslést készítettünk az Ön ingatlanára.',
@@ -205,6 +210,17 @@ export const HU = {
       'Ez a becslés tájékoztató jellegű, nem értékbecslői szakvélemény, és nem helyettesíti a hivatalos ingatlanértékelést.',
     cta: 'Hirdesse meg most',
     ctaUrl: 'submitAd',
+    introWithBasis: (range: string) => `A megadott adatok alapján a tájékoztató, piaci alapú értékmeghatározás: ${range}.`,
+    mid: 'Középérték',
+    basis: 'Adatalap',
+    rateDate: 'Árfolyam dátuma',
+    source: 'Forrás',
+    factorsHeading: 'Értéket befolyásoló szempontok',
+    dirPlus: 'Értéknövelő',
+    dirMinus: 'Értékcsökkentő',
+    dirUnsure: 'Bizonytalan',
+    visit: 'Gábor helyszíni látogatása',
+    judicial: 'Igazságügyi értékbecslés kérése',
   },
 
   valuationDeclined: {
@@ -317,3 +333,9 @@ export const HU = {
 // Deliberately not `as const`: this object's *shape* is the contract that
 // nl.ts is checked against. Literal types would make that check demand
 // identical strings in both languages, which is the opposite of the point.
+
+/** The admin notices go to the office, which reads Hungarian in every case. */
+export const ADMIN_EMAIL_KEYS = ['adminNewSubmission', 'adminServiceRequested', 'referralAdminNotice'] as const;
+
+/** What a recipient-facing language must provide: everything except the office notices. */
+export type PublicEmailCopy = Omit<typeof HU, (typeof ADMIN_EMAIL_KEYS)[number]>;

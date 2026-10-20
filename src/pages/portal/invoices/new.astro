@@ -263,6 +263,9 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
             <div class="iv-seg small" role="group" id="locale-seg">
               <button type="button" data-locale="hu">Magyar</button>
               <button type="button" data-locale="nl">Nederlands</button>
+              <button type="button" data-locale="en">English</button>
+              <button type="button" data-locale="de">Deutsch</button>
+              <button type="button" data-locale="fr">Français</button>
             </div>
           </div>
         </div>
@@ -646,7 +649,7 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
     }
     $$('#type-seg button').forEach((b) => b.addEventListener('click', () => { doc.buyer.type = b.dataset.type as 'person' | 'company'; afterBuyerChange(); markDirty(); render(); }));
     $$('#method-seg button').forEach((b) => b.addEventListener('click', () => { doc.paymentMethod = b.dataset.method as any; markDirty(); render(); }));
-    $$('#locale-seg button').forEach((b) => b.addEventListener('click', () => { doc.locale = b.dataset.locale as 'hu' | 'nl'; markDirty(); render(); }));
+    $$('#locale-seg button').forEach((b) => b.addEventListener('click', () => { doc.locale = b.dataset.locale as 'hu' | 'nl' | 'en' | 'de' | 'fr'; markDirty(); render(); }));
     $$('#kind-seg button').forEach((b) => b.addEventListener('click', () => {
       doc.kind = b.dataset.kind as 'invoice' | 'proforma';
       if (doc.kind === 'proforma') doc.settled = false;

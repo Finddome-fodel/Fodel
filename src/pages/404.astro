@@ -1,58 +1,65 @@
 ---
 // Rendered on demand: [slug].astro rewrites unknown slugs here, and Astro
 // forbids rewriting an on-demand route to a prerendered one (ForbiddenRewrite
-// — every unknown /hu/ or /nl/ URL answered 500 instead of this page).
+// — every unknown property URL answered 500 instead of this page).
 export const prerender = false;
 /**
- * 404. Bilingual, because a visitor arriving on a dead link may be coming from
- * either market — and because the old fodel.nl URLs will send traffic here
- * until the redirect map is in place.
+ * 404, in the language of the address that was not found (/de/nichts/ → German).
+ * An address with no language in it (the old fodel.nl URLs, a typo at the
+ * root) gets the language the visitor last picked, else Dutch. Beside the
+ * apology, the other four languages are one click away.
  */
 import Base from '~/layouts/Base.astro';
 import Button from '~/components/Button.astro';
-import { path } from '~/i18n/ui';
+import { LOCALES, LOCALE_META, FALLBACK_LOCALE, localeOfPath, localeFrom, path, localizer } from '~/i18n/ui';
 import { COMPANY } from '~/config/company';
+
+// After a rewrite, Astro.url is the 404 route itself; the original address is
+// what tells us the language.
+const original: string = (Astro as unknown as { originPathname?: string }).originPathname ?? Astro.url.pathname;
+const locale = localeOfPath(original) ?? localeFrom(Astro.cookies.get('fodel_lang')?.value, FALLBACK_LOCALE);
+const x = localizer(locale);
+const others = LOCALES.filter((code) => code !== locale);
+
+const title = x('Az oldal nem található', 'Pagina niet gevonden', 'Page not found', 'Seite nicht gefunden', 'Page introuvable');
+const body = x(
+  'A keresett oldal nem létezik, vagy áthelyeztük. Nézze meg a kínálatunkat, vagy vegye fel velünk a kapcsolatot.',
+  'De pagina die u zocht bestaat niet of is verplaatst. Bekijk ons aanbod, of neem contact met ons op.',
+  'The page you were looking for does not exist or has moved. See our properties, or get in touch.',
+  'Die gesuchte Seite gibt es nicht oder sie wurde verschoben. Sehen Sie sich unser Angebot an oder nehmen Sie Kontakt mit uns auf.',
+  'La page que vous cherchez n’existe pas ou a été déplacée. Découvrez nos biens, ou contactez-nous.'
+);
+const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another language', 'In einer anderen Sprache', 'Dans une autre langue');
 ---
 
-<Base
-  locale="nl"
-  title="404 — Pagina niet gevonden / Az oldal nem található"
-  description="De opgevraagde pagina bestaat niet. A keresett oldal nem található."
-  noindex
->
+<Base locale={locale} title={`404 | ${title}`} description={body} noindex>
   <section class="notfound">
     <p class="code num" aria-hidden="true">404</p>
 
     <div class="copy">
-      <h1>
-        <span lang="nl">Pagina niet gevonden</span>
-        <em lang="hu">Az oldal nem található</em>
-      </h1>
+      <h1>{title}</h1>
 
       <div class="cols">
-        <div class="col" lang="nl">
-          <p class="col-lang">Nederlands</p>
-          <p class="col-body">
-            De pagina die u zocht bestaat niet of is verplaatst. Bekijk ons aanbod,
-            of neem contact met ons op.
-          </p>
+        <div class="col">
+          <p class="col-body">{body}</p>
           <div class="actions">
-            <Button variant="dark" href={path('nl', 'properties')}>Ons aanbod</Button>
-            <Button variant="text" href={path('nl', 'contact')}>Contact</Button>
+            <Button variant="dark" href={path(locale, 'properties')}>{x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens')}</Button>
+            <Button variant="text" href={path(locale, 'contact')}>{x('Kapcsolat', 'Contact', 'Contact', 'Kontakt', 'Contact')}</Button>
           </div>
         </div>
 
-        <div class="col" lang="hu">
-          <p class="col-lang">Magyar</p>
-          <p class="col-body">
-            A keresett oldal nem létezik, vagy áthelyeztük. Nézze meg a kínálatunkat,
-            vagy vegye fel velünk a kapcsolatot.
-          </p>
-          <div class="actions">
-            <Button variant="dark" href={path('hu', 'properties')}>Ingatlanok</Button>
-            <Button variant="text" href={path('hu', 'contact')}>Kapcsolat</Button>
-          </div>
-        </div>
+        <nav class="col" aria-label={otherLanguages}>
+          <p class="col-lang">{otherLanguages}</p>
+          <ul class="langs">
+            {
+              others.map((code) => (
+                <li>
+                  <a href={`/${code}/`} lang={LOCALE_META[code].htmlLang} hreflang={LOCALE_META[code].hreflang}>{LOCALE_META[code].label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
       </div>
 
       <p class="reach">
@@ -65,8 +72,8 @@ import { COMPANY } from '~/config/company';
 </Base>
 
 <style>
-  /* One page for both markets: a light 404 set like the site's figures, the
-     apology in both languages, and a way onward from each. */
+  /* A light 404 set like the site's figures: the apology in the visitor's
+     language, a way onward, and the other languages. */
   .notfound {
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -89,8 +96,6 @@ import { COMPANY } from '~/config/company';
     animation: fx-fade-up 1.3s var(--ease-out) 0.4s both;
   }
   h1 {
-    display: flex;
-    flex-direction: column;
     margin-bottom: 56px;
     font-family: var(--serif);
     font-weight: var(--fw-hero);
@@ -105,6 +110,19 @@ import { COMPANY } from '~/config/company';
     gap: 48px;
     padding-top: 28px;
     border-top: 1px solid var(--border);
+  }
+  .langs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+  }
+  .langs a {
+    font-size: var(--fs-body);
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
   .col-lang {
     margin-bottom: 12px;

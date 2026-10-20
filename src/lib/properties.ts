@@ -20,7 +20,7 @@
 
 import { getSupabase } from '~/lib/supabase';
 import { resolveImage } from '~/lib/property-images';
-import type { Locale, PlannedLocale } from '~/i18n/ui';
+import type { Locale } from '~/i18n/ui';
 import { LOCALES, propertyPath } from '~/i18n/ui';
 import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
 import type { ImageMetadata } from 'astro';
@@ -33,8 +33,8 @@ export type Property = {
   data: {
     ref: string;
     category: string;
-    categoryLabels: Partial<Record<PlannedLocale, string>> & { hu: string; nl: string };
-    categorySlugs: Partial<Record<PlannedLocale, string>>;
+    categoryLabels: Partial<Record<Locale, string>> & { hu: string; nl: string };
+    categorySlugs: Partial<Record<Locale, string>>;
     categorySchema: string;
     status: 'active' | 'reserved' | 'sold';
     title: LocalisedText;
@@ -271,10 +271,29 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
   };
 }
 
-/** Resolve a localised field, falling back to Hungarian. */
+/**
+ * The language a visitor reads seller-written text in, and where it came from.
+ *
+ * Sellers write Hungarian, and pay for a Dutch version (and, as an extra, for
+ * more languages). FODEL never translates seller text on the fly. So:
+ *   hu, nl      the visitor's language, then Hungarian;
+ *   en, de, fr  a translation the seller paid for, then the Dutch text, then
+ *               Hungarian. `from` tells the page when it is not the visitor's
+ *               own language, so it can say so.
+ */
+export function resolveText(field: LocalisedText | undefined, locale: Locale): { text: string; from: Locale } {
+  if (!field) return { text: '', from: locale };
+  const order: Locale[] = locale === 'hu' || locale === 'nl' ? [locale, 'hu'] : [locale, 'nl', 'hu'];
+  for (const candidate of order) {
+    const value = field[candidate];
+    if (value) return { text: value, from: candidate };
+  }
+  return { text: field.hu ?? '', from: 'hu' };
+}
+
+/** Resolve a localised field, falling back as described above. */
 export function text(field: LocalisedText | undefined, locale: Locale): string {
-  if (!field) return '';
-  return field[locale] ?? field.hu ?? '';
+  return resolveText(field, locale).text;
 }
 
 /** True when the seller paid for this locale, so we can mark machine fallbacks. */
@@ -364,7 +383,8 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
   const page = Math.max(1, params.page ?? 1);
 
   const args: Record<string, unknown> = {
-    p_locale: params.locale,
+    // English, German and French readers see the Dutch text, so that is what they search.
+    p_locale: params.locale === 'hu' ? 'hu' : 'nl',
     p_query: params.q || null,
     p_category: params.category || null,
     p_country: params.country || null,

@@ -6,9 +6,12 @@
  * their own open orders.
  */
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
+import { portalLang } from '~/lib/portal/auth-copy';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { sanitiseParty, billingComplete } from '~/lib/invoicing/model';
-import { validateField, errorMessage, normalizePhone, normalizePostcode, isPhoneCountry, defaultPhoneCountry } from '~/lib/validation';
+import { validateField, normalizePhone, normalizePostcode, isPhoneCountry, defaultPhoneCountry } from '~/lib/validation';
+import { errorMessage } from '~/lib/validation-server';
 
 export const prerender = false;
 
@@ -20,12 +23,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!user) return json(401, { ok: false });
   const body = await request.json().catch(() => ({}));
   const billing = sanitiseParty(body.billing);
-  const locale = locals.profile?.locale === 'nl' ? 'nl' : 'hu';
+  // Phone numbers default to the profile's own country; the words are the portal's.
+  const profileLocale = localeFrom(locals.profile?.locale, 'hu');
+  const locale = portalLang(profileLocale);
   if (!billingComplete(billing)) {
     return json(422, {
       ok: false,
       error: 'incomplete',
-      message: locale === 'nl' ? 'Naam, land, plaats en straat zijn verplicht.' : 'A név, az ország, a város és az utca megadása kötelező.',
+      message: {
+        hu: 'A név, az ország, a város és az utca megadása kötelező.',
+        nl: 'Naam, land, plaats en straat zijn verplicht.',
+        en: 'Name, country, town and street are required.',
+      }[locale],
     });
   }
 
@@ -36,9 +45,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
   billing.postalCode = normalizePostcode(billing.postalCode, billing.countryCode);
   if (billing.phone) {
     const picked = String(body.billing?.phoneCountry ?? '');
-    const phone = normalizePhone(billing.phone, isPhoneCountry(picked) ? picked : defaultPhoneCountry(locale));
+    const phone = normalizePhone(billing.phone, isPhoneCountry(picked) ? picked : defaultPhoneCountry(profileLocale));
     if (!phone.ok) {
-      const error = validateField({ rule: 'phone' }, billing.phone, isPhoneCountry(picked) ? picked : defaultPhoneCountry(locale));
+      const error = validateField({ rule: 'phone' }, billing.phone, isPhoneCountry(picked) ? picked : defaultPhoneCountry(profileLocale));
       return json(422, { ok: false, error: 'phone', message: error ? errorMessage(error, locale) : '' });
     }
     billing.phone = phone.e164;
@@ -49,7 +58,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return json(500, {
       ok: false,
       error: 'save-failed',
-      message: locale === 'nl' ? 'Opslaan is niet gelukt. Probeer het later opnieuw.' : 'A mentés nem sikerült. Lehet, hogy a rendszer frissítése még nem fejeződött be.',
+      message: {
+        hu: 'A mentés nem sikerült. Lehet, hogy a rendszer frissítése még nem fejeződött be.',
+        nl: 'Opslaan is niet gelukt. Probeer het later opnieuw.',
+        en: 'Saving did not work. Please try again later.',
+      }[locale],
     });
   }
 

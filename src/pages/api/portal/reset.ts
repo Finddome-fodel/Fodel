@@ -7,6 +7,7 @@
  * session can do it, and the person doing this is by definition signed out.
  */
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import crypto from 'node:crypto';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 
@@ -18,7 +19,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const password = String(form.get('password') ?? '');
   const password2 = String(form.get('password2') ?? '');
 
-  const lang = form.get('lang') === 'nl' ? 'nl' : 'hu';
+  const lang = localeFrom(form.get('lang')?.toString(), 'hu');
   // An error code; the page words it in hu or nl (src/lib/portal/auth-copy.ts).
   const fail = (code: 'short' | 'mismatch' | 'invalid' | 'failed') =>
     redirect(`/portal/reset/${token}?error=${code}&lang=${lang}`);

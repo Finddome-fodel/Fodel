@@ -11,6 +11,7 @@
  * in its notification email.
  */
 import { ONSITE_SERVICES, isOnsiteServiceId, type OnsiteServiceId } from '~/config/company';
+import type { Locale } from '~/i18n/ui';
 import { deliver, templates } from '~/lib/email/send';
 import { officeInbox } from '~/lib/email/routing';
 import { formatCents } from '~/lib/orders';
@@ -37,7 +38,7 @@ export function onsiteService(id: string) {
   return ONSITE_SERVICES.find((service) => service.id === id);
 }
 
-export function serviceName(id: string, locale: 'hu' | 'nl' = 'hu'): string {
+export function serviceName(id: string, locale: Locale = 'hu'): string {
   return onsiteService(id)?.names[locale] ?? id;
 }
 
@@ -49,7 +50,7 @@ export function servicePrice(id: string): string {
 export type NewServiceRequest = {
   serviceId: OnsiteServiceId;
   source: ServiceSource;
-  locale: 'hu' | 'nl';
+  locale: Locale;
   propertyId?: string | null;
   valuationId?: string | null;
   profileId?: string | null;
@@ -58,7 +59,7 @@ export type NewServiceRequest = {
   phone?: string | null;
   note?: string | null;
   /** Overrides the catalogue price in the emails — a valuation visit can be priced in admin settings. */
-  priceLabel?: Record<'hu' | 'nl', string>;
+  priceLabel?: Partial<Record<Locale, string>>;
 };
 
 /**

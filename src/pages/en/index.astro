@@ -1,12 +1,10 @@
 ---
-// Server-rendered since 2.1 so the newest EN articles appear without a
-// rebuild; the bridge content itself is unchanged. Cached at the CDN.
+// Reads property data from Supabase (via HomePage.astro), so this renders on
+// request rather than once at build time. Cached at the CDN for 5 minutes.
 export const prerender = false;
 Astro.response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
-import LocaleBridgePage from '~/components/pages/LocaleBridgePage.astro';
-import { latestArticles } from '~/lib/blog';
 
-const posts = await latestArticles('en', 3);
+import HomePage from '~/components/pages/HomePage.astro';
 ---
 
-<LocaleBridgePage locale="en" posts={posts} />
+<HomePage locale="en" />

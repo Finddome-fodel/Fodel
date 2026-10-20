@@ -21,11 +21,10 @@ interface Props {
 
 const { locale } = Astro.props;
 const ui = UI[locale];
-const hu = locale === 'hu';
 const sold = await soldProperties();
 
-const t = hu
-  ? {
+const copies = {
+  hu: {
       metaTitle: 'Eladva: sikeres tranzakcióink',
       metaDescription: 'Ingatlanok, amelyeket a FODEL közvetítésével értékesítettünk nyugat-európai vevőknek.',
       eyebrow: 'Eladva',
@@ -34,8 +33,8 @@ const t = hu
       intro: 'Ezek az ingatlanok a FODEL közvetítésével találtak új tulajdonosra.',
       empty: 'Ez az oldal hamarosan feltöltésre kerül a lezárt tranzakciókkal.',
       emptyHint: 'Addig is nézze meg az aktuális kínálatot.',
-    }
-  : {
+    },
+  nl: {
       metaTitle: 'Verkocht: afgeronde transacties',
       metaDescription: 'Woningen die via FODEL zijn verkocht aan kopers uit West-Europa.',
       eyebrow: 'Verkocht',
@@ -44,7 +43,39 @@ const t = hu
       intro: 'Deze woningen hebben via FODEL een nieuwe eigenaar gevonden.',
       empty: 'Deze pagina wordt binnenkort gevuld met afgeronde transacties.',
       emptyHint: 'Bekijk in de tussentijd het actuele aanbod.',
-    };
+    },
+  en: {
+    metaTitle: 'Sold: completed transactions',
+    metaDescription: 'Properties sold through FODEL to buyers from Western Europe.',
+    eyebrow: 'Sold',
+    title: 'Completed',
+    titleEm: 'transactions',
+    intro: 'These properties found a new owner through FODEL.',
+    empty: 'This page will soon be filled with completed transactions.',
+    emptyHint: 'In the meantime, see the current properties.',
+  },
+  de: {
+    metaTitle: 'Verkauft: abgeschlossene Transaktionen',
+    metaDescription: 'Immobilien, die über FODEL an Käufer aus Westeuropa verkauft wurden.',
+    eyebrow: 'Verkauft',
+    title: 'Abgeschlossene',
+    titleEm: 'Transaktionen',
+    intro: 'Diese Immobilien haben über FODEL einen neuen Eigentümer gefunden.',
+    empty: 'Diese Seite wird in Kürze mit abgeschlossenen Transaktionen gefüllt.',
+    emptyHint: 'Sehen Sie sich in der Zwischenzeit das aktuelle Angebot an.',
+  },
+  fr: {
+    metaTitle: 'Biens vendus\u00a0: transactions conclues',
+    metaDescription: 'Des biens vendus par l’intermédiaire de FODEL à des acheteurs d’Europe de l’Ouest.',
+    eyebrow: 'Vendus',
+    title: 'Transactions',
+    titleEm: 'conclues',
+    intro: 'Ces biens ont trouvé un nouveau propriétaire par l’intermédiaire de FODEL.',
+    empty: 'Cette page sera bientôt alimentée avec les transactions conclues.',
+    emptyHint: 'En attendant, découvrez les biens actuellement disponibles.',
+  },
+};
+const t = copies[locale];
 ---
 
 <Base

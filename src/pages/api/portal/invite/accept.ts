@@ -116,15 +116,11 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     return redirect('/portal/login');
   }
 
-  // The welcome email exists in the two languages with reviewed copy. An
-  // English or German invitee already has the admin-approved invite in their
-  // own language; a Hungarian welcome after it would only mix languages.
-  if (locale === 'hu' || locale === 'nl') {
-    await deliver(
-      invite.email,
-      templates.welcome(locale, { name: fullName, portalUrl: `${SITE_URL}/portal/dashboard` })
-    );
-  }
+  // The welcome email, in the invitee's own language.
+  await deliver(
+    invite.email,
+    templates.welcome(locale, { name: fullName, portalUrl: `${SITE_URL}/portal/dashboard` })
+  );
 
   // A self-service registration carries the listing they described on the
   // public form; an admin's free-listing invite is an entitlement for one.

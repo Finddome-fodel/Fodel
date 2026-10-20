@@ -8,8 +8,10 @@
  */
 
 import type { Locale } from '~/i18n/ui';
+import { FEATURE_LABELS } from '~/data/taxonomy-i18n';
 
-export const FEATURES: Record<string, Record<Locale, string> & Partial<Record<'en' | 'de', string>>> = {
+/** Hungarian and Dutch, the languages the vocabulary was written in. English, German and French: taxonomy-i18n.ts. */
+export const FEATURES: Record<string, { hu: string; nl: string }> = {
   'panoramic-view': { hu: 'Panorámás kilátás', nl: 'Panoramisch uitzicht' },
   waterfront: { hu: 'Közvetlen vízpart', nl: 'Direct aan het water' },
   'private-jetty': { hu: 'Saját stég', nl: 'Eigen steiger' },
@@ -29,19 +31,21 @@ export const FEATURES: Record<string, Record<Locale, string> & Partial<Record<'e
   'original-beams': { hu: 'Eredeti gerendázat', nl: 'Oorspronkelijke balken' },
   renovated: { hu: 'Felújított', nl: 'Gerenoveerd' },
   parking: { hu: 'Parkolás a telken', nl: 'Parkeren op eigen terrein' },
-  garage: { hu: 'Garázs', nl: 'Garage', en: 'Garage', de: 'Garage' },
-  pool: { hu: 'Medence', nl: 'Zwembad', en: 'Pool', de: 'Pool' },
-  balcony: { hu: 'Erkély', nl: 'Balkon', en: 'Balcony', de: 'Balkon' },
-  carport: { hu: 'Fedett beálló', nl: 'Carport', en: 'Carport', de: 'Carport' },
-  'storage-building': { hu: 'Tárolóépület', nl: 'Opslaggebouw', en: 'Storage building', de: 'Lagergebäude' },
-  'barn-hall': { hu: 'Csarnok', nl: 'Schuur of hal', en: 'Barn or hall', de: 'Scheune oder Halle' },
-  'animal-housing': { hu: 'Állattartásra alkalmas épület', nl: 'Dierenverblijf', en: 'Animal housing', de: 'Tierstall' },
-  gazebo: { hu: 'Szaletli', nl: 'Prieel', en: 'Gazebo', de: 'Gartenpavillon' },
-  'outdoor-oven': { hu: 'Kerti sütőde / kemence', nl: 'Buitenoven', en: 'Outdoor oven', de: 'Außenofen' },
+  garage: { hu: 'Garázs', nl: 'Garage' },
+  pool: { hu: 'Medence', nl: 'Zwembad' },
+  balcony: { hu: 'Erkély', nl: 'Balkon' },
+  carport: { hu: 'Fedett beálló', nl: 'Carport' },
+  'storage-building': { hu: 'Tárolóépület', nl: 'Opslaggebouw' },
+  'barn-hall': { hu: 'Csarnok', nl: 'Schuur of hal' },
+  'animal-housing': { hu: 'Állattartásra alkalmas épület', nl: 'Dierenverblijf' },
+  gazebo: { hu: 'Szaletli', nl: 'Prieel' },
+  'outdoor-oven': { hu: 'Kerti sütőde / kemence', nl: 'Buitenoven' },
 };
 
 export function featureLabel(key: string, locale: Locale): string {
-  return FEATURES[key]?.[locale] ?? key;
+  const base = FEATURES[key];
+  if (!base) return key;
+  return locale === 'hu' || locale === 'nl' ? base[locale] : FEATURE_LABELS[key]?.[locale] ?? base.nl;
 }
 
 /** Hungarian counties FODEL actively market, for region landing pages. */

@@ -19,7 +19,8 @@
  * MapLibre is a real ~200 kB library — a deliberate exception to this site's
  * near-zero-JS budget, loaded only on pages that show a map.
  */
-import type { Locale } from '~/i18n/ui';
+import { path, type Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 import { APPROX_RADIUS_M } from '~/lib/listing-rules';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -39,9 +40,18 @@ const { mode, lat, lng, precision = 'approximate', zoom = mode === 'pin' ? 13 : 
 // Runtime lookup: Vercel environment changes must not require rebuilding the
 // server bundle merely to switch the basemap.
 const pmtilesUrl = process.env.PMTILES_URL ?? '';
-const label = locale === 'hu'
-  ? mode === 'pin' ? 'Az ingatlan helye a térképen' : 'Ingatlanok térképe'
-  : mode === 'pin' ? 'Ligging van de woning op de kaart' : 'Kaart met woningen';
+const chrome = CHROME[locale].map;
+const label = mode === 'pin' ? chrome.pin : chrome.browse;
+// What the script needs, in this page's language only: no other language's
+// strings are shipped, and the script never hardcodes a URL per language.
+const clientStrings = JSON.stringify({
+  'CooperativeGesturesHandler.WindowsHelpText': chrome.windowsHelp,
+  'CooperativeGesturesHandler.MacHelpText': chrome.macHelp,
+  'CooperativeGesturesHandler.MobileHelpText': chrome.mobileHelp,
+  'NavigationControl.ZoomIn': chrome.zoomIn,
+  'NavigationControl.ZoomOut': chrome.zoomOut,
+});
+const listUrl = path(locale, 'properties');
 ---
 
 <div
@@ -57,6 +67,8 @@ const label = locale === 'hu'
   data-radius={APPROX_RADIUS_M}
   data-zoom={zoom}
   data-locale={locale}
+  data-strings={clientStrings}
+  data-list-url={listUrl}
   data-pmtiles={pmtilesUrl}
 >
 </div>
@@ -116,7 +128,8 @@ const label = locale === 'hu'
     const zoom = Number(el.dataset.zoom ?? 7);
     const lat = el.dataset.lat ? Number(el.dataset.lat) : 47.1625;
     const lng = el.dataset.lng ? Number(el.dataset.lng) : 19.5033;
-    const locale = el.dataset.locale === 'nl' ? 'nl' : 'hu';
+    const locale = el.dataset.locale ?? 'hu';
+    const mapStrings = JSON.parse(el.dataset.strings ?? '{}') as Record<string, string>;
 
     const map = new MapLibreMap({
       container: el,
@@ -125,9 +138,7 @@ const label = locale === 'hu'
       zoom,
       attributionControl: false,
       cooperativeGestures: mode === 'pin',
-      locale: locale === 'hu'
-        ? { 'CooperativeGesturesHandler.WindowsHelpText': 'A nagyításhoz használja a Ctrl + görgetést', 'CooperativeGesturesHandler.MacHelpText': 'A nagyításhoz használja a ⌘ + görgetést', 'CooperativeGesturesHandler.MobileHelpText': 'Két ujjal mozgathatja a térképet', 'NavigationControl.ZoomIn': 'Nagyítás', 'NavigationControl.ZoomOut': 'Kicsinyítés' }
-        : { 'CooperativeGesturesHandler.WindowsHelpText': 'Gebruik Ctrl + scroll om te zoomen', 'CooperativeGesturesHandler.MacHelpText': 'Gebruik ⌘ + scroll om te zoomen', 'CooperativeGesturesHandler.MobileHelpText': 'Gebruik twee vingers om de kaart te verplaatsen', 'NavigationControl.ZoomIn': 'Inzoomen', 'NavigationControl.ZoomOut': 'Uitzoomen' },
+      locale: mapStrings,
     });
     // A tile that fails to load (a flaky connection, a navigation that aborts
     // the request) leaves a gap the next pan fills; it is not a page error.
@@ -157,7 +168,7 @@ const label = locale === 'hu'
     }
 
     // Browse mode: clusters as circles, single listings as HTML price pills.
-    const listUrl = locale === 'hu' ? '/hu/ingatlanok/' : '/nl/woningen/';
+    const listUrl = el.dataset.listUrl ?? `/${locale}/`;
     const feedUrl = (bounds = map.getBounds()) => {
       const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
       const filters = new URLSearchParams(window.location.search);

@@ -12,9 +12,11 @@ import Logo from './Logo.astro';
 import Eyebrow from './Eyebrow.astro';
 import ArrowChip from './ArrowChip.astro';
 import { UI, BRAND, CATEGORY_FALLBACK, path, type Locale, type RouteKey } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 import { getCompany } from '~/lib/runtime-config';
 import { slugify } from '~/lib/properties';
 import { officeHours, callbackHours } from '~/lib/hours';
+import { addressLine } from '~/config/company';
 import NewsletterForm from './NewsletterForm.astro';
 
 interface Props {
@@ -27,7 +29,7 @@ const brand = BRAND[locale];
 const year = new Date().getFullYear();
 const COMPANY = await getCompany();
 const weekdayHours = officeHours(COMPANY.hours, locale);
-const foundedPlace = locale === 'hu' ? 'Hága, Hollandia' : 'Den Haag, Nederland';
+const chrome = CHROME[locale];
 
 const navItems: { key: RouteKey; label: string }[] = [
   { key: 'properties', label: ui.nav.properties },
@@ -38,17 +40,17 @@ const navItems: { key: RouteKey; label: string }[] = [
   // The valuation form, linked only while an admin has it switched on
   // (Beállítások → Szolgáltatások) — never a link to an unstaffed service.
   ...(COMPANY.services.valuationEntry
-    ? [{ key: 'valuation' as const, label: locale === 'hu' ? 'Értékbecslés' : 'Waardebepaling' }]
+    ? [{ key: 'valuation' as const, label: chrome.valuationNav }]
     : []),
   { key: 'contact', label: ui.nav.contact },
 ];
 
 const legalItems = [
-  { key: 'imprint', label: locale === 'hu' ? 'Impresszum' : 'Colofon' },
-  { key: 'privacy', label: locale === 'hu' ? 'Adatvédelem' : 'Privacy' },
-  { key: 'terms', label: locale === 'hu' ? 'ÁSZF' : 'Voorwaarden' },
-  { key: 'cookies', label: locale === 'hu' ? 'Sütik' : 'Cookies' },
-  { key: 'accessibility', label: locale === 'hu' ? 'Akadálymentesítés' : 'Toegankelijkheid' },
+  { key: 'imprint', label: chrome.legal.imprint },
+  { key: 'privacy', label: chrome.legal.privacy },
+  { key: 'terms', label: chrome.legal.terms },
+  { key: 'cookies', label: chrome.legal.cookies },
+  { key: 'accessibility', label: chrome.legal.accessibility },
 ] as const;
 
 const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
@@ -71,11 +73,7 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
         <ArrowChip size={36} />
       </a>
       <p class="founded">
-        {
-          locale === 'hu'
-            ? `Alapítva ${COMPANY.founded}-ban, ${foundedPlace}.`
-            : `Opgericht in ${COMPANY.founded} te ${foundedPlace}.`
-        }
+        {chrome.founded(COMPANY.founded)}
       </p>
     </div>
 
@@ -131,8 +129,8 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
 
   <div class="news">
     <div class="news-copy">
-      <h2 class="news-title">{locale === 'hu' ? 'Új ingatlanok elsőként' : 'Nieuw aanbod als eerste'}</h2>
-      <p>{locale === 'hu' ? 'Havi hírlevél a friss hirdetésekről és a magyar ingatlanpiacról.' : 'Maandelijkse nieuwsbrief met nieuwe woningen en nieuws over de Hongaarse markt.'}</p>
+      <h2 class="news-title">{chrome.newsTitle}</h2>
+      <p>{chrome.newsBody}</p>
     </div>
     <NewsletterForm locale={locale} tone="dark" source="footer" id={`nl-footer-${locale}`} />
   </div>
@@ -141,10 +139,10 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
     <div class="legal-details">
       <Eyebrow space="18px">{ui.footer.companyDetails}</Eyebrow>
       <p>
-        {COMPANY.names.legal} · {COMPANY.address.oneLine}
+        {COMPANY.names.legal} · {addressLine(COMPANY.address, locale)}
       </p>
       <p>
-        {locale === 'hu' ? 'Holland adószám' : 'BTW-nummer'}: {COMPANY.registration.vat}
+        {chrome.vatLabel}: {COMPANY.registration.vat}
         {' · '}
         KvK: {
           COMPANY.registration.kvk ?? (
@@ -185,7 +183,7 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
     </p>
     <span class="wordmark-rule"></span>
     <p class="wordmark-sub">
-      <span>{brand.name.replace('FODEL', '').trim() || 'VASTGOED'}</span>
+      <span>{brand.name.replace('FODEL', '').trim()}</span>
       <span class="num">52°04′N 4°18′E — 47°30′N 19°02′E</span>
     </p>
   </div>
@@ -194,7 +192,7 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
     <p>© {COMPANY.founded}–{year} {COMPANY.names.legal} · {COMPANY.network.slice(0, 3).join(' · ')}</p>
     <p class="signature">{brand.signature}</p>
     <a class="to-top" href="#main">
-      {locale === 'hu' ? 'Vissza az oldal tetejére' : 'Terug naar boven'}
+      {chrome.backToTop}
       <span class="to-top-disc" aria-hidden="true">
         <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
           <path d="M6 13V1.5M1.5 6 6 1.5 10.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />

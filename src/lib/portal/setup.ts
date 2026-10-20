@@ -16,6 +16,8 @@
  * and the order builder read it exactly as before. No new columns.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { localeFrom } from '~/i18n/ui';
+import type { PortalLang } from '~/lib/portal/auth-copy';
 import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import { TRANSLATION_LANGUAGES, isOnsiteServiceId } from '~/config/company';
@@ -46,7 +48,7 @@ export async function saveSetupStep(
   existing: Existing,
   step: SetupStep,
   form: FormData,
-  ctx: { isAdmin: boolean; locale: 'hu' | 'nl' }
+  ctx: { isAdmin: boolean; locale: PortalLang }
 ): Promise<StepResult> {
   if (step === 'package') return savePackage(supabase, existing, form);
   if (step === 'property') return saveProperty(supabase, existing, form);
@@ -118,7 +120,7 @@ async function syncService(supabase: SupabaseClient, existing: Existing, wanted:
     await createServiceRequest(supabase, {
       serviceId: wanted as never,
       source: 'listing_editor',
-      locale: owner?.locale === 'nl' ? 'nl' : 'hu',
+      locale: localeFrom(owner?.locale, 'hu'),
       propertyId: existing.id,
       profileId: existing.owner_id,
       name: owner?.full_name ?? null,
@@ -213,7 +215,7 @@ async function saveProperty(supabase: SupabaseClient, existing: Existing, form: 
 
 /* ── 3. Description and contact ────────────────────────────────────────── */
 
-async function saveDescription(supabase: SupabaseClient, existing: Existing, form: FormData, locale: 'hu' | 'nl'): Promise<StepResult> {
+async function saveDescription(supabase: SupabaseClient, existing: Existing, form: FormData, locale: PortalLang): Promise<StepResult> {
   const text = str(form, 'description');
   if (text.length > DESCRIPTION_MAX) return { ok: false, error: 'invalid', errors: { description: { code: 'too-long', limit: DESCRIPTION_MAX } } };
 

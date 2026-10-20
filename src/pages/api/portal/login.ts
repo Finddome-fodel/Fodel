@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import { logEvent } from '~/lib/activity';
 
 export const prerender = false;
@@ -19,7 +20,7 @@ function rateLimited(ip: string): boolean {
 export const POST: APIRoute = async ({ request, clientAddress, locals, redirect }) => {
   const form = await request.formData();
   // Back to the same screen, in the same language, still pointing where it pointed.
-  const lang = form.get('lang') === 'nl' ? 'nl' : 'hu';
+  const lang = localeFrom(form.get('lang')?.toString(), 'hu');
   const again = (error: string) => {
     const next = String(form.get('next') ?? '');
     return redirect(`/portal/login?error=${error}&lang=${lang}${next.startsWith('/portal') ? `&next=${encodeURIComponent(next)}` : ''}`);

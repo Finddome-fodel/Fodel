@@ -10,10 +10,12 @@
  * submit page keeps its choices in the marketing column).
  */
 import { ONSITE_SERVICES } from '~/config/company';
-import { formatCents } from '~/lib/orders';
+import { eurCents } from '~/lib/format';
+import { CHROME } from '~/i18n/chrome';
+import type { Locale } from '~/i18n/ui';
 
 interface Props {
-  locale: 'hu' | 'nl';
+  locale: Locale;
   formId?: string;
   name?: string;
   /** Pre-selected service id ('' = none). */
@@ -25,22 +27,7 @@ interface Props {
 }
 
 const { locale, formId, name = 'service', selected = '', only, heading, intro } = Astro.props;
-const hu = locale === 'hu';
-const t = hu
-  ? {
-      heading: 'Szívesebben bízná szakemberre?',
-      intro: 'Nem kötelező. Ha kéri, munkatársunk felveszi Önnel a kapcsolatot az időpont egyeztetéséhez, és ekkor tájékoztatja a díj rendezéséről. Most nem kell fizetnie semmit.',
-      none: 'Nem kérem',
-      noneBody: 'A fotókat én készítem el.',
-      once: 'egyszeri díj',
-    }
-  : {
-      heading: 'Laat u het liever aan een vakman over?',
-      intro: 'Optioneel. Kiest u hiervoor, dan neemt onze medewerker contact met u op om een afspraak te maken en informeert u dan over de betaling. U betaalt nu niets.',
-      none: 'Nee, dank u',
-      noneBody: 'Ik maak de foto’s zelf.',
-      once: 'eenmalig',
-    };
+const t = CHROME[locale].onsite;
 const services = ONSITE_SERVICES.filter((service) => !only || service.id === only);
 const uid = `${name}-${Math.random().toString(36).slice(2, 8)}`;
 ---
@@ -72,7 +59,7 @@ const uid = `${name}-${Math.random().toString(36).slice(2, 8)}`;
         <span class="dot" aria-hidden="true"></span>
         <span class="card-body">
           <span class="card-price">
-            <strong class="num">{formatCents(service.priceEur * 100)}</strong>
+            <strong class="num">{eurCents(service.priceEur * 100, locale)}</strong>
             <span>{t.once}</span>
           </span>
           <span class="card-name">{service.names[locale]}</span>

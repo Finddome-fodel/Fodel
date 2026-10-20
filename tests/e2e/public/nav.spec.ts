@@ -4,6 +4,7 @@
  * bar is shown.
  */
 import { test, expect } from '../support/fixtures';
+import { LOCALES, path as routePath } from '../../../src/i18n/ui';
 
 test('the header offers the account links and the listing button', async ({ page, isMobile }) => {
   test.skip(!!isMobile, 'the desktop bar; the mobile drawer is covered in language.spec.ts');
@@ -23,7 +24,7 @@ test('Dutch header says Inloggen / Registreren', async ({ page, isMobile }) => {
   await expect(page.locator('.nav-cta a:visible').first()).toHaveAttribute('href', '/nl/advertentie-plaatsen/');
 });
 
-for (const lang of ['hu', 'nl'] as const) {
+for (const lang of LOCALES) {
   for (const width of [1081, 1210, 1280, 1366, 1440, 1920]) {
     test(`${lang} header at ${width}px: links, account, button and switcher do not overlap`, async ({ page, isMobile }) => {
       test.skip(!!isMobile, 'desktop bar');
@@ -43,3 +44,12 @@ for (const lang of ['hu', 'nl'] as const) {
     });
   }
 }
+
+test('every language has an account link and a listing button that point at its own pages', async ({ page, isMobile }) => {
+  test.skip(!!isMobile, 'desktop bar');
+  for (const lang of LOCALES) {
+    await page.goto(`/${lang}/`);
+    await expect(page.locator('.nav-account:visible').first()).toHaveAttribute('href', /\/portal\/(login|register)/);
+    await expect(page.locator('.nav-cta a:visible').first()).toHaveAttribute('href', routePath(lang, 'submitAd'));
+  }
+});

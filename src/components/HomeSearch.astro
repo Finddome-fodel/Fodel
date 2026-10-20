@@ -6,6 +6,7 @@
  * shareable, indexable URL instead of React state.
  */
 import { UI, path, type Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 import { termLabel, type TaxonomyTerm } from '~/lib/runtime-config';
 import { PRICE_BANDS, priceBandLabel } from '~/lib/properties';
 
@@ -18,6 +19,7 @@ interface Props {
 const { locale, regions, categories } = Astro.props;
 const ui = UI[locale];
 const action = path(locale, 'properties');
+const searchText = CHROME[locale].search;
 ---
 
 <div class="search-head">
@@ -37,8 +39,8 @@ const action = path(locale, 'properties');
       id="s-query"
       type="search"
       name="q"
-      placeholder={locale === 'hu' ? 'Település, megye, vagy hirdetésszám' : 'Plaats, provincie of referentienummer'}
-      data-placeholder-short={locale === 'hu' ? 'Település vagy azonosító' : 'Plaats of referentie'}
+      placeholder={searchText.placeholder}
+      data-placeholder-short={searchText.placeholderShort}
     />
   </div>
 

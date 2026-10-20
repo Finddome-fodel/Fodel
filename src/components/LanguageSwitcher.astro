@@ -1,30 +1,24 @@
 ---
 /**
- * Replaces the flat HU | NL text list with a flag + code dropdown that can
- * carry all seven markets FODEL sells in, without widening LOCALES —
- * hu/nl link to their real alternate, en/de/fr point at the existing
- * bridge pages, it/es render disabled with a "coming soon" chip.
+ * The language menu: a flag + code toggle that lists all five languages, each
+ * as a complete site. Every row links to the equivalent page when the template
+ * passes `alternates`, and to that language's home page otherwise.
  *
  * Used twice per page (desktop nav + mobile drawer), so ids are randomised
  * per render rather than hardcoded, and the toggle script below is written
  * to set up every `[data-switcher]` instance it finds.
  *
- * Launch round: also rendered on the en/de/fr bridge pages (Bridge.astro,
- * LocaleBridgePage.astro), so a visitor who wandered into English can always
- * get back. Every row is a real `<a href>`: switching works with JavaScript
- * off, and the script only adds the open/close behaviour and remembers the
- * choice in the `fodel_lang` cookie the root page reads.
+ * Every row is a real `<a href>`: switching works with JavaScript off, and the
+ * script only adds the open/close behaviour and remembers the choice in the
+ * `fodel_lang` cookie the root page reads.
  */
 import Flag from './Flag.astro';
 import { LOCALE_META, SWITCHER_LOCALES, UI, type Locale } from '~/i18n/ui';
 
-/** The languages a page can be in: the two full sites and the three bridges. */
-type PageLocale = Locale | 'en' | 'de' | 'fr';
-
 interface Props {
-  locale: PageLocale;
+  locale: Locale;
   /** The same page in another language, where one exists. Falls back to that language's home. */
-  alternates?: Partial<Record<PageLocale, string>>;
+  alternates?: Partial<Record<Locale, string>>;
   align?: 'left' | 'right';
 }
 
@@ -33,15 +27,7 @@ const current = LOCALE_META[locale];
 const uid = Math.random().toString(36).slice(2, 8);
 const menuId = `lang-menu-${uid}`;
 /** The toggle's accessible name, in the page's own language. */
-const switchLabel =
-  locale === 'hu' || locale === 'nl'
-    ? UI[locale].a11y.langSwitch
-    : { en: 'Change language', de: 'Sprache wechseln', fr: 'Changer de langue' }[locale];
-
-const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALES)[number]['status']) => {
-  if (status === 'soon') return undefined;
-  return alternates[code as PageLocale] ?? `/${code}/`;
-};
+const switchLabel = UI[locale].a11y.langSwitch;
 ---
 
 <div class="switcher" data-switcher data-align={align}>
@@ -60,36 +46,25 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
   </button>
   <ul class="switcher-menu" id={menuId}>
     {
-      // Markets without a site yet (it, es) are not listed at all: a menu of
-      // "coming soon" rows read as unfinished.
-      SWITCHER_LOCALES.filter(({ status }) => status !== 'soon').map(({ code, status }) => {
+      SWITCHER_LOCALES.map(({ code }) => {
         const meta = LOCALE_META[code];
-        const href = hrefFor(code, status);
         const active = code === locale;
         return (
           <li>
-            {href ? (
-              <a
-                href={href}
-                hreflang={code === 'hu' || code === 'nl' ? meta.hreflang : undefined}
-                lang={meta.htmlLang}
-                class:list={['switcher-row', { active }]}
-                aria-current={active ? 'true' : undefined}
-                data-lang={code}
-              >
-                <Flag code={meta.flag} />
-                <span class="switcher-name">{meta.label}</span>
-                <span class="switcher-code" aria-hidden="true">
-                  {meta.short}
-                </span>
-              </a>
-            ) : (
-              <span class="switcher-row switcher-row-disabled" aria-disabled="true">
-                <Flag code={meta.flag} />
-                <span class="switcher-name">{meta.label}</span>
-                <span class="switcher-soon">{locale === 'hu' || locale === 'nl' ? UI[locale].comingSoon : 'Soon'}</span>
+            <a
+              href={alternates[code] ?? `/${code}/`}
+              hreflang={meta.hreflang}
+              lang={meta.htmlLang}
+              class:list={['switcher-row', { active }]}
+              aria-current={active ? 'true' : undefined}
+              data-lang={code}
+            >
+              <Flag code={meta.flag} />
+              <span class="switcher-name">{meta.label}</span>
+              <span class="switcher-code" aria-hidden="true">
+                {meta.short}
               </span>
-            )}
+            </a>
           </li>
         );
       })
@@ -250,8 +225,7 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
     transition-delay: 0s;
   }
 
-  .switcher-row,
-  .switcher-row-disabled {
+  .switcher-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -286,20 +260,6 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
     font-size: 12px;
     letter-spacing: 0.08em;
   }
-  .switcher-row-disabled {
-    color: var(--taupe);
-    cursor: default;
-  }
-  .switcher-soon {
-    font-size: 11px;
-    font-weight: var(--fw-medium);
-    letter-spacing: 0.02em;
-    background: rgba(16, 42, 67, 0.07);
-    border-radius: var(--r-pill);
-    padding: 3px 9px;
-    white-space: nowrap;
-  }
-
   .sr-only {
     position: absolute;
     width: 1px;

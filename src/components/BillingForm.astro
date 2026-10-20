@@ -9,7 +9,7 @@
  * its EU form (HU12345678) and decides whether VAT is charged: a business
  * with a valid EU VAT id is invoiced without Dutch VAT (reverse charge).
  *
- * Launch round: speaks the seller's language (hu/nl), takes the phone number
+ * Launch round: speaks the seller's language (hu/nl/en), takes the phone number
  * through the international PhoneField, and checks the postcode against the
  * chosen country's format (HU 4 digits, NL "1234 AB", DE 5 digits…) on blur
  * — the server checks both again (api/portal/settings/billing.ts).
@@ -17,6 +17,7 @@
 import { COUNTRIES, type Party } from '~/lib/invoicing/model';
 import { postcodeExample } from '~/lib/validation';
 import PhoneField from '~/components/forms/PhoneField.astro';
+import type { PortalLang } from '~/lib/portal/auth-copy';
 
 interface Props {
   billing?: Partial<Party> | null;
@@ -24,16 +25,17 @@ interface Props {
   fallbackPhone?: string;
   paymentId?: string;
   compact?: boolean;
-  locale?: 'hu' | 'nl';
+  locale?: PortalLang;
   /** Hide the form's own save button (the guided setup saves it with "Continue"). */
   embedded?: boolean;
 }
 const { billing, fallbackName = '', fallbackPhone = '', paymentId, compact = false, locale = 'hu', embedded = false } = Astro.props;
-const b = { type: 'person', countryCode: locale === 'nl' ? 'NL' : 'HU', ...(billing ?? {}) } as Partial<Party>;
+const b = { type: 'person', countryCode: { hu: 'HU', nl: 'NL', en: 'GB' }[locale], ...(billing ?? {}) } as Partial<Party>;
 const uid = `bf-${Math.random().toString(36).slice(2, 8)}`;
-const hu = locale === 'hu';
-const t = hu
-  ? {
+const countryNames = new Intl.DisplayNames([locale], { type: 'region' });
+const countryLabel = (c: (typeof COUNTRIES)[number]) => (locale === 'en' ? (countryNames.of(c.code) ?? c.nl) : c[locale]);
+const t = {
+  hu: {
       kind: 'Számlázás típusa', person: 'Magánszemély', company: 'Vállalkozás',
       nameCompany: 'Cégnév', namePerson: 'Név a számlán', country: 'Ország', postcode: 'Irányítószám', city: 'Város', street: 'Utca, házszám',
       tax: 'Adószám', optional: '(nem kötelező)', required: '(kötelező)',
@@ -42,8 +44,8 @@ const t = hu
       taxInvalid: 'Nem tűnik érvényes adószámnak. Magyar adószám: 12345678-1-23; uniós: országkóddal, pl. NL123456789B01.',
       example: 'pl.',
       save: 'Számlázási adatok mentése', saving: 'Mentés…', saved: 'Számlázási adatok mentve.', failed: 'A mentés nem sikerült.',
-    }
-  : {
+    },
+  nl: {
       kind: 'Soort factuur', person: 'Particulier', company: 'Bedrijf',
       nameCompany: 'Bedrijfsnaam', namePerson: 'Naam op de factuur', country: 'Land', postcode: 'Postcode', city: 'Plaats', street: 'Straat en huisnummer',
       tax: 'Btw-nummer', optional: '(optioneel)', required: '(verplicht)',
@@ -52,7 +54,18 @@ const t = hu
       taxInvalid: 'Dit lijkt geen geldig btw-nummer. Vermeld de landcode, bijv. NL123456789B01.',
       example: 'bijv.',
       save: 'Factuurgegevens opslaan', saving: 'Opslaan…', saved: 'Factuurgegevens opgeslagen.', failed: 'Opslaan is niet gelukt.',
-    };
+    },
+  en: {
+      kind: 'Billing type', person: 'Individual', company: 'Business',
+      nameCompany: 'Company name', namePerson: 'Name on the invoice', country: 'Country', postcode: 'Postcode', city: 'Town or city', street: 'Street and house number',
+      tax: 'VAT number', optional: '(optional)', required: '(required)',
+      taxPlaceholder: 'for example NL123456789B01',
+      taxHint: 'If you are buying as a business, your VAT number gets you an invoice without VAT (reverse charge).',
+      taxInvalid: 'This does not look like a valid VAT number. Include the country code, for example NL123456789B01.',
+      example: 'for example',
+      save: 'Save billing details', saving: 'Saving…', saved: 'Billing details saved.', failed: 'Saving failed.',
+    },
+}[locale];
 const postcodeHint = (code: string) => {
   const example = postcodeExample(code);
   return example ? `${t.example} ${example}` : '';
@@ -77,7 +90,7 @@ const postcodeHint = (code: string) => {
     <label class="wide"><span><span data-name-label>{b.type === 'company' ? t.nameCompany : t.namePerson}</span> <em>{t.required}</em></span><input name="name" value={b.name ?? fallbackName} autocomplete="name" enterkeyhint="next" required /><small class="bf-error" hidden></small></label>
     <label><span>{t.country} <em>{t.required}</em></span>
       <select name="countryCode" autocomplete="country">
-        {COUNTRIES.map((c) => <option value={c.code} selected={c.code === b.countryCode}>{c[locale]}</option>)}
+        {COUNTRIES.map((c) => <option value={c.code} selected={c.code === b.countryCode}>{countryLabel(c)}</option>)}
       </select>
     </label>
     <label><span>{t.postcode} <em>{t.optional}</em></span><input name="postalCode" value={b.postalCode ?? ''} autocomplete="postal-code" autocapitalize="characters" enterkeyhint="next" data-postcode /><small data-postcode-hint>{postcodeHint(b.countryCode ?? 'HU')}</small><small class="bf-error" hidden></small></label>
@@ -99,13 +112,17 @@ const postcodeHint = (code: string) => {
 
 <script>
   import { checkTaxId } from '~/lib/invoicing/model';
-  import { validateField, errorMessage, normalizePostcode } from '~/lib/validation';
+  import { validateField, normalizePostcode } from '~/lib/validation';
+  import { loadValidationCopy } from '~/lib/validation-client';
+  import { errorMessageIn } from '~/lib/validation-messages';
 
   type Strings = { saving: string; saved: string; failed: string; taxHint: string; taxInvalid: string; namePerson: string; nameCompany: string; example: string };
 
   /** Validates every field; returns the first invalid control (or null). Used by the setup too. */
-  function validateBilling(form: HTMLFormElement): HTMLElement | null {
-    const locale = form.dataset.locale === 'nl' ? 'nl' : 'hu';
+  async function validateBilling(form: HTMLFormElement): Promise<HTMLElement | null> {
+    const copy = await loadValidationCopy(form.dataset.locale ?? 'hu');
+    const errorMessage = (e: Parameters<typeof errorMessageIn>[1], _locale?: string) => errorMessageIn(copy, e);
+    const locale = form.dataset.locale ?? 'hu';
     const cc = (form.elements.namedItem('countryCode') as HTMLSelectElement).value;
     let first: HTMLElement | null = null;
     const mark = (control: HTMLInputElement, message: string | null) => {
@@ -151,9 +168,9 @@ const postcodeHint = (code: string) => {
     const check = () => {
       const r = checkTaxId(cc.value, tax.value);
       hint.dataset.state = r.state;
-      // The checker's own detail line is Hungarian; a Dutch form uses its own words.
+      // The checker's own detail line is Hungarian; the other forms use their own words.
       hint.textContent =
-        r.state === 'valid' ? `✓ ${r.value}` : r.state === 'invalid' ? (form.dataset.locale === 'nl' ? s.taxInvalid : r.hint) : s.taxHint;
+        r.state === 'valid' ? `✓ ${r.value}` : r.state === 'invalid' ? (form.dataset.locale === 'hu' ? r.hint : s.taxInvalid) : s.taxHint;
       return r;
     };
     tax.addEventListener('blur', () => {
@@ -172,7 +189,7 @@ const postcodeHint = (code: string) => {
     // Inline, on leaving a field — never while it is still being typed.
     form.addEventListener('focusout', (e) => {
       const target = e.target as HTMLElement;
-      if (target.matches('input[name="postalCode"], input[type="tel"]') && (target as HTMLInputElement).value) validateBilling(form);
+      if (target.matches('input[name="postalCode"], input[type="tel"]') && (target as HTMLInputElement).value) void validateBilling(form);
     });
     const syncLabel = () => {
       const company = form.querySelector<HTMLInputElement>('input[name="type"]:checked')?.value === 'company';
@@ -183,7 +200,7 @@ const postcodeHint = (code: string) => {
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const invalid = validateBilling(form);
+      const invalid = await validateBilling(form);
       if (invalid) {
         invalid.focus();
         return;

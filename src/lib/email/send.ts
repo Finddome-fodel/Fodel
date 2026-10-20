@@ -18,6 +18,7 @@
  * and a half-built queue is worse than an honest lack of one — it looks like a
  * guarantee it cannot keep. Flagged in the 1.1 plan as known and unbuilt.
  */
+import { localeFrom } from '~/i18n/ui';
 import { Resend } from 'resend';
 import type { BuiltEmail } from './templates';
 import type { EmailLocale } from './layout';
@@ -110,12 +111,12 @@ export async function deliver(to: string, email: BuiltEmail, replyTo?: string): 
  * Which language to write to someone in.
  *
  * `profiles.locale` is the recipient's own stated language and is always
- * populated (the column is `not null default 'hu'`). Anything outside the two
- * built markets falls back to Hungarian, which is FODEL's default and the
- * language of the office.
+ * populated (the column is `not null default 'hu'`). It can be any of the five
+ * site languages; anything else falls back to Hungarian, which is FODEL's
+ * default and the language of the office.
  */
 export function localeOf(profile: { locale?: string | null } | null | undefined): EmailLocale {
-  return profile?.locale === 'nl' ? 'nl' : 'hu';
+  return localeFrom(profile?.locale);
 }
 
 /**

@@ -14,12 +14,17 @@ import type { ContentPageData } from '~/lib/content-sections';
 import type { Locale } from '~/i18n/ui';
 import { COMPANY, COMMISSION } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
+import { LEGAL_EN } from '~/data/legal-en';
+import { LEGAL_DE } from '~/data/legal-de';
+import { LEGAL_FR } from '~/data/legal-fr';
 
 const UPDATED = { hu: '2026. július 27.', nl: '27 juli 2026' };
 
 const kvk = COMPANY.registration.kvk ?? '—';
 
-export const LEGAL: Record<Locale, Record<string, ContentPageData>> = {
+export type LegalKey = 'imprint' | 'privacy' | 'cookies' | 'terms' | 'accessibility';
+
+export const LEGAL: Record<Locale, Record<LegalKey, ContentPageData>> = {
   hu: {
     imprint: {
       metaTitle: 'Impresszum: cégadatok',
@@ -609,4 +614,7 @@ export const LEGAL: Record<Locale, Record<string, ContentPageData>> = {
       ],
     },
   },
+  en: LEGAL_EN,
+  de: LEGAL_DE,
+  fr: LEGAL_FR,
 };

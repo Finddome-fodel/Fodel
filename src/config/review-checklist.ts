@@ -16,7 +16,7 @@ import { LOW_RESOLUTION_EDGE } from '~/lib/media';
 
 export const MIN_PHOTOS = 5;
 
-export type ChecklistLocale = 'hu' | 'nl';
+export type ChecklistLocale = 'hu' | 'nl' | 'en';
 
 export type ChecklistItem = {
   id: string;
@@ -40,6 +40,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: `Kérjük, töltsön fel legalább ${MIN_PHOTOS} fényképet az ingatlanról.`,
       nl: `Upload alstublieft minimaal ${MIN_PHOTOS} foto’s van de woning.`,
+      en: `Please upload at least ${MIN_PHOTOS} photos of the property.`,
     },
   },
   {
@@ -49,6 +50,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, a sötét képeket cserélje nappali fényben, lehetőleg napsütésben készült fotókra, felkapcsolt lámpákkal.',
       nl: 'Vervang de donkere foto’s alstublieft door foto’s bij daglicht, liefst bij zon, met het licht aan.',
+      en: 'Please replace the dark photos with photos taken in daylight, ideally in sunshine, with the lights on.',
     },
   },
   {
@@ -58,6 +60,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, a függőleges (álló) képeket cserélje fekvő helyzetben, vízszintesen tartott telefonnal készült fotókra.',
       nl: 'Vervang de staande foto’s alstublieft door foto’s die met een horizontaal (liggend) gehouden telefoon zijn gemaakt.',
+      en: 'Please replace the portrait photos with photos taken with the phone held horizontally (landscape).',
     },
   },
   {
@@ -67,6 +70,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Néhány kép életlen vagy homályos. Kérjük, törölje meg a lencsét, tartsa stabilan a telefont, és készítse el újra.',
       nl: 'Enkele foto’s zijn onscherp of wazig. Veeg de lens schoon, houd de telefoon stil en maak ze opnieuw.',
+      en: 'Some photos are out of focus or blurred. Please wipe the lens, hold the phone steady and take them again.',
     },
   },
   {
@@ -76,6 +80,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, cserélje azokat a képeket, amelyeken ember látható (tükörben is).',
       nl: 'Vervang alstublieft de foto’s waarop mensen te zien zijn (ook in een spiegel).',
+      en: 'Please replace the photos in which people can be seen (including in a mirror).',
     },
   },
   {
@@ -85,6 +90,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, mutassa be az összes fontos helyiséget és a homlokzatot is — a szoba sarkából, mellmagasságból fotózva.',
       nl: 'Laat alstublieft alle belangrijke ruimtes en de gevel zien — gefotografeerd vanuit een hoek, op borsthoogte.',
+      en: 'Please show all the important rooms and the façade, photographed from a corner of the room at chest height.',
     },
   },
   {
@@ -94,6 +100,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, ellenőrizze és adja meg az irányárat forintban és euróban.',
       nl: 'Controleer alstublieft de vraagprijs en vul deze in forint en euro in.',
+      en: 'Please check the asking price and enter it in forints and euros.',
     },
   },
   {
@@ -103,6 +110,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, adja meg a lakóterületet és a telek méretét négyzetméterben.',
       nl: 'Vul alstublieft het woonoppervlak en de perceelgrootte in vierkante meters in.',
+      en: 'Please enter the living area and the plot size in square metres.',
     },
   },
   {
@@ -112,6 +120,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, ellenőrizze a település és a megye nevét.',
       nl: 'Controleer alstublieft de plaats en het comitaat.',
+      en: 'Please check the name of the town or village and the county.',
     },
   },
   {
@@ -121,6 +130,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, egészítse ki a leírást: az épület állapota, a helyiségek, a telek, a környék és a megközelítés.',
       nl: 'Vul de omschrijving alstublieft aan: staat van het gebouw, de ruimtes, het perceel, de omgeving en de bereikbaarheid.',
+      en: 'Please complete the description: the condition of the building, the rooms, the plot, the surroundings and how to get there.',
     },
   },
   {
@@ -130,6 +140,7 @@ export const CHECKLIST: ChecklistItem[] = [
     ask: {
       hu: 'Kérjük, ellenőrizze az ingatlan típusát (kategóriáját).',
       nl: 'Controleer alstublieft het type (de categorie) van de woning.',
+      en: 'Please check the type (category) of the property.',
     },
   },
 ];
@@ -137,6 +148,7 @@ export const CHECKLIST: ChecklistItem[] = [
 export const CHECKLIST_WRAP: Record<ChecklistLocale, { lead: string }> = {
   hu: { lead: 'Mielőtt közzétesszük, kérjük, javítsa az alábbiakat:' },
   nl: { lead: 'Voordat wij de advertentie publiceren, vragen wij u het volgende aan te passen:' },
+  en: { lead: 'Before we publish the listing, please change the following:' },
 };
 
 /* ── Automatic photo hints (brief 3 §G.2) ─────────────────────────────── */

@@ -14,8 +14,8 @@ if (!isBlogLocale(requested)) return Astro.redirect('/portal/content/blog');
 const locale = requested;
 const caseStudy = Astro.url.searchParams.get('kind') === 'case_study';
 
-const NEW_TITLE = { hu: 'Új cikk', nl: 'Nieuw artikel', en: 'New article', de: 'Neuer Artikel' } as const;
-const NEW_SLUG = { hu: 'uj-cikk', nl: 'nieuw-artikel', en: 'new-article', de: 'neuer-artikel' } as const;
+const NEW_TITLE = { hu: 'Új cikk', nl: 'Nieuw artikel', en: 'New article', de: 'Neuer Artikel', fr: 'Nouvel article' } as const;
+const NEW_SLUG = { hu: 'uj-cikk', nl: 'nieuw-artikel', en: 'new-article', de: 'neuer-artikel', fr: 'nouvel-article' } as const;
 
 const draft: Record<string, unknown> = {
   locale,

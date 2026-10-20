@@ -5,12 +5,13 @@
  * exactly one listing until its date, and nothing is stored to make it work.
  * Pages: src/pages/listing/[action].astro.
  */
+import type { Locale } from '~/i18n/ui';
 import { SITE_URL } from '~/config/site.mjs';
 import { signAction, type ActionPurpose } from '~/lib/valuation/action-token';
 
 export type OwnerAction = 'still-available' | 'price' | 'sold' | 'renew';
 
-export function ownerLink(action: OwnerAction, propertyId: string, locale: 'hu' | 'nl', validDays: number): string {
+export function ownerLink(action: OwnerAction, propertyId: string, locale: Locale, validDays: number): string {
   const token = signAction(action as ActionPurpose, propertyId, validDays);
   return `${SITE_URL}/listing/${action}?p=${propertyId}&t=${token}&l=${locale}`;
 }

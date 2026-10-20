@@ -12,6 +12,7 @@
  */
 import Portal from '~/layouts/Portal.astro';
 import Logo from '~/components/Logo.astro';
+import type { Locale } from '~/i18n/ui';
 
 interface Props {
   /** Browser title. */
@@ -19,12 +20,12 @@ interface Props {
   /** Heading shown on the panel. */
   heading: string;
   /** Page language — the invite screen follows the invitee's language. */
-  lang?: 'hu' | 'nl' | 'en' | 'de';
+  lang?: Locale;
 }
 
 const { title, heading, lang = 'hu' } = Astro.props;
-const brandLocale = lang === 'nl' || lang === 'hu' ? lang : 'nl';
-const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en: 'Back to the homepage', de: 'Zurück zur Startseite' }[lang];
+const brandLocale = lang;
+const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en: 'Back to the homepage', de: 'Zurück zur Startseite', fr: 'Retour à l’accueil' }[lang];
 ---
 
 <Portal title={title} bare lang={lang}>

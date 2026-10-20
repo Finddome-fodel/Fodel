@@ -81,6 +81,7 @@ const paymentLabel: Record<string, string> = { pending: 'Fizetésre vár', paid:
 
 const canCompute = ['queued', 'needs_info', 'insufficient_data'].includes(v.status);
 const canDecide = v.status !== 'queued';
+const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'németül', fr: 'franciául' } as Record<string, string>)[String(v.locale)] ?? 'magyarul';
 ---
 
 <Portal title="Értékbecslés">
@@ -268,7 +269,7 @@ const canDecide = v.status !== 'queued';
       {isLead && v.status !== 'approved' && v.status !== 'rejected' && (
         <form id="info-form" class="panel">
           <h2>Hiánypótlás kérése</h2>
-          <p class="hint">Az ügyfél e-mailt kap {v.locale === 'nl' ? 'hollandul' : 'magyarul'}, benne az Ön szövegével. Írja le pontosan, milyen adatot vagy képet kér.</p>
+          <p class="hint">Az ügyfél e-mailt kap {leadLanguage}, benne az Ön szövegével. Írja le pontosan, milyen adatot vagy képet kér.</p>
           <label>Mit kér az ügyféltől? <textarea name="infoNote" rows="4">{v.info_request ?? ''}</textarea></label>
           <div class="actions">
             <button type="button" class="btn" id="info-btn">Hiánypótlás kérése</button>

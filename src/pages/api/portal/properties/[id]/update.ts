@@ -15,6 +15,7 @@
  * save, unchanged.
  */
 import type { APIRoute } from 'astro';
+import { portalLang } from '~/lib/portal/auth-copy';
 import { LOCALE_OPTIONS } from '~/lib/portal/properties';
 import { extractYouTubeId } from '~/lib/video';
 import { logEvent } from '~/lib/activity';
@@ -70,7 +71,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   // One step of the guided setup: only that step's fields, answered in JSON.
   if (step) {
     if (!(SETUP_STEPS as readonly string[]).includes(step)) return Response.json({ ok: false, error: 'unknown-step' }, { status: 400 });
-    const result = await saveSetupStep(supabase, existing, step as SetupStep, form, { isAdmin, locale: profile?.locale === 'nl' ? 'nl' : 'hu' });
+    const result = await saveSetupStep(supabase, existing, step as SetupStep, form, { isAdmin, locale: portalLang(profile?.locale) });
     if (result.ok) {
       await logEvent({
         kind: 'listing.edited',

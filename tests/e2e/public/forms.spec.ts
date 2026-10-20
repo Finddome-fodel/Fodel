@@ -7,7 +7,15 @@
 import { test, expect } from '../support/fixtures';
 import type { Page } from '@playwright/test';
 
+import { LOCALES, path as routePath, type Locale } from '../../../src/i18n/ui';
+
 const REGISTER = { hu: '/hu/hirdetes-feladasa/', nl: '/nl/advertentie-plaatsen/' };
+
+/** The phone field's starting country and the example it shows, per language. */
+const PHONE: Record<Locale, { country: string; prefix: string }> = {
+  hu: { country: 'HU', prefix: '+36' }, nl: { country: 'NL', prefix: '+31' }, en: { country: 'GB', prefix: '+44' },
+  de: { country: 'DE', prefix: '+49' }, fr: { country: 'FR', prefix: '+33' },
+};
 
 const form = (page: Page) => page.locator('#listing-order');
 
@@ -133,5 +141,47 @@ test.describe('other forms', () => {
     await budget.fill('sok');
     await budget.blur();
     await expect(f.locator('#f-budgetMin-error')).toBeVisible();
+  });
+});
+
+test.describe('forms in every language', () => {
+  for (const locale of LOCALES) {
+    test(`${locale}: the registration form speaks ${locale}, starts on its country and judges a short number`, async ({ page, blockedPosts }) => {
+      await page.goto(routePath(locale, 'submitAd'));
+      await expect(form(page).locator('select[name="phoneCountry"]')).toHaveValue(PHONE[locale].country);
+      await expect(form(page).locator('#f-phone-hint')).toContainText(PHONE[locale].prefix);
+
+      // An empty submit: a summary in the page's language, nothing sent.
+      await form(page).locator('button[type="submit"]').click();
+      const summary = page.locator('#listing-order-summary');
+      await expect(summary).toBeVisible();
+      const emptyText = (await summary.innerText()).trim();
+      expect(emptyText.length).toBeGreaterThan(10);
+
+      await fillRegister(page, { name: 'Test Person', email: 'test@example.com', phone: '12', consent: true });
+      await form(page).locator('button[type="submit"]').click();
+      const error = form(page).locator('#f-phone-error');
+      await expect(error).toBeVisible();
+      await expect(error).toContainText(PHONE[locale].prefix);
+      expect(blockedPosts).toHaveLength(0);
+    });
+  }
+
+  test('the same mistake reads differently in each language', async ({ browser, baseURL }) => {
+    const seen = new Map<string, string>();
+    for (const locale of LOCALES) {
+      const context = await browser.newContext({ baseURL: baseURL! });
+      const page = await context.newPage();
+      await page.goto(routePath(locale, 'contact'));
+      const contact = page.locator('form.form').first();
+      await contact.locator('#f-email').fill('not-an-email');
+      await contact.locator('#f-email').blur();
+      await expect(contact.locator('#f-email-error')).toBeVisible();
+      const message = (await contact.locator('#f-email-error').innerText()).trim();
+      expect(message.length).toBeGreaterThan(5);
+      expect(seen.has(message), `"${message}" repeats in ${locale}`).toBe(false);
+      seen.set(message, locale);
+      await context.close();
+    }
   });
 });

@@ -9,6 +9,7 @@ import { COMPANY } from '~/config/company';
 import { getCompany } from '~/lib/runtime-config';
 import { sendEmail } from '~/lib/email/send';
 import { logEvent } from '~/lib/activity';
+import { localeFrom, type Locale } from '~/i18n/ui';
 import { invoiceToBookkeeper, invoiceToCustomer } from './emails';
 import { invoiceCatalogue, invoiceLineFromOrder } from './catalogue';
 import {
@@ -94,7 +95,7 @@ export function rowToDoc(row: InvoiceRow, issuerFallback: Issuer): InvoiceDoc {
     reference: row.reference ?? '',
     referenceNumber: row.reference_number ?? null,
     notes: row.notes ?? '',
-    locale: row.locale === 'nl' ? 'nl' : 'hu',
+    locale: localeFrom(row.locale),
     settled: Boolean(row.paid_at) || row.status === 'paid',
   };
 }
@@ -303,7 +304,7 @@ export async function proformaToInvoice(admin: any, id: string, actor: { id?: st
 /* ── From an order ───────────────────────────────────────────────────────── */
 
 /** The customer as the system already knows them: order → account → what Stripe collected. */
-export async function resolveBuyer(admin: any, payment: InvoiceRow): Promise<{ buyer: Party; locale: 'hu' | 'nl' }> {
+export async function resolveBuyer(admin: any, payment: InvoiceRow): Promise<{ buyer: Party; locale: Locale }> {
   const { data: owner } = payment.owner_id
     ? await admin.from('profiles').select('full_name, email, phone, locale, billing').eq('id', payment.owner_id).maybeSingle()
     : { data: null };
@@ -321,7 +322,7 @@ export async function resolveBuyer(admin: any, payment: InvoiceRow): Promise<{ b
     phone: pick(b.phone, a.phone, owner?.phone),
     taxNumber: pick(b.taxNumber, a.taxNumber),
   };
-  return { buyer, locale: (owner?.locale ?? payment.locale) === 'nl' ? 'nl' : 'hu' };
+  return { buyer, locale: localeFrom(owner?.locale ?? payment.locale) };
 }
 
 /** Re-prices every price-list line for the chosen treatment. Typed-over lines stay as they are. */
@@ -456,19 +457,19 @@ export function toListItem(row: InvoiceRow): InvoiceListItem {
 }
 
 /** People the admin can bill with one click: portal accounts, then earlier invoice customers. */
-export async function searchCustomers(admin: any, q: string): Promise<(Party & { source: 'account' | 'invoice'; ownerId?: string; locale?: 'hu' | 'nl' })[]> {
+export async function searchCustomers(admin: any, q: string): Promise<(Party & { source: 'account' | 'invoice'; ownerId?: string; locale?: Locale })[]> {
   const term = q.replace(/[,()%*]/g, ' ').trim();
   if (term.length < 2) return [];
   const [accounts, previous] = await Promise.all([
     admin.from('profiles').select('id, full_name, email, phone, locale, billing').or(`full_name.ilike.%${term}%,email.ilike.%${term}%`).limit(6),
     admin.from('invoices').select('buyer').not('buyer', 'is', null).ilike('buyer->>name', `%${term}%`).order('created_at', { ascending: false }).limit(12),
   ]);
-  const out: (Party & { source: 'account' | 'invoice'; ownerId?: string; locale?: 'hu' | 'nl' })[] = [];
+  const out: (Party & { source: 'account' | 'invoice'; ownerId?: string; locale?: Locale })[] = [];
   for (const p of accounts.data ?? []) {
     const b = (p.billing ?? {}) as Partial<Party>;
     out.push({
       ...emptyParty(), ...b, name: b.name || p.full_name || p.email, email: p.email, phone: b.phone || p.phone || '',
-      source: 'account', ownerId: p.id, locale: p.locale === 'nl' ? 'nl' : 'hu',
+      source: 'account', ownerId: p.id, locale: localeFrom(p.locale),
     });
   }
   const seen = new Set(out.map((o) => `${o.name}|${o.email}`.toLowerCase()));
@@ -528,7 +529,7 @@ export function sanitiseDoc(input: any, issuer: Issuer): InvoiceDoc {
     fxRate: fx > 0 && fx < 100000 ? Math.round(fx * 10000) / 10000 : null,
     reference: str(input?.reference, 160),
     notes: str(input?.notes, 600),
-    locale: input?.locale === 'nl' ? 'nl' : 'hu',
+    locale: localeFrom(input?.locale),
     settled: Boolean(input?.settled),
   };
 }

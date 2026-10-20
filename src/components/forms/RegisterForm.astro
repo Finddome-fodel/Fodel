@@ -31,7 +31,6 @@ interface Props {
 
 const { locale, onDark = false, formId = 'listing-order' } = Astro.props;
 const ui = UI[locale];
-const hu = locale === 'hu';
 
 // A referrer's personal link — …/hirdetes-feladasa/?ref=ABC12345 — carried
 // through as a plain string; resolved server-side against a real seller's
@@ -43,8 +42,8 @@ const referralCode = Astro.url.searchParams.get('ref')?.slice(0, 20) ?? '';
 const sender = senderAddress('portal');
 const subject = templates.registrationConfirm(locale, { name: '', acceptUrl: '' }).subject;
 
-const t = hu
-  ? {
+const copies = {
+  hu: {
       submit: 'Regisztráció',
       title: 'Nézze meg a postafiókját',
       sentTo: 'Elküldtük a jelszóbeállító linket ide:',
@@ -58,8 +57,8 @@ const t = hu
       resendFailed: 'Most nem sikerült újraküldeni. Próbálja meg egy perc múlva.',
       wrong: 'Rossz címet adott meg?',
       change: 'Javítás',
-    }
-  : {
+    },
+  nl: {
       submit: 'Registreren',
       title: 'Kijk in uw mailbox',
       sentTo: 'Wij hebben de link om uw wachtwoord in te stellen gestuurd naar:',
@@ -73,7 +72,54 @@ const t = hu
       resendFailed: 'Opnieuw versturen lukt nu niet. Probeer het over een minuut nog eens.',
       wrong: 'Verkeerd adres ingevuld?',
       change: 'Wijzigen',
-    };
+    },
+  en: {
+    submit: 'Register',
+    title: 'Check your inbox',
+    sentTo: 'We have sent the link to set your password to:',
+    from: 'From',
+    subject: 'Subject',
+    validity: `The link is valid for ${REGISTRATION_DAYS} days.`,
+    spam: 'If nothing arrives within a few minutes, check your spam or promotions folder too.',
+    resend: 'Resend the email',
+    resendIn: (s: number) => `Resend in ${s} s`,
+    resent: 'Sent again.',
+    resendFailed: 'We could not resend it just now. Please try again in a minute.',
+    wrong: 'Wrong address?',
+    change: 'Change it',
+  },
+  de: {
+    submit: 'Registrieren',
+    title: 'Schauen Sie in Ihr Postfach',
+    sentTo: 'Wir haben den Link zum Festlegen Ihres Passworts gesendet an:',
+    from: 'Absender',
+    subject: 'Betreff',
+    validity: `Der Link ist ${REGISTRATION_DAYS} Tage gültig.`,
+    spam: 'Kommt nach einigen Minuten nichts an, prüfen Sie auch den Spam- oder Werbeordner.',
+    resend: 'E-Mail erneut senden',
+    resendIn: (s: number) => `Erneut senden in ${s} s`,
+    resent: 'Erneut gesendet.',
+    resendFailed: 'Das erneute Senden hat gerade nicht geklappt. Versuchen Sie es in einer Minute noch einmal.',
+    wrong: 'Falsche Adresse eingegeben?',
+    change: 'Ändern',
+  },
+  fr: {
+    submit: 'S’inscrire',
+    title: 'Consultez votre boîte de réception',
+    sentTo: 'Nous avons envoyé le lien pour définir votre mot de passe à\u00a0:',
+    from: 'Expéditeur',
+    subject: 'Objet',
+    validity: `Le lien est valable ${REGISTRATION_DAYS} jours.`,
+    spam: 'Si rien n’arrive au bout de quelques minutes, regardez aussi dans vos courriers indésirables ou vos promotions.',
+    resend: 'Renvoyer l’e-mail',
+    resendIn: (s: number) => `Renvoi possible dans ${s} s`,
+    resent: 'Renvoyé.',
+    resendFailed: 'Impossible de renvoyer l’e-mail pour le moment. Réessayez dans une minute.',
+    wrong: 'Mauvaise adresse\u202f?',
+    change: 'Modifier',
+  },
+};
+const t = copies[locale];
 ---
 
 <div class="register" data-register data-form={formId}>

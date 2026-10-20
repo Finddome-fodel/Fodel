@@ -18,7 +18,8 @@
  * stores the number in E.164 (src/lib/validation.ts, form-handler.ts).
  */
 import { getCountries, getCountryCallingCode, type CountryCode } from 'libphonenumber-js/min';
-import { UI, type Locale } from '~/i18n/ui';
+import { UI, localizer, type Locale } from '~/i18n/ui';
+import { intlTag } from '~/lib/format';
 import { COMMON_PHONE_COUNTRIES, defaultPhoneCountry, phoneExample, isPhoneCountry, normalizePhone } from '~/lib/validation';
 import '~/styles/fields.css';
 
@@ -53,7 +54,7 @@ const {
 } = Astro.props;
 
 const ui = UI[locale];
-const hu = locale === 'hu';
+const x = localizer(locale);
 const id = idProp ?? `f-${name}`;
 const countryId = `${id}-country`;
 const errorId = `${id}-error`;
@@ -65,7 +66,7 @@ const selected: CountryCode =
   (stored?.ok && stored.country) || (isPhoneCountry(country) ? country : defaultPhoneCountry(locale));
 const shownValue = stored?.ok ? stored.display : (value ?? '');
 
-const names = new Intl.DisplayNames([locale === 'hu' ? 'hu' : 'nl'], { type: 'region' });
+const names = new Intl.DisplayNames([intlTag(locale)], { type: 'region' });
 const flag = (code: string) => String.fromCodePoint(...[...code].map((c) => 0x1f1a5 + c.charCodeAt(0)));
 const entry = (code: CountryCode) => ({
   code,
@@ -81,13 +82,14 @@ const all = getCountries()
   .sort((a, b) => collator.compare(a.name, b.name));
 const current = entry(selected);
 
+const exampleLabel = x('Például:', 'Bijvoorbeeld:', 'For example:', 'Zum Beispiel:', 'Par exemple\u00a0:');
 const t = {
-  country: hu ? 'Ország hívószáma' : 'Landcode',
-  common: hu ? 'Gyakori' : 'Veelgekozen',
-  all: hu ? 'Minden ország' : 'Alle landen',
-  search: hu ? 'Ország keresése' : 'Land zoeken',
-  none: hu ? 'Nincs találat' : 'Geen resultaten',
-  example: (ex: string) => (hu ? `Például: ${ex}` : `Bijvoorbeeld: ${ex}`),
+  country: x('Ország hívószáma', 'Landcode', 'Country dialling code', 'Ländervorwahl', 'Indicatif du pays'),
+  common: x('Gyakori', 'Veelgekozen', 'Common', 'Häufig', 'Courants'),
+  all: x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays'),
+  search: x('Ország keresése', 'Land zoeken', 'Search for a country', 'Land suchen', 'Rechercher un pays'),
+  none: x('Nincs találat', 'Geen resultaten', 'No results', 'Keine Treffer', 'Aucun résultat'),
+  example: (ex: string) => `${exampleLabel} ${ex}`,
 };
 ---
 
@@ -96,7 +98,7 @@ const t = {
     {label ?? ui.form.phone}
     <span class="req">{required ? `(${ui.form.required})` : `(${ui.form.optional})`}</span>
   </label>
-  <p class="hint" id={hintId} data-hint-custom={hint ? '' : undefined} data-example-label={hu ? 'Például:' : 'Bijvoorbeeld:'}>
+  <p class="hint" id={hintId} data-hint-custom={hint ? '' : undefined} data-example-label={exampleLabel}>
     {hint ?? t.example(current.example)}
   </p>
 

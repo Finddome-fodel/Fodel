@@ -1,5 +1,7 @@
 /**
- * Page copy, both locales.
+ * Page copy, all five languages. Hungarian and Dutch live in this file; English,
+ * German and French in copy-en.ts, copy-de.ts and copy-fr.ts, each type-checked
+ * against the Hungarian shape.
  *
  * Hungarian keeps FODEL's own register: formal ("Ön"), reassuring,
  * explanatory, and their exact CTAs ("Forduljon hozzánk bizalommal!").
@@ -14,6 +16,9 @@
 import type { Locale } from '~/i18n/ui';
 import { COMPANY, formatHours, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
+import { EN } from '~/data/copy-en';
+import { DE } from '~/data/copy-de';
+import { FR } from '~/data/copy-fr';
 
 const REACH_COUNTRIES = COMPANY.reach.countries;
 const REACH_LANGUAGES = COMPANY.reach.languages;
@@ -34,7 +39,7 @@ export interface Persona {
   body: string;
 }
 
-export const COPY: Record<Locale, any> = {
+const BASE = {
   hu: {
     home: {
       meta: {
@@ -550,6 +555,14 @@ export const COPY: Record<Locale, any> = {
   },
 };
 
-export function copy(locale: Locale) {
+/** The shape every language's copy must have: Hungarian is the reference. */
+export type CopyShape = (typeof BASE)['hu'];
+
+/** Dutch is held to the same shape, so a key missing in either fails the build. */
+const NL: CopyShape = BASE.nl;
+
+export const COPY: Record<Locale, CopyShape> = { hu: BASE.hu, nl: NL, en: EN, de: DE, fr: FR };
+
+export function copy(locale: Locale): CopyShape {
   return COPY[locale];
 }

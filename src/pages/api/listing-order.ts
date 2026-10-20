@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import { handleForm } from '~/lib/form-handler';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { register } from '~/lib/portal/registration';
@@ -45,7 +46,7 @@ export const POST: APIRoute = (context) =>
         name: values.name,
         email: values.email,
         phone: values.phone || null,
-        locale: extras.Locale === 'nl' ? 'nl' : 'hu',
+        locale: localeFrom(extras.Locale, 'hu'),
         referralCode: values.referralCode,
         origin: new URL(context.request.url).origin,
       });

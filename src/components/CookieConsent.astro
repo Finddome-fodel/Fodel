@@ -13,6 +13,7 @@
  */
 import Button from './Button.astro';
 import { path, type Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 
 interface Props {
   locale: Locale;
@@ -20,22 +21,7 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const copy = {
-  hu: {
-    title: 'Sütik',
-    body: 'Ez az oldal csak a működéshez feltétlenül szükséges sütiket használja. Statisztikai célú mérést csak az Ön kifejezett hozzájárulásával végzünk.',
-    accept: 'Elfogadom',
-    reject: 'Elutasítom',
-    more: 'Részletek',
-  },
-  nl: {
-    title: 'Cookies',
-    body: 'Deze site gebruikt alleen cookies die noodzakelijk zijn om te functioneren. Statistieken meten wij uitsluitend met uw uitdrukkelijke toestemming.',
-    accept: 'Akkoord',
-    reject: 'Weigeren',
-    more: 'Meer informatie',
-  },
-}[locale];
+const copy = CHROME[locale].cookie;
 ---
 
 <aside

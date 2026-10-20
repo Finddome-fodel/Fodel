@@ -13,33 +13,44 @@ export const prerender = false;
 import { getImage } from 'astro:assets';
 import Button from '~/components/Button.astro';
 import Base from '~/layouts/Base.astro';
-import { UI, path, type Locale, LOCALES } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
+import { sourceNote } from '~/i18n/fallback';
 import { crumbs } from '~/lib/page';
 import { articleSchema, breadcrumbSchema } from '~/lib/seo';
 import { formatDate } from '~/lib/format';
-import { siblingPost, type BlogPost } from '~/lib/blog';
+import { siblingPosts, postPath, postPathIn, type BlogPost } from '~/lib/blog';
 import { renderMarkdown } from '~/lib/markdown';
 
 interface Props {
   locale: Locale;
   post: BlogPost;
+  /** The language the text is in, when it is not the page's (Dutch standing in for English, German, French). */
+  from?: Locale;
 }
 
-const { locale, post } = Astro.props;
+const { locale, post, from = locale } = Astro.props;
 
 const ui = UI[locale];
-const url = `${path(locale, 'blog')}${post.slug}/`;
+const x = localizer(locale);
+const standIn = from !== locale;
+const note = sourceNote(locale, from, 'article');
+const url = postPathIn(locale, post.slug);
 const html = renderMarkdown(post.body_md);
 
-// hreflang only where a sibling actually exists — most posts have none, and
-// asserting otherwise is exactly the bug the plan's architecture review
-// flagged (Piacelemzés and Kopersgids are not translations of each other).
-const otherLocale = LOCALES.find((l) => l !== locale)!;
-const sibling = await siblingPost(post, otherLocale);
-const alternates: Partial<Record<Locale, string>> = {
-  [locale]: url,
-  ...(sibling ? { [otherLocale]: `${path(otherLocale, 'blog')}${sibling.slug}/` } : {}),
-};
+// hreflang only where a version really exists in that language — most posts
+// have few, and asserting otherwise is exactly the bug the plan's architecture
+// review flagged (Piacelemzés and Kopersgids are not translations of each
+// other). The language menu is more generous: every language can open the
+// article, so each row links to its page, with the stand-in note where the
+// text is not in that language.
+const siblings = await siblingPosts(post);
+const versions: Partial<Record<Locale, string>> = Object.fromEntries(
+  Object.entries(siblings).map(([code, version]) => [code, postPathIn(code as Locale, version!.slug)])
+);
+const hreflang = standIn ? {} : versions;
+const switcher: Partial<Record<Locale, string>> = Object.fromEntries(
+  (['hu', 'nl', 'en', 'de', 'fr'] as const).map((code) => [code, versions[code] ?? postPathIn(code, post.slug)])
+);
 
 // The article's own share picture, cut to the 1200×630 the page's og:image
 // tags declare — the same treatment property pages get. Without one the site
@@ -57,9 +68,9 @@ if (shareSource) {
 const isCase = post.kind === 'case_study';
 const caseSections = isCase
   ? [
-      { title: locale === 'hu' ? 'Módszertan' : 'Methode', md: post.case_method },
-      { title: locale === 'hu' ? 'Eredmények' : 'Resultaten', md: post.case_results },
-      { title: locale === 'hu' ? 'Források' : 'Bronnen', md: post.case_sources },
+      { title: x('Módszertan', 'Methode', 'Method', 'Methode', 'Méthode'), md: post.case_method },
+      { title: x('Eredmények', 'Resultaten', 'Results', 'Ergebnisse', 'Résultats'), md: post.case_results },
+      { title: x('Források', 'Bronnen', 'Sources', 'Quellen', 'Sources'), md: post.case_sources },
     ].filter((section) => section.md?.trim())
   : [];
 
@@ -73,7 +84,9 @@ const trail = crumbs(locale, [
   locale={locale}
   title={post.seo_title || post.title}
   description={post.seo_description || post.excerpt}
-  alternates={alternates}
+  alternates={hreflang}
+  switcher={switcher}
+  canonicalPath={standIn ? postPath(post) : undefined}
   ogType="article"
   ogImage={ogImage}
   schema={[
@@ -100,18 +113,19 @@ const trail = crumbs(locale, [
 
   <article class="article">
     <header>
-      <span class="pill">{isCase ? (locale === 'hu' ? 'Esettanulmány' : 'Casestudy') : post.category}</span>
+      <span class="pill">{isCase ? x('Esettanulmány', 'Casestudy', 'Case study', 'Fallstudie', 'Étude de cas') : post.category}</span>
       <h1>{post.title}</h1>
       <p class="meta">
         {post.published_at && (
           <time datetime={post.published_at.toISOString()}>{formatDate(post.published_at, locale)}</time>
         )}
         <span aria-hidden="true">·</span>
-        <span>{post.reading_minutes} {locale === 'hu' ? 'perc olvasás' : 'min. lezen'}</span>
+        <span>{x(`${post.reading_minutes} perc olvasás`, `${post.reading_minutes} min. lezen`, `${post.reading_minutes} min read`, `${post.reading_minutes} Min. Lesezeit`, `${post.reading_minutes} min de lecture`)}</span>
         <span aria-hidden="true">·</span>
         <span>{post.author}</span>
       </p>
       <p class="excerpt">{post.excerpt}</p>
+      {note && <p class="stand-in">{note}</p>}
     </header>
 
     <div class="prose" set:html={html} />
@@ -131,6 +145,13 @@ const trail = crumbs(locale, [
 </Base>
 
 <style>
+  /* "Article in Dutch": a quiet one-liner under the standfirst. */
+  .stand-in {
+    margin-top: 14px;
+    font-size: var(--fs-small);
+    font-weight: var(--fw-medium);
+    color: var(--taupe);
+  }
   .case-section {
     margin-top: 48px;
     padding-top: 32px;

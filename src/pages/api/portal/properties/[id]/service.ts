@@ -10,6 +10,7 @@
  * are the office's job, a withdrawal before scheduling is the only exception.
  */
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import { isOnsiteServiceId } from '~/config/company';
 import { createServiceRequest } from '~/lib/portal/service-requests';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
@@ -75,7 +76,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   const id = await createServiceRequest(supabase, {
     serviceId,
     source: 'listing_editor',
-    locale: profile?.locale === 'nl' ? 'nl' : 'hu',
+    locale: localeFrom(profile?.locale, 'hu'),
     propertyId: property.id,
     profileId: user.id,
     name: profile?.full_name ?? null,

@@ -10,8 +10,8 @@ interface Props {
 
 const { locale, light = false, href = `/${locale}/` } = Astro.props;
 
-/** "INGATLAN" in Hungarian, "VASTGOED" in Dutch — their own market names. */
-const subLabel = BRAND[locale].name.replace('FODEL', '').trim() || 'VASTGOED';
+/** "INGATLAN", "VASTGOED", "REAL ESTATES", "IMMOBILIEN", "IMMOBILIER": the brand name minus the wordmark. */
+const subLabel = BRAND[locale].name.replace('FODEL', '').trim();
 ---
 
 <a class="logo" class:list={{ light }} href={href} aria-label={BRAND[locale].name}>

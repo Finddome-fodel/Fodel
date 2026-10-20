@@ -18,10 +18,11 @@ import Base from '~/layouts/Base.astro';
 import PageHeader from '~/components/PageHeader.astro';
 import Eyebrow from '~/components/Eyebrow.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
+import { sourceNote } from '~/i18n/fallback';
 import { alternatesFor } from '~/lib/page';
 import { formatDate } from '~/lib/format';
-import { publishedPosts } from '~/lib/blog';
+import { localizedPosts, postPathIn } from '~/lib/blog';
 
 interface Props {
   locale: Locale;
@@ -29,41 +30,63 @@ interface Props {
 
 const { locale } = Astro.props;
 const ui = UI[locale];
-const hu = locale === 'hu';
+const x = localizer(locale);
 
 // Articles and case studies are listed separately (brief §5): the default view
 // is articles, `?type=case-study` the case studies. The switch only appears
 // once a case study exists in this language.
 const showCases = Astro.url.searchParams.get('type') === 'case-study';
 const [articles, cases] = await Promise.all([
-  publishedPosts(locale, { kind: 'article' }),
-  publishedPosts(locale, { kind: 'case_study' }),
+  localizedPosts(locale, { kind: 'article' }),
+  localizedPosts(locale, { kind: 'case_study' }),
 ]);
 const posts = showCases ? cases : articles;
 
-const [lead, ...rest] = posts;
+const [leadEntry, ...restEntries] = posts;
+const lead = leadEntry?.post;
+const rest = restEntries.map((entry) => entry.post);
+const noteOf = (index: number) => {
+  const entry = index < 0 ? leadEntry : restEntries[index];
+  return entry ? sourceNote(locale, entry.from, 'article') : null;
+};
+const minutes = (n: number) => x(`${n} perc olvasás`, `${n} min. lezen`, `${n} min read`, `${n} Min. Lesezeit`, `${n} min de lecture`);
 
-const t = hu
-  ? {
-      metaTitle: 'Hírek és cikkek: piac, migráció, tanácsok',
-      metaDescription:
-        'Elemzések a magyar ingatlanpiacról és a nyugat-európai vevőkről: miért költöznek a hollandok Magyarországra, és mit jelent ez az eladóknak.',
-      eyebrow: 'Hírek és cikkek',
-      title: 'Piac,',
-      titleEm: 'háttér, tanácsok',
-      intro: 'Amit a magyar ingatlanpiacról és a nyugat-európai vevőkről érdemes tudni.',
-      empty: 'Hamarosan új cikkekkel jelentkezünk.',
-    }
-  : {
-      metaTitle: 'Nieuws en achtergrond: markt, emigratie, advies',
-      metaDescription:
-        'Analyses over de Hongaarse vastgoedmarkt en West-Europese kopers: waarom Nederlanders naar Hongarije verhuizen, en wat dat betekent.',
-      eyebrow: 'Nieuws',
-      title: 'Markt,',
-      titleEm: 'achtergrond, advies',
-      intro: 'Wat u moet weten over de Hongaarse vastgoedmarkt en de kopers uit West-Europa.',
-      empty: 'Binnenkort verschijnen hier nieuwe artikelen.',
-    };
+const t = {
+  metaTitle: x(
+    'Hírek és cikkek: piac, migráció, tanácsok',
+    'Nieuws en achtergrond: markt, emigratie, advies',
+    'News and articles: market, moving, advice',
+    'Neuigkeiten und Artikel: Markt, Auswanderung, Ratgeber',
+    'Actualités et articles\u00a0: marché, installation, conseils'
+  ),
+  metaDescription: x(
+    'Elemzések a magyar ingatlanpiacról és a nyugat-európai vevőkről: miért költöznek a hollandok Magyarországra, és mit jelent ez az eladóknak.',
+    'Analyses over de Hongaarse vastgoedmarkt en West-Europese kopers: waarom Nederlanders naar Hongarije verhuizen, en wat dat betekent.',
+    'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
+    'Analysen zum ungarischen Immobilienmarkt und zu Käufern aus Westeuropa: warum Niederländer nach Ungarn ziehen und was das bedeutet.',
+    'Analyses du marché immobilier hongrois et des acheteurs d’Europe de l’Ouest\u00a0: pourquoi des Néerlandais s’installent en Hongrie, et ce que cela signifie.'
+  ),
+  eyebrow: x('Hírek és cikkek', 'Nieuws', 'News and articles', 'Neuigkeiten und Artikel', 'Actualités et articles'),
+  title: x('Piac,', 'Markt,', 'Market,', 'Markt,', 'Marché,'),
+  titleEm: x('háttér, tanácsok', 'achtergrond, advies', 'background, advice', 'Hintergrund, Ratgeber', 'contexte, conseils'),
+  intro: x(
+    'Amit a magyar ingatlanpiacról és a nyugat-európai vevőkről érdemes tudni.',
+    'Wat u moet weten over de Hongaarse vastgoedmarkt en de kopers uit West-Europa.',
+    'What you should know about the Hungarian property market and buyers from Western Europe.',
+    'Was Sie über den ungarischen Immobilienmarkt und die Käufer aus Westeuropa wissen sollten.',
+    'Ce qu’il faut savoir sur le marché immobilier hongrois et les acheteurs d’Europe de l’Ouest.'
+  ),
+  empty: x(
+    'Hamarosan új cikkekkel jelentkezünk.',
+    'Binnenkort verschijnen hier nieuwe artikelen.',
+    'New articles are coming soon.',
+    'Bald erscheinen hier neue Artikel.',
+    'De nouveaux articles arrivent bientôt.'
+  ),
+  kinds: x('Tartalomtípus', 'Soort inhoud', 'Content type', 'Art des Inhalts', 'Type de contenu'),
+  articles: x('Cikkek', 'Artikelen', 'Articles', 'Artikel', 'Articles'),
+  cases: x('Esettanulmányok', 'Casestudies', 'Case studies', 'Fallstudien', 'Études de cas'),
+};
 ---
 
 <Base
@@ -76,10 +99,10 @@ const t = hu
 
   <div class="blog">
     {cases.length > 0 && (
-      <nav class="kinds" aria-label={hu ? 'Tartalomtípus' : 'Soort inhoud'}>
-        <a href={path(locale, 'blog')} aria-current={!showCases ? 'page' : undefined}>{hu ? 'Cikkek' : 'Artikelen'}</a>
+      <nav class="kinds" aria-label={t.kinds}>
+        <a href={path(locale, 'blog')} aria-current={!showCases ? 'page' : undefined}>{t.articles}</a>
         <a href={`${path(locale, 'blog')}?type=case-study`} aria-current={showCases ? 'page' : undefined}>
-          {hu ? 'Esettanulmányok' : 'Casestudies'}
+          {t.cases}
         </a>
       </nav>
     )}
@@ -88,7 +111,7 @@ const t = hu
     {
       lead && (
         <article class="lead reveal">
-          <a href={`${path(locale, 'blog')}${lead.slug}/`} data-bg="dark" class:list={[{ 'has-media': !!lead.cover_url }]}>
+          <a href={postPathIn(locale, lead.slug)} data-bg="dark" class:list={[{ 'has-media': !!lead.cover_url }]}>
             {lead.cover_url && (
               <div class="lead-media">
                 <img src={lead.cover_url} alt={lead.cover_alt ?? ''} loading="eager" width="900" height="600" />
@@ -98,6 +121,7 @@ const t = hu
               <span class="pill pill-dark">{lead.category}</span>
               <h2>{lead.title}</h2>
               <p class="excerpt">{lead.excerpt}</p>
+              {noteOf(-1) && <p class="note">{noteOf(-1)}</p>}
               <div class="lead-foot">
                 <p class="meta">
                   {lead.published_at && (
@@ -106,7 +130,7 @@ const t = hu
                     </time>
                   )}
                   <span aria-hidden="true">·</span>
-                  <span>{lead.reading_minutes} {hu ? 'perc olvasás' : 'min. lezen'}</span>
+                  <span>{minutes(lead.reading_minutes)}</span>
                 </p>
                 <span class="more">
                   <span>{ui.cta.readMore}</span>
@@ -124,7 +148,7 @@ const t = hu
         <div class="grid">
           {rest.map((post, i) => (
             <article class="card reveal" style={`--reveal-delay:${(i % 3) * 0.08}s`}>
-              <a href={`${path(locale, 'blog')}${post.slug}/`}>
+              <a href={postPathIn(locale, post.slug)}>
                 {post.cover_url && (
                   <div class="card-media">
                     <img src={post.cover_url} alt={post.cover_alt ?? ''} loading="lazy" width="700" height="525" />
@@ -137,6 +161,7 @@ const t = hu
                   </div>
                   <h3>{post.title}</h3>
                   <p class="excerpt">{post.excerpt}</p>
+                  {noteOf(i) && <p class="note">{noteOf(i)}</p>}
                   <p class="meta">
                     {post.published_at && (
                       <time datetime={post.published_at.toISOString()}>
@@ -144,7 +169,7 @@ const t = hu
                       </time>
                     )}
                     <span aria-hidden="true">·</span>
-                    <span>{post.reading_minutes} {hu ? 'perc' : 'min.'}</span>
+                    <span>{post.reading_minutes} {x('perc', 'min.', 'min', 'Min.', 'min')}</span>
                   </p>
                 </div>
               </a>
@@ -185,6 +210,12 @@ const t = hu
     background: var(--ink);
     border-color: var(--ink);
     color: var(--cream);
+  }
+  /* "Article in Dutch": quiet, one line, never louder than the excerpt. */
+  .note {
+    font-size: 13px;
+    font-weight: var(--fw-medium);
+    opacity: 0.72;
   }
   .empty {
     font-size: var(--fs-body);

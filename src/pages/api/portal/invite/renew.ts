@@ -12,6 +12,7 @@
  * no such address — so the page cannot be used to learn who is registered.
  */
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import crypto from 'node:crypto';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, templates } from '~/lib/email/send';
@@ -36,7 +37,7 @@ export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
   const form = await request.formData();
   const token = String(form.get('token') ?? '').trim();
   const typedEmail = String(form.get('email') ?? '').trim().toLowerCase();
-  const lang = form.get('lang') === 'nl' ? 'nl' : 'hu';
+  const lang = localeFrom(form.get('lang')?.toString(), 'hu');
   const origin = new URL(request.url).origin;
 
   const done = () => redirect(`/portal/invite/${encodeURIComponent(token || 'new')}?renewed=1&lang=${lang}`);
@@ -56,7 +57,7 @@ export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
   // Already has an account (the link was used): say so, with a way in.
   const { data: profile } = await admin.from('profiles').select('full_name, locale').eq('email', email).maybeSingle();
   if (profile) {
-    const locale = profile.locale === 'nl' ? 'nl' : 'hu';
+    const locale = localeFrom(profile.locale, 'hu');
     await deliver(
       email,
       templates.accountExists(locale, {

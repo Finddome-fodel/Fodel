@@ -11,7 +11,7 @@ import Base from '~/layouts/Base.astro';
 import PageHeader from '~/components/PageHeader.astro';
 import Eyebrow from '~/components/Eyebrow.astro';
 import Button from '~/components/Button.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
 import { FAQ, faqAnswerText, type FaqAudience } from '~/data/faq';
 import { alternatesFor } from '~/lib/page';
 import { faqSchema } from '~/lib/seo';
@@ -24,12 +24,13 @@ interface Props {
 
 const { locale } = Astro.props;
 const ui = UI[locale];
+const x = localizer(locale);
 const hu = locale === 'hu';
 const entries = FAQ[locale];
 const { hours } = await getCompany();
 
-const t = hu
-  ? {
+const copies = {
+  hu: {
       metaTitle: 'Gyakori kérdések: hirdetés, jutalék, külföldi vevők',
       metaDescription:
         'Miért jó egy külföldi vevő? Mennyibe kerül a hirdetés? Mikor kell jutalékot fizetni? A FODEL 22 leggyakoribb kérdése és válasza.',
@@ -43,8 +44,8 @@ const t = hu
       ],
       stillHead: 'Nem találta meg a választ?',
       stillBody: '{hours} Kérjen ingyenes visszahívást, vagy írjon nekünk.',
-    }
-  : {
+    },
+  nl: {
       metaTitle: 'Veelgestelde vragen: kopen in Hongarije',
       metaDescription:
         'Kan ik als EU-burger kopen in Hongarije? Wat kost uw bemiddeling? Moet ik erheen om te tekenen? De vragen die kopers ons het vaakst stellen.',
@@ -58,7 +59,54 @@ const t = hu
       ],
       stillHead: 'Geen antwoord gevonden?',
       stillBody: '{hours} Vraag gratis om teruggebeld te worden, of schrijf ons.',
-    };
+    },
+  en: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
+  de: {
+    metaTitle: 'Häufige Fragen: Kaufen in Ungarn',
+    metaDescription:
+      'Kann ich als EU-Bürger in Ungarn kaufen? Was kostet Ihre Vermittlung? Muss ich zum Unterschreiben anreisen? Die Fragen, die Käufer uns am häufigsten stellen.',
+    eyebrow: 'Häufige Fragen',
+    title: 'Fragen und',
+    titleEm: 'Antworten',
+    body: 'Unten finden Sie die Fragen, die wir am häufigsten bekommen. Ist Ihre nicht dabei, rufen Sie uns an oder bitten Sie um einen kostenlosen Rückruf.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'Für Käufer' },
+      { id: 'both' as FaqAudience, label: 'Allgemein' },
+    ],
+    stillHead: 'Keine Antwort gefunden',
+    stillBody: '{hours} Bitten Sie kostenlos um einen Rückruf oder schreiben Sie uns.',
+  },
+  fr: {
+    metaTitle: 'Questions fréquentes\u00a0: acheter en Hongrie',
+    metaDescription:
+      'Puis-je acheter en Hongrie en tant que citoyen de l’UE\u202f? Combien coûte votre intermédiation\u202f? Dois-je me déplacer pour signer\u202f? Les questions que les acheteurs nous posent le plus souvent.',
+    eyebrow: 'Questions fréquentes',
+    title: 'Questions et',
+    titleEm: 'réponses',
+    body: 'Voici les questions que nous recevons le plus souvent. Si la vôtre n’y figure pas, appelez-nous ou demandez à être rappelé gratuitement.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'Pour les acheteurs' },
+      { id: 'both' as FaqAudience, label: 'Général' },
+    ],
+    stillHead: 'Pas de réponse à votre question',
+    stillBody: '{hours} Demandez gratuitement à être rappelé, ou écrivez-nous.',
+  },
+};
+const t = copies[locale];
 
 const grouped = t.groups
   .map((g) => ({ ...g, items: entries.filter((e) => e.audience === g.id) }))
@@ -75,7 +123,7 @@ const grouped = t.groups
   <PageHeader eyebrow={t.eyebrow} title={t.title} titleEm={t.titleEm} body={t.body} compact />
 
   <div class="faq-page">
-    <nav class="toc no-print" aria-label={hu ? 'Kérdések' : 'Vragen'}>
+    <nav class="toc no-print" aria-label={x('Kérdések', 'Vragen', 'Questions', 'Fragen', 'Questions')}>
       {
         grouped.map((group) => (
           <div class="toc-group">

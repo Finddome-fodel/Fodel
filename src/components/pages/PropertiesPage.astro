@@ -15,7 +15,7 @@
 import Base from '~/layouts/Base.astro';
 import Button from '~/components/Button.astro';
 import PropertyCard from '~/components/PropertyCard.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { countryLabel as labelCountry } from '~/config/countries';
 import { alternatesFor, crumbs } from '~/lib/page';
@@ -105,7 +105,7 @@ const { properties, total, perPage } = await searchProperties({
   page,
 });
 const totalPages = Math.max(1, Math.ceil(total / perPage));
-const hu = locale === 'hu';
+const x = localizer(locale);
 
 /** Where this listing lives: a category page (/hu/ingatlanok/haz/) or the
  *  general list. Pagination and filter removal stay on it. */
@@ -122,10 +122,14 @@ const mapHref = (() => {
   return query ? `${path(locale, 'map')}?${query}` : path(locale, 'map');
 })();
 
-const title = heading ?? (hu ? 'Ingatlanok' : 'Ons aanbod');
-const defaultDescription = hu
-  ? `${total} magyar ingatlan eladó: házak, tanyák, kúriák, nyaralók és birtokok. Szűrjön típus, régió és ár szerint.`
-  : `${total} woningen in Hongarije: huizen, boerderijen, landhuizen en vakantiehuizen. Filter op type, regio en prijs.`;
+const title = heading ?? x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens');
+const defaultDescription = x(
+  `${total} magyar ingatlan eladó: házak, tanyák, kúriák, nyaralók és birtokok. Szűrjön típus, régió és ár szerint.`,
+  `${total} woningen in Hongarije: huizen, boerderijen, landhuizen en vakantiehuizen. Filter op type, regio en prijs.`,
+  `${total} properties in Hungary: houses, farms, manor houses and holiday homes. Filter by type, region and price.`,
+  `${total} Immobilien in Ungarn: Häuser, Höfe, Landhäuser und Ferienhäuser. Filtern Sie nach Typ, Region und Preis.`,
+  `${total} biens en Hongrie\u00a0: maisons, fermes, manoirs et maisons de vacances. Filtrez par type, région et prix.`
+);
 
 const trail = crumbs(locale, [{ name: title, url: currentPath }]);
 
@@ -144,21 +148,21 @@ function withParam(key: string, value: string): string {
 
 /** The filters in force, each with a link that removes just that one. */
 const active = [
-  q && { key: 'q', label: `„${q}”` },
+  q && { key: 'q', label: x(`„${q}”`, `“${q}”`, `“${q}”`, `„${q}“`, `«\u00a0${q}\u00a0»`) },
   type && { key: 'type', label: categoryLabel(type) },
   country && { key: 'country', label: labelCountry(country, locale) },
   region && { key: 'region', label: region },
   county && { key: 'county', label: county },
   settlement && { key: 'settlement', label: settlement },
   priceBand && { key: 'price', label: priceBandLabel(priceBand) },
-  beds && { key: 'beds', label: `${beds}+ ${hu ? 'szoba' : 'slaapkamers'}` },
+  beds && { key: 'beds', label: x(`${beds}+ szoba`, `${beds}+ slaapkamers`, `${beds}+ bedrooms`, `${beds}+ Schlafzimmer`, `${beds}+ chambres`) },
   floorMin && { key: 'floor_min', label: `${ui.filters.area} ≥ ${floorMin} m²` },
   floorMax && { key: 'floor_max', label: `${ui.filters.area} ≤ ${floorMax} m²` },
   plotMin && { key: 'plot_min', label: `${ui.filters.land} ≥ ${plotMin} m²` },
   plotMax && { key: 'plot_max', label: `${ui.filters.land} ≤ ${plotMax} m²` },
   bargain && { key: 'bargain', label: ui.filters.bargain },
   excludeAdobe && { key: 'no_adobe', label: ui.filters.excludeAdobe },
-  bbox && { key: 'bbox', label: hu ? 'Térképterület' : 'Kaartgebied' },
+  bbox && { key: 'bbox', label: x('Térképterület', 'Kaartgebied', 'Map area', 'Kartenausschnitt', 'Zone de la carte') },
 ].filter(Boolean) as { key: string; label: string }[];
 
 /** A category page's own category is where the visitor is, not a filter
@@ -185,16 +189,16 @@ const pageItems = (() => {
 
 const countWord = ui.filters.results(total).replace(String(total), '').trim();
 const labels = {
-  filters: hu ? 'Szűrés' : 'Filters',
-  openFilters: hu ? 'Szűrők' : 'Filters',
-  location: hu ? 'Elhelyezkedés' : 'Locatie',
-  keyword: hu ? 'Szabad szavas keresés' : 'Vrij zoeken',
+  filters: x('Szűrés', 'Filters', 'Filters', 'Filter', 'Filtres'),
+  openFilters: x('Szűrők', 'Filters', 'Filters', 'Filter', 'Filtres'),
+  location: x('Elhelyezkedés', 'Locatie', 'Location', 'Lage', 'Localisation'),
+  keyword: x('Szabad szavas keresés', 'Vrij zoeken', 'Free-text search', 'Freitextsuche', 'Recherche libre'),
   min: 'min.',
   max: 'max.',
-  prev: hu ? 'Előző oldal' : 'Vorige pagina',
-  next: hu ? 'Következő oldal' : 'Volgende pagina',
-  pages: hu ? 'Lapozás' : 'Paginering',
-  remove: hu ? 'Szűrő eltávolítása' : 'Filter verwijderen',
+  prev: x('Előző oldal', 'Vorige pagina', 'Previous page', 'Vorherige Seite', 'Page précédente'),
+  next: x('Következő oldal', 'Volgende pagina', 'Next page', 'Nächste Seite', 'Page suivante'),
+  pages: x('Lapozás', 'Paginering', 'Pagination', 'Seitennavigation', 'Pagination'),
+  remove: x('Szűrő eltávolítása', 'Filter verwijderen', 'Remove filter', 'Filter entfernen', 'Retirer le filtre'),
   apply: ui.filters.search,
 };
 ---
@@ -262,7 +266,7 @@ const labels = {
               type="search"
               name="q"
               value={q}
-              placeholder={hu ? 'Település, jellemző, azonosító…' : 'Plaats, kenmerk, referentie…'}
+              placeholder={x('Település, jellemző, azonosító…', 'Plaats, kenmerk, referentie…', 'Town, feature, reference…', 'Ort, Merkmal, Referenz…', 'Localité, caractéristique, référence…')}
               aria-label={labels.keyword}
               enterkeyhint="search"
             />
@@ -337,7 +341,7 @@ const labels = {
                   <div class="field">
                     <label for="f-country">{ui.filters.country}</label>
                     <select id="f-country" name="country" data-auto>
-                      <option value="">{hu ? 'Minden ország' : 'Alle landen'}</option>
+                      <option value="">{x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays')}</option>
                       {countries.map((code) => (
                         <option value={code} selected={code === country}>{labelCountry(code, locale)}</option>
                       ))}
@@ -435,7 +439,7 @@ const labels = {
                 <input type="hidden" name="bbox" value={bboxParam} />
                 <p class="area-note">
                   {ui.filters.areaFiltered} ·{' '}
-                  <a href={withParam('bbox', '')}>{hu ? 'Szűrés törlése' : 'Filter wissen'}</a>
+                  <a href={withParam('bbox', '')}>{x('Szűrés törlése', 'Filter wissen', 'Clear filter', 'Filter löschen', 'Effacer le filtre')}</a>
                 </p>
               </>
             )
@@ -498,7 +502,7 @@ const labels = {
 
         {
           chips.length > 0 && (
-            <ul class="active" aria-label={hu ? 'Aktív szűrők' : 'Actieve filters'}>
+            <ul class="active" aria-label={x('Aktív szűrők', 'Actieve filters', 'Active filters', 'Aktive Filter', 'Filtres actifs')}>
               {chips.map((f) => (
                 <li>
                   <a href={withParam(f.key, '')} aria-label={`${labels.remove}: ${f.label}`}>

@@ -6,7 +6,9 @@ import { deliver, templates } from '~/lib/email/send';
 import { officeInbox } from '~/lib/email/routing';
 import { SITE_URL } from '~/config/site.mjs';
 import { getCompany } from '~/lib/runtime-config';
-import { valuationPackage, isPayable, priceLabel } from '~/lib/valuation/packages';
+import { valuationPackage, isPayable } from '~/lib/valuation/packages';
+import { payNowLabel, priceLabels } from '~/lib/valuation/wording';
+import { localeFrom } from '~/i18n/ui';
 import { isStripeEnabled } from '~/lib/stripe';
 
 export const prerender = false;
@@ -20,12 +22,12 @@ export const POST: APIRoute = async ({ request }) => {
   const admin = createSupabaseAdminClient();
   const { data: row } = await admin.from('valuations').select('id,status,request_kind,locale,contact_name,contact_email,contact_phone').eq('id', id).maybeSingle();
   if (!row || row.status !== 'approved' || !row.contact_email) return json(404, { ok: false });
-  const locale = row.locale === 'nl' ? 'nl' : 'hu';
+  const locale = localeFrom(row.locale, 'hu');
   const company = await getCompany();
   const pkg = valuationPackage(company.services, kind);
   if (!pkg?.enabled) return json(409, { ok: false });
   const pay = isStripeEnabled() && isPayable(pkg)
-    ? { label: locale === 'nl' ? `Nu betalen — ${priceLabel(pkg, 'nl')} (kaart)` : `Fizetés most — ${priceLabel(pkg, 'hu')} (bankkártya)` }
+    ? { label: payNowLabel(locale, pkg) }
     : null;
   if (row.request_kind === kind) return json(200, { ok: true, already: true, pay });
   if (row.request_kind !== 'indicative') return json(409, { ok: false });
@@ -36,7 +38,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (kind === 'expert_visit') {
     const serviceId = await createServiceRequest(admin, { serviceId: 'onsite-visit', source: 'valuation', locale,
       valuationId: id, name: row.contact_name, email: row.contact_email, phone: row.contact_phone,
-      priceLabel: { hu: priceLabel(pkg, 'hu'), nl: priceLabel(pkg, 'nl') } });
+      priceLabel: priceLabels(pkg) });
     if (!serviceId) {
       await admin.from('valuations').update({ request_kind: 'indicative' }).eq('id', id).eq('request_kind', kind);
       return json(500, { ok: false });

@@ -1,8 +1,8 @@
 ---
-// Supabase-backed (see src/lib/blog.ts): rendered per request, cached at the CDN.
+// Supabase-backed since FODEL 1.2 — see src/lib/blog.ts.
 export const prerender = false;
 Astro.response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
-import BridgeBlogPage from '~/components/pages/BridgeBlogPage.astro';
+import BlogPage from "~/components/pages/BlogPage.astro";
 ---
 
-<BridgeBlogPage locale="de" />
+<BlogPage locale="de" />

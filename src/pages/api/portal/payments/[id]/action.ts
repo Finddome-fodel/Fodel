@@ -13,6 +13,7 @@ import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
+import { intlTag } from '~/lib/format';
 import { listingTitle, publishProperty, publicUrl, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
 import { logEvent } from '~/lib/activity';
 import { SITE_URL } from '~/config/site.mjs';
@@ -113,9 +114,9 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           const locale = localeOf(owner);
           const title = await listingTitle(admin, order.property_id, locale, property.ref);
           await deliver(owner.email, templates.paymentReceipt(locale, {
-            ref: property.ref, title, items: linesForEmail((order.line_items ?? []) as OrderLine[]),
-            discount: order.discount_cents ? `−${formatCents(order.discount_cents)}` : undefined,
-            total: formatCents(order.amount_cents), paidAt: paidAt.toLocaleDateString(locale === 'hu' ? 'hu-HU' : 'nl-NL'),
+            ref: property.ref, title, items: linesForEmail((order.line_items ?? []) as OrderLine[], locale),
+            discount: order.discount_cents ? `−${formatCents(order.discount_cents, locale)}` : undefined,
+            total: formatCents(order.amount_cents, locale), paidAt: paidAt.toLocaleDateString(intlTag(locale)),
           }));
         }
       }
@@ -146,9 +147,9 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const shared = {
       ref: property.ref,
       title,
-      items: linesForEmail(lines),
-      discount: order.discount_cents ? `−${formatCents(order.discount_cents)}` : undefined,
-      total: formatCents(order.amount_cents),
+      items: linesForEmail(lines, locale),
+      discount: order.discount_cents ? `−${formatCents(order.discount_cents, locale)}` : undefined,
+      total: formatCents(order.amount_cents, locale),
       payUrl: `${SITE_URL}/portal/properties/${order.property_id}`,
     };
     const email = property.status === 'published'
@@ -156,7 +157,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           ...shared,
           viewUrl: await publicUrl(property, locale),
           dueDate: order.due_at
-            ? new Date(order.due_at).toLocaleDateString(locale === 'hu' ? 'hu-HU' : 'nl-NL')
+            ? new Date(order.due_at).toLocaleDateString(intlTag(locale))
             : '—',
         })
       : templates.approvedAwaitingPayment(locale, shared);

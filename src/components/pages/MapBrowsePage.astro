@@ -18,7 +18,7 @@
 import Base from '~/layouts/Base.astro';
 import Eyebrow from '~/components/Eyebrow.astro';
 import Map from '~/components/Map.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
 import { alternatesFor, crumbs } from '~/lib/page';
 import { breadcrumbSchema } from '~/lib/seo';
 
@@ -29,11 +29,15 @@ interface Props {
 const { locale } = Astro.props;
 const ui = UI[locale];
 
-const title = locale === 'hu' ? 'Ingatlanok térképen' : 'Woningen op de kaart';
-const description =
-  locale === 'hu'
-    ? 'Böngéssze a FODEL magyarországi ingatlanait térképen, régió szerint csoportosítva.'
-    : 'Blader door het Hongaarse vastgoed van FODEL op de kaart, gegroepeerd per regio.';
+const x = localizer(locale);
+const title = x('Ingatlanok térképen', 'Woningen op de kaart', 'Properties on the map', 'Immobilien auf der Karte', 'Les biens sur la carte');
+const description = x(
+  'Böngéssze a FODEL magyarországi ingatlanait térképen, régió szerint csoportosítva.',
+  'Blader door het Hongaarse vastgoed van FODEL op de kaart, gegroepeerd per regio.',
+  'Browse FODEL’s Hungarian properties on a map, grouped by region.',
+  'Stöbern Sie auf der Karte durch die ungarischen Immobilien von FODEL, nach Region gruppiert.',
+  'Parcourez sur la carte les biens hongrois de FODEL, regroupés par région.'
+);
 
 const trail = crumbs(locale, [
   { name: ui.nav.properties, url: path(locale, 'properties') },
@@ -67,7 +71,7 @@ const listHref = carriedQuery
       <h1>{title}</h1>
       <a href={listHref} class="list-link">{ui.filters.viewList}</a>
       <button type="button" id="search-this-area" class="area-btn">
-        {locale === 'hu' ? 'Keresés ezen a területen' : 'Zoek in dit gebied'}
+        {x('Keresés ezen a területen', 'Zoek in dit gebied', 'Search this area', 'In diesem Bereich suchen', 'Rechercher dans cette zone')}
       </button>
     </div>
     <div class="map-wrap">

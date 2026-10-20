@@ -7,6 +7,7 @@
  * One open renewal order per listing: a second click reuses it rather than
  * creating a second debt.
  */
+import type { Locale } from '~/i18n/ui';
 import { buildOrderLines, orderTotalCents, type OrderLine } from '~/lib/orders';
 import { getStripe } from '~/lib/stripe';
 import { getCompany } from '~/lib/runtime-config';
@@ -22,7 +23,7 @@ export type RenewalOrder = { id: string; amount_cents: number; line_items: Order
 export async function openRenewalOrder(
   admin: any,
   property: { id: string; owner_id: string | null },
-  locale: 'hu' | 'nl',
+  locale: Locale,
   contactEmail?: string | null
 ): Promise<RenewalOrder> {
   const { data: open } = await admin

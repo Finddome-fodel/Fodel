@@ -18,7 +18,7 @@ import PropertyCard from '~/components/PropertyCard.astro';
 import PointsList from '~/components/PointsList.astro';
 import FaqAccordion from '~/components/FaqAccordion.astro';
 import ParallaxCta from '~/components/ParallaxCta.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
 import { AGRI_HECTARE_LIMIT } from '~/config/company';
 import { copy } from '~/data/copy';
 import { faqFor, faqAnswerText } from '~/data/faq';
@@ -34,33 +34,65 @@ interface Props {
 const { locale } = Astro.props;
 const ui = UI[locale];
 const c = copy(locale).buyers;
-const hu = locale === 'hu';
+const x = localizer(locale);
 
 const buyerFaq = faqFor(locale, 'buyer').slice(0, 8);
 const featured = await homepageFeatured(3);
 
 // FAQ Q19 / Q21 — what FODEL say Dutch and Belgian buyers actually look for.
-const wants = hu
-  ? [
-      'Vidéki, reális árú ingatlanok',
-      'Hegyvidéki ingatlanok kilátással',
-      'Erdőszéli, erdőközeli ingatlanok',
-      'Kiadható nyaralók, vízparti ingatlanok',
-      'Állattartásra, lótartásra alkalmas tanyák',
-      'Nagy földterületek, agráringatlanok',
-      'Ferihegyhez jó közlekedéssel rendelkező ingatlanok',
-      'A Dunántúlon fekvő ingatlanok',
-    ]
-  : [
-      'Landelijk gelegen woningen met een reële prijs',
-      'Woningen op een heuvel, met uitzicht',
-      'Panden aan de bosrand',
-      'Verhuurbare vakantiehuizen en waterkant',
-      'Boerderijen geschikt voor vee en paarden',
-      'Grote percelen en agrarisch vastgoed',
-      'Goede verbinding met de luchthaven van Boedapest',
-      'Vastgoed in Transdanubië',
-    ];
+const wantsByLocale = {
+  hu: [
+    'Vidéki, reális árú ingatlanok',
+    'Hegyvidéki ingatlanok kilátással',
+    'Erdőszéli, erdőközeli ingatlanok',
+    'Kiadható nyaralók, vízparti ingatlanok',
+    'Állattartásra, lótartásra alkalmas tanyák',
+    'Nagy földterületek, agráringatlanok',
+    'Ferihegyhez jó közlekedéssel rendelkező ingatlanok',
+    'A Dunántúlon fekvő ingatlanok',
+  ],
+  nl: [
+    'Landelijk gelegen woningen met een reële prijs',
+    'Woningen op een heuvel, met uitzicht',
+    'Panden aan de bosrand',
+    'Verhuurbare vakantiehuizen en waterkant',
+    'Boerderijen geschikt voor vee en paarden',
+    'Grote percelen en agrarisch vastgoed',
+    'Goede verbinding met de luchthaven van Boedapest',
+    'Vastgoed in Transdanubië',
+  ],
+  en: [
+    'Rural properties at a realistic price',
+    'Hilltop properties with a view',
+    'Properties at the edge of a forest',
+    'Holiday homes to let, and waterside properties',
+    'Farms suitable for livestock and horses',
+    'Large plots and agricultural property',
+    'Good links to Budapest airport',
+    'Property in Transdanubia',
+  ],
+  de: [
+    'Ländliche Immobilien zu einem realistischen Preis',
+    'Immobilien auf einem Hügel, mit Aussicht',
+    'Objekte am Waldrand',
+    'Vermietbare Ferienhäuser und Immobilien am Wasser',
+    'Höfe, geeignet für Vieh und Pferde',
+    'Große Grundstücke und Agrarimmobilien',
+    'Gute Anbindung an den Flughafen Budapest',
+    'Immobilien in Transdanubien',
+  ],
+  fr: [
+    'Des biens à la campagne, à un prix réaliste',
+    'Des biens sur les collines, avec vue',
+    'Des biens en lisière de forêt',
+    'Des maisons de vacances à louer et des biens au bord de l’eau',
+    'Des fermes adaptées au bétail et aux chevaux',
+    'De grands terrains et des biens agricoles',
+    'Une bonne liaison avec l’aéroport de Budapest',
+    'Des biens en Transdanubie',
+  ],
+};
+const wants = wantsByLocale[locale];
 ---
 
 <Base
@@ -80,7 +112,7 @@ const wants = hu
     titleEm={c.hero.titleEm}
     body={c.hero.body}
     image={vevoknek}
-    imageAlt={hu ? 'Felújított magyar parasztház belső tere' : 'Interieur van een gerenoveerde Hongaarse woning'}
+    imageAlt={x('Felújított magyar parasztház belső tere', 'Interieur van een gerenoveerde Hongaarse woning', 'Interior of a renovated Hungarian farmhouse', 'Innenraum eines renovierten ungarischen Bauernhauses', 'Intérieur d’une maison hongroise rénovée')}
     primary={{ label: c.hero.cta, href: path(locale, 'properties') }}
     secondary={{ label: c.hero.secondary, href: path(locale, 'searchRequest') }}
   />
@@ -89,28 +121,32 @@ const wants = hu
   <section class="direct slab surface-ink" data-bg="dark">
     <p class="direct-source reveal">
       <span class="direct-rule draw" aria-hidden="true"></span>
-      {hu ? 'A FODEL-modell' : 'Het FODEL-model'}
+      {x('A FODEL-modell', 'Het FODEL-model', 'The FODEL model', 'Das FODEL-Modell', 'Le modèle FODEL')}
     </p>
     <h2 class="direct-statement" data-words>
-      {
-        hu
-          ? 'A hirdetésben a tulajdonos neve és telefonszáma is szerepel.'
-          : 'Bij de advertentie staan ook de naam en het nummer van de eigenaar.'
-      }
+      {x(
+        'A hirdetésben a tulajdonos neve és telefonszáma is szerepel.',
+        'Bij de advertentie staan ook de naam en het nummer van de eigenaar.',
+        'The owner’s name and number are in the listing too.',
+        'Beim Inserat stehen auch Name und Nummer des Eigentümers.',
+        'L’annonce indique aussi le nom et le numéro du propriétaire.'
+      )}
     </h2>
 
     <div class="direct-foot">
       <p class="direct-body reveal">
-        {
-          hu
-            ? 'Ez nem szlogen, hanem a modellünk lényege. Ahol a tulajdonos hozzájárult, ott közvetlenül felveheti vele a kapcsolatot. Ha így köti meg az üzletet, sem Önnek, sem az eladónak nem kell jutalékot fizetnie. Mi a hirdetésért kaptunk díjat.'
-            : 'Dat is geen slogan maar de kern van ons model. Waar de eigenaar daarmee heeft ingestemd, kunt u rechtstreeks contact opnemen. Regelt u de koop zo, dan betaalt niemand courtage. Wij zijn al betaald voor de advertentie.'
-        }
+        {x(
+          'Ez nem szlogen, hanem a modellünk lényege. Ahol a tulajdonos hozzájárult, ott közvetlenül felveheti vele a kapcsolatot. Ha így köti meg az üzletet, sem Önnek, sem az eladónak nem kell jutalékot fizetnie. Mi a hirdetésért kaptunk díjat.',
+          'Dat is geen slogan maar de kern van ons model. Waar de eigenaar daarmee heeft ingestemd, kunt u rechtstreeks contact opnemen. Regelt u de koop zo, dan betaalt niemand courtage. Wij zijn al betaald voor de advertentie.',
+          'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
+          'Das ist kein Slogan, sondern der Kern unseres Modells. Wo der Eigentümer zugestimmt hat, können Sie ihn direkt kontaktieren. Regeln Sie den Kauf auf diesem Weg, fällt für niemanden Provision an. Wir sind für das Inserat bereits bezahlt.',
+          'Ce n’est pas un slogan, c’est le cœur de notre modèle. Lorsque le propriétaire y a consenti, vous pouvez le contacter directement. Si vous réglez l’achat ainsi, personne ne paie de commission. Nous avons déjà été rémunérés pour l’annonce.'
+        )}
       </p>
       <div class="direct-figure reveal">
         <span class="pct num">0<span class="pct-sign">%</span></span>
         <span class="pct-note">
-          {hu ? 'jutalék közvetlen üzletkötésnél' : 'courtage bij een directe koop'}
+          {x('jutalék közvetlen üzletkötésnél', 'courtage bij een directe koop', 'commission on a direct purchase', 'Provision bei direktem Kauf', 'de commission en cas d’achat direct')}
         </span>
       </div>
     </div>
@@ -124,7 +160,7 @@ const wants = hu
         <PointsList items={c.services.points} />
         <div class="services-more">
           <Button variant="text" href={path(locale, 'services')}>
-            {hu ? 'Szolgáltatások és díjak' : 'Diensten en tarieven'}
+            {x('Szolgáltatások és díjak', 'Diensten en tarieven', 'Services and prices', 'Leistungen und Preise', 'Services et tarifs')}
           </Button>
         </div>
       </div>
@@ -140,24 +176,30 @@ const wants = hu
   <section class="agri">
     <div class="agri-figure reveal" aria-hidden="true">
       <span class="ha num">{AGRI_HECTARE_LIMIT}</span>
-      <span class="ha-unit">{hu ? 'hektár' : 'hectare'}</span>
+      <span class="ha-unit">{x('hektár', 'hectare', 'hectares', 'Hektar', 'hectares')}</span>
     </div>
     <div class="agri-copy reveal">
       <SectionHead
-        eyebrow={hu ? 'Agráringatlan' : 'Agrarisch vastgoed'}
-        title={hu
-          ? `Agrárvégzettséggel ${AGRI_HECTARE_LIMIT} hektárig vásárolhat`
-          : `Met een agrarische kwalificatie tot ${AGRI_HECTARE_LIMIT} hectare`}
+        eyebrow={x('Agráringatlan', 'Agrarisch vastgoed', 'Agricultural property', 'Agrarimmobilien', 'Immobilier agricole')}
+        title={x(
+          `Agrárvégzettséggel ${AGRI_HECTARE_LIMIT} hektárig vásárolhat`,
+          `Met een agrarische kwalificatie tot ${AGRI_HECTARE_LIMIT} hectare`,
+          `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
+          `Mit landwirtschaftlicher Qualifikation bis zu ${AGRI_HECTARE_LIMIT} Hektar kaufen`,
+          `Jusqu’à ${AGRI_HECTARE_LIMIT} hectares avec une qualification agricole`
+        )}
       />
       <p>
-        {
-          hu
-            ? `Uniós állampolgár agrárvégzettséggel Magyarországon összesen ${AGRI_HECTARE_LIMIT} hektár földterület megvásárlására jogosult. Ennek a procedúrának a teljes körű leszervezését a FODEL vállalja.`
-            : `Een EU-burger met een agrarische kwalificatie mag in Hongarije in totaal ${AGRI_HECTARE_LIMIT} hectare grond verwerven. Die hele procedure regelen wij voor u.`
-        }
+        {x(
+          `Uniós állampolgár agrárvégzettséggel Magyarországon összesen ${AGRI_HECTARE_LIMIT} hektár földterület megvásárlására jogosult. Ennek a procedúrának a teljes körű leszervezését a FODEL vállalja.`,
+          `Een EU-burger met een agrarische kwalificatie mag in Hongarije in totaal ${AGRI_HECTARE_LIMIT} hectare grond verwerven. Die hele procedure regelen wij voor u.`,
+          `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
+          `Ein EU-Bürger mit landwirtschaftlicher Qualifikation darf in Ungarn insgesamt ${AGRI_HECTARE_LIMIT} Hektar Land erwerben. Das gesamte Verfahren übernehmen wir für Sie.`,
+          `Un citoyen de l’UE titulaire d’une qualification agricole peut acquérir au total ${AGRI_HECTARE_LIMIT} hectares de terres en Hongrie. Nous nous chargeons de toute la procédure.`
+        )}
       </p>
       <Button variant="outline" href={path(locale, 'agricultural')}>
-        {hu ? 'Részletek' : 'Meer hierover'}
+        {x('Részletek', 'Meer hierover', 'More on this', 'Mehr dazu', 'En savoir plus')}
       </Button>
     </div>
   </section>
@@ -167,8 +209,8 @@ const wants = hu
     featured.length > 0 && (
       <section class="featured slab">
         <SectionHead
-          eyebrow={hu ? 'Válogatás' : 'Selectie'}
-          title={hu ? 'Kiemelt ingatlanok' : 'Uitgelicht aanbod'}
+          eyebrow={x('Válogatás', 'Selectie', 'Selection', 'Auswahl', 'Sélection')}
+          title={x('Kiemelt ingatlanok', 'Uitgelicht aanbod', 'Featured properties', 'Empfohlene Immobilien', 'Biens à la une')}
           size="large"
           class="feat-head reveal"
         >
@@ -197,22 +239,24 @@ const wants = hu
 
   {/* ── Buyer FAQ ── */}
   <FaqAccordion
-    eyebrow={hu ? 'Gyakori kérdések' : 'Veelgestelde vragen'}
-    title={hu ? 'Amit a vevők kérdezni szoktak' : 'Wat kopers ons vragen'}
+    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes')}
+    title={x('Amit a vevők kérdezni szoktak', 'Wat kopers ons vragen', 'What buyers ask us', 'Was Käufer uns fragen', 'Ce que nous demandent les acheteurs')}
     entries={buyerFaq}
     moreHref={path(locale, 'faq')}
-    moreLabel={hu ? 'Összes kérdés és válasz' : 'Alle vragen en antwoorden'}
+    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses')}
   />
 
   <ParallaxCta
-    eyebrow={hu ? 'Nem találta meg?' : 'Niet gevonden?'}
-    title={hu ? 'Kerestesse velünk' : 'Laat ons zoeken'}
-    titleEm={hu ? 'díjmentesen' : 'zonder kosten'}
-    body={
-      hu
-        ? 'Adja meg, mit keres. A nem hirdetett kínálatból is keresünk Önnek.'
-        : 'Geef door wat u zoekt. Wij zoeken ook buiten het geadverteerde aanbod.'
-    }
+    eyebrow={x('Nem találta meg?', 'Niet gevonden?', 'Cannot find it?', 'Nichts Passendes gefunden?', 'Pas trouvé\u202f?')}
+    title={x('Kerestesse velünk', 'Laat ons zoeken', 'Let us search', 'Wir suchen', 'Laissez-nous chercher')}
+    titleEm={x('díjmentesen', 'zonder kosten', 'free of charge', 'kostenlos für Sie', 'gratuitement')}
+    body={x(
+      'Adja meg, mit keres. A nem hirdetett kínálatból is keresünk Önnek.',
+      'Geef door wat u zoekt. Wij zoeken ook buiten het geadverteerde aanbod.',
+      'Tell us what you are looking for. We also search beyond the properties we advertise.',
+      'Sagen Sie uns, was Sie suchen. Wir suchen auch außerhalb des inserierten Angebots.',
+      'Dites-nous ce que vous cherchez. Nous cherchons aussi au-delà des biens annoncés.'
+    )}
     primary={{ label: ui.cta.searchRequest, href: path(locale, 'searchRequest') }}
     secondary={{ label: ui.cta.contact, href: path(locale, 'contact') }}
   />

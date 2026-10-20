@@ -1,0 +1,7 @@
+---
+export const prerender = true;
+import ContentPage from '~/components/pages/ContentPage.astro';
+import { LEGAL } from '~/data/pages-legal';
+---
+
+<ContentPage locale="en" routeKey="imprint" data={LEGAL.en.imprint} />

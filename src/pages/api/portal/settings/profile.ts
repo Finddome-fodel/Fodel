@@ -1,19 +1,23 @@
 import type { APIRoute } from 'astro';
-import { validateField, errorMessage, normalizePhone, defaultPhoneCountry, isPhoneCountry } from '~/lib/validation';
+import { validateField, normalizePhone, defaultPhoneCountry, isPhoneCountry } from '~/lib/validation';
+import { localeFrom } from '~/i18n/ui';
+import { portalLang } from '~/lib/portal/auth-copy';
+import { errorMessage } from '~/lib/validation-server';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const { supabase, user } = locals;
   const form = await request.formData();
-  const locale = locals.profile?.locale === 'nl' ? 'nl' : 'hu';
+  const profileLocale = localeFrom(locals.profile?.locale, 'hu');
+  const locale = portalLang(profileLocale);
   const full_name = String(form.get('full_name') ?? '').trim() || null;
   let phone = String(form.get('phone') ?? '').trim() || null;
 
   // Stored in E.164, checked against the country picked beside it.
   if (phone) {
     const picked = String(form.get('phoneCountry') ?? '');
-    const country = isPhoneCountry(picked) ? picked : defaultPhoneCountry(locale);
+    const country = isPhoneCountry(picked) ? picked : defaultPhoneCountry(profileLocale);
     const normalised = normalizePhone(phone, country);
     if (!normalised.ok) {
       const problem = validateField({ rule: 'phone' }, phone, country);

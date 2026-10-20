@@ -17,6 +17,8 @@ import { ROUTES } from '~/i18n/ui';
 import { getTaxonomy, getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import { deliver, localeOf, templates } from '~/lib/email/send';
+import { intlTag } from '~/lib/format';
+import type { Locale } from '~/i18n/ui';
 import { logEvent } from '~/lib/activity';
 import { addMonths, renewedExpiry } from '~/lib/listing-rules';
 import { lifecycleEmails } from '~/lib/email/lifecycle';
@@ -24,7 +26,7 @@ import { lifecycleEmails } from '~/lib/email/lifecycle';
 /** The public URL of a listing, in the owner's own language. */
 export async function publicUrl(
   property: { category: string; ref: string },
-  locale: 'hu' | 'nl' = 'hu'
+  locale: Locale = 'hu'
 ): Promise<string> {
   const taxonomy = await getTaxonomy();
   const slug = taxonomy.category.find((term) => term.key === property.category)?.slugs[locale] ?? property.category;
@@ -136,19 +138,24 @@ async function notifyOwnerPublished(
 export async function listingTitle(
   client: any,
   propertyId: string,
-  locale: 'hu' | 'nl',
+  locale: Locale,
   ref: string
 ): Promise<string> {
   const { data } = await client
     .from('property_translations')
     .select('locale, title')
     .eq('property_id', propertyId)
-    .in('locale', [locale, 'hu']);
+    .in('locale', [locale, 'nl', 'hu']);
 
+  // The owner's language, then (for English, German and French, which read
+  // the Dutch text on the site) Dutch, then Hungarian, which always exists.
   const rows = (data ?? []) as { locale: string; title: string }[];
-  const preferred = rows.find((row) => row.locale === locale)?.title;
-  const hungarian = rows.find((row) => row.locale === 'hu')?.title;
-  return preferred || hungarian || `#${ref}`;
+  const order: string[] = locale === 'hu' || locale === 'nl' ? [locale, 'hu'] : [locale, 'nl', 'hu'];
+  for (const code of order) {
+    const title = rows.find((row) => row.locale === code)?.title;
+    if (title) return title;
+  }
+  return `#${ref}`;
 }
 
 /* ── Renewal ──────────────────────────────────────────────────────────────
@@ -211,7 +218,7 @@ export async function renewProperty(
         ref: property.ref,
         title: await listingTitle(client, propertyId, locale, property.ref),
         url: await publicUrl(property, locale),
-        expiresOn: next.toLocaleDateString(locale === 'nl' ? 'nl-NL' : 'hu-HU', { year: 'numeric', month: 'long', day: 'numeric' }),
+        expiresOn: next.toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }),
       }));
     }
   }

@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { deleteImage } from '~/lib/media';
+import { isLocale } from '~/i18n/ui';
 import { OWNER_EDITABLE } from '~/lib/portal/properties';
 
 export const prerender = false;
@@ -94,7 +95,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Dutch and, until the office translates it, also stands in for the
     // Hungarian one — an image with no description at all is the worse
     // outcome for the accessibility check.
-    patch.alt = !alt ? {} : body.locale === 'nl' ? { hu: alt, nl: alt } : { hu: alt };
+    patch.alt = !alt ? {} : typeof body.locale === 'string' && isLocale(body.locale) && body.locale !== 'hu' ? { hu: alt, [body.locale]: alt } : { hu: alt };
   }
 
   if (Object.keys(patch).length > 0) {

@@ -13,11 +13,25 @@ export type Hours = {
   callback: { to: string; includesWeekends: boolean };
 };
 
-type L = 'hu' | 'nl' | 'en' | 'de';
+import type { Locale } from '~/i18n/ui';
+
+type L = Locale;
+
+/** "21:00" → "21 h" (French writes the hour, with a no-break space before the h). */
+const frTime = (hhmm: string) => {
+  const [h, m] = hhmm.split(':');
+  return m === '00' ? `${Number(h)}\u00a0h` : `${Number(h)}\u00a0h\u00a0${m}`;
+};
 
 export function officeHours(h: Hours, locale: L): string {
   const range = `${h.weekdays.from}–${h.weekdays.to}`;
-  return { hu: `Hétfő–péntek · ${range}`, nl: `Maandag–vrijdag · ${range}`, en: `Monday–Friday · ${range}`, de: `Montag–Freitag · ${range}` }[locale];
+  return {
+    hu: `Hétfő–péntek · ${range}`,
+    nl: `Maandag–vrijdag · ${range}`,
+    en: `Monday–Friday · ${range}`,
+    de: `Montag–Freitag · ${range}`,
+    fr: `Lundi–vendredi · ${range}`,
+  }[locale];
 }
 
 export function callbackHours(h: Hours, locale: L): string {
@@ -28,6 +42,7 @@ export function callbackHours(h: Hours, locale: L): string {
     nl: weekend ? `Terugbellen tot ${to} uur, ook in het weekend.` : `Terugbellen op werkdagen tot ${to} uur.`,
     en: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
     de: weekend ? `Rückruf bis ${to} Uhr, auch am Wochenende.` : `Rückruf werktags bis ${to} Uhr.`,
+    fr: weekend ? `Rappel jusqu’à ${frTime(to)}, week-end compris.` : `Rappel en semaine jusqu’à ${frTime(to)}.`,
   }[locale];
 }
 
@@ -41,6 +56,7 @@ export function hoursSentence(h: Hours, locale: L): string {
     nl: `Bel ons op werkdagen tussen ${from} en ${to}; terugbellen kan tot ${cb} uur${weekend ? ', ook in het weekend' : ''}.`,
     en: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
     de: `Rufen Sie uns werktags zwischen ${from} und ${to} an; Rückrufe bis ${cb} Uhr${weekend ? ', auch am Wochenende' : ''}.`,
+    fr: `Appelez-nous en semaine entre ${frTime(from)} et ${frTime(to)}\u00a0; nous rappelons jusqu’à ${frTime(cb)}${weekend ? ', week-end compris' : ''}.`,
   }[locale];
 }
 

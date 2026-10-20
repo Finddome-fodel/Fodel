@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import { handleForm } from '~/lib/form-handler';
 import type { FieldError } from '~/lib/validation';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
@@ -54,7 +55,7 @@ export const POST: APIRoute = (context) =>
         email: values.email,
         phone: values.phone || null,
         message: values.message || null,
-        locale: extras.Locale === 'nl' ? 'nl' : 'hu',
+        locale: localeFrom(extras.Locale, 'hu'),
       };
       // contact_pref arrives with migration 0016; until it runs, save without it.
       let { data: saved, error: insertError } = await admin

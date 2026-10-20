@@ -2,20 +2,30 @@
  * Emails of a live listing's life after publication — expiry reminders,
  * expiry, renewal, the monthly "still for sale?" check — plus the newsletter
  * confirmation. Same shell, helpers and tone as templates.ts; the copy lives
- * here rather than in copy/{hu,nl}.ts because it is one self-contained round
+ * here rather than in copy/<lang>.ts because it is one self-contained round
  * (the invoicing emails follow the same pattern).
  *
- * Owners read Hungarian or Dutch (profiles.locale → localeOf). The newsletter
- * also speaks English and German, because the EN/DE pages collect sign-ups.
+ * Every email speaks the recipient's language (profiles.locale → localeOf;
+ * a newsletter sign-up, the page's own). All five languages are written out
+ * below, side by side, so none can be forgotten.
  */
 import { shell, textShell, h1, p, lead, small, button, facts, textLink, esc, type EmailLocale, type ShellLocale } from './layout';
 import type { BuiltEmail } from './templates';
 import { COMPANY } from '~/config/company';
 
-const sign = { hu: 'Üdvözlettel,\nFODEL Ingatlan', nl: 'Met vriendelijke groet,\nFODEL Vastgoed' };
-const questions = {
+const sign: Record<EmailLocale, string> = {
+  hu: 'Üdvözlettel,\nFODEL Ingatlan',
+  nl: 'Met vriendelijke groet,\nFODEL Vastgoed',
+  en: 'Kind regards,\nFODEL Real Estates',
+  de: 'Mit freundlichen Grüßen\nFODEL Immobilien',
+  fr: 'Cordialement,\nFODEL Immobilier',
+};
+const questions: Record<EmailLocale, string> = {
   hu: `Kérdése van? Válaszoljon erre a levélre, vagy hívjon minket: ${COMPANY.phones[0].display}.`,
   nl: `Vragen? Beantwoord deze e-mail of bel ons: ${COMPANY.phones[0].display}.`,
+  en: `Questions? Reply to this email or call us: ${COMPANY.phones[0].display}.`,
+  de: `Fragen? Antworten Sie auf diese E-Mail oder rufen Sie uns an: ${COMPANY.phones[0].display}.`,
+  fr: `Une question\u202f? Répondez à cet e-mail ou appelez-nous\u00a0: ${COMPANY.phones[0].display}.`,
 };
 const signOff = (l: EmailLocale) => small(questions[l]) + p(sign[l]);
 const textSign = (l: EmailLocale) => `${questions[l]}\n\n${sign[l]}`;
@@ -47,6 +57,39 @@ const EXPIRY = {
     view: 'Advertentie bekijken',
     labels: { ref: 'Referentie', ends: 'Vervaldatum' },
     sold: 'Is de woning inmiddels verkocht? Laat het ons weten door deze e-mail te beantwoorden.',
+  },
+  en: {
+    subject: (d: number) => `Your listing expires in ${d} days | FODEL`,
+    preheader: 'One click extends it by 6 months.',
+    heading: 'Your listing expires soon',
+    intro: (t: string, d: number, on: string) => `Your listing “${t}” expires in ${d} days, on ${on}. After that it comes off the site.`,
+    body: (price: string) => `If the property is still for sale, extend it by 6 months (${price}). You can pay by card or bank transfer; the extension starts on the expiry date, so you lose not a single day.`,
+    cta: 'Extend listing',
+    view: 'View listing',
+    labels: { ref: 'Reference', ends: 'Expiry date' },
+    sold: 'If it has sold in the meantime, let us know by replying to this email.',
+  },
+  de: {
+    subject: (d: number) => `Ihr Inserat läuft in ${d} Tagen ab | FODEL`,
+    preheader: 'Mit einem Klick verlängern Sie um 6 Monate.',
+    heading: 'Ihr Inserat läuft bald ab',
+    intro: (t: string, d: number, on: string) => `Ihr Inserat „${t}“ läuft in ${d} Tagen ab, am ${on}. Danach verschwindet es von der Website.`,
+    body: (price: string) => `Ist die Immobilie noch zu haben, verlängern Sie um 6 Monate (${price}). Sie zahlen per Karte oder Überweisung; die Verlängerung beginnt am Ablauftag, Sie verlieren also keinen Tag.`,
+    cta: 'Inserat verlängern',
+    view: 'Inserat ansehen',
+    labels: { ref: 'Referenz', ends: 'Ablaufdatum' },
+    sold: 'Ist sie inzwischen verkauft? Teilen Sie es uns mit, indem Sie auf diese E-Mail antworten.',
+  },
+  fr: {
+    subject: (d: number) => `Votre annonce expire dans ${d} jours | FODEL`,
+    preheader: 'Un clic suffit pour la prolonger de 6 mois.',
+    heading: 'Votre annonce expire bientôt',
+    intro: (t: string, d: number, on: string) => `Votre annonce «\u00a0${t}\u00a0» expire dans ${d} jours, le ${on}. Elle sera ensuite retirée du site.`,
+    body: (price: string) => `Si le bien est toujours à vendre, prolongez l’annonce de 6 mois (${price}). Vous pouvez payer par carte ou par virement\u00a0; la prolongation débute à la date d’expiration, vous ne perdez donc aucun jour.`,
+    cta: 'Prolonger l’annonce',
+    view: 'Voir l’annonce',
+    labels: { ref: 'Référence', ends: 'Date d’expiration' },
+    sold: 'Le bien est entre-temps vendu\u202f? Dites-le-nous en répondant à cet e-mail.',
   },
 };
 
@@ -88,6 +131,30 @@ const EXPIRED = {
     body: (price: string) => `Is de woning nog te koop? Verleng dan met 6 maanden (${price}): na betaling staat de advertentie direct weer online, op hetzelfde adres.`,
     cta: 'Verlengen en weer online',
   },
+  en: {
+    subject: 'Your listing has expired: one click and it is back online',
+    preheader: 'After renewal it is back online straight away.',
+    heading: 'Your listing has expired',
+    intro: (t: string) => `The listing “${t}” has expired and is no longer on the site. Your details and photos have been kept.`,
+    body: (price: string) => `If the property is still for sale, extend it by 6 months (${price}): after payment the listing is back online straight away, at the same address.`,
+    cta: 'Extend and put back online',
+  },
+  de: {
+    subject: 'Ihr Inserat ist abgelaufen: mit einem Klick wieder online',
+    preheader: 'Nach der Verlängerung ist es sofort wieder online.',
+    heading: 'Ihr Inserat ist abgelaufen',
+    intro: (t: string) => `Das Inserat „${t}“ ist abgelaufen und nicht mehr auf der Website. Ihre Angaben und Fotos bleiben erhalten.`,
+    body: (price: string) => `Ist die Immobilie noch zu haben, verlängern Sie um 6 Monate (${price}): Nach der Zahlung ist das Inserat sofort wieder online, unter derselben Adresse.`,
+    cta: 'Verlängern und wieder online stellen',
+  },
+  fr: {
+    subject: 'Votre annonce a expiré\u00a0: un clic et elle est de nouveau en ligne',
+    preheader: 'Après la prolongation, elle est aussitôt de nouveau en ligne.',
+    heading: 'Votre annonce a expiré',
+    intro: (t: string) => `L’annonce «\u00a0${t}\u00a0» a expiré et n’est plus sur le site. Vos informations et vos photos sont conservées.`,
+    body: (price: string) => `Si le bien est toujours à vendre, prolongez l’annonce de 6 mois (${price})\u00a0: après le paiement, elle est aussitôt de nouveau en ligne, à la même adresse.`,
+    cta: 'Prolonger et remettre en ligne',
+  },
 };
 
 function listingExpired(locale: EmailLocale, a: ExpiredArgs): BuiltEmail {
@@ -115,6 +182,27 @@ const RENEWED = {
     heading: 'Verlengd',
     intro: (t: string, on: string) => `De advertentie „${t}” blijft online tot ${on}. Dank u wel!`,
     cta: 'Advertentie bekijken',
+  },
+  en: {
+    subject: 'Your listing has been extended | FODEL',
+    preheader: 'The new expiry date is in this email.',
+    heading: 'Extended',
+    intro: (t: string, on: string) => `The listing “${t}” now runs until ${on}. Thank you.`,
+    cta: 'View listing',
+  },
+  de: {
+    subject: 'Ihr Inserat wurde verlängert | FODEL',
+    preheader: 'Das neue Ablaufdatum steht in dieser E-Mail.',
+    heading: 'Verlängert',
+    intro: (t: string, on: string) => `Das Inserat „${t}“ läuft nun bis ${on}. Vielen Dank.`,
+    cta: 'Inserat ansehen',
+  },
+  fr: {
+    subject: 'Votre annonce a été prolongée | FODEL',
+    preheader: 'La nouvelle date d’expiration figure dans cet e-mail.',
+    heading: 'Prolongée',
+    intro: (t: string, on: string) => `L’annonce «\u00a0${t}\u00a0» reste en ligne jusqu’au ${on}. Merci.`,
+    cta: 'Voir l’annonce',
   },
 };
 
@@ -149,6 +237,33 @@ const TRANSFER = {
     labels: { amount: 'Bedrag', account: 'Rekening', reference: 'Omschrijving' },
     note: 'Toch liever per kaart betalen? Dat kan altijd via de knop hieronder.',
     cta: 'Betaalmogelijkheden',
+  },
+  en: {
+    subject: (r: string) => `Extension by bank transfer (#${r})`,
+    preheader: 'The payment details; once it arrives we extend the listing.',
+    heading: 'Extension by bank transfer',
+    intro: (t: string) => `Thank you. We extend the listing “${t}” as soon as the payment arrives.`,
+    labels: { amount: 'Amount', account: 'Account', reference: 'Reference' },
+    note: 'Prefer to pay by card after all? You can always do so with the button below.',
+    cta: 'Ways to pay',
+  },
+  de: {
+    subject: (r: string) => `Verlängerung per Überweisung (#${r})`,
+    preheader: 'Die Zahlungsdaten; nach Zahlungseingang verlängern wir das Inserat.',
+    heading: 'Verlängerung per Überweisung',
+    intro: (t: string) => `Vielen Dank. Wir verlängern das Inserat „${t}“, sobald die Zahlung eingegangen ist.`,
+    labels: { amount: 'Betrag', account: 'Konto', reference: 'Verwendungszweck' },
+    note: 'Lieber doch mit Karte zahlen? Das geht jederzeit über die Schaltfläche unten.',
+    cta: 'Zahlungsmöglichkeiten',
+  },
+  fr: {
+    subject: (r: string) => `Prolongation par virement (#${r})`,
+    preheader: 'Les coordonnées de paiement\u00a0; à réception, nous prolongeons l’annonce.',
+    heading: 'Prolongation par virement',
+    intro: (t: string) => `Merci. Nous prolongeons l’annonce «\u00a0${t}\u00a0» dès que le paiement arrive.`,
+    labels: { amount: 'Montant', account: 'Compte', reference: 'Référence' },
+    note: 'Vous préférez finalement payer par carte\u202f? C’est toujours possible avec le bouton ci-dessous.',
+    cta: 'Moyens de paiement',
   },
 };
 
@@ -190,6 +305,42 @@ const REFRESH = {
     sold: 'Verkocht',
     how: 'Eén klik volstaat, inloggen is niet nodig. Een nieuwe prijs passen wij direct aan.',
     valid: (d: string) => `De links zijn geldig tot ${d}.`,
+  },
+  en: {
+    subject: (t: string, r: boolean) => `${r ? 'Reminder: ' : ''}Still for sale? · ${t}`,
+    preheader: 'One click, no sign-in.',
+    heading: 'Is the property still for sale?',
+    intro: (t: string, price: string) => `Once a month we ask whether the listing “${t}” (${price}) is still current. Buyers trust listings that are accurate.`,
+    reminder: 'We asked you a week ago, but have not had an answer yet.',
+    still: 'Yes, still for sale',
+    price: 'The price has changed',
+    sold: 'Sold',
+    how: 'One click is enough, no need to sign in. We update a new price straight away.',
+    valid: (d: string) => `The links are valid until ${d}.`,
+  },
+  de: {
+    subject: (t: string, r: boolean) => `${r ? 'Erinnerung: ' : ''}Noch zu verkaufen? · ${t}`,
+    preheader: 'Ein Klick, ohne Anmeldung.',
+    heading: 'Ist die Immobilie noch zu verkaufen?',
+    intro: (t: string, price: string) => `Einmal im Monat fragen wir, ob das Inserat „${t}“ (${price}) noch aktuell ist. Käufer vertrauen Inseraten, die stimmen.`,
+    reminder: 'Wir haben Sie vor einer Woche danach gefragt, aber noch keine Antwort erhalten.',
+    still: 'Ja, noch zu verkaufen',
+    price: 'Der Preis hat sich geändert',
+    sold: 'Verkauft',
+    how: 'Ein Klick genügt, eine Anmeldung ist nicht nötig. Einen neuen Preis übernehmen wir sofort.',
+    valid: (d: string) => `Die Links sind bis ${d} gültig.`,
+  },
+  fr: {
+    subject: (t: string, r: boolean) => `${r ? 'Rappel\u00a0: ' : ''}Toujours à vendre\u202f? · ${t}`,
+    preheader: 'Un clic, sans connexion.',
+    heading: 'Le bien est-il toujours à vendre\u202f?',
+    intro: (t: string, price: string) => `Une fois par mois, nous demandons si l’annonce «\u00a0${t}\u00a0» (${price}) est toujours d’actualité. Les acheteurs font confiance aux annonces exactes.`,
+    reminder: 'Nous vous avons posé la question il y a une semaine, sans réponse pour le moment.',
+    still: 'Oui, toujours à vendre',
+    price: 'Le prix a changé',
+    sold: 'Vendu',
+    how: 'Un clic suffit, sans connexion. Un nouveau prix est mis à jour aussitôt.',
+    valid: (d: string) => `Les liens sont valables jusqu’au ${d}.`,
   },
 };
 
@@ -269,6 +420,16 @@ const NEWSLETTER: Record<ShellLocale, { subject: string; preheader: string; head
     ignore: 'Wenn Sie sich nicht angemeldet haben, ignorieren Sie diese E-Mail einfach: ohne Bestätigung senden wir nichts.',
     unsubscribe: 'Abmelden',
     why: 'Sie erhalten diese E-Mail, weil diese Adresse für den FODEL-Newsletter angemeldet wurde.',
+  },
+  fr: {
+    subject: 'Confirmez votre inscription | Lettre d’information FODEL',
+    preheader: 'Un clic, et nous vous envoyons les nouveaux biens.',
+    heading: 'Encore un clic',
+    intro: 'Merci de vous être inscrit à la lettre d’information de FODEL. Veuillez confirmer que c’est bien vous. Nous n’envoyons rien avant.',
+    cta: 'Confirmer l’inscription',
+    ignore: 'Si vous ne vous êtes pas inscrit, ignorez simplement cet e-mail\u00a0: sans confirmation, nous n’envoyons rien.',
+    unsubscribe: 'Se désabonner',
+    why: 'Vous recevez cet e-mail parce que cette adresse a été inscrite à la lettre d’information de FODEL.',
   },
 };
 

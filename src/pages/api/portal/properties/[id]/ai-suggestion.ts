@@ -5,6 +5,7 @@
  * server-side re-check the rest of the property editor already does.
  */
 import type { APIRoute } from 'astro';
+import { localeFrom } from '~/i18n/ui';
 import { suggestDescription } from '~/lib/ai/description';
 import { isAiEnabled, AiError } from '~/lib/ai/client';
 import { logEvent } from '~/lib/activity';
@@ -25,7 +26,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
   const body = await request.json().catch(() => ({}));
   const action = String(body.action ?? 'request');
-  const locale = body.locale === 'nl' ? 'nl' : 'hu';
+  const locale = localeFrom(body.locale, 'hu');
 
   if (action === 'request') {
     if (!isAiEnabled()) return json(503, { ok: false, error: 'ai-disabled' });

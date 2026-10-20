@@ -22,12 +22,13 @@ import Button from '~/components/Button.astro';
 import PackageCard from '~/components/PackageCard.astro';
 import PhotoTips from '~/components/PhotoTips.astro';
 import RegisterForm from '~/components/forms/RegisterForm.astro';
-import { LOCALE_META, path, type Locale } from '~/i18n/ui';
+import { LOCALE_META, path, localizer, type Locale } from '~/i18n/ui';
 import { getCompany } from '~/lib/runtime-config';
 import { TRANSLATION_LANGUAGES } from '~/config/company';
 import { listingCatalog, packageCard, priceFacts } from '~/lib/listing-packages';
 import { alternatesFor } from '~/lib/page';
-import { formatCents } from '~/lib/orders';
+import { approvedWording } from '~/lib/approved-text';
+import { eur, eurCents } from '~/lib/format';
 import { listingServiceSchema } from '~/lib/seo';
 
 interface Props {
@@ -35,14 +36,18 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const hu = locale === 'hu';
+const x = localizer(locale);
 const COMPANY = await getCompany();
-const refundPolicy = COMPANY.services.refundPolicy?.[locale]?.trim();
+// English, German and French readers see the approved Dutch wording, marked as Dutch.
+const refund = approvedWording(COMPANY.services.refundPolicy, locale);
+const refundPolicy = refund?.text;
+const refundLang = refund?.lang ?? locale;
 const catalog = listingCatalog(COMPANY.services);
 const fromEur = priceFacts(catalog).from;
 
-const t = hu
-  ? {
+const R = COMPANY.reach;
+const copies = {
+  hu: {
       metaTitle: 'Hirdetés feladása: hirdesse ingatlanát Nyugat-Európában',
       metaDescription:
         `Adja fel ingatlanhirdetését ${fromEur} €-tól. Jóváhagyás után azonnal megjelenik ${COMPANY.reach.languages} nyelven, ${COMPANY.reach.countries} országban, előrefizetés és kizárólagosság nélkül.`,
@@ -78,8 +83,8 @@ const t = hu
       alreadyTail: ', onnan új hirdetést is indíthat.',
       bankHead: 'Bankszámlaszámaink',
       bankNote: 'A jóváhagyáskor a hirdetés azonnal megjelenik; a díjat ezután ezekre a számlákra utalhatja, vagy bankkártyával rendezheti a saját felületén.',
-    }
-  : {
+    },
+  nl: {
       metaTitle: 'Advertentie plaatsen: uw woning in West-Europa',
       metaDescription:
         `Plaats uw advertentie vanaf € ${fromEur}. Na goedkeuring verschijnt deze direct in ${COMPANY.reach.languages} talen en ${COMPANY.reach.countries} landen, zonder vooruitbetaling of exclusiviteit.`,
@@ -115,7 +120,126 @@ const t = hu
       alreadyTail: '; daar start u ook een nieuwe advertentie.',
       bankHead: 'Onze bankrekeningen',
       bankNote: 'Bij goedkeuring gaat uw advertentie direct online; daarna maakt u het bedrag over naar een van deze rekeningen of betaalt u met creditcard.',
-    };
+    },
+  en: {
+    metaTitle: 'Place a listing: advertise your property in Western Europe',
+    metaDescription: `Place your property listing from ${eur(fromEur, locale)}. Once approved it appears at once in ${R.languages} languages in ${R.countries} countries, with no upfront payment and no exclusivity.`,
+    eyebrow: 'Place a listing',
+    title: 'Advertise your property',
+    titleEm: 'in Western Europe',
+    body: 'Register with a few details. You receive an email with a link to set your password, and then put your listing together step by step in your own area, photos included. You pay nothing upfront: we review the listing and publish it as soon as it is approved.',
+    processHead: 'The process',
+    steps: [
+      { n: '01', t: 'Register', b: 'You give your name, email address and phone number. That is all you need to begin.' },
+      { n: '02', t: 'Email and password', b: 'We send you a link by email. Click it to set your password.' },
+      { n: '03', t: 'Put the listing together', b: 'Step by step: package, property details, description, photos. You can stop at any time and carry on later.' },
+      { n: '04', t: 'Review', b: 'One of our team reviews the listing and asks for a correction if needed.' },
+      { n: '05', t: 'Publication', b: `An approved listing goes live at once, in ${R.languages} languages in ${R.countries} countries. You never pay for a listing that is rejected.` },
+      { n: '06', t: 'Payment', b: 'You then pay by card or bank transfer; payment does not hold up publication.' },
+    ],
+    packagesHead: 'Packages and prices',
+    packagesNote: 'You choose the package and extras after registering, when you put your listing together.',
+    recommended: 'Recommended',
+    extrasHead: 'Extras',
+    extraTranslation: 'Translation',
+    extraTranslationUnit: 'per language',
+    extraCategoryHighlight: 'Highlighting in the category',
+    extraHomepageHighlight: 'Highlighting on the homepage',
+    extraVideo: 'Video placement',
+    perMonth: '/ month',
+    minMonths: (n: number) => `min. ${n} months`,
+    once: 'one-off',
+    formHead: 'Register',
+    formNote: 'Three details and you can begin. If you get stuck, call us; we are glad to help.',
+    already: 'Already advertising with us?',
+    alreadyLink: 'Sign in to the advertiser portal',
+    alreadyTail: ', where you can also start a new listing.',
+    bankHead: 'Our bank accounts',
+    bankNote: 'Once approved, your listing goes live at once; you then transfer the amount to one of these accounts or pay by card in your own area.',
+  },
+  de: {
+    metaTitle: 'Inserat aufgeben: Ihre Immobilie in Westeuropa',
+    metaDescription: `Geben Sie Ihr Immobilieninserat ab ${eur(fromEur, locale)} auf. Nach der Freigabe erscheint es sofort in ${R.languages} Sprachen in ${R.countries} Ländern, ohne Vorauszahlung und ohne Exklusivität.`,
+    eyebrow: 'Inserat aufgeben',
+    title: 'Inserieren Sie Ihre Immobilie',
+    titleEm: 'in Westeuropa',
+    body: 'Registrieren Sie sich mit wenigen Angaben. Sie erhalten per E-Mail einen Link zum Festlegen Ihres Passworts und stellen danach in Ihrem eigenen Bereich Schritt für Schritt Ihr Inserat zusammen, einschließlich der Fotos. Sie zahlen nichts im Voraus: Wir prüfen das Inserat und veröffentlichen es, sobald es freigegeben ist.',
+    processHead: 'Der Ablauf',
+    steps: [
+      { n: '01', t: 'Registrieren', b: 'Sie geben Name, E-Mail-Adresse und Telefonnummer an. Mehr brauchen Sie zum Start nicht.' },
+      { n: '02', t: 'E-Mail und Passwort', b: 'Wir senden Ihnen einen Link per E-Mail. Darüber legen Sie Ihr Passwort fest.' },
+      { n: '03', t: 'Inserat zusammenstellen', b: 'Schritt für Schritt: Paket, Angaben zur Immobilie, Beschreibung, Fotos. Sie können jederzeit aufhören und später weitermachen.' },
+      { n: '04', t: 'Prüfung', b: 'Ein Mitarbeiter prüft das Inserat und bittet bei Bedarf um eine Korrektur.' },
+      { n: '05', t: 'Veröffentlichung', b: `Ein freigegebenes Inserat geht sofort online, in ${R.languages} Sprachen und ${R.countries} Ländern. Für ein abgelehntes Inserat zahlen Sie nie.` },
+      { n: '06', t: 'Zahlung', b: 'Anschließend zahlen Sie per Karte oder Überweisung; die Zahlung hält die Veröffentlichung nicht auf.' },
+    ],
+    packagesHead: 'Pakete und Preise',
+    packagesNote: 'Paket und Zusatzoptionen wählen Sie nach der Registrierung, wenn Sie Ihr Inserat zusammenstellen.',
+    recommended: 'Empfohlen',
+    extrasHead: 'Zusatzoptionen',
+    extraTranslation: 'Übersetzung',
+    extraTranslationUnit: 'pro Sprache',
+    extraCategoryHighlight: 'Hervorhebung in der Kategorie',
+    extraHomepageHighlight: 'Hervorhebung auf der Startseite',
+    extraVideo: 'Video einbinden',
+    perMonth: '/ Monat',
+    minMonths: (n: number) => `mind. ${n} Monate`,
+    once: 'einmalig',
+    formHead: 'Registrieren',
+    formNote: 'Drei Angaben, und Sie können loslegen. Wenn Sie irgendwo nicht weiterkommen, rufen Sie uns an; wir helfen gern.',
+    already: 'Inserieren Sie bereits bei uns?',
+    alreadyLink: 'Im Inserentenportal anmelden',
+    alreadyTail: ', dort können Sie auch ein neues Inserat starten.',
+    bankHead: 'Unsere Bankverbindungen',
+    bankNote: 'Nach der Freigabe geht Ihr Inserat sofort online; den Betrag überweisen Sie danach auf eines dieser Konten oder zahlen in Ihrem Bereich per Karte.',
+  },
+  fr: {
+    metaTitle: 'Déposer une annonce\u00a0: votre bien en Europe de l’Ouest',
+    metaDescription: `Déposez votre annonce dès ${eur(fromEur, locale)}. Une fois validée, elle paraît aussitôt en ${R.languages} langues dans ${R.countries} pays, sans paiement d’avance ni exclusivité.`,
+    eyebrow: 'Déposer une annonce',
+    title: 'Annoncez votre bien',
+    titleEm: 'en Europe de l’Ouest',
+    body: 'Inscrivez-vous avec quelques informations. Vous recevez par e-mail un lien pour définir votre mot de passe, puis vous composez votre annonce étape par étape dans votre espace, photos comprises. Vous ne payez rien d’avance\u00a0: nous examinons l’annonce et la publions dès sa validation.',
+    processHead: 'Le déroulement',
+    steps: [
+      { n: '01', t: 'Inscription', b: 'Vous indiquez votre nom, votre adresse e-mail et votre numéro de téléphone. C’est tout ce qu’il faut pour commencer.' },
+      { n: '02', t: 'E-mail et mot de passe', b: 'Nous vous envoyons un lien par e-mail. Il vous permet de définir votre mot de passe.' },
+      { n: '03', t: 'Composer l’annonce', b: 'Étape par étape\u00a0: forfait, données du bien, description, photos. Vous pouvez vous arrêter à tout moment et reprendre plus tard.' },
+      { n: '04', t: 'Vérification', b: 'Un collaborateur examine l’annonce et demande une correction si nécessaire.' },
+      { n: '05', t: 'Publication', b: `Une annonce validée est mise en ligne aussitôt, en ${R.languages} langues dans ${R.countries} pays. Vous ne payez jamais pour une annonce refusée.` },
+      { n: '06', t: 'Paiement', b: 'Vous réglez ensuite par carte bancaire ou par virement\u00a0; le paiement ne retarde pas la publication.' },
+    ],
+    packagesHead: 'Forfaits et tarifs',
+    packagesNote: 'Vous choisissez le forfait et les options après l’inscription, au moment de composer votre annonce.',
+    recommended: 'Recommandé',
+    extrasHead: 'Options complémentaires',
+    extraTranslation: 'Traduction',
+    extraTranslationUnit: 'par langue',
+    extraCategoryHighlight: 'Mise en avant dans la catégorie',
+    extraHomepageHighlight: 'Mise en avant sur la page d’accueil',
+    extraVideo: 'Mise en ligne d’une vidéo',
+    perMonth: '/ mois',
+    minMonths: (n: number) => `min. ${n} mois`,
+    once: 'unique',
+    formHead: 'Inscription',
+    formNote: 'Trois informations, et vous pouvez commencer. Si vous êtes bloqué, appelez-nous\u00a0; nous vous aidons volontiers.',
+    already: 'Vous annoncez déjà chez nous\u00a0?',
+    alreadyLink: 'Connectez-vous à l’espace annonceur',
+    alreadyTail: ', vous pouvez aussi y lancer une nouvelle annonce.',
+    bankHead: 'Nos comptes bancaires',
+    bankNote: 'Dès la validation, votre annonce est mise en ligne\u00a0; vous virez ensuite le montant sur l’un de ces comptes ou réglez par carte dans votre espace.',
+  },
+};
+const t = copies[locale];
+const misc = {
+  refund: x('Visszatérítési szabály', 'Terugbetalingsbeleid', 'Refund policy', 'Erstattungsregel', 'Politique de remboursement'),
+  help: x('Segítségre van szüksége?', 'Hulp nodig?', 'Need help?', 'Brauchen Sie Hilfe?', 'Besoin d’aide\u00a0?'),
+  faq: x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes'),
+  bankNl: x('Hollandia', 'Nederland', 'Netherlands', 'Niederlande', 'Pays-Bas'),
+  bankHu: x('Magyarország', 'Hongarije', 'Hungary', 'Ungarn', 'Hongrie'),
+};
+// Money here is shown the way the page's own language writes it.
+const money = (cents: number) => eurCents(cents, locale === 'hu' ? 'nl' : locale);
 
 /**
  * Package cards, ids straight off the catalogue — this zip is what makes the
@@ -136,17 +260,17 @@ const extrasInfo = [
   {
     name: t.extraTranslation,
     detail: TRANSLATION_LANGUAGES.map((lang) => LOCALE_META[lang].label).join(', '),
-    price: `${formatCents(translationExtra.priceEur * 100)} ${t.extraTranslationUnit}`,
+    price: `${money(translationExtra.priceEur * 100)} ${t.extraTranslationUnit}`,
   },
   {
     name: t.extraCategoryHighlight,
-    price: `${formatCents(categoryHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(categoryHighlight.minMonths!)}`,
+    price: `${money(categoryHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(categoryHighlight.minMonths!)}`,
   },
   {
     name: t.extraHomepageHighlight,
-    price: `${formatCents(homepageHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(homepageHighlight.minMonths!)}`,
+    price: `${money(homepageHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(homepageHighlight.minMonths!)}`,
   },
-  ...(videoSold ? [{ name: t.extraVideo, price: `${formatCents(videoExtra.priceEur * 100)} ${t.once}` }] : []),
+  ...(videoSold ? [{ name: t.extraVideo, price: `${money(videoExtra.priceEur * 100)} ${t.once}` }] : []),
 ];
 
 const packageSchema = listingServiceSchema(locale, {
@@ -224,8 +348,8 @@ const packageSchema = listingServiceSchema(locale, {
 
       {refundPolicy && (
         <section class="refund-policy">
-          <h3>{hu ? 'Visszatérítési szabály' : 'Terugbetalingsbeleid'}</h3>
-          <p>{refundPolicy}</p>
+          <h3>{misc.refund}</h3>
+          <p lang={refundLang}>{refundPolicy}</p>
         </section>
       )}
     </div>
@@ -246,21 +370,21 @@ const packageSchema = listingServiceSchema(locale, {
         <p class="bank-note">{t.bankNote}</p>
         <dl>
           <div>
-            <dt>Nederland</dt>
+            <dt>{misc.bankNl}</dt>
             <dd>{COMPANY.banks.nl.iban}</dd>
             <dd class="bic">{COMPANY.banks.nl.bic}</dd>
           </div>
           <div>
-            <dt>Magyarország</dt>
+            <dt>{misc.bankHu}</dt>
             <dd>{COMPANY.banks.hu.account}</dd>
           </div>
         </dl>
 
         <div class="help">
-          <p>{hu ? 'Segítségre van szüksége?' : 'Hulp nodig?'}</p>
+          <p>{misc.help}</p>
           {COMPANY.phones.filter((p) => p.public).map((p) => <a href={p.href}>{p.display}</a>)}
           <Button variant="text" href={path(locale, 'faq')}>
-            {hu ? 'Gyakori kérdések' : 'Veelgestelde vragen'}
+            {misc.faq}
           </Button>
         </div>
       </aside>

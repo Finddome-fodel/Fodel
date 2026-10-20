@@ -11,7 +11,9 @@ import { deliver, templates } from '~/lib/email/send';
 import { eur } from '~/lib/format';
 import { logEvent } from '~/lib/activity';
 import { SITE_URL } from '~/config/site.mjs';
-import { path } from '~/i18n/ui';
+import { path, localeFrom } from '~/i18n/ui';
+import { valuationAmount, valuationBasis, valuationSourceDate, showsEuro, type ValuationBaseline } from '~/lib/valuation/wording';
+import { approvedWording } from '~/lib/approved-text';
 import { friendlyError } from '~/lib/portal/labels';
 import { estimateValuation } from '~/lib/valuation/estimate';
 import { getCompany } from '~/lib/runtime-config';
@@ -50,7 +52,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
   // The lead's own language, from the form they filled in (migration 0014).
   // Rows from before 0014 have no locale and were Hungarian-form leads.
-  const leadLocale = valuation.locale === 'nl' ? 'nl' : 'hu';
+  const leadLocale = localeFrom(valuation.locale, 'hu');
   const isLead = valuation.source === 'public_lead' && Boolean(valuation.contact_email);
 
   if (action === 'request_info') {
@@ -273,23 +275,20 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       if (action === 'approve') {
         const company = await getCompany();
         const rate = company.services.eurHufRateDate ? company.services.eurHufRate : null;
-        const display = (huf: number, euro: number) => leadLocale === 'nl' && rate && hasHuf && huf > 0
-          ? eur(Math.round(huf / rate)) : hasHuf ? new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 }).format(huf) : eur(euro);
-        const baseline = valuation.baseline as { kind?: string; count?: number; year?: number; level?: string; url?: string; retrievedAt?: string } | null;
-        const basis = baseline?.kind === 'ksh'
-          ? leadLocale === 'nl' ? `KSH Ingatlanadattár, ${baseline.year} (${baseline.level === 'county' ? 'provincie' : 'plaats'}, ${baseline.count} gegevens)`
-            : `KSH Ingatlanadattár, ${baseline.year} (${baseline.level === 'county' ? 'vármegye' : 'település'}, ${baseline.count} adat)`
-          : baseline?.kind === 'comps' ? leadLocale === 'nl' ? `${baseline.count} vergelijkbare FODEL-advertenties` : `${baseline.count} hasonló FODEL-hirdetés` : undefined;
+        const display = (huf: number, euro: number) => showsEuro(leadLocale) && rate && hasHuf && huf > 0
+          ? eur(Math.round(huf / rate), leadLocale) : hasHuf ? valuationAmount('hu', huf, null) : eur(euro, leadLocale);
+        const baseline = valuation.baseline as ValuationBaseline | null;
+        const basis = valuationBasis(leadLocale, baseline);
         await deliver(
           valuation.contact_email,
           templates.valuationReady(leadLocale, {
             range: `${display(lowHuf, lowEur)} – ${display(highHuf, highEur)}`,
             mid: display(midHuf, midEur), basis,
             sourceUrl: baseline?.kind === 'ksh' ? baseline.url : undefined,
-            sourceDate: baseline?.kind === 'ksh' ? `${baseline.year}, ${leadLocale === 'nl' ? 'opgehaald' : 'letöltve'} ${baseline.retrievedAt ?? '—'}` : undefined,
-            rateDate: leadLocale === 'nl' && rate ? company.services.eurHufRateDate ?? undefined : undefined,
+            sourceDate: baseline?.kind === 'ksh' ? valuationSourceDate(leadLocale, baseline) : undefined,
+            rateDate: showsEuro(leadLocale) && rate ? company.services.eurHufRateDate ?? undefined : undefined,
             factors: Array.isArray(valuation.factors) ? valuation.factors : [],
-            notice: company.services.valuationNotice?.[leadLocale],
+            notice: approvedWording(company.services.valuationNotice, leadLocale)?.text,
             compCount: valuation.comp_count ?? 0,
             submitAdUrl: `${SITE_URL}${path(leadLocale, 'submitAd')}`,
             visitUrl: `${SITE_URL}${path(leadLocale, 'valuation')}?service=onsite-visit`,

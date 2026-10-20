@@ -19,7 +19,8 @@ import PointsList from '~/components/PointsList.astro';
 import NumberedColumns from '~/components/NumberedColumns.astro';
 import StatsBand from '~/components/StatsBand.astro';
 import ParallaxCta from '~/components/ParallaxCta.astro';
-import { UI, path, type Locale } from '~/i18n/ui';
+import { UI, path, localizer, type Locale } from '~/i18n/ui';
+import { addressLine } from '~/config/company';
 import { getCompany } from '~/lib/runtime-config';
 import { copy } from '~/data/copy';
 import { alternatesFor } from '~/lib/page';
@@ -35,7 +36,7 @@ const ui = UI[locale];
 const c = copy(locale).about;
 const cta = copy(locale).home.cta;
 const stats = copy(locale).stats;
-const hu = locale === 'hu';
+const x = localizer(locale);
 const COMPANY = await getCompany();
 const quote = splitOpeningQuote(c.origin.quote);
 ---
@@ -52,7 +53,7 @@ const quote = splitOpeningQuote(c.origin.quote);
     titleEm={c.hero.titleEm}
     body={c.hero.body}
     image={kuria}
-    imageAlt={hu ? 'Restaurált magyar kúria angolparkkal' : 'Gerestaureerd Hongaars landhuis met park'}
+    imageAlt={x('Restaurált magyar kúria angolparkkal', 'Gerestaureerd Hongaars landhuis met park', 'A restored Hungarian manor house with an English-style park', 'Ein restauriertes ungarisches Herrenhaus mit Landschaftspark', 'Un manoir hongrois restauré, avec son parc à l’anglaise')}
     primary={{ label: ui.cta.getInTouch, href: path(locale, 'contact') }}
   />
 
@@ -99,15 +100,15 @@ const quote = splitOpeningQuote(c.origin.quote);
 
         <dl class="details">
           <div>
-            <dt>{hu ? 'Cím' : 'Adres'}</dt>
-            <dd>{COMPANY.address.oneLine}</dd>
+            <dt>{x('Cím', 'Adres', 'Address', 'Adresse', 'Adresse')}</dt>
+            <dd>{addressLine(COMPANY.address, locale)}</dd>
           </div>
           <div>
             <dt>E-mail</dt>
             <dd><a href={`mailto:${COMPANY.email.primary}`}>{COMPANY.email.primary}</a></dd>
           </div>
           <div>
-            <dt>{hu ? 'Nyelvek' : 'Talen'}</dt>
+            <dt>{x('Nyelvek', 'Talen', 'Languages', 'Sprachen', 'Langues')}</dt>
             <dd>Nederlands · Deutsch · English · Français · Magyar</dd>
           </div>
         </dl>

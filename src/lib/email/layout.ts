@@ -36,16 +36,13 @@
  * the codebase where these hex values are legitimately repeated.
  */
 import { SITE_URL } from '~/config/site.mjs';
-import { COMPANY } from '~/config/company';
-import { BRAND } from '~/i18n/ui';
+import { COMPANY, addressLine } from '~/config/company';
+import { BRAND, type Locale } from '~/i18n/ui';
 
-export type EmailLocale = 'hu' | 'nl';
-/**
- * The shell alone also renders English and German — used only by the invite,
- * whose body text an admin writes and approves (email_templates). Every other
- * template stays hu/nl, the two languages with reviewed copy.
- */
-export type ShellLocale = EmailLocale | 'en' | 'de';
+/** The recipient's language: every email exists in all five. */
+export type EmailLocale = Locale;
+/** Kept for the invite, whose body an admin writes and approves (email_templates). */
+export type ShellLocale = EmailLocale;
 
 /* ── Palette (mirrors src/styles/tokens.css) ─────────────────────────────── */
 const INK = '#102a43';
@@ -196,12 +193,16 @@ const FOOTER_COPY = {
     contact: 'Contact',
   },
   en: {
-    why: 'You are receiving this email because FODEL invited you to its advertiser portal.',
+    why: 'You are receiving this email because you have a FODEL account or placed a listing with us.',
     contact: 'Contact',
   },
   de: {
-    why: 'Sie erhalten diese E-Mail, weil FODEL Sie zu seinem Inserentenportal eingeladen hat.',
+    why: 'Sie erhalten diese E-Mail, weil Sie ein FODEL-Konto haben oder bei uns ein Inserat aufgegeben haben.',
     contact: 'Kontakt',
+  },
+  fr: {
+    why: 'Vous recevez cet e-mail parce que vous avez un compte FODEL ou que vous avez déposé une annonce chez nous.',
+    contact: 'Contact',
   },
 } as const;
 
@@ -209,7 +210,7 @@ function wordmark(locale: ShellLocale): string {
   // BRAND[locale].name is "FODEL INGATLAN" / "FODEL VASTGOED" — the sub-label
   // is whatever follows the wordmark, exactly as src/components/Logo.astro
   // derives it. Same rule, one source.
-  const sub = BRAND[locale].name.replace('FODEL', '').trim() || 'VASTGOED';
+  const sub = BRAND[locale].name.replace('FODEL', '').trim();
   return `<a href="${SITE}/${locale}/" style="text-decoration:none;">
   <span style="display:block;font-family:${DISPLAY};font-size:19px;font-weight:500;letter-spacing:0.34em;text-transform:uppercase;color:${INK};">FODEL</span>
   <span style="display:block;width:34px;height:1px;background-color:${INK};font-size:0;line-height:0;margin:9px 0 8px;">&nbsp;</span>
@@ -277,7 +278,7 @@ export function shell(opts: {
             <div style="height:1px;background-color:${BORDER};font-size:0;line-height:0;margin:14px 0 20px;">&nbsp;</div>
             <p style="margin:0 0 6px;font-family:${SANS};font-size:12px;line-height:1.7;color:${TAUPE};">
               <strong style="color:${INK};font-weight:500;">${esc(BRAND[locale].name)}</strong><br />
-              ${esc(COMPANY.address.oneLine)}<br />
+              ${esc(addressLine(COMPANY.address, locale))}<br />
               <a href="mailto:${mail}" style="color:${TAUPE};text-decoration:underline;">${mail}</a> &nbsp;·&nbsp; ${esc(COMPANY.phones[0].display)}
             </p>
             <p style="margin:14px 0 0;font-family:${SANS};font-size:11px;line-height:1.6;color:${TAUPE};">
@@ -314,7 +315,7 @@ ${body.trim()}
 
 ${'—'.repeat(24)}
 ${BRAND[locale].name}
-${COMPANY.address.oneLine}
+${addressLine(COMPANY.address, locale)}
 ${mail} · ${COMPANY.phones[0].display}
 ${opts.why ?? FOOTER_COPY[locale].why}
 `;

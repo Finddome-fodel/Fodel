@@ -21,6 +21,7 @@ import ArrowChip from './ArrowChip.astro';
 import { type Locale, UI } from '~/i18n/ui';
 import { text, url as propertyUrl, type Property } from '~/lib/properties';
 import { eur, area, floorArea } from '~/lib/format';
+import { CHROME } from '~/i18n/chrome';
 
 interface Props {
   property: Property;
@@ -54,13 +55,13 @@ const ui = UI[locale];
 const href = propertyUrl(property, locale);
 const title = text(d.title, locale);
 const tag = d.tag ? text(d.tag, locale) : null;
-const category = d.categoryLabels[locale] ?? d.categoryLabels.hu;
+const category = d.categoryLabels[locale] ?? d.categoryLabels.nl ?? d.categoryLabels.hu;
 const heroAlt = text(d.media.heroAlt, locale);
 
 /** Each figure with its own small drawing, so floor and plot area can never
  *  be mistaken for each other; the label is there for screen readers. */
 const specs = [
-  d.rooms ? { icon: 'bed', label: ui.property.beds, value: `${d.rooms.bedrooms} ${locale === 'hu' ? 'szoba' : 'slk.'}` } : null,
+  d.rooms ? { icon: 'bed', label: ui.property.beds, value: `${d.rooms.bedrooms} ${CHROME[locale].card.bedsShort}` } : null,
   d.areas.floorM2 ? { icon: 'floor', label: ui.property.area, value: floorArea(d.areas.floorM2, locale) } : null,
   d.areas.plotM2 ? { icon: 'plot', label: ui.property.land, value: area(d.areas.plotM2, locale) } : null,
 ].filter(Boolean) as { icon: 'bed' | 'floor' | 'plot'; label: string; value: string }[];
@@ -101,7 +102,7 @@ const specs = [
       </div>
       <span class="card-tags">
         {rank && <span class="tag tag-rank num">{String(rank).padStart(2, '0')}</span>}
-        {(d.listing.bargain || tag) && <span class="tag">{d.listing.bargain ? (locale === 'hu' ? 'Alkalmi vétel' : 'Buitenkans') : tag}</span>}
+        {(d.listing.bargain || tag) && <span class="tag">{d.listing.bargain ? CHROME[locale].card.bargain : tag}</span>}
       </span>
       {
         d.status !== 'active' && (

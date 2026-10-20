@@ -14,10 +14,10 @@ export const SITE_URL = 'https://fodel.eu';
 /** The bare host, for copy that names the website ("látható a fodel.eu oldalon"). */
 export const SITE_HOST = new URL(SITE_URL).host;
 
-/** Locales live in 1.0. de/en/fr are scaffolded in src/i18n/ui.ts but not routed yet. */
-export const LOCALES = ['hu', 'nl'];
+/** Every language the public site exists in, each as a complete site under /<code>/. */
+export const LOCALES = ['hu', 'nl', 'en', 'de', 'fr'];
 
 export const DEFAULT_LOCALE = 'hu';
 
-/** Every locale FODEL sells in — used for the hreflang plan and the language switcher. */
-export const PLANNED_LOCALES = ['hu', 'nl', 'de', 'en', 'fr'];
+/** Kept for older imports: the planned set is now the live set. */
+export const PLANNED_LOCALES = LOCALES;
