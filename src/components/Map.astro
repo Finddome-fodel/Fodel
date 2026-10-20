@@ -129,6 +129,9 @@ const label = locale === 'hu'
         ? { 'CooperativeGesturesHandler.WindowsHelpText': 'A nagyításhoz használja a Ctrl + görgetést', 'CooperativeGesturesHandler.MacHelpText': 'A nagyításhoz használja a ⌘ + görgetést', 'CooperativeGesturesHandler.MobileHelpText': 'Két ujjal mozgathatja a térképet', 'NavigationControl.ZoomIn': 'Nagyítás', 'NavigationControl.ZoomOut': 'Kicsinyítés' }
         : { 'CooperativeGesturesHandler.WindowsHelpText': 'Gebruik Ctrl + scroll om te zoomen', 'CooperativeGesturesHandler.MacHelpText': 'Gebruik ⌘ + scroll om te zoomen', 'CooperativeGesturesHandler.MobileHelpText': 'Gebruik twee vingers om de kaart te verplaatsen', 'NavigationControl.ZoomIn': 'Inzoomen', 'NavigationControl.ZoomOut': 'Uitzoomen' },
     });
+    // A tile that fails to load (a flaky connection, a navigation that aborts
+    // the request) leaves a gap the next pan fills; it is not a page error.
+    map.on('error', () => {});
     // OpenFreeMap's style carries its own OSM/OpenMapTiles credit; the
     // self-hosted tileset has none, so it is added here.
     map.addControl(new AttributionControl({ compact: true, ...(pmtilesUrl ? { customAttribution: PMTILES_ATTRIBUTION } : {}) }));
@@ -175,7 +178,7 @@ const label = locale === 'hu'
         a.className = 'map-pill';
         a.href = p.url;
         a.dataset.precision = p.precision;
-        a.setAttribute('aria-label', `${p.title} — ${p.category}, ${p.price}`);
+        a.setAttribute('aria-label', `${p.title}, ${p.category}, ${p.price}`);
         a.innerHTML = `<span class="map-pill-ic">${pictogram(p.cat)}</span><span class="map-pill-price">${p.priceShort}</span>`;
         const [x, y] = (feature.geometry as GeoJSON.Point).coordinates;
         markers.set(p.ref, new Marker({ element: a, anchor: 'bottom' }).setLngLat([x, y]).addTo(map));

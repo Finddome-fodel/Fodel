@@ -5,6 +5,11 @@
  *
  * Dutch is x-default: FODEL's buyer demand is Dutch and Belgian, and the
  * Hungarian side arrives through direct links and the old fodel.hu.
+ *
+ * Order of preference: the language the visitor last picked in the switcher
+ * (the `fodel_lang` cookie, set by LanguageSwitcher.astro), then the
+ * browser's own languages, then Dutch. Without JavaScript the meta refresh
+ * inside <noscript> sends everyone to Dutch, as before.
  */
 export const prerender = true;
 import { SITE_URL } from '~/config/site.mjs';
@@ -22,11 +27,19 @@ import { SITE_URL } from '~/config/site.mjs';
     <link rel="alternate" hreflang="nl" href={`${SITE_URL}/nl/`} />
     <link rel="alternate" hreflang="hu" href={`${SITE_URL}/hu/`} />
     <link rel="alternate" hreflang="x-default" href={`${SITE_URL}/nl/`} />
-    <meta http-equiv="refresh" content="0; url=/nl/" />
+    <noscript><meta http-equiv="refresh" content="0; url=/nl/" /></noscript>
     <script is:inline>
-      // Prefer the visitor's own language when we publish it.
+      // The visitor's own choice first, then their browser's languages.
       (function () {
         var supported = ['nl', 'hu'];
+        var chosen = (document.cookie.match(/(?:^|;\s*)fodel_lang=([a-z]{2})/) || [])[1];
+        if (chosen) {
+          // The bridge languages have their own home page; hu/nl are full sites.
+          if (supported.concat(['en', 'de', 'fr']).indexOf(chosen) !== -1) {
+            location.replace('/' + chosen + '/');
+            return;
+          }
+        }
         var languages = navigator.languages || [navigator.language || 'nl'];
         var match = 'nl';
         for (var i = 0; i < languages.length; i++) {

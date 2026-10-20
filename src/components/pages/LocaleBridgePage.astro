@@ -25,6 +25,10 @@
  * content with the wrong <html lang>. This is a small, self-contained
  * document instead, the same pattern src/pages/index.astro already uses for
  * the same reason (a page that sits outside the hu/nl-only shell).
+ *
+ * The language switcher in the top corner is the way back: before the launch
+ * round a visitor who picked English had no route to Hungarian or Dutch
+ * other than the browser's Back button.
  */
 import { BRAND, CATEGORY_FALLBACK, LOCALE_META, type PlannedLocale } from '~/i18n/ui';
 import { COMPANY } from '~/config/company';
@@ -33,6 +37,7 @@ import PostCard from '~/components/PostCard.astro';
 import { BLOG_PATH, type BlogPost } from '~/lib/blog';
 import '~/styles/global.css';
 import NewsletterForm from '~/components/NewsletterForm.astro';
+import LanguageSwitcher from '~/components/LanguageSwitcher.astro';
 
 interface Props {
   locale: Extract<PlannedLocale, 'de' | 'en' | 'fr'>;
@@ -71,7 +76,7 @@ const organisationSchema = {
 const STRINGS = {
   de: {
     intro:
-      'FODEL vermittelt ungarische Immobilien an Käufer in den Niederlanden, Belgien, Deutschland, Österreich, der Schweiz, Großbritannien und den USA — ohne Alleinauftrag.',
+      'FODEL vermittelt ungarische Immobilien an Käufer in den Niederlanden, Belgien, Deutschland, Österreich, der Schweiz, Großbritannien und den USA, ohne Alleinauftrag.',
     browse: 'Zum vollständigen Angebot (Niederländisch)',
     contact: 'Kontakt aufnehmen',
     categories: 'Immobilienarten',
@@ -79,7 +84,7 @@ const STRINGS = {
   },
   en: {
     intro:
-      'FODEL advertises Hungarian property to buyers across the Netherlands, Belgium, Germany, Austria, Switzerland, the UK and the US — with no exclusivity contract.',
+      'FODEL advertises Hungarian property to buyers across the Netherlands, Belgium, Germany, Austria, Switzerland, the UK and the US, with no exclusivity contract.',
     browse: 'Browse the full listings (Dutch)',
     contact: 'Get in touch',
     categories: 'Property types',
@@ -87,7 +92,7 @@ const STRINGS = {
   },
   fr: {
     intro:
-      "FODEL annonce des biens immobiliers hongrois auprès d'acheteurs néerlandais, belges, allemands et suisses — sans contrat d'exclusivité.",
+      "FODEL annonce des biens immobiliers hongrois auprès d'acheteurs néerlandais, belges, allemands et suisses, sans contrat d'exclusivité.",
     browse: 'Voir toutes les annonces (en néerlandais)',
     contact: 'Nous contacter',
     categories: "Types de biens",
@@ -101,19 +106,22 @@ const STRINGS = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{brand.name} — {brand.tagline}</title>
+    <title>{brand.name} | {brand.tagline}</title>
     <meta name="description" content={STRINGS.intro} />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={brand.name} />
     <meta property="og:locale" content={meta.ogLocale} />
-    <meta property="og:title" content={`${brand.name} — ${brand.tagline}`} />
+    <meta property="og:title" content={`${brand.name} | ${brand.tagline}`} />
     <meta property="og:description" content={STRINGS.intro} />
     <meta property="og:url" content={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script type="application/ld+json" set:html={JSON.stringify(organisationSchema)} is:inline />
   </head>
   <body>
+    <header class="bridge-top">
+      <LanguageSwitcher locale={locale} align="right" />
+    </header>
     <main class="bridge">
       <p class="mark" aria-hidden="true"><span>FODEL</span></p>
       <p class="eyebrow">{brand.positioning}</p>
@@ -164,6 +172,13 @@ const STRINGS = {
 </html>
 
 <style>
+  .bridge-top {
+    display: flex;
+    justify-content: flex-end;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 16px 24px 0;
+  }
   .bridge-news {
     display: grid;
     justify-items: center;
@@ -188,7 +203,7 @@ const STRINGS = {
   }
   .bridge {
     max-width: 720px;
-    margin: 40px auto;
+    margin: 16px auto 40px;
     padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px);
     border-radius: var(--r-2xl);
     background: var(--white);
@@ -352,6 +367,9 @@ const STRINGS = {
     }
   }
   @media (max-width: 760px) {
+    .bridge-top {
+      padding: 8px 8px 0;
+    }
     .bridge {
       margin: 8px;
       border-radius: var(--r-xl);

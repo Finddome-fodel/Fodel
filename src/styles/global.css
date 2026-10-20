@@ -83,6 +83,9 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  /* iOS/Android draw a grey box on every tapped link; a faint ink tint reads
+     as the site's own pressed state instead. */
+  -webkit-tap-highlight-color: rgba(16, 42, 67, 0.08);
 }
 
 body {
@@ -151,6 +154,59 @@ select {
   font-size: var(--fs-body);
 }
 
+/* iOS Safari zooms the whole page into any field set below 16px and does not
+   zoom back out. Several portal fields are set at 14–15px for density on a
+   desktop; on a touch screen they are lifted to 16px. The one !important in
+   this file: it has to beat every scoped field style, and it only ever
+   raises a size, never lowers one. */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type='checkbox'], [type='radio'], [type='range'], [type='file']),
+  select,
+  textarea {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
+/* WebKit's own search-field chrome (inner padding, the blue cancel cross) and
+   number spinners fight the rounded fields; the browsers' native clear and
+   step controls are not needed on these forms. */
+input[type='search'] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+/* Native date pickers keep their own control, but take the field's height and
+   type instead of WebKit's shorter default. */
+input[type='date'] {
+  min-height: 1.4em;
+  font-family: inherit;
+}
+input[type='date']::-webkit-date-and-time-value {
+  text-align: left;
+}
+/* Autofilled fields keep the site's surface instead of the browser's pale
+   yellow/blue (dark panels override --autofill-bg / --autofill-ink). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--autofill-ink, var(--ink));
+  -webkit-box-shadow: 0 0 0 1000px var(--autofill-bg, var(--white)) inset;
+  caret-color: var(--autofill-ink, var(--ink));
+  transition: background-color 9999s ease-out 0s;
+}
+
 img,
 picture,
 video,
@@ -201,9 +257,15 @@ svg {
   width: 100%;
 }
 
-.prop-card:hover .card-img-inner,
 .prop-card:focus-within .card-img-inner {
   transform: scale(1.05);
+}
+/* Hover effects only where there is a real pointer: on a phone a tap leaves
+   :hover stuck on the last card touched. */
+@media (hover: hover) {
+  .prop-card:hover .card-img-inner {
+    transform: scale(1.05);
+  }
 }
 
 .nav-link {
@@ -223,9 +285,13 @@ svg {
   transition: transform var(--dur-fast) ease;
 }
 
-.nav-link:hover::after,
 .nav-link[aria-current='page']::after {
   transform: scaleX(1);
+}
+@media (hover: hover) {
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
 }
 
 ::-webkit-scrollbar {
@@ -628,13 +694,21 @@ svg {
 .arrow-chip svg + svg {
   transform: translateX(-190%);
 }
-:is(a, button, label):is(:hover, :focus-visible) .arrow-chip svg:first-child,
+:is(a, button, label):focus-visible .arrow-chip svg:first-child,
 .is-hover .arrow-chip svg:first-child {
   transform: translateX(190%);
 }
-:is(a, button, label):is(:hover, :focus-visible) .arrow-chip svg + svg,
+:is(a, button, label):focus-visible .arrow-chip svg + svg,
 .is-hover .arrow-chip svg + svg {
   transform: none;
+}
+@media (hover: hover) {
+  :is(a, button, label):hover .arrow-chip svg:first-child {
+    transform: translateX(190%);
+  }
+  :is(a, button, label):hover .arrow-chip svg + svg {
+    transform: none;
+  }
 }
 .arrow-chip[data-dir='down'] svg {
   rotate: 90deg;
@@ -642,11 +716,113 @@ svg {
 .arrow-chip[data-dir='down'] svg + svg {
   transform: translateY(-190%);
 }
-:is(a, button):is(:hover, :focus-visible) .arrow-chip[data-dir='down'] svg:first-child {
+:is(a, button):focus-visible .arrow-chip[data-dir='down'] svg:first-child {
   transform: translateY(190%);
 }
-:is(a, button):is(:hover, :focus-visible) .arrow-chip[data-dir='down'] svg + svg {
+:is(a, button):focus-visible .arrow-chip[data-dir='down'] svg + svg {
   transform: none;
+}
+@media (hover: hover) {
+  :is(a, button):hover .arrow-chip[data-dir='down'] svg:first-child {
+    transform: translateY(190%);
+  }
+  :is(a, button):hover .arrow-chip[data-dir='down'] svg + svg {
+    transform: none;
+  }
+}
+
+/* ── Launch round: the call-to-action pill ──
+   For the one action FODEL most wants a visitor to take ("Hirdetés
+   feladása"). Calm by design: every few seconds a soft band of warm light
+   crosses the pill; on hover or keyboard focus it crosses once straight away
+   and the arrow chip leans forward. Compositor-only (transform, opacity), so
+   it never shifts layout or repaints the page. Put .cta-sheen on the Button.
+
+   The sheen is clipped by the pill itself (overflow: hidden) and sits at
+   z-index -1 inside the button's own stacking context (Button.astro sets
+   isolation): above the ink fill, beneath the label and the chip. */
+.cta-sheen {
+  overflow: hidden;
+}
+.cta-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: -1;
+  width: 46%;
+  background: linear-gradient(100deg, transparent 15%, rgba(255, 248, 236, 0.2) 50%, transparent 85%);
+  transform: translateX(-110%);
+  pointer-events: none;
+  animation: cta-sheen 7s var(--ease-in-out) 2.4s infinite;
+}
+@keyframes cta-sheen {
+  0% {
+    transform: translateX(-110%);
+  }
+  16%,
+  100% {
+    transform: translateX(330%);
+  }
+}
+@keyframes cta-sheen-once {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(330%);
+  }
+}
+.cta-sheen:focus-visible::after {
+  animation: cta-sheen-once 0.95s var(--ease-out) 1;
+}
+/* Doubled class: has to out-rank Button.astro's own scoped chip scale. */
+.btn.cta-sheen.cta-sheen:focus-visible .arrow-chip {
+  transform: translateX(3px) scale(1.06);
+}
+@media (hover: hover) {
+  .cta-sheen:hover::after {
+    animation: cta-sheen-once 0.95s var(--ease-out) 1;
+  }
+  .btn.cta-sheen.cta-sheen:hover .arrow-chip {
+    transform: translateX(3px) scale(1.06);
+  }
+}
+
+/* The halo: a faint brass ring that breathes twice shortly after the page
+   opens, then rests. The ring's shadow is drawn once; only its opacity moves.
+   On a wrapper rather than the button, because the button clips (above). */
+.cta-halo {
+  position: relative;
+  display: inline-flex;
+  border-radius: var(--r-pill);
+}
+.cta-halo::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  box-shadow:
+    0 0 0 1px rgba(var(--gold-rgb), 0.55),
+    0 0 22px 3px rgba(var(--gold-rgb), 0.32);
+  opacity: 0;
+  pointer-events: none;
+  animation: cta-halo 1.8s ease-in-out 1.1s 2 both;
+}
+@keyframes cta-halo {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-sheen::after,
+  .cta-halo::before {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 /* The ink ground every dark slab shares. */

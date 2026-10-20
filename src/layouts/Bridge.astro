@@ -8,6 +8,9 @@
  * would mix languages on the page. This shell carries only what is verified
  * in these languages — FODEL's own brand line, the language's home, its
  * articles, and the locale-neutral contact facts.
+ *
+ * The language switcher sits at the end of the bar, so a visitor can always
+ * get back to Hungarian or Dutch (or across to the other bridge language).
  */
 import { BRAND, LOCALE_META } from '~/i18n/ui';
 import { COMPANY } from '~/config/company';
@@ -15,6 +18,7 @@ import { abs } from '~/lib/seo';
 import { BLOG_PATH } from '~/lib/blog';
 import '~/styles/global.css';
 import NewsletterForm from '~/components/NewsletterForm.astro';
+import LanguageSwitcher from '~/components/LanguageSwitcher.astro';
 
 interface Props {
   locale: 'en' | 'de';
@@ -32,7 +36,7 @@ const { locale, title, description, ogImage, ogType = 'website', alternates = {}
 const brand = BRAND[locale];
 const meta = LOCALE_META[locale];
 const canonical = abs(Astro.url.pathname);
-const fullTitle = `${title} — ${brand.name}`;
+const fullTitle = `${title} | ${brand.name}`;
 const T = {
   en: { home: 'Home', articles: 'Articles', listings: 'Listings (Dutch)', contact: 'Contact' },
   de: { home: 'Startseite', articles: 'Artikel', listings: 'Angebote (Niederländisch)', contact: 'Kontakt' },
@@ -74,13 +78,14 @@ const T = {
         <a href={BLOG_PATH[locale]} aria-current={Astro.url.pathname.startsWith(BLOG_PATH[locale]) ? 'page' : undefined}>{T.articles}</a>
         <a href="/nl/woningen/">{T.listings}</a>
       </nav>
+      <LanguageSwitcher locale={locale} alternates={alternates} align="right" />
     </header>
     <main id="main">
       <slot />
     </main>
     <footer class="foot">
       <div class="foot-news">
-        <p class="foot-news-title">{locale === 'de' ? 'Neue Immobilien zuerst — der monatliche Newsletter' : 'New listings first — the monthly newsletter'}</p>
+        <p class="foot-news-title">{locale === 'de' ? 'Neue Immobilien zuerst: der monatliche Newsletter' : 'New listings first: the monthly newsletter'}</p>
         <NewsletterForm locale={locale} source="bridge" id={`nl-bridge-${locale}`} />
       </div>
       <p class="foot-brand">{brand.name} · {brand.signature}</p>
@@ -119,6 +124,7 @@ const T = {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    margin-right: auto;
   }
   .bar nav a {
     display: inline-flex;
@@ -131,9 +137,13 @@ const T = {
     color: var(--ink);
     transition: background-color 0.3s var(--ease-out);
   }
-  .bar nav a:hover,
   .bar nav a[aria-current='page'] {
     background: rgba(16, 42, 67, 0.07);
+  }
+  @media (hover: hover) {
+    .bar nav a:hover {
+      background: rgba(16, 42, 67, 0.07);
+    }
   }
   main {
     max-width: 1180px;

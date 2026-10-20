@@ -64,14 +64,27 @@ const copy = {
   const KEY = 'fodel:consent';
   const banner = document.getElementById('cookie-consent');
 
-  if (banner && !localStorage.getItem(KEY)) {
+  // Safari has no requestIdleCallback (an undeclared name throws, so test it on window),
+  // and storage can throw in private windows: either way the banner still appears.
+  let decided = false;
+  try {
+    decided = !!localStorage.getItem(KEY);
+  } catch {
+    /* treated as undecided */
+  }
+  if (banner && !decided) {
     // Deferred so the banner never competes with the LCP element.
-    requestIdleCallback?.(() => banner.removeAttribute('hidden')) ??
-      setTimeout(() => banner.removeAttribute('hidden'), 800);
+    const show = () => banner.removeAttribute('hidden');
+    if ('requestIdleCallback' in window) window.requestIdleCallback(show, { timeout: 1500 });
+    else setTimeout(show, 800);
   }
 
   const decide = (value: 'granted' | 'denied') => {
-    localStorage.setItem(KEY, JSON.stringify({ analytics: value, at: Date.now() }));
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ analytics: value, at: Date.now() }));
+    } catch {
+      /* the choice then lasts for this page only */
+    }
     banner?.setAttribute('hidden', '');
     // When analytics is added, it initialises here — and only here.
     document.dispatchEvent(new CustomEvent('fodel:consent', { detail: { analytics: value } }));

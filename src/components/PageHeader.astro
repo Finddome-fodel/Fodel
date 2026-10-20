@@ -28,7 +28,8 @@ interface Props {
   body?: string;
   image?: ImageMetadata;
   imageAlt?: string;
-  primary?: { label: string; href: string };
+  /** `emphasis` gives the button the calm sheen of the nav's CTA (global.css .cta-sheen). */
+  primary?: { label: string; href: string; emphasis?: boolean };
   secondary?: { label: string; href: string };
   /** Narrow, centred variant for content pages with no hero image. */
   compact?: boolean;
@@ -76,7 +77,7 @@ const hasActions = !!(primary || secondary);
           {body && <p class="ph-body">{body}</p>}
           {hasActions && (
             <div class="ph-actions">
-              {primary && <Button variant="dark" href={primary.href}>{primary.label}</Button>}
+              {primary && <Button variant="dark" href={primary.href} class={primary.emphasis ? 'cta-sheen' : undefined}>{primary.label}</Button>}
               {secondary && <Button variant="text" href={secondary.href}>{secondary.label}</Button>}
             </div>
           )}

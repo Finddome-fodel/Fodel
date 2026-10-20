@@ -58,7 +58,7 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
     body={c.hero.body}
     image={vineyard}
     imageAlt={locale === 'hu' ? 'Szőlőbirtok a Dunántúlon' : 'Wijngaard in Transdanubië'}
-    primary={{ label: c.hero.cta, href: path(locale, 'submitAd') }}
+    primary={{ label: c.hero.cta, href: path(locale, 'submitAd'), emphasis: true }}
     secondary={{ label: c.hero.secondary, href: path(locale, 'priceList') }}
   />
 

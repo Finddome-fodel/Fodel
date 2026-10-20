@@ -14,6 +14,13 @@
  * with one soft pill that glides to whichever link is pointed at and rests
  * on the current page. The mobile menu is a rounded sheet that unfolds
  * beneath the bar.
+ *
+ * Launch round: the dark pill at the end of the bar is "Hirdetés feladása"
+ * — the action FODEL most wants — with the calm sheen/halo from global.css
+ * (.cta-sheen, .cta-halo). "Kapcsolat" moved into the links row. The account
+ * control is one quiet pill, "Belépés / Regisztráció", that collapses to its
+ * icon where the row would otherwise not fit; the portal pages it opens are
+ * told the visitor's language through `?lang=`.
  */
 import Logo from './Logo.astro';
 import Button from './Button.astro';
@@ -38,7 +45,12 @@ const links = [
   { key: 'buyers', label: ui.nav.buyers },
   { key: 'about', label: ui.nav.about },
   { key: 'blog', label: ui.nav.blog },
+  { key: 'contact', label: ui.nav.contact },
 ] as const;
+
+const loginHref = `/portal/login?lang=${locale}`;
+const registerHref = `/portal/register?lang=${locale}`;
+const accountLabel = `${ui.cta.accountLogin} / ${ui.cta.accountRegister}`;
 
 const isCurrent = (href: string) =>
   href === `/${locale}/` ? current === href : current.startsWith(href);
@@ -69,16 +81,20 @@ const isCurrent = (href: string) =>
     <div class="nav-end">
       <LanguageSwitcher locale={locale} alternates={alternates} align="right" />
 
-      <a class="nav-login" href="/portal/login" rel="nofollow" aria-label={ui.cta.login}>
+      <a class="nav-account" href={loginHref} rel="nofollow" aria-label={accountLabel}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <circle cx="8" cy="5.25" r="2.9" stroke="currentColor" stroke-width="1.3" />
           <path d="M2.5 14.25c.65-2.85 2.85-4.5 5.5-4.5s4.85 1.65 5.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
         </svg>
-        <span>{ui.cta.login}</span>
+        <span class="nav-account-text" aria-hidden="true">
+          {ui.cta.accountLogin}<span class="nav-account-slash">/</span>{ui.cta.accountRegister}
+        </span>
       </a>
-      <Button variant="dark" size="sm" href={path(locale, 'contact')} class="nav-cta">
-        {ui.cta.contact}
-      </Button>
+      <span class="cta-halo nav-cta">
+        <Button variant="dark" size="sm" href={path(locale, 'submitAd')} class="cta-sheen">
+          {ui.cta.submitAd}
+        </Button>
+      </span>
     </div>
 
     <div class="nav-mobile-only">
@@ -104,7 +120,7 @@ const isCurrent = (href: string) =>
   <div class="drawer-panel">
     <ul class="drawer-links">
       {
-        [...links, { key: 'contact', label: ui.nav.contact } as const].map((l, i) => {
+        links.map((l, i) => {
           const href = path(locale, l.key);
           return (
             <li style={`--i:${i}`}>
@@ -120,8 +136,12 @@ const isCurrent = (href: string) =>
     </ul>
 
     <div class="drawer-foot" style={`--i:${links.length + 1}`}>
-      <Button variant="dark" href={path(locale, 'contact')} block>{ui.cta.callback}</Button>
-      <Button variant="outline" href="/portal/login" rel="nofollow" block>{ui.cta.login}</Button>
+      <Button variant="dark" href={path(locale, 'submitAd')} block class="cta-sheen">{ui.cta.submitAd}</Button>
+      <Button variant="outline" href={path(locale, 'contact')} block>{ui.cta.callback}</Button>
+      <div class="drawer-account">
+        <Button variant="outline" size="sm" href={loginHref} rel="nofollow" block arrow={false}>{ui.cta.accountLogin}</Button>
+        <Button variant="outline" size="sm" href={registerHref} rel="nofollow" block arrow={false}>{ui.cta.accountRegister}</Button>
+      </div>
       <p class="drawer-contact">
         {COMPANY.phones.filter((p) => p.public).slice(0, 2).map((p) => <a href={p.href}>{p.display}</a>)}
         <a href={`mailto:${COMPANY.email.primary}`}>{COMPANY.email.primary}</a>
@@ -185,9 +205,12 @@ const isCurrent = (href: string) =>
       a.addEventListener('focus', () => place(a));
     });
     list.addEventListener('pointerleave', settle);
-    list.addEventListener('focusout', () => requestAnimationFrame(() => {
-      if (!list.contains(document.activeElement)) settle();
-    }));
+    // Only when focus has really moved elsewhere: Safari reports a mouse
+    // click on a link as focus going nowhere (relatedTarget null).
+    list.addEventListener('focusout', (e: FocusEvent) => {
+      const next = e.relatedTarget;
+      if (!(next instanceof Element) || !list.contains(next)) settle();
+    });
     window.addEventListener('resize', () => place(home, true), { passive: true });
   }
 
@@ -195,7 +218,7 @@ const isCurrent = (href: string) =>
   const focusable = () =>
     Array.from(drawer.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'));
 
-  const setOpen = (open: boolean) => {
+  const setOpen = (open: boolean, moveFocus = true) => {
     toggle.setAttribute('aria-expanded', String(open));
     drawer.toggleAttribute('data-open', open);
     nav.toggleAttribute('data-menu-open', open);
@@ -203,8 +226,15 @@ const isCurrent = (href: string) =>
     // closing — `hidden` would rip it out of layout mid-transition.
     drawer.inert = !open;
     document.documentElement.style.overflow = open ? 'hidden' : '';
-    if (open) focusable()[0]?.focus();
+    if (open && moveFocus) focusable()[0]?.focus();
   };
+
+  // A page restored by the Back button (bfcache) comes back exactly as it was
+  // left: sheet open, page scroll locked. Start it clean instead.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted && drawer.hasAttribute('data-open')) setOpen(false, false);
+    onScroll();
+  });
 
   toggle.addEventListener('click', () => {
     setOpen(toggle.getAttribute('aria-expanded') !== 'true');
@@ -258,7 +288,7 @@ const isCurrent = (href: string) =>
     min-height: var(--nav-h);
     max-width: calc(var(--maxw) + 2 * var(--pad-x));
     margin-inline: auto;
-    padding: 0 var(--pad-x);
+    padding: 0 max(var(--pad-x), env(safe-area-inset-right, 0px)) 0 max(var(--pad-x), env(safe-area-inset-left, 0px));
     border-radius: 0;
     background: rgba(244, 244, 242, 0);
     border: 1px solid transparent;
@@ -275,7 +305,8 @@ const isCurrent = (href: string) =>
   /* Scrolled: the island. The left padding is chosen so the logo moves by
      only the inset — it stays over the page's own margin. */
   .nav[data-scrolled] {
-    padding: 10px var(--slab-x);
+    padding: max(10px, env(safe-area-inset-top, 0px)) max(var(--slab-x), env(safe-area-inset-right, 0px)) 10px
+      max(var(--slab-x), env(safe-area-inset-left, 0px));
   }
   .nav[data-scrolled] .nav-inner,
   .nav[data-menu-open] .nav-inner {
@@ -355,23 +386,46 @@ const isCurrent = (href: string) =>
     justify-content: flex-end;
     gap: 6px;
   }
-  .nav-login {
+  /* One quiet pill: icon, "Belépés / Regisztráció". The slash is a thin
+     divider in the same ink — one colour, one weight, no two-tone text. */
+  .nav-account {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     height: 44px;
     padding: 0 16px;
     border-radius: var(--r-pill);
-    font-size: 1rem;
+    box-shadow: inset 0 0 0 1px rgba(16, 42, 67, 0.12);
+    font-size: 0.9375rem;
     color: var(--ink);
     white-space: nowrap;
-    transition: background-color var(--dur-fast) ease;
+    transition:
+      background-color var(--dur-fast) ease,
+      box-shadow var(--dur-fast) ease;
   }
-  .nav-login:hover {
-    background: rgba(16, 42, 67, 0.065);
+  @media (hover: hover) {
+    .nav-account:hover {
+      background: rgba(16, 42, 67, 0.065);
+      box-shadow: inset 0 0 0 1px rgba(16, 42, 67, 0.2);
+    }
   }
-  .nav-end :global(.nav-cta) {
+  .nav-account svg {
+    flex-shrink: 0;
+  }
+  .nav-account-text {
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .nav-account-slash {
+    margin: 0 0.42em;
+    font-weight: var(--fw-light);
+    opacity: 0.45;
+  }
+  .nav-end .nav-cta {
     margin-left: 6px;
+  }
+  .nav-cta :global(.btn) {
+    white-space: nowrap;
   }
 
   .nav-mobile-only {
@@ -445,10 +499,11 @@ const isCurrent = (href: string) =>
   }
   .drawer-panel {
     position: absolute;
-    top: calc(10px + 66px + 8px);
-    left: var(--slab-x);
-    right: var(--slab-x);
-    max-height: calc(100dvh - 10px - 66px - 8px - var(--slab-x));
+    top: calc(max(10px, env(safe-area-inset-top, 0px)) + 66px + 8px);
+    left: max(var(--slab-x), env(safe-area-inset-left, 0px));
+    right: max(var(--slab-x), env(safe-area-inset-right, 0px));
+    max-height: calc(100vh - 10px - 66px - 8px - var(--slab-x));
+    max-height: calc(100dvh - 10px - 66px - 8px - var(--slab-x) - env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     overscroll-behavior: contain;
     display: flex;
@@ -459,10 +514,17 @@ const isCurrent = (href: string) =>
     background: var(--paper);
     box-shadow: var(--shadow-float);
     clip-path: inset(0 0 100% 0 round var(--r-xl));
-    transition: clip-path 0.75s var(--ease-in-out);
+    /* Out of the tab order once closed even without `inert` support; the
+       delay lets the closing wipe finish first. */
+    visibility: hidden;
+    transition:
+      clip-path 0.75s var(--ease-in-out),
+      visibility 0s linear 0.75s;
   }
   .drawer[data-open] .drawer-panel {
     clip-path: inset(0 0 0 0 round var(--r-xl));
+    visibility: visible;
+    transition-delay: 0s;
   }
   .drawer-links {
     list-style: none;
@@ -522,6 +584,15 @@ const isCurrent = (href: string) =>
     gap: 10px;
     padding: 0 6px;
   }
+  .drawer-account {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .drawer-account :global(.btn) {
+    min-height: 48px;
+    padding-inline: 12px;
+  }
   .drawer-contact {
     display: flex;
     flex-wrap: wrap;
@@ -542,17 +613,42 @@ const isCurrent = (href: string) =>
     }
   }
 
-  @media (max-width: 1280px) {
-    .nav-login span {
+  /* Six links, the switcher, the account pill and the CTA, measured in
+     Hungarian (the longest words): below 1440px the links tighten, and below
+     1400px the account pill keeps only its icon — the full "Belépés /
+     Regisztráció" stays its accessible name — so nothing ever touches. */
+  @media (max-width: 1440px) {
+    .nav-link {
+      padding-inline: 12px;
+    }
+    .nav-links {
+      margin-left: clamp(12px, 2vw, 32px);
+    }
+  }
+  @media (max-width: 1400px) {
+    .nav-account-text {
       display: none;
     }
-    .nav-login {
+    .nav-account {
       width: 44px;
       padding: 0;
       justify-content: center;
     }
+  }
+  @media (max-width: 1200px) {
     .nav-link {
-      padding-inline: 13px;
+      padding-inline: 8px;
+      font-size: 0.9625rem;
+    }
+    .nav-inner {
+      gap: 14px;
+    }
+    /* The switcher shows its flag alone here; "HU" stays in its accessible name. */
+    .nav-end :global(.switcher-toggle > span[aria-hidden='true']) {
+      display: none;
+    }
+    .nav-end :global(.switcher-toggle) {
+      padding: 0 10px;
     }
   }
 

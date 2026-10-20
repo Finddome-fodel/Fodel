@@ -42,6 +42,12 @@
      replacement for the old light italic. 4.9:1 on --cream, so it is legible
      as text, not only as display. */
   --ink-quiet: #5c6d7e;
+  /* Launch round: a warm brass, used only as light — the faint ring that
+     breathes around the nav's "Hirdetés feladása" pill. Never as text or a
+     fill. (GoldRule.astro is drawn in --accent ink, so there was no gold
+     token to reuse.) */
+  --gold: #b8925a;
+  --gold-rgb: 184, 146, 90;
   --shadow-xs: 0 1px 2px rgba(var(--shadow-ink), 0.06);
   --shadow-md: 0 1px 2px rgba(var(--shadow-ink), 0.05), 0 12px 32px -10px rgba(var(--shadow-ink), 0.18);
   --shadow-float: 0 1px 1px rgba(var(--shadow-ink), 0.04), 0 8px 24px -6px rgba(var(--shadow-ink), 0.16),

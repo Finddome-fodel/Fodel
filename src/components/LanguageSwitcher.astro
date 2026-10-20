@@ -8,26 +8,39 @@
  * Used twice per page (desktop nav + mobile drawer), so ids are randomised
  * per render rather than hardcoded, and the toggle script below is written
  * to set up every `[data-switcher]` instance it finds.
+ *
+ * Launch round: also rendered on the en/de/fr bridge pages (Bridge.astro,
+ * LocaleBridgePage.astro), so a visitor who wandered into English can always
+ * get back. Every row is a real `<a href>`: switching works with JavaScript
+ * off, and the script only adds the open/close behaviour and remembers the
+ * choice in the `fodel_lang` cookie the root page reads.
  */
 import Flag from './Flag.astro';
 import { LOCALE_META, SWITCHER_LOCALES, UI, type Locale } from '~/i18n/ui';
 
+/** The languages a page can be in: the two full sites and the three bridges. */
+type PageLocale = Locale | 'en' | 'de' | 'fr';
+
 interface Props {
-  locale: Locale;
-  alternates?: Partial<Record<Locale, string>>;
+  locale: PageLocale;
+  /** The same page in another language, where one exists. Falls back to that language's home. */
+  alternates?: Partial<Record<PageLocale, string>>;
   align?: 'left' | 'right';
 }
 
 const { locale, alternates = {}, align = 'right' } = Astro.props;
-const ui = UI[locale];
 const current = LOCALE_META[locale];
 const uid = Math.random().toString(36).slice(2, 8);
 const menuId = `lang-menu-${uid}`;
+/** The toggle's accessible name, in the page's own language. */
+const switchLabel =
+  locale === 'hu' || locale === 'nl'
+    ? UI[locale].a11y.langSwitch
+    : { en: 'Change language', de: 'Sprache wechseln', fr: 'Changer de langue' }[locale];
 
 const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALES)[number]['status']) => {
   if (status === 'soon') return undefined;
-  if (code === 'hu' || code === 'nl') return alternates[code] ?? `/${code}/`;
-  return `/${code}/`;
+  return alternates[code as PageLocale] ?? `/${code}/`;
 };
 ---
 
@@ -40,12 +53,12 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
   >
     <Flag code={current.flag} />
     <span aria-hidden="true">{current.short}</span>
-    <span class="sr-only">{ui.a11y.langSwitch}</span>
+    <span class="sr-only">{switchLabel}</span>
     <svg class="switcher-caret" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
       <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   </button>
-  <ul class="switcher-menu" id={menuId} inert>
+  <ul class="switcher-menu" id={menuId}>
     {
       // Markets without a site yet (it, es) are not listed at all: a menu of
       // "coming soon" rows read as unfinished.
@@ -62,6 +75,7 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
                 lang={meta.htmlLang}
                 class:list={['switcher-row', { active }]}
                 aria-current={active ? 'true' : undefined}
+                data-lang={code}
               >
                 <Flag code={meta.flag} />
                 <span class="switcher-name">{meta.label}</span>
@@ -73,7 +87,7 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
               <span class="switcher-row switcher-row-disabled" aria-disabled="true">
                 <Flag code={meta.flag} />
                 <span class="switcher-name">{meta.label}</span>
-                <span class="switcher-soon">{ui.comingSoon}</span>
+                <span class="switcher-soon">{locale === 'hu' || locale === 'nl' ? UI[locale].comingSoon : 'Soon'}</span>
               </span>
             )}
           </li>
@@ -84,37 +98,76 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
 </div>
 
 <script>
+  /**
+   * Remembered for a year so the root page (src/pages/index.astro) sends a
+   * returning visitor to the language they chose, not the one their browser
+   * happens to prefer — a Hungarian living in Utrecht who picked NL stays NL.
+   */
+  const rememberLanguage = (code: string) => {
+    const secure = location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `fodel_lang=${code}; Max-Age=31536000; Path=/; SameSite=Lax${secure}`;
+  };
+
   function setupSwitcher(root: HTMLElement) {
     const toggle = root.querySelector<HTMLButtonElement>('.switcher-toggle');
     const menu = root.querySelector<HTMLElement>('.switcher-menu');
     if (!toggle || !menu) return;
+    const rows = () => Array.from(menu.querySelectorAll<HTMLAnchorElement>('a.switcher-row'));
+    // Closed and out of the tab order from here on; without this script the
+    // menu instead opens on hover and keyboard focus (see the CSS below).
+    root.setAttribute('data-ready', '');
+    menu.inert = true;
 
-    const setOpen = (open: boolean) => {
+    const isOpen = () => root.hasAttribute('data-open');
+    const setOpen = (open: boolean, focusFirst = false) => {
       root.toggleAttribute('data-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       menu.inert = !open;
-      if (open) menu.querySelector<HTMLElement>('a, [tabindex]')?.focus();
+      if (open && focusFirst) (rows().find((a) => a.classList.contains('active')) ?? rows()[0])?.focus();
     };
 
-    toggle.addEventListener('click', () => {
-      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
-    });
+    toggle.addEventListener('click', () => setOpen(!isOpen(), true));
 
-    document.addEventListener('click', (e) => {
-      if (!root.contains(e.target as Node)) setOpen(false);
+    // Closing rules, written for Safari. Safari does not focus a link or a
+    // button on mouse click, so pressing a menu row moves focus to <body> and
+    // fires `focusout` with no relatedTarget *between mousedown and click*.
+    // Closing on that (as this used to) made the menu inert before the click
+    // landed, so in Safari no language could be chosen at all. Now the menu
+    // only closes on a press outside it, on Escape, or when focus genuinely
+    // moves to another element on the page — never because focus went nowhere.
+    document.addEventListener('pointerdown', (e) => {
+      if (isOpen() && !root.contains(e.target as Node)) setOpen(false);
     });
-
-    root.addEventListener('focusout', () => {
-      requestAnimationFrame(() => {
-        if (!root.contains(document.activeElement)) setOpen(false);
-      });
+    root.addEventListener('focusout', (e: FocusEvent) => {
+      const next = e.relatedTarget;
+      if (isOpen() && next instanceof Element && !root.contains(next)) setOpen(false);
     });
-
     root.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && isOpen()) {
+        e.preventDefault();
         setOpen(false);
         toggle.focus();
+        return;
       }
+      // Arrow keys move through the rows, as in any menu-like list.
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && isOpen()) {
+        e.preventDefault();
+        const list = rows();
+        const at = list.indexOf(document.activeElement as HTMLAnchorElement);
+        const step = e.key === 'ArrowDown' ? 1 : -1;
+        list[(at + step + list.length) % list.length]?.focus();
+      }
+    });
+
+    menu.addEventListener('click', (e) => {
+      const row = (e.target as Element).closest<HTMLAnchorElement>('a[data-lang]');
+      if (row?.dataset.lang) rememberLanguage(row.dataset.lang);
+    });
+
+    // Coming back with the browser's Back button restores the page from the
+    // back/forward cache exactly as it was left — menu open. Close it.
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) setOpen(false);
     });
   }
 
@@ -142,9 +195,13 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
     cursor: pointer;
     transition: background-color var(--dur-fast) ease;
   }
-  .switcher-toggle:hover,
   .switcher[data-open] .switcher-toggle {
     background: rgba(16, 42, 67, 0.065);
+  }
+  @media (hover: hover) {
+    .switcher-toggle:hover {
+      background: rgba(16, 42, 67, 0.065);
+    }
   }
   .switcher-caret {
     color: var(--taupe);
@@ -169,9 +226,13 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
     transform: translateY(-6px) scale(0.97);
     transform-origin: top right;
     pointer-events: none;
+    /* Hidden from tab order and touch once closed even where `inert` is not
+       supported; the delay lets the closing fade finish first. */
+    visibility: hidden;
     transition:
       opacity 0.3s var(--ease-out),
-      transform 0.45s var(--ease-out);
+      transform 0.45s var(--ease-out),
+      visibility 0s linear 0.45s;
   }
   .switcher[data-align='right'] .switcher-menu {
     right: 0;
@@ -180,10 +241,13 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
     left: 0;
     transform-origin: top left;
   }
-  .switcher[data-open] .switcher-menu {
+  .switcher[data-open] .switcher-menu,
+  .switcher:not([data-ready]):is(:hover, :focus-within) .switcher-menu {
     opacity: 1;
     transform: none;
     pointer-events: auto;
+    visibility: visible;
+    transition-delay: 0s;
   }
 
   .switcher-row,
@@ -201,8 +265,14 @@ const hrefFor = (code: keyof typeof LOCALE_META, status: (typeof SWITCHER_LOCALE
   a.switcher-row {
     transition: background-color 0.25s ease;
   }
-  a.switcher-row:hover {
+  @media (hover: hover) {
+    a.switcher-row:hover {
+      background: rgba(16, 42, 67, 0.06);
+    }
+  }
+  a.switcher-row:focus-visible {
     background: rgba(16, 42, 67, 0.06);
+    outline-offset: -2px;
   }
   a.switcher-row.active {
     background: rgba(16, 42, 67, 0.08);
