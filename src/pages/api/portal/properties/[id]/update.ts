@@ -7,17 +7,34 @@
  * section: RLS already refuses the UPDATE outright if the caller doesn't own
  * the row or the row isn't in an editable status, but re-checking here first
  * means the seller gets a clear message instead of a silent no-op.
+ *
+ * Launch round: the guided setup (properties/[id]/setup.astro) saves here
+ * too, one step at a time — a form carrying `step` updates only that step's
+ * fields and answers in JSON, so "Continue" and autosave-on-blur can never
+ * blank a field from another step. Without `step` this is the full editor's
+ * save, unchanged.
  */
 import type { APIRoute } from 'astro';
 import { LOCALE_OPTIONS } from '~/lib/portal/properties';
 import { extractYouTubeId } from '~/lib/video';
 import { logEvent } from '~/lib/activity';
+import { normalizePhone, isPhoneCountry } from '~/lib/validation';
 import { boundsFor, COUNTRIES } from '~/config/countries';
 import { friendlyError } from '~/lib/portal/labels';
 import { getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
+import { saveSetupStep, SETUP_STEPS, type SetupStep } from '~/lib/portal/setup';
 
 export const prerender = false;
+
+/** The seller's number in E.164 when it reads as one in the picked country; otherwise as typed. */
+function sellerPhone(form: FormData): string | null {
+  const raw = String(form.get('seller_phone') ?? '').trim();
+  if (!raw) return null;
+  const picked = String(form.get('seller_phoneCountry') ?? '');
+  const phone = normalizePhone(raw, isPhoneCountry(picked) ? picked : 'HU');
+  return phone.ok ? phone.e164 : raw.slice(0, 40);
+}
 
 const str = (form: FormData, key: string): string => String(form.get(key) ?? '').trim();
 const num = (form: FormData, key: string): number | null => {
@@ -33,6 +50,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   const form = await request.formData();
 
   const back = (query: string) => redirect(`/portal/properties/${id}?${query}`);
+  const step = String(form.get('step') ?? '');
 
   const { data: existing, error: fetchError } = await supabase
     .from('properties')
@@ -45,7 +63,27 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   const isOwner = existing.owner_id === user?.id;
   if (!isAdmin && !isOwner) return back('error=forbidden');
   if (!isAdmin && !['draft', 'changes_requested'].includes(existing.status)) {
+    if (step) return Response.json({ ok: false, error: 'not-editable' }, { status: 409 });
     return back('error=' + encodeURIComponent('ez a hirdetés jelenleg nem szerkeszthető'));
+  }
+
+  // One step of the guided setup: only that step's fields, answered in JSON.
+  if (step) {
+    if (!(SETUP_STEPS as readonly string[]).includes(step)) return Response.json({ ok: false, error: 'unknown-step' }, { status: 400 });
+    const result = await saveSetupStep(supabase, existing, step as SetupStep, form, { isAdmin, locale: profile?.locale === 'nl' ? 'nl' : 'hu' });
+    if (result.ok) {
+      await logEvent({
+        kind: 'listing.edited',
+        actorId: user?.id ?? null,
+        actorEmail: profile?.email ?? null,
+        subjectType: 'property',
+        subjectId: id,
+        propertyId: id ?? null,
+        source: 'setup',
+        payload: { step },
+      }).catch(() => {});
+    }
+    return Response.json(result, { status: result.ok ? 200 : 422 });
   }
 
   const patch = {
@@ -74,7 +112,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     video_url: str(form, 'video_url') || null,
     seller_contact_visible: form.get('seller_contact_visible') === 'yes',
     seller_name: str(form, 'seller_name') || null,
-    seller_phone: str(form, 'seller_phone') || null,
+    seller_phone: sellerPhone(form),
     seller_speaks: form.getAll('seller_speaks').map(String),
     ...(form.has('reserved') || existing.status === 'published'
       ? { reserved: form.get('reserved') === 'yes' }

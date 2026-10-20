@@ -81,6 +81,12 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
       acceptUrl: `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`,
       settlement: 'Csemő',
     }),
+  accountExists: (l) =>
+    templates.accountExists(l, {
+      name: 'Kovács Anna',
+      loginUrl: `${SITE_URL}/portal/login?lang=${l}`,
+      forgotUrl: `${SITE_URL}/portal/forgot?lang=${l}`,
+    }),
   invite: (l) =>
     templates.invite(l, { role: 'owner', acceptUrl: `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}` }),
   welcome: (l) =>

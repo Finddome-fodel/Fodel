@@ -2,35 +2,34 @@
 export const prerender = false;
 
 import AuthPanel from '~/components/portal/AuthPanel.astro';
+import { AUTH_COPY, authLang } from '~/lib/portal/auth-copy';
 
 if (Astro.locals.user) return Astro.redirect('/portal/dashboard');
 
+const lang = authLang(Astro.url, Astro.cookies);
+const t = AUTH_COPY[lang].forgot;
 const sent = Astro.url.searchParams.get('sent') === '1';
 ---
 
-<AuthPanel title="Elfelejtett jelszó" heading="Elfelejtett jelszó">
+<AuthPanel title={t.title} heading={t.heading} lang={lang}>
   {
     sent ? (
       <>
-        <p class="notice ok">
-          Ha ehhez az e-mail címhez tartozik fiók, elküldtük rá a jelszó-visszaállító linket.
-          Nézze meg a postaládáját — és a spam mappát is.
-        </p>
-        <p class="hint">A link egy óráig érvényes. <a href="/portal/login">Vissza a bejelentkezéshez</a></p>
+        <p class="notice ok" role="status">{t.sent}</p>
+        <p class="hint">{t.validity} <a href={`/portal/login?lang=${lang}`}>{t.back}</a></p>
       </>
     ) : (
       <>
-        <p class="body">
-          Adja meg az e-mail címét, és küldünk egy linket, amivel új jelszót állíthat be.
-        </p>
+        <p class="body">{t.body}</p>
         <form method="POST" action="/api/portal/forgot">
+          <input type="hidden" name="lang" value={lang} />
           <div class="field">
-            <label for="email">E-mail cím</label>
-            <input id="email" name="email" type="email" required autocomplete="username" autofocus />
+            <label for="email">{t.email}</label>
+            <input id="email" name="email" type="email" required autocomplete="username" inputmode="email" enterkeyhint="send" autofocus />
           </div>
-          <button type="submit" class="submit">Link küldése</button>
+          <button type="submit" class="submit">{t.submit}</button>
         </form>
-        <p class="hint"><a href="/portal/login">Vissza a bejelentkezéshez</a></p>
+        <p class="hint"><a href={`/portal/login?lang=${lang}`}>{t.back}</a></p>
       </>
     )
   }

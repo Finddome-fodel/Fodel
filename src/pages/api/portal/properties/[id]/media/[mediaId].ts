@@ -90,7 +90,11 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Stored per locale, same shape the public site reads through `text()`.
     // Hungarian is the language the owner writes in; the other locales fall
     // back to it exactly as titles and descriptions do.
-    patch.alt = alt ? { hu: alt } : {};
+    // A Dutch-speaking seller's caption (from the guided setup) is kept as
+    // Dutch and, until the office translates it, also stands in for the
+    // Hungarian one — an image with no description at all is the worse
+    // outcome for the accessibility check.
+    patch.alt = !alt ? {} : body.locale === 'nl' ? { hu: alt, nl: alt } : { hu: alt };
   }
 
   if (Object.keys(patch).length > 0) {

@@ -17,11 +17,18 @@ function rateLimited(ip: string): boolean {
 }
 
 export const POST: APIRoute = async ({ request, clientAddress, locals, redirect }) => {
+  const form = await request.formData();
+  // Back to the same screen, in the same language, still pointing where it pointed.
+  const lang = form.get('lang') === 'nl' ? 'nl' : 'hu';
+  const again = (error: string) => {
+    const next = String(form.get('next') ?? '');
+    return redirect(`/portal/login?error=${error}&lang=${lang}${next.startsWith('/portal') ? `&next=${encodeURIComponent(next)}` : ''}`);
+  };
+
   if (clientAddress && rateLimited(clientAddress)) {
-    return redirect('/portal/login?error=rate-limited');
+    return again('rate-limited');
   }
 
-  const form = await request.formData();
   const email = String(form.get('email') ?? '').trim();
   const password = String(form.get('password') ?? '');
   const next = String(form.get('next') ?? '/portal/dashboard');
@@ -29,12 +36,12 @@ export const POST: APIRoute = async ({ request, clientAddress, locals, redirect 
   const safeNext = next.startsWith('/portal') ? next : '/portal/dashboard';
 
   if (!email || !password) {
-    return redirect('/portal/login?error=invalid');
+    return again('invalid');
   }
 
   const { data, error } = await locals.supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    return redirect('/portal/login?error=invalid');
+    return again('invalid');
   }
 
   await logEvent({

@@ -13,11 +13,12 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import Ago from '~/components/portal/Ago.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
 import { STATUS_LABEL } from '~/lib/portal/properties';
 import { formatCents } from '~/lib/orders';
 import { icon } from '~/lib/portal/icons';
-import { greeting, longDate, timeAgo, hoursSince, listingName } from '~/lib/portal/time';
+import { greeting, longDate, hoursSince, listingName, newestFirst } from '~/lib/portal/time';
 import { getCompany } from '~/lib/runtime-config';
 import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
 import { toListItem } from '~/lib/invoicing/store';
@@ -98,9 +99,11 @@ if (isAdmin) {
   for (const p of people.data ?? []) ownerName.set(p.id, p.full_name || p.email);
 }
 
-const waiting = properties
-  .filter((p) => p.status === 'submitted')
-  .sort((a, b) => String(a.submitted_at ?? a.created_at).localeCompare(String(b.submitted_at ?? b.created_at)));
+// Newest submission first, like every admin list (launch round).
+const waiting = newestFirst(
+  properties.filter((p) => p.status === 'submitted'),
+  (p) => p.submitted_at ?? p.created_at
+);
 
 const thumb = (p: (typeof properties)[number]) => {
   const media = [...(p.property_media ?? [])].sort((a: any, b: any) => a.sort_order - b.sort_order);
@@ -113,12 +116,26 @@ const rules = isAdmin ? listingRules((await getCompany()).services) : null;
 const expiring = isAdmin
   ? properties
       .filter((p: any) => p.status === 'published' && p.expires_at && daysLeft(p.expires_at) <= 30)
+      // Deliberate exception to newest-first: a deadline list, soonest first.
       .sort((a: any, b: any) => String(a.expires_at).localeCompare(String(b.expires_at)))
   : [];
 const silent = isAdmin && rules ? properties.filter((p: any) => p.status === 'published' && isUnresponsive(p, rules)) : [];
 const hu = (iso: string) => new Date(iso).toLocaleDateString('hu-HU', { month: 'long', day: 'numeric' });
 
 const todo = waiting.length + openEnquiries.length + pendingValuations + requestedServices;
+
+// An owner's drafts that were never submitted: the guided setup picks up
+// where they left off. In the owner's own language (launch round).
+const ownerLang = profile?.locale === 'nl' ? 'nl' : 'hu';
+const unfinished = !isAdmin
+  ? properties
+      .filter((p: any) => p.status === 'draft' && !p.submitted_at)
+      .sort((a: any, b: any) => String(b.created_at).localeCompare(String(a.created_at)) || String(b.id).localeCompare(String(a.id)))
+  : [];
+const resume =
+  ownerLang === 'nl'
+    ? { title: 'Ga verder met uw advertentie', body: 'U was bezig uw advertentie samen te stellen. Ga verder waar u gebleven was; niets is verloren gegaan.', cta: 'Verder' }
+    : { title: 'Folytassa a hirdetés összeállítását', body: 'Elkezdte összeállítani a hirdetését. Ott folytathatja, ahol abbahagyta; semmi nem veszett el.', cta: 'Folytatás' };
 const myAwaitingPayment = !isAdmin ? counts.awaiting_payment : 0;
 
 // The path a listing walks, in order, each with the tint it carries elsewhere.
@@ -144,7 +161,7 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
           isAdmin
             ? todo > 0
               ? `Ma ${todo} dolog vár Önre.`
-              : 'Minden rendben — jelenleg nincs függőben lévő teendő.'
+              : 'Minden rendben, jelenleg nincs függőben lévő teendő.'
             : myAwaitingPayment > 0
               ? 'Egy jóváhagyott hirdetése fizetésre vár.'
               : 'Itt látja hirdetései állapotát.'
@@ -195,7 +212,7 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
                             {Number(p.price_eur).toLocaleString('de-DE')}
                           </span>
                         </span>
-                        <span class:list={['q-when', late && 'late']}>{timeAgo(p.submitted_at ?? p.created_at)}</span>
+                        <Ago class:list={['q-when', late && 'late']} iso={p.submitted_at ?? p.created_at} />
                         <ArrowChip size={34} class="q-chip" />
                       </a>
                     </li>
@@ -225,7 +242,7 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
                       <span class="c-name">
                         <b>{e.name}</b>
                         <span>
-                          {e.contact_pref === 'email' ? 'E-mailt kér' : e.phone ? 'Visszahívást kér' : 'Érdeklődik'} · {timeAgo(e.created_at)}
+                          {e.contact_pref === 'email' ? 'E-mailt kér' : e.phone ? 'Visszahívást kér' : 'Érdeklődik'} · <Ago iso={e.created_at} />
                         </span>
                       </span>
                       {e.phone ? (
@@ -294,7 +311,7 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
         <section class="life" aria-label="Lejáratok és visszaigazolások">
           <div class="life-card">
             <div class="life-head">
-              <h2>Hamarosan lejár <span>30 napon belül</span></h2>
+              <h2>Hamarosan lejár <span>30 napon belül · legközelebbi lejárat elöl</span></h2>
               {expiring.length > 0 && <span class="count">{expiring.length}</span>}
             </div>
             {expiring.length === 0 ? (
@@ -338,9 +355,18 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
       </>
     ) : (
       <>
+        {unfinished.map((p: any) => (
+          <a class="callout resume" href={`/portal/properties/${p.id}/setup`} lang={ownerLang}>
+            <span>
+              <b>{resume.title}</b>
+              <span class="resume-body">{p.settlement ? `${p.settlement} · ` : ''}#{p.ref}. {resume.body}</span>
+            </span>
+            <span class="resume-cta">{resume.cta}<ArrowChip size={34} /></span>
+          </a>
+        ))}
         {myAwaitingPayment > 0 && (
           <a class="callout" href="/portal/properties?status=awaiting_payment">
-            <span><b>{myAwaitingPayment}</b> jóváhagyott hirdetése fizetésre vár — a díj rendezése után azonnal megjelenik.</span>
+            <span><b>{myAwaitingPayment}</b> jóváhagyott hirdetése fizetésre vár. A díj rendezése után azonnal megjelenik.</span>
             <ArrowChip size={34} />
           </a>
         )}
@@ -389,6 +415,10 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
 </Portal>
 
 <style>
+  .resume { align-items: center; }
+  .resume > span:first-child { display: grid; gap: 4px; }
+  .resume-body { font-size: 14.5px; line-height: 1.55; opacity: 0.85; }
+  .resume-cta { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; font-weight: var(--fw-medium); }
   .top {
     display: flex;
     align-items: flex-end;

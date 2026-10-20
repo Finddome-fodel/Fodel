@@ -14,13 +14,11 @@ export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
 import Field from '~/components/forms/Field.astro';
-import PhotoTips from '~/components/PhotoTips.astro';
+import PhotoUploader from '~/components/portal/PhotoUploader.astro';
 import { ONSITE_SERVICES } from '~/config/company';
-import { isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
 import { getProperty, STATUS_LABEL, EPC_OPTIONS, LOCALE_OPTIONS, OWNER_EDITABLE } from '~/lib/portal/properties';
 import { getTaxonomy, getCompany, termLabel } from '~/lib/runtime-config';
-import { resolveImage } from '~/lib/property-images';
 import { formatCents, type OrderLine } from '~/lib/orders';
 import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
@@ -31,14 +29,7 @@ import BillingForm from '~/components/BillingForm.astro';
 import { billingComplete } from '~/lib/invoicing/model';
 import { COUNTRIES } from '~/config/countries';
 import { SITE_HOST } from '~/config/site.mjs';
-import { MAX_UPLOAD_MB, MAX_EDGE, LOW_RESOLUTION_EDGE } from '~/lib/media';
 import { listingRules, daysLeft, isUnresponsive } from '~/lib/listing-rules';
-
-/** A demo photo (bare filename) needs Astro's asset pipeline to become a real URL; a real upload already is one. */
-function mediaSrc(storagePath: string): string {
-  if (storagePath.startsWith('http')) return storagePath;
-  return resolveImage(storagePath).src;
-}
 
 const { supabase, profile, user } = Astro.locals;
 const { id } = Astro.params;
@@ -90,8 +81,6 @@ const payment = Astro.url.searchParams.get('payment');
 const trByLocale = Object.fromEntries(property.translations.map((t) => [t.locale, t]));
 
 const suggestionByLocale = Object.fromEntries((suggestionsResult.data ?? []).map((s) => [s.locale, s]));
-const hero = property.media.find((m) => m.is_hero) ?? property.media[0];
-const gallery = property.media.filter((m) => m !== hero);
 
 /** The description an owner wrote for a photo. Empty until they fill it in. */
 const captionOf = (m: (typeof property.media)[number]) =>
@@ -160,7 +149,6 @@ const railItems = [
   ...(servicesAvailable && (openService || canRequestService) ? [{ id: 'service', label: 'Szolgáltatás' }] : []),
 ];
 
-const photoHintCounts = photoHints(property.media);
 
 /** Not a blocker — but it costs the listing real search traffic. */
 const missingCaptions = property.media.filter((m) => !captionOf(m).trim()).length;
@@ -175,8 +163,6 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
 // The package's photo limit (admin-set in Szolgáltatások). Admins may exceed it.
 const listingPackage = packageOf(listingCatalog(company.services), property.package);
 const photoLimit = listingPackage.maxImages;
-const photoCount = property.media.length;
-const photosFull = photoLimit !== null && photoCount >= photoLimit;
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
@@ -558,81 +544,17 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
     <p class="workflow-status" id="workflow-status" role="status"></p>
   </section>
 
-  <section id="media" class="media-section ed-card">
-    <header class="card-head media-head">
-      <div><h2>Fényképek</h2><p>Az első kép a címlapkép — a többit húzás nélkül, a „Címlapképnek” gombbal cserélheti.</p></div>
-      <p class:list={['photo-meter', { full: photosFull }]} title={`${listingPackage.names.hu} csomag`}>
-        <b>{photoCount}{photoLimit !== null && <span> / {photoLimit}</span>}</b>
-        <span>{photoLimit === null ? 'kép · korlátlan' : 'kép a csomagban'}</span>
-      </p>
-    </header>
-    <p class="hint">
-      Húzza ide a képeket, vagy kattintson a tallózáshoz. Formátum: JPG, PNG vagy WebP ·
-      legfeljebb {MAX_UPLOAD_MB} MB képenként (a nagy fájlokat a böngésző feltöltés előtt
-      automatikusan kicsinyíti) · a tárolt kép hosszabbik oldala legfeljebb {MAX_EDGE} képpont. Ajánlott legalább {LOW_RESOLUTION_EDGE} képpont a hosszabbik oldalon — ennél kisebb
-      képet is elfogadunk, de nagy képernyőn elmosódottnak látszhat.
-    </p>
-
-    <PhotoTips locale="hu" variant="portal" heading="Így készítsen jó fotót" />
-
-    {(photoHintCounts.portrait > 0 || photoHintCounts.lowResolution > 0) && (
-      <p class="soft-warn">
-        {photoHintCounts.portrait > 0 && `${photoHintCounts.portrait} kép álló tájolású. `}
-        {photoHintCounts.lowResolution > 0 && `${photoHintCounts.lowResolution} kép kis felbontású. `}
-        Beküldheti így is, de fekvő, nagy felbontású képekkel a hirdetés jobban mutat — a jelölt képeket
-        érdemes cserélni.
-      </p>
-    )}
-
-    <p class="hint">
-      Írjon minden képhez egy rövid leírást (pl. „Nappali cserépkályhával”). Ezt olvassa fel a
-      képernyőolvasó a látássérült érdeklődőknek, és ez alapján találja meg a Google képkeresője
-      is a hirdetést.
-    </p>
-
-    <div class="media-grid" id="media-grid" data-property-id={property.id}>
-      {[hero, ...gallery].filter(Boolean).map((m) => (
-        <figure class="media-item" data-media-id={m!.id} data-hero={m === hero ? 'true' : undefined}>
-          <div class="media-thumb">
-            <img src={mediaSrc(m!.storage_path)} alt={captionOf(m!)} />
-            {m === hero && <span class="hero-badge">Címlapkép</span>}
-            {(isPortrait(m!) || isLowResolution(m!)) && (
-              <span class="photo-flags">
-                {isPortrait(m!) && <span title="A kép álló tájolású — fekvő képek mutatnak jobban.">Álló kép</span>}
-                {isLowResolution(m!) && <span title="Nagy képernyőn elmosódottnak látszhat.">Kis felbontás</span>}
-              </span>
-            )}
-            {m !== hero && <button type="button" class="set-hero" data-set-hero={m!.id}>Címlapképnek</button>}
-            <button type="button" class="remove" data-remove-media={m!.id} aria-label="Kép törlése">×</button>
-          </div>
-          <figcaption>
-            <label class="sr-only" for={`caption-${m!.id}`}>Kép leírása</label>
-            <input
-              id={`caption-${m!.id}`}
-              class="caption"
-              type="text"
-              maxlength="160"
-              placeholder="Mi látható a képen?"
-              value={captionOf(m!)}
-              data-caption-for={m!.id}
-              disabled={!editable}
-            />
-          </figcaption>
-        </figure>
-      ))}
-    </div>
-
-    {photosFull && (
-      <p class="soft-warn">
-        A(z) {listingPackage.names.hu} legfeljebb {photoLimit} képet tartalmaz. {isAdmin ? 'Adminként ennél többet is feltölthet.' : 'Újabb kép előtt töröljön egyet, vagy kérjen nagyobb csomagot munkatársunktól.'}
-      </p>
-    )}
-    <label class="dropzone" id="dropzone" hidden={photosFull && !isAdmin}>
-      <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" multiple hidden />
-      <span class="dz-ic" aria-hidden="true">+</span><span class="dz-t">Fotók hozzáadása</span><span class="dz-s">Húzza ide a képeket, vagy kattintson</span>
-    </label>
-    <p class="upload-status" id="upload-status" role="status"></p>
-  </section>
+  <div class="media-section ed-card">
+    <PhotoUploader
+      propertyId={property.id}
+      media={property.media}
+      photoLimit={photoLimit}
+      packageName={listingPackage.names.hu}
+      editable={editable}
+      isAdmin={isAdmin}
+      locale="hu"
+    />
+  </div>
 
   {servicesAvailable && (openService || canRequestService) && (
     <section id="service" class="service-section ed-card">
@@ -717,10 +639,6 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
   });
 </script>
 
-<script>
-  import { exposeShrinkImage } from '~/scripts/shrink-image';
-  exposeShrinkImage();
-</script>
 
 <script>
   /* ── Section rail: the section being read lights up ─────────────────── */
@@ -784,7 +702,7 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
   }
 </script>
 
-<script define:vars={{ propertyId: property.id, photoLimit }}>
+<script define:vars={{ propertyId: property.id }}>
   // Locale tabs — plain show/hide, no framework.
   document.querySelectorAll('[data-locale-tab]').forEach((tab) => {
     tab.addEventListener('click', () => {
@@ -853,67 +771,6 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
     });
   });
 
-  // Media upload: drag-drop, click-to-browse, progress, reorder, set-hero, delete.
-  const grid = document.getElementById('media-grid');
-  const dropzone = document.getElementById('dropzone');
-  const fileInput = document.getElementById('file-input');
-  const status = document.getElementById('upload-status');
-
-  const UPLOAD_ERRORS = {
-    'unsupported-type': 'nem támogatott formátum (JPG, PNG vagy WebP lehet)',
-    'too-large': 'túl nagy fájl',
-    'unreadable-image': 'a fájl nem olvasható képként',
-    'storage-failed': 'a tárolás nem sikerült, próbálja újra',
-    'not-editable': 'a hirdetés jelenleg nem szerkeszthető',
-    'photo-limit': photoLimit ? `elérte a csomagban foglalt ${photoLimit} képet` : 'elérte a csomag képkeretét',
-    forbidden: 'nincs jogosultsága',
-  };
-
-  async function uploadFiles(files) {
-    const soft = [];
-    for (const file of files) {
-      status.textContent = `Feltöltés: ${file.name}…`;
-      // Large phone photos are scaled down in the browser first — the server
-      // accepts at most ~4.5 MB per request (see src/scripts/shrink-image.ts).
-      const prepared = window.fodelShrinkImage ? await window.fodelShrinkImage(file) : file;
-      if (prepared.size > 4.4 * 1024 * 1024) {
-        status.textContent = `Nem sikerült feltölteni: ${file.name} — a kép túl nagy (JPG, PNG vagy WebP formátumban próbálja).`;
-        return;
-      }
-      const body = new FormData();
-      body.append('file', prepared);
-      try {
-        const res = await fetch(`/api/portal/properties/${propertyId}/media`, { method: 'POST', body });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok || !json.ok) throw new Error(json.error ?? 'upload-failed');
-        if (json.warning === 'low-resolution') soft.push(file.name);
-      } catch (error) {
-        const reason = UPLOAD_ERRORS[error.message];
-        status.textContent = `Nem sikerült feltölteni: ${file.name}${reason ? ` — ${reason}` : ''}`;
-        return;
-      }
-    }
-    if (soft.length) {
-      status.textContent = `Feltöltve. Kis felbontású kép: ${soft.join(', ')} — ha van nagyobb változata, érdemes azt feltölteni.`;
-      setTimeout(() => location.reload(), 4000);
-      return;
-    }
-    status.textContent = 'Kész — az oldal frissül…';
-    location.reload();
-  }
-
-  dropzone?.addEventListener('click', () => fileInput?.click());
-  fileInput?.addEventListener('change', () => fileInput.files && uploadFiles([...fileInput.files]));
-  ['dragover', 'dragenter'].forEach((evt) =>
-    dropzone?.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('drag'); })
-  );
-  ['dragleave', 'drop'].forEach((evt) =>
-    dropzone?.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove('drag'); })
-  );
-  dropzone?.addEventListener('drop', (e) => {
-    if (e.dataTransfer?.files) uploadFiles([...e.dataTransfer.files]);
-  });
-
   const workflowStatus = document.getElementById('workflow-status');
 
   async function doAction(action, note) {
@@ -966,30 +823,6 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
     if (await window.pf.confirm({ title: 'Megjelöli eladottként?', body: 'A hirdetés lekerül az élő listáról, és az eladott ingatlanok közé kerül.', confirmLabel: 'Megjelölés eladottként' })) doAction('mark_sold');
   });
 
-  // Captions save on blur rather than behind a button: they are a dozen small
-  // independent edits, and a "save all photos" button would be one more thing
-  // to forget before hitting submit.
-  grid?.addEventListener('change', async (e) => {
-    const input = e.target;
-    if (!(input instanceof HTMLInputElement)) return;
-    const mediaId = input.getAttribute('data-caption-for');
-    if (!mediaId) return;
-
-    input.classList.remove('saved', 'failed');
-    try {
-      const res = await fetch(`/api/portal/properties/${propertyId}/media/${mediaId}`, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ alt: input.value }),
-      });
-      if (!res.ok) throw new Error('save-failed');
-      input.classList.add('saved');
-    } catch {
-      input.classList.add('failed');
-      status.textContent = 'A képleírást nem sikerült menteni.';
-    }
-  });
-
   // Card payment. The session is minted on click, not when the approval email
   // was sent — a Stripe session created days earlier would already have expired.
   const payBtn = document.getElementById('pay-btn');
@@ -1013,28 +846,6 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
     }
   });
 
-  grid?.addEventListener('click', async (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLElement)) return;
-
-    const removeId = target.getAttribute('data-remove-media');
-    if (removeId) {
-      if (!(await window.pf.confirm({ title: 'Törli a képet?', body: 'A kép véglegesen eltűnik a hirdetésből.', confirmLabel: 'Törlés', danger: true }))) return;
-      await fetch(`/api/portal/properties/${propertyId}/media/${removeId}`, { method: 'DELETE' });
-      location.reload();
-      return;
-    }
-
-    const heroId = target.getAttribute('data-set-hero');
-    if (heroId) {
-      await fetch(`/api/portal/properties/${propertyId}/media/${heroId}`, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ isHero: true }),
-      });
-      location.reload();
-    }
-  });
 </script>
 
 <style>
@@ -1087,13 +898,6 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
   .ed-card { padding: clamp(22px, 3vw, 36px); border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); scroll-margin-top: 24px; transition: box-shadow 0.4s var(--ease-out); }
   .ed-card:focus-within { box-shadow: var(--shadow-md), 0 0 0 1px rgba(16, 42, 67, 0.14); }
   .card-head { margin-bottom: 26px; }
-  .media-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
-  .photo-meter { display: grid; justify-items: end; gap: 2px; margin: 0; padding: 10px 18px; border-radius: var(--r-md); background: var(--paper); text-align: right; }
-  .photo-meter b { font-size: 24px; line-height: 1.1; font-weight: var(--fw-medium); color: var(--ink); font-variant-numeric: tabular-nums; }
-  .photo-meter b span { color: var(--ink-quiet); font-weight: var(--fw-body); }
-  .photo-meter > span { font-size: 13px; color: var(--ink-quiet); }
-  .photo-meter.full { background: var(--linen); }
-  @media (max-width: 560px) { .photo-meter { justify-items: start; text-align: left; } }
   .ed-card h2 { font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; letter-spacing: var(--ls-heading); color: var(--ink); }
   .card-head p { margin-top: 6px; font-size: 14.5px; line-height: 1.6; color: var(--ink-quiet); max-width: 62ch; }
   .ed-card h3 { margin: 28px 0 12px; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-quiet); font-weight: var(--fw-medium); }
@@ -1181,38 +985,8 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
   .bank dt { font-size: 13px; color: var(--ink-quiet); }
   .bank dd { font-size: var(--fs-small); color: var(--ink); word-break: break-all; }
 
-  /* ── Photos ──────────────────────────────────────────────────────────── */
-  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px 16px; margin: 22px 0; }
-  .media-item { display: flex; flex-direction: column; gap: 10px; }
-  .media-thumb { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--r-lg); background: var(--linen); box-shadow: 0 0 0 1px var(--pt-hair); }
-  .media-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s var(--ease-out); }
-  .media-item:hover img { transform: scale(1.04); }
-  .media-item[data-hero='true'] .media-thumb { box-shadow: 0 0 0 2px var(--ink); }
-  .hero-badge { position: absolute; top: 10px; left: 10px; padding: 4px 11px; border-radius: var(--r-pill); background: var(--ink); color: var(--cream); font-size: 12px; letter-spacing: 0.04em; }
-  .set-hero { position: absolute; left: 10px; bottom: 10px; padding: 6px 12px; border-radius: var(--r-pill); background: rgba(250, 250, 248, 0.94); color: var(--ink); font-size: 12.5px; box-shadow: var(--shadow-sm); opacity: 0; transform: translateY(4px); transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out); }
-  .media-thumb:hover .set-hero, .set-hero:focus-visible { opacity: 1; transform: none; }
-  @media (hover: none) { .set-hero { opacity: 1; transform: none; } }
-  .remove { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(16, 42, 67, 0.82); color: var(--cream); font-size: 17px; line-height: 1; backdrop-filter: blur(6px); transition: background-color 0.2s var(--ease-out), transform 0.2s var(--ease-out); }
-  .remove:hover { background: var(--pt-red); transform: scale(1.08); }
-  .photo-flags { position: absolute; right: 10px; bottom: 10px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; pointer-events: none; }
-  .photo-flags span { padding: 3px 9px; border-radius: var(--r-pill); background: rgba(255, 247, 224, 0.96); color: var(--pt-amber); font-size: 11.5px; }
-  .caption { width: 100%; min-height: 42px; padding: 9px 14px; border: 1px solid transparent; border-radius: var(--r-sm); background: var(--paper); font-size: 14px; color: var(--ink); transition: border-color 0.25s var(--ease-out), background-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out); }
-  .caption:hover { background: var(--linen); }
-  .caption:focus { outline: none; background: var(--white); border-color: var(--ink); box-shadow: 0 0 0 4px rgba(16, 42, 67, 0.08); }
-  .caption:disabled { background: var(--paper); color: var(--ink-quiet); }
-  /* A brief confirmation on the field itself — a photo grid full of toasts is unreadable. */
-  .caption.saved { border-color: var(--pt-green); }
-  .caption.failed { border-color: var(--pt-red); }
+  /* Photos: src/components/portal/PhotoUploader.astro. */
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-
-  .dropzone { display: grid; justify-items: center; gap: 4px; padding: 36px 24px; border: 1.5px dashed rgba(16, 42, 67, 0.22); border-radius: var(--r-lg); background: var(--paper); cursor: pointer; text-align: center; transition: border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
-  .dropzone:hover { border-color: var(--ink); background: var(--linen); }
-  .dropzone.drag { border-color: var(--ink); background: rgba(16, 42, 67, 0.08); transform: scale(1.01); }
-  .dz-ic { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 8px; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 24px; line-height: 1; transition: transform 0.4s var(--ease-out); }
-  .dropzone:hover .dz-ic { transform: rotate(90deg) scale(1.06); }
-  .dz-t { font-size: var(--fs-body); font-weight: var(--fw-medium); color: var(--ink); }
-  .dz-s { font-size: 14px; color: var(--ink-quiet); }
-  .upload-status { min-height: 1.5em; margin-top: 12px; font-size: 14px; color: var(--ink-quiet); }
 
   /* ── On-site service ─────────────────────────────────────────────────── */
   .service-status p { font-size: var(--fs-small); color: var(--ink); line-height: 1.7; }
@@ -1243,7 +1017,6 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
     .ring-l { display: none; }
     .grid-2, .diff { grid-template-columns: 1fr; }
     .checkbox-grid { grid-template-columns: 1fr 1fr; }
-    .media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
     .savebar { bottom: 10px; }
     .savebar-in { left: 0; right: 0; transform: none; justify-content: space-between; padding-left: 18px; gap: 12px; }
     .savebar kbd { display: none; }
@@ -1252,6 +1025,6 @@ const photosFull = photoLimit !== null && photoCount >= photoLimit;
     .checkbox-grid { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .media-item img, .dz-ic, .ring-fg { transition: none; }
+    .ring-fg { transition: none; }
   }
 </style>

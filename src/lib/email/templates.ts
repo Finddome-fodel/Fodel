@@ -23,6 +23,7 @@ import {
   lead,
   small,
   linkFallback,
+  textLink,
   button,
   quote,
   facts,
@@ -61,12 +62,15 @@ function textCta(label: string, href: string): string {
 
 export function registrationConfirm(
   locale: EmailLocale,
+  /** `settlement` is accepted for links minted before the launch round and no longer shown. */
   opts: { name: string; acceptUrl: string; settlement?: string }
 ): BuiltEmail {
   const c = copyFor(locale).registrationConfirm;
   const common = copyFor(locale).common;
-  const settlement = opts.settlement ?? '';
 
+  // One clear button and one line on what follows it. The details someone
+  // used to type on the public form are now asked for in the portal, so
+  // there is nothing to confirm here except the mailbox itself.
   return {
     subject: c.subject,
     html: shell({
@@ -75,9 +79,9 @@ export function registrationConfirm(
       body:
         h1(c.heading) +
         p(common.greeting(opts.name)) +
-        lead(c.intro(settlement)) +
-        p(c.body) +
+        lead(c.intro) +
         button(c.cta, opts.acceptUrl) +
+        p(c.next) +
         linkFallback(common.linkFallback, opts.acceptUrl) +
         small(c.expiry) +
         signOff(locale),
@@ -88,15 +92,60 @@ export function registrationConfirm(
 
 ${common.greeting(opts.name)}
 
-${c.intro(settlement)}
-
-${c.body}
+${c.intro}
 
 ${textCta(c.cta, opts.acceptUrl)}
+
+${c.next}
 
 ${c.expiry}
 
 ${common.questions}
+
+${common.signOff}`,
+    }),
+  };
+}
+
+/**
+ * Someone registered with an address that already has an account. The page
+ * they registered on shows the same "check your inbox" panel either way (so
+ * it never reveals who has an account); this email is where the real owner
+ * of the address learns what happened and how to get in.
+ */
+export function accountExists(
+  locale: EmailLocale,
+  opts: { name: string; loginUrl: string; forgotUrl: string }
+): BuiltEmail {
+  const c = copyFor(locale).accountExists;
+  const common = copyFor(locale).common;
+  return {
+    subject: c.subject,
+    html: shell({
+      locale,
+      preheader: c.preheader,
+      body:
+        h1(c.heading) +
+        p(common.greeting(opts.name)) +
+        lead(c.body) +
+        button(c.cta, opts.loginUrl) +
+        textLink(c.reset, opts.forgotUrl) +
+        small(c.ignore) +
+        signOff(locale),
+    }),
+    text: textShell({
+      locale,
+      body: `${c.heading}
+
+${common.greeting(opts.name)}
+
+${c.body}
+
+${textCta(c.cta, opts.loginUrl)}
+
+${c.reset}: ${opts.forgotUrl}
+
+${c.ignore}
 
 ${common.signOff}`,
     }),
@@ -294,7 +343,7 @@ export function adminNewSubmission(
     subject: c.subject(opts.ref),
     html: shell({
       locale,
-      preheader: `${opts.title} — ${opts.location}`,
+      preheader: `${opts.title} · ${opts.location}`,
       body:
         h1(c.heading) +
         facts([
@@ -423,7 +472,7 @@ export function approvedAwaitingPayment(
 ${c.body(opts.title, opts.ref)}
 
 ${c.orderTitle}
-${opts.items.map((i) => `  ${i.label} — ${i.amount}`).join('\n')}
+${opts.items.map((i) => `  ${i.label}: ${i.amount}`).join('\n')}
 ${opts.discount ? `  ${c.discountLabel}: ${opts.discount}\n` : ''}  ${c.totalLabel}: ${opts.total}
 ${c.vatNote}
 ${opts.payUrl ? `\n${textCta(c.ctaCard, opts.payUrl)}\n${c.cardNote}\n` : ''}
@@ -457,7 +506,7 @@ export function approvedPublished(
       h2(c.orderTitle) + itemisedTotal(opts.items, c.totalLabel, opts.total) + discountLine +
       facts([[c.dueLabel, opts.dueDate]]) + small(c.vatNote) + cardBlock + bankBlock + signOff(locale),
     }),
-    text: textShell({ locale, body: `${c.heading}\n\n${c.body(opts.title, opts.ref)}\n\n${textCta(c.viewCta, opts.viewUrl)}\n\n${c.orderTitle}\n${opts.items.map((item) => `  ${item.label} — ${item.amount}`).join('\n')}\n${opts.discount ? `  ${c.discountLabel}: ${opts.discount}\n` : ''}  ${c.totalLabel}: ${opts.total}\n${c.dueLabel}: ${opts.dueDate}\n${c.vatNote}\n${opts.payUrl ? `\n${textCta(c.ctaCard, opts.payUrl)}\n${c.cardNote}\n` : ''}\n${c.bankTitle}\n  IBAN: ${COMPANY.banks.nl.iban}\n  BIC: ${COMPANY.banks.nl.bic}\n${c.bankNote(`#${opts.ref}`)}\n\n${common.signOff}` }),
+    text: textShell({ locale, body: `${c.heading}\n\n${c.body(opts.title, opts.ref)}\n\n${textCta(c.viewCta, opts.viewUrl)}\n\n${c.orderTitle}\n${opts.items.map((item) => `  ${item.label}: ${item.amount}`).join('\n')}\n${opts.discount ? `  ${c.discountLabel}: ${opts.discount}\n` : ''}  ${c.totalLabel}: ${opts.total}\n${c.dueLabel}: ${opts.dueDate}\n${c.vatNote}\n${opts.payUrl ? `\n${textCta(c.ctaCard, opts.payUrl)}\n${c.cardNote}\n` : ''}\n${c.bankTitle}\n  IBAN: ${COMPANY.banks.nl.iban}\n  BIC: ${COMPANY.banks.nl.bic}\n${c.bankNote(`#${opts.ref}`)}\n\n${common.signOff}` }),
   };
 }
 
@@ -500,7 +549,7 @@ export function paymentReceipt(
 ${c.body(opts.title, opts.ref)}
 
 ${c.orderTitle}
-${opts.items.map((i) => `  ${i.label} — ${i.amount}`).join('\n')}
+${opts.items.map((i) => `  ${i.label}: ${i.amount}`).join('\n')}
 ${opts.discount ? `  ${c.discountLabel}: ${opts.discount}\n` : ''}  ${c.totalLabel}: ${opts.total}
   ${c.paidAtLabel}: ${opts.paidAt}
 
@@ -519,7 +568,7 @@ export function valuationReceived(locale: EmailLocale): BuiltEmail {
   const body = hu
     ? 'Munkatársunk ellenőrzi az ingatlan adatait és az adatalapot, majd e-mailben küldi a tájékoztató, piaci alapú értékmeghatározást.'
     : 'Onze medewerker controleert de woninggegevens en de gegevensbasis en stuurt daarna de indicatieve, marktgebaseerde waardebepaling per e-mail.';
-  return { subject: heading + ' — FODEL',
+  return { subject: heading + ' | FODEL',
     html: shell({ locale, preheader: heading, body: h1(heading) + lead(body) + signOff(locale) }),
     text: textShell({ locale, body: `${heading}\n\n${body}` }) };
 }
@@ -556,7 +605,7 @@ export function valuationReady(
     }),
     text: textShell({
       locale,
-      body: `${c.heading}\n\n${intro}\n${opts.mid ? `\n${locale === 'nl' ? 'Middenwaarde' : 'Középérték'}: ${opts.mid}` : ''}${opts.basis ? `\n${locale === 'nl' ? 'Gegevensbasis' : 'Adatalap'}: ${opts.basis}` : ''}${opts.rateDate ? `\n${locale === 'nl' ? 'Wisselkoersdatum' : 'Árfolyam dátuma'}: ${opts.rateDate}` : ''}${opts.sourceUrl ? `\n${locale === 'nl' ? 'Bron' : 'Forrás'}: KSH Ingatlanadattár${opts.sourceDate ? `, ${opts.sourceDate}` : ''} · CC BY 4.0 — ${opts.sourceUrl}` : ''}\n${opts.factors?.map((f) => `${f.direction === 'plus' ? (locale === 'nl' ? 'Waardeverhogend' : 'Értéknövelő') : f.direction === 'minus' ? (locale === 'nl' ? 'Waardeverlagend' : 'Értékcsökkentő') : (locale === 'nl' ? 'Onzeker' : 'Bizonytalan')}: ${f.text}`).join('\n') ?? ''}\n${opts.notice ?? ''}\n${disclaimer}\n\n${textCta(c.cta, opts.submitAdUrl)}${opts.visitUrl ? `\n${locale === 'nl' ? 'Bezoek van Gábor aanvragen' : 'Gábor helyszíni látogatása'}: ${opts.visitUrl}` : ''}${opts.judicialUrl ? `\n${locale === 'nl' ? 'Officiële taxatie aanvragen' : 'Igazságügyi értékbecslés kérése'}: ${opts.judicialUrl}` : ''}`,
+      body: `${c.heading}\n\n${intro}\n${opts.mid ? `\n${locale === 'nl' ? 'Middenwaarde' : 'Középérték'}: ${opts.mid}` : ''}${opts.basis ? `\n${locale === 'nl' ? 'Gegevensbasis' : 'Adatalap'}: ${opts.basis}` : ''}${opts.rateDate ? `\n${locale === 'nl' ? 'Wisselkoersdatum' : 'Árfolyam dátuma'}: ${opts.rateDate}` : ''}${opts.sourceUrl ? `\n${locale === 'nl' ? 'Bron' : 'Forrás'}: KSH Ingatlanadattár${opts.sourceDate ? `, ${opts.sourceDate}` : ''} · CC BY 4.0 · ${opts.sourceUrl}` : ''}\n${opts.factors?.map((f) => `${f.direction === 'plus' ? (locale === 'nl' ? 'Waardeverhogend' : 'Értéknövelő') : f.direction === 'minus' ? (locale === 'nl' ? 'Waardeverlagend' : 'Értékcsökkentő') : (locale === 'nl' ? 'Onzeker' : 'Bizonytalan')}: ${f.text}`).join('\n') ?? ''}\n${opts.notice ?? ''}\n${disclaimer}\n\n${textCta(c.cta, opts.submitAdUrl)}${opts.visitUrl ? `\n${locale === 'nl' ? 'Bezoek van Gábor aanvragen' : 'Gábor helyszíni látogatása'}: ${opts.visitUrl}` : ''}${opts.judicialUrl ? `\n${locale === 'nl' ? 'Officiële taxatie aanvragen' : 'Igazságügyi értékbecslés kérése'}: ${opts.judicialUrl}` : ''}`,
     }),
   };
 }
@@ -633,7 +682,7 @@ export function valuationPaid(
     }),
     text: textShell({
       locale,
-      body: `${c.heading}\n\n${c.body(opts.service)}\n\n${c.orderTitle}\n${opts.items.map((i) => `  ${i.label} — ${i.amount}`).join('\n')}\n  ${c.totalLabel}: ${opts.total}\n  ${c.paidAtLabel}: ${opts.paidAt}\n\n${c.next}\n${c.invoice}\n\n${common.signOff}`,
+      body: `${c.heading}\n\n${c.body(opts.service)}\n\n${c.orderTitle}\n${opts.items.map((i) => `  ${i.label}: ${i.amount}`).join('\n')}\n  ${c.totalLabel}: ${opts.total}\n  ${c.paidAtLabel}: ${opts.paidAt}\n\n${c.next}\n${c.invoice}\n\n${common.signOff}`,
     }),
   };
 }
@@ -887,7 +936,7 @@ export function newEnquiry(
     subject: c.subject(opts.ref),
     html: shell({
       locale,
-      preheader: `${opts.name} — ${opts.title}`,
+      preheader: `${opts.name} · ${opts.title}`,
       body:
         h1(c.heading) +
         lead(c.body(opts.title, opts.ref)) +
@@ -961,6 +1010,7 @@ ${common.signOff}`,
  */
 export const templates = {
   registrationConfirm,
+  accountExists,
   invite,
   inviteFromTemplate,
   welcome,

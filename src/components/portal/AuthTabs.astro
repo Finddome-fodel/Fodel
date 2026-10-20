@@ -1,0 +1,71 @@
+---
+/**
+ * "Bejelentkezés | Regisztráció" — the segmented control at the top of the
+ * sign-in and registration screens.
+ *
+ * Two links, not a tab widget: each side is its own URL (/portal/login and
+ * /portal/register), so a deep link opens the right one and the browser's
+ * Back button moves between them like any other page. `aria-current` marks
+ * the side you are on.
+ */
+import { AUTH_COPY, type AuthLang } from '~/lib/portal/auth-copy';
+
+interface Props {
+  active: 'login' | 'register';
+  lang: AuthLang;
+  /** Carried to the sign-in side so a deep link still lands where it pointed. */
+  next?: string | null;
+}
+
+const { active, lang, next } = Astro.props;
+const t = AUTH_COPY[lang].tabs;
+const loginHref = `/portal/login?lang=${lang}${next ? `&next=${encodeURIComponent(next)}` : ''}`;
+const registerHref = `/portal/register?lang=${lang}`;
+---
+
+<nav class="auth-tabs" aria-label={t.label}>
+  <a href={loginHref} aria-current={active === 'login' ? 'page' : undefined}>{t.login}</a>
+  <a href={registerHref} aria-current={active === 'register' ? 'page' : undefined}>{t.register}</a>
+</nav>
+
+<style>
+  .auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 28px;
+    border-radius: var(--r-pill);
+    background: var(--linen);
+  }
+  .auth-tabs a {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: var(--r-pill);
+    font-size: 15px;
+    font-weight: var(--fw-medium);
+    color: var(--ink-quiet);
+    text-decoration: none;
+    text-align: center;
+    transition:
+      background-color 0.3s var(--ease-out),
+      color 0.3s var(--ease-out),
+      box-shadow 0.3s var(--ease-out);
+  }
+  .auth-tabs a[aria-current='page'] {
+    background: var(--white);
+    color: var(--ink);
+    box-shadow: var(--shadow-xs), 0 0 0 1px rgba(16, 42, 67, 0.06);
+  }
+  @media (hover: hover) {
+    .auth-tabs a:not([aria-current]):hover {
+      color: var(--ink);
+    }
+  }
+  .auth-tabs a:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+</style>

@@ -16,6 +16,7 @@ import { createSupabaseServerClient } from '~/lib/supabase-server';
 
 const PUBLIC_PORTAL_PATHS = [
   '/portal/login',
+  '/portal/register', // self-registration (launch round) — the same form as the public submit page
   '/portal/invite/', // /portal/invite/[token] — the token itself is the credential
   '/portal/forgot',
   '/portal/reset/', // /portal/reset/[token] — likewise

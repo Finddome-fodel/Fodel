@@ -1,0 +1,395 @@
+---
+/**
+ * A listing's photos: the package's photo meter, the rules, the tips, the
+ * grid (cover photo, captions, delete) and the drop zone.
+ *
+ * Extracted from the property editor in the launch round so the guided setup
+ * (properties/[id]/setup.astro) uses exactly the same uploader and rules —
+ * the package photo limit (the server answers `photo-limit` past it, admins
+ * excepted), in-browser downscaling of large phone photos before upload, and
+ * the portrait / low-resolution flags. Hungarian in the editor; in the
+ * setup it speaks the seller's language.
+ *
+ * Safari: the drop zone is a <label> around the file input, so a click opens
+ * the picker natively. (A second, scripted click on top of that made Safari
+ * open nothing at all.) Drag and drop reads `dataTransfer.files`, which Safari
+ * supports.
+ */
+import PhotoTips from '~/components/PhotoTips.astro';
+import { isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
+import { resolveImage } from '~/lib/property-images';
+import { MAX_UPLOAD_MB, MAX_EDGE, LOW_RESOLUTION_EDGE } from '~/lib/media';
+import type { PortalMedia } from '~/lib/portal/properties';
+
+interface Props {
+  propertyId: string;
+  media: PortalMedia[];
+  /** null = unlimited. */
+  photoLimit: number | null;
+  packageName: string;
+  editable: boolean;
+  isAdmin: boolean;
+  locale?: 'hu' | 'nl';
+  /** Show the card heading (the editor); the setup has its own step heading. */
+  withHeading?: boolean;
+}
+
+const { propertyId, media, photoLimit, packageName, editable, isAdmin, locale = 'hu', withHeading = true } = Astro.props;
+const hu = locale === 'hu';
+
+/** A demo photo (bare filename) needs Astro's asset pipeline to become a real URL; a real upload already is one. */
+function mediaSrc(storagePath: string): string {
+  if (storagePath.startsWith('http')) return storagePath;
+  return resolveImage(storagePath).src;
+}
+const captionOf = (m: PortalMedia) => (m.alt as Record<string, string> | null)?.[locale] ?? (m.alt as Record<string, string> | null)?.hu ?? '';
+
+const hero = media.find((m) => m.is_hero) ?? media[0];
+const ordered = [hero, ...media.filter((m) => m !== hero)].filter(Boolean) as PortalMedia[];
+const photoCount = media.length;
+const photosFull = photoLimit !== null && photoCount >= photoLimit;
+const hints = photoHints(media);
+
+const t = hu
+  ? {
+      heading: 'Fényképek',
+      sub: 'Az első kép a címlapkép. Bármelyik másikat a „Címlapképnek” gombbal teheti az első helyre.',
+      meterOf: 'kép a csomagban',
+      meterUnlimited: 'kép · korlátlan',
+      rules: `Húzza ide a képeket, vagy kattintson a tallózáshoz. Formátum: JPG, PNG vagy WebP, legfeljebb ${MAX_UPLOAD_MB} MB képenként (a nagy fájlokat a böngésző feltöltés előtt automatikusan kicsinyíti). A tárolt kép hosszabbik oldala legfeljebb ${MAX_EDGE} képpont. Ajánlott legalább ${LOW_RESOLUTION_EDGE} képpont a hosszabbik oldalon; ennél kisebb képet is elfogadunk, de nagy képernyőn elmosódottnak látszhat.`,
+      tipsHeading: 'Így készítsen jó fotót',
+      flags: (portrait: number, low: number) =>
+        `${portrait ? `${portrait} kép álló tájolású. ` : ''}${low ? `${low} kép kis felbontású. ` : ''}Beküldheti így is, de fekvő, nagy felbontású képekkel a hirdetés jobban mutat; a jelölt képeket érdemes cserélni.`,
+      captions: 'Írjon minden képhez egy rövid leírást (pl. „Nappali cserépkályhával”). Ezt olvassa fel a képernyőolvasó a látássérült érdeklődőknek, és ez alapján találja meg a Google képkeresője is a hirdetést.',
+      cover: 'Címlapkép',
+      makeCover: 'Címlapképnek',
+      portrait: 'Álló kép',
+      portraitTitle: 'A kép álló tájolású; fekvő képek mutatnak jobban.',
+      low: 'Kis felbontás',
+      lowTitle: 'Nagy képernyőn elmosódottnak látszhat.',
+      remove: 'Kép törlése',
+      captionLabel: 'Kép leírása',
+      captionPlaceholder: 'Mi látható a képen?',
+      full: `A(z) ${packageName} csomag legfeljebb ${photoLimit} képet tartalmaz. ${isAdmin ? 'Adminként ennél többet is feltölthet.' : 'Újabb kép előtt töröljön egyet, vagy válasszon nagyobb csomagot.'}`,
+      add: 'Fotók hozzáadása',
+      addSub: 'Húzza ide a képeket, vagy kattintson',
+    }
+  : {
+      heading: 'Foto’s',
+      sub: 'De eerste foto is de hoofdfoto. Met ‘Als hoofdfoto’ zet u een andere vooraan.',
+      meterOf: 'foto’s in het pakket',
+      meterUnlimited: 'foto’s · onbeperkt',
+      rules: `Sleep de foto’s hierheen of klik om te bladeren. JPG, PNG of WebP, maximaal ${MAX_UPLOAD_MB} MB per foto (grote bestanden verkleint de browser automatisch vóór het uploaden). De langste zijde wordt maximaal ${MAX_EDGE} pixels opgeslagen. Wij raden minstens ${LOW_RESOLUTION_EDGE} pixels aan; kleinere foto’s accepteren wij ook, maar op een groot scherm kunnen ze wazig ogen.`,
+      tipsHeading: 'Zo maakt u goede foto’s',
+      flags: (portrait: number, low: number) =>
+        `${portrait ? `${portrait} foto’s staan rechtop. ` : ''}${low ? `${low} foto’s hebben een lage resolutie. ` : ''}U kunt zo indienen, maar liggende foto’s met een hoge resolutie laten de woning beter zien; vervang de gemarkeerde foto’s als het kan.`,
+      captions: 'Geef elke foto een korte omschrijving (bijv. ‘Woonkamer met tegelkachel’). Een schermlezer leest die voor aan slechtziende bezoekers, en Google Afbeeldingen vindt de advertentie erdoor.',
+      cover: 'Hoofdfoto',
+      makeCover: 'Als hoofdfoto',
+      portrait: 'Staand',
+      portraitTitle: 'Deze foto staat rechtop; liggende foto’s komen beter uit.',
+      low: 'Lage resolutie',
+      lowTitle: 'Kan op een groot scherm wazig ogen.',
+      remove: 'Foto verwijderen',
+      captionLabel: 'Omschrijving van de foto',
+      captionPlaceholder: 'Wat is er te zien?',
+      full: `Het pakket ${packageName} bevat maximaal ${photoLimit} foto’s. ${isAdmin ? 'Als beheerder kunt u er meer uploaden.' : 'Verwijder eerst een foto, of kies een groter pakket.'}`,
+      add: 'Foto’s toevoegen',
+      addSub: 'Sleep foto’s hierheen of klik',
+    };
+
+/** What the script says, in the same language. */
+const scriptStrings = hu
+  ? {
+      uploading: 'Feltöltés: {name}…',
+      failed: 'Nem sikerült feltölteni: {name}',
+      tooBig: 'Nem sikerült feltölteni: {name}. A kép túl nagy (JPG, PNG vagy WebP formátumban próbálja).',
+      done: 'Kész, az oldal frissül…',
+      lowRes: 'Feltöltve. Kis felbontású kép: {names}. Ha van nagyobb változata, érdemes azt feltölteni.',
+      captionFailed: 'A képleírást nem sikerült menteni.',
+      confirmTitle: 'Törli a képet?',
+      confirmBody: 'A kép véglegesen eltűnik a hirdetésből.',
+      confirmLabel: 'Törlés',
+      errors: {
+        'unsupported-type': 'nem támogatott formátum (JPG, PNG vagy WebP lehet)',
+        'too-large': 'túl nagy fájl',
+        'unreadable-image': 'a fájl nem olvasható képként',
+        'storage-failed': 'a tárolás nem sikerült, próbálja újra',
+        'not-editable': 'a hirdetés jelenleg nem szerkeszthető',
+        'photo-limit': photoLimit ? `elérte a csomagban foglalt ${photoLimit} képet` : 'elérte a csomag képkeretét',
+        forbidden: 'nincs jogosultsága',
+      },
+    }
+  : {
+      uploading: 'Uploaden: {name}…',
+      failed: 'Uploaden mislukt: {name}',
+      tooBig: 'Uploaden mislukt: {name}. De foto is te groot (probeer JPG, PNG of WebP).',
+      done: 'Klaar, de pagina wordt vernieuwd…',
+      lowRes: 'Geüpload. Lage resolutie: {names}. Heeft u een grotere versie, upload die dan.',
+      captionFailed: 'De omschrijving kon niet worden opgeslagen.',
+      confirmTitle: 'Foto verwijderen?',
+      confirmBody: 'De foto verdwijnt definitief uit de advertentie.',
+      confirmLabel: 'Verwijderen',
+      errors: {
+        'unsupported-type': 'dit formaat wordt niet ondersteund (JPG, PNG of WebP)',
+        'too-large': 'het bestand is te groot',
+        'unreadable-image': 'het bestand is geen leesbare foto',
+        'storage-failed': 'opslaan mislukt, probeer het opnieuw',
+        'not-editable': 'de advertentie kan nu niet worden bewerkt',
+        'photo-limit': photoLimit ? `het maximum van ${photoLimit} foto’s in uw pakket is bereikt` : 'het maximum aantal foto’s is bereikt',
+        forbidden: 'geen toegang',
+      },
+    };
+---
+
+<section
+  id="media"
+  class="photo-uploader"
+  data-photo-uploader
+  data-property-id={propertyId}
+  data-locale={locale}
+  data-strings={JSON.stringify(scriptStrings)}
+>
+  <header class="pu-head">
+    {withHeading && (
+      <div>
+        <h2>{t.heading}</h2>
+        <p>{t.sub}</p>
+      </div>
+    )}
+    <p class:list={['photo-meter', { full: photosFull }]} title={packageName} data-photo-count={photoCount}>
+      <b>{photoCount}{photoLimit !== null && <span> / {photoLimit}</span>}</b>
+      <span>{photoLimit === null ? t.meterUnlimited : t.meterOf}</span>
+    </p>
+  </header>
+  {!withHeading && <p class="pu-hint">{t.sub}</p>}
+  <p class="pu-hint">{t.rules}</p>
+
+  <PhotoTips locale={locale} variant="portal" heading={t.tipsHeading} />
+
+  {(hints.portrait > 0 || hints.lowResolution > 0) && <p class="pu-warn">{t.flags(hints.portrait, hints.lowResolution)}</p>}
+
+  {media.length > 0 && <p class="pu-hint">{t.captions}</p>}
+
+  <div class="media-grid" data-media-grid>
+    {ordered.map((m) => (
+      <figure class="media-item" data-media-id={m.id} data-hero={m === hero ? 'true' : undefined}>
+        <div class="media-thumb">
+          <img src={mediaSrc(m.storage_path)} alt={captionOf(m)} loading="lazy" decoding="async" />
+          {m === hero && <span class="hero-badge">{t.cover}</span>}
+          {(isPortrait(m) || isLowResolution(m)) && (
+            <span class="photo-flags">
+              {isPortrait(m) && <span title={t.portraitTitle}>{t.portrait}</span>}
+              {isLowResolution(m) && <span title={t.lowTitle}>{t.low}</span>}
+            </span>
+          )}
+          {m !== hero && editable && <button type="button" class="set-hero" data-set-hero={m.id}>{t.makeCover}</button>}
+          {editable && <button type="button" class="remove" data-remove-media={m.id} aria-label={t.remove}>×</button>}
+        </div>
+        <figcaption>
+          <label class="sr-only" for={`caption-${m.id}`}>{t.captionLabel}</label>
+          <input
+            id={`caption-${m.id}`}
+            class="caption"
+            type="text"
+            maxlength="160"
+            placeholder={t.captionPlaceholder}
+            value={captionOf(m)}
+            data-caption-for={m.id}
+            enterkeyhint="done"
+            disabled={!editable}
+          />
+        </figcaption>
+      </figure>
+    ))}
+  </div>
+
+  {photosFull && <p class="pu-warn" data-photo-full>{t.full}</p>}
+  {editable && (
+    <label class="dropzone" data-dropzone hidden={photosFull && !isAdmin}>
+      <input type="file" accept="image/jpeg,image/png,image/webp" multiple class="dz-input" data-file-input />
+      <span class="dz-ic" aria-hidden="true">+</span><span class="dz-t">{t.add}</span><span class="dz-s">{t.addSub}</span>
+    </label>
+  )}
+  <p class="upload-status" role="status" data-upload-status></p>
+</section>
+
+<script>
+  import { exposeShrinkImage } from '~/scripts/shrink-image';
+  exposeShrinkImage();
+
+  type Strings = {
+    uploading: string;
+    failed: string;
+    tooBig: string;
+    done: string;
+    lowRes: string;
+    captionFailed: string;
+    confirmTitle: string;
+    confirmBody: string;
+    confirmLabel: string;
+    errors: Record<string, string>;
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-photo-uploader]').forEach((root) => {
+    const propertyId = root.dataset.propertyId!;
+    const s = JSON.parse(root.dataset.strings ?? '{}') as Strings;
+    const grid = root.querySelector<HTMLElement>('[data-media-grid]');
+    const dropzone = root.querySelector<HTMLElement>('[data-dropzone]');
+    const fileInput = root.querySelector<HTMLInputElement>('[data-file-input]');
+    const status = root.querySelector<HTMLElement>('[data-upload-status]')!;
+    const fill = (text: string, values: Record<string, string>) => text.replace(/\{(\w+)\}/g, (_, k) => values[k] ?? '');
+
+    async function uploadFiles(files: File[]) {
+      const soft: string[] = [];
+      for (const file of files) {
+        status.textContent = fill(s.uploading, { name: file.name });
+        // Large phone photos are scaled down in the browser first — the server
+        // accepts at most ~4.5 MB per request (src/scripts/shrink-image.ts).
+        const prepared = window.fodelShrinkImage ? await window.fodelShrinkImage(file) : file;
+        if (prepared.size > 4.4 * 1024 * 1024) {
+          status.textContent = fill(s.tooBig, { name: file.name });
+          return;
+        }
+        const body = new FormData();
+        body.append('file', prepared);
+        try {
+          const res = await fetch(`/api/portal/properties/${propertyId}/media`, { method: 'POST', body });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.ok) throw new Error(json.error ?? 'upload-failed');
+          if (json.warning === 'low-resolution') soft.push(file.name);
+        } catch (error) {
+          const reason = s.errors[(error as Error).message];
+          status.textContent = `${fill(s.failed, { name: file.name })}${reason ? `: ${reason}` : ''}`;
+          root.dispatchEvent(new CustomEvent('photos:error', { bubbles: true, detail: (error as Error).message }));
+          if ((error as Error).message === 'photo-limit') setTimeout(() => location.reload(), 2500);
+          return;
+        }
+      }
+      status.textContent = soft.length ? fill(s.lowRes, { names: soft.join(', ') }) : s.done;
+      setTimeout(() => location.reload(), soft.length ? 4000 : 0);
+    }
+
+    fileInput?.addEventListener('change', () => {
+      if (fileInput.files?.length) void uploadFiles([...fileInput.files]);
+      fileInput.value = '';
+    });
+    (['dragover', 'dragenter'] as const).forEach((evt) =>
+      dropzone?.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('drag');
+      })
+    );
+    (['dragleave', 'drop'] as const).forEach((evt) =>
+      dropzone?.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('drag');
+      })
+    );
+    dropzone?.addEventListener('drop', (e) => {
+      const files = (e as DragEvent).dataTransfer?.files;
+      if (files?.length) void uploadFiles([...files]);
+    });
+
+    // Captions save on blur rather than behind a button: they are a dozen small
+    // independent edits, and a "save all photos" button would be one more thing
+    // to forget before submitting.
+    grid?.addEventListener('change', async (e) => {
+      const input = e.target;
+      if (!(input instanceof HTMLInputElement)) return;
+      const mediaId = input.getAttribute('data-caption-for');
+      if (!mediaId) return;
+      input.classList.remove('saved', 'failed');
+      try {
+        const res = await fetch(`/api/portal/properties/${propertyId}/media/${mediaId}`, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ alt: input.value, locale: root.dataset.locale }),
+        });
+        if (!res.ok) throw new Error('save-failed');
+        input.classList.add('saved');
+      } catch {
+        input.classList.add('failed');
+        status.textContent = s.captionFailed;
+      }
+    });
+
+    grid?.addEventListener('click', async (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      const removeId = target.getAttribute('data-remove-media');
+      if (removeId) {
+        const ok = window.pf
+          ? await window.pf.confirm({ title: s.confirmTitle, body: s.confirmBody, confirmLabel: s.confirmLabel, danger: true })
+          : window.confirm(s.confirmTitle);
+        if (!ok) return;
+        await fetch(`/api/portal/properties/${propertyId}/media/${removeId}`, { method: 'DELETE' });
+        location.reload();
+        return;
+      }
+
+      const heroId = target.getAttribute('data-set-hero');
+      if (heroId) {
+        await fetch(`/api/portal/properties/${propertyId}/media/${heroId}`, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ isHero: true }),
+        });
+        location.reload();
+      }
+    });
+  });
+</script>
+
+<style>
+  .pu-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-bottom: 20px; }
+  .pu-head h2 { font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; letter-spacing: var(--ls-heading); color: var(--ink); }
+  .pu-head p { margin-top: 6px; font-size: 14.5px; line-height: 1.6; color: var(--ink-quiet); max-width: 62ch; }
+  .photo-meter { display: grid; justify-items: end; gap: 2px; margin: 0 0 0 auto; padding: 10px 18px; border-radius: var(--r-md); background: var(--paper); text-align: right; }
+  .photo-meter b { font-size: 24px; line-height: 1.1; font-weight: var(--fw-medium); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .photo-meter b span { color: var(--ink-quiet); font-weight: var(--fw-body); }
+  .photo-meter > span { margin: 0; font-size: 13px; color: var(--ink-quiet); }
+  .photo-meter.full { background: var(--linen); }
+  @media (max-width: 560px) { .photo-meter { justify-items: start; text-align: left; margin-left: 0; } }
+  .pu-hint { font-size: 14px; line-height: 1.65; color: var(--ink-quiet); margin-bottom: 14px; max-width: 70ch; }
+  .pu-warn { max-width: 68ch; margin-top: 16px; padding: 12px 16px; border-radius: var(--r-md); background: var(--pt-amber-bg); font-size: 14px; line-height: 1.65; color: var(--pt-amber); }
+
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px 16px; margin: 22px 0; }
+  .media-grid:empty { display: none; }
+  .media-item { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+  .media-thumb { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: var(--r-lg); background: var(--linen); box-shadow: 0 0 0 1px var(--pt-hair); }
+  .media-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s var(--ease-out); }
+  @media (hover: hover) { .media-item:hover img { transform: scale(1.04); } }
+  .media-item[data-hero='true'] .media-thumb { box-shadow: 0 0 0 2px var(--ink); }
+  .hero-badge { position: absolute; top: 10px; left: 10px; padding: 4px 11px; border-radius: var(--r-pill); background: var(--ink); color: var(--cream); font-size: 12px; letter-spacing: 0.04em; }
+  .set-hero { position: absolute; left: 10px; bottom: 10px; padding: 6px 12px; border-radius: var(--r-pill); background: rgba(250, 250, 248, 0.94); color: var(--ink); font-size: 12.5px; box-shadow: var(--shadow-sm); opacity: 0; transform: translateY(4px); transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out); }
+  .media-thumb:hover .set-hero, .set-hero:focus-visible { opacity: 1; transform: none; }
+  @media (hover: none) { .set-hero { opacity: 1; transform: none; } }
+  .remove { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(16, 42, 67, 0.82); color: var(--cream); font-size: 17px; line-height: 1; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background-color 0.2s var(--ease-out), transform 0.2s var(--ease-out); }
+  @media (hover: hover) { .remove:hover { background: var(--pt-red); transform: scale(1.08); } }
+  .photo-flags { position: absolute; right: 10px; bottom: 10px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; pointer-events: none; }
+  .photo-flags span { padding: 3px 9px; border-radius: var(--r-pill); background: rgba(255, 247, 224, 0.96); color: var(--pt-amber); font-size: 11.5px; }
+  .caption { width: 100%; min-height: 42px; padding: 9px 14px; border: 1px solid transparent; border-radius: var(--r-sm); background: var(--paper); font-size: 14px; color: var(--ink); transition: border-color 0.25s var(--ease-out), background-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out); }
+  @media (hover: hover) { .caption:hover { background: var(--linen); } }
+  .caption:focus { outline: none; background: var(--white); border-color: var(--ink); box-shadow: 0 0 0 4px rgba(16, 42, 67, 0.08); }
+  .caption:disabled { background: var(--paper); color: var(--ink-quiet); }
+  /* A brief confirmation on the field itself — a photo grid full of toasts is unreadable. */
+  .caption.saved { border-color: var(--pt-green); }
+  .caption.failed { border-color: var(--pt-red); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+  .dropzone { position: relative; display: grid; justify-items: center; gap: 4px; padding: 36px 24px; border: 1.5px dashed rgba(16, 42, 67, 0.22); border-radius: var(--r-lg); background: var(--paper); cursor: pointer; text-align: center; transition: border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
+  .dropzone[hidden] { display: none; }
+  /* Visually hidden but focusable, so the picker is reachable by keyboard. */
+  .dz-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+  .dropzone:has(.dz-input:focus-visible) { outline: var(--focus-ring); outline-offset: 3px; }
+  @media (hover: hover) { .dropzone:hover { border-color: var(--ink); background: var(--linen); } .dropzone:hover .dz-ic { transform: rotate(90deg) scale(1.06); } }
+  .dropzone.drag { border-color: var(--ink); background: rgba(16, 42, 67, 0.08); transform: scale(1.01); }
+  .dz-ic { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 8px; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 24px; line-height: 1; transition: transform 0.4s var(--ease-out); }
+  .dz-t { font-size: var(--fs-body); font-weight: var(--fw-medium); color: var(--ink); }
+  .dz-s { font-size: 14px; color: var(--ink-quiet); }
+  .upload-status { min-height: 1.5em; margin-top: 12px; font-size: 14px; color: var(--ink-quiet); }
+  @media (max-width: 720px) { .media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; } }
+  @media (prefers-reduced-motion: reduce) { .media-item img, .dz-ic { transition: none; } }
+</style>

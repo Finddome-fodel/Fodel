@@ -23,14 +23,23 @@ export const HU = {
   },
 
   registrationConfirm: {
-    subject: 'Erősítse meg hirdetésfeladását — FODEL',
-    preheader: 'Már csak egy lépés: állítson be egy jelszót, és folytassa a hirdetés összeállítását.',
-    heading: 'Már csak egy lépés',
-    intro: (settlement: string) =>
-      `Köszönjük, hogy a FODEL-t választotta${settlement ? ` a(z) ${settlement} településen lévő ingatlanához` : ''}. Az adatait megkaptuk.`,
-    body: 'Az alábbi gombra kattintva beállíthat egy jelszót, és azonnal folytathatja a hirdetés összeállítását — az adatok, amiket megadott, már be vannak töltve.',
-    cta: 'Hirdetés folytatása',
-    expiry: 'A link 7 napig érvényes. Ha nem Ön kezdeményezte a hirdetésfeladást, nyugodtan hagyja figyelmen kívül ezt a levelet — nem jön létre fiók.',
+    subject: 'Állítsa be a jelszavát | FODEL',
+    preheader: 'Egy kattintás, és már állíthatja össze a hirdetését.',
+    heading: 'Állítsa be a jelszavát',
+    intro: 'Köszönjük a regisztrációt. A fiókja szinte kész, már csak egy jelszó hiányzik.',
+    cta: 'Jelszó beállítása',
+    next: 'Utána rögtön a hirdetés összeállításával folytathatja: csomag, adatok, fotók. Munkatársunk csak a beküldés után nézi át.',
+    expiry: 'A link 7 napig érvényes. Ha nem Ön regisztrált, hagyja figyelmen kívül ezt a levelet: fiók nem jön létre.',
+  },
+
+  accountExists: {
+    subject: 'Már van FODEL-fiókja',
+    preheader: 'Jelentkezzen be, vagy állítson be új jelszót.',
+    heading: 'Ehhez a címhez már tartozik fiók',
+    body: 'Valaki most regisztrálni próbált ezzel az e-mail-címmel a FODEL oldalán. A címhez már tartozik fiók, ezért újat nem hoztunk létre.',
+    cta: 'Bejelentkezés',
+    reset: 'Elfelejtette a jelszavát? Új jelszó kérése',
+    ignore: 'Ha nem Ön próbált regisztrálni, nincs teendője: a fiókja változatlan.',
   },
 
   invite: {
@@ -52,7 +61,7 @@ export const HU = {
     body: 'A fiókja aktív. A portálon összeállíthatja hirdetését, fényképeket tölthet fel, és nyomon követheti, hol tart az elbírálás.',
     stepsTitle: 'Amire szüksége lesz',
     steps: [
-      'Fényképek az ingatlanról — legalább egy, de minél több, annál jobb',
+      'Fényképek az ingatlanról: legalább egy, de minél több, annál jobb',
       'Az ingatlan alapadatai: alapterület, telekméret, irányár',
       'Néhány mondat arról, mitől különleges az ingatlan',
     ],
@@ -60,7 +69,7 @@ export const HU = {
   },
 
   submissionReceived: {
-    subject: (ref: string) => `Hirdetését megkaptuk — #${ref}`,
+    subject: (ref: string) => `Hirdetését megkaptuk (#${ref})`,
     preheader: 'Munkatársunk átnézi, és e-mailben jelentkezünk.',
     heading: 'Hirdetését elbírálásra megkaptuk',
     body: (title: string, ref: string) =>
@@ -70,7 +79,7 @@ export const HU = {
   },
 
   adminNewSubmission: {
-    subject: (ref: string) => `Elbírálásra vár — #${ref}`,
+    subject: (ref: string) => `Elbírálásra vár (#${ref})`,
     preheader: 'Új hirdetés érkezett a portálra.',
     heading: 'Új hirdetés vár elbírálásra',
     cta: 'Elbírálás megnyitása',
@@ -87,21 +96,21 @@ export const HU = {
   },
 
   changesRequested: {
-    subject: (ref: string) => `Javítás szükséges — #${ref}`,
+    subject: (ref: string) => `Javítás szükséges (#${ref})`,
     preheader: 'Egy apró javítás kell, mielőtt élesíthetjük a hirdetést.',
     heading: 'Kérjük, javítsa hirdetését',
     body: (title: string, ref: string) =>
       `A(z) „${title}” (#${ref}) hirdetésével kapcsolatban munkatársunk az alábbi megjegyzést fűzte:`,
-    after: 'A hirdetés újra szerkeszthető. Kérjük, végezze el a javítást, majd küldje be ismét — a folyamat innen ugyanúgy folytatódik.',
+    after: 'A hirdetés újra szerkeszthető. Kérjük, végezze el a javítást, majd küldje be ismét. A folyamat innen ugyanúgy folytatódik.',
     cta: 'Hirdetés javítása',
   },
 
   approvedAwaitingPayment: {
-    subject: (ref: string) => `Jóváhagyva — #${ref} · már csak a díj rendezése van hátra`,
+    subject: (ref: string) => `Jóváhagyva (#${ref}): már csak a díj rendezése van hátra`,
     preheader: 'A hirdetést jóváhagytuk. A díj beérkezése után azonnal élesedik.',
     heading: 'Hirdetését jóváhagytuk',
     body: (title: string, ref: string) =>
-      `Jó hír: a(z) „${title}” (#${ref}) hirdetését átnéztük és jóváhagytuk. Már csak a hirdetési díj rendezése van hátra — a fizetés beérkezése után a hirdetés azonnal megjelenik.`,
+      `Jó hír: a(z) „${title}” (#${ref}) hirdetését átnéztük és jóváhagytuk. Már csak a hirdetési díj rendezése van hátra. A fizetés beérkezése után a hirdetés azonnal megjelenik.`,
     orderTitle: 'A hirdetés díja',
     discountLabel: 'Ajánlói kedvezmény (10%)',
     totalLabel: 'Fizetendő',
@@ -114,7 +123,7 @@ export const HU = {
   },
 
   approvedPublished: {
-    subject: (ref: string) => `Jóváhagyva és élesítve — #${ref}`,
+    subject: (ref: string) => `Jóváhagyva és élesítve (#${ref})`,
     preheader: 'Hirdetése már látható; a hirdetési díjat 14 napon belül rendezheti.',
     heading: 'Hirdetése már élő',
     body: (title: string, ref: string) => `A(z) „${title}” (#${ref}) hirdetését jóváhagytuk és azonnal közzétettük.`,
@@ -131,7 +140,7 @@ export const HU = {
   },
 
   paymentReceipt: {
-    subject: (ref: string) => `Fizetési visszaigazolás — #${ref}`,
+    subject: (ref: string) => `Fizetési visszaigazolás (#${ref})`,
     preheader: 'Köszönjük, a fizetés megérkezett.',
     heading: 'Köszönjük, a fizetés megérkezett',
     body: (title: string, ref: string) =>
@@ -144,7 +153,7 @@ export const HU = {
   },
 
   published: {
-    subject: (ref: string) => `Hirdetése élesedett — #${ref}`,
+    subject: (ref: string) => `Hirdetése élesedett (#${ref})`,
     preheader: `A hirdetés mostantól látható a ${SITE_HOST} oldalon.`,
     heading: 'Hirdetése mostantól élő',
     body: (title: string, ref: string) =>
@@ -154,37 +163,37 @@ export const HU = {
   },
 
   newEnquiry: {
-    subject: (ref: string) => `Új érdeklődő — #${ref}`,
+    subject: (ref: string) => `Új érdeklődő (#${ref})`,
     preheader: 'Valaki érdeklődik az ingatlana iránt.',
     heading: 'Új érdeklődő a hirdetésére',
     body: (title: string, ref: string) =>
       `A(z) „${title}” (#${ref}) hirdetésére új érdeklődő jelentkezett:`,
     labels: { name: 'Név', email: 'E-mail', phone: 'Telefon' },
     messageTitle: 'Üzenete',
-    advice: 'Javasoljuk, hogy két napon belül vegye fel a kapcsolatot az érdeklődővel — a gyors válasz a legfontosabb tényező abban, hogy létrejön-e az adásvétel.',
+    advice: 'Javasoljuk, hogy két napon belül vegye fel a kapcsolatot az érdeklődővel: a gyors válasz a legfontosabb tényező abban, hogy létrejön-e az adásvétel.',
   },
 
   passwordReset: {
-    subject: 'Jelszó visszaállítása — FODEL portál',
+    subject: 'Jelszó visszaállítása | FODEL portál',
     preheader: 'A link egy óráig érvényes.',
     heading: 'Jelszó visszaállítása',
     body: 'Jelszó-visszaállítási kérelmet kaptunk a FODEL portál fiókjához. Az alábbi gombra kattintva állíthat be újat.',
     cta: 'Új jelszó beállítása',
     expiry: 'A link egy óráig érvényes, és csak egyszer használható fel.',
-    ignore: 'Ha nem Ön kérte a visszaállítást, hagyja figyelmen kívül ezt a levelet — a jelszava változatlan marad, és nem történik semmi.',
+    ignore: 'Ha nem Ön kérte a visszaállítást, hagyja figyelmen kívül ezt a levelet. A jelszava változatlan marad, és nem történik semmi.',
   },
 
   referralRegistered: {
-    subject: 'Ajánlását megkaptuk — FODEL',
+    subject: 'Ajánlását megkaptuk | FODEL',
     preheader: 'Munkatársunk hamarosan felveszi a kapcsolatot az Ön által ajánlott személlyel.',
     heading: 'Köszönjük az ajánlást',
     body: (referredName: string) =>
       `Megkaptuk ${referredName} adatait. Munkatársunk felveszi vele a kapcsolatot, és ha a hirdetésfeladás létrejön, az Ön következő hirdetésének díjából 10% kedvezményt írunk jóvá.`,
-    note: 'A jóváírás a hirdető fizetése után, kézzel történik — munkatársunk értesíti Önt, amint elérhető.',
+    note: 'A jóváírás a hirdető fizetése után, kézzel történik. Munkatársunk értesíti Önt, amint elérhető.',
   },
 
   valuationReady: {
-    subject: 'Elkészült az értékbecslése — FODEL',
+    subject: 'Elkészült az értékbecslése | FODEL',
     preheader: 'Tájékoztató jellegű becslést készítettünk az Ön ingatlanára.',
     heading: 'Elkészült az értékbecslése',
     body: (range: string) =>
@@ -199,14 +208,14 @@ export const HU = {
   },
 
   valuationDeclined: {
-    subject: 'Az Ön értékbecslési igénye — FODEL',
+    subject: 'Az Ön értékbecslési igénye | FODEL',
     preheader: 'Munkatársunk személyesen felveszi Önnel a kapcsolatot.',
     heading: 'Köszönjük a megkeresést',
     body: 'A megadott adatok alapján jelenleg nem áll elég összehasonlítható ingatlan a rendelkezésünkre egy megbízható becsléshez. Munkatársunk személyesen felveszi Önnel a kapcsolatot.',
   },
 
   valuationNeedsInfo: {
-    subject: 'Értékbecslés — néhány adatot még kérnénk',
+    subject: 'Értékbecslés: néhány adatot még kérnénk',
     preheader: 'A becsléshez további információra van szükségünk.',
     heading: 'Néhány adatot még kérnénk',
     body: 'Köszönjük értékbecslési kérését. A becslés elkészítéséhez munkatársunk az alábbiakat kérné Öntől:',
@@ -214,7 +223,7 @@ export const HU = {
   },
 
   rejected: {
-    subject: (ref: string) => `Hirdetését nem tudjuk közzétenni — #${ref}`,
+    subject: (ref: string) => `Hirdetését nem tudjuk közzétenni (#${ref})`,
     preheader: 'Az elbírálás eredménye és az indoklás.',
     heading: 'A hirdetést nem tudjuk közzétenni',
     body: (title: string, ref: string) =>
@@ -224,7 +233,7 @@ export const HU = {
   },
 
   invoiceIssued: {
-    subject: (number: string) => `Számla — ${number}`,
+    subject: (number: string) => `Számla ${number}`,
     preheader: 'A számlát elkészítettük, megtekintheti vagy letöltheti a linken.',
     heading: 'Elkészült a számlája',
     body: (title: string, ref: string, number: string) =>
@@ -233,7 +242,7 @@ export const HU = {
   },
 
   creditNoteIssued: {
-    subject: (number: string) => `Jóváíró számla — ${number}`,
+    subject: (number: string) => `Jóváíró számla ${number}`,
     preheader: 'Jóváíró számlát állítottunk ki a korábbi számlájához.',
     heading: 'Jóváíró számla készült',
     body: (title: string, ref: string, number: string, correctsNumber: string) =>
@@ -242,7 +251,7 @@ export const HU = {
   },
 
   serviceRequested: {
-    subject: 'Megkaptuk szolgáltatásigényét — FODEL',
+    subject: 'Megkaptuk szolgáltatásigényét | FODEL',
     preheader: 'Munkatársunk felveszi Önnel a kapcsolatot az időpont egyeztetéséhez.',
     heading: 'Megkaptuk az igényét',
     body: (service: string, price: string) => `Köszönjük, rögzítettük az igényét: ${service} (${price}).`,
@@ -252,7 +261,7 @@ export const HU = {
   },
 
   valuationPaid: {
-    subject: 'Fizetési visszaigazolás — FODEL értékbecslés',
+    subject: 'Fizetési visszaigazolás | FODEL értékbecslés',
     preheader: 'Köszönjük, a fizetés megérkezett.',
     heading: 'Köszönjük, a fizetés megérkezett',
     body: (service: string) => `Megkaptuk a(z) „${service}” díját.`,
@@ -264,7 +273,7 @@ export const HU = {
   },
 
   judicialRequested: {
-    subject: 'Hivatalos értékbecslési igény — FODEL',
+    subject: 'Hivatalos értékbecslési igény | FODEL',
     preheader: 'Munkatársunk felveszi Önnel a kapcsolatot a lehetőségekről.',
     heading: 'Megkaptuk kérését',
     body: 'Köszönjük, rögzítettük, hogy hivatalos (igazságügyi) szakértői értékbecslést szeretne. Ez nem azonos az oldalunkon kérhető tájékoztató, piaci alapú értékmeghatározással: erre jogosult szakértő végzi, egyedi árajánlat alapján.',
@@ -272,7 +281,7 @@ export const HU = {
   },
 
   adminServiceRequested: {
-    subject: (service: string) => `Új szolgáltatásigény — ${service}`,
+    subject: (service: string) => `Új szolgáltatásigény: ${service}`,
     preheader: 'Egyeztessen időpontot az ügyféllel.',
     heading: 'Új szolgáltatásigény érkezett',
     labels: {
@@ -293,7 +302,7 @@ export const HU = {
   },
 
   referralAdminNotice: {
-    subject: (referrerName: string) => `Új ajánlás — ${referrerName}`,
+    subject: (referrerName: string) => `Új ajánlás: ${referrerName}`,
     preheader: 'Új ajánlói lead érkezett a honlapról.',
     heading: 'Új ajánlás érkezett',
     labels: {
@@ -302,7 +311,7 @@ export const HU = {
       referredName: 'Ajánlott neve',
       referredEmail: 'Ajánlott e-mail',
     },
-    advice: 'Vegye fel a kapcsolatot az ajánlott személlyel, és — ha hirdetést ad fel — jegyezze fel az ajánlót a jóváíráshoz.',
+    advice: 'Vegye fel a kapcsolatot az ajánlott személlyel, és ha hirdetést ad fel, jegyezze fel az ajánlót a jóváíráshoz.',
   },
 };
 // Deliberately not `as const`: this object's *shape* is the contract that

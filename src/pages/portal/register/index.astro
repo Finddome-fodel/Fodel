@@ -1,0 +1,28 @@
+---
+/**
+ * Registration, inside the portal's signed-out chrome — the "Regisztráció"
+ * side of the segmented control on the sign-in screen. The same form as the
+ * public submit page (src/components/forms/RegisterForm.astro), so the two
+ * doors lead to exactly the same place.
+ */
+export const prerender = false;
+
+import AuthPanel from '~/components/portal/AuthPanel.astro';
+import AuthTabs from '~/components/portal/AuthTabs.astro';
+import RegisterForm from '~/components/forms/RegisterForm.astro';
+import { AUTH_COPY, authLang } from '~/lib/portal/auth-copy';
+
+// Signed in already: nothing to register.
+if (Astro.locals.user) {
+  return Astro.redirect('/portal/dashboard');
+}
+
+const lang = authLang(Astro.url, Astro.cookies);
+const t = AUTH_COPY[lang].register;
+---
+
+<AuthPanel title={t.title} heading={t.heading} lang={lang}>
+  <AuthTabs slot="top" active="register" lang={lang} />
+  <p class="body">{t.intro}</p>
+  <RegisterForm locale={lang} formId="register" />
+</AuthPanel>

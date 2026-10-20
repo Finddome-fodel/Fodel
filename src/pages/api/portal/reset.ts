@@ -18,10 +18,13 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const password = String(form.get('password') ?? '');
   const password2 = String(form.get('password2') ?? '');
 
-  const fail = (msg: string) => redirect(`/portal/reset/${token}?error=${encodeURIComponent(msg)}`);
+  const lang = form.get('lang') === 'nl' ? 'nl' : 'hu';
+  // An error code; the page words it in hu or nl (src/lib/portal/auth-copy.ts).
+  const fail = (code: 'short' | 'mismatch' | 'invalid' | 'failed') =>
+    redirect(`/portal/reset/${token}?error=${code}&lang=${lang}`);
 
-  if (password.length < 8) return fail('a jelszó legalább 8 karakter legyen');
-  if (password !== password2) return fail('a két jelszó nem egyezik');
+  if (password.length < 8) return fail('short');
+  if (password !== password2) return fail('mismatch');
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
   const admin = createSupabaseAdminClient();
@@ -33,7 +36,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     .maybeSingle();
 
   if (!reset || reset.used_at || new Date(reset.expires_at) < new Date()) {
-    return fail('ez a link már nem érvényes — kérjen újat');
+    return fail('invalid');
   }
 
   const { data: profile } = await admin
@@ -41,10 +44,13 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     .select('email')
     .eq('id', reset.user_id)
     .maybeSingle();
-  if (!profile?.email) return fail('a fiók nem található');
+  if (!profile?.email) return fail('invalid');
 
   const { error } = await admin.auth.admin.updateUserById(reset.user_id, { password });
-  if (error) return fail(error.message);
+  if (error) {
+    console.error('[reset] password update failed', error.message);
+    return fail('failed');
+  }
 
   // Spend the token before signing in, not after: if the sign-in below fails
   // for any reason the password has still changed, and a token that could be
@@ -58,7 +64,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     email: profile.email,
     password,
   });
-  if (signInError) return redirect('/portal/login?reset=1');
+  if (signInError) return redirect(`/portal/login?reset=1&lang=${lang}`);
 
   return redirect('/portal/dashboard');
 };

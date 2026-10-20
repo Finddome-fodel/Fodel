@@ -1,0 +1,1041 @@
+---
+/**
+ * Guided listing setup — step 4 of the seller flow (launch round).
+ *
+ * After registering on the public site and setting a password, a seller lands
+ * here, in their own language (profiles.locale, hu or nl), and builds the
+ * listing one calm step at a time: package → the property → description and
+ * contact → photos → billing → review and submit. One page; each step is a
+ * section revealed on its own, the URL hash says which (#package, #property…)
+ * so a reload, a deep link and the browser's Back button all land where they
+ * should, and the person can leave and come back at any time.
+ *
+ * Saving: every step saves on "Continue" and, quietly, whenever a field is
+ * left (autosave on blur) — through the existing update endpoint with a
+ * `step` field (src/lib/portal/setup.ts), so only that step's fields change.
+ * Photos and billing use their own endpoints; submitting is the existing
+ * status action. Row-Level Security still decides that an owner can only
+ * touch their own draft.
+ *
+ * What does not change: nothing publishes without FODEL approving it, and
+ * payment comes after approval. The full editor (/portal/properties/[id])
+ * stays for admins and for edits after the first submission.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import Logo from '~/components/Logo.astro';
+import ArrowChip from '~/components/ArrowChip.astro';
+import PackageCard from '~/components/PackageCard.astro';
+import OnsiteServiceChoice from '~/components/OnsiteServiceChoice.astro';
+import Field from '~/components/forms/Field.astro';
+import PhotoUploader from '~/components/portal/PhotoUploader.astro';
+import BillingForm from '~/components/BillingForm.astro';
+import { getProperty, OWNER_EDITABLE } from '~/lib/portal/properties';
+import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
+import { listingCatalog, packageCard, packageOf } from '~/lib/listing-packages';
+import { readRequestedExtras } from '~/lib/portal/requested-extras';
+import { TRANSLATION_LANGUAGES, ONSITE_SERVICES } from '~/config/company';
+import { LOCALE_META } from '~/i18n/ui';
+import { DESCRIPTION_MAX } from '~/lib/portal/setup';
+import settlements from '~/data/market/hu-settlements.json';
+
+const { supabase, profile, user } = Astro.locals;
+const { id } = Astro.params;
+const isAdmin = profile?.role === 'admin';
+
+const property = await getProperty(supabase, id!);
+if (!property) return new Response('Not found', { status: 404 });
+if (!isAdmin && property.owner_id !== user?.id) return new Response('Forbidden', { status: 403 });
+// Submitted, approved or live: the guided setup is over; the editor shows its state.
+if (!OWNER_EDITABLE.includes(property.status)) return Astro.redirect(`/portal/properties/${property.id}`);
+
+const lang: 'hu' | 'nl' = profile?.locale === 'nl' ? 'nl' : 'hu';
+const hu = lang === 'hu';
+
+const [company, taxonomy, { data: billingRow }, serviceResult] = await Promise.all([
+  getCompany(),
+  getTaxonomy(),
+  supabase.from('profiles').select('billing, full_name, phone').eq('id', user!.id).maybeSingle(),
+  supabase
+    .from('service_requests')
+    .select('service_id, status')
+    .eq('property_id', property.id)
+    .in('status', ['requested', 'scheduled'])
+    .maybeSingle(),
+]);
+
+const catalog = listingCatalog(company.services);
+const requested = readRequestedExtras(property.requested_extras);
+// The package the seller chose here before; on a fresh draft, the recommended one.
+const chosenId = requested.source === 'listing_editor' ? property.package : (catalog.packages.find((p) => p.recommended) ?? catalog.packages[0]).id;
+const chosen = packageOf(catalog, chosenId);
+const cards = catalog.packages.map((pkg) => ({ pkg, card: packageCard(pkg, catalog, lang) }));
+const extra = (key: string) => catalog.extras.find((e) => e.id === key)!;
+const service = serviceResult.data?.service_id ?? requested.service ?? '';
+
+const tr = property.translations.find((t) => t.locale === lang) ?? property.translations.find((t) => t.locale === 'hu');
+const description = tr?.body || tr?.description || '';
+
+// Counties: every Hungarian county (not only the ones FODEL markets) from the
+// KSH settlement list, named the way the listings store them ("Pest").
+type Place = [string, string, string, number];
+const places = settlements as Place[];
+const counties = places.filter((p) => p[3] === 0).map((p) => p[1].replace(/ vármegye$/, ''));
+if (property.county && !counties.includes(property.county)) counties.push(property.county);
+
+const blank = (n: number | null | undefined) => (n && n > 1 ? String(n) : '');
+const options = (group: 'category' | 'wall' | 'condition' | 'heating', withNone: boolean) => [
+  ...(withNone ? [{ value: '', label: hu ? 'Nem adom meg' : 'Niet opgeven' }] : []),
+  ...taxonomy[group].filter((term) => term.enabled).map((term) => ({ value: term.key, label: termLabel(term, lang) })),
+];
+
+const STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
+
+const t = hu
+  ? {
+      title: 'Hirdetés összeállítása',
+      eyebrow: 'Hirdetés összeállítása',
+      saveExit: 'Mentés és kilépés',
+      steps: ['Csomag', 'Az ingatlan', 'Leírás és elérhetőség', 'Fotók', 'Számlázás', 'Áttekintés'],
+      intros: [
+        'Válassza ki, hogyan jelenjen meg a hirdetése. Később is módosíthatja, amíg be nem küldi.',
+        'Az alapadatok: ezek alapján szűrnek a vevők.',
+        'Írja le a saját szavaival, mi teszi különlegessé az ingatlant. A szöveget munkatársunk átnézi.',
+        'A fotók adják el az ingatlant. Töltsön fel annyit, amennyit a csomagja enged.',
+        'Kinek állítsuk ki a díjbekérőt és a számlát? Fizetni csak a jóváhagyás után kell.',
+        'Nézze át, és ha minden rendben, küldje be ellenőrzésre.',
+      ],
+      back: 'Vissza',
+      next: 'Tovább',
+      saving: 'Mentés…',
+      saved: 'Mentve',
+      saveFailed: 'Nem sikerült menteni. Ellenőrizze a kapcsolatot, és próbálja újra.',
+      of: 'lépés',
+      extrasHead: 'Kiegészítők',
+      extrasNote: 'Nem kötelező. Most csak jelzi az igényét; a végleges összeget munkatársunk erősíti meg a jóváhagyáskor.',
+      translation: 'Fordítás',
+      perLanguage: '/ nyelv',
+      categoryHighlight: 'Kiemelés a kategóriában',
+      homepageHighlight: 'Kiemelés a főoldalon',
+      video: 'Videós bemutató',
+      perMonth: '/ hó',
+      minMonths: (n: number) => `min. ${n} hó`,
+      once: 'egyszeri',
+      total: 'Becsült összeg',
+      totalNote: 'Tájékoztató jellegű. A végleges díjat az ingatlan ára alapján számoljuk, és a jóváhagyáskor erősítjük meg.',
+      recommended: 'Ajánlott',
+      category: 'Az ingatlan típusa',
+      settlement: 'Település',
+      settlementHint: 'Kezdjen gépelni, és válasszon a listából. Ha nincs benne, szabadon is megadhatja.',
+      county: 'Megye',
+      price: 'Irányár (Ft)',
+      priceHint: 'Forintban, pl. 45 000 000',
+      floor: 'Alapterület (m²)',
+      floorHint: 'pl. 120',
+      plot: 'Telekterület (m²)',
+      plotHint: 'pl. 1 200. Lakásnál hagyja üresen.',
+      wall: 'Falazat',
+      wallHint: 'A vevők a keresőben kizárhatják a vályogházakat.',
+      condition: 'Állapot',
+      heating: 'Fűtés',
+      precision: 'Mennyire pontosan mutassuk a helyet a térképen?',
+      precisionHint: 'Közelítőnél csak egy kb. 1 km-es kört mutatunk, eltolt középponttal; a pontos cím nem derül ki.',
+      approx: 'Közelítőleg (ajánlott)',
+      exact: 'Pontosan, tűvel',
+      description: 'Az ingatlan leírása',
+      descriptionHint: 'Legalább néhány mondat. A szöveget munkatársunk átnézi, és a hirdetés nyelveire lefordíttatja.',
+      chars: 'karakter',
+      goodHead: 'Mitől lesz jó a leírás?',
+      good: [
+        'A szobák száma, az állapot és ami az utóbbi években megújult.',
+        'Ami különlegessé teszi: kert, kilátás, pince, műhely, csend.',
+        'A környék: víz, város, bolt, orvos, autópálya, repülőtér távolsága.',
+        'A bővítés lehetősége, ha van.',
+      ],
+      speaks: 'Milyen nyelven tud kommunikálni?',
+      speaksHint: 'Feltüntetjük a hirdetésben, hogy a külföldi érdeklődő előre tudja.',
+      contact: 'Megjelenjen az elérhetősége a hirdetésben?',
+      contactHint: 'Ha igen, a külföldi érdeklődő közvetlenül Önt is megkeresheti. Ilyenkor, ha nincs szükség a segítségünkre, jutalékot nem számítunk fel.',
+      contactYes: 'Igen, jelenjen meg a nevem és a telefonszámom',
+      contactNo: 'Nem, csak a FODEL elérhetősége jelenjen meg',
+      contactNotInPackage: 'A választott csomagban az érdeklődők a FODEL-en keresztül érik el Önt. A telefonszám megjelenítése nagyobb csomaggal kérhető.',
+      reviewPackage: 'Csomag',
+      reviewProperty: 'Az ingatlan',
+      reviewDescription: 'Leírás',
+      reviewPhotos: 'Fotók',
+      reviewBilling: 'Számlázás',
+      edit: 'Szerkesztés',
+      none: 'Nincs megadva',
+      photosCount: (n: number) => `${n} fotó`,
+      missingHead: 'A beküldéshez még hiányzik:',
+      missing: {
+        photos: 'legalább egy fotó',
+        price: 'az irányár',
+        settlement: 'a település',
+        description: 'a leírás',
+        billing: 'a számlázási adatok',
+      },
+      submit: 'Beküldés ellenőrzésre',
+      submitting: 'Beküldés…',
+      submitFailed: 'Nem sikerült beküldeni. Kérjük, próbálja újra.',
+      noPhotos: 'Legalább egy fotót fel kell tölteni a beküldés előtt.',
+      doneTitle: 'Köszönjük, megkaptuk',
+      doneBody: 'Munkatársunk átnézi a hirdetést. Ha valamit javítani kell, e-mailben jelezzük. Ha minden rendben, jóváhagyjuk, és a hirdetés azonnal megjelenik; a díjbekérőt ekkor küldjük el.',
+      doneCta: 'Tovább az áttekintéshez',
+      required: 'Kérjük, töltse ki ezt a mezőt.',
+    }
+  : {
+      title: 'Advertentie samenstellen',
+      eyebrow: 'Advertentie samenstellen',
+      saveExit: 'Opslaan en sluiten',
+      steps: ['Pakket', 'De woning', 'Omschrijving en contact', 'Foto’s', 'Facturering', 'Overzicht'],
+      intros: [
+        'Kies hoe uw advertentie verschijnt. Tot u indient, kunt u dit nog wijzigen.',
+        'De basisgegevens: hierop filteren kopers.',
+        'Beschrijf in uw eigen woorden wat de woning bijzonder maakt. Onze medewerker leest de tekst na.',
+        'Foto’s verkopen de woning. Upload er zoveel als uw pakket toelaat.',
+        'Op wiens naam sturen wij het betaalverzoek en de factuur? U betaalt pas na goedkeuring.',
+        'Controleer alles en dien de advertentie in voor beoordeling.',
+      ],
+      back: 'Terug',
+      next: 'Verder',
+      saving: 'Opslaan…',
+      saved: 'Opgeslagen',
+      saveFailed: 'Opslaan is niet gelukt. Controleer uw verbinding en probeer het opnieuw.',
+      of: 'stap',
+      extrasHead: 'Aanvullende opties',
+      extrasNote: 'Optioneel. U geeft nu alleen uw wens door; het definitieve bedrag bevestigen wij bij goedkeuring.',
+      translation: 'Vertaling',
+      perLanguage: 'per taal',
+      categoryHighlight: 'Uitlichten in de categorie',
+      homepageHighlight: 'Uitlichten op de homepage',
+      video: 'Video plaatsen',
+      perMonth: '/ mnd',
+      minMonths: (n: number) => `min. ${n} mnd`,
+      once: 'eenmalig',
+      total: 'Geschat bedrag',
+      totalNote: 'Indicatief. Het definitieve bedrag berekenen wij op basis van de vraagprijs en bevestigen wij bij goedkeuring.',
+      recommended: 'Aanbevolen',
+      category: 'Type woning',
+      settlement: 'Plaats',
+      settlementHint: 'Begin te typen en kies uit de lijst. Staat de plaats er niet in, vul hem dan zelf in.',
+      county: 'Comitaat',
+      price: 'Vraagprijs (HUF)',
+      priceHint: 'In forint, bijv. 45.000.000',
+      floor: 'Woonoppervlak (m²)',
+      floorHint: 'bijv. 120',
+      plot: 'Perceeloppervlak (m²)',
+      plotHint: 'bijv. 1.200. Bij een appartement leeg laten.',
+      wall: 'Muurwerk',
+      wallHint: 'Kopers kunnen bij het zoeken leemhuizen uitsluiten.',
+      condition: 'Staat',
+      heating: 'Verwarming',
+      precision: 'Hoe nauwkeurig tonen wij de ligging op de kaart?',
+      precisionHint: 'Bij ‘bij benadering’ tonen wij alleen een cirkel van ca. 1 km met een verschoven middelpunt; het exacte adres blijft verborgen.',
+      approx: 'Bij benadering (aanbevolen)',
+      exact: 'Exact, met een speld',
+      description: 'Omschrijving van de woning',
+      descriptionHint: 'Minstens een paar zinnen. Onze medewerker leest de tekst na en laat hem vertalen in de talen van de advertentie.',
+      chars: 'tekens',
+      goodHead: 'Wat maakt een goede omschrijving?',
+      good: [
+        'Het aantal kamers, de staat en wat de laatste jaren is vernieuwd.',
+        'Wat de woning bijzonder maakt: tuin, uitzicht, kelder, werkplaats, rust.',
+        'De omgeving: water, stad, winkels, huisarts, snelweg en luchthaven.',
+        'Uitbreidingsmogelijkheden, als die er zijn.',
+      ],
+      speaks: 'Welke talen spreekt u?',
+      speaksHint: 'Wij vermelden dit bij de advertentie, zodat geïnteresseerden het vooraf weten.',
+      contact: 'Mogen wij uw contactgegevens bij de advertentie tonen?',
+      contactHint: 'Zo ja, dan kan een buitenlandse geïnteresseerde u rechtstreeks benaderen. Regelt u de koop dan zelf, dan brengen wij geen courtage in rekening.',
+      contactYes: 'Ja, toon mijn naam en telefoonnummer',
+      contactNo: 'Nee, toon alleen de gegevens van FODEL',
+      contactNotInPackage: 'Bij het gekozen pakket bereiken geïnteresseerden u via FODEL. Uw telefoonnummer tonen kan met een groter pakket.',
+      reviewPackage: 'Pakket',
+      reviewProperty: 'De woning',
+      reviewDescription: 'Omschrijving',
+      reviewPhotos: 'Foto’s',
+      reviewBilling: 'Facturering',
+      edit: 'Wijzigen',
+      none: 'Niet ingevuld',
+      photosCount: (n: number) => `${n} foto’s`,
+      missingHead: 'Om in te dienen ontbreekt nog:',
+      missing: {
+        photos: 'minstens één foto',
+        price: 'de vraagprijs',
+        settlement: 'de plaats',
+        description: 'de omschrijving',
+        billing: 'de factuurgegevens',
+      },
+      submit: 'Indienen voor beoordeling',
+      submitting: 'Indienen…',
+      submitFailed: 'Indienen is niet gelukt. Probeer het opnieuw.',
+      noPhotos: 'Upload minstens één foto voordat u indient.',
+      doneTitle: 'Dank u wel, wij hebben hem ontvangen',
+      doneBody: 'Onze medewerker beoordeelt de advertentie. Moet er iets worden aangepast, dan laten wij het u per e-mail weten. Is alles in orde, dan keuren wij hem goed en staat hij direct online; dan sturen wij ook het betaalverzoek.',
+      doneCta: 'Naar het overzicht',
+      required: 'Vul dit veld in.',
+    };
+
+const speakOptions = ['hu', 'nl', 'de', 'en', 'fr'] as const;
+const billing = (billingRow as any)?.billing ?? null;
+
+/** Everything the script needs to price and summarise, without a second request. */
+const pricing = {
+  packages: Object.fromEntries(
+    catalog.packages.map((p) => [
+      p.id,
+      { name: p.names[lang], cents: p.priceEur * 100, aboveCents: p.priceEurAbove !== null ? p.priceEurAbove * 100 : null, threshold: p.thresholdHuf, video: p.video, phone: p.phone },
+    ])
+  ),
+  translationCents: extra('translation').priceEur * 100,
+  categoryCents: extra('category-highlight').priceEur * 100 * (extra('category-highlight').minMonths ?? 1),
+  homepageCents: extra('homepage-highlight').priceEur * 100 * (extra('homepage-highlight').minMonths ?? 1),
+  videoCents: extra('video').priceEur * 100,
+  services: Object.fromEntries(ONSITE_SERVICES.map((s) => [s.id, { name: s.names[lang], cents: s.priceEur * 100 }])),
+};
+const strings = {
+  saving: t.saving, saved: t.saved, saveFailed: t.saveFailed, required: t.required, none: t.none,
+  submitting: t.submitting, submitFailed: t.submitFailed, noPhotos: t.noPhotos,
+  missing: t.missing, missingHead: t.missingHead, photosCount: t.photosCount(0).replace('0', '{n}'),
+  translation: t.translation, categoryHighlight: t.categoryHighlight, homepageHighlight: t.homepageHighlight, video: t.video,
+};
+---
+
+<Portal title={t.title} bare wide lang={lang}>
+  <div
+    class="su"
+    data-setup
+    data-property-id={property.id}
+    data-lang={lang}
+    data-steps={STEPS.join(',')}
+    data-strings={JSON.stringify(strings)}
+    data-pricing={JSON.stringify(pricing)}
+  >
+    <script is:inline>
+      // Before first paint: show one step, chosen by the hash, so the page
+      // never flashes all six at once.
+      (function () {
+        var root = document.currentScript.parentElement;
+        var steps = root.dataset.steps.split(',');
+        var at = steps.indexOf(location.hash.slice(1));
+        root.dataset.active = steps[at < 0 ? 0 : at];
+        root.classList.add('js');
+      })();
+    </script>
+
+    <header class="su-top">
+      <Logo locale={lang} href="/portal/dashboard" />
+      <a class="su-exit" href="/portal/dashboard">{t.saveExit}</a>
+    </header>
+
+    <div class="su-head">
+      <p class="su-eyebrow">{t.eyebrow} · #{property.ref}</p>
+      <div class="su-progress">
+        <div class="su-bar" aria-hidden="true"><span data-progress-bar></span></div>
+        <p class="su-count" aria-live="polite"><b data-step-n>1</b> / {STEPS.length} <span class="sr-only">{t.of}</span></p>
+      </div>
+      <ol class="su-steps">
+        {STEPS.map((step, i) => (
+          <li><a href={`#${step}`} data-step-link={step}><span class="n">{i + 1}</span><span class="l">{t.steps[i]}</span></a></li>
+        ))}
+      </ol>
+    </div>
+
+    {/* ── 1. Package ── */}
+    <section class="su-step" id="package" data-step="package" aria-labelledby="h-package" tabindex="-1">
+      <h1 id="h-package">{t.steps[0]}</h1>
+      <p class="su-intro">{t.intros[0]}</p>
+      <form data-step-form="package" id="su-package" novalidate>
+        <div class="su-packages">
+          {cards.map(({ pkg, card }) => (
+            <PackageCard
+              pkg={card}
+              mode="select"
+              radioName="package"
+              checked={pkg.id === chosen.id}
+              priceCents={card.priceCents}
+              recommendedLabel={t.recommended}
+            />
+          ))}
+        </div>
+
+        <fieldset class="su-extras">
+          <legend>{t.extrasHead}</legend>
+          <p class="su-note">{t.extrasNote}</p>
+          <div class="chips">
+            {TRANSLATION_LANGUAGES.map((code) => (
+              <label class="chip">
+                <input type="checkbox" name="translations" value={code} checked={requested.translations?.includes(code)} />
+                <span class="box" aria-hidden="true"></span>
+                <span class="chip-name">{t.translation}: {LOCALE_META[code].label}</span>
+                <span class="chip-price">€ {extra('translation').priceEur} {t.perLanguage}</span>
+              </label>
+            ))}
+            <label class="chip">
+              <input type="checkbox" name="categoryHighlight" value="yes" checked={requested.categoryHighlight} />
+              <span class="box" aria-hidden="true"></span>
+              <span class="chip-name">{t.categoryHighlight}</span>
+              <span class="chip-price">€ {extra('category-highlight').priceEur} {t.perMonth} · {t.minMonths(extra('category-highlight').minMonths ?? 1)}</span>
+            </label>
+            <label class="chip">
+              <input type="checkbox" name="homepageHighlight" value="yes" checked={requested.homepageHighlight} />
+              <span class="box" aria-hidden="true"></span>
+              <span class="chip-name">{t.homepageHighlight}</span>
+              <span class="chip-price">€ {extra('homepage-highlight').priceEur} {t.perMonth} · {t.minMonths(extra('homepage-highlight').minMonths ?? 1)}</span>
+            </label>
+            <label class="chip" data-video-chip>
+              <input type="checkbox" name="video" value="yes" checked={requested.video} />
+              <span class="box" aria-hidden="true"></span>
+              <span class="chip-name">{t.video}</span>
+              <span class="chip-price">€ {extra('video').priceEur} {t.once}</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="su-onsite">
+          <OnsiteServiceChoice locale={lang} selected={service} />
+        </div>
+
+        <div class="su-total" aria-live="polite">
+          <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{t.totalNote}</span></p>
+          <strong class="num" data-total>—</strong>
+        </div>
+      </form>
+    </section>
+
+    {/* ── 2. The property ── */}
+    <section class="su-step" id="property" data-step="property" aria-labelledby="h-property" tabindex="-1">
+      <h1 id="h-property">{t.steps[1]}</h1>
+      <p class="su-intro">{t.intros[1]}</p>
+      <form data-step-form="property" novalidate class="su-grid">
+        <Field locale={lang} name="category" label={t.category} type="select" required value={property.category} options={options('category', false)} />
+        <div class="field fld span-full su-settlement">
+          <label for="f-settlement">{t.settlement} <span class="req">({hu ? 'kötelező' : 'verplicht'})</span></label>
+          <p class="hint" id="f-settlement-hint">{t.settlementHint}</p>
+          <input id="f-settlement" name="settlement" required list="su-places" value={property.settlement} autocomplete="address-level2" enterkeyhint="next" maxlength="120" aria-describedby="f-settlement-hint f-settlement-error" data-label={t.settlement} />
+          <datalist id="su-places"></datalist>
+          <p class="error" id="f-settlement-error" hidden></p>
+        </div>
+        <Field locale={lang} name="county" label={t.county} type="select" required value={property.county} options={[{ value: '', label: '—' }, ...counties.map((c) => ({ value: c, label: c }))]} />
+        <Field locale={lang} name="price_huf" label={t.price} type="number" required inputmode="numeric" hint={t.priceHint} value={blank(property.price_huf)} min={1000} />
+        <Field locale={lang} name="floor_m2" label={t.floor} type="number" inputmode="decimal" hint={t.floorHint} value={blank(property.floor_m2)} span="half" min={1} />
+        <Field locale={lang} name="plot_m2" label={t.plot} type="number" inputmode="decimal" hint={t.plotHint} value={blank(property.plot_m2)} span="half" min={1} />
+        <Field locale={lang} name="condition_key" label={t.condition} type="select" value={property.condition_key ?? ''} options={options('condition', true)} span="half" />
+        <Field locale={lang} name="heating_key" label={t.heating} type="select" value={property.heating_key ?? ''} options={options('heating', true)} span="half" />
+        <Field locale={lang} name="wall_key" label={t.wall} type="select" hint={t.wallHint} value={property.wall_key ?? ''} options={options('wall', true)} />
+        <Field
+          locale={lang}
+          name="precision"
+          label={t.precision}
+          type="select"
+          hint={t.precisionHint}
+          value={property.precision}
+          options={[{ value: 'approximate', label: t.approx }, { value: 'exact', label: t.exact }]}
+        />
+      </form>
+    </section>
+
+    {/* ── 3. Description and contact ── */}
+    <section class="su-step" id="description" data-step="description" aria-labelledby="h-description" tabindex="-1">
+      <h1 id="h-description">{t.steps[2]}</h1>
+      <p class="su-intro">{t.intros[2]}</p>
+      <form data-step-form="description" novalidate>
+        <aside class="su-good">
+          <p class="su-good-head">{t.goodHead}</p>
+          <ul>{t.good.map((line) => <li>{line}</li>)}</ul>
+        </aside>
+        <Field locale={lang} name="description" label={t.description} type="textarea" rows={10} required hint={t.descriptionHint} value={description} maxlength={DESCRIPTION_MAX} />
+        <p class="su-counter num" aria-live="polite"><span data-counter>{description.length.toLocaleString(hu ? 'hu-HU' : 'nl-NL')}</span> / {DESCRIPTION_MAX.toLocaleString(hu ? 'hu-HU' : 'nl-NL')} {t.chars}</p>
+
+        <fieldset class="su-fieldset">
+          <legend>{t.speaks}</legend>
+          <p class="su-note">{t.speaksHint}</p>
+          <div class="chips">
+            {speakOptions.map((code) => (
+              <label class="chip">
+                <input type="checkbox" name="seller_speaks" value={code} checked={property.seller_speaks.includes(code)} />
+                <span class="box" aria-hidden="true"></span>
+                <span class="chip-name">{LOCALE_META[code].label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="su-fieldset" data-contact-choice>
+          <legend>{t.contact}</legend>
+          <p class="su-note">{t.contactHint}</p>
+          <label class="su-radio"><input type="radio" name="contact" value="yes" checked={property.seller_contact_visible} /> {t.contactYes}</label>
+          <label class="su-radio"><input type="radio" name="contact" value="no" checked={!property.seller_contact_visible} /> {t.contactNo}</label>
+        </fieldset>
+        <p class="su-note su-contact-off" data-contact-off>{t.contactNotInPackage}</p>
+      </form>
+    </section>
+
+    {/* ── 4. Photos ── */}
+    <section class="su-step" id="photos" data-step="photos" aria-labelledby="h-photos" tabindex="-1">
+      <h1 id="h-photos">{t.steps[3]}</h1>
+      <p class="su-intro">{t.intros[3]}</p>
+      <div class="su-card">
+        <PhotoUploader
+          propertyId={property.id}
+          media={property.media}
+          photoLimit={packageOf(catalog, property.package).maxImages}
+          packageName={packageOf(catalog, property.package).names[lang]}
+          editable={true}
+          isAdmin={isAdmin}
+          locale={lang}
+          withHeading={false}
+        />
+      </div>
+    </section>
+
+    {/* ── 5. Billing ── */}
+    <section class="su-step" id="billing" data-step="billing" aria-labelledby="h-billing" tabindex="-1">
+      <h1 id="h-billing">{t.steps[4]}</h1>
+      <p class="su-intro">{t.intros[4]}</p>
+      <div class="su-card">
+        <BillingForm billing={billing} fallbackName={(billingRow as any)?.full_name ?? ''} fallbackPhone={(billingRow as any)?.phone ?? ''} locale={lang} embedded />
+      </div>
+    </section>
+
+    {/* ── 6. Review ── */}
+    <section class="su-step" id="review" data-step="review" aria-labelledby="h-review" tabindex="-1">
+      <h1 id="h-review">{t.steps[5]}</h1>
+      <p class="su-intro">{t.intros[5]}</p>
+      <div class="su-review" data-review>
+        <dl>
+          {[
+            ['package', t.reviewPackage],
+            ['property', t.reviewProperty],
+            ['description', t.reviewDescription],
+            ['photos', t.reviewPhotos],
+            ['billing', t.reviewBilling],
+          ].map(([key, label]) => (
+            <div class="su-row">
+              <dt>{label}</dt>
+              <dd data-summary={key}></dd>
+              <a class="su-edit" href={`#${key}`}>{t.edit}<span class="sr-only">: {label}</span></a>
+            </div>
+          ))}
+        </dl>
+        <div class="su-total">
+          <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{t.totalNote}</span></p>
+          <strong class="num" data-total>—</strong>
+        </div>
+        <div class="su-missing" data-missing hidden></div>
+        <p class="su-submit-status" role="status" data-submit-status></p>
+      </div>
+      <div class="su-done" data-done hidden tabindex="-1">
+        <span class="su-done-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 11.5l4 4 8-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+        <h2>{t.doneTitle}</h2>
+        <p>{t.doneBody}</p>
+        <a class="su-btn" href="/portal/dashboard">{t.doneCta} <ArrowChip size={32} /></a>
+      </div>
+    </section>
+
+    <nav class="su-nav" aria-label={t.title}>
+      <button type="button" class="su-back" data-back>{t.back}</button>
+      <p class="su-saved" role="status" data-save-status></p>
+      <button type="button" class="su-btn" data-next>
+        <span data-next-label>{t.next}</span>
+        <ArrowChip size={32} />
+      </button>
+      <button type="button" class="su-btn" data-submit hidden>
+        <span>{t.submit}</span>
+        <ArrowChip size={32} />
+      </button>
+    </nav>
+  </div>
+</Portal>
+
+<script>
+  type Pricing = {
+    packages: Record<string, { name: string; cents: number; aboveCents: number | null; threshold: number | null; video: string; phone: boolean }>;
+    translationCents: number;
+    categoryCents: number;
+    homepageCents: number;
+    videoCents: number;
+    services: Record<string, { name: string; cents: number }>;
+  };
+
+  const root = document.querySelector<HTMLElement>('[data-setup]')!;
+  const id = root.dataset.propertyId!;
+  const lang = (root.dataset.lang === 'nl' ? 'nl' : 'hu') as 'hu' | 'nl';
+  const steps = root.dataset.steps!.split(',');
+  const s = JSON.parse(root.dataset.strings!);
+  const pricing = JSON.parse(root.dataset.pricing!) as Pricing;
+  const saveStatus = root.querySelector<HTMLElement>('[data-save-status]')!;
+  const nextBtn = root.querySelector<HTMLButtonElement>('[data-next]')!;
+  const backBtn = root.querySelector<HTMLButtonElement>('[data-back]')!;
+  const submitBtn = root.querySelector<HTMLButtonElement>('[data-submit]')!;
+  const form = (step: string) => root.querySelector<HTMLFormElement>(`[data-step-form="${step}"]`);
+  const nf = new Intl.NumberFormat(lang === 'hu' ? 'hu-HU' : 'nl-NL');
+  const money = (cents: number) => `€ ${(cents / 100).toLocaleString('de-DE')}`;
+
+  let lib: typeof import('~/lib/validation') | null = null;
+  const loadLib = async () => (lib ??= await import('~/lib/validation'));
+
+  /* ── Steps ─────────────────────────────────────────────────────────── */
+
+  const show = (step: string, focus = true) => {
+    const at = Math.max(0, steps.indexOf(step));
+    const name = steps[at];
+    root.dataset.active = name;
+    root.querySelector<HTMLElement>('[data-step-n]')!.textContent = String(at + 1);
+    root.querySelector<HTMLElement>('[data-progress-bar]')!.style.transform = `scaleX(${(at + 1) / steps.length})`;
+    root.querySelectorAll<HTMLElement>('[data-step-link]').forEach((a, i) => {
+      a.toggleAttribute('aria-current', i === at);
+      a.dataset.done = String(i < at);
+    });
+    backBtn.hidden = at === 0;
+    nextBtn.hidden = name === 'review';
+    submitBtn.hidden = name !== 'review';
+    saveStatus.textContent = '';
+    if (name === 'review') renderReview();
+    if (focus) {
+      const section = root.querySelector<HTMLElement>(`[data-step="${name}"]`)!;
+      section.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  show(root.dataset.active ?? steps[0], false);
+
+  /* ── Validation (the same rules as every public form) ──────────────── */
+
+  const fieldError = (control: HTMLElement) =>
+    control.closest('.field, .fld')?.querySelector<HTMLElement>(':scope > .error');
+
+  async function validate(scope: HTMLElement): Promise<HTMLElement | null> {
+    const { validateField, errorMessage } = await loadLib();
+    let first: HTMLElement | null = null;
+    scope.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input[name], textarea[name], select[name]').forEach((control) => {
+      if (control.type === 'radio' || control.type === 'checkbox' || control.type === 'hidden') return;
+      const error = validateField(
+        {
+          rule: (control.dataset.rule as never) ?? 'text',
+          required: control.required,
+          min: control.dataset.min ? Number(control.dataset.min) : undefined,
+          max: control.dataset.max ? Number(control.dataset.max) : undefined,
+          maxLength: 'maxLength' in control && control.maxLength > 0 ? control.maxLength : undefined,
+        },
+        control.value
+      );
+      const el = fieldError(control);
+      if (error) {
+        control.setAttribute('aria-invalid', 'true');
+        if (el) {
+          el.textContent = errorMessage(error, lang);
+          el.hidden = false;
+        }
+        first ??= control;
+      } else {
+        control.removeAttribute('aria-invalid');
+        if (el) el.hidden = true;
+      }
+    });
+    return first;
+  }
+
+  /** The server's own refusals, shown on the fields they belong to. */
+  async function showServerErrors(scope: HTMLElement, errors: Record<string, { code: string }>) {
+    const { errorMessage } = await loadLib();
+    let first: HTMLElement | null = null;
+    for (const [name, error] of Object.entries(errors)) {
+      const control = scope.querySelector<HTMLElement>(`[name="${name}"]`);
+      if (!control) continue;
+      control.setAttribute('aria-invalid', 'true');
+      const el = fieldError(control);
+      if (el) {
+        el.textContent = errorMessage(error as never, lang);
+        el.hidden = false;
+      }
+      first ??= control;
+    }
+    first?.focus();
+  }
+
+  /* ── Saving ────────────────────────────────────────────────────────── */
+
+  async function save(step: string, quiet = false): Promise<boolean> {
+    const f = form(step);
+    if (!f) return true;
+    const body = new FormData(f);
+    body.set('step', step);
+    if (!quiet) saveStatus.textContent = s.saving;
+    try {
+      const res = await fetch(`/api/portal/properties/${id}/update`, { method: 'POST', headers: { Accept: 'application/json' }, body });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        if (json.errors) await showServerErrors(f, json.errors);
+        saveStatus.textContent = s.saveFailed;
+        return false;
+      }
+      saveStatus.textContent = s.saved;
+      return true;
+    } catch {
+      saveStatus.textContent = s.saveFailed;
+      return false;
+    }
+  }
+
+  // Autosave when a field is left — quietly, and only once something changed.
+  let pending: number | undefined;
+  root.querySelectorAll<HTMLFormElement>('[data-step-form]').forEach((f) => {
+    f.addEventListener('change', () => {
+      window.clearTimeout(pending);
+      pending = window.setTimeout(() => void save(f.dataset.stepForm!, true), 400);
+    });
+    f.addEventListener('submit', (e) => e.preventDefault());
+  });
+
+  /** The billing step saves through its own form (BillingForm.astro). */
+  const saveBilling = () =>
+    new Promise<boolean>((resolve) => {
+      const billing = root.querySelector<HTMLFormElement>('form[data-billing]');
+      if (!billing) return resolve(true);
+      const invalid = (window as any).fodelValidateBilling?.(billing) as HTMLElement | null;
+      if (invalid) {
+        invalid.focus();
+        return resolve(false);
+      }
+      const done = (ok: boolean) => () => resolve(ok);
+      billing.addEventListener('billing:saved', done(true), { once: true });
+      billing.addEventListener('billing:failed', done(false), { once: true });
+      // requestSubmit (Safari 16+) runs the form's own submit handler; older
+      // engines get the same event dispatched by hand.
+      if (typeof billing.requestSubmit === 'function') billing.requestSubmit();
+      else billing.dispatchEvent(new Event('submit', { cancelable: true }));
+    });
+
+  nextBtn.addEventListener('click', async () => {
+    const current = root.dataset.active!;
+    const scope = root.querySelector<HTMLElement>(`[data-step="${current}"]`)!;
+    window.clearTimeout(pending);
+    nextBtn.disabled = true;
+    try {
+      const invalid = await validate(scope);
+      if (invalid) {
+        invalid.focus();
+        return;
+      }
+      const ok = current === 'billing' ? await saveBilling() : await save(current);
+      if (!ok) return;
+      location.hash = steps[steps.indexOf(current) + 1];
+    } finally {
+      nextBtn.disabled = false;
+    }
+  });
+  backBtn.addEventListener('click', () => {
+    const at = steps.indexOf(root.dataset.active!);
+    if (at > 0) location.hash = steps[at - 1];
+  });
+
+  /* ── Step 1: price estimate, video and phone follow the package ────── */
+
+  const priceHuf = () => {
+    const raw = (form('property')?.elements.namedItem('price_huf') as HTMLInputElement | null)?.value ?? '';
+    const digits = raw.replace(/[^\d]/g, '');
+    return digits ? Number(digits) : 0;
+  };
+  const selectedPackage = () => (form('package')?.querySelector<HTMLInputElement>('input[name="package"]:checked')?.value ?? '');
+
+  function estimate(): { cents: number; lines: string[] } {
+    const f = form('package');
+    const pkg = pricing.packages[selectedPackage()];
+    if (!f || !pkg) return { cents: 0, lines: [] };
+    const above = pkg.aboveCents !== null && pkg.threshold !== null && priceHuf() > pkg.threshold;
+    let cents = above ? pkg.aboveCents! : pkg.cents;
+    const lines = [pkg.name];
+    const translations = f.querySelectorAll<HTMLInputElement>('input[name="translations"]:checked');
+    if (translations.length) {
+      cents += translations.length * pricing.translationCents;
+      lines.push(`${s.translation} × ${translations.length}`);
+    }
+    const flag = (name: string) => Boolean(f.querySelector<HTMLInputElement>(`input[name="${name}"]`)?.checked);
+    const add = (when: boolean, amount: number, label: string) => {
+      if (!when) return;
+      cents += amount;
+      lines.push(label);
+    };
+    add(flag('categoryHighlight'), pricing.categoryCents, s.categoryHighlight);
+    add(flag('homepageHighlight'), pricing.homepageCents, s.homepageHighlight);
+    add(pkg.video === 'extra' && flag('video'), pricing.videoCents, s.video);
+    const service = f.querySelector<HTMLInputElement>('input[name="service"]:checked')?.value ?? '';
+    add(Boolean(pricing.services[service]), pricing.services[service]?.cents ?? 0, pricing.services[service]?.name ?? '');
+    return { cents, lines };
+  }
+
+  function syncPackage() {
+    const pkg = pricing.packages[selectedPackage()];
+    const videoChip = root.querySelector<HTMLElement>('[data-video-chip]');
+    if (videoChip) videoChip.hidden = pkg?.video !== 'extra';
+    const contact = root.querySelector<HTMLElement>('[data-contact-choice]');
+    const off = root.querySelector<HTMLElement>('[data-contact-off]');
+    if (contact) contact.hidden = !pkg?.phone;
+    if (off) off.hidden = Boolean(pkg?.phone);
+    const total = money(estimate().cents);
+    root.querySelectorAll<HTMLElement>('[data-total]').forEach((el) => (el.textContent = total));
+  }
+  form('package')?.addEventListener('change', syncPackage);
+  form('property')?.addEventListener('change', syncPackage);
+  syncPackage();
+
+  /* ── Step 2: settlement list and county, price grouping ────────────── */
+
+  type Place = [string, string, string, number];
+  let places: Place[] = [];
+  const settlement = root.querySelector<HTMLInputElement>('#f-settlement');
+  settlement?.addEventListener(
+    'focus',
+    async () => {
+      try {
+        const res = await fetch('/data/telepulesek.json');
+        places = await res.json();
+        root.querySelector('#su-places')!.innerHTML = places
+          .filter((p) => p[3] !== 0)
+          .map((p) => `<option value="${p[1].replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"></option>`)
+          .join('');
+      } catch {
+        /* free text still works */
+      }
+    },
+    { once: true }
+  );
+  settlement?.addEventListener('change', () => {
+    const match = places.find((p) => p[3] !== 0 && p[1].localeCompare(settlement.value.trim(), 'hu', { sensitivity: 'base' }) === 0);
+    const county = places.find((p) => p[3] === 0 && p[0] === match?.[2])?.[1].replace(/ vármegye$/, '');
+    const select = form('property')?.elements.namedItem('county') as HTMLSelectElement | null;
+    if (match) settlement.value = match[1];
+    if (county && select && [...select.options].some((o) => o.value === county)) select.value = county;
+  });
+  const price = form('property')?.elements.namedItem('price_huf') as HTMLInputElement | null;
+  price?.addEventListener('blur', () => {
+    const digits = price.value.replace(/[^\d]/g, '');
+    if (digits) price.value = nf.format(Number(digits));
+  });
+
+  /* ── Step 3: character counter ─────────────────────────────────────── */
+
+  const text = form('description')?.elements.namedItem('description') as HTMLTextAreaElement | null;
+  const counter = root.querySelector<HTMLElement>('[data-counter]');
+  text?.addEventListener('input', () => {
+    if (counter) counter.textContent = nf.format(text.value.length);
+  });
+
+  /* ── Step 6: review and submit ─────────────────────────────────────── */
+
+  const value = (step: string, name: string) => {
+    const el = form(step)?.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+    if (!el) return '';
+    if (el instanceof HTMLSelectElement) return el.value ? el.selectedOptions[0]?.textContent?.trim() ?? '' : '';
+    return el.value.trim();
+  };
+  const photoCount = () => Number(root.querySelector<HTMLElement>('[data-photo-count]')?.dataset.photoCount ?? 0);
+  const billingName = () => (root.querySelector<HTMLFormElement>('form[data-billing]')?.elements.namedItem('name') as HTMLInputElement | null)?.value.trim() ?? '';
+
+  function missing(): [string, string][] {
+    const list: [string, string][] = [];
+    if (!value('property', 'settlement')) list.push(['property', s.missing.settlement]);
+    if (!priceHuf()) list.push(['property', s.missing.price]);
+    if (!value('description', 'description')) list.push(['description', s.missing.description]);
+    if (photoCount() < 1) list.push(['photos', s.missing.photos]);
+    if (!billingName()) list.push(['billing', s.missing.billing]);
+    return list;
+  }
+
+  function renderReview() {
+    const put = (key: string, lines: string[]) => {
+      const dd = root.querySelector<HTMLElement>(`[data-summary="${key}"]`)!;
+      dd.textContent = '';
+      const shown = lines.filter(Boolean);
+      (shown.length ? shown : [s.none]).forEach((line) => {
+        const span = document.createElement('span');
+        span.textContent = line;
+        dd.append(span);
+      });
+    };
+    const est = estimate();
+    put('package', est.lines);
+    put('property', [
+      [value('property', 'category'), value('property', 'settlement'), value('property', 'county')].filter(Boolean).join(', '),
+      priceHuf() ? `${nf.format(priceHuf())} Ft` : '',
+      [value('property', 'floor_m2') && `${value('property', 'floor_m2')} m²`, value('property', 'plot_m2') && `${value('property', 'plot_m2')} m²`].filter(Boolean).join(' · '),
+    ]);
+    const desc = value('description', 'description');
+    put('description', [desc.length > 220 ? `${desc.slice(0, 220)}…` : desc]);
+    put('photos', [photoCount() ? s.photosCount.replace('{n}', String(photoCount())) : '']);
+    const b = root.querySelector<HTMLFormElement>('form[data-billing]');
+    const bv = (n: string) => (b?.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? '';
+    put('billing', [bv('name'), [bv('postalCode'), bv('city'), bv('street')].filter(Boolean).join(' ')]);
+    root.querySelectorAll<HTMLElement>('[data-total]').forEach((el) => (el.textContent = money(est.cents)));
+
+    const gaps = missing();
+    const box = root.querySelector<HTMLElement>('[data-missing]')!;
+    box.hidden = gaps.length === 0;
+    box.innerHTML = '';
+    if (gaps.length) {
+      const head = document.createElement('p');
+      head.textContent = s.missingHead;
+      const ul = document.createElement('ul');
+      gaps.forEach(([step, label]) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${step}`;
+        a.textContent = label;
+        li.append(a);
+        ul.append(li);
+      });
+      box.append(head, ul);
+    }
+    submitBtn.disabled = gaps.length > 0;
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    const status = root.querySelector<HTMLElement>('[data-submit-status]')!;
+    submitBtn.disabled = true;
+    status.textContent = s.submitting;
+    try {
+      const res = await fetch(`/api/portal/properties/${id}/status`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'submit' }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error ?? 'failed');
+      status.textContent = '';
+      root.querySelector<HTMLElement>('[data-review]')!.hidden = true;
+      root.querySelector<HTMLElement>('.su-nav')!.hidden = true;
+      root.querySelector<HTMLElement>('.su-steps')!.hidden = true;
+      const done = root.querySelector<HTMLElement>('[data-done]')!;
+      done.hidden = false;
+      done.focus();
+    } catch (error) {
+      status.textContent = (error as Error).message === 'no-photos' ? s.noPhotos : s.submitFailed;
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .su { display: flex; flex-direction: column; gap: 0; width: 100%; }
+  .su-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 4px 28px; }
+  .su-exit { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: var(--r-pill); font-size: 14.5px; font-weight: var(--fw-medium); color: var(--ink); text-decoration: none; background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .su-exit:focus-visible { outline: var(--focus-ring); outline-offset: 3px; }
+
+  .su-head { margin-bottom: 28px; }
+  .su-eyebrow { font-size: 13px; letter-spacing: 0.04em; color: var(--ink-quiet); margin-bottom: 14px; }
+  .su-progress { display: flex; align-items: center; gap: 16px; }
+  .su-bar { flex: 1; height: 6px; border-radius: var(--r-pill); background: rgba(16, 42, 67, 0.08); overflow: hidden; }
+  .su-bar span { display: block; height: 100%; border-radius: inherit; background: var(--ink); transform-origin: left; transform: scaleX(0.1667); transition: transform 0.6s var(--ease-out); }
+  .su-count { font-size: 14px; color: var(--ink-quiet); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .su-count b { color: var(--ink); font-weight: var(--fw-medium); }
+  .su-steps { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; list-style: none; }
+  .su-steps a { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 14px 4px 5px; border-radius: var(--r-pill); font-size: 13.5px; color: var(--ink-quiet); text-decoration: none; transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out); }
+  .su-steps .n { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .su-steps a[data-done='true'] .n { background: rgba(16, 42, 67, 0.12); box-shadow: none; color: var(--ink); }
+  .su-steps a[aria-current] { background: var(--white); color: var(--ink); font-weight: var(--fw-medium); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .su-steps a[aria-current] .n { background: var(--ink); color: var(--cream); box-shadow: none; }
+  .su-steps a:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+  @media (hover: hover) { .su-steps a:hover { color: var(--ink); } }
+  @media (max-width: 760px) { .su-steps .l { display: none; } .su-steps a[aria-current] .l { display: inline; } }
+
+  /* One step at a time once the script runs; without it every step stacks. */
+  .su.js .su-step { display: none; }
+  .su.js[data-active='package'] [data-step='package'],
+  .su.js[data-active='property'] [data-step='property'],
+  .su.js[data-active='description'] [data-step='description'],
+  .su.js[data-active='photos'] [data-step='photos'],
+  .su.js[data-active='billing'] [data-step='billing'],
+  .su.js[data-active='review'] [data-step='review'] { display: block; animation: su-in 0.5s var(--ease-out) both; }
+  @keyframes su-in { from { opacity: 0; transform: translateY(10px); } }
+  .su-step { scroll-margin-top: 24px; }
+  .su-step:focus { outline: none; }
+  .su-step h1 { font-family: var(--serif); font-weight: var(--fw-display); font-size: clamp(28px, 4vw, 40px); letter-spacing: var(--ls-heading); line-height: 1.12; color: var(--ink); margin-bottom: 10px; }
+  .su-intro { max-width: 60ch; font-size: var(--fs-body); line-height: 1.6; color: var(--ink-quiet); margin-bottom: 28px; }
+  .su-note { font-size: 14px; line-height: 1.6; color: var(--ink-quiet); margin-bottom: 14px; max-width: 64ch; }
+  .su-note[hidden] { display: none; }
+  .su-card { padding: clamp(20px, 3vw, 32px); border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+
+  .su-packages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 28px; }
+  @media (max-width: 760px) { .su-packages { grid-template-columns: 1fr; } }
+  .su-extras, .su-fieldset { border: 0; padding: 0; margin: 0 0 24px; min-width: 0; }
+  .su-extras legend, .su-fieldset legend { font-family: var(--serif); font-weight: var(--fw-medium); font-size: 20px; color: var(--ink); margin-bottom: 6px; }
+  .su-fieldset[hidden] { display: none; }
+  .su-onsite { margin-bottom: 24px; padding: clamp(20px, 3vw, 28px); border-radius: var(--r-xl); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); }
+
+  /* Extras: pills that fill when chosen, with a drawn tick. */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 8px 18px 8px 10px; border-radius: var(--r-pill); background: var(--white); border: 1px solid rgba(16, 42, 67, 0.12); cursor: pointer; transition: border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out); }
+  .chip[hidden] { display: none; }
+  @media (hover: hover) { .chip:hover { border-color: rgba(16, 42, 67, 0.34); } }
+  .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .box { position: relative; display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(16, 42, 67, 0.07); transition: background-color 0.3s var(--ease-out); }
+  .box::after { content: ''; width: 9px; height: 5px; margin-top: -2px; border-left: 1.6px solid var(--ink); border-bottom: 1.6px solid var(--ink); transform: rotate(-45deg) scale(0); transition: transform 0.35s var(--ease-out); }
+  .chip:has(input:checked) { background: var(--ink); border-color: var(--ink); }
+  .chip:has(input:checked) .box { background: var(--cream); }
+  .chip:has(input:checked) .box::after { transform: rotate(-45deg) scale(1); }
+  .chip:has(input:checked) :is(.chip-name, .chip-price) { color: var(--cream); }
+  .chip:has(input:focus-visible) { outline: var(--focus-ring); outline-offset: 3px; }
+  .chip-name { font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
+  .chip-price { font-size: 13px; color: var(--ink-quiet); white-space: nowrap; }
+
+  .su-total { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 20px 26px; border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-sm), 0 0 0 1px var(--pt-hair); }
+  .su-total p { display: flex; flex-direction: column; gap: 3px; }
+  .su-total-label { font-size: var(--fs-body); font-weight: var(--fw-medium); color: var(--ink); }
+  .su-total-note { font-size: 13px; line-height: 1.5; color: var(--ink-quiet); max-width: 52ch; }
+  .su-total strong { flex-shrink: 0; font-family: var(--serif); font-weight: var(--fw-medium); font-size: clamp(26px, 3vw, 34px); letter-spacing: -0.02em; color: var(--ink); }
+  @media (max-width: 520px) { .su-total { flex-direction: column; align-items: flex-start; gap: 10px; } }
+
+  .su-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+  @media (max-width: 620px) { .su-grid { grid-template-columns: 1fr; } .su-grid :global(.fld.span-half) { grid-column: 1 / -1; } }
+  .su-settlement datalist { display: none; }
+
+  .su-good { margin-bottom: 22px; padding: 18px 22px; border-radius: var(--r-lg); background: rgba(16, 42, 67, 0.04); }
+  .su-good-head { font-weight: var(--fw-medium); color: var(--ink); margin-bottom: 8px; }
+  .su-good ul { display: grid; gap: 4px; padding-left: 18px; font-size: 14.5px; line-height: 1.6; color: var(--ink-quiet); }
+  .su-counter { margin: -10px 0 26px; font-size: 13px; color: var(--ink-quiet); text-align: right; }
+  .su-radio { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 10px 16px; margin-bottom: 8px; border-radius: var(--r-md); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); font-size: var(--fs-small); color: var(--ink); cursor: pointer; }
+  .su-radio:has(input:checked) { box-shadow: 0 0 0 2px var(--ink); }
+  .su-radio input { width: 18px; height: 18px; accent-color: var(--ink); }
+  .su-contact-off[hidden] { display: none; }
+
+  .su-review dl { display: grid; gap: 2px; margin-bottom: 16px; border-radius: var(--r-xl); overflow: hidden; box-shadow: 0 0 0 1px var(--pt-hair); }
+  .su-row { display: grid; grid-template-columns: 170px minmax(0, 1fr) auto; gap: 8px 20px; align-items: start; padding: 18px 22px; background: var(--white); }
+  .su-row dt { font-size: 14px; color: var(--ink-quiet); }
+  .su-row dd { display: grid; gap: 2px; font-size: var(--fs-small); color: var(--ink); overflow-wrap: anywhere; }
+  .su-edit { font-size: 14px; font-weight: var(--fw-medium); color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 620px) { .su-row { grid-template-columns: minmax(0, 1fr) auto; } .su-row dd { grid-column: 1 / -1; grid-row: 2; } }
+  .su-missing { margin-top: 14px; padding: 14px 18px; border-radius: var(--r-md); background: var(--pt-amber-bg); color: var(--pt-amber); font-size: 14.5px; }
+  .su-missing :global(ul) { margin-top: 4px; padding-left: 18px; }
+  .su-missing :global(a) { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .su-missing[hidden] { display: none; }
+  .su-submit-status { min-height: 1.4em; margin-top: 12px; font-size: 14px; color: var(--ink-quiet); }
+
+  .su-done { padding: clamp(28px, 4vw, 44px); border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-md); }
+  .su-done:focus { outline: none; }
+  .su-done[hidden] { display: none; }
+  .su-done-mark { display: inline-grid; place-items: center; width: 52px; height: 52px; margin-bottom: 18px; border-radius: 50%; background: var(--ink); color: var(--cream); }
+  .su-done h2 { font-family: var(--serif); font-weight: var(--fw-display); font-size: 28px; color: var(--ink); margin-bottom: 10px; }
+  .su-done p { max-width: 60ch; font-size: var(--fs-body); line-height: 1.65; color: var(--ink-quiet); margin-bottom: 24px; }
+
+  /* The step bar: sticks to the bottom of the screen on a phone, so Continue is always in reach. */
+  .su-nav { position: sticky; bottom: max(12px, env(safe-area-inset-bottom, 0px)); z-index: 20; display: flex; align-items: center; gap: 12px; margin-top: 32px; padding: 8px; border-radius: var(--r-pill); background: rgba(250, 250, 248, 0.9); backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5); box-shadow: var(--shadow-lg), 0 0 0 1px var(--pt-hair); }
+  .su-nav[hidden] { display: none; }
+  .su-back { min-height: 48px; padding: 0 20px; border-radius: var(--r-pill); font-size: 15px; font-weight: var(--fw-medium); color: var(--ink); }
+  .su-back[hidden] { display: none; }
+  .su-back:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+  @media (hover: hover) { .su-back:hover { background: var(--linen); } }
+  .su-saved { flex: 1; font-size: 13.5px; color: var(--ink-quiet); text-align: center; }
+  .su-btn { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; margin-left: auto; padding: 0 6px 0 22px; border-radius: var(--r-pill); background: var(--ink); color: var(--cream); font-size: 15.5px; font-weight: var(--fw-medium); text-decoration: none; --chip-bg: var(--cream); --chip-fg: var(--ink); transition: background-color 0.3s var(--ease-out); }
+  .su-btn[hidden] { display: none; }
+  .su-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .su-btn:focus-visible { outline: var(--focus-ring); outline-offset: 3px; }
+  @media (hover: hover) { .su-btn:not(:disabled):hover { background: var(--ink-soft); } }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { .su-bar span { transition: none; } .su.js .su-step { animation: none !important; } }
+</style>

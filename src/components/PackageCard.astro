@@ -9,7 +9,11 @@
  * mode="select" — the whole card is a <label> wrapping a visually-hidden
  *                 radio input; :has(:checked) carries the selected look.
  *                 `pkg.id` must be a real catalogue id (src/lib/orders.ts) —
- *                 this is what gets posted, never a price.
+ *                 this is what gets posted, never a price. Used in the
+ *                 portal's guided setup since the launch round.
+ * mode="info"   — the public submit page: the same card, read-only. No
+ *                 radio, no selected state, no total — the package is chosen
+ *                 after registration. The recommended one wears the badge.
  */
 import Button from './Button.astro';
 
@@ -26,7 +30,7 @@ interface PackageCardData {
 
 interface Props {
   pkg: PackageCardData;
-  mode: 'link' | 'select';
+  mode: 'link' | 'select' | 'info';
   ctaLabel?: string;
   ctaHref?: string;
   radioName?: string;
@@ -55,8 +59,9 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
 ---
 
 {
-  mode === 'link' ? (
-    <article class:list={['package', { featured: pkg.featured }]} data-bg={pkg.featured ? 'dark' : undefined}>
+  mode === 'link' || mode === 'info' ? (
+    <article class:list={['package', { featured: pkg.featured, 'package-info': mode === 'info' }]} data-bg={pkg.featured ? 'dark' : undefined}>
+      {mode === 'info' && pkg.featured && recommendedLabel && <span class="badge">{recommendedLabel}</span>}
       <header>
         <h2>{pkg.name}</h2>
         <p class="duration">{pkg.duration}</p>
@@ -64,7 +69,7 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
       <p class="price">{pkg.price}</p>
       {pkg.priceAlt && (
         <p class="price-alt">
-          <strong>{pkg.priceAlt}</strong> — {pkg.priceAltNote}
+          <strong>{pkg.priceAlt}</strong> · {pkg.priceAltNote}
         </p>
       )}
       <span class="pkg-rule" aria-hidden="true" />
@@ -78,9 +83,11 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
           </li>
         ))}
       </ul>
-      <Button variant={pkg.featured ? 'dark' : 'outline'} light={pkg.featured} arrow href={ctaHref} block>
-        {ctaLabel}
-      </Button>
+      {mode === 'link' && (
+        <Button variant={pkg.featured ? 'dark' : 'outline'} light={pkg.featured} arrow href={ctaHref} block>
+          {ctaLabel}
+        </Button>
+      )}
     </article>
   ) : (
     <label class="package package-select" for={inputId}>
@@ -102,7 +109,7 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
       <p class="price">{pkg.price}</p>
       {pkg.priceAlt && (
         <p class="price-alt">
-          <strong>{pkg.priceAlt}</strong> — {pkg.priceAltNote}
+          <strong>{pkg.priceAlt}</strong> · {pkg.priceAltNote}
         </p>
       )}
       <span class="pkg-rule" aria-hidden="true" />
@@ -137,9 +144,24 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
       background-color 0.5s var(--ease-out),
       border-color 0.5s var(--ease-out);
   }
-  article.package:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+  @media (hover: hover) {
+    article.package:not(.package-info):hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+  }
+  /* Read-only cards end with their list; badge rows line up across the pair. */
+  .package-info ul {
+    margin-bottom: 0;
+  }
+  .package-info:not(:has(.badge))::before {
+    content: '';
+    display: block;
+    height: 46px;
+  }
+  .featured .badge {
+    background: var(--cream);
+    color: var(--ink);
   }
   /* The recommended package is the inverted one: ink, with cream type. */
   .package.featured {
@@ -249,8 +271,10 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
     white-space: nowrap;
     border: 0;
   }
-  .package-select:hover {
-    border-color: rgba(16, 42, 67, 0.3);
+  @media (hover: hover) {
+    .package-select:hover {
+      border-color: rgba(16, 42, 67, 0.3);
+    }
   }
   .package-select:has(input:checked) {
     border-color: var(--ink);

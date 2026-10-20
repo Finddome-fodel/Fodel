@@ -5,16 +5,17 @@
  * hash is stored, so the original raw token no longer exists anywhere to be
  * sent. That is the mechanism working as intended, not a limitation — and it
  * means a resend also invalidates a link that may have been forwarded on.
+ *
+ * Launch round: the rotation itself lives in src/lib/portal/registration.ts,
+ * shared with the public form's "Resend" and the invite page's "request a
+ * new link". A self-registration gets the "set your password" email again;
+ * an admin's invite gets its own wording, as before.
  */
 import type { APIRoute } from 'astro';
-import crypto from 'node:crypto';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
-import { deliver } from '~/lib/email/send';
-import { buildInvite, isInviteLocale } from '~/lib/portal/invites';
+import { rotateRegistration } from '~/lib/portal/registration';
 
 export const prerender = false;
-
-const EXPIRES_DAYS = 7;
 
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -43,24 +44,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   }
 
   if (action === 'resend') {
-    const stored = (invite.payload as { locale?: string } | null)?.locale;
-    const locale = isInviteLocale(stored) ? stored : 'hu';
-    const token = crypto.randomBytes(32).toString('hex');
-    const acceptUrl = `${new URL(request.url).origin}/portal/invite/${token}`;
-    const message = await buildInvite(admin, locale, invite.role, acceptUrl);
-    if (!message) return json(422, { ok: false, error: 'no-template' });
-
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const expiresAt = new Date(Date.now() + EXPIRES_DAYS * 24 * 60 * 60 * 1000);
-
-    const { error } = await admin
-      .from('invites')
-      .update({ token_hash: tokenHash, expires_at: expiresAt.toISOString() })
-      .eq('id', inviteId);
-    if (error) return json(500, { ok: false, error: error.message });
-
-    await deliver(invite.email, message);
-
+    const sent = await rotateRegistration(admin, invite as never, new URL(request.url).origin);
+    if (!sent) return json(422, { ok: false, error: 'no-template' });
     return json(200, { ok: true });
   }
 

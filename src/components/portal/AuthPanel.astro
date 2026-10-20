@@ -36,6 +36,7 @@ const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en:
   </a>
   <div class="panel">
     <div class="brand"><Logo locale={brandLocale} href={`/${lang}/`} /></div>
+    <slot name="top" />
     <h1>{heading}</h1>
     <slot />
   </div>
@@ -63,9 +64,11 @@ const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en:
     text-decoration: none;
     transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
   }
-  .auth-back:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+  @media (hover: hover) {
+    .auth-back:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
   }
   .auth-back:focus-visible {
     outline: var(--focus-ring);
@@ -154,9 +157,11 @@ const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en:
       transform 0.4s var(--ease-out),
       box-shadow 0.4s var(--ease-out);
   }
-  .panel .submit:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+  @media (hover: hover) {
+    .panel .submit:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
   }
   .panel .hint {
     margin-top: 24px;

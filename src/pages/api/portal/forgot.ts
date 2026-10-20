@@ -41,9 +41,10 @@ function rateLimited(ip: string): boolean {
 export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
   const form = await request.formData();
   const email = String(form.get('email') ?? '').trim().toLowerCase();
+  const lang = form.get('lang') === 'nl' ? 'nl' : 'hu';
 
   // Identical for every outcome below — see note 1.
-  const done = () => redirect('/portal/forgot?sent=1');
+  const done = () => redirect(`/portal/forgot?sent=1&lang=${lang}`);
 
   if (clientAddress && rateLimited(clientAddress)) return done();
   if (!email || !email.includes('@')) return done();
@@ -83,7 +84,7 @@ export const POST: APIRoute = async ({ request, clientAddress, redirect }) => {
     profile.email,
     templates.passwordReset(localeOf(profile), {
       name: profile.full_name ?? profile.email,
-      resetUrl: `${origin}/portal/reset/${token}`,
+      resetUrl: `${origin}/portal/reset/${token}?lang=${localeOf(profile)}`,
     })
   );
 

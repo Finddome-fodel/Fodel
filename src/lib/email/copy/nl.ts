@@ -19,14 +19,23 @@ export const NL = {
   },
 
   registrationConfirm: {
-    subject: 'Bevestig uw advertentie — FODEL',
-    preheader: 'Nog één stap: stel een wachtwoord in en ga verder met uw advertentie.',
-    heading: 'Nog één stap',
-    intro: (settlement: string) =>
-      `Dank u wel dat u voor FODEL heeft gekozen${settlement ? ` voor uw woning in ${settlement}` : ''}. Wij hebben uw gegevens ontvangen.`,
-    body: 'Klik op de knop hieronder om een wachtwoord in te stellen en direct verder te gaan met uw advertentie — de gegevens die u heeft ingevuld staan er al in.',
-    cta: 'Verder met mijn advertentie',
-    expiry: 'De link is 7 dagen geldig. Heeft u zelf geen advertentie aangevraagd? Dan kunt u deze e-mail negeren — er wordt geen account aangemaakt.',
+    subject: 'Stel uw wachtwoord in | FODEL',
+    preheader: 'Eén klik en u kunt uw advertentie samenstellen.',
+    heading: 'Stel uw wachtwoord in',
+    intro: 'Dank u voor uw registratie. Uw account is bijna klaar, alleen het wachtwoord ontbreekt nog.',
+    cta: 'Wachtwoord instellen',
+    next: 'Daarna gaat u direct verder met uw advertentie: pakket, gegevens, foto’s. Wij bekijken hem pas nadat u hem heeft ingediend.',
+    expiry: 'De link is 7 dagen geldig. Heeft u zich niet zelf geregistreerd? Dan kunt u deze e-mail negeren: er wordt geen account aangemaakt.',
+  },
+
+  accountExists: {
+    subject: 'U heeft al een FODEL-account',
+    preheader: 'Log in, of stel een nieuw wachtwoord in.',
+    heading: 'Bij dit adres hoort al een account',
+    body: 'Iemand probeerde zich zojuist met dit e-mailadres te registreren op de website van FODEL. Bij dit adres hoort al een account, dus wij hebben geen nieuw account aangemaakt.',
+    cta: 'Inloggen',
+    reset: 'Wachtwoord vergeten? Nieuw wachtwoord aanvragen',
+    ignore: 'Was u dit niet? Dan hoeft u niets te doen: uw account blijft zoals het is.',
   },
 
   invite: {
@@ -48,7 +57,7 @@ export const NL = {
     body: 'Uw account is actief. In het portaal stelt u uw advertentie samen, uploadt u foto’s en volgt u de beoordeling.',
     stepsTitle: 'Wat u nodig heeft',
     steps: [
-      'Foto’s van de woning — minimaal één, maar hoe meer hoe beter',
+      'Foto’s van de woning: minimaal één, maar hoe meer hoe beter',
       'De basisgegevens: woonoppervlak, perceeloppervlak, vraagprijs',
       'Een paar zinnen over wat deze woning bijzonder maakt',
     ],
@@ -56,7 +65,7 @@ export const NL = {
   },
 
   submissionReceived: {
-    subject: (ref: string) => `Wij hebben uw advertentie ontvangen — #${ref}`,
+    subject: (ref: string) => `Wij hebben uw advertentie ontvangen (#${ref})`,
     preheader: 'Wij beoordelen hem en laten het u per e-mail weten.',
     heading: 'Uw advertentie is ontvangen',
     body: (title: string, ref: string) =>
@@ -66,7 +75,7 @@ export const NL = {
   },
 
   adminNewSubmission: {
-    subject: (ref: string) => `Wacht op beoordeling — #${ref}`,
+    subject: (ref: string) => `Wacht op beoordeling (#${ref})`,
     preheader: 'Er is een nieuwe advertentie binnengekomen.',
     heading: 'Nieuwe advertentie ter beoordeling',
     cta: 'Beoordeling openen',
@@ -83,21 +92,21 @@ export const NL = {
   },
 
   changesRequested: {
-    subject: (ref: string) => `Aanpassing nodig — #${ref}`,
+    subject: (ref: string) => `Aanpassing nodig (#${ref})`,
     preheader: 'Eén kleine aanpassing en de advertentie kan live.',
     heading: 'Wij vragen u om een aanpassing',
     body: (title: string, ref: string) =>
       `Over uw advertentie „${title}” (#${ref}) heeft onze medewerker de volgende opmerking:`,
-    after: 'De advertentie is weer te bewerken. Voer de aanpassing door en dien hem opnieuw in — daarna loopt het proces gewoon verder.',
+    after: 'De advertentie is weer te bewerken. Voer de aanpassing door en dien hem opnieuw in. Daarna loopt het proces gewoon verder.',
     cta: 'Advertentie aanpassen',
   },
 
   approvedAwaitingPayment: {
-    subject: (ref: string) => `Goedgekeurd — #${ref} · alleen de betaling nog`,
+    subject: (ref: string) => `Goedgekeurd (#${ref}): alleen de betaling nog`,
     preheader: 'Uw advertentie is goedgekeurd en gaat live zodra de betaling binnen is.',
     heading: 'Uw advertentie is goedgekeurd',
     body: (title: string, ref: string) =>
-      `Goed nieuws: wij hebben uw advertentie „${title}” (#${ref}) beoordeeld en goedgekeurd. Alleen de betaling is nog nodig — zodra die binnen is, staat de advertentie direct online.`,
+      `Goed nieuws: wij hebben uw advertentie „${title}” (#${ref}) beoordeeld en goedgekeurd. Alleen de betaling is nog nodig. Zodra die binnen is, staat de advertentie direct online.`,
     orderTitle: 'Kosten van de advertentie',
     discountLabel: 'Aanbrengkorting (10%)',
     totalLabel: 'Te betalen',
@@ -110,7 +119,7 @@ export const NL = {
   },
 
   approvedPublished: {
-    subject: (ref: string) => `Goedgekeurd en online — #${ref}`,
+    subject: (ref: string) => `Goedgekeurd en online (#${ref})`,
     preheader: 'Uw advertentie staat al online; betaal de advertentiekosten binnen 14 dagen.',
     heading: 'Uw advertentie staat nu online',
     body: (title: string, ref: string) => `Wij hebben advertentie „${title}” (#${ref}) goedgekeurd en direct gepubliceerd.`,
@@ -127,7 +136,7 @@ export const NL = {
   },
 
   paymentReceipt: {
-    subject: (ref: string) => `Betalingsbevestiging — #${ref}`,
+    subject: (ref: string) => `Betalingsbevestiging (#${ref})`,
     preheader: 'Dank u wel, wij hebben uw betaling ontvangen.',
     heading: 'Dank u wel, uw betaling is ontvangen',
     body: (title: string, ref: string) =>
@@ -140,7 +149,7 @@ export const NL = {
   },
 
   published: {
-    subject: (ref: string) => `Uw advertentie staat online — #${ref}`,
+    subject: (ref: string) => `Uw advertentie staat online (#${ref})`,
     preheader: `De advertentie is nu zichtbaar op ${SITE_HOST}.`,
     heading: 'Uw advertentie staat online',
     body: (title: string, ref: string) =>
@@ -150,37 +159,37 @@ export const NL = {
   },
 
   newEnquiry: {
-    subject: (ref: string) => `Nieuwe geïnteresseerde — #${ref}`,
+    subject: (ref: string) => `Nieuwe geïnteresseerde (#${ref})`,
     preheader: 'Iemand heeft interesse in uw woning.',
     heading: 'Nieuwe reactie op uw advertentie',
     body: (title: string, ref: string) =>
       `Op uw advertentie „${title}” (#${ref}) heeft iemand gereageerd:`,
     labels: { name: 'Naam', email: 'E-mail', phone: 'Telefoon' },
     messageTitle: 'Zijn bericht',
-    advice: 'Neem bij voorkeur binnen twee dagen contact op — snel reageren is veruit de belangrijkste factor of het tot een verkoop komt.',
+    advice: 'Neem bij voorkeur binnen twee dagen contact op: snel reageren is veruit de belangrijkste factor of het tot een verkoop komt.',
   },
 
   passwordReset: {
-    subject: 'Wachtwoord herstellen — FODEL-portaal',
+    subject: 'Wachtwoord herstellen | FODEL-portaal',
     preheader: 'De link is één uur geldig.',
     heading: 'Wachtwoord herstellen',
     body: 'Wij ontvingen een verzoek om het wachtwoord van uw FODEL-portaalaccount te herstellen. Klik op de knop hieronder om een nieuw wachtwoord in te stellen.',
     cta: 'Nieuw wachtwoord instellen',
     expiry: 'De link is één uur geldig en kan maar één keer worden gebruikt.',
-    ignore: 'Heeft u dit niet zelf aangevraagd? Negeer deze e-mail — uw wachtwoord blijft ongewijzigd en er gebeurt niets.',
+    ignore: 'Heeft u dit niet zelf aangevraagd? Negeer deze e-mail. Uw wachtwoord blijft ongewijzigd en er gebeurt niets.',
   },
 
   referralRegistered: {
-    subject: 'Uw aanbeveling is ontvangen — FODEL',
+    subject: 'Uw aanbeveling is ontvangen | FODEL',
     preheader: 'Onze medewerker neemt binnenkort contact op met de door u aanbevolen persoon.',
     heading: 'Dank u voor de aanbeveling',
     body: (referredName: string) =>
       `Wij hebben de gegevens van ${referredName} ontvangen. Onze medewerker neemt contact op, en zodra de advertentie tot stand komt, schrijven wij 10% korting bij op de kosten van uw volgende advertentie.`,
-    note: 'De bijschrijving gebeurt handmatig, na betaling door de adverteerder — onze medewerker laat het u weten zodra dat kan.',
+    note: 'De bijschrijving gebeurt handmatig, na betaling door de adverteerder. Onze medewerker laat het u weten zodra dat kan.',
   },
 
   valuationReady: {
-    subject: 'Uw waardebepaling is gereed — FODEL',
+    subject: 'Uw waardebepaling is gereed | FODEL',
     preheader: 'Wij hebben een indicatieve schatting voor uw woning gemaakt.',
     heading: 'Uw waardebepaling is gereed',
     body: (range: string) =>
@@ -195,14 +204,14 @@ export const NL = {
   },
 
   valuationDeclined: {
-    subject: 'Uw aanvraag voor een waardebepaling — FODEL',
+    subject: 'Uw aanvraag voor een waardebepaling | FODEL',
     preheader: 'Onze medewerker neemt persoonlijk contact met u op.',
     heading: 'Dank u voor uw aanvraag',
     body: 'Op basis van de opgegeven gegevens hebben wij momenteel te weinig vergelijkbare woningen voor een betrouwbare schatting. Onze medewerker neemt persoonlijk contact met u op.',
   },
 
   valuationNeedsInfo: {
-    subject: 'Waardebepaling — wij hebben nog enkele gegevens nodig',
+    subject: 'Waardebepaling: wij hebben nog enkele gegevens nodig',
     preheader: 'Voor de schatting hebben wij nog wat extra informatie nodig.',
     heading: 'Wij hebben nog enkele gegevens nodig',
     body: 'Bedankt voor uw aanvraag voor een waardebepaling. Voor de schatting vraagt onze medewerker u om het volgende:',
@@ -210,7 +219,7 @@ export const NL = {
   },
 
   rejected: {
-    subject: (ref: string) => `Uw advertentie kan niet worden geplaatst — #${ref}`,
+    subject: (ref: string) => `Uw advertentie kan niet worden geplaatst (#${ref})`,
     preheader: 'De uitkomst van de beoordeling en de toelichting.',
     heading: 'Wij kunnen de advertentie niet plaatsen',
     body: (title: string, ref: string) =>
@@ -220,7 +229,7 @@ export const NL = {
   },
 
   invoiceIssued: {
-    subject: (number: string) => `Factuur — ${number}`,
+    subject: (number: string) => `Factuur ${number}`,
     preheader: 'De factuur is gereed, u kunt hem bekijken of downloaden via de link.',
     heading: 'Uw factuur is gereed',
     body: (title: string, ref: string, number: string) =>
@@ -229,7 +238,7 @@ export const NL = {
   },
 
   creditNoteIssued: {
-    subject: (number: string) => `Creditfactuur — ${number}`,
+    subject: (number: string) => `Creditfactuur ${number}`,
     preheader: 'Wij hebben een creditfactuur opgesteld voor uw eerdere factuur.',
     heading: 'Creditfactuur gereed',
     body: (title: string, ref: string, number: string, correctsNumber: string) =>
@@ -238,7 +247,7 @@ export const NL = {
   },
 
   serviceRequested: {
-    subject: 'Uw aanvraag is ontvangen — FODEL',
+    subject: 'Uw aanvraag is ontvangen | FODEL',
     preheader: 'Onze medewerker neemt contact met u op om een afspraak te maken.',
     heading: 'Wij hebben uw aanvraag ontvangen',
     body: (service: string, price: string) => `Dank u wel, wij hebben uw aanvraag genoteerd: ${service} (${price}).`,
@@ -248,7 +257,7 @@ export const NL = {
   },
 
   valuationPaid: {
-    subject: 'Betalingsbevestiging — FODEL waardebepaling',
+    subject: 'Betalingsbevestiging | FODEL waardebepaling',
     preheader: 'Dank u wel, uw betaling is ontvangen.',
     heading: 'Dank u wel, uw betaling is ontvangen',
     body: (service: string) => `Wij hebben de betaling voor „${service}” ontvangen.`,
@@ -260,7 +269,7 @@ export const NL = {
   },
 
   judicialRequested: {
-    subject: 'Aanvraag officiële taxatie — FODEL',
+    subject: 'Aanvraag officiële taxatie | FODEL',
     preheader: 'Onze medewerker neemt contact met u op over de mogelijkheden.',
     heading: 'Wij hebben uw verzoek ontvangen',
     body: 'Dank u wel, wij hebben genoteerd dat u een officiële (gerechtelijke) taxatie door een deskundige wenst. Dit is iets anders dan de indicatieve, marktgebaseerde waardebepaling op onze website: een bevoegde taxateur voert deze uit, op basis van een offerte.',
@@ -268,7 +277,7 @@ export const NL = {
   },
 
   adminServiceRequested: {
-    subject: (service: string) => `Nieuwe aanvraag — ${service}`,
+    subject: (service: string) => `Nieuwe aanvraag: ${service}`,
     preheader: 'Maak een afspraak met de klant.',
     heading: 'Nieuwe dienstaanvraag',
     labels: {
@@ -289,7 +298,7 @@ export const NL = {
   },
 
   referralAdminNotice: {
-    subject: (referrerName: string) => `Nieuwe aanbeveling — ${referrerName}`,
+    subject: (referrerName: string) => `Nieuwe aanbeveling: ${referrerName}`,
     preheader: 'Er is een nieuwe aanbevelings-lead binnengekomen via de website.',
     heading: 'Nieuwe aanbeveling ontvangen',
     labels: {

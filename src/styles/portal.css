@@ -443,12 +443,19 @@ body.portal.bare {
 }
 main.pm.bare {
   max-width: 460px;
+  min-height: 100vh;
   min-height: 100dvh;
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
+}
+/* The guided listing setup: a calm, centred reading column, top-aligned. */
+main.pm.bare.wide {
+  max-width: 920px;
+  justify-content: flex-start;
+  padding: 20px max(16px, env(safe-area-inset-left, 0px)) 64px;
 }
 
 
@@ -724,6 +731,7 @@ main.pm.pm :is(.btn, button, .pill-btn, [role='button']):not(:disabled):active,
 .pt-dialog::backdrop {
   background: rgba(10, 29, 48, 0.5);
   backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   animation: pt-fade 0.3s var(--ease-out);
 }
 @keyframes pt-dialog {
@@ -1282,6 +1290,14 @@ main.pm.pm input[type='radio']:disabled {
 .set-grid .wide {
   grid-column: 1 / -1;
 }
+/* The international phone field sits under the grid: its own layout, not the grid's. */
+.set-phone {
+  margin-top: 18px;
+  max-width: 520px;
+}
+.set-phone .fld {
+  margin-bottom: 0;
+}
 .set-grid label,
 .set-card .set-field {
   display: grid;
@@ -1632,7 +1648,7 @@ main.pm.pm
   border-color: var(--ink);
   box-shadow: 0 0 0 4px rgba(16, 42, 67, 0.08);
 }
-main.pm.pm :is(.field label, label.field) {
+main.pm.pm :is(.field:not(.fld) label, label.field) {
   letter-spacing: 0.08em;
 }
 /* The editor's labels are plain sentence case. */

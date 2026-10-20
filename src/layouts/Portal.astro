@@ -21,9 +21,11 @@ interface Props {
   bare?: boolean;
   /** Document language. The portal works in Hungarian; only invite acceptance follows the invitee. */
   lang?: string;
+  /** With `bare`: a wide, top-aligned column instead of the centred auth card (the guided setup). */
+  wide?: boolean;
 }
 
-const { title, bare = false, lang = 'hu' } = Astro.props;
+const { title, bare = false, lang = 'hu', wide = false } = Astro.props;
 const { profile, supabase } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
 
@@ -123,7 +125,7 @@ const homeHref = profile?.locale === 'nl' ? '/nl/' : '/hu/';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} — {lang === 'hu' ? 'FODEL portál' : 'FODEL'}</title>
+    <title>{title} | {lang === 'hu' ? 'FODEL portál' : 'FODEL'}</title>
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <FontPreload />
@@ -132,7 +134,7 @@ const homeHref = profile?.locale === 'nl' ? '/nl/' : '/hu/';
     <div class="pt-progress" aria-hidden="true"><i></i></div>
     {
       bare ? (
-        <main class="pm bare">
+        <main class:list={['pm', 'bare', { wide }]}>
           <slot />
         </main>
       ) : (
@@ -249,7 +251,12 @@ const homeHref = profile?.locale === 'nl' ? '/nl/' : '/hu/';
   };
   // Back/forward restores the page from memory: undo whatever was showing when it was left.
   window.addEventListener('pageshow', (event) => {
-    if (event.persisted) reset();
+    if (!event.persisted) return;
+    reset();
+    // A drawer or question that was open when the page was left must not come back open.
+    setDrawer(false);
+    if (dialog?.open) dialog.close();
+    document.body.style.overflow = '';
   });
 
   const showSkeleton = () => {

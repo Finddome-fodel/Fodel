@@ -9,6 +9,7 @@ export const prerender = false;
 import crypto from 'node:crypto';
 import AuthPanel from '~/components/portal/AuthPanel.astro';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { AUTH_COPY, authLang } from '~/lib/portal/auth-copy';
 
 const { token } = Astro.params;
 const err = Astro.url.searchParams.get('error');
@@ -22,34 +23,36 @@ const { data: reset } = await admin
   .maybeSingle();
 
 const usable = reset && !reset.used_at && new Date(reset.expires_at) >= new Date();
+// The reset email links with ?lang= in the account's own language.
+const lang = authLang(Astro.url, Astro.cookies);
+const t = AUTH_COPY[lang].reset;
+const errorText = err ? (t.errors[err as keyof typeof t.errors] ?? t.errors.failed) : null;
 ---
 
-<AuthPanel title="Új jelszó" heading={usable ? 'Új jelszó beállítása' : 'A link nem érvényes'}>
+<AuthPanel title={t.title} heading={usable ? t.heading : t.headingInvalid} lang={lang}>
   {
     usable ? (
       <>
-        {err && <p class="notice error">{decodeURIComponent(err)}</p>}
+        {errorText && <p class="notice error" role="alert">{errorText}</p>}
         <form method="POST" action="/api/portal/reset">
           <input type="hidden" name="token" value={token} />
+          <input type="hidden" name="lang" value={lang} />
           <div class="field">
-            <label for="password">Új jelszó</label>
-            <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" autofocus />
+            <label for="password">{t.password}</label>
+            <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" enterkeyhint="next" autofocus />
           </div>
           <div class="field">
-            <label for="password2">Új jelszó ismét</label>
-            <input id="password2" name="password2" type="password" required minlength="8" autocomplete="new-password" />
+            <label for="password2">{t.password2}</label>
+            <input id="password2" name="password2" type="password" required minlength="8" autocomplete="new-password" enterkeyhint="done" />
           </div>
-          <button type="submit" class="submit">Jelszó mentése</button>
+          <button type="submit" class="submit">{t.submit}</button>
         </form>
-        <p class="hint">Legalább 8 karakter. <a href="/portal/login">Vissza a bejelentkezéshez</a></p>
+        <p class="hint">{t.rule} <a href={`/portal/login?lang=${lang}`}>{t.back}</a></p>
       </>
     ) : (
       <>
-        <p class="body">
-          Ez a jelszó-visszaállító link lejárt, vagy már felhasználták. A biztonság kedvéért
-          minden link csak egyszer és csak egy óráig működik.
-        </p>
-        <p class="hint"><a href="/portal/forgot">Új link kérése</a> · <a href="/portal/login">Vissza a bejelentkezéshez</a></p>
+        <p class="body">{t.invalid}</p>
+        <p class="hint"><a href={`/portal/forgot?lang=${lang}`}>{t.newLink}</a> · <a href={`/portal/login?lang=${lang}`}>{t.back}</a></p>
       </>
     )
   }

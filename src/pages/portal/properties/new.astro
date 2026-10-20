@@ -1,14 +1,15 @@
 ---
-// A thin redirect: creates a blank draft and sends the seller straight into
-// its editor, so "+ Új ingatlan" behaves like "start a new document" rather
-// than requiring a separate empty form step first.
+// A thin redirect: creates a blank draft and opens it, so "+ Új ingatlan"
+// behaves like "start a new document" rather than requiring a separate empty
+// form step first. Owners go into the guided setup (launch round), one step
+// at a time; admins keep the full editor.
 export const prerender = false;
 
 import { createDraft } from '~/lib/portal/properties';
 
-const { supabase, user } = Astro.locals;
+const { supabase, user, profile } = Astro.locals;
 if (!user) return Astro.redirect('/portal/login');
 
 const id = await createDraft(supabase, user.id);
-return Astro.redirect(`/portal/properties/${id}`);
+return Astro.redirect(profile?.role === 'admin' ? `/portal/properties/${id}` : `/portal/properties/${id}/setup`);
 ---

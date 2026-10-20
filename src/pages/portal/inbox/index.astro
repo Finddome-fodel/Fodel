@@ -11,16 +11,24 @@
  * (submit, request_changes) plus the silent move_to_draft. Approving is
  * deliberately NOT a drag: it sets the package and the price, so it happens on
  * the review screen.
+ *
+ * Launch round: a first column for people who registered on the public site
+ * but have not set a password yet — before, they were invisible until the
+ * emailed link was used. Resend (a new link) and delete act on the invite
+ * itself; expired ones fold into a "Lejárt" group. Every column is newest
+ * first, with the exact time on hover.
  */
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
 import { icon } from '~/lib/portal/icons';
-import { timeAgo, hoursSince, listingName } from '~/lib/portal/time';
+import Ago from '~/components/portal/Ago.astro';
+import { hoursSince, listingName, newestFirst } from '~/lib/portal/time';
+import { isSelfRegistration } from '~/lib/portal/registration';
 
 const { supabase } = Astro.locals;
 
-const [{ data: rows }, { data: people }] = await Promise.all([
+const [{ data: rows }, { data: people }, { data: inviteRows }] = await Promise.all([
   supabase
     .from('properties')
     .select(
@@ -29,8 +37,31 @@ const [{ data: rows }, { data: people }] = await Promise.all([
     .in('status', ['draft', 'submitted', 'changes_requested', 'rejected'])
     .order('created_at', { ascending: false }),
   supabase.from('profiles').select('id, full_name, email'),
+  // Registered, password not set: open self-registration invites (admins only by RLS).
+  supabase
+    .from('invites')
+    .select('id, email, payload, created_at, expires_at')
+    .is('accepted_at', null)
+    .eq('role', 'owner')
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false }),
 ]);
 const properties = rows ?? [];
+
+type Registration = { id: string; email: string; name: string; phone: string; created_at: string; expires_at: string };
+const registrations: Registration[] = (inviteRows ?? [])
+  .filter((row: any) => isSelfRegistration(row.payload))
+  .map((row: any) => ({
+    id: row.id,
+    email: row.email,
+    name: String(row.payload?.name ?? ''),
+    phone: String(row.payload?.phone ?? ''),
+    created_at: row.created_at,
+    expires_at: row.expires_at,
+  }));
+const now = Date.now();
+const openRegistrations = registrations.filter((r) => new Date(r.expires_at).getTime() >= now);
+const expiredRegistrations = registrations.filter((r) => new Date(r.expires_at).getTime() < now);
 
 const ownerName = new Map<string, string>((people ?? []).map((p: any) => [p.id, p.full_name || p.email]));
 
@@ -41,10 +72,12 @@ const COLUMNS = [
   { key: 'rejected', title: 'Elutasítva', hint: 'Lezárt hirdetések', tone: 'mute' },
 ] as const;
 
+// Newest first: the review queue by when it was submitted, the rest by creation.
 const byStatus = (status: string) =>
-  properties
-    .filter((p) => p.status === status)
-    .sort((a, b) => String(a.submitted_at ?? a.created_at).localeCompare(String(b.submitted_at ?? b.created_at)));
+  newestFirst(
+    properties.filter((p) => p.status === status),
+    (p) => p.submitted_at ?? p.created_at
+  );
 
 const thumb = (p: (typeof properties)[number]) => {
   const media = [...(p.property_media ?? [])].sort((a: any, b: any) => a.sort_order - b.sort_order);
@@ -71,6 +104,59 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
   <p class="status" id="board-status" role="status" aria-live="polite"></p>
 
   <div class="board" id="board">
+    <section class="col tone-blue reg-col" aria-label="Regisztrált, még nem állított be jelszót" data-reg-col>
+      <header class="col-head">
+        <h2>
+          <span class="dot" aria-hidden="true" />
+          Regisztrált
+        </h2>
+        <span class="n" data-count>{openRegistrations.length}</span>
+      </header>
+      <p class="hint">Még nem állított be jelszót</p>
+      <div class="drop">
+        {openRegistrations.map((r) => (
+          <article class="card reg" data-invite={r.id}>
+            <div class="body reg-body">
+              <b class="t">{r.name || r.email}</b>
+              <p class="m"><a href={`mailto:${r.email}`}>{r.email}</a></p>
+              {r.phone && <p class="o"><a href={`tel:${r.phone}`}>{r.phone}</a></p>}
+            </div>
+            <div class="foot">
+              <span class="when">
+                <Fragment set:html={icon('clock', 14)} />
+                <Ago iso={r.created_at} />
+              </span>
+              <span class="reg-actions">
+                <button type="button" class="reg-btn" data-reg-action="resend">Újraküldés</button>
+                <button type="button" class="reg-btn danger" data-reg-action="revoke">Törlés</button>
+              </span>
+            </div>
+          </article>
+        ))}
+        <p class="empty" data-empty hidden={openRegistrations.length > 0}>Nincs függőben lévő regisztráció.</p>
+        {expiredRegistrations.length > 0 && (
+          <details class="expired">
+            <summary>Lejárt <span class="n">{expiredRegistrations.length}</span></summary>
+            {expiredRegistrations.map((r) => (
+              <article class="card reg" data-invite={r.id}>
+                <div class="body reg-body">
+                  <b class="t">{r.name || r.email}</b>
+                  <p class="m"><a href={`mailto:${r.email}`}>{r.email}</a></p>
+                  {r.phone && <p class="o"><a href={`tel:${r.phone}`}>{r.phone}</a></p>}
+                </div>
+                <div class="foot">
+                  <span class="when"><Fragment set:html={icon('clock', 14)} /><Ago iso={r.created_at} /></span>
+                  <span class="reg-actions">
+                    <button type="button" class="reg-btn" data-reg-action="resend">Újraküldés</button>
+                    <button type="button" class="reg-btn danger" data-reg-action="revoke">Törlés</button>
+                  </span>
+                </div>
+              </article>
+            ))}
+          </details>
+        )}
+      </div>
+    </section>
     {
       COLUMNS.map((col) => {
         const items = byStatus(col.key);
@@ -111,7 +197,7 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
                     <div class="foot">
                       <span class:list={['when', late && 'late']}>
                         <Fragment set:html={icon('clock', 14)} />
-                        {timeAgo(p.submitted_at ?? p.created_at)}
+                        <Ago iso={p.submitted_at ?? p.created_at} />
                       </span>
                       <span class="ref">#{p.ref}</span>
                     </div>
@@ -169,7 +255,7 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
     rejected: [],
   };
   const ERRORS: Record<string, string> = {
-    'no-photos': 'Fotó nélkül nem küldhető be elbírálásra — előbb töltsön fel legalább egy képet.',
+    'no-photos': 'Fotó nélkül nem küldhető be elbírálásra. Előbb töltsön fel legalább egy képet.',
     'note-required': 'A javításkéréshez írjon üzenetet a hirdetőnek.',
     'not-movable': 'Ez a hirdetés ebből az állapotból nem helyezhető át.',
   };
@@ -177,7 +263,7 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
   const say = (text: string) => (statusLine.textContent = text);
 
   function refreshColumns() {
-    board.querySelectorAll<HTMLElement>('.col').forEach((col) => {
+    board.querySelectorAll<HTMLElement>('.col:not([data-reg-col])').forEach((col) => {
       const cards = col.querySelectorAll('.card').length;
       col.querySelector('[data-count]')!.textContent = String(cards);
       col.querySelector<HTMLElement>('[data-empty]')!.hidden = cards > 0;
@@ -299,6 +385,46 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
     const card = item.closest<HTMLElement>('.card');
     if (card) move(card, item.dataset.move!);
   });
+  /* Registered, no password yet: resend the link, or delete the registration. */
+  board.addEventListener('click', async (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-reg-action]');
+    if (!button) return;
+    const card = button.closest<HTMLElement>('[data-invite]')!;
+    const name = card.querySelector('.t')?.textContent ?? '';
+    const action = button.dataset.regAction!;
+    if (action === 'revoke') {
+      const ok = await (window as any).pf.confirm({
+        title: 'Törli a regisztrációt?',
+        body: `${name} regisztrációja törlődik, az e-mailben kiküldött link nem működik tovább. Később újra regisztrálhat.`,
+        confirmLabel: 'Törlés',
+        danger: true,
+      });
+      if (!ok) return;
+    }
+    button.disabled = true;
+    say(action === 'resend' ? 'Küldés…' : 'Törlés…');
+    const res = await fetch(`/api/portal/users/invites/${card.dataset.invite}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action }),
+    });
+    button.disabled = false;
+    if (!res.ok) {
+      say(action === 'resend' ? 'Nem sikerült újraküldeni.' : 'Nem sikerült törölni.');
+      return;
+    }
+    if (action === 'revoke') {
+      card.remove();
+      const col = board.querySelector<HTMLElement>('[data-reg-col]')!;
+      const open = col.querySelectorAll(':scope .drop > .card').length;
+      col.querySelector('[data-count]')!.textContent = String(open);
+      col.querySelector<HTMLElement>('[data-empty]')!.hidden = open > 0;
+      say('Törölve.');
+    } else {
+      say(`Új link elküldve: ${name}.`);
+    }
+  });
+
   // The menu offers every column except the one the card is in.
   board.querySelectorAll<HTMLElement>('.card').forEach((card) => {
     card.querySelectorAll<HTMLElement>('[data-move]').forEach((item) => {
@@ -388,6 +514,61 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
     border-radius: 50%;
     background: #c9ced3;
   }
+  .tone-blue .dot {
+    background: #6b8fb5;
+  }
+  .reg {
+    grid-template-columns: minmax(0, 1fr);
+    cursor: default;
+  }
+  .reg-body {
+    padding-right: 0;
+  }
+  .reg-body a {
+    color: inherit;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .reg-body a:hover {
+    text-decoration: underline;
+  }
+  .reg-actions {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .reg-btn {
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: var(--r-pill);
+    background: var(--linen);
+    font-size: 13px;
+    font-weight: var(--fw-medium);
+    color: var(--ink);
+  }
+  .reg-btn.danger {
+    color: var(--pt-red);
+  }
+  .reg-btn:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .expired {
+    margin-top: 6px;
+  }
+  .expired summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: var(--fw-medium);
+    color: var(--ink-quiet);
+  }
+  .expired .card {
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
   .tone-amber .dot {
     background: #e2b53c;
   }
@@ -448,9 +629,11 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
       box-shadow 0.45s var(--ease-out),
       opacity 0.3s var(--ease-out);
   }
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+  @media (hover: hover) {
+    .card:not(.reg):hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
   }
   .card.dragging {
     opacity: 0.4;

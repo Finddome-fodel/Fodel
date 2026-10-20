@@ -7,6 +7,13 @@
  *
  * 2.1: the screen speaks the language the invite was written in, so a German
  * invitee does not land on a Hungarian page straight from a German email.
+ *
+ * Launch round: step 3 of the seller flow. The name typed at registration is
+ * filled in (and can be corrected), the address is shown but not editable,
+ * and there is one password field with a show/hide switch and the one rule
+ * visible as it is met — no "type it again" field. An expired, used or
+ * unknown link says which it is and offers a fresh one in place
+ * (api/portal/invite/renew.ts), instead of sending the person back to FODEL.
  */
 export const prerender = false;
 
@@ -14,9 +21,11 @@ import crypto from 'node:crypto';
 import AuthPanel from '~/components/portal/AuthPanel.astro';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { isInviteLocale, type InviteLocale } from '~/lib/portal/invites';
+import { authLang } from '~/lib/portal/auth-copy';
 
 const { token } = Astro.params;
 const err = Astro.url.searchParams.get('error');
+const renewed = Astro.url.searchParams.get('renewed') === '1';
 
 if (Astro.locals.user) {
   return Astro.redirect('/portal/dashboard');
@@ -24,119 +33,253 @@ if (Astro.locals.user) {
 
 const tokenHash = crypto.createHash('sha256').update(token!).digest('hex');
 const admin = createSupabaseAdminClient();
-const { data: invite } = await admin
-  .from('invites')
-  .select('email, role, expires_at, accepted_at, payload')
-  .eq('token_hash', tokenHash)
-  .maybeSingle();
+const { data: invite } = token === 'new'
+  ? { data: null }
+  : await admin
+      .from('invites')
+      .select('email, role, expires_at, accepted_at, payload')
+      .eq('token_hash', tokenHash)
+      .maybeSingle();
 
 const invalid = !invite;
-const expired = invite && new Date(invite.expires_at) < new Date();
-const used = invite && invite.accepted_at;
+const expired = Boolean(invite && new Date(invite.expires_at) < new Date());
+const used = Boolean(invite && invite.accepted_at);
 const usable = !invalid && !expired && !used;
 
-// A self-service registration carries the listing they described on the public
-// form. Saying so here is what makes the next screen unsurprising: they arrive
-// in a half-filled editor rather than wondering where their answers went.
-const intake = (invite?.payload ?? {}) as { settlement?: string; locale?: string };
-const hasIntake = Boolean(intake.settlement);
-const lang: InviteLocale = isInviteLocale(intake.locale) ? intake.locale : 'hu';
+const payload = (invite?.payload ?? {}) as { name?: string; locale?: string };
+const lang: InviteLocale = isInviteLocale(payload.locale) ? payload.locale : authLang(Astro.url, Astro.cookies);
 
 const T = {
   hu: {
-    title: 'Meghívó elfogadása', titleInvalid: 'Meghívó',
-    heading: 'Üdvözöljük a FODEL portálon', headingInvalid: 'A meghívó nem érvényes',
-    account: 'Fiók létrehozása ehhez:',
-    intake: (place: string) => `A(z) ${place} településen lévő ingatlanhoz megadott adatait megőriztük — a jelszó beállítása után rögtön a hirdetésénél folytathatja.`,
-    name: 'Teljes név', password: 'Jelszó', submit: 'Fiók létrehozása',
-    hint: 'A jelszó legalább 8 karakter legyen.',
-    notFound: 'Ez a meghívó link nem található.',
-    expired: 'Ez a meghívó lejárt. Kérjen újat a FODEL-től.',
-    used: 'Ezt a meghívót már felhasználták — ha Öné a fiók, jelentkezzen be.',
-    login: 'Bejelentkezés',
+    title: 'Jelszó beállítása', titleInvalid: 'Meghívó',
+    heading: 'Állítsa be a jelszavát',
+    headingExpired: 'Ez a link lejárt', headingUsed: 'Ezt a linket már felhasználták', headingInvalid: 'Ez a link nem érvényes',
+    headingRenewed: 'Nézze meg a postafiókját',
+    intro: 'Utolsó lépés a fiókja előtt. Utána rögtön a hirdetés összeállításával folytathatja.',
+    email: 'E-mail-cím', name: 'Teljes név', password: 'Jelszó', submit: 'Jelszó mentése és tovább',
+    rule: 'Legalább 8 karakter', show: 'Megjelenítés', hide: 'Elrejtés',
+    expired: 'A biztonság kedvéért minden link 7 napig érvényes. Kérjen újat, és elküldjük ugyanarra a címre.',
+    used: 'Ehhez a linkhez már tartozik fiók. Jelentkezzen be, vagy ha nem emlékszik a jelszavára, állítson be újat.',
+    notFound: 'Lehet, hogy időközben újat kért, és ez a régi link már nem működik. Adja meg az e-mail-címét, és küldünk egy újat.',
+    renewedBody: 'Ha a cím szerepel nálunk, elküldtük rá az új linket. Ha néhány percen belül sem érkezik meg, nézze meg a spam mappát is.',
+    newLink: 'Új link kérése', login: 'Bejelentkezés', forgot: 'Elfelejtett jelszó',
+    errors: {
+      missing: 'Adja meg a nevét és egy legalább 8 karakteres jelszót.',
+      invalid: 'Ez a link időközben lejárt vagy már nem érvényes. Kérjen újat alább.',
+      failed: 'Nem sikerült létrehozni a fiókot. Kérjük, próbálja újra, vagy hívjon minket.',
+    },
   },
   nl: {
-    title: 'Uitnodiging accepteren', titleInvalid: 'Uitnodiging',
-    heading: 'Welkom bij het FODEL-portaal', headingInvalid: 'De uitnodiging is niet geldig',
-    account: 'Account aanmaken voor:',
-    intake: (place: string) => `De gegevens die u voor de woning in ${place} heeft ingevuld, hebben wij bewaard — na het instellen van een wachtwoord gaat u direct verder met uw advertentie.`,
-    name: 'Volledige naam', password: 'Wachtwoord', submit: 'Account aanmaken',
-    hint: 'Het wachtwoord moet minimaal 8 tekens lang zijn.',
-    notFound: 'Deze uitnodigingslink bestaat niet.',
-    expired: 'Deze uitnodiging is verlopen. Vraag FODEL om een nieuwe.',
-    used: 'Deze uitnodiging is al gebruikt — is het account van u, log dan in.',
-    login: 'Inloggen',
+    title: 'Wachtwoord instellen', titleInvalid: 'Uitnodiging',
+    heading: 'Stel uw wachtwoord in',
+    headingExpired: 'Deze link is verlopen', headingUsed: 'Deze link is al gebruikt', headingInvalid: 'Deze link is niet geldig',
+    headingRenewed: 'Kijk in uw mailbox',
+    intro: 'De laatste stap voor uw account. Daarna gaat u direct verder met uw advertentie.',
+    email: 'E-mailadres', name: 'Volledige naam', password: 'Wachtwoord', submit: 'Opslaan en verder',
+    rule: 'Minimaal 8 tekens', show: 'Tonen', hide: 'Verbergen',
+    expired: 'Voor uw veiligheid is elke link 7 dagen geldig. Vraag een nieuwe aan; wij sturen die naar hetzelfde adres.',
+    used: 'Bij deze link hoort al een account. Log in, of stel een nieuw wachtwoord in als u het niet meer weet.',
+    notFound: 'Misschien heeft u inmiddels een nieuwe aangevraagd en werkt deze oude link niet meer. Vul uw e-mailadres in, dan sturen wij een nieuwe.',
+    renewedBody: 'Als wij dit adres kennen, hebben wij er een nieuwe link naartoe gestuurd. Ziet u na een paar minuten nog niets? Kijk dan ook in uw spammap.',
+    newLink: 'Nieuwe link aanvragen', login: 'Inloggen', forgot: 'Wachtwoord vergeten',
+    errors: {
+      missing: 'Vul uw naam en een wachtwoord van minimaal 8 tekens in.',
+      invalid: 'Deze link is inmiddels verlopen of niet meer geldig. Vraag hieronder een nieuwe aan.',
+      failed: 'Het account kon niet worden aangemaakt. Probeer het opnieuw of bel ons.',
+    },
   },
   en: {
-    title: 'Accept invitation', titleInvalid: 'Invitation',
-    heading: 'Welcome to the FODEL portal', headingInvalid: 'This invitation is not valid',
-    account: 'Create an account for:',
-    intake: (place: string) => `We have kept the details you entered for the property in ${place} — once you set a password you can carry on with your listing.`,
-    name: 'Full name', password: 'Password', submit: 'Create account',
-    hint: 'The password must be at least 8 characters long.',
-    notFound: 'This invitation link does not exist.',
-    expired: 'This invitation has expired. Please ask FODEL for a new one.',
-    used: 'This invitation has already been used — if the account is yours, please sign in.',
-    login: 'Sign in',
+    title: 'Set your password', titleInvalid: 'Invitation',
+    heading: 'Set your password',
+    headingExpired: 'This link has expired', headingUsed: 'This link has already been used', headingInvalid: 'This link is not valid',
+    headingRenewed: 'Check your inbox',
+    intro: 'The last step before your account is ready.',
+    email: 'Email address', name: 'Full name', password: 'Password', submit: 'Save and continue',
+    rule: 'At least 8 characters', show: 'Show', hide: 'Hide',
+    expired: 'For your security every link is valid for 7 days. Ask for a new one and we will send it to the same address.',
+    used: 'This link already belongs to an account. Sign in, or set a new password if you have forgotten it.',
+    notFound: 'You may have asked for a newer link since, which retires this one. Enter your email address and we will send a new one.',
+    renewedBody: 'If we know this address, a new link is on its way. If nothing arrives within a few minutes, please check your spam folder.',
+    newLink: 'Request a new link', login: 'Sign in', forgot: 'Forgotten password',
+    errors: {
+      missing: 'Please enter your name and a password of at least 8 characters.',
+      invalid: 'This link has expired or is no longer valid. Request a new one below.',
+      failed: 'The account could not be created. Please try again or contact us.',
+    },
   },
   de: {
-    title: 'Einladung annehmen', titleInvalid: 'Einladung',
-    heading: 'Willkommen im FODEL-Portal', headingInvalid: 'Die Einladung ist nicht gültig',
-    account: 'Konto erstellen für:',
-    intake: (place: string) => `Ihre Angaben zur Immobilie in ${place} haben wir gespeichert — nach dem Festlegen eines Passworts können Sie direkt mit Ihrer Anzeige fortfahren.`,
-    name: 'Vollständiger Name', password: 'Passwort', submit: 'Konto erstellen',
-    hint: 'Das Passwort muss mindestens 8 Zeichen lang sein.',
-    notFound: 'Dieser Einladungslink existiert nicht.',
-    expired: 'Diese Einladung ist abgelaufen. Bitte fordern Sie bei FODEL eine neue an.',
-    used: 'Diese Einladung wurde bereits verwendet — wenn das Konto Ihnen gehört, melden Sie sich bitte an.',
-    login: 'Anmelden',
+    title: 'Passwort festlegen', titleInvalid: 'Einladung',
+    heading: 'Legen Sie Ihr Passwort fest',
+    headingExpired: 'Dieser Link ist abgelaufen', headingUsed: 'Dieser Link wurde bereits verwendet', headingInvalid: 'Dieser Link ist ungültig',
+    headingRenewed: 'Bitte sehen Sie in Ihr Postfach',
+    intro: 'Der letzte Schritt, bevor Ihr Konto bereit ist.',
+    email: 'E-Mail-Adresse', name: 'Vollständiger Name', password: 'Passwort', submit: 'Speichern und weiter',
+    rule: 'Mindestens 8 Zeichen', show: 'Anzeigen', hide: 'Verbergen',
+    expired: 'Zu Ihrer Sicherheit ist jeder Link 7 Tage gültig. Fordern Sie einen neuen an; wir senden ihn an dieselbe Adresse.',
+    used: 'Zu diesem Link gehört bereits ein Konto. Melden Sie sich an oder legen Sie ein neues Passwort fest.',
+    notFound: 'Vielleicht haben Sie inzwischen einen neueren Link angefordert. Geben Sie Ihre E-Mail-Adresse ein, dann senden wir einen neuen.',
+    renewedBody: 'Wenn wir diese Adresse kennen, ist ein neuer Link unterwegs. Kommt in einigen Minuten nichts an, sehen Sie bitte auch im Spam-Ordner nach.',
+    newLink: 'Neuen Link anfordern', login: 'Anmelden', forgot: 'Passwort vergessen',
+    errors: {
+      missing: 'Bitte geben Sie Ihren Namen und ein Passwort mit mindestens 8 Zeichen ein.',
+      invalid: 'Dieser Link ist abgelaufen oder nicht mehr gültig. Fordern Sie unten einen neuen an.',
+      failed: 'Das Konto konnte nicht erstellt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns.',
+    },
   },
 }[lang];
+
+const errorText = err && err in T.errors ? T.errors[err as keyof typeof T.errors] : null;
+const portalLang = lang === 'nl' ? 'nl' : 'hu';
+const heading = renewed
+  ? T.headingRenewed
+  : usable
+    ? T.heading
+    : used
+      ? T.headingUsed
+      : expired
+        ? T.headingExpired
+        : T.headingInvalid;
 ---
 
-<AuthPanel
-  title={usable ? T.title : T.titleInvalid}
-  heading={usable ? T.heading : T.headingInvalid}
-  lang={lang}
->
+<AuthPanel title={usable ? T.title : T.titleInvalid} heading={heading} lang={lang}>
   {
-    usable ? (
+    renewed ? (
       <>
-        <p class="body">
-          {T.account} <strong>{invite!.email}</strong>
-          {hasIntake && (
-            <>
-              <br />
-              {T.intake(intake.settlement!)}
-            </>
-          )}
-        </p>
+        <p class="notice ok" role="status">{T.renewedBody}</p>
+        <p class="hint"><a href={`/portal/login?lang=${portalLang}`}>{T.login}</a></p>
+      </>
+    ) : usable ? (
+      <>
+        <p class="body">{T.intro}</p>
+        {errorText && <p class="notice error" role="alert">{errorText}</p>}
 
-        {err && <p class="notice error">{decodeURIComponent(err)}</p>}
-
-        <form method="POST" action="/api/portal/invite/accept">
+        <form method="POST" action="/api/portal/invite/accept" class="set-password">
           <input type="hidden" name="token" value={token} />
           <div class="field">
+            <label for="email">{T.email}</label>
+            <input id="email" type="email" value={invite!.email} readonly autocomplete="username" class="readonly" />
+          </div>
+          <div class="field">
             <label for="full_name">{T.name}</label>
-            <input id="full_name" name="full_name" required autofocus autocomplete="name" />
+            <input id="full_name" name="full_name" required autocomplete="name" enterkeyhint="next" value={payload.name ?? ''} />
           </div>
           <div class="field">
             <label for="password">{T.password}</label>
-            <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" />
+            <div class="pw">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minlength="8"
+                autocomplete="new-password"
+                enterkeyhint="done"
+                aria-describedby="pw-rule"
+                autofocus={Boolean(payload.name)}
+              />
+              <button type="button" class="pw-toggle" aria-controls="password" aria-pressed="false" data-show={T.show} data-hide={T.hide}>{T.show}</button>
+            </div>
+            <p class="pw-rule" id="pw-rule" data-ok="false">
+              <span class="pw-dot" aria-hidden="true"></span>{T.rule}
+            </p>
           </div>
           <button type="submit" class="submit">{T.submit}</button>
         </form>
-        <p class="hint">{T.hint}</p>
       </>
     ) : (
       <>
-        <p class="body">
-          {invalid && T.notFound}
-          {expired && T.expired}
-          {used && T.used}
-        </p>
-        <p class="hint"><a href="/portal/login">{T.login}</a></p>
+        <p class="body">{used ? T.used : expired ? T.expired : T.notFound}</p>
+        {used ? (
+          <p class="hint">
+            <a href={`/portal/login?lang=${portalLang}`}>{T.login}</a> · <a href={`/portal/forgot?lang=${portalLang}`}>{T.forgot}</a>
+          </p>
+        ) : (
+          <form method="POST" action="/api/portal/invite/renew">
+            <input type="hidden" name="lang" value={portalLang} />
+            {invalid ? (
+              <div class="field">
+                <label for="renew-email">{T.email}</label>
+                <input id="renew-email" name="email" type="email" required autocomplete="email" inputmode="email" enterkeyhint="send" />
+              </div>
+            ) : (
+              <input type="hidden" name="token" value={token} />
+            )}
+            <button type="submit" class="submit">{T.newLink}</button>
+          </form>
+        )}
       </>
     )
   }
 </AuthPanel>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('.set-password #password');
+  const toggle = document.querySelector<HTMLButtonElement>('.pw-toggle');
+  const rule = document.getElementById('pw-rule');
+  if (input && toggle && rule) {
+    toggle.addEventListener('click', () => {
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      toggle.setAttribute('aria-pressed', String(!showing));
+      toggle.textContent = (showing ? toggle.dataset.show : toggle.dataset.hide) ?? '';
+      input.focus();
+    });
+    const check = () => rule.setAttribute('data-ok', String(input.value.length >= 8));
+    input.addEventListener('input', check);
+    check();
+  }
+</script>
+
+<style is:global>
+  .panel .readonly {
+    background: var(--linen);
+    color: var(--ink-quiet);
+  }
+  .panel .pw {
+    position: relative;
+    display: flex;
+  }
+  .panel .pw input {
+    flex: 1;
+    padding-right: 112px;
+  }
+  .panel .pw-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: var(--r-pill);
+    font-size: 14px;
+    font-weight: var(--fw-medium);
+    color: var(--ink);
+    background: rgba(16, 42, 67, 0.06);
+  }
+  .panel .pw-toggle:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+  .panel .pw-rule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 9px;
+    font-size: 14px;
+    color: var(--ink-quiet);
+  }
+  .panel .pw-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px rgba(16, 42, 67, 0.3);
+    transition: background-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  }
+  .panel .pw-rule[data-ok='true'] {
+    color: #1f6f4a;
+  }
+  .panel .pw-rule[data-ok='true'] .pw-dot {
+    background: #1f6f4a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.25 5 8.75l4.5-5.5' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 10px no-repeat;
+    box-shadow: none;
+  }
+</style>

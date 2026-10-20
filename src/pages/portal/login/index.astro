@@ -1,49 +1,50 @@
 ---
+/**
+ * Sign in. Hungarian or Dutch (src/lib/portal/auth-copy.ts); the segmented
+ * control above the form switches to /portal/register, which is its own
+ * URL. `next` survives every round trip, including a failed attempt.
+ */
 export const prerender = false;
 
 import AuthPanel from '~/components/portal/AuthPanel.astro';
+import AuthTabs from '~/components/portal/AuthTabs.astro';
+import { AUTH_COPY, authLang } from '~/lib/portal/auth-copy';
 
 // Already signed in — no reason to see the login form again.
 if (Astro.locals.user) {
   return Astro.redirect('/portal/dashboard');
 }
 
-const next = Astro.url.searchParams.get('next') ?? '/portal/dashboard';
+const lang = authLang(Astro.url, Astro.cookies);
+const t = AUTH_COPY[lang].login;
+const nextParam = Astro.url.searchParams.get('next');
+const next = nextParam ?? '/portal/dashboard';
 const error = Astro.url.searchParams.get('error');
 const justReset = Astro.url.searchParams.get('reset') === '1';
+const errorText = error ? (t.errors[error as keyof typeof t.errors] ?? t.errors.other) : null;
 ---
 
-<AuthPanel title="Bejelentkezés" heading="Portál bejelentkezés">
-  {justReset && <p class="notice ok">Jelszava megváltozott. Kérjük, jelentkezzen be az új jelszavával.</p>}
-  {
-    error && (
-      <p class="notice error" role="alert">
-        {error === 'invalid'
-          ? 'Hibás e-mail cím vagy jelszó.'
-          : error === 'rate-limited'
-            ? 'Túl sok próbálkozás. Kérjük, várjon egy percet, majd próbálja újra.'
-            : 'Nem sikerült bejelentkezni. Kérjük próbálja újra.'}
-      </p>
-    )
-  }
+<AuthPanel title={t.title} heading={t.heading} lang={lang}>
+  <AuthTabs slot="top" active="login" lang={lang} next={nextParam} />
+  {justReset && <p class="notice ok">{t.justReset}</p>}
+  {errorText && <p class="notice error" role="alert">{errorText}</p>}
 
   <form method="POST" action="/api/portal/login">
     <input type="hidden" name="next" value={next} />
+    <input type="hidden" name="lang" value={lang} />
     <div class="field">
-      <label for="email">E-mail cím</label>
-      <input id="email" name="email" type="email" required autocomplete="username" autofocus />
+      <label for="email">{t.email}</label>
+      <input id="email" name="email" type="email" required autocomplete="username" inputmode="email" enterkeyhint="next" autofocus />
     </div>
     <div class="field">
-      <label for="password">Jelszó</label>
-      <input id="password" name="password" type="password" required autocomplete="current-password" />
+      <label for="password">{t.password}</label>
+      <input id="password" name="password" type="password" required autocomplete="current-password" enterkeyhint="go" />
     </div>
-    <button type="submit" class="submit">Bejelentkezés</button>
+    <button type="submit" class="submit">{t.submit}</button>
   </form>
 
   <p class="hint">
-    <a href="/portal/forgot">Elfelejtette a jelszavát?</a>
+    <a href={`/portal/forgot?lang=${lang}`}>{t.forgot}</a>
   </p>
-  <p class="hint">
-    Meghívót kapott a FODEL-től? A meghívó e-mailben lévő linkre kattintva állíthatja be a jelszavát.
-  </p>
+  <p class="hint">{t.invited}</p>
 </AuthPanel>
