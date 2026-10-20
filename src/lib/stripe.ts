@@ -21,7 +21,8 @@
 import Stripe from 'stripe';
 
 export function isStripeEnabled(): boolean {
-  return import.meta.env.STRIPE_ENABLED === 'true';
+  // String(): Astro hands a literal `true` through as a boolean, not the text "true".
+  return String(import.meta.env.STRIPE_ENABLED) === 'true';
 }
 
 let client: Stripe | null = null;

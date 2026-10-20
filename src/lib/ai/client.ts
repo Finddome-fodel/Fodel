@@ -8,7 +8,7 @@
  */
 
 export function isAiEnabled(): boolean {
-  return import.meta.env.AI_ENABLED === 'true' && Boolean(import.meta.env.OPENAI_API_KEY);
+  return String(import.meta.env.AI_ENABLED) === 'true' && Boolean(import.meta.env.OPENAI_API_KEY);
 }
 
 export class AiError extends Error {

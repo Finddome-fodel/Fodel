@@ -50,7 +50,11 @@ export const POST: APIRoute = async ({ request }) => {
 
   const admin = createSupabaseAdminClient();
 
-  if (event.type === 'checkout.session.completed') {
+  // A delayed method (SEPA debit, bank redirect) completes the session first
+  // with payment_status 'unpaid', and the money arrives later as
+  // async_payment_succeeded. Both run the same settling code below, which
+  // only acts once the session is 'paid'.
+  if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
     const session = event.data.object as {
       id: string;
       metadata?: { orderId?: string; propertyId?: string; kind?: string; valuationId?: string } | null;
@@ -146,8 +150,11 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(null, { status: 200 });
   }
 
-  if (event.type === 'checkout.session.expired') {
+  // The session expired unpaid, or a delayed payment was refused: the order is
+  // closed, and nothing is published.
+  if (event.type === 'checkout.session.expired' || event.type === 'checkout.session.async_payment_failed') {
     const session = event.data.object as { id: string };
+    if (event.type === 'checkout.session.async_payment_failed') console.warn(`[stripe] delayed payment failed for session ${session.id}`);
     await admin
       .from('payments')
       .update({ status: 'cancelled' })
