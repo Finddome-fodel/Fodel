@@ -37,7 +37,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       id: 'miert-jo-kulfoldi-vasarlo',
       question: 'Miért jó egy külföldi ingatlanvásárló?',
       answer: [
-        'Külföldi érdeklődő esetén rendszerint „komoly partnerre és nem egy valós vételi szándék nélkül bámészkodóra, ún. ingatlanturistára” számíthat. Egy magyarországi ingatlan megtekintése legalább két napjába és 200–300 eurójába kerül az idelátogatónak — ezt az összeget senki nem költi el felelőtlenül.',
+        'Külföldi érdeklődő esetén rendszerint „komoly partnerre és nem egy valós vételi szándék nélkül bámészkodóra, ún. ingatlanturistára” számíthat. Egy magyarországi ingatlan megtekintése legalább két napjába és 200–300 eurójába kerül az idelátogatónak. Ezt az összeget senki nem költi el felelőtlenül.',
         'A külföldi vevő nem vesz fel banki hitelt és nem vár állami támogatásra (például CSOK-ra), hanem egy összegben, banki átutalással fizet. Nem kell arra sem várnia, hogy előbb eladja a jelenlegi otthonát.',
       ],
       audience: 'seller',
@@ -183,7 +183,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       id: 'erdemes-e',
       question: 'Érdemes-e meghirdetnem az ingatlanomat Önöknél?',
       answer: [
-        'Olvassa végig az oldalunkat — a díjszabás, a modell és a folyamat minden eleme nyilvános.',
+        'Olvassa végig az oldalunkat: a díjszabás, a modell és a folyamat minden eleme nyilvános.',
         'Ha ezután is bizonytalan, kérjen ingyenes visszahívást és tanácsadást a Kapcsolat oldalunkon. Ha e-mailt ír, jelezze, mikor hívhatjuk.',
       ],
       audience: 'seller',
@@ -272,7 +272,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       id: 'mire-szamitsak',
       question: 'Mire számítsak holland érdeklődő esetén?',
       answer: [
-        'Arra, hogy a környék ingatlankínálatát az interneten és a helyszínen egyaránt alaposan feltérképezi, hogy az ingatlant körültekintően körüljárja — és hogy korrektül fizet.',
+        'Arra, hogy a környék ingatlankínálatát az interneten és a helyszínen egyaránt alaposan feltérképezi, hogy az ingatlant körültekintően körüljárja, és hogy korrektül fizet.',
       ],
       audience: 'seller',
       sourced: true,
@@ -285,7 +285,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       question: 'Wat betekent “direct van de eigenaar”?',
       answer: [
         'Bij een groot deel van ons aanbod publiceren wij naast onze eigen gegevens ook de naam en het telefoonnummer van de eigenaar. U kunt dus rechtstreeks contact opnemen met de verkoper.',
-        'Neemt u rechtstreeks contact op en regelt u de koop zelf, dan betaalt niemand courtage — noch u, noch de verkoper. Wij zijn dan alleen betaald voor de advertentie.',
+        'Neemt u rechtstreeks contact op en regelt u de koop zelf, dan betaalt niemand courtage: noch u, noch de verkoper. Wij zijn dan alleen betaald voor de advertentie.',
       ],
       audience: 'buyer',
       sourced: true,
@@ -304,7 +304,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       id: 'als-buitenlander-kopen',
       question: 'Kan ik als Nederlander of Belg een woning kopen in Hongarije?',
       answer: [
-        'Ja. Als EU-burger koopt u woningen en percelen in Hongarije op vrijwel dezelfde voorwaarden als een Hongaar. Bijna 100% van het Hongaarse vastgoed staat op eigen grond — erfpacht zoals in Nederland komt er nauwelijks voor.',
+        'Ja. Als EU-burger koopt u woningen en percelen in Hongarije op vrijwel dezelfde voorwaarden als een Hongaar. Bijna 100% van het Hongaarse vastgoed staat op eigen grond. Erfpacht zoals in Nederland komt er nauwelijks voor.',
         'Voor landbouwgrond gelden aparte regels. Een EU-burger met een agrarische kwalificatie mag in Hongarije tot 300 hectare verwerven; die procedure regelen wij volledig.',
       ],
       audience: 'buyer',
@@ -373,7 +373,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       id: 'zoekdienst',
       question: 'Wat is de zoekdienst en wat kost die?',
       answer: [
-        'De zoekdienst is gratis. U geeft door wat u zoekt — type, streek, budget en wensen — en wij gaan voor u op zoek, ook buiten het aanbod op deze site om.',
+        'De zoekdienst is gratis. U geeft door wat u zoekt (type, streek, budget en wensen) en wij gaan voor u op zoek, ook buiten het aanbod op deze site om.',
         'Onze Hongaarssprekende collega’s helpen bij de onderhandeling en zorgen dat de overeenkomst juridisch correct wordt opgesteld. U ontvangt per e-mail bericht zodra er iets passends is.',
       ],
       audience: 'buyer',
@@ -383,7 +383,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       id: 'welke-streken',
       question: 'In welke streken heeft u aanbod?',
       answer: [
-        'Het zwaartepunt ligt in Transdanubië — de comitaten Baranya, Tolna, Zala, Somogy en Veszprém — plus het Balatonmeer en de Balatonhoogvlakte.',
+        'Het zwaartepunt ligt in Transdanubië, met de comitaten Baranya, Tolna, Zala, Somogy en Veszprém, plus het Balatonmeer en de Balatonhoogvlakte.',
         'Daarnaast hebben wij aanbod op de laagvlakte en in gebieden met een goede verbinding naar de luchthaven van Boedapest.',
       ],
       audience: 'buyer',
@@ -404,7 +404,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = {
       question: 'Wanneer kan ik u bereiken?',
       answer: [
         'Op werkdagen tussen 09:00 en 18:00. Vraagt u om teruggebeld te worden, dan bellen wij tot 21:00 uur, ook in het weekend.',
-        'Het terugbellen kost u niets — wij betalen het gesprek.',
+        'Het terugbellen kost u niets. Wij betalen het gesprek.',
       ],
       audience: 'buyer',
       sourced: true,

@@ -256,6 +256,9 @@ export const UI = {
     cta: {
       contact: 'Kapcsolat',
       login: 'Bejelentkezés',
+      /** The nav's account control: one pill, two words, a quiet slash between. */
+      accountLogin: 'Belépés',
+      accountRegister: 'Regisztráció',
       callback: 'Ingyenes visszahívás',
       allProperties: 'Összes ingatlan',
       viewProperty: 'Megtekintés',
@@ -296,7 +299,7 @@ export const UI = {
       reserved: 'Foglalt',
       ownerContact: 'A tulajdonos elérhetősége',
       ownerContactNote:
-        'Ennél az ingatlannál a tulajdonos neve és elérhetősége is megjelenik — közvetlenül felveheti vele a kapcsolatot, jutalék nélkül.',
+        'Ennél az ingatlannál a tulajdonos neve és elérhetősége is megjelenik. Közvetlenül felveheti vele a kapcsolatot, jutalék nélkül.',
       enquire: 'Visszahívás',
       enquireTitle: 'Hívjuk vissza 24 órán belül',
       priceOnRequest: 'Ár egyeztetés alapján',
@@ -305,7 +308,7 @@ export const UI = {
     filters: {
       title: 'Ingatlanok szűrése',
       /** Bold intro line above the homepage search card, separate from it. */
-      heroHeading: 'Találja meg álmai ingatlanát',
+      heroHeading: 'Találja meg az Önnek való ingatlant',
       type: 'Típus',
       region: 'Régió',
       price: 'Ár',
@@ -358,10 +361,10 @@ export const UI = {
       successBody:
         'Üzenetét megkaptuk. Munkatársunk hamarosan felveszi Önnel a kapcsolatot. {hours}',
       errorTitle: 'Nem sikerült elküldeni',
-      errorBody: 'Kérjük próbálja újra, vagy hívjon minket a +36 70 225 5255 számon.',
-      errorRequired: 'Kérjük töltse ki ezt a mezőt.',
-      errorEmail: 'Kérjük adjon meg érvényes e-mail címet.',
-      errorConsent: 'A folytatáshoz kérjük fogadja el az adatkezelési tájékoztatót.',
+      errorBody: 'Kérjük, próbálja újra, vagy hívjon minket a +36 70 225 5255 számon.',
+      errorRequired: 'Kérjük, töltse ki ezt a mezőt.',
+      errorEmail: 'Kérjük, adjon meg érvényes e-mail címet.',
+      errorConsent: 'A folytatáshoz kérjük, fogadja el az adatkezelési tájékoztatót.',
     },
 
     footer: {
@@ -371,7 +374,7 @@ export const UI = {
       legal: 'Jogi információk',
       companyDetails: 'Cégadatok',
       hours: 'Nyitvatartás',
-      callbackNote: 'A visszahívást mi fizetjük — Önnek semmibe nem kerül.',
+      callbackNote: 'A visszahívást mi fizetjük. Önnek semmibe nem kerül.',
       /** Portal entry point. Until 1.1 nothing on the public site linked to
        *  /portal at all, so an owner could not find their own login page. */
       portalLogin: 'Hirdetői belépés',
@@ -381,7 +384,7 @@ export const UI = {
       breadcrumb: 'Morzsamenü',
       mainNav: 'Fő navigáció',
       langSwitch: 'Nyelvváltás',
-      imageOf: (n: number, total: number) => `${n}. kép a(z) ${total}-ból`,
+      imageOf: (n: number, total: number) => `${n}. kép (${total} közül)`,
     },
   },
 
@@ -405,7 +408,9 @@ export const UI = {
     cta: {
       contact: 'Contact',
       login: 'Inloggen',
-      callback: 'Gratis teruggebeld worden',
+      accountLogin: 'Inloggen',
+      accountRegister: 'Registreren',
+      callback: 'Gratis terugbellen',
       allProperties: 'Alle woningen',
       viewProperty: 'Bekijken',
       learnMore: 'Meer informatie',
@@ -445,16 +450,16 @@ export const UI = {
       reserved: 'Onder optie',
       ownerContact: 'Contact met de eigenaar',
       ownerContactNote:
-        'Bij deze woning tonen wij ook de naam en het telefoonnummer van de eigenaar — u kunt rechtstreeks contact opnemen, zonder courtage.',
+        'Bij deze woning tonen wij ook de naam en het telefoonnummer van de eigenaar. U kunt rechtstreeks contact opnemen, zonder courtage.',
       enquire: 'Terugbellen',
       enquireTitle: 'Wij bellen u binnen 24 uur terug',
       priceOnRequest: 'Prijs op aanvraag',
     },
 
     filters: {
-      title: 'Gefilterde zoekopdracht',
+      title: 'Woningen filteren',
       /** Bold intro line above the homepage search card, separate from it. */
-      heroHeading: 'Vind uw droomwoning',
+      heroHeading: 'Vind de woning die bij u past',
       type: 'Type',
       region: 'Regio',
       price: 'Prijs',
@@ -473,7 +478,7 @@ export const UI = {
       results: (n: number) => (n === 1 ? '1 woning' : `${n} woningen`),
       noResults: 'Geen woningen gevonden met deze filters.',
       noResultsHint: 'Probeer ruimere criteria, of plaats een gratis zoekopdracht.',
-      county: 'Provincie',
+      county: 'Comitaat',
       country: 'Land',
       settlement: 'Plaats',
       areaFrom: 'Woonoppervlak vanaf',
@@ -519,7 +524,7 @@ export const UI = {
       legal: 'Juridisch',
       companyDetails: 'Bedrijfsgegevens',
       hours: 'Openingstijden',
-      callbackNote: 'Wij bellen u terug — dat kost u niets.',
+      callbackNote: 'Wij bellen u terug. Dat kost u niets.',
       portalLogin: 'Inloggen voor adverteerders',
     },
 

@@ -26,6 +26,7 @@ import WhatsApp from '~/components/WhatsApp.astro';
 import { getCompany } from '~/lib/runtime-config';
 import { abs } from '~/lib/seo';
 import { listingRules, showSellerPhone } from '~/lib/listing-rules';
+import { normalizePhone } from '~/lib/validation';
 
 interface Props {
   locale: Locale;
@@ -75,7 +76,7 @@ const epc = epcLabel(d.building.epcClass, { epcMissing: ui.property.epcMissing }
 const specs = [
   d.rooms && { label: ui.property.beds, value: String(d.rooms.bedrooms) },
   d.rooms && { label: ui.property.baths, value: String(d.rooms.bathrooms) },
-  d.areas.floorM2 && { label: ui.property.area, value: floorArea(d.areas.floorM2) },
+  d.areas.floorM2 && { label: ui.property.area, value: floorArea(d.areas.floorM2, locale) },
   { label: ui.property.land, value: area(d.areas.plotM2, locale) },
   { label: ui.property.epc, value: epc.value },
   d.building.yearBuilt && { label: ui.property.yearBuilt, value: String(d.building.yearBuilt) },
@@ -93,9 +94,10 @@ const trail = crumbs(locale, [
 
 const mapUrl = `https://www.openstreetmap.org/?mlat=${d.location.lat}&mlon=${d.location.lng}#map=13/${d.location.lat}/${d.location.lng}`;
 
-const metaDescription = `${title} — ${d.location.settlement}, ${d.location.county}. ${eur(
-  d.price.eur
-)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2)}` : ''}, ${area(d.areas.plotM2, locale)}. ${
+// A stored E.164 number is shown the way it is dialled from abroad.
+const dialled = d.seller.phone ? normalizePhone(d.seller.phone, 'HU') : { ok: false as const };
+
+const metaDescription = `${title} · ${d.location.settlement}, ${d.location.county}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}, ${area(d.areas.plotM2, locale)}. ${
   locale === 'hu' ? 'Azonosító' : 'Referentie'
 } ${d.ref}.`;
 
@@ -120,7 +122,7 @@ const whatsappMessage =
 
 <Base
   locale={locale}
-  title={`${title} — ${d.location.settlement}`}
+  title={`${title}, ${d.location.settlement}`}
   description={metaDescription}
   alternates={propertyAlternates(d.categorySlugs, d.ref)}
   ogType="article"
@@ -185,7 +187,7 @@ const whatsappMessage =
     <div class="hero-foot">
       <div class="hero-title">
         {tag && <span class="hero-tag">{tag}</span>}
-        <span class="hero-kicker">{d.location.region} — {category}</span>
+        <span class="hero-kicker">{d.location.region} · {category}</span>
         <span class="hero-name">{title}</span>
       </div>
 
@@ -220,7 +222,7 @@ const whatsappMessage =
   {/* ── Body ── */}
   <div class="body">
     <div class="main">
-      <Eyebrow space="12px">{d.location.region} — {category}</Eyebrow>
+      <Eyebrow space="12px">{d.location.region} · {category}</Eyebrow>
       <h1>{title}</h1>
       {subtitle && <p class="subtitle">{subtitle}</p>}
 
@@ -236,7 +238,7 @@ const whatsappMessage =
       </p>
 
       <div class="price-row">
-        <span class="price">{eur(d.price.eur)}</span>
+        <span class="price">{eur(d.price.eur, locale)}</span>
         <span class="price-huf">{huf(d.price.huf, locale)}</span>
         <span class="price-asof">
           {locale === 'hu' ? 'Árfolyam' : 'Koers'}: {formatDate(d.price.asOf, locale)}
@@ -303,13 +305,13 @@ const whatsappMessage =
             {d.seller.name && <p class="owner-name">{d.seller.name}</p>}
             {d.seller.phone && (
               <p class="owner-phone">
-                <a href={`tel:${d.seller.phone.replace(/\s/g, '')}`}>
+                <a href={`tel:${dialled.ok ? dialled.e164 : d.seller.phone.replace(/\s/g, '')}`}>
                   <span class="owner-phone-icon" aria-hidden="true">
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
                       <path d="M6.2 2.5 7.9 6.4 5.9 7.8a10.6 10.6 0 0 0 6.3 6.3l1.4-2 3.9 1.7-.6 3a1.8 1.8 0 0 1-1.9 1.4C8.7 17.8 2.2 11.3 1.8 5a1.8 1.8 0 0 1 1.4-1.9l3-.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
                     </svg>
                   </span>
-                  <span class="num">{d.seller.phone}</span>
+                  <span class="num">{dialled.ok ? dialled.display : d.seller.phone}</span>
                 </a>
               </p>
             )}

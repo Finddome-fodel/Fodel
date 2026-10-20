@@ -22,7 +22,7 @@ const kvk = COMPANY.registration.kvk ?? '—';
 export const LEGAL: Record<Locale, Record<string, ContentPageData>> = {
   hu: {
     imprint: {
-      metaTitle: 'Impresszum — Cégadatok',
+      metaTitle: 'Impresszum: cégadatok',
       metaDescription: `${COMPANY.names.legal} cégadatai: székhely, adószám, kamarai nyilvántartási szám és elérhetőségek.`,
       eyebrow: 'Impresszum',
       title: 'Cégadatok',
@@ -321,7 +321,7 @@ export const LEGAL: Record<Locale, Record<string, ContentPageData>> = {
 
   nl: {
     imprint: {
-      metaTitle: 'Colofon — Bedrijfsgegevens',
+      metaTitle: 'Colofon: bedrijfsgegevens',
       metaDescription: `Bedrijfsgegevens van ${COMPANY.names.legal}: vestigingsadres, btw-nummer, KvK-nummer en contactgegevens.`,
       eyebrow: 'Colofon',
       title: 'Bedrijfsgegevens',

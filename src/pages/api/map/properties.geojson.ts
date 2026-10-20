@@ -33,7 +33,7 @@ export const GET: APIRoute = async ({ url }) => {
       title: text(p.data.title, locale),
       cat: p.data.category,
       category: p.data.categoryLabels[locale] ?? p.data.categoryLabels.hu,
-      price: eur(p.data.price.eur),
+      price: eur(p.data.price.eur, locale),
       priceShort: compactEur(p.data.price.eur),
       precision: p.data.location.precision,
       url: propertyUrl(p, locale),

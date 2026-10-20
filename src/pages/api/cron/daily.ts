@@ -178,7 +178,7 @@ async function sendRefresh(admin: any, row: any, owner: any, rules: ListingRules
     ref: row.ref,
     title: await listingTitle(admin, row.id, locale, row.ref),
     url: await publicUrl(row, locale),
-    price: eur(row.price_eur),
+    price: eur(row.price_eur, locale),
     stillUrl: ownerLink('still-available', row.id, locale, days),
     priceUrl: ownerLink('price', row.id, locale, days),
     soldUrl: ownerLink('sold', row.id, locale, days),

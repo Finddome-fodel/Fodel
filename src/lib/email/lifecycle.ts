@@ -27,7 +27,7 @@ export type ExpiryArgs = { ref: string; title: string; url: string; expiresOn: s
 
 const EXPIRY = {
   hu: {
-    subject: (d: number) => `Hirdetése ${d} nap múlva lejár — FODEL`,
+    subject: (d: number) => `Hirdetése ${d} nap múlva lejár | FODEL`,
     preheader: 'Egy kattintással meghosszabbíthatja további 6 hónapra.',
     heading: 'Hamarosan lejár a hirdetése',
     intro: (t: string, d: number, on: string) => `A(z) „${t}” hirdetése ${d} nap múlva lejár (${on}), ezután lekerül az oldalról.`,
@@ -35,10 +35,10 @@ const EXPIRY = {
     cta: 'Hirdetés meghosszabbítása',
     view: 'Hirdetés megtekintése',
     labels: { ref: 'Azonosító', ends: 'Lejárat' },
-    sold: 'Ha időközben eladta, nincs teendője — ebben az esetben kérjük, jelezze nekünk egy válasz-levélben.',
+    sold: 'Ha időközben eladta, nincs teendője. Ebben az esetben kérjük, jelezze nekünk egy válaszlevélben.',
   },
   nl: {
-    subject: (d: number) => `Uw advertentie verloopt over ${d} dagen — FODEL`,
+    subject: (d: number) => `Uw advertentie verloopt over ${d} dagen | FODEL`,
     preheader: 'Met één klik verlengt u met 6 maanden.',
     heading: 'Uw advertentie verloopt binnenkort',
     intro: (t: string, d: number, on: string) => `Uw advertentie „${t}” verloopt over ${d} dagen, op ${on}. Daarna verdwijnt ze van de site.`,
@@ -73,7 +73,7 @@ export type ExpiredArgs = { ref: string; title: string; renewUrl: string; price:
 
 const EXPIRED = {
   hu: {
-    subject: 'Hirdetése lejárt — egy kattintással újra online lehet',
+    subject: 'Hirdetése lejárt: egy kattintással újra online lehet',
     preheader: 'Hosszabbítás után azonnal újra megjelenik.',
     heading: 'Lejárt a hirdetése',
     intro: (t: string) => `A(z) „${t}” hirdetés lejárt, és lekerült az oldalról. Az adatai és a fényképei megmaradtak.`,
@@ -81,7 +81,7 @@ const EXPIRED = {
     cta: 'Hosszabbítás és újra online',
   },
   nl: {
-    subject: 'Uw advertentie is verlopen — met één klik weer online',
+    subject: 'Uw advertentie is verlopen: met één klik weer online',
     preheader: 'Na verlenging staat ze direct weer online.',
     heading: 'Uw advertentie is verlopen',
     intro: (t: string) => `De advertentie „${t}” is verlopen en staat niet meer op de site. Uw gegevens en foto's blijven bewaard.`,
@@ -103,14 +103,14 @@ function listingExpired(locale: EmailLocale, a: ExpiredArgs): BuiltEmail {
 
 const RENEWED = {
   hu: {
-    subject: 'Hirdetését meghosszabbítottuk — FODEL',
+    subject: 'Hirdetését meghosszabbítottuk | FODEL',
     preheader: 'Az új lejárati dátum a levélben.',
     heading: 'Meghosszabbítva',
     intro: (t: string, on: string) => `A(z) „${t}” hirdetés új lejárata: ${on}. Köszönjük!`,
     cta: 'Hirdetés megtekintése',
   },
   nl: {
-    subject: 'Uw advertentie is verlengd — FODEL',
+    subject: 'Uw advertentie is verlengd | FODEL',
     preheader: 'De nieuwe vervaldatum staat in deze e-mail.',
     heading: 'Verlengd',
     intro: (t: string, on: string) => `De advertentie „${t}” blijft online tot ${on}. Dank u wel!`,
@@ -133,7 +133,7 @@ export type TransferArgs = { ref: string; title: string; amount: string; account
 
 const TRANSFER = {
   hu: {
-    subject: (r: string) => `Hosszabbítás átutalással — #${r}`,
+    subject: (r: string) => `Hosszabbítás átutalással (#${r})`,
     preheader: 'Az átutalás adatai; a jóváírás után meghosszabbítjuk a hirdetést.',
     heading: 'Hosszabbítás átutalással',
     intro: (t: string) => `Köszönjük! A(z) „${t}” hirdetés hosszabbítását a díj beérkezése után rögzítjük.`,
@@ -142,7 +142,7 @@ const TRANSFER = {
     cta: 'Fizetési lehetőségek',
   },
   nl: {
-    subject: (r: string) => `Verlenging per overboeking — #${r}`,
+    subject: (r: string) => `Verlenging per overboeking (#${r})`,
     preheader: 'De betaalgegevens; na ontvangst verlengen wij de advertentie.',
     heading: 'Verlenging per overboeking',
     intro: (t: string) => `Dank u! Wij verlengen de advertentie „${t}” zodra de betaling binnen is.`,
@@ -168,7 +168,7 @@ export type RefreshArgs = { ref: string; title: string; url: string; price: stri
 
 const REFRESH = {
   hu: {
-    subject: (t: string, r: boolean) => `${r ? 'Emlékeztető: ' : ''}Még eladó? — ${t}`,
+    subject: (t: string, r: boolean) => `${r ? 'Emlékeztető: ' : ''}Még eladó? · ${t}`,
     preheader: 'Egy kattintás, belépés nélkül.',
     heading: 'Még eladó az ingatlan?',
     intro: (t: string, price: string) => `Havonta egyszer rákérdezünk, hogy a(z) „${t}” hirdetés (${price}) még friss-e. A vevők a naprakész hirdetésekben bíznak meg.`,
@@ -180,7 +180,7 @@ const REFRESH = {
     valid: (d: string) => `A linkek ${d}-ig érvényesek.`,
   },
   nl: {
-    subject: (t: string, r: boolean) => `${r ? 'Herinnering: ' : ''}Nog te koop? — ${t}`,
+    subject: (t: string, r: boolean) => `${r ? 'Herinnering: ' : ''}Nog te koop? · ${t}`,
     preheader: 'Eén klik, zonder in te loggen.',
     heading: 'Is de woning nog te koop?',
     intro: (t: string, price: string) => `Eens per maand vragen wij of de advertentie „${t}” (${price}) nog actueel is. Kopers vertrouwen op advertenties die kloppen.`,
@@ -214,7 +214,7 @@ function ownerRefresh(locale: EmailLocale, a: RefreshArgs): BuiltEmail {
 /* ── Office notice: the owner changed the price or sold (Hungarian) ────── */
 
 function adminOwnerUpdate(a: { kind: 'price' | 'sold'; ref: string; title: string; owner: string; oldPrice?: string; newPrice?: string; editUrl: string }): BuiltEmail {
-  const subject = a.kind === 'price' ? `Árváltozás a tulajdonostól — #${a.ref}` : `Eladva jelölte a tulajdonos — #${a.ref}`;
+  const subject = a.kind === 'price' ? `Árváltozás a tulajdonostól (#${a.ref})` : `A tulajdonos eladottnak jelölte (#${a.ref})`;
   const intro = a.kind === 'price'
     ? `${a.owner} a havi visszaigazoló linken új árat adott meg. Az ár azonnal frissült a hirdetésben (újbóli elbírálás nélkül).`
     : `${a.owner} a havi visszaigazoló linken eladottnak jelölte a hirdetést. Átkerült az eladott ingatlanok közé.`;
@@ -231,40 +231,40 @@ function adminOwnerUpdate(a: { kind: 'price' | 'sold'; ref: string; title: strin
 
 const NEWSLETTER: Record<ShellLocale, { subject: string; preheader: string; heading: string; intro: string; cta: string; ignore: string; unsubscribe: string; why: string }> = {
   hu: {
-    subject: 'Erősítse meg a feliratkozást — FODEL hírlevél',
+    subject: 'Erősítse meg a feliratkozást | FODEL hírlevél',
     preheader: 'Egy kattintás, és küldjük az új ingatlanokat.',
     heading: 'Még egy kattintás',
-    intro: 'Köszönjük, hogy feliratkozott a FODEL hírlevelére. Kérjük, erősítse meg, hogy valóban Ön kérte — csak ezután küldünk levelet.',
+    intro: 'Köszönjük, hogy feliratkozott a FODEL hírlevelére. Kérjük, erősítse meg, hogy valóban Ön kérte. Csak ezután küldünk levelet.',
     cta: 'Feliratkozás megerősítése',
     ignore: 'Ha nem Ön iratkozott fel, hagyja figyelmen kívül ezt a levelet: megerősítés nélkül nem küldünk semmit.',
     unsubscribe: 'Leiratkozás',
     why: 'Ezt a levelet azért kapja, mert ezzel a címmel feliratkoztak a FODEL hírlevelére.',
   },
   nl: {
-    subject: 'Bevestig uw inschrijving — FODEL nieuwsbrief',
+    subject: 'Bevestig uw inschrijving | FODEL nieuwsbrief',
     preheader: 'Eén klik, en u ontvangt het nieuwe aanbod.',
     heading: 'Nog één klik',
-    intro: 'Bedankt voor uw inschrijving op de FODEL-nieuwsbrief. Bevestig dat u dit zelf heeft aangevraagd — pas daarna sturen wij u iets.',
+    intro: 'Bedankt voor uw inschrijving op de FODEL-nieuwsbrief. Bevestig dat u dit zelf heeft aangevraagd. Pas daarna sturen wij u iets.',
     cta: 'Inschrijving bevestigen',
     ignore: 'Heeft u zich niet ingeschreven? Negeer deze e-mail dan: zonder bevestiging sturen wij niets.',
     unsubscribe: 'Uitschrijven',
     why: 'U ontvangt deze e-mail omdat dit adres is ingeschreven voor de FODEL-nieuwsbrief.',
   },
   en: {
-    subject: 'Confirm your subscription — FODEL newsletter',
+    subject: 'Confirm your subscription | FODEL newsletter',
     preheader: 'One click, and we will send you new listings.',
     heading: 'One more click',
-    intro: 'Thank you for subscribing to the FODEL newsletter. Please confirm it was you — we send nothing until you do.',
+    intro: 'Thank you for subscribing to the FODEL newsletter. Please confirm it was you. We send nothing until you do.',
     cta: 'Confirm subscription',
     ignore: 'If you did not subscribe, simply ignore this email: without confirmation we send nothing.',
     unsubscribe: 'Unsubscribe',
     why: 'You are receiving this email because this address was subscribed to the FODEL newsletter.',
   },
   de: {
-    subject: 'Bitte bestätigen Sie Ihr Abonnement — FODEL-Newsletter',
+    subject: 'Bitte bestätigen Sie Ihr Abonnement | FODEL-Newsletter',
     preheader: 'Ein Klick, und wir senden Ihnen neue Angebote.',
     heading: 'Noch ein Klick',
-    intro: 'Vielen Dank für Ihre Anmeldung zum FODEL-Newsletter. Bitte bestätigen Sie, dass Sie es waren — vorher senden wir nichts.',
+    intro: 'Vielen Dank für Ihre Anmeldung zum FODEL-Newsletter. Bitte bestätigen Sie, dass Sie es waren. Vorher senden wir nichts.',
     cta: 'Anmeldung bestätigen',
     ignore: 'Wenn Sie sich nicht angemeldet haben, ignorieren Sie diese E-Mail einfach: ohne Bestätigung senden wir nichts.',
     unsubscribe: 'Abmelden',

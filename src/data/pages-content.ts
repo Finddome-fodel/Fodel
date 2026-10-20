@@ -21,7 +21,7 @@ function photoGuideSections(
   t: { topTitle: string; calloutTitle: string; calloutBody: (lines: string[]) => string; ctaTitle: string; primary: string; secondary: string }
 ): Section[] {
   return [
-    { type: 'list', title: t.topTitle, intro: WHY_IT_MATTERS[locale], items: TOP_TIPS.map((tip) => `${tip.title[locale]} — ${tip.body[locale]}`), ordered: true },
+    { type: 'list', title: t.topTitle, intro: WHY_IT_MATTERS[locale], items: TOP_TIPS.map((tip) => `${tip.title[locale]}: ${tip.body[locale]}`), ordered: true },
     ...GUIDE_SECTIONS.map((section): Section => ({ type: 'list', title: section.title[locale], items: section.items[locale] })),
     { type: 'callout', title: t.calloutTitle, body: t.calloutBody(onsiteServiceLines(locale)) },
     { type: 'cta', title: t.ctaTitle, primary: { label: t.primary, to: 'submitAd' }, secondary: { label: t.secondary, to: 'priceList' } },
@@ -31,14 +31,14 @@ function photoGuideSections(
 export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
   hu: {
     services: {
-      metaTitle: 'Szolgáltatások — Ügyintézés, szerződés, fotózás',
+      metaTitle: 'Szolgáltatások: ügyintézés, szerződés, fotózás',
       metaDescription:
         'Kétnyelvű adásvételi szerződés 150 €-tól, meghatalmazásos képviselet, földhivatali ügyintézés, energetikai tanúsítvány, ingatlanfotózás és drónfelvétel.',
       eyebrow: 'Szolgáltatások',
       title: 'Amit a hirdetésen',
       titleEm: 'túl elvégzünk',
       intro:
-        'A hirdetés csak az első lépés. Az alábbi szolgáltatásokkal a teljes adásvételi folyamatot le tudjuk venni a válláról — mindkét ország szabályai szerint.',
+        'A hirdetés csak az első lépés. Az alábbi szolgáltatásokkal a teljes adásvételi folyamatot le tudjuk venni a válláról, mindkét ország szabályai szerint.',
       sections: [
         {
           type: 'steps',
@@ -68,9 +68,9 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
           title: 'Kiegészítő szolgáltatások',
           intro: 'Ezekre egyedi árajánlatot adunk:',
           items: [
-            'Épületenergetikai tanúsítvány beszerzése — az uniós előírás szerint a hirdetésben kötelező feltüntetni',
+            'Épületenergetikai tanúsítvány beszerzése: az uniós előírás szerint a hirdetésben kötelező feltüntetni',
             'Professzionális ingatlanfotózás',
-            'Drónfelvétel — nagy telkeknél és panorámás fekvésnél különösen hatásos',
+            'Drónfelvétel: nagy telkeknél és panorámás fekvésnél különösen hatásos',
             'Videós bemutató a hirdetéshez (36 €)',
           ],
         },
@@ -98,14 +98,14 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
     },
 
     agricultural: {
-      metaTitle: 'Agráringatlan — 300 hektárig vásárolhat Magyarországon',
+      metaTitle: 'Agráringatlan: 300 hektárig vásárolhat Magyarországon',
       metaDescription:
         'Uniós állampolgár agrárvégzettséggel Magyarországon összesen 300 hektár földterület megvásárlására jogosult. A teljes procedúra leszervezését a FODEL vállalja.',
       eyebrow: 'Agráringatlan',
       title: 'Termőföld és',
       titleEm: 'agrárbirtok',
       intro:
-        'A magyar termőföldpiac külön szabályozás alá esik. Aki ismeri a feltételeket, komoly lehetőségekhez jut — szőlőbirtokhoz, szántóhoz, tanyához vagy erdőhöz.',
+        'A magyar termőföldpiac külön szabályozás alá esik. Aki ismeri a feltételeket, komoly lehetőségekhez jut: szőlőbirtokhoz, szántóhoz, tanyához vagy erdőhöz.',
       sections: [
         {
           type: 'prose',
@@ -140,7 +140,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
         {
           type: 'callout',
           title: 'Fontos',
-          body: 'A termőföldszerzés szabályai időről időre változnak, és az egyedi eset körülményeitől is függenek. Az itt leírtak tájékoztató jellegűek — konkrét ügyben mindig egyeztessen velünk és a szakjogásszal.',
+          body: 'A termőföldszerzés szabályai időről időre változnak, és az egyedi eset körülményeitől is függenek. Az itt leírtak tájékoztató jellegűek. Konkrét ügyben mindig egyeztessen velünk és a szakjogásszal.',
         },
         {
           type: 'cta',
@@ -153,19 +153,19 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
     },
 
     photoGuide: {
-      metaTitle: 'Fotózási útmutató — Így adja el gyorsabban az ingatlanát',
+      metaTitle: 'Fotózási útmutató: így adja el gyorsabban az ingatlanát',
       metaDescription:
         'A jó fotó a leggyorsabb eladás egyetlen legfontosabb eszköze. A FODEL fotózási útmutatója: megvilágítás, tájolás, felbontás és a leggyakoribb hibák.',
       eyebrow: 'Eladóknak',
       title: 'Fotózási',
       titleEm: 'útmutató',
       intro:
-        'A külföldi érdeklődő először a képeket látja — sokszor csak azokat. Ez a néhány szabály többet ér, mint bármilyen hirdetési szöveg.',
+        'A külföldi érdeklődő először a képeket látja, sokszor csak azokat. Ez a néhány szabály többet ér, mint bármilyen hirdetési szöveg.',
       sections: photoGuideSections('hu', {
         topTitle: 'A hat legfontosabb szabály',
         calloutTitle: 'Nincs kedve bajlódni vele?',
         calloutBody: (lines) =>
-          `Kérje szakember segítségét — a hirdetés feladásakor egy kattintással kiválaszthatja: ${lines.join('; ')}. Mindkettő választható, nem kötelező; munkatársunk az időpont egyeztetéséhez felveszi Önnel a kapcsolatot.`,
+          `Kérje szakember segítségét. A hirdetés feladásakor egy kattintással kiválaszthatja: ${lines.join('; ')}. Mindkettő választható, nem kötelező; munkatársunk az időpont egyeztetéséhez felveszi Önnel a kapcsolatot.`,
         ctaTitle: 'Készen áll a hirdetésre?',
         primary: 'Hirdetés feladása',
         secondary: 'Árlista',
@@ -173,7 +173,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
     },
 
     buyingGuide: {
-      metaTitle: 'Vásárlás Magyarországon — a folyamat lépésről lépésre',
+      metaTitle: 'Vásárlás Magyarországon: a folyamat lépésről lépésre',
       metaDescription:
         'Hogyan zajlik egy ingatlan adásvétele Magyarországon külföldi vevő esetén: szerződés, foglaló, földhivatal, közművek és a várható költségek.',
       eyebrow: 'Vevőknek',
@@ -198,11 +198,11 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
           type: 'list',
           title: 'Amire számítson a vételáron felül',
           items: [
-            'Vagyonszerzési illeték — mértéke az ingatlan típusától és az Ön helyzetétől függ',
+            'Vagyonszerzési illeték: mértéke az ingatlan típusától és az Ön helyzetétől függ',
             'Ügyvédi díj a szerződés elkészítéséért és ellenjegyzéséért',
-            'Kétnyelvű szerződés fordítása — 150 €-tól nyelvpártól függően',
+            'Kétnyelvű szerződés fordítása: 150 €-tól nyelvpártól függően',
             'Földhivatali eljárási díj',
-            'Adott esetben a FODEL közvetítői jutaléka — ezt az eladó fizeti, nem Ön',
+            'Adott esetben a FODEL közvetítői jutaléka: ezt az eladó fizeti, nem Ön',
           ],
         },
         {
@@ -220,7 +220,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
         {
           type: 'cta',
           title: 'Kezdjük el?',
-          body: 'Böngéssze a kínálatot, vagy mondja el, mit keres — díjmentesen megkeressük.',
+          body: 'Böngéssze a kínálatot, vagy mondja el, mit keres, díjmentesen megkeressük.',
           primary: { label: 'Ingatlanok', to: 'properties' },
           secondary: { label: 'Ingyenes kerestetés', to: 'searchRequest' },
         },
@@ -230,7 +230,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
     emigration: {
       metaTitle: 'Miért költöznek a hollandok Magyarországra?',
       metaDescription:
-        'Ár/érték arány, népsűrűség, megélhetési költségek és földrajzi biztonság — a négy tényező, amely a holland és belga vevőket Magyarországra hozza.',
+        'Ár/érték arány, népsűrűség, megélhetési költségek és földrajzi biztonság: ez a négy tényező hozza a holland és belga vevőket Magyarországra.',
       eyebrow: 'Háttér',
       title: 'A holland',
       titleEm: 'migráció okai',
@@ -248,7 +248,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
           type: 'prose',
           title: 'Népsűrűség és tér',
           paragraphs: [
-            'Hollandia népsűrűsége 482 fő/km², a lakosság mintegy 17 millió fő, és az ország jelentős része vízzel borított. A tér hiánya nem elvont probléma, hanem mindennapi tapasztalat — és a legtöbbször említett indok.',
+            'Hollandia népsűrűsége 482 fő/km², a lakosság mintegy 17 millió fő, és az ország jelentős része vízzel borított. A tér hiánya nem elvont probléma, hanem mindennapi tapasztalat, és a legtöbbször említett indok.',
           ],
         },
         {
@@ -268,7 +268,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
         {
           type: 'callout',
           title: 'Mit jelent ez az eladónak?',
-          body: 'Azt, hogy a vevő nem alkalmi érdeklődő. Egy magyarországi ingatlan megtekintése legalább két napjába és 200–300 eurójába kerül. Aki ezt vállalja, komolyan gondolja — és jellemzően egy összegben, banki átutalással fizet.',
+          body: 'Azt, hogy a vevő nem alkalmi érdeklődő. Egy magyarországi ingatlan megtekintése legalább két napjába és 200–300 eurójába kerül. Aki ezt vállalja, komolyan gondolja, és jellemzően egy összegben, banki átutalással fizet.',
         },
         {
           type: 'cta',
@@ -282,14 +282,14 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
 
   nl: {
     services: {
-      metaTitle: 'Diensten — Afwikkeling, contract, fotografie',
+      metaTitle: 'Diensten: afwikkeling, contract, fotografie',
       metaDescription:
         'Tweetalige koopovereenkomst vanaf € 150, vertegenwoordiging met volmacht, inschrijving bij het kadaster, energielabel, vastgoedfotografie en drone-opnamen.',
       eyebrow: 'Diensten',
       title: 'Wat wij naast',
       titleEm: 'de advertentie doen',
       intro:
-        'De advertentie is de eerste stap. Met onderstaande diensten nemen wij het volledige aankooptraject uit handen — volgens de regels van beide landen.',
+        'De advertentie is de eerste stap. Met onderstaande diensten nemen wij het volledige aankooptraject uit handen, volgens de regels van beide landen.',
       sections: [
         {
           type: 'steps',
@@ -319,9 +319,9 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
           title: 'Aanvullende diensten',
           intro: 'Hiervoor maken wij een offerte op maat:',
           items: [
-            'Aanvragen van het energieprestatiecertificaat — volgens EU-regels verplicht in de advertentie',
+            'Aanvragen van het energieprestatiecertificaat: volgens EU-regels verplicht in de advertentie',
             'Professionele vastgoedfotografie',
-            'Drone-opnamen — vooral effectief bij grote percelen en uitzicht',
+            'Drone-opnamen: vooral effectief bij grote percelen en uitzicht',
             'Video bij de advertentie (€ 36)',
           ],
         },
@@ -348,7 +348,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
     },
 
     agricultural: {
-      metaTitle: `Agrarisch vastgoed — tot ${AGRI_HECTARE_LIMIT} hectare in Hongarije`,
+      metaTitle: `Agrarisch vastgoed: tot ${AGRI_HECTARE_LIMIT} hectare in Hongarije`,
       metaDescription: `Een EU-burger met een agrarische kwalificatie mag in Hongarije tot ${AGRI_HECTARE_LIMIT} hectare grond verwerven. FODEL regelt de volledige procedure.`,
       eyebrow: 'Agrarisch vastgoed',
       title: 'Landbouwgrond en',
@@ -389,7 +389,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
         {
           type: 'callout',
           title: 'Belangrijk',
-          body: 'De regels voor grondverwerving wijzigen van tijd tot tijd en hangen af van uw specifieke situatie. Bovenstaande is informatief — overleg bij een concreet plan altijd met ons en met een gespecialiseerde jurist.',
+          body: 'De regels voor grondverwerving wijzigen van tijd tot tijd en hangen af van uw specifieke situatie. Bovenstaande is informatief. Overleg bij een concreet plan altijd met ons en met een gespecialiseerde jurist.',
         },
         {
           type: 'cta',
@@ -402,7 +402,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
     },
 
     buyingGuide: {
-      metaTitle: 'Kopen in Hongarije — het traject stap voor stap',
+      metaTitle: 'Kopen in Hongarije: het traject stap voor stap',
       metaDescription:
         'Hoe een aankoop in Hongarije verloopt voor een buitenlandse koper: contract, aanbetaling, kadaster, nutsvoorzieningen en de te verwachten kosten.',
       eyebrow: 'Voor kopers',
@@ -427,11 +427,11 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
           type: 'list',
           title: 'Kosten naast de koopsom',
           items: [
-            'Overdrachtsbelasting — het tarief hangt af van het type object en uw situatie',
+            'Overdrachtsbelasting: het tarief hangt af van het type object en uw situatie',
             'Advocaatkosten voor het opstellen en tegentekenen van de akte',
-            'Vertaling van het tweetalige contract — vanaf € 150, afhankelijk van de talencombinatie',
+            'Vertaling van het tweetalige contract: vanaf € 150, afhankelijk van de talencombinatie',
             'Kadasterkosten',
-            'Eventuele courtage van FODEL — die betaalt de verkoper, niet u',
+            'Eventuele courtage van FODEL: die betaalt de verkoper, niet u',
           ],
         },
         {
@@ -449,7 +449,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
         {
           type: 'cta',
           title: 'Zullen wij beginnen?',
-          body: 'Bekijk het aanbod, of vertel ons wat u zoekt — dat kost u niets.',
+          body: 'Bekijk het aanbod, of vertel ons wat u zoekt. Dat kost u niets.',
           primary: { label: 'Ons aanbod', to: 'properties' },
           secondary: { label: 'Gratis zoekopdracht', to: 'searchRequest' },
         },
@@ -457,7 +457,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
     },
 
     emigration: {
-      metaTitle: 'Emigreren naar Hongarije — waarom Nederlanders de stap zetten',
+      metaTitle: 'Emigreren naar Hongarije: waarom Nederlanders de stap zetten',
       metaDescription:
         'De vier redenen waarom Nederlanders en Belgen naar Hongarije verhuizen: prijs-kwaliteitverhouding, ruimte, lagere lasten en ligging.',
       eyebrow: 'Achtergrond',
@@ -477,7 +477,7 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
           type: 'prose',
           title: 'Ruimte',
           paragraphs: [
-            'Nederland heeft een bevolkingsdichtheid van 482 inwoners per km² bij zo’n 17 miljoen inwoners, en een aanzienlijk deel van het land bestaat uit water. Het gebrek aan ruimte is geen abstract probleem maar een dagelijkse ervaring — en de meestgenoemde reden.',
+            'Nederland heeft een bevolkingsdichtheid van 482 inwoners per km² bij zo’n 17 miljoen inwoners, en een aanzienlijk deel van het land bestaat uit water. Het gebrek aan ruimte is geen abstract probleem maar een dagelijkse ervaring, en de meestgenoemde reden.',
           ],
         },
         {
@@ -512,12 +512,12 @@ export const CONTENT: Record<Locale, Record<string, ContentPageData>> = {
       title: 'Fotografie',
       titleEm: 'gids',
       intro:
-        'De buitenlandse geïnteresseerde ziet eerst de foto’s — vaak alleen de foto’s. Deze regels doen meer dan welke advertentietekst ook.',
+        'De buitenlandse geïnteresseerde ziet eerst de foto’s, vaak alleen de foto’s. Deze regels doen meer dan welke advertentietekst ook.',
       sections: photoGuideSections('nl', {
         topTitle: 'De zes belangrijkste regels',
         calloutTitle: 'Liever uitbesteden?',
         calloutBody: (lines) =>
-          `Schakel een vakman in — u kiest dit met één klik bij het plaatsen van uw advertentie: ${lines.join('; ')}. Beide zijn optioneel; onze medewerker neemt contact met u op om een afspraak te maken.`,
+          `Schakel een vakman in. U kiest dit met één klik bij het plaatsen van uw advertentie: ${lines.join('; ')}. Beide zijn optioneel; onze medewerker neemt contact met u op om een afspraak te maken.`,
         ctaTitle: 'Klaar om te adverteren?',
         primary: 'Advertentie plaatsen',
         secondary: 'Tarieven',

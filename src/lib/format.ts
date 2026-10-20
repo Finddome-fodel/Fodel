@@ -13,14 +13,25 @@ const NBSP = ' ';
 
 const LOCALE_TAG: Record<Locale, string> = { hu: 'hu-HU', nl: 'nl-NL' };
 
-/** € 178 000 — thin-spaced thousands, as in the prototype. */
-export function eur(amount: number): string {
-  return `€${NBSP}${amount.toLocaleString('de-DE')}`;
+/**
+ * Thousands the way each language writes them: a no-break space in Hungarian
+ * ("1 200 000", also for four digits, which ICU's hu-HU leaves ungrouped),
+ * a dot in Dutch ("1.200.000").
+ */
+export function grouped(amount: number, locale: Locale): string {
+  const whole = Math.trunc(Math.abs(amount)).toString();
+  const sign = amount < 0 ? '-' : '';
+  const sep = locale === 'hu' ? NBSP : '.';
+  return sign + whole.replace(/\B(?=(\d{3})+(?!\d))/g, sep) + (amount % 1 ? String(Math.abs(amount) % 1).slice(1).replace('.', ',') : '');
+}
+
+/** € 178 000 (hu) or € 178.000 (nl). */
+export function eur(amount: number, locale: Locale = 'nl'): string {
+  return `€${NBSP}${grouped(amount, locale)}`;
 }
 
 export function huf(amount: number, locale: Locale): string {
-  const n = amount.toLocaleString(LOCALE_TAG[locale] === 'hu-HU' ? 'hu-HU' : 'de-DE');
-  return `${n}${NBSP}Ft`;
+  return `${grouped(amount, locale)}${NBSP}Ft`;
 }
 
 /** Plots switch to hectares above 1 ha, matching the prototype's threshold. */
@@ -29,11 +40,11 @@ export function area(m2: number, locale: Locale): string {
     const ha = (m2 / 10000).toFixed(2).replace('.', locale === 'hu' ? ',' : ',');
     return `${ha}${NBSP}ha`;
   }
-  return `${m2.toLocaleString('de-DE')}${NBSP}m²`;
+  return `${grouped(m2, locale)}${NBSP}m²`;
 }
 
-export function floorArea(m2: number): string {
-  return `${m2.toLocaleString('de-DE')}${NBSP}m²`;
+export function floorArea(m2: number, locale: Locale = 'nl'): string {
+  return `${grouped(m2, locale)}${NBSP}m²`;
 }
 
 /**
@@ -46,7 +57,7 @@ export function areaWithAlternates(m2: number, locale: Locale): string {
   if (m2 >= 10000) {
     const hold = (m2 / 5754.6).toFixed(1).replace('.', ',');
     if (locale === 'hu') parts.push(`${hold}${NBSP}hold`);
-    else parts.push(`${m2.toLocaleString('de-DE')}${NBSP}m²`);
+    else parts.push(`${grouped(m2, locale)}${NBSP}m²`);
   }
   return parts.join(' · ');
 }

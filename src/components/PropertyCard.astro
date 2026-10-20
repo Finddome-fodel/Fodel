@@ -61,7 +61,7 @@ const heroAlt = text(d.media.heroAlt, locale);
  *  be mistaken for each other; the label is there for screen readers. */
 const specs = [
   d.rooms ? { icon: 'bed', label: ui.property.beds, value: `${d.rooms.bedrooms} ${locale === 'hu' ? 'szoba' : 'slk.'}` } : null,
-  d.areas.floorM2 ? { icon: 'floor', label: ui.property.area, value: floorArea(d.areas.floorM2) } : null,
+  d.areas.floorM2 ? { icon: 'floor', label: ui.property.area, value: floorArea(d.areas.floorM2, locale) } : null,
   d.areas.plotM2 ? { icon: 'plot', label: ui.property.land, value: area(d.areas.plotM2, locale) } : null,
 ].filter(Boolean) as { icon: 'bed' | 'floor' | 'plot'; label: string; value: string }[];
 ---
@@ -121,7 +121,7 @@ const specs = [
         <span class="ref">· {ui.property.reference} {d.ref}</span>
       </p>
       <div class="card-foot">
-        <span class="price num">{eur(d.price.eur)}</span>
+        <span class="price num">{eur(d.price.eur, locale)}</span>
         {
           specs.length > 0 && (
             <ul class="specs">

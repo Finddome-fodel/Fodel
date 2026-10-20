@@ -236,11 +236,11 @@ if (valid) {
           await log('listing.price_changed_by_owner', { old_eur: property.price_eur, new_eur: next.price_eur, old_huf: property.price_huf, new_huf: next.price_huf });
           await notifyOffice(lifecycleEmails.adminOwnerUpdate({
             kind: 'price', ref: property.ref, title, owner: ownerName,
-            oldPrice: `${eur(property.price_eur)} / ${huf(property.price_huf, 'hu')}`,
-            newPrice: `${eur(next.price_eur)} / ${huf(next.price_huf, 'hu')}`,
+            oldPrice: `${eur(property.price_eur, 'hu')} / ${huf(property.price_huf, 'hu')}`,
+            newPrice: `${eur(next.price_eur, 'hu')} / ${huf(next.price_huf, 'hu')}`,
             editUrl: `${SITE_URL}/portal/properties/${id}`,
           }));
-          view = { kind: 'message', title: T.priceDone, body: hu ? `${huf(next.price_huf, 'hu')} (${eur(next.price_eur)})` : `${eur(next.price_eur)} (${huf(next.price_huf, 'nl')})`, tone: 'ok', link: { href: listingUrl, label: T.view } };
+          view = { kind: 'message', title: T.priceDone, body: hu ? `${huf(next.price_huf, 'hu')} (${eur(next.price_eur, 'hu')})` : `${eur(next.price_eur)} (${huf(next.price_huf, 'nl')})`, tone: 'ok', link: { href: listingUrl, label: T.view } };
         }
       }
     } else {
@@ -249,7 +249,7 @@ if (valid) {
   }
 }
 
-const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur)}` : `${eur(property.price_eur)} · ${huf(property.price_huf, 'nl')}`) : '';
+const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur, 'hu')}` : `${eur(property.price_eur)} · ${huf(property.price_huf, 'nl')}`) : '';
 const expiry = property?.expires_at ? new Date(property.expires_at) : null;
 const expiryText = expiry ? expiry.toLocaleDateString(hu ? 'hu-HU' : 'nl-NL', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
 const renewalPrice = formatCents(await renewalPriceCents());

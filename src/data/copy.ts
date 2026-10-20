@@ -38,15 +38,15 @@ export const COPY: Record<Locale, any> = {
   hu: {
     home: {
       meta: {
-        title: 'FODEL Ingatlan — Magyar ingatlanok hirdetése Nyugat-Európában',
+        title: 'FODEL Ingatlan | Magyar ingatlanok hirdetése Nyugat-Európában',
         description:
-          `Hirdesse magyar ingatlanát ${REACH_LANGUAGES} nyelven, ${REACH_COUNTRIES} országban — kizárólagossági szerződés nélkül. Készpénzes holland, belga és német vevők. Jutalék csak sikeres eladás esetén.`,
+          `Hirdesse magyar ingatlanát ${REACH_LANGUAGES} nyelven, ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Készpénzes holland, belga és német vevők. Jutalék csak sikeres eladás esetén.`,
       },
       hero: {
-        eyebrow: `Alapítva 2013 — ${foundedInLabel('hu')}`,
-        title: ['Magyar', 'Ingatlanok', 'Nyugat-Európában'],
+        eyebrow: `Alapítva 2013 · ${foundedInLabel('hu')}`,
+        title: ['Magyar', 'ingatlanok', 'Nyugat-Európában'],
         emphasis: 1,
-        body: `Egyedülálló hirdetési modell: ${REACH_LANGUAGES} nyelven, ${REACH_COUNTRIES} országban — kizárólagossági szerződés nélkül. Komoly, készpénzes külföldi vevők.`,
+        body: `Egyedülálló hirdetési modell: ${REACH_LANGUAGES} nyelven, ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Komoly, készpénzes külföldi vevők.`,
         primary: 'Ingatlanok',
         secondary: 'Hirdessen nálunk',
         featuredLabel: 'Kiemelt ingatlan',
@@ -67,10 +67,10 @@ export const COPY: Record<Locale, any> = {
           to: 'properties',
         },
       ],
-      featured: { eyebrow: 'Válogatás', title: 'Kiemelt Ingatlanok' },
+      featured: { eyebrow: 'Válogatás', title: 'Kiemelt ingatlanok' },
       // Verbatim FODEL, from their own editorial copy.
       quote: '„A hollandok gyakran nem hisznek a szemüknek, amikor megtudják, hogy Magyarországon mit és milyen áron vásárolhatnak.”',
-      quoteSource: `FODEL INGATLAN — ${SITE_HOST}`,
+      quoteSource: `FODEL INGATLAN · ${SITE_HOST}`,
       how: { eyebrow: 'Egyedülálló modell', title: 'Így működik a FODEL' },
       cta: {
         eyebrow: 'Lépjen kapcsolatba velünk',
@@ -82,11 +82,11 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Ajánlói program',
         title: 'Ajánljon egy hirdetőt,',
         titleEm: 'kapjon 10%-ot',
-        body: 'Ha valaki az Ön ajánlására ad fel hirdetést a FODEL-nél, 10% kedvezményt kap a csomagjából — és Önnek 10% jóváírást írunk a következő hirdetésére. Ha már hirdetett nálunk, saját ajánlói kódját a portál Beállítások menüjében találja.',
+        body: 'Ha valaki az Ön ajánlására ad fel hirdetést a FODEL-nél, 10% kedvezményt kap a csomagjából, Önnek pedig 10% jóváírást írunk a következő hirdetésére. Ha már hirdetett nálunk, saját ajánlói kódját a portál Beállítások menüjében találja.',
         steps: [
-          'Ajánlja ismerősét — a lenti űrlappal, vagy adja meg a saját linkjét a portálon',
+          'Ajánlja ismerősét a lenti űrlappal, vagy ossza meg a portálban található saját linkjét',
           'Munkatársunk felveszi vele a kapcsolatot',
-          'Ha hirdet, ő 10%-ot spórol, Ön 10%-ot jóváírunk',
+          'Ha hirdet, ő 10% kedvezményt kap, Ön pedig 10% jóváírást',
         ],
         formTitle: 'Ajánljon egy ismerőst',
         fields: {
@@ -103,7 +103,7 @@ export const COPY: Record<Locale, any> = {
       {
         num: '01',
         title: `Hirdetés ${REACH_COUNTRIES} országban`,
-        body: `Ingatlanát ${REACH_LANGUAGES} nyelven hirdetjük meg Hollandiában, Belgiumban, Németországban, Angliában és más uniós országokban — kizárólagossági szerződés nélkül.`,
+        body: `Ingatlanát ${REACH_LANGUAGES} nyelven hirdetjük meg Hollandiában, Belgiumban, Németországban, Angliában és más uniós országokban, kizárólagossági szerződés nélkül.`,
       },
       {
         num: '02',
@@ -113,7 +113,7 @@ export const COPY: Record<Locale, any> = {
       {
         num: '03',
         title: 'Teljes körű ügyintézés',
-        body: 'Kétnyelvű adásvételi szerződés, meghatalmazásos képviselet, földhivatali ügyintézés és közüzemi átírás — mindent elvégzünk Ön helyett.',
+        body: 'Kétnyelvű adásvételi szerződés, meghatalmazásos képviselet, földhivatali ügyintézés és közüzemi átírás. Mindent elvégzünk Ön helyett.',
       },
     ] as Step[],
 
@@ -126,7 +126,7 @@ export const COPY: Record<Locale, any> = {
 
     sellers: {
       meta: {
-        title: 'Eladóknak — Hirdesse ingatlanát Nyugat-Európában',
+        title: 'Eladóknak | Hirdesse ingatlanát Nyugat-Európában',
         description:
           'Hirdesse magyar ingatlanát holland, belga és német vevőknek. 69 €-tól, kizárólagosság nélkül. Jutalék csak akkor, ha mi hozzuk a vevőt: 4% + 21% holland áfa.',
       },
@@ -134,7 +134,7 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Eladóknak',
         title: 'Hirdesse ingatlanát',
         titleEm: 'Nyugat-Európában',
-        body: `A FODEL egyedülálló hirdetési modelljével ingatlana ${REACH_LANGUAGES} nyelven jelenik meg ${REACH_COUNTRIES} országban — kizárólagossági szerződés nélkül. Csak komoly, készpénzes külföldi vevőkkel dolgozunk.`,
+        body: `A FODEL egyedülálló hirdetési modelljével ingatlana ${REACH_LANGUAGES} nyelven jelenik meg ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Csak komoly, készpénzes külföldi vevőkkel dolgozunk.`,
         cta: 'Hirdetés feladása',
         secondary: 'Árlista megtekintése',
       },
@@ -142,10 +142,10 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Az előnyök',
         title: 'Miért érdemes külföldi vevőt keresni?',
         points: [
-          'Készpénzes vevők — nincs bankihitel-várakozás, nincs CSOK-ügyintézés.',
-          'Egy összegben, banki átutalással fizetnek — gyors és biztonságos.',
+          'Készpénzes vevők: nincs bankihitel-várakozás, nincs CSOK-ügyintézés.',
+          'Egy összegben, banki átutalással fizetnek, gyorsan és biztonságosan.',
           'Komoly szándék: egy megtekintés legalább 2 napba és 200–300 €-ba kerül nekik.',
-          'Stabil, reális vételár — nem alkudoznak irreálisan.',
+          'Stabil, reális vételár: nem alkudoznak irreálisan.',
           'A FODEL a vevőt személyesen minősíti, Önhöz csak komoly partnert küldünk.',
         ],
       },
@@ -175,14 +175,14 @@ export const COPY: Record<Locale, any> = {
       commission: {
         eyebrow: 'Díjszabás',
         title: 'Jutalék csak sikeres\ntranzakció esetén',
-        body: 'Ha a vevő közvetlenül veszi fel Önnel a kapcsolatot és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie. FODEL közvetítésnél: 4% nettó (min. 2.000 €) + 21% holland áfa.',
+        body: 'Ha a vevő közvetlenül veszi fel Önnel a kapcsolatot és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie. FODEL közvetítése esetén: 4% nettó (min. 2 000 €) + 21% holland áfa.',
         cta: 'Árlista megtekintése',
       },
     },
 
     buyers: {
       meta: {
-        title: 'Vevőknek — Ingatlan közvetlenül a tulajdonostól',
+        title: 'Vevőknek | Ingatlan közvetlenül a tulajdonostól',
         description:
           'Autentikus magyar ingatlanok holland-magyar közvetítéssel. Kétnyelvű szerződés, meghatalmazásos képviselet, földhivatali ügyintézés. Ingyenes kerestetés.',
       },
@@ -190,7 +190,7 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Vevőknek',
         title: 'Ingatlan közvetlenül',
         titleEm: 'a tulajdonostól',
-        body: 'Hirdetéseinkben a FODEL elérhetősége mellett gyakran a tulajdonos neve és telefonszáma is szerepel. Közvetlenül tárgyalhat — vagy ránk bízhatja a teljes folyamatot.',
+        body: 'Hirdetéseinkben a FODEL elérhetősége mellett gyakran a tulajdonos neve és telefonszáma is szerepel. Közvetlenül tárgyalhat, vagy ránk bízhatja a teljes folyamatot.',
         cta: 'Ingatlanok böngészése',
         secondary: 'Ingyenes kerestetés',
       },
@@ -201,7 +201,7 @@ export const COPY: Record<Locale, any> = {
           'A vevőjelölt és az eladó közötti kommunikáció, tolmácsolással.',
           'Megtekintések megszervezése, idegen nyelvet beszélő munkatárs kíséretével.',
           'Az áralku segítése és a többnyelvű szerződés előkészítése.',
-          'Meghatalmazásos képviselet — nem kell Magyarországra utaznia az aláíráshoz.',
+          'Meghatalmazásos képviselet: nem kell Magyarországra utaznia az aláíráshoz.',
           'Földhivatali bejegyzés és a közművek átírása.',
         ],
       },
@@ -213,7 +213,7 @@ export const COPY: Record<Locale, any> = {
 
     about: {
       meta: {
-        title: 'Rólunk — Egy híd két világ között',
+        title: 'Rólunk | Egy híd két világ között',
         description:
           '2013 óta segítjük a magyar ingatlan-eladókat abban, hogy megtalálják a megfelelő nyugat-európai vevőt. Diszkréten, átláthatóan, kizárólagossági szerződés nélkül.',
       },
@@ -221,12 +221,12 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Rólunk',
         title: 'Egy híd két',
         titleEm: 'világ között',
-        body: '2013 óta segítjük a magyar ingatlan-eladókat abban, hogy megtalálják a megfelelő külföldi vevőt — diszkréten, hatékonyan, kizárólagossági szerződés nélkül.',
+        body: '2013 óta segítjük a magyar ingatlan-eladókat abban, hogy megtalálják a megfelelő külföldi vevőt: diszkréten, hatékonyan, kizárólagossági szerződés nélkül.',
       },
       origin: {
-        eyebrow: 'A kezdetek — Almere-Buiten, 2013',
+        eyebrow: 'A kezdetek · Almere-Buiten, 2013',
         quote:
-          '„Almere-Buitenben élve láttuk, hogy a hollandok mennyire vágynak autentikus európai életmódra — míg Magyarországon a legjobb ingatlanok ismeretlenül várnak gazdára.”',
+          '„Almere-Buitenben élve láttuk, hogy a hollandok mennyire vágynak autentikus európai életmódra, míg Magyarországon a legjobb ingatlanok ismeretlenül várnak gazdára.”',
       },
       values: {
         eyebrow: 'Értékeink',
@@ -254,9 +254,9 @@ export const COPY: Record<Locale, any> = {
         title: 'Nem vagyunk nagy iroda.',
         titleEm: 'Ez az előnyünk.',
         points: [
-          'Minden ügyféllel személyesen foglalkozunk — nincs call center, nincs anonim ügyintézés.',
+          'Minden ügyféllel személyesen foglalkozunk: nincs call center, nincs anonim ügyintézés.',
           'Mindkét kultúrát belülről ismerjük: holland és magyar szemmel egyaránt értékeljük az ingatlanokat.',
-          'Az ingatlan és a vevő összeillesztése a mi felelősségünk — nem a szerencsén múlik.',
+          'Az ingatlan és a vevő összeillesztése a mi felelősségünk, nem a szerencsén múlik.',
           'Kizárólagossági szerződés nélkül dolgozunk, mert bízunk abban, hogy eredménnyel bizonyítunk.',
         ],
       },
@@ -265,15 +265,15 @@ export const COPY: Record<Locale, any> = {
         title: 'A híd, amelyet',
         titleEm: 'megépítettünk',
         paragraphs: [
-          'A FODEL Hollandiában élő magyarok által alapított ingatlanközvetítő iroda. Almere-Buitenben indultunk el 2013-ban, ahol rájöttünk: rengeteg holland és belga érdeklődő szeretne autentikus magyar ingatlant vásárolni — de nem tudja, hogyan fogjon hozzá.',
-          `Ma ${REACH_COUNTRIES} országban hirdetünk, ${REACH_LANGUAGES} nyelven — és minden tranzakciót elejétől a végéig kísérünk. Kétnyelvű adásvételi szerződéssel, meghatalmazásos képviselettel, földhivatali ügyintézéssel. Irodánk ma Hágában működik.`,
+          'A FODEL Hollandiában élő magyarok által alapított ingatlanközvetítő iroda. Almere-Buitenben indultunk el 2013-ban, ahol rájöttünk: rengeteg holland és belga érdeklődő szeretne autentikus magyar ingatlant vásárolni, de nem tudja, hogyan fogjon hozzá.',
+          `Ma ${REACH_COUNTRIES} országban hirdetünk, ${REACH_LANGUAGES} nyelven. Minden tranzakciót elejétől a végéig kísérünk, kétnyelvű adásvételi szerződéssel, meghatalmazásos képviselettel és földhivatali ügyintézéssel. Irodánk ma Hágában működik.`,
         ],
       },
     },
 
     contact: {
       meta: {
-        title: 'Kapcsolat — Forduljon hozzánk bizalommal',
+        title: 'Kapcsolat | Forduljon hozzánk bizalommal',
         description:
           `Hívjon minket munkanapokon ${COMPANY.hours.weekdays.from} és ${COMPANY.hours.weekdays.to} között, vagy kérjen ingyenes visszahívást. A hívást mi fizetjük.`,
       },
@@ -290,22 +290,22 @@ export const COPY: Record<Locale, any> = {
         'Visszahívás kérése',
         'Egyéb',
       ],
-      note: 'A visszahívást mi fizetjük — Önnek semmibe nem kerül. Magyarul beszélő munkatársunk egy holland számról fog jelentkezni.',
+      note: 'A visszahívást mi fizetjük. Önnek semmibe nem kerül. Magyarul beszélő munkatársunk egy holland számról fog jelentkezni.',
     },
   },
 
   nl: {
     home: {
       meta: {
-        title: 'FODEL Vastgoed — Onroerend goed kopen direct van de eigenaar',
+        title: 'FODEL Vastgoed | Onroerend goed kopen direct van de eigenaar',
         description:
           'Huizen, boerderijen en landgoederen in Hongarije, vaak rechtstreeks van de eigenaar. Nederlandse begeleiding en tweetalige contracten.',
       },
       hero: {
-        eyebrow: `Sinds 2013 — ${foundedInLabel('nl')}`,
+        eyebrow: `Sinds 2013 · ${foundedInLabel('nl')}`,
         title: ['Vastgoed', 'in Hongarije', 'direct van de eigenaar'],
         emphasis: 1,
-        body: 'Bij een groot deel van ons aanbod staat de eigenaar er zelf bij vermeld. U onderhandelt rechtstreeks — of laat de hele afwikkeling aan ons over.',
+        body: 'Bij een groot deel van ons aanbod staat de eigenaar er zelf bij vermeld. U onderhandelt rechtstreeks of laat de hele afwikkeling aan ons over.',
         primary: 'Woningen bekijken',
         secondary: 'Gratis zoekopdracht',
         featuredLabel: 'Uitgelicht',
@@ -329,7 +329,7 @@ export const COPY: Record<Locale, any> = {
       featured: { eyebrow: 'Selectie', title: 'Uitgelicht aanbod' },
       quote:
         '“Nederlanders geloven hun ogen vaak niet wanneer ze zien wat je in Hongarije voor welk bedrag kunt kopen.”',
-      quoteSource: `FODEL VASTGOED — ${SITE_HOST}`,
+      quoteSource: `FODEL VASTGOED · ${SITE_HOST}`,
       how: { eyebrow: 'Hoe het werkt', title: 'Zo werkt FODEL' },
       cta: {
         eyebrow: 'Neem contact op',
@@ -341,9 +341,9 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Aanbevelingsprogramma',
         title: 'Beveel een adverteerder aan,',
         titleEm: 'ontvang 10%',
-        body: 'Plaatst iemand op uw aanbeveling een advertentie bij FODEL, dan krijgt hij 10% korting op zijn pakket — en wij schrijven 10% bij op uw volgende advertentie. Adverteert u al bij ons? Uw eigen aanbevelingscode vindt u onder Instellingen in het portaal.',
+        body: 'Plaatst iemand op uw aanbeveling een advertentie bij FODEL, dan krijgt hij 10% korting op zijn pakket. Wij schrijven 10% bij op uw volgende advertentie. Adverteert u al bij ons? Uw eigen aanbevelingscode vindt u onder Instellingen in het portaal.',
         steps: [
-          'Beveel een kennis aan — met het formulier hieronder, of deel uw eigen link uit het portaal',
+          'Beveel een kennis aan met het formulier hieronder, of deel uw eigen link uit het portaal',
           'Onze medewerker neemt contact op',
           'Plaatst hij een advertentie, dan bespaart hij 10% en schrijven wij u 10% bij',
         ],
@@ -362,7 +362,7 @@ export const COPY: Record<Locale, any> = {
       {
         num: '01',
         title: `Aanbod in ${REACH_COUNTRIES} landen`,
-        body: `Wij adverteren in ${REACH_LANGUAGES} talen in Nederland, België, Duitsland, Engeland en andere EU-landen — zonder exclusiviteitscontract met de verkoper.`,
+        body: `Wij adverteren in ${REACH_LANGUAGES} talen in Nederland, België, Duitsland, Engeland en andere EU-landen, zonder exclusiviteitscontract met de verkoper.`,
       },
       {
         num: '02',
@@ -385,7 +385,7 @@ export const COPY: Record<Locale, any> = {
 
     sellers: {
       meta: {
-        title: 'Adverteren — Uw Hongaarse woning in West-Europa',
+        title: 'Adverteren | Uw Hongaarse woning in West-Europa',
         description:
           `Adverteer uw Hongaarse woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, vanaf € 69 en zonder exclusiviteit. Courtage alleen als FODEL de koper aanbrengt: 4% + 21% btw.`,
       },
@@ -393,7 +393,7 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Adverteren',
         title: 'Uw woning',
         titleEm: 'in West-Europa',
-        body: `Met het model van FODEL verschijnt uw woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen — zonder exclusiviteitscontract. Wij werken uitsluitend met serieuze kopers.`,
+        body: `Met het model van FODEL verschijnt uw woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, zonder exclusiviteitscontract. Wij werken uitsluitend met serieuze kopers.`,
         cta: 'Advertentie plaatsen',
         secondary: 'Tarieven bekijken',
       },
@@ -401,10 +401,10 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'De voordelen',
         title: 'Waarom een buitenlandse koper?',
         points: [
-          'Kopers met eigen geld — geen wachten op een hypotheek of subsidie.',
-          'Betaling ineens per bankoverschrijving — snel en veilig.',
+          'Kopers met eigen geld: geen wachten op een hypotheek of subsidie.',
+          'Betaling ineens per bankoverschrijving, snel en veilig.',
           'Serieuze intentie: één bezichtiging kost hen twee dagen en € 200–300.',
-          'Realistische prijsvorming — er wordt niet onredelijk onderhandeld.',
+          'Realistische prijsvorming: er wordt niet onredelijk onderhandeld.',
           'FODEL beoordeelt de koper persoonlijk voordat er een afspraak komt.',
         ],
       },
@@ -441,7 +441,7 @@ export const COPY: Record<Locale, any> = {
 
     buyers: {
       meta: {
-        title: 'Voor kopers — Een woning kopen in Hongarije',
+        title: 'Voor kopers | Een woning kopen in Hongarije',
         description:
           'Zo koopt u veilig een woning in Hongarije: tweetalig contract, vertegenwoordiging met volmacht, inschrijving bij het kadaster. Plus een gratis zoekdienst.',
       },
@@ -449,7 +449,7 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Voor kopers',
         title: 'Kopen in Hongarije,',
         titleEm: 'zonder verrassingen',
-        body: 'Bij veel van ons aanbod staat de eigenaar er zelf bij. U onderhandelt rechtstreeks — of laat de volledige afwikkeling aan ons over.',
+        body: 'Bij veel van ons aanbod staat de eigenaar er zelf bij. U onderhandelt rechtstreeks of laat de volledige afwikkeling aan ons over.',
         cta: 'Woningen bekijken',
         secondary: 'Gratis zoekopdracht',
       },
@@ -460,7 +460,7 @@ export const COPY: Record<Locale, any> = {
           'De communicatie tussen u en de verkoper, inclusief tolken.',
           'Bezichtigingen, met een Nederlands- of Duitssprekende collega erbij.',
           'Ondersteuning bij de prijsonderhandeling en het opstellen van het tweetalige contract.',
-          'Vertegenwoordiging met volmacht — u hoeft niet naar Hongarije voor de ondertekening.',
+          'Vertegenwoordiging met volmacht: u hoeft niet naar Hongarije voor de ondertekening.',
           'Inschrijving bij het kadaster en het overzetten van de nutsvoorzieningen.',
         ],
       },
@@ -472,7 +472,7 @@ export const COPY: Record<Locale, any> = {
 
     about: {
       meta: {
-        title: 'Over ons — Een brug tussen twee werelden',
+        title: 'Over ons | Een brug tussen twee werelden',
         description:
           'Sinds 2013 brengen wij Hongaarse verkopers en West-Europese kopers bij elkaar. Discreet, transparant en zonder exclusiviteitscontract.',
       },
@@ -480,12 +480,12 @@ export const COPY: Record<Locale, any> = {
         eyebrow: 'Over ons',
         title: 'Een brug tussen',
         titleEm: 'twee werelden',
-        body: 'Sinds 2013 helpen wij Hongaarse verkopers de juiste buitenlandse koper te vinden — discreet, doeltreffend en zonder exclusiviteitscontract.',
+        body: 'Sinds 2013 helpen wij Hongaarse verkopers de juiste buitenlandse koper te vinden: discreet, doeltreffend en zonder exclusiviteitscontract.',
       },
       origin: {
-        eyebrow: 'Het begin — Almere-Buiten, 2013',
+        eyebrow: 'Het begin · Almere-Buiten, 2013',
         quote:
-          '“Wonend in Almere-Buiten zagen wij hoezeer Nederlanders verlangen naar een authentieke Europese leefstijl — terwijl in Hongarije het mooiste vastgoed onopgemerkt op een eigenaar wacht.”',
+          '“Wonend in Almere-Buiten zagen wij hoezeer Nederlanders verlangen naar een authentieke Europese leefstijl, terwijl in Hongarije het mooiste vastgoed onopgemerkt op een eigenaar wacht.”',
       },
       values: {
         eyebrow: 'Onze uitgangspunten',
@@ -513,7 +513,7 @@ export const COPY: Record<Locale, any> = {
         title: 'Wij zijn geen groot kantoor.',
         titleEm: 'Dat is onze kracht.',
         points: [
-          'Iedere klant krijgt persoonlijk contact — geen callcenter, geen anoniem loket.',
+          'Iedere klant krijgt persoonlijk contact: geen callcenter, geen anoniem loket.',
           'Wij kennen beide culturen van binnenuit en beoordelen vastgoed met Nederlandse én Hongaarse ogen.',
           'Het samenbrengen van woning en koper is onze verantwoordelijkheid, geen kwestie van toeval.',
           'Wij werken zonder exclusiviteit, omdat wij liever met resultaat overtuigen.',
@@ -524,7 +524,7 @@ export const COPY: Record<Locale, any> = {
         title: 'De brug die wij',
         titleEm: 'hebben gebouwd',
         paragraphs: [
-          'FODEL is opgericht door in Nederland wonende Hongaren. Wij begonnen in 2013 in Almere-Buiten, waar wij merkten hoeveel Nederlanders en Belgen een authentieke Hongaarse woning wilden kopen — maar niet wisten hoe ze moesten beginnen.',
+          'FODEL is opgericht door in Nederland wonende Hongaren. Wij begonnen in 2013 in Almere-Buiten, waar wij merkten hoeveel Nederlanders en Belgen een authentieke Hongaarse woning wilden kopen, maar niet wisten hoe ze moesten beginnen.',
           `Vandaag adverteren wij in ${REACH_COUNTRIES} landen en ${REACH_LANGUAGES} talen, en begeleiden wij elke transactie van begin tot eind: tweetalig koopcontract, vertegenwoordiging met volmacht en inschrijving bij het kadaster. Ons kantoor is gevestigd in Den Haag.`,
         ],
       },
@@ -532,7 +532,7 @@ export const COPY: Record<Locale, any> = {
 
     contact: {
       meta: {
-        title: 'Contact — Wij bellen u graag terug',
+        title: 'Contact | Wij bellen u graag terug',
         description:
           `Bel ons op werkdagen tussen ${COMPANY.hours.weekdays.from} en ${COMPANY.hours.weekdays.to}, of vraag om teruggebeld te worden. Het gesprek kost u niets.`,
       },
@@ -545,7 +545,7 @@ export const COPY: Record<Locale, any> = {
         'Terugbelverzoek',
         'Anders',
       ],
-      note: 'Terugbellen kost u niets — wij betalen het gesprek. Ook in het weekend bellen wij tot 21:00 uur.',
+      note: 'Terugbellen kost u niets. Wij betalen het gesprek. Ook in het weekend bellen wij tot 21:00 uur.',
     },
   },
 };

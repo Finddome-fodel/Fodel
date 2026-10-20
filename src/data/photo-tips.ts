@@ -44,8 +44,8 @@ export const TOP_TIPS: PhotoTip[] = [
     icon: 'curtain',
     title: { hu: 'Függönyök elhúzva', nl: 'Gordijnen open' },
     body: {
-      hu: 'Húzza el a függönyöket, és húzza fel a redőnyöket — minden fény számít.',
-      nl: 'Trek gordijnen open en rolluiken omhoog — elk beetje licht telt.',
+      hu: 'Húzza el a függönyöket, és húzza fel a redőnyöket. Minden fény számít.',
+      nl: 'Trek gordijnen open en rolluiken omhoog. Elk beetje licht telt.',
     },
   },
   {
@@ -71,8 +71,8 @@ export const TOP_TIPS: PhotoTip[] = [
     icon: 'nobody',
     title: { hu: 'Ember nélkül', nl: 'Zonder mensen' },
     body: {
-      hu: 'A képeken ne szerepeljen ember — Ön se, a tükörben sem.',
-      nl: 'Zorg dat er niemand op de foto staat — ook u niet, ook niet in de spiegel.',
+      hu: 'A képeken ne szerepeljen ember: Ön se, a tükörben sem.',
+      nl: 'Zorg dat er niemand op de foto staat: ook u niet, ook niet in de spiegel.',
     },
   },
 ];
@@ -92,14 +92,14 @@ export const GUIDE_SECTIONS: { title: Record<TipLocale, string>; items: Record<T
         'Pakolja el a személyes holmikat minden helyiségből.',
         'A kertben nyírja le a füvet a fotózás előtt.',
         'Kapcsolja ki a készüléken a dátumbélyegzőt.',
-        'Törölje meg a telefon lencséjét — a zsíros, homályos lencse a leggyakoribb oka a fátyolos képnek.',
+        'Törölje meg a telefon lencséjét. A zsíros, homályos lencse a leggyakoribb oka a fátyolos képnek.',
       ],
       nl: [
         'Ruim op en doe overal het licht aan voordat u fotografeert.',
         'Haal persoonlijke spullen uit beeld.',
         'Maai het gras voordat u de tuin fotografeert.',
         'Zet de datumstempel op uw toestel uit.',
-        'Veeg de lens van uw telefoon schoon — een vettige lens is de meest voorkomende oorzaak van wazige foto’s.',
+        'Veeg de lens van uw telefoon schoon. Een vettige lens is de meest voorkomende oorzaak van wazige foto’s.',
       ],
     },
   },
@@ -107,7 +107,7 @@ export const GUIDE_SECTIONS: { title: Record<TipLocale, string>; items: Record<T
     title: { hu: 'Megvilágítás', nl: 'Licht' },
     items: {
       hu: [
-        'Napsütéses időben fényképezzen — kívül és belül egyaránt.',
+        'Napsütéses időben fényképezzen, kívül és belül egyaránt.',
         'Borult, alkonyati vagy sötétedés utáni fotózást kerülje.',
         'Kapcsolja fel a belső világítást minden helyiségben.',
         'Húzza el a függönyöket, húzza fel a sötétítőket és a redőnyöket.',
@@ -126,24 +126,24 @@ export const GUIDE_SECTIONS: { title: Record<TipLocale, string>; items: Record<T
     title: { hu: 'Géptartás és kompozíció', nl: 'Compositie' },
     items: {
       hu: [
-        'Mindig vízszintesen (fekvő helyzetben) tartsa a telefont — függőleges tájolású képet ne készítsen.',
+        'Mindig vízszintesen (fekvő helyzetben) tartsa a telefont. Függőleges tájolású képet ne készítsen.',
         'Álljon a helyiség sarkába, és mellmagasságból fotózzon: így az egész szoba látszik.',
         'A vízszintes síkokat igazítsa párhuzamosan a kijelző felső szélével.',
         'Ha szűk a látószög, lépjen hátrébb.',
         'Kertes ház esetén készítsen felülnézeti, madártávlati képet is.',
         'Homlokzatnál mutassa be a teljes épületet.',
         'Kerülje, hogy nagy felületet foglaljon el az aszfalt, a mennyezet vagy a kerítés.',
-        'A képeken ne szerepeljen ember — tükörben, ablaküvegben sem.',
+        'A képeken ne szerepeljen ember: tükörben, ablaküvegben sem.',
       ],
       nl: [
-        'Houd het toestel altijd horizontaal (liggend) — maak geen staande foto’s.',
+        'Houd het toestel altijd horizontaal (liggend). Maak geen staande foto’s.',
         'Ga in een hoek van de ruimte staan en fotografeer op borsthoogte: zo is de hele kamer in beeld.',
         'Lijn horizontale vlakken uit met de bovenrand van het scherm.',
         'Doe een stap achteruit als de ruimte niet in beeld past.',
         'Maak bij een vrijstaand huis ook een opname van bovenaf.',
         'Breng bij de gevel het hele gebouw in beeld.',
         'Vermijd dat asfalt, plafond of schutting het beeld domineert.',
-        'Zorg dat er niemand op de foto staat — ook niet in een spiegel of ruit.',
+        'Zorg dat er niemand op de foto staat: ook niet in een spiegel of ruit.',
       ],
     },
   },
@@ -152,14 +152,14 @@ export const GUIDE_SECTIONS: { title: Record<TipLocale, string>; items: Record<T
     items: {
       hu: [
         'Mindig aktuális képeket töltsön fel, ne elavultakat.',
-        'Használjon eredeti, nagyfelbontású fájlokat — legalább 3 megapixel, legalább 1500 pixel szélesség.',
+        'Használjon eredeti, nagyfelbontású fájlokat: legalább 3 megapixel, legalább 1500 pixel szélesség.',
         'Ne e-mailben továbbküldött, tömörített változatot töltsön fel.',
-        'Exponálás előtt vegyen mély levegőt, és tartsa vissza egy másodpercig — így nem mozdul be a kép.',
+        'Exponálás előtt vegyen mély levegőt, és tartsa vissza egy másodpercig, így nem mozdul be a kép.',
         'A feldolgozás után egyesével ellenőrizze a képek élességét.',
       ],
       nl: [
         'Gebruik actuele foto’s, geen oude.',
-        'Upload de originele bestanden — minimaal 3 megapixel en 1500 pixels breed.',
+        'Upload de originele bestanden: minimaal 3 megapixel en 1500 pixels breed.',
         'Stuur geen via e-mail gecomprimeerde versies door.',
         'Adem in en houd één seconde uw adem in voordat u afdrukt; dat scheelt bewegingsonscherpte.',
         'Controleer achteraf elke foto op scherpte.',
@@ -193,5 +193,5 @@ export const GUIDE_SECTIONS: { title: Record<TipLocale, string>; items: Record<T
 
 /** "€ 150 — Helyszíni profi fotózás…" lines for the guide page callout. */
 export function onsiteServiceLines(locale: TipLocale): string[] {
-  return ONSITE_SERVICES.map((service) => `${service.names[locale]} — € ${service.priceEur}`);
+  return ONSITE_SERVICES.map((service) => `${service.names[locale]}: € ${service.priceEur}`);
 }
