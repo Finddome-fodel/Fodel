@@ -4,6 +4,7 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deliberate exception to newest-first: vocabulary keeps its curated sort_order.
 const { data: terms } = await supabase.from('taxonomy_terms').select('*').order('group_key').order('sort_order');
 const { data: properties } = await supabase.from('properties').select('*');
 const { data: blogPosts } = await supabase.from('blog_posts').select('locale, category, published');

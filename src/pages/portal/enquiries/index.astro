@@ -16,8 +16,9 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import Ago from '~/components/portal/Ago.astro';
 import { icon } from '~/lib/portal/icons';
-import { timeAgo, hoursSince } from '~/lib/portal/time';
+import { hoursSince } from '~/lib/portal/time';
 
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
@@ -30,6 +31,7 @@ const [{ data: enquiries }, openCount, handledCount] = await Promise.all([
     .select('*')
     .eq('handled', tab === 'handled')
     .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
     .limit(200),
   supabase.from('enquiries').select('id', { count: 'exact', head: true }).eq('handled', false),
   supabase.from('enquiries').select('id', { count: 'exact', head: true }).eq('handled', true),
@@ -103,7 +105,7 @@ const initials = (name: string) =>
                 <div class="id">
                   <b>{e.name}</b>
                   <span class="when">
-                    {dateFmt.format(new Date(e.created_at))} · {timeAgo(e.created_at)}
+                    <Ago iso={e.created_at} />
                     {e.locale === 'nl' ? ' · holland' : ''}
                   </span>
                 </div>

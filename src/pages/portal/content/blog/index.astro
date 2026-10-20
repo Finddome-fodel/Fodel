@@ -9,8 +9,8 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import Ago from '~/components/portal/Ago.astro';
 import { icon } from '~/lib/portal/icons';
-import { timeAgo } from '~/lib/portal/time';
 import { BLOG_LOCALES, isBlogLocale, PLACEHOLDER_PREFIX } from '~/lib/blog';
 
 const { supabase, profile } = Astro.locals;
@@ -20,7 +20,7 @@ const params = Astro.url.searchParams;
 const localeFilter = isBlogLocale(params.get('locale')) ? params.get('locale')! : '';
 const kindFilter = params.get('kind') === 'case_study' ? 'case_study' : params.get('kind') === 'article' ? 'article' : '';
 
-const { data: rows } = await supabase.from('blog_posts').select('*').order('updated_at', { ascending: false });
+const { data: rows } = await supabase.from('blog_posts').select('*').order('updated_at', { ascending: false }).order('id', { ascending: false });
 const all = (rows ?? []).map((row: any) => ({ ...row, kind: row.kind === 'case_study' ? 'case_study' : 'article' }));
 
 type Post = (typeof all)[number];
@@ -126,7 +126,7 @@ const LANG = { hu: 'Magyar', nl: 'Holland', en: 'Angol', de: 'Német' } as const
             <h3>{primary.title || '(névtelen)'}</h3>
             <span class="art-meta">
               <span class="state" data-state={stateOf(primary)}>{STATE_LABEL[stateOf(primary)]}</span>
-              <span>Frissítve {timeAgo(updated)}</span>
+              <span>Frissítve <Ago iso={updated} /></span>
             </span>
           </a>
           <ul class="langs" aria-label="Nyelvi változatok">

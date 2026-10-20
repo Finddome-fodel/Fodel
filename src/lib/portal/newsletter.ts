@@ -19,7 +19,7 @@ export function newsletterFilters(params: URLSearchParams): NewsletterFilters {
 }
 
 export async function loadSubscribers(supabase: any, f: NewsletterFilters) {
-  let query = supabase.from('newsletter_subscribers').select('*').order('created_at', { ascending: false }).limit(5000);
+  let query = supabase.from('newsletter_subscribers').select('*').order('created_at', { ascending: false }).order('id', { ascending: false }).limit(5000);
   if (f.status) query = query.eq('status', f.status);
   if (f.locale) query = query.eq('locale', f.locale);
   const { data, error } = await query;

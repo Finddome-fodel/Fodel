@@ -23,7 +23,7 @@ const diagnosis = migrated ? '' : await migrationDiagnosis(admin);
 const [settings, company, counters] = await Promise.all([
   loadInvoiceSettings(admin),
   getCompany(),
-  migrated ? admin.from('invoice_counters').select('series, n').order('series') : Promise.resolve({ data: [] as { series: string; n: number }[] }),
+  migrated ? admin.from('invoice_counters').select('series, n').order('series') /* counters, not records: by series */ : Promise.resolve({ data: [] as { series: string; n: number }[] }),
 ]);
 const issuer = buildIssuer(company, settings);
 const year = new Date().getFullYear();

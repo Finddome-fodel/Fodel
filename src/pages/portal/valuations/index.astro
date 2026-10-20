@@ -22,6 +22,7 @@ let query = supabase
   .from('valuations')
   .select('*')
   .order('created_at', { ascending: false })
+  .order('id', { ascending: false })
   .limit(200);
 if (filter) query = query.eq('status', filter);
 

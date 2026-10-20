@@ -28,6 +28,7 @@ let query = supabase
   .from('service_requests')
   .select('id, service_id, status, source, property_id, valuation_id, contact_name, contact_email, contact_phone, locale, note, admin_note, scheduled_for, created_at, properties(ref)')
   .order('created_at', { ascending: false })
+  .order('id', { ascending: false })
   .limit(300);
 if (filter === 'open') query = query.in('status', ['requested', 'scheduled']);
 else if (filter !== 'all') query = query.eq('status', filter);

@@ -1,0 +1,16 @@
+---
+/**
+ * A relative time ("12 perce") with the exact moment on hover and in the
+ * markup — every admin list shows its records this way (launch round).
+ */
+import { timeAgo, absoluteTime } from '~/lib/portal/time';
+
+interface Props {
+  iso: string | null | undefined;
+  class?: string;
+}
+
+const { iso, class: className } = Astro.props;
+---
+
+{iso ? <time class={className} datetime={iso} title={absoluteTime(iso)}>{timeAgo(iso)}</time> : <span class={className}>—</span>}

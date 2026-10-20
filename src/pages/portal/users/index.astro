@@ -3,10 +3,10 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import Ago from '~/components/portal/Ago.astro';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { LOCALE_LABEL } from '~/lib/portal/labels';
 import { icon } from '~/lib/portal/icons';
-import { timeAgo } from '~/lib/portal/time';
 
 const { supabase, user } = Astro.locals;
 const tab = Astro.url.searchParams.get('tab') === 'abandoned' ? 'abandoned' : 'registered';
@@ -14,13 +14,15 @@ const tab = Astro.url.searchParams.get('tab') === 'abandoned' ? 'abandoned' : 'r
 const { data: profiles } = await supabase
   .from('profiles')
   .select('id, role, full_name, email, phone, created_at, locale')
-  .order('created_at', { ascending: false });
+  .order('created_at', { ascending: false })
+  .order('id', { ascending: false });
 
 const { data: openInvites } = await supabase
   .from('invites')
   .select('id, email, role, expires_at, created_at, invited_by, payload')
   .is('accepted_at', null)
-  .order('created_at', { ascending: false });
+  .order('created_at', { ascending: false })
+  .order('id', { ascending: false });
 
 // Two different things share the invites table. An admin's invite is a
 // pending invitation. A row with no inviter was created by the public ad form
@@ -142,7 +144,7 @@ const lockedOut = (profiles ?? []).filter((p) => bannedIds.has(p.id)).length;
                 <td>{row.phone || '—'}</td>
                 <td>{row.place || '—'}</td>
                 <td>
-                  {new Date(row.latest.created_at).toLocaleDateString('hu-HU')}
+                  <Ago iso={row.latest.created_at} />
                   {row.attempts > 1 && <><br /><span class="sub">{row.attempts} próbálkozás</span></>}
                 </td>
                 <td>{row.linkValid ? <span class="pill">Folyamatban (link érvényes)</span> : <span class="pill pill-off">Félbehagyva (link lejárt)</span>}</td>
@@ -174,7 +176,7 @@ const lockedOut = (profiles ?? []).filter((p) => bannedIds.has(p.id)).length;
             <span>{p.full_name ? p.email : ''}{p.phone ? ` · ${p.phone}` : ''}</span>
           </div>
           <span class:list={['role', p.role === 'admin' && 'role-admin']}>{p.role === 'admin' ? 'Admin' : 'Hirdető'}</span>
-          <span class="meta">{count} hirdetés<small>{LOCALE_LABEL[p.locale] ?? p.locale} · regisztrált {timeAgo(p.created_at)}</small></span>
+          <span class="meta">{count} hirdetés<small>{LOCALE_LABEL[p.locale] ?? p.locale} · regisztrált <Ago iso={p.created_at} /></small></span>
           <span class="state" data-off={banned ? 'true' : undefined}>{banned ? 'Letiltva' : 'Aktív'}</span>
           {isSelf ? (
             <span class="menu-slot" />

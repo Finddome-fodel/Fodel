@@ -6,6 +6,7 @@ import { path } from '~/i18n/ui';
 import { SITE_URL } from '~/config/site.mjs';
 import { icon } from '~/lib/portal/icons';
 import BillingForm from '~/components/BillingForm.astro';
+import PhoneField from '~/components/forms/PhoneField.astro';
 import { eur, dateHu, KIND_LABEL } from '~/lib/invoicing/model';
 
 const { profile, supabase, user } = Astro.locals;
@@ -66,9 +67,9 @@ const billing = (billingRow as { billing?: Record<string, string> } | null)?.bil
       <h2>Adatok</h2>
       <div class="set-grid">
         <label>Teljes név<input id="full_name" name="full_name" value={profile?.full_name ?? ''} autocomplete="name" /></label>
-        <label>Telefonszám<input id="phone" name="phone" value={profile?.phone ?? ''} autocomplete="tel" /></label>
         <div class="wide ro"><span>E-mail cím</span><b>{profile?.email}</b></div>
       </div>
+      <div class="set-phone"><PhoneField locale={referralLocale} name="phone" id="phone" value={profile?.phone ?? ''} /></div>
       <div class="actions"><button type="submit" class="btn">Mentés</button></div>
     </form>
 

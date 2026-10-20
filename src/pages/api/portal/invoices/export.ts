@@ -14,6 +14,8 @@ const money = (cents: number): string => (cents / 100).toFixed(2).replace('.', '
 export const GET: APIRoute = async ({ url, locals }) => {
   if (locals.profile?.role !== 'admin') return new Response('Forbidden', { status: 403 });
   const month = url.searchParams.get('month') ?? '';
+  // Deliberate exception: the bookkeeper's export runs in issue order, the
+  // order the numbered series is kept in.
   let q = createSupabaseAdminClient().from('invoices').select('*').not('finalised_at', 'is', null).order('issued_at');
   if (/^\d{4}-\d{2}$/.test(month)) {
     const [y, m] = month.split('-').map(Number);

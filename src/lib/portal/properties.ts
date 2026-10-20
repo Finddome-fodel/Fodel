@@ -117,7 +117,8 @@ export async function listProperties(
   supabase: SupabaseClient,
   opts: { status?: string } = {}
 ): Promise<PortalProperty[]> {
-  let query = supabase.from('properties').select(SELECT).order('created_at', { ascending: false });
+  // Newest first, id as the tie-breaker; photos below keep their own sort_order.
+  let query = supabase.from('properties').select(SELECT).order('created_at', { ascending: false }).order('id', { ascending: false });
   if (opts.status) query = query.eq('status', opts.status);
   const { data, error } = await query;
   if (error) throw new Error(error.message);

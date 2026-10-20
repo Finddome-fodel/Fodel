@@ -70,7 +70,7 @@ export async function loadLedger(supabase: any, filters: LedgerFilters): Promise
       .from('payments')
       .select('*')
       .order('created_at', { ascending: false })
-      .order('id', { ascending: true })
+      .order('id', { ascending: false })
       .range(from, from + PAGE - 1);
     if (filters.status) query = query.eq('status', filters.status);
     if (filters.overdue) query = query.eq('status', 'pending').lt('due_at', new Date().toISOString());

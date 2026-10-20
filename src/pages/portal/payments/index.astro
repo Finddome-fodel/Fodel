@@ -16,6 +16,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import Ago from '~/components/portal/Ago.astro';
 import { loadLedger, ledgerFilters, totalsByCurrency, money } from '~/lib/portal/payments';
 import { PAYMENT_STATUS_LABEL as STATUS_LABEL, friendlyError } from '~/lib/portal/labels';
 import { ONSITE_SERVICES } from '~/config/company';
@@ -230,7 +231,7 @@ const nextMonth = new Date(Date.UTC(calYear, calMon, 1)).toISOString().slice(0, 
             {orderRows.map((o) => (
               <tr class:list={{ muted: o.status === 'cancelled' }}>
                 <td>
-                  {dateFmt.format(new Date(o.createdAt))}
+                  <Ago iso={o.createdAt} />
                   {o.paidAt && <><br /><span class="sub">Fizetve: {dateFmt.format(new Date(o.paidAt))}</span></>}
                   {o.refundedAt && <><br /><span class="sub">Visszatérítve: {dateFmt.format(new Date(o.refundedAt))}</span></>}
                 </td>

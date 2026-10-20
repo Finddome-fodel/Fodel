@@ -43,9 +43,11 @@ const expiringSoon = (p: (typeof all)[number]) => p.status === 'published' && p.
 const silent = (p: (typeof all)[number]) => p.status === 'published' && isUnresponsive(p, rules);
 const properties =
   view === 'curation'
-    ? scoped.filter((p) => p.editors_pick || p.bargain).sort((a, b) => a.editors_pick_order - b.editors_pick_order)
+    ? // Deliberate exception: the editors' pick keeps its curated order.
+      scoped.filter((p) => p.editors_pick || p.bargain).sort((a, b) => a.editors_pick_order - b.editors_pick_order)
     : view === 'expiring'
-      ? scoped.filter(expiringSoon).sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)))
+      ? // Deliberate exception: a deadline list, soonest expiry first.
+        scoped.filter(expiringSoon).sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)))
       : view === 'silent'
         ? scoped.filter(silent)
         : scoped;
@@ -590,6 +592,7 @@ const chips: [string, string][] = isAdmin
     bottom: 10px;
     background: rgba(250, 250, 248, 0.94);
     backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
   .info {
     padding: 14px 18px 18px;
@@ -636,6 +639,7 @@ const chips: [string, string][] = isAdmin
   .on-photo {
     background: rgba(250, 250, 248, 0.94);
     backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     color: var(--ink);
     box-shadow: var(--shadow-xs);
   }

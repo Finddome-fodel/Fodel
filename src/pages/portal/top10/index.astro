@@ -25,7 +25,8 @@ const MAX = 10;
 const { data: rows } = await supabase
   .from('properties')
   .select('id, ref, status, reserved, settlement, price_eur, editors_pick, editors_pick_order, featured, homepage_featured, property_translations(locale, title)')
-  .order('ref', { ascending: true });
+  .order('created_at', { ascending: false })
+  .order('id', { ascending: false });
 
 type Row = NonNullable<typeof rows>[number];
 const titleOf = (row: Row) =>
@@ -34,6 +35,7 @@ const isLive = (row: Row) => row.status === 'published' && !row.reserved;
 const hiddenReason = (row: Row) =>
   row.status === 'published' && row.reserved ? 'Foglalt' : STATUS_LABEL[row.status] ?? row.status;
 
+// Deliberate exception: the Top 10 itself keeps the editors' order.
 const selected = (rows ?? [])
   .filter((row) => row.editors_pick)
   .sort((a, b) => a.editors_pick_order - b.editors_pick_order);
