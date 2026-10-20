@@ -4,14 +4,29 @@
  * aria-describedby, and required fields are marked in text as well as with
  * the attribute — the prototype's forms had labels but no association,
  * no validation and no error surface at all.
+ *
+ * Launch round: every field says "(kötelező)" or "(nem kötelező)", carries
+ * the keyboard hints a phone needs (`inputmode`, `enterkeyhint`,
+ * `autocomplete`) and a `data-rule` that FormShell checks on blur and on
+ * submit with the same rules the server runs (src/lib/validation.ts).
+ *
+ * `type="number"` renders a text field with a numeric keyboard rather than
+ * <input type=number>: the native control throws away "64.000.000" or
+ * "1 200 000" — exactly how people write a price — and spins the value when
+ * the page is scrolled over it. The server reads those forms correctly.
+ *
+ * `type="tel"` renders PhoneField.astro (country picker + number), so every
+ * form that asks for a phone gets the international field.
  */
 import { UI, type Locale } from '~/i18n/ui';
+import PhoneField from './PhoneField.astro';
+import '~/styles/fields.css';
 
 interface Props {
   locale: Locale;
   name: string;
   label: string;
-  type?: 'text' | 'email' | 'tel' | 'number' | 'url' | 'textarea' | 'select';
+  type?: 'text' | 'email' | 'tel' | 'number' | 'url' | 'textarea' | 'select' | 'postcode';
   required?: boolean;
   placeholder?: string;
   autocomplete?: string;
@@ -23,7 +38,12 @@ interface Props {
   onDark?: boolean;
   min?: number;
   max?: number;
+  maxlength?: number;
   span?: 'full' | 'half';
+  inputmode?: 'text' | 'numeric' | 'decimal' | 'email' | 'tel' | 'url' | 'search' | 'none';
+  enterkeyhint?: 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send';
+  /** `type="postcode"`: the name of the field holding the address's ISO country code. */
+  countryField?: string;
 }
 
 const {
@@ -41,7 +61,11 @@ const {
   onDark = false,
   min,
   max,
+  maxlength,
   span = 'full',
+  inputmode,
+  enterkeyhint,
+  countryField,
 } = Astro.props;
 
 const ui = UI[locale];
@@ -49,9 +73,20 @@ const id = `f-${name}`;
 const errorId = `${id}-error`;
 const hintId = hint ? `${id}-hint` : undefined;
 const describedBy = [hintId, errorId].filter(Boolean).join(' ');
+
+/** What FormShell and the server check this value against. */
+const rule = { email: 'email', tel: 'phone', number: 'number', url: 'url', postcode: 'postcode' }[type as string];
+const htmlType = (type === 'number' || type === 'postcode' ? 'text' : type) as 'text' | 'email' | 'tel' | 'url';
+const keyboard =
+  inputmode ?? (type === 'number' ? 'decimal' : type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'url' ? 'url' : undefined);
+const autoComplete =
+  autocomplete ?? (type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'postcode' ? 'postal-code' : undefined);
 ---
 
-<div class:list={['field', `span-${span}`, { 'on-dark': onDark }]}>
+{type === 'tel' ? (
+  <PhoneField locale={locale} name={name} label={label} required={required} value={value} hint={hint} onDark={onDark} span={span} enterkeyhint={enterkeyhint === 'next' || enterkeyhint === 'done' || enterkeyhint === 'send' || enterkeyhint === 'go' ? enterkeyhint : undefined} />
+) : (
+<div class:list={['field', 'fld', `span-${span}`, { 'on-dark': onDark }]}>
   <label for={id}>
     {label}
     <span class="req">{required ? `(${ui.form.required})` : `(${ui.form.optional})`}</span>
@@ -68,7 +103,10 @@ const describedBy = [hintId, errorId].filter(Boolean).join(' ');
         required={required}
         placeholder={placeholder}
         aria-describedby={describedBy}
-        autocomplete={autocomplete}
+        autocomplete={autoComplete}
+        maxlength={maxlength}
+        enterkeyhint={enterkeyhint}
+        data-label={label}
       >{value}</textarea>
     ) : type === 'select' ? (
       <select
@@ -76,7 +114,8 @@ const describedBy = [hintId, errorId].filter(Boolean).join(' ');
         name={name}
         required={required}
         aria-describedby={describedBy}
-        autocomplete={autocomplete}
+        autocomplete={autoComplete}
+        data-label={label}
       >
         {options.map((o) => (
           <option value={o.value} selected={o.value === value}>
@@ -88,171 +127,26 @@ const describedBy = [hintId, errorId].filter(Boolean).join(' ');
       <input
         id={id}
         name={name}
-        type={type}
+        type={htmlType}
         required={required}
         placeholder={placeholder}
         value={value}
-        min={min}
-        max={max}
         aria-describedby={describedBy}
-        autocomplete={autocomplete}
+        autocomplete={autoComplete}
+        inputmode={keyboard}
+        enterkeyhint={enterkeyhint}
+        maxlength={maxlength}
+        autocapitalize={type === 'email' || type === 'url' ? 'off' : type === 'postcode' ? 'characters' : undefined}
+        spellcheck={type === 'email' || type === 'url' ? 'false' : undefined}
+        data-rule={rule}
+        data-min={min}
+        data-max={max}
+        data-country-field={countryField}
+        data-label={label}
       />
     )
   }
 
   <p class="error" id={errorId} hidden></p>
 </div>
-
-<style>
-  .field {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 18px;
-  }
-  .span-half {
-    grid-column: span 1;
-  }
-  .span-full {
-    grid-column: 1 / -1;
-  }
-
-  /* 2.0: labels in sentence case at reading size, as a form for people who
-     are not in a hurry should be. */
-  label {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 2px 8px;
-    font-family: var(--sans);
-    font-size: var(--fs-small);
-    font-weight: var(--fw-medium);
-    line-height: 1.4;
-    color: var(--ink);
-    margin-bottom: 9px;
-  }
-  .req {
-    font-size: 13px;
-    font-weight: var(--fw-regular);
-    color: var(--taupe);
-  }
-  .hint {
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: var(--taupe);
-    margin: -3px 0 9px;
-  }
-
-  input,
-  textarea,
-  select {
-    width: 100%;
-    min-height: 54px;
-    padding: 14px 18px;
-    border: 1px solid rgba(16, 42, 67, 0.16);
-    border-radius: var(--r-sm);
-    background: var(--white);
-    font-weight: var(--fw-body);
-    font-size: var(--fs-body);
-    line-height: 1.4;
-    color: var(--ink);
-    outline: none;
-    transition:
-      border-color 0.3s var(--ease-out),
-      box-shadow 0.3s var(--ease-out),
-      background-color 0.3s var(--ease-out);
-  }
-  input::placeholder,
-  textarea::placeholder {
-    color: var(--taupe);
-    opacity: 0.7;
-  }
-  textarea {
-    resize: vertical;
-    min-height: 128px;
-  }
-  select {
-    appearance: none;
-    cursor: pointer;
-    padding-right: 48px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' fill='none' stroke='%23102a43' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-position: right 18px center;
-    background-size: 12px 8px;
-    background-repeat: no-repeat;
-  }
-
-  input:hover,
-  textarea:hover,
-  select:hover {
-    border-color: rgba(16, 42, 67, 0.34);
-  }
-  input:focus,
-  textarea:focus,
-  select:focus {
-    border-color: var(--ink);
-    box-shadow: 0 0 0 4px rgba(16, 42, 67, 0.08);
-  }
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible {
-    outline: none;
-  }
-
-  input[aria-invalid='true'],
-  textarea[aria-invalid='true'],
-  select[aria-invalid='true'] {
-    border-color: #b3261e;
-    box-shadow: 0 0 0 4px rgba(179, 38, 30, 0.08);
-  }
-
-  .error {
-    font-size: 13.5px;
-    line-height: 1.5;
-    color: #b3261e;
-    margin-top: 7px;
-  }
-  .error[hidden] {
-    display: none;
-  }
-
-  /* Dark panels */
-  .on-dark label {
-    color: var(--on-dark-strong);
-  }
-  .on-dark .req,
-  .on-dark .hint {
-    color: var(--on-dark-muted);
-  }
-  .on-dark input,
-  .on-dark textarea,
-  .on-dark select {
-    background-color: rgba(244, 244, 242, 0.06);
-    border-color: rgba(244, 244, 242, 0.2);
-    color: var(--cream);
-  }
-  .on-dark select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' fill='none' stroke='%23f4f4f2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  }
-  .on-dark select option {
-    color: var(--ink);
-  }
-  .on-dark input::placeholder,
-  .on-dark textarea::placeholder {
-    color: var(--on-dark-faint);
-    opacity: 1;
-  }
-  .on-dark input:hover,
-  .on-dark textarea:hover,
-  .on-dark select:hover {
-    border-color: rgba(244, 244, 242, 0.4);
-  }
-  .on-dark input:focus,
-  .on-dark textarea:focus,
-  .on-dark select:focus {
-    border-color: var(--cream);
-    background-color: rgba(244, 244, 242, 0.09);
-    box-shadow: 0 0 0 4px rgba(244, 244, 242, 0.1);
-  }
-  .on-dark .error {
-    color: #f0b4ae;
-  }
-</style>
+)}

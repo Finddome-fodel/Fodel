@@ -11,16 +11,35 @@
  */
 
 import type { APIContext } from 'astro';
-import { Resend } from 'resend';
 import { logEvent } from '~/lib/activity';
 import { SITE_HOST } from '~/config/site.mjs';
 import { senderAddress, officeInbox, replyToAddress } from '~/lib/email/routing';
+import { sendEmail } from '~/lib/email/send';
+import {
+  validateField,
+  normalizePhone,
+  normalizePostcode,
+  normalizeNumber,
+  isPhoneCountry,
+  defaultPhoneCountry,
+  type FieldError,
+  type FieldRule as ValidationRule,
+} from '~/lib/validation';
 
 export type FieldRule = {
   name: string;
   required?: boolean;
-  type?: 'text' | 'email' | 'tel' | 'number';
+  /**
+   * `tel` is checked with libphonenumber against the country picked beside it
+   * (`<name>Country`, posted by PhoneField.astro) and stored as E.164.
+   * `number` accepts "64.000.000" and "1 200 000" the way people write them.
+   */
+  type?: 'text' | 'email' | 'tel' | 'number' | 'postcode' | 'url';
   maxLength?: number;
+  min?: number;
+  max?: number;
+  /** For `postcode`: the field holding the ISO country code. */
+  countryField?: string;
   /** Shown to FODEL in the email; keeps the message readable. */
   label: string;
 };
@@ -44,7 +63,7 @@ export interface FormDefinition {
     form: FormData
   ) => Promise<void | Record<string, unknown>>;
   /** Cross-field rules the per-field rules cannot express (e.g. "phone is required when a callback is chosen"). */
-  refine?: (values: Record<string, string>) => Record<string, string>;
+  refine?: (values: Record<string, string>) => Record<string, FieldError>;
   /** Critical persistence hooks return an error instead of false success. */
   requireSuccess?: boolean;
   /**
@@ -63,8 +82,6 @@ export interface FormDefinition {
    */
   activityKind: string;
 }
-
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
 /** Humans do not complete and submit a form in under three seconds. */
 const MIN_FILL_MS = 3000;
@@ -85,37 +102,63 @@ function rateLimited(ip: string): boolean {
 export interface ValidationResult {
   ok: boolean;
   values: Record<string, string>;
-  errors: Record<string, string>;
+  /** Field name → what is wrong, in the shape src/lib/validation.ts words in hu/nl. */
+  errors: Record<string, FieldError>;
 }
 
+const RULE_OF: Record<NonNullable<FieldRule['type']>, ValidationRule> = {
+  text: 'text',
+  email: 'email',
+  tel: 'phone',
+  number: 'number',
+  postcode: 'postcode',
+  url: 'url',
+};
+
+/**
+ * The same rules the browser ran (src/lib/validation.ts), run again here —
+ * never trust the client. A valid phone number is rewritten to E.164 and a
+ * postcode to its usual form, so what is stored and emailed is clean.
+ */
 export function validate(form: FormData, def: FormDefinition): ValidationResult {
   const values: Record<string, string> = {};
-  const errors: Record<string, string> = {};
+  const errors: Record<string, FieldError> = {};
+  const locale = form.get('locale') === 'nl' ? 'nl' : 'hu';
 
   for (const field of def.fields) {
     const raw = form.get(field.name);
     const value = typeof raw === 'string' ? raw.trim() : '';
+    const rule = RULE_OF[field.type ?? 'text'];
+    const pickedCountry = String(form.get(`${field.name}Country`) ?? '');
+    const country =
+      rule === 'phone'
+        ? (isPhoneCountry(pickedCountry) ? pickedCountry : defaultPhoneCountry(locale))
+        : field.countryField
+          ? String(form.get(field.countryField) ?? '').toUpperCase()
+          : undefined;
 
-    if (field.required && !value) {
-      errors[field.name] = 'required';
+    const error = validateField(
+      { rule, required: field.required, maxLength: field.maxLength, min: field.min, max: field.max },
+      value,
+      country
+    );
+    if (error) {
+      errors[field.name] = error;
       continue;
     }
-    if (value && field.type === 'email' && !EMAIL_RE.test(value)) {
-      errors[field.name] = 'email';
-      continue;
+    if (value && rule === 'phone' && isPhoneCountry(country)) {
+      const phone = normalizePhone(value, country);
+      values[field.name] = phone.ok ? phone.e164 : value;
+    } else if (value && rule === 'number') {
+      values[field.name] = normalizeNumber(value);
+    } else if (value && rule === 'postcode' && country) {
+      values[field.name] = normalizePostcode(value, country);
+    } else {
+      values[field.name] = value;
     }
-    if (value && field.type === 'number' && !Number.isFinite(Number(value))) {
-      errors[field.name] = 'number';
-      continue;
-    }
-    if (field.maxLength && value.length > field.maxLength) {
-      errors[field.name] = 'too-long';
-      continue;
-    }
-    values[field.name] = value;
   }
 
-  if (form.get('consent') !== 'yes') errors.consent = 'required';
+  if (form.get('consent') !== 'yes') errors.consent = { code: 'consent' };
 
   return { ok: Object.keys(errors).length === 0, values, errors };
 }
@@ -171,7 +214,7 @@ function buildEmail(def: FormDefinition, values: Record<string, string>, extras:
 
 const ACK = {
   hu: {
-    subject: 'Köszönjük megkeresését — FODEL',
+    subject: 'Köszönjük megkeresését | FODEL',
     body: (name: string, phones: string, hours: string) =>
       `<p>Kedves ${escapeHtml(name || 'Érdeklődőnk')}!</p>
        <p>Köszönjük, hogy felvette velünk a kapcsolatot. Üzenetét megkaptuk, munkatársunk hamarosan jelentkezik. ${escapeHtml(hours)}</p>
@@ -179,7 +222,7 @@ const ACK = {
        <p>Üdvözlettel,<br>FODEL Ingatlan</p>`,
   },
   nl: {
-    subject: 'Bedankt voor uw bericht — FODEL',
+    subject: 'Bedankt voor uw bericht | FODEL',
     body: (name: string, phones: string, hours: string) =>
       `<p>Beste ${escapeHtml(name || 'bezoeker')},</p>
        <p>Bedankt voor uw bericht. Wij hebben het ontvangen; een medewerker neemt spoedig contact met u op. ${escapeHtml(hours)}</p>
@@ -283,11 +326,12 @@ export async function handleForm(
   }).catch(() => {});
 
   const html = buildEmail(def, result.values, extras);
-  const apiKey = import.meta.env.RESEND_API_KEY;
   const inbox = officeInbox();
   const from = senderAddress('website');
 
-  if (!apiKey) {
+  // Capture mode (end-to-end tests) counts as a transport: the messages land in
+  // .e2e/outbox/ instead of Resend, exactly as the portal's own emails do.
+  if (!import.meta.env.RESEND_API_KEY && import.meta.env.EMAIL_TRANSPORT !== 'capture') {
     // Local development: log rather than fail, so forms are testable offline.
     console.warn(`[form:${def.id}] RESEND_API_KEY unset — submission logged, not sent`);
     console.info(result.values, extras);
@@ -302,18 +346,19 @@ export async function handleForm(
   }
 
   try {
-    const resend = new Resend(apiKey);
     const subject = extras.propertyRef
       ? `${def.subject} — #${extras.propertyRef}`
       : def.subject;
 
-    await resend.emails.send({
+    // sendEmail retries a transient 429/5xx itself; `false` means it gave up.
+    const delivered = await sendEmail({
       from,
       to: inbox,
       subject,
       html,
       replyTo: result.values.email || undefined,
     });
+    if (!delivered) throw new Error('office notification not delivered');
 
     // Acknowledge to the sender so they know it arrived.
     if (result.values.email && !def.skipAck) {
@@ -322,7 +367,7 @@ export async function handleForm(
       const { hoursSentence } = await import('~/lib/hours');
       const company = await getCompany();
       const phones = company.phones.filter((phone) => phone.public).map((phone) => phone.display).join(' / ');
-      await resend.emails.send({
+      await sendEmail({
         from,
         to: result.values.email,
         subject: ack.subject,

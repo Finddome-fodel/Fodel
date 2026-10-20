@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { handleForm } from '~/lib/form-handler';
+import type { FieldError } from '~/lib/validation';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { pushEnquiryToCrm } from '~/lib/crm';
@@ -27,8 +28,8 @@ export const POST: APIRoute = (context) =>
       { name: 'message', label: 'Üzenet / Bericht', maxLength: 4000 },
     ],
     // A callback is useless without a number; an e-mail reply needs none.
-    refine: (values): Record<string, string> =>
-      values.contact_pref !== 'email' && !values.phone ? { phone: 'required' } : {},
+    refine: (values): Record<string, FieldError> =>
+      values.contact_pref !== 'email' && !values.phone ? { phone: { code: 'required' } } : {},
     onSuccess: async (values, extras) => {
       const ref = extras.propertyRef;
       if (!ref) return; // enquiry sent without property context — nothing to persist against

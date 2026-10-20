@@ -41,7 +41,7 @@ export const POST: APIRoute = (context) => handleForm(context, {
   fields: [
     { name: 'name', label: 'Név', required: true, maxLength: 120 },
     { name: 'email', label: 'E-mail', type: 'email', required: true, maxLength: 160 },
-    optional('phone','Telefon',40),
+    { name: 'phone', label: 'Telefon', type: 'tel', maxLength: 40 },
     { name: 'category', label: 'Típus', required: true, maxLength: 60 },
     { name: 'settlement', label: 'Település', required: true, maxLength: 120 },
     { name: 'floorM2', label: 'Alapterület (m²)', required: true, type: 'number', maxLength: 12 },

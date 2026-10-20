@@ -25,11 +25,11 @@ const hu = locale === 'hu';
 
 const t = hu
   ? {
-      metaTitle: 'Kerestető — Ingyenes ingatlankeresés',
+      metaTitle: 'Kerestető: ingyenes ingatlankeresés',
       metaDescription:
-        'Nem találta meg, amit keres? Adja meg az igényeit, és megkeressük Önnek — a hirdetéseinken kívüli kínálatból is. A szolgáltatás ingyenes.',
+        'Nem találta meg, amit keres? Adja meg az igényeit, és megkeressük Önnek, a hirdetéseinken kívüli kínálatból is. A szolgáltatás ingyenes.',
       eyebrow: 'Kerestető',
-      title: 'Mondja el, mit keres —',
+      title: 'Mondja el, mit keres,',
       titleEm: 'mi megkeressük',
       body: 'Ha a kínálatunkban nem talált megfelelőt, adja meg az igényeit. Magyar partnerhálózatunkon keresztül olyan ingatlanokat is elérünk, amelyek még nem szerepelnek a weboldalon. A szolgáltatás díjmentes.',
       howHead: 'Hogyan működik?',
@@ -37,7 +37,7 @@ const t = hu
         { n: '01', t: 'Kitölti az űrlapot', b: 'Megadja a típust, a régiót, a keretösszeget és az elvárásait.' },
         { n: '02', t: 'Keresünk', b: 'Partnereinkkel átnézzük a kínálatot, a nem hirdetett ingatlanokat is.' },
         { n: '03', t: 'Értesítjük', b: 'E-mailben küldjük az Ön feltételeinek megfelelő ingatlanokat.' },
-        { n: '04', t: 'Kísérjük', b: 'Megtekintés, áralku, kétnyelvű szerződés — végig Ön mellett vagyunk.' },
+        { n: '04', t: 'Kísérjük', b: 'Megtekintés, áralku, kétnyelvű szerződés: végig Ön mellett vagyunk.' },
       ],
       formHead: 'Ingyenes keresési megbízás',
       free: 'Díjmentes',
@@ -47,11 +47,11 @@ const t = hu
         'Megkaptuk a keresési igényét. Amint találunk az Ön feltételeinek megfelelő ingatlant, e-mailben értesítjük.',
     }
   : {
-      metaTitle: 'Zoekdienst — Gratis zoekopdracht in Hongarije',
+      metaTitle: 'Zoekdienst: gratis zoekopdracht in Hongarije',
       metaDescription:
-        'Niet gevonden wat u zoekt? Geef uw wensen door en wij gaan voor u op zoek — ook buiten ons eigen aanbod. De zoekdienst is gratis.',
+        'Niet gevonden wat u zoekt? Geef uw wensen door en wij gaan voor u op zoek, ook buiten ons eigen aanbod. De zoekdienst is gratis.',
       eyebrow: 'Zoekdienst',
-      title: 'Vertel ons wat u zoekt —',
+      title: 'Vertel ons wat u zoekt,',
       titleEm: 'wij gaan op zoek',
       body: 'Staat het juiste pand niet bij ons aanbod? Geef uw wensen door. Via ons Hongaarse partnernetwerk bereiken wij ook woningen die nog niet online staan. De dienst is gratis.',
       howHead: 'Hoe werkt het?',
@@ -59,7 +59,7 @@ const t = hu
         { n: '01', t: 'U vult het formulier in', b: 'Type, streek, budget en uw specifieke wensen.' },
         { n: '02', t: 'Wij zoeken', b: 'Samen met onze partners, ook buiten het geadverteerde aanbod om.' },
         { n: '03', t: 'U hoort van ons', b: 'U ontvangt per e-mail wat aan uw criteria voldoet.' },
-        { n: '04', t: 'Wij begeleiden', b: 'Bezichtiging, onderhandeling en tweetalig contract — wij blijven erbij.' },
+        { n: '04', t: 'Wij begeleiden', b: 'Bezichtiging, onderhandeling en tweetalig contract: wij blijven erbij.' },
       ],
       formHead: 'Gratis zoekopdracht',
       free: 'Gratis',
@@ -116,7 +116,7 @@ const categoryOptions = taxonomy.category.filter((term) => term.enabled).map((te
       >
         <Field locale={locale} name="name" label={ui.form.name} required autocomplete="name" span="half" />
         <Field locale={locale} name="email" label={ui.form.email} type="email" required autocomplete="email" span="half" />
-        <Field locale={locale} name="phone" label={ui.form.phone} type="tel" autocomplete="tel" span="half" />
+        <Field locale={locale} name="phone" label={ui.form.phone} type="tel" autocomplete="tel" span="full" />
         <Field
           locale={locale}
           name="propertyType"
@@ -124,7 +124,7 @@ const categoryOptions = taxonomy.category.filter((term) => term.enabled).map((te
           type="select"
           required
           options={categoryOptions}
-          span="half"
+          span="full"
         />
         <Field
           locale={locale}

@@ -1,0 +1,473 @@
+---
+/**
+ * An international phone number: a country picker (flag and dial code,
+ * searchable) beside the number itself.
+ *
+ * Built in two layers. Without JavaScript it is a plain <select> of every
+ * country and a tel input — fully usable, and what the server reads
+ * (`<name>` and `<name>Country`). The script then replaces the select's look
+ * with a compact "🇳🇱 +31" button that opens a searchable list (the select
+ * stays in the form and keeps the value), formats the number as it is typed
+ * when the caret is at the end (never fighting a cursor placed mid-number),
+ * and moves the picker to the right country when someone types or pastes a
+ * number with its own +prefix.
+ *
+ * The default country follows the page (hu → HU +36, nl → NL +31); the
+ * common markets are listed first. Validation — on blur and on submit, in
+ * FormShell, and again on the server — is libphonenumber's, and the server
+ * stores the number in E.164 (src/lib/validation.ts, form-handler.ts).
+ */
+import { getCountries, getCountryCallingCode, type CountryCode } from 'libphonenumber-js/min';
+import { UI, type Locale } from '~/i18n/ui';
+import { COMMON_PHONE_COUNTRIES, defaultPhoneCountry, phoneExample, isPhoneCountry, normalizePhone } from '~/lib/validation';
+import '~/styles/fields.css';
+
+interface Props {
+  locale: Locale;
+  name?: string;
+  label?: string;
+  required?: boolean;
+  /** A stored number (E.164 or as typed); its country is picked automatically. */
+  value?: string | null;
+  country?: string;
+  hint?: string;
+  onDark?: boolean;
+  span?: 'full' | 'half';
+  enterkeyhint?: 'next' | 'done' | 'send' | 'go';
+  /** Overrides the input id (default `f-<name>`), for pages with two phone fields. */
+  id?: string;
+}
+
+const {
+  locale,
+  name = 'phone',
+  label,
+  required = false,
+  value,
+  country,
+  hint,
+  onDark = false,
+  span = 'full',
+  enterkeyhint = 'next',
+  id: idProp,
+} = Astro.props;
+
+const ui = UI[locale];
+const hu = locale === 'hu';
+const id = idProp ?? `f-${name}`;
+const countryId = `${id}-country`;
+const errorId = `${id}-error`;
+const hintId = `${id}-hint`;
+
+// A stored number decides its own country; otherwise the page's language.
+const stored = value ? normalizePhone(value, defaultPhoneCountry(locale)) : null;
+const selected: CountryCode =
+  (stored?.ok && stored.country) || (isPhoneCountry(country) ? country : defaultPhoneCountry(locale));
+const shownValue = stored?.ok ? stored.display : (value ?? '');
+
+const names = new Intl.DisplayNames([locale === 'hu' ? 'hu' : 'nl'], { type: 'region' });
+const flag = (code: string) => String.fromCodePoint(...[...code].map((c) => 0x1f1a5 + c.charCodeAt(0)));
+const entry = (code: CountryCode) => ({
+  code,
+  name: names.of(code) ?? code,
+  dial: `+${getCountryCallingCode(code)}`,
+  flag: flag(code),
+  example: phoneExample(code),
+});
+const common = COMMON_PHONE_COUNTRIES.map((code) => entry(code));
+const collator = new Intl.Collator(locale);
+const all = getCountries()
+  .map((code) => entry(code))
+  .sort((a, b) => collator.compare(a.name, b.name));
+const current = entry(selected);
+
+const t = {
+  country: hu ? 'Ország hívószáma' : 'Landcode',
+  common: hu ? 'Gyakori' : 'Veelgekozen',
+  all: hu ? 'Minden ország' : 'Alle landen',
+  search: hu ? 'Ország keresése' : 'Land zoeken',
+  none: hu ? 'Nincs találat' : 'Geen resultaten',
+  example: (ex: string) => (hu ? `Például: ${ex}` : `Bijvoorbeeld: ${ex}`),
+};
+---
+
+<div class:list={['field', 'fld', 'phone-field', `span-${span}`, { 'on-dark': onDark }]} data-phone-field data-locale={locale}>
+  <label for={id}>
+    {label ?? ui.form.phone}
+    <span class="req">{required ? `(${ui.form.required})` : `(${ui.form.optional})`}</span>
+  </label>
+  <p class="hint" id={hintId} data-hint-custom={hint ? '' : undefined} data-example-label={hu ? 'Például:' : 'Bijvoorbeeld:'}>
+    {hint ?? t.example(current.example)}
+  </p>
+
+  <div class="pf-row">
+    <div class="pf-country">
+      <label class="sr-only" for={countryId}>{t.country}</label>
+      <select id={countryId} name={`${name}Country`} class="pf-select" autocomplete="tel-country-code">
+        <optgroup label={t.common}>
+          {common.map((c) => (
+            <option value={c.code} selected={c.code === selected} data-dial={c.dial} data-flag={c.flag} data-example={c.example}>
+              {c.flag} {c.name} ({c.dial})
+            </option>
+          ))}
+        </optgroup>
+        <optgroup label={t.all}>
+          {all.map((c) => (
+            <option value={c.code} data-dial={c.dial} data-flag={c.flag} data-example={c.example}>
+              {c.flag} {c.name} ({c.dial})
+            </option>
+          ))}
+        </optgroup>
+      </select>
+    </div>
+    <input
+      id={id}
+      name={name}
+      type="tel"
+      inputmode="tel"
+      autocomplete="tel"
+      enterkeyhint={enterkeyhint}
+      required={required}
+      value={shownValue}
+      placeholder={current.example.replace(`${current.dial} `, '')}
+      maxlength={40}
+      aria-describedby={`${hintId} ${errorId}`}
+      data-rule="phone"
+      data-country-input={countryId}
+      data-label={label ?? ui.form.phone}
+    />
+  </div>
+  <p class="error" id={errorId} hidden></p>
+
+  <template data-pf-strings data-search={t.search} data-none={t.none} data-label={t.country}></template>
+</div>
+
+<script>
+  // The phone metadata (~80 kB) is fetched the first time a phone field is
+  // focused, not with the page: most visitors to a listing never type a number.
+  type Lib = typeof import('~/lib/validation');
+  let lib: Lib | null = null;
+  const loadLib = async () => (lib ??= await import('~/lib/validation'));
+
+  function enhance(root: HTMLElement) {
+    const select = root.querySelector<HTMLSelectElement>('.pf-select');
+    const input = root.querySelector<HTMLInputElement>('input[type="tel"]');
+    const hint = root.querySelector<HTMLElement>('.hint');
+    const strings = root.querySelector<HTMLTemplateElement>('[data-pf-strings]')?.dataset ?? {};
+    if (!select || !input || root.dataset.enhanced) return;
+    root.dataset.enhanced = '';
+
+    const uid = select.id;
+    const options = () => Array.from(select.querySelectorAll('optgroup:last-of-type option')) as HTMLOptionElement[];
+    const commonCodes = new Set(Array.from(select.querySelectorAll('optgroup:first-of-type option')).map((o) => (o as HTMLOptionElement).value));
+    const optionFor = (code: string) => select.querySelector<HTMLOptionElement>(`option[value="${code}"]`);
+
+    // The compact trigger that stands in for the select.
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'pf-trigger';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    select.parentElement!.append(trigger);
+    select.classList.add('pf-select-hidden');
+    select.tabIndex = -1;
+    select.setAttribute('aria-hidden', 'true');
+
+    const pop = document.createElement('div');
+    pop.className = 'pf-pop';
+    pop.hidden = true;
+    const search = document.createElement('input');
+    search.type = 'search';
+    search.className = 'pf-search';
+    search.placeholder = strings.search ?? '';
+    search.setAttribute('aria-label', strings.search ?? '');
+    search.setAttribute('role', 'combobox');
+    search.setAttribute('aria-autocomplete', 'list');
+    search.setAttribute('aria-expanded', 'true');
+    search.setAttribute('aria-controls', `${uid}-list`);
+    search.autocomplete = 'off';
+    search.setAttribute('enterkeyhint', 'done');
+    const list = document.createElement('ul');
+    list.id = `${uid}-list`;
+    list.className = 'pf-list';
+    list.setAttribute('role', 'listbox');
+    list.setAttribute('aria-label', strings.label ?? '');
+    pop.append(search, list);
+    select.parentElement!.append(pop);
+
+    const paint = () => {
+      const o = select.selectedOptions[0];
+      trigger.innerHTML = `<span class="pf-flag" aria-hidden="true">${o?.dataset.flag ?? ''}</span><span class="pf-dial">${o?.dataset.dial ?? ''}</span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      trigger.setAttribute('aria-label', `${strings.label}: ${o?.textContent?.replace(/^\S+\s/, '').trim() ?? ''}`);
+      // The picker already shows the dial code; the field shows the rest.
+      input.placeholder = (o?.dataset.example ?? '').replace(`${o?.dataset.dial ?? ''} `, '');
+      if (hint && !hint.hasAttribute('data-hint-custom') && o?.dataset.example) {
+        hint.textContent = `${hint.dataset.exampleLabel} ${o.dataset.example}`;
+      }
+    };
+
+    const setCountry = (code: string) => {
+      if (!optionFor(code) || select.value === code) return;
+      select.value = code;
+      paint();
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
+    let active = 0;
+    let shown: HTMLOptionElement[] = [];
+    const render = () => {
+      const q = search.value.trim().toLowerCase().replace(/^\+/, '');
+      const pool = options();
+      // Common markets first when nothing is typed; everything matching when it is.
+      shown = q
+        ? pool.filter((o) => o.textContent!.toLowerCase().includes(q) || o.value.toLowerCase() === q || (o.dataset.dial ?? '').slice(1).startsWith(q))
+        : [...pool.filter((o) => commonCodes.has(o.value)).sort((a, b) => [...commonCodes].indexOf(a.value) - [...commonCodes].indexOf(b.value)), ...pool.filter((o) => !commonCodes.has(o.value))];
+      list.innerHTML = '';
+      if (!shown.length) {
+        const li = document.createElement('li');
+        li.className = 'pf-none';
+        li.textContent = strings.none ?? '';
+        list.append(li);
+        search.removeAttribute('aria-activedescendant');
+        return;
+      }
+      shown.forEach((o, i) => {
+        const li = document.createElement('li');
+        li.id = `${uid}-opt-${o.value}`;
+        li.setAttribute('role', 'option');
+        li.dataset.code = o.value;
+        li.setAttribute('aria-selected', String(o.value === select.value));
+        li.innerHTML = `<span class="pf-flag" aria-hidden="true">${o.dataset.flag}</span><span class="pf-name"></span><span class="pf-code">${o.dataset.dial}</span>`;
+        li.querySelector('.pf-name')!.textContent = o.textContent!.replace(/^\S+\s/, '').replace(/\s\(\+\d+\)$/, '');
+        if (i === active) li.classList.add('active');
+        list.append(li);
+      });
+      const current = list.children[active] as HTMLElement | undefined;
+      if (current?.id) search.setAttribute('aria-activedescendant', current.id);
+      current?.scrollIntoView({ block: 'nearest' });
+    };
+
+    const open = () => {
+      pop.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      search.value = '';
+      active = 0;
+      render();
+      const at = shown.findIndex((o) => o.value === select.value);
+      if (at > 0) {
+        active = at;
+        render();
+      }
+      search.focus();
+    };
+    const close = (focusTrigger = true) => {
+      if (pop.hidden) return;
+      pop.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      if (focusTrigger) trigger.focus();
+    };
+    const choose = (code: string) => {
+      setCountry(code);
+      close(false);
+      input.focus();
+      void reformat();
+    };
+
+    trigger.addEventListener('click', () => (pop.hidden ? open() : close()));
+    search.addEventListener('input', () => {
+      active = 0;
+      render();
+    });
+    search.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        active = Math.max(0, Math.min(shown.length - 1, active + (e.key === 'ArrowDown' ? 1 : -1)));
+        render();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (shown[active]) choose(shown[active].value);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+      } else if (e.key === 'Tab') {
+        close(false);
+      }
+    });
+    // pointerdown, not click, so the choice lands before the search field blurs.
+    list.addEventListener('pointerdown', (e) => {
+      const li = (e.target as Element).closest<HTMLElement>('[data-code]');
+      if (!li) return;
+      e.preventDefault();
+      choose(li.dataset.code!);
+    });
+    document.addEventListener('pointerdown', (e) => {
+      if (!pop.hidden && !root.querySelector('.pf-country')!.contains(e.target as Node)) close(false);
+    });
+    window.addEventListener('pageshow', () => close(false));
+
+    // Format as you type — only while the caret is at the end, so editing in
+    // the middle of a number is never interrupted by digits jumping about.
+    const reformat = async () => {
+      const { countryOfNumber, isPhoneCountry, formatPhoneAsYouType } = await loadLib();
+      const typed = countryOfNumber(input.value);
+      if (typed && isPhoneCountry(typed)) setCountry(typed);
+      if (input.selectionStart !== input.value.length) return;
+      const formatted = formatPhoneAsYouType(input.value, select.value as never);
+      if (formatted && formatted !== input.value) input.value = formatted;
+    };
+    input.addEventListener('focus', () => void loadLib(), { once: true });
+    input.addEventListener('input', (e) => {
+      // Deleting must stay deleting: reformatting after a backspace would put a
+      // just-removed space straight back.
+      if ((e as InputEvent).inputType?.startsWith('delete')) return;
+      void reformat();
+    });
+    select.addEventListener('change', paint);
+    paint();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-phone-field]').forEach(enhance);
+</script>
+
+<style>
+  .pf-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+  }
+  .pf-country {
+    position: relative;
+  }
+  /* Before the script runs (or without it) the native select is the picker. */
+  .pf-select {
+    width: 7.5em;
+    height: 100%;
+  }
+  .pf-select-hidden {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .pf-country :global(.pf-trigger) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    min-height: 54px;
+    padding: 0 14px 0 16px;
+    border: 1px solid rgba(16, 42, 67, 0.16);
+    border-radius: var(--r-sm);
+    background: var(--white);
+    font-family: var(--sans);
+    font-size: var(--fs-body);
+    color: var(--ink);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  }
+  .pf-country :global(.pf-trigger svg) {
+    color: var(--taupe);
+  }
+  .pf-country :global(.pf-trigger:focus-visible),
+  .pf-country :global(.pf-trigger[aria-expanded='true']) {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 4px rgba(16, 42, 67, 0.08);
+  }
+  .pf-country :global(.pf-flag) {
+    font-size: 1.15em;
+    line-height: 1;
+  }
+  .pf-country :global(.pf-pop) {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 60;
+    width: min(320px, calc(100vw - 48px));
+    padding: 8px;
+    border-radius: var(--r-lg);
+    background: var(--paper);
+    border: 1px solid rgba(16, 42, 67, 0.08);
+    box-shadow: var(--shadow-float);
+    color: var(--ink);
+  }
+  .pf-country :global(.pf-search) {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(16, 42, 67, 0.16);
+    border-radius: var(--r-sm);
+    background: var(--white);
+    font-size: var(--fs-body);
+    color: var(--ink);
+  }
+  .pf-country :global(.pf-search:focus) {
+    outline: none;
+    border-color: var(--ink);
+  }
+  .pf-country :global(.pf-list) {
+    max-height: 264px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+  }
+  .pf-country :global(.pf-list li[role='option']) {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 6px 10px;
+    border-radius: var(--r-xs);
+    font-size: var(--fs-small);
+    cursor: pointer;
+  }
+  .pf-country :global(.pf-list li.active),
+  .pf-country :global(.pf-list li[aria-selected='true']) {
+    background: rgba(16, 42, 67, 0.07);
+  }
+  @media (hover: hover) {
+    .pf-country :global(.pf-list li[role='option']:hover) {
+      background: rgba(16, 42, 67, 0.05);
+    }
+  }
+  .pf-country :global(.pf-name) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pf-country :global(.pf-code) {
+    color: var(--taupe);
+    font-variant-numeric: tabular-nums;
+  }
+  .pf-country :global(.pf-none) {
+    padding: 12px 10px;
+    font-size: var(--fs-small);
+    color: var(--taupe);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .on-dark .pf-country :global(.pf-trigger) {
+    background: rgba(244, 244, 242, 0.06);
+    border-color: rgba(244, 244, 242, 0.2);
+    color: var(--cream);
+  }
+  .on-dark .pf-country :global(.pf-trigger svg) {
+    color: var(--on-dark-muted);
+  }
+  .on-dark .pf-country :global(.pf-trigger:focus-visible),
+  .on-dark .pf-country :global(.pf-trigger[aria-expanded='true']) {
+    border-color: var(--cream);
+    box-shadow: 0 0 0 4px rgba(244, 244, 242, 0.1);
+  }
+</style>

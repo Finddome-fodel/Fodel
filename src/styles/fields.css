@@ -1,0 +1,196 @@
+/**
+ * The public forms' fields — shared by Field.astro and PhoneField.astro.
+ *
+ * Global (not scoped to one component) so the phone field, which renders its
+ * own markup, looks exactly like every other field without a second copy of
+ * these rules. Everything is namespaced under `.fld`, so the portal's own
+ * `.field` rules and these never touch.
+ *
+ * Inputs are 17px (--fs-body): never under 16px, the size below which iOS
+ * Safari zooms the page into the field.
+ */
+.fld {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-bottom: 18px;
+}
+.fld.span-half {
+  grid-column: span 1;
+}
+.fld.span-full {
+  grid-column: 1 / -1;
+}
+
+/* 2.0: labels in sentence case at reading size, as a form for people who
+   are not in a hurry should be. */
+.fld > label,
+.fld .fld-label {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  font-family: var(--sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  margin-bottom: 9px;
+}
+.fld .req {
+  font-size: 13px;
+  font-weight: var(--fw-regular);
+  color: var(--taupe);
+}
+.fld .hint {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--taupe);
+  margin: -3px 0 9px;
+}
+
+.fld input,
+.fld textarea,
+.fld select {
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 18px;
+  border: 1px solid rgba(16, 42, 67, 0.16);
+  border-radius: var(--r-sm);
+  background-color: var(--white);
+  font-family: var(--sans);
+  font-weight: var(--fw-body);
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.3s var(--ease-out),
+    background-color 0.3s var(--ease-out);
+}
+.fld input::placeholder,
+.fld textarea::placeholder {
+  color: var(--taupe);
+  opacity: 0.7;
+}
+.fld textarea {
+  resize: vertical;
+  min-height: 128px;
+}
+.fld select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' fill='none' stroke='%23102a43' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 18px center;
+  background-size: 12px 8px;
+  background-repeat: no-repeat;
+}
+
+@media (hover: hover) {
+  .fld input:hover,
+  .fld textarea:hover,
+  .fld select:hover {
+    border-color: rgba(16, 42, 67, 0.34);
+  }
+}
+.fld input:focus,
+.fld textarea:focus,
+.fld select:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 4px rgba(16, 42, 67, 0.08);
+}
+.fld input:focus-visible,
+.fld textarea:focus-visible,
+.fld select:focus-visible {
+  outline: none;
+}
+
+.fld [aria-invalid='true'] {
+  border-color: #b3261e;
+  box-shadow: 0 0 0 4px rgba(179, 38, 30, 0.08);
+}
+
+.fld .error {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #b3261e;
+  margin-top: 7px;
+}
+.fld .error::before {
+  content: '';
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin-top: 3px;
+  border-radius: 50%;
+  background: currentColor
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath d='M7 3.6v4.2' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='7' cy='10.2' r='0.95' fill='white'/%3E%3C/svg%3E")
+    center / 14px no-repeat;
+}
+.fld .error[hidden] {
+  display: none;
+}
+
+/* Dark panels (the submit page's form card, the listing enquiry panel). */
+.fld.on-dark {
+  --autofill-bg: #1d3a57;
+  --autofill-ink: var(--cream);
+}
+.fld.on-dark > label,
+.fld.on-dark .fld-label {
+  color: var(--on-dark-strong);
+}
+.fld.on-dark .req,
+.fld.on-dark .hint {
+  color: var(--on-dark-muted);
+}
+.fld.on-dark input,
+.fld.on-dark textarea,
+.fld.on-dark select {
+  background-color: rgba(244, 244, 242, 0.06);
+  border-color: rgba(244, 244, 242, 0.2);
+  color: var(--cream);
+}
+.fld.on-dark select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' fill='none' stroke='%23f4f4f2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.fld.on-dark select option {
+  color: var(--ink);
+}
+.fld.on-dark input::placeholder,
+.fld.on-dark textarea::placeholder {
+  color: var(--on-dark-faint);
+  opacity: 1;
+}
+@media (hover: hover) {
+  .fld.on-dark input:hover,
+  .fld.on-dark textarea:hover,
+  .fld.on-dark select:hover {
+    border-color: rgba(244, 244, 242, 0.4);
+  }
+}
+.fld.on-dark input:focus,
+.fld.on-dark textarea:focus,
+.fld.on-dark select:focus {
+  border-color: var(--cream);
+  background-color: rgba(244, 244, 242, 0.09);
+  box-shadow: 0 0 0 4px rgba(244, 244, 242, 0.1);
+}
+.fld.on-dark .error {
+  color: #f0b4ae;
+}
+.fld.on-dark .error::before {
+  background-color: #f0b4ae;
+}
+.fld.on-dark [aria-invalid='true'] {
+  border-color: #f0b4ae;
+  box-shadow: 0 0 0 4px rgba(240, 180, 174, 0.12);
+}

@@ -14,6 +14,20 @@
  * Spam handling is a honeypot plus a time-trap, both checked server-side. No
  * third-party captcha, so nothing is loaded from another origin and no
  * consent is required for the form to work.
+ *
+ * Launch round — validation people can follow:
+ *   - a field is checked when the person leaves it, never while they are
+ *     still typing it for the first time; once it shows an error, the error
+ *     clears as soon as the value is right;
+ *   - the rules and the wording come from src/lib/validation.ts, the module
+ *     the server runs too, so both always agree ("Adjon meg egy érvényes
+ *     holland telefonszámot, pl. +31 6 12345678");
+ *   - a failed submit lists every problem in a summary above the form and
+ *     puts the cursor in the first field to fix;
+ *   - a server refusal (422) is shown the same way, in place, with every
+ *     value the person typed still there.
+ * A form with its own confirmation (the registration's "check your inbox")
+ * passes it in the `success` slot.
  */
 import Button from '~/components/Button.astro';
 import { UI, path, type Locale } from '~/i18n/ui';
@@ -55,13 +69,21 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
 
 <div class:list={['form-shell', { 'on-dark': onDark }]}>
   <div class="status" id={`${formId}-success`} role="status" hidden>
-    <span class="status-mark" aria-hidden="true">
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <path d="M5 11.5l4 4 8-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-    </span>
-    <h3 tabindex="-1">{successTitle ?? ui.form.successTitle}</h3>
-    <p>{successBody ?? fillHours(ui.form.successBody, company.hours, locale)}</p>
+    {
+      Astro.slots.has('success') ? (
+        <slot name="success" />
+      ) : (
+        <>
+          <span class="status-mark" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M5 11.5l4 4 8-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <h3 tabindex="-1">{successTitle ?? ui.form.successTitle}</h3>
+          <p>{successBody ?? fillHours(ui.form.successBody, company.hours, locale)}</p>
+        </>
+      )
+    }
   </div>
 
   <form
@@ -87,6 +109,11 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
     </div>
     {/* Time-trap: submissions faster than a human can type are rejected. */}
     <input type="hidden" name="renderedAt" value={Date.now()} />
+
+    <div class="error-summary" id={`${formId}-summary`} role="alert" hidden>
+      <p class="error-summary-head"></p>
+      <ul></ul>
+    </div>
 
     <div class="fields">
       <slot />
@@ -120,92 +147,171 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
 </div>
 
 <script>
-  const strings = {
-    hu: {
-      required: 'Kérjük töltse ki ezt a mezőt.',
-      email: 'Kérjük adjon meg érvényes e-mail címet.',
-      consent: 'A folytatáshoz kérjük fogadja el az adatkezelési tájékoztatót.',
-      sending: 'Küldés…',
-      error: 'Nem sikerült elküldeni. Kérjük próbálja újra, vagy hívjon minket.',
-    },
-    nl: {
-      required: 'Vul dit veld in.',
-      email: 'Vul een geldig e-mailadres in.',
-      consent: 'Ga akkoord met de privacyverklaring om verder te gaan.',
-      sending: 'Versturen…',
-      error: 'Versturen mislukt. Probeer het opnieuw, of bel ons.',
-    },
+  type FieldError = { code: string; country?: string; example?: string; limit?: number };
+  type Control = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+
+  // The rules (and the phone metadata) arrive the first time they are needed —
+  // a blur or a submit — never with the page.
+  let lib: typeof import('~/lib/validation') | null = null;
+  const loadLib = async () => (lib ??= await import('~/lib/validation'));
+
+  const sendError = {
+    hu: 'Nem sikerült elküldeni. Kérjük, próbálja újra, vagy hívjon minket.',
+    nl: 'Versturen is niet gelukt. Probeer het opnieuw, of bel ons.',
   };
+  const sending = { hu: 'Küldés…', nl: 'Versturen…' };
 
   document.querySelectorAll<HTMLFormElement>('form.form').forEach((form) => {
-    const locale = (form.dataset.locale ?? 'hu') as 'hu' | 'nl';
-    const t = strings[locale];
+    const locale = (form.dataset.locale === 'nl' ? 'nl' : 'hu') as 'hu' | 'nl';
     const formId = form.id;
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     // The label lives in its own span beside the arrow chip; only it changes.
     const submitLabel = submit.querySelector<HTMLElement>('.label') ?? submit;
     const formError = document.getElementById(`${formId}-error`)!;
     const success = document.getElementById(`${formId}-success`)!;
+    const summary = document.getElementById(`${formId}-summary`)!;
     const originalLabel = submitLabel.textContent ?? '';
 
-    const showFieldError = (input: HTMLElement, message: string) => {
-      const wrap = input.closest('.field') ?? input.closest('.consent');
-      const error = wrap?.querySelector<HTMLElement>('.error');
-      input.setAttribute('aria-invalid', 'true');
-      if (error) {
-        error.textContent = message;
-        error.hidden = false;
+    const controls = () =>
+      Array.from(
+        form.querySelectorAll<Control>('input:not([type=hidden]):not([tabindex="-1"]):not([aria-hidden="true"]), textarea, select:not([aria-hidden="true"])')
+      ).filter((c) => !c.disabled && !c.closest('[hidden]'));
+
+    const errorEl = (control: Control) =>
+      (control.closest('.field') ?? control.closest('.consent'))?.querySelector<HTMLElement>(':scope > .error, .error');
+
+    const show = (control: Control, message: string) => {
+      control.setAttribute('aria-invalid', 'true');
+      const el = errorEl(control);
+      if (el) {
+        el.textContent = message;
+        el.hidden = false;
       }
     };
-
-    const clearFieldError = (input: HTMLElement) => {
-      const wrap = input.closest('.field') ?? input.closest('.consent');
-      const error = wrap?.querySelector<HTMLElement>('.error');
-      input.removeAttribute('aria-invalid');
-      if (error) error.hidden = true;
+    const clear = (control: Control) => {
+      control.removeAttribute('aria-invalid');
+      const el = errorEl(control);
+      if (el) el.hidden = true;
     };
 
-    const validate = (): HTMLElement | null => {
-      let firstInvalid: HTMLElement | null = null;
-      const controls = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
-        'input:not([type=hidden]):not([tabindex="-1"]), textarea, select'
+    /** The country a phone number or a postcode is checked against. */
+    const countryOf = (control: Control) => {
+      const byId = control.dataset.countryInput;
+      if (byId) return (document.getElementById(byId) as HTMLSelectElement | null)?.value;
+      const byName = control.dataset.countryField;
+      if (byName) return (form.elements.namedItem(byName) as HTMLSelectElement | null)?.value?.toUpperCase();
+      return undefined;
+    };
+
+    const check = async (control: Control): Promise<string | null> => {
+      const { validateField, errorMessage } = await loadLib();
+      if (control instanceof HTMLInputElement && control.type === 'checkbox') {
+        return control.required && !control.checked ? errorMessage({ code: 'consent' }, locale) : null;
+      }
+      const error = validateField(
+        {
+          rule: (control.dataset.rule as never) ?? 'text',
+          required: control.required,
+          min: control.dataset.min ? Number(control.dataset.min) : undefined,
+          max: control.dataset.max ? Number(control.dataset.max) : undefined,
+          maxLength: 'maxLength' in control && control.maxLength > 0 ? control.maxLength : undefined,
+          minLength: control instanceof HTMLInputElement && control.minLength > 0 ? control.minLength : undefined,
+        },
+        control.value,
+        countryOf(control)
       );
+      return error ? errorMessage(error as never, locale) : null;
+    };
 
-      for (const control of controls) {
-        clearFieldError(control);
+    const validateOne = async (control: Control) => {
+      const message = await check(control);
+      if (message) show(control, message);
+      else clear(control);
+      return message;
+    };
 
-        if (control.type === 'checkbox') {
-          if (control.required && !(control as HTMLInputElement).checked) {
-            showFieldError(control, t.consent);
-            firstInvalid ??= control;
-          }
-          continue;
-        }
-
-        const value = control.value.trim();
-        if (control.required && !value) {
-          showFieldError(control, t.required);
-          firstInvalid ??= control;
-        } else if (control.type === 'email' && value && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(value)) {
-          showFieldError(control, t.email);
-          firstInvalid ??= control;
-        }
+    // Inline: on leaving a field the person has typed in (or one already
+    // marked wrong) — and, once marked, again on every keystroke so the error
+    // disappears the moment the value is right.
+    form.addEventListener('input', (e) => {
+      const control = e.target as Control;
+      control.dataset.dirty = '';
+      if (control.getAttribute('aria-invalid') === 'true') void validateOne(control);
+    });
+    form.addEventListener('change', (e) => {
+      const control = e.target as Control;
+      if (control.matches('select, [type=checkbox], [type=radio]') || control.getAttribute('aria-invalid') === 'true') {
+        control.dataset.dirty = '';
+        void validateOne(control);
       }
-      return firstInvalid;
+    });
+    // An error that appears when a field loses focus pushes the page down; if
+    // that happens between pressing and releasing a button or checkbox, the
+    // click is lost. So while the pointer is down on such a control, leaving a
+    // field validates nothing: submitting checks everything anyway.
+    let pressing = false;
+    form.addEventListener('pointerdown', (e) => {
+      pressing = !!(e.target as Element).closest('button, label, select, [type=checkbox], [type=radio], a');
+    }, true);
+    const release = () => setTimeout(() => (pressing = false), 0);
+    document.addEventListener('pointerup', release);
+    document.addEventListener('pointercancel', release);
+    form.addEventListener('focusout', (e) => {
+      const control = e.target as Control;
+      if (!control.matches?.('input, textarea, select')) return;
+      if (pressing) return;
+      if ('dirty' in control.dataset || control.getAttribute('aria-invalid') === 'true') void validateOne(control);
+    });
+
+    const labelOf = (control: Control) =>
+      control.dataset.label ??
+      form.querySelector(`label[for="${control.id}"]`)?.firstChild?.textContent?.trim() ??
+      control.name;
+
+    const showSummary = async (invalid: { control: Control; message: string }[]) => {
+      const { summaryHeading } = await loadLib();
+      summary.querySelector('.error-summary-head')!.textContent = summaryHeading(invalid.length, locale);
+      const list = summary.querySelector('ul')!;
+      list.innerHTML = '';
+      for (const { control, message } of invalid) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${control.id}`;
+        a.textContent = control.type === 'checkbox' ? message : `${labelOf(control)}: ${message}`;
+        a.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          control.focus();
+        });
+        li.append(a);
+        list.append(li);
+      }
+      summary.hidden = false;
+      invalid[0].control.focus();
+      invalid[0].control.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    };
+
+    const validateAll = async () => {
+      const invalid: { control: Control; message: string }[] = [];
+      for (const control of controls()) {
+        const message = await validateOne(control);
+        if (message) invalid.push({ control, message });
+      }
+      return invalid;
     };
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       formError.hidden = true;
+      summary.hidden = true;
 
-      const invalid = validate();
-      if (invalid) {
-        invalid.focus();
+      const invalid = await validateAll();
+      if (invalid.length) {
+        await showSummary(invalid);
         return;
       }
 
       submit.disabled = true;
-      submitLabel.textContent = t.sending;
+      submitLabel.textContent = sending[locale];
 
       try {
         const response = await fetch(form.action, {
@@ -213,17 +319,42 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
           headers: { Accept: 'application/json' },
           body: new FormData(form),
         });
+        const data = await response.json().catch(() => ({}));
+
+        // The server's own checks failed: show them exactly like the browser's.
+        if (response.status === 422 && data?.errors) {
+          const { errorMessage } = await loadLib();
+          const serverInvalid: { control: Control; message: string }[] = [];
+          for (const [name, raw] of Object.entries(data.errors as Record<string, FieldError | string>)) {
+            const error = typeof raw === 'string' ? { code: raw } : raw;
+            const control = (name === 'consent'
+              ? form.querySelector<Control>('input[name="consent"]')
+              : form.querySelector<Control>(`[name="${CSS.escape(name)}"]`));
+            if (!control) continue;
+            const message = errorMessage(error as never, locale);
+            show(control, message);
+            serverInvalid.push({ control, message });
+          }
+          submit.disabled = false;
+          submitLabel.textContent = originalLabel;
+          if (serverInvalid.length) {
+            await showSummary(serverInvalid);
+            return;
+          }
+          throw new Error('422');
+        }
 
         if (!response.ok) throw new Error(String(response.status));
-        const data = await response.json();
         form.dispatchEvent(new CustomEvent('fodel:success', { detail: data }));
 
         form.hidden = true;
         success.hidden = false;
+        submit.disabled = false;
+        submitLabel.textContent = originalLabel;
         success.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        (success.querySelector('h3') as HTMLElement | null)?.focus?.();
+        (success.querySelector('h3, h2, [tabindex="-1"]') as HTMLElement | null)?.focus?.();
       } catch {
-        formError.textContent = t.error;
+        formError.textContent = sendError[locale];
         formError.hidden = false;
         submit.disabled = false;
         submitLabel.textContent = originalLabel;
@@ -317,6 +448,38 @@ const contactPhone = locale === 'hu' ? (publicPhones.find((phone) => phone.href.
   }
   .consent .error[hidden] {
     display: none;
+  }
+
+  .error-summary {
+    margin-bottom: 22px;
+    padding: 16px 20px;
+    border-radius: var(--r-md);
+    background: rgba(179, 38, 30, 0.07);
+    color: #8c1d17;
+  }
+  .error-summary[hidden] {
+    display: none;
+  }
+  .error-summary-head {
+    font-size: var(--fs-small);
+    font-weight: var(--fw-medium);
+    margin-bottom: 6px;
+  }
+  .error-summary ul {
+    display: grid;
+    gap: 4px;
+    padding-left: 18px;
+    font-size: var(--fs-small);
+    line-height: 1.5;
+  }
+  .error-summary a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .on-dark .error-summary {
+    background: rgba(240, 180, 174, 0.12);
+    color: #f6cdc8;
   }
 
   .form-error {

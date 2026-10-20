@@ -3,6 +3,8 @@
 import Base from '~/layouts/Base.astro';
 import PageHeader from '~/components/PageHeader.astro';
 import FormShell from '~/components/forms/FormShell.astro';
+import PhoneField from '~/components/forms/PhoneField.astro';
+import Field from '~/components/forms/Field.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
 import { UI, path, type Locale } from '~/i18n/ui';
 import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
@@ -32,7 +34,7 @@ const visit = packages.find((pkg) => pkg.kind === 'expert_visit');
 const visitPrice = visit?.priceEur ?? null;
 const cardPayments = isStripeEnabled();
 ---
-<Base locale={locale} title={hu ? 'Értékmeghatározás — FODEL' : 'Waardebepaling — FODEL'} description={hu ? 'Részletes, tájékoztató piaci értékmeghatározás.' : 'Uitgebreide, indicatieve marktwaardebepaling.'} alternates={alternatesFor('valuation')} schema={[serviceSchema(locale, hu ? 'Értékmeghatározás' : 'Waardebepaling', notice)]}>
+<Base locale={locale} title={hu ? 'Értékmeghatározás | FODEL' : 'Waardebepaling | FODEL'} description={hu ? 'Részletes, tájékoztató piaci értékmeghatározás.' : 'Uitgebreide, indicatieve marktwaardebepaling.'} alternates={alternatesFor('valuation')} schema={[serviceSchema(locale, hu ? 'Értékmeghatározás' : 'Waardebepaling', notice)]}>
   <PageHeader eyebrow={hu ? 'Értékmeghatározás' : 'Waardebepaling'} title={hu ? 'Mennyit ér' : 'Wat is uw woning'} titleEm={hu ? 'az ingatlana?' : 'waard?'} body={hu ? 'Adja meg az ismert adatokat. Munkatársunk ellenőrzi az eredményt, és e-mailben küldi.' : 'Vul in wat u weet. Onze medewerker controleert het resultaat en stuurt het per e-mail.'} compact />
   <section class="wizard-wrap">
     <div class="wizard" data-submit-url={path(locale, 'submitAd')} data-valuation-url={path(locale, 'valuation')} data-visit-price={visitPrice ?? ''} data-doc-url="/api/valuation/upload-url" data-next-label={hu ? 'Tovább' : 'Verder'} data-submit-label={hu ? 'Kérelem elküldése' : 'Aanvraag versturen'}>
@@ -82,10 +84,10 @@ const cardPayments = isStripeEnabled();
             <small>{hu ? 'Legfeljebb 15 fájl, egyenként 50 MB-ig. Közvetlenül, tömörítés nélkül töltődnek fel; csak munkatársunk látja őket.' : 'Maximaal 15 bestanden van elk 50 MB. Ze worden rechtstreeks en ongecomprimeerd geüpload en zijn alleen zichtbaar voor ons team.'}</small>
             <ul class="doc-list" id="doc-list" aria-live="polite"></ul>
           </div>
-          <div class="two"><label class="control">{ui.form.name} <span aria-hidden="true">*</span><input name="name" required autocomplete="name" maxlength="120" /></label><label class="control">{ui.form.email} <span aria-hidden="true">*</span><input name="email" type="email" required autocomplete="email" maxlength="160" /></label></div>
-          <label class="control">{ui.form.phone}<input name="phone" type="tel" autocomplete="tel" maxlength="40" /></label>
+          <div class="two"><Field locale={locale} name="name" label={ui.form.name} required autocomplete="name" maxlength={120} span="full" /><Field locale={locale} name="email" label={ui.form.email} type="email" required autocomplete="email" maxlength={160} span="full" /></div>
+          <PhoneField locale={locale} name="phone" />
           <fieldset class="chips"><legend>{hu ? 'Milyen értékmeghatározást kér?' : 'Welke waardebepaling wenst u?'}</legend>
-            {packages.map((pkg) => <label><input type="radio" name="requestKind" value={pkg.kind} checked={pkg.kind === 'indicative'} /><span>{pkg.names[locale]}{pkg.kind === 'indicative' ? (company.services.valuationFreeConfirmed ? ` — ${priceLabel(pkg, locale)}` : '') : ` — ${priceLabel(pkg, locale)}`}</span></label>)}
+            {packages.map((pkg) => <label><input type="radio" name="requestKind" value={pkg.kind} checked={pkg.kind === 'indicative'} /><span>{pkg.names[locale]}{pkg.kind === 'indicative' ? (company.services.valuationFreeConfirmed ? ` · ${priceLabel(pkg, locale)}` : '') : ` · ${priceLabel(pkg, locale)}`}</span></label>)}
           </fieldset>
           <p class="question-hint">{hu ? 'Helyszíni kérésnél munkatársunk felveszi Önnel a kapcsolatot az időpont egyeztetéséhez.' : 'Bij een bezoek nemen wij contact op om een afspraak te maken.'}{cardPayments ? (hu ? ' Fix árú csomagnál a kérés elküldése után azonnal bankkártyával is fizethet.' : ' Bij een pakket met vaste prijs kunt u na het versturen meteen met kaart betalen.') : ''}{hu ? ' Hivatalos kérésnél árat és határidőt csak árajánlat után vállalunk.' : ' Voor een officiële taxatie geven wij vooraf geen prijs of termijn.'}</p>
           <p class="notice">{notice}</p>
@@ -310,7 +312,7 @@ const cardPayments = isStripeEnabled();
       report(docText('Feltöltve', 'Geüpload'));
     } catch {
       docCount -= 1;
-      report(docText('Nem sikerült — ellenőrizze a fájltípust, vagy próbálja újra.', 'Mislukt — controleer het bestandstype of probeer opnieuw.'), true);
+      report(docText('Nem sikerült. Ellenőrizze a fájltípust, vagy próbálja újra.', 'Mislukt. Controleer het bestandstype of probeer opnieuw.'), true);
     } finally { docPending -= 1; }
   };
   docInput?.addEventListener('change', () => {
@@ -323,7 +325,7 @@ const cardPayments = isStripeEnabled();
       event.preventDefault();
       event.stopImmediatePropagation();
       const status = document.querySelector<HTMLElement>('#photo-status');
-      if (status) status.textContent = docText('A dokumentumok még töltődnek fel — kérjük, várjon.', 'De documenten worden nog geüpload — even geduld.');
+      if (status) status.textContent = docText('A dokumentumok még töltődnek fel. Kérjük, várjon.', 'De documenten worden nog geüpload. Even geduld.');
     }
   }, true);
 

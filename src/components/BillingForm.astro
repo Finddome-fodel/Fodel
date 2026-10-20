@@ -1,14 +1,22 @@
 ---
 /**
  * The customer's billing details, entered once and reused: on every order, on
- * every invoice. Used in Settings and, with an order id, right inside the
- * payment panel so nobody has to leave the page they are paying on.
+ * every invoice. Used in Settings, in the guided listing setup and, with an
+ * order id, right inside the payment panel so nobody has to leave the page
+ * they are paying on.
  *
  * The tax number is read the way people write it (12345678-1-23), shown in
  * its EU form (HU12345678) and decides whether VAT is charged: a business
  * with a valid EU VAT id is invoiced without Dutch VAT (reverse charge).
+ *
+ * Launch round: speaks the seller's language (hu/nl), takes the phone number
+ * through the international PhoneField, and checks the postcode against the
+ * chosen country's format (HU 4 digits, NL "1234 AB", DE 5 digits…) on blur
+ * — the server checks both again (api/portal/settings/billing.ts).
  */
 import { COUNTRIES, type Party } from '~/lib/invoicing/model';
+import { postcodeExample } from '~/lib/validation';
+import PhoneField from '~/components/forms/PhoneField.astro';
 
 interface Props {
   billing?: Partial<Party> | null;
@@ -16,75 +24,172 @@ interface Props {
   fallbackPhone?: string;
   paymentId?: string;
   compact?: boolean;
+  locale?: 'hu' | 'nl';
+  /** Hide the form's own save button (the guided setup saves it with "Continue"). */
+  embedded?: boolean;
 }
-const { billing, fallbackName = '', fallbackPhone = '', paymentId, compact = false } = Astro.props;
-const b = { type: 'person', countryCode: 'HU', ...(billing ?? {}) } as Partial<Party>;
+const { billing, fallbackName = '', fallbackPhone = '', paymentId, compact = false, locale = 'hu', embedded = false } = Astro.props;
+const b = { type: 'person', countryCode: locale === 'nl' ? 'NL' : 'HU', ...(billing ?? {}) } as Partial<Party>;
 const uid = `bf-${Math.random().toString(36).slice(2, 8)}`;
+const hu = locale === 'hu';
+const t = hu
+  ? {
+      kind: 'Számlázás típusa', person: 'Magánszemély', company: 'Vállalkozás',
+      nameCompany: 'Cégnév', namePerson: 'Név a számlán', country: 'Ország', postcode: 'Irányítószám', city: 'Város', street: 'Utca, házszám',
+      tax: 'Adószám', optional: '(nem kötelező)', required: '(kötelező)',
+      taxPlaceholder: 'pl. 12345678-1-23',
+      taxHint: 'Ha vállalkozásként vásárol, az adószámával áfa nélküli (fordított adózású) számlát kaphat.',
+      taxInvalid: 'Nem tűnik érvényes adószámnak. Magyar adószám: 12345678-1-23; uniós: országkóddal, pl. NL123456789B01.',
+      example: 'pl.',
+      save: 'Számlázási adatok mentése', saving: 'Mentés…', saved: 'Számlázási adatok mentve.', failed: 'A mentés nem sikerült.',
+    }
+  : {
+      kind: 'Soort factuur', person: 'Particulier', company: 'Bedrijf',
+      nameCompany: 'Bedrijfsnaam', namePerson: 'Naam op de factuur', country: 'Land', postcode: 'Postcode', city: 'Plaats', street: 'Straat en huisnummer',
+      tax: 'Btw-nummer', optional: '(optioneel)', required: '(verplicht)',
+      taxPlaceholder: 'bijv. NL123456789B01',
+      taxHint: 'Koopt u zakelijk, dan ontvangt u met uw btw-nummer een factuur zonder btw (verlegd).',
+      taxInvalid: 'Dit lijkt geen geldig btw-nummer. Vermeld de landcode, bijv. NL123456789B01.',
+      example: 'bijv.',
+      save: 'Factuurgegevens opslaan', saving: 'Opslaan…', saved: 'Factuurgegevens opgeslagen.', failed: 'Opslaan is niet gelukt.',
+    };
+const postcodeHint = (code: string) => {
+  const example = postcodeExample(code);
+  return example ? `${t.example} ${example}` : '';
+};
 ---
 
-<form class:list={['billing-form', { compact }]} data-billing data-payment={paymentId} id={uid}>
-  <div class="bf-type" role="group" aria-label="Számlázás típusa">
-    <label><input type="radio" name="type" value="person" checked={b.type !== 'company'} /><span>Magánszemély</span></label>
-    <label><input type="radio" name="type" value="company" checked={b.type === 'company'} /><span>Vállalkozás</span></label>
+<form
+  class:list={['billing-form', { compact }]}
+  data-billing
+  data-payment={paymentId}
+  data-locale={locale}
+  data-embedded={embedded ? '' : undefined}
+  data-strings={JSON.stringify({ saving: t.saving, saved: t.saved, failed: t.failed, taxHint: t.taxHint, taxInvalid: t.taxInvalid, namePerson: t.namePerson, nameCompany: t.nameCompany, example: t.example })}
+  id={uid}
+  novalidate
+>
+  <div class="bf-type" role="group" aria-label={t.kind}>
+    <label><input type="radio" name="type" value="person" checked={b.type !== 'company'} /><span>{t.person}</span></label>
+    <label><input type="radio" name="type" value="company" checked={b.type === 'company'} /><span>{t.company}</span></label>
   </div>
   <div class="bf-grid">
-    <label class="wide"><span data-name-label>{b.type === 'company' ? 'Cégnév' : 'Név a számlán'}</span><input name="name" value={b.name ?? fallbackName} autocomplete="name" required /></label>
-    <label>Ország
-      <select name="countryCode">
-        {COUNTRIES.map((c) => <option value={c.code} selected={c.code === b.countryCode}>{c.hu}</option>)}
+    <label class="wide"><span><span data-name-label>{b.type === 'company' ? t.nameCompany : t.namePerson}</span> <em>{t.required}</em></span><input name="name" value={b.name ?? fallbackName} autocomplete="name" enterkeyhint="next" required /><small class="bf-error" hidden></small></label>
+    <label><span>{t.country} <em>{t.required}</em></span>
+      <select name="countryCode" autocomplete="country">
+        {COUNTRIES.map((c) => <option value={c.code} selected={c.code === b.countryCode}>{c[locale]}</option>)}
       </select>
     </label>
-    <label>Irányítószám<input name="postalCode" value={b.postalCode ?? ''} autocomplete="postal-code" /></label>
-    <label>Város<input name="city" value={b.city ?? ''} autocomplete="address-level2" required /></label>
-    <label>Utca, házszám<input name="street" value={b.street ?? ''} autocomplete="street-address" required /></label>
-    <label>Telefon<input name="phone" value={b.phone ?? fallbackPhone} autocomplete="tel" /></label>
-    <label><span>Adószám <em>(nem kötelező)</em></span>
-      <input name="taxNumber" value={b.taxNumber ?? ''} placeholder="pl. 12345678-1-23" autocomplete="off" />
-      <small data-tax-hint>Ha vállalkozásként vásárol, az adószámával áfa nélküli (fordított adózású) számlát kaphat.</small>
+    <label><span>{t.postcode} <em>{t.optional}</em></span><input name="postalCode" value={b.postalCode ?? ''} autocomplete="postal-code" autocapitalize="characters" enterkeyhint="next" data-postcode /><small data-postcode-hint>{postcodeHint(b.countryCode ?? 'HU')}</small><small class="bf-error" hidden></small></label>
+    <label><span>{t.city} <em>{t.required}</em></span><input name="city" value={b.city ?? ''} autocomplete="address-level2" enterkeyhint="next" required /><small class="bf-error" hidden></small></label>
+    <label><span>{t.street} <em>{t.required}</em></span><input name="street" value={b.street ?? ''} autocomplete="street-address" enterkeyhint="next" required /><small class="bf-error" hidden></small></label>
+    <div class="wide bf-phone"><PhoneField locale={locale} name="phone" id={`${uid}-phone`} value={b.phone ?? fallbackPhone} /></div>
+    <label class="wide"><span>{t.tax} <em>{t.optional}</em></span>
+      <input name="taxNumber" value={b.taxNumber ?? ''} placeholder={t.taxPlaceholder} autocomplete="off" autocapitalize="characters" enterkeyhint="done" />
+      <small data-tax-hint>{t.taxHint}</small>
     </label>
   </div>
-  <div class="bf-actions">
-    <button type="submit" class="btn">Számlázási adatok mentése</button>
-    <span class="bf-status" role="status"></span>
-  </div>
+  {!embedded && (
+    <div class="bf-actions">
+      <button type="submit" class="btn">{t.save}</button>
+      <span class="bf-status" role="status"></span>
+    </div>
+  )}
 </form>
 
 <script>
   import { checkTaxId } from '~/lib/invoicing/model';
+  import { validateField, errorMessage, normalizePostcode } from '~/lib/validation';
+
+  type Strings = { saving: string; saved: string; failed: string; taxHint: string; taxInvalid: string; namePerson: string; nameCompany: string; example: string };
+
+  /** Validates every field; returns the first invalid control (or null). Used by the setup too. */
+  function validateBilling(form: HTMLFormElement): HTMLElement | null {
+    const locale = form.dataset.locale === 'nl' ? 'nl' : 'hu';
+    const cc = (form.elements.namedItem('countryCode') as HTMLSelectElement).value;
+    let first: HTMLElement | null = null;
+    const mark = (control: HTMLInputElement, message: string | null) => {
+      const error = control.closest('label, .field')?.querySelector<HTMLElement>('.bf-error, .error');
+      control.toggleAttribute('aria-invalid', Boolean(message));
+      if (message) control.setAttribute('aria-invalid', 'true');
+      if (error) {
+        error.textContent = message ?? '';
+        error.hidden = !message;
+      }
+      if (message) first ??= control;
+    };
+    for (const name of ['name', 'city', 'street']) {
+      const control = form.elements.namedItem(name) as HTMLInputElement;
+      const e = validateField({ required: true, maxLength: 160 }, control.value);
+      mark(control, e ? errorMessage(e, locale) : null);
+    }
+    const postcode = form.elements.namedItem('postalCode') as HTMLInputElement;
+    const pe = validateField({ rule: 'postcode' }, postcode.value, cc);
+    mark(postcode, pe ? errorMessage(pe, locale) : null);
+    if (!pe && postcode.value) postcode.value = normalizePostcode(postcode.value, cc);
+    const phone = form.querySelector<HTMLInputElement>('input[type="tel"]');
+    const country = form.querySelector<HTMLSelectElement>('.pf-select')?.value;
+    if (phone) {
+      const e = validateField({ rule: 'phone' }, phone.value, country);
+      mark(phone, e ? errorMessage(e, locale) : null);
+    }
+    return first;
+  }
+  (window as any).fodelValidateBilling = validateBilling;
 
   document.querySelectorAll<HTMLFormElement>('form[data-billing]').forEach((form) => {
     if (form.dataset.bound) return;
     form.dataset.bound = '1';
+    const s = JSON.parse(form.dataset.strings ?? '{}') as Strings;
     const cc = form.elements.namedItem('countryCode') as HTMLSelectElement;
     const tax = form.elements.namedItem('taxNumber') as HTMLInputElement;
     const hint = form.querySelector<HTMLElement>('[data-tax-hint]')!;
-    const status = form.querySelector<HTMLElement>('.bf-status')!;
+    const postHint = form.querySelector<HTMLElement>('[data-postcode-hint]');
+    const status = form.querySelector<HTMLElement>('.bf-status');
     const label = form.querySelector<HTMLElement>('[data-name-label]')!;
-    const base = hint.textContent ?? '';
 
     const check = () => {
       const r = checkTaxId(cc.value, tax.value);
       hint.dataset.state = r.state;
-      hint.textContent = r.state === 'valid' ? `✓ ${r.value}${r.hint ? ' · ' + r.hint : ''}` : r.state === 'invalid' ? r.hint : base;
+      // The checker's own detail line is Hungarian; a Dutch form uses its own words.
+      hint.textContent =
+        r.state === 'valid' ? `✓ ${r.value}` : r.state === 'invalid' ? (form.dataset.locale === 'nl' ? s.taxInvalid : r.hint) : s.taxHint;
       return r;
     };
-    tax.addEventListener('input', check);
     tax.addEventListener('blur', () => {
       const r = check();
       if (r.state === 'valid') tax.value = r.value;
     });
-    cc.addEventListener('change', check);
+    tax.addEventListener('input', () => {
+      if (hint.dataset.state === 'invalid') check();
+    });
+    cc.addEventListener('change', async () => {
+      check();
+      const { postcodeExample } = await import('~/lib/validation');
+      const example = postcodeExample(cc.value);
+      if (postHint) postHint.textContent = example ? `${s.example} ${example}` : '';
+    });
+    // Inline, on leaving a field — never while it is still being typed.
+    form.addEventListener('focusout', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.matches('input[name="postalCode"], input[type="tel"]') && (target as HTMLInputElement).value) validateBilling(form);
+    });
     const syncLabel = () => {
       const company = form.querySelector<HTMLInputElement>('input[name="type"]:checked')?.value === 'company';
-      label.textContent = company ? 'Cégnév' : 'Név a számlán';
+      label.textContent = company ? s.nameCompany : s.namePerson;
     };
     form.querySelectorAll('input[name="type"]').forEach((r) => r.addEventListener('change', syncLabel));
     check();
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const invalid = validateBilling(form);
+      if (invalid) {
+        invalid.focus();
+        return;
+      }
       const data = Object.fromEntries(new FormData(form).entries());
-      status.textContent = 'Mentés…';
+      if (status) status.textContent = s.saving;
       try {
         const res = await fetch('/api/portal/settings/billing', {
           method: 'POST',
@@ -92,15 +197,19 @@ const uid = `bf-${Math.random().toString(36).slice(2, 8)}`;
           body: JSON.stringify({ billing: data, paymentId: form.dataset.payment }),
         });
         const json = await res.json().catch(() => ({}));
-        status.textContent = '';
+        if (status) status.textContent = '';
         if (json.ok) {
-          window.pf?.toast('Számlázási adatok mentve.', 'ok');
+          window.pf?.toast(s.saved, 'ok');
           if (json.billing?.taxNumber) tax.value = json.billing.taxNumber;
           form.dispatchEvent(new CustomEvent('billing:saved', { bubbles: true }));
-        } else window.pf?.toast(json.message ?? 'A mentés nem sikerült.', 'error');
+        } else {
+          form.dispatchEvent(new CustomEvent('billing:failed', { bubbles: true }));
+          window.pf?.toast(json.message ?? s.failed, 'error');
+        }
       } catch {
-        status.textContent = '';
-        window.pf?.toast('A mentés nem sikerült.', 'error');
+        if (status) status.textContent = '';
+        form.dispatchEvent(new CustomEvent('billing:failed', { bubbles: true }));
+        window.pf?.toast(s.failed, 'error');
       }
     });
   });
@@ -120,8 +229,13 @@ const uid = `bf-${Math.random().toString(36).slice(2, 8)}`;
   .bf-grid label em { font-style: normal; font-weight: var(--fw-regular); color: var(--ink-quiet); }
   .bf-grid input, .bf-grid select { width: 100%; min-height: 50px; padding: 12px 16px; font: inherit; font-weight: var(--fw-body); font-size: var(--fs-body); color: var(--ink); }
   .bf-grid small { font-weight: var(--fw-regular); font-size: 13px; line-height: 1.5; color: var(--ink-quiet); }
+  .bf-grid small:empty { display: none; }
   .bf-grid small[data-state='valid'] { color: var(--pt-green); }
   .bf-grid small[data-state='invalid'] { color: var(--pt-red); }
+  .bf-grid .bf-error { color: #b3261e; }
+  .bf-grid .bf-error[hidden] { display: none; }
+  .bf-grid [aria-invalid='true'] { border-color: #b3261e; }
+  .bf-phone :global(.fld) { margin-bottom: 0; }
   .bf-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .bf-status { font-size: 14px; color: var(--ink-quiet); }
   .compact .bf-grid { gap: 12px 14px; }

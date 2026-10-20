@@ -1,0 +1,314 @@
+---
+/**
+ * Seller registration — step 1 of "Hirdetés feladása". Used on the public
+ * submit page (dark card) and on /portal/register (light panel).
+ *
+ * Only what an account needs: name, email, an international phone number and
+ * the consent the site already asks for. The package, the property and the
+ * photos come after the password, in the portal's guided setup.
+ *
+ * On success the form is replaced in place by a calm "check your inbox"
+ * panel: where the email went, who it is from and what it is called, that the
+ * link lasts 7 days, the spam-folder reminder, a "Resend" button that waits
+ * 60 seconds between sends (with the countdown visible), and a "Wrong
+ * address?" link back to the form with everything still filled in. The panel
+ * is the same whatever the server found — see src/lib/portal/registration.ts.
+ */
+import FormShell from './FormShell.astro';
+import Field from './Field.astro';
+import PhoneField from './PhoneField.astro';
+import { UI, type Locale } from '~/i18n/ui';
+import { senderAddress } from '~/lib/email/routing';
+import { templates } from '~/lib/email/templates';
+import { REGISTRATION_DAYS } from '~/lib/portal/registration';
+
+interface Props {
+  locale: Locale;
+  onDark?: boolean;
+  /** Distinct per page, in case a page ever carries two. */
+  formId?: string;
+}
+
+const { locale, onDark = false, formId = 'listing-order' } = Astro.props;
+const ui = UI[locale];
+const hu = locale === 'hu';
+
+// A referrer's personal link — …/hirdetes-feladasa/?ref=ABC12345 — carried
+// through as a plain string; resolved server-side against a real seller's
+// code, never trusted (src/lib/portal/registration.ts).
+const referralCode = Astro.url.searchParams.get('ref')?.slice(0, 20) ?? '';
+
+// The From and the subject exactly as the email will show them, so the person
+// knows what to look for in their inbox.
+const sender = senderAddress('portal');
+const subject = templates.registrationConfirm(locale, { name: '', acceptUrl: '' }).subject;
+
+const t = hu
+  ? {
+      submit: 'Regisztráció',
+      title: 'Nézze meg a postafiókját',
+      sentTo: 'Elküldtük a jelszóbeállító linket ide:',
+      from: 'Feladó',
+      subject: 'Tárgy',
+      validity: `A link ${REGISTRATION_DAYS} napig érvényes.`,
+      spam: 'Ha néhány percen belül sem érkezik meg, nézze meg a spam vagy promóciók mappát is.',
+      resend: 'E-mail újraküldése',
+      resendIn: (s: number) => `Újraküldés ${s} mp múlva`,
+      resent: 'Újra elküldtük.',
+      resendFailed: 'Most nem sikerült újraküldeni. Próbálja meg egy perc múlva.',
+      wrong: 'Rossz címet adott meg?',
+      change: 'Javítás',
+    }
+  : {
+      submit: 'Registreren',
+      title: 'Kijk in uw mailbox',
+      sentTo: 'Wij hebben de link om uw wachtwoord in te stellen gestuurd naar:',
+      from: 'Afzender',
+      subject: 'Onderwerp',
+      validity: `De link is ${REGISTRATION_DAYS} dagen geldig.`,
+      spam: 'Ziet u na een paar minuten nog niets? Kijk dan ook in uw spammap of bij ‘Reclame’.',
+      resend: 'E-mail opnieuw versturen',
+      resendIn: (s: number) => `Opnieuw versturen over ${s} s`,
+      resent: 'Opnieuw verstuurd.',
+      resendFailed: 'Opnieuw versturen lukt nu niet. Probeer het over een minuut nog eens.',
+      wrong: 'Verkeerd adres ingevuld?',
+      change: 'Wijzigen',
+    };
+---
+
+<div class="register" data-register data-form={formId}>
+  <FormShell locale={locale} endpoint="/api/listing-order" formId={formId} submitLabel={t.submit} onDark={onDark}>
+    <input type="hidden" name="referralCode" value={referralCode} />
+
+    <Field locale={locale} name="name" label={ui.form.name} required autocomplete="name" enterkeyhint="next" maxlength={120} span="full" onDark={onDark} />
+    <Field locale={locale} name="email" label={ui.form.email} type="email" required enterkeyhint="next" maxlength={160} span="full" onDark={onDark} />
+    <PhoneField locale={locale} name="phone" required enterkeyhint="done" onDark={onDark} />
+
+    <div slot="success" class="inbox">
+      <span class="inbox-mark" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="5.5" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.6" />
+          <path d="m4 7.5 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <h3 tabindex="-1">{t.title}</h3>
+      <p class="inbox-to">{t.sentTo} <strong data-sent-to></strong></p>
+      <dl class="inbox-facts">
+        <div><dt>{t.from}</dt><dd>{sender}</dd></div>
+        <div><dt>{t.subject}</dt><dd>{subject}</dd></div>
+      </dl>
+      <p class="inbox-note">{t.validity} {t.spam}</p>
+      <div class="inbox-actions">
+        <button type="button" class="inbox-resend" data-resend data-label={t.resend} data-wait={t.resendIn(0)} disabled>{t.resendIn(60)}</button>
+        <p class="inbox-change">{t.wrong} <a href="#" data-change>{t.change}</a></p>
+      </div>
+      <p class="inbox-status" role="status" data-resend-status data-ok={t.resent} data-fail={t.resendFailed}></p>
+    </div>
+  </FormShell>
+</div>
+
+<script>
+  const WAIT_SECONDS = 60;
+
+  document.querySelectorAll<HTMLElement>('[data-register]').forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>('form.form');
+    const panel = root.querySelector<HTMLElement>('.status');
+    const resend = root.querySelector<HTMLButtonElement>('[data-resend]');
+    const change = root.querySelector<HTMLAnchorElement>('[data-change]');
+    const sentTo = root.querySelector<HTMLElement>('[data-sent-to]');
+    const status = root.querySelector<HTMLElement>('[data-resend-status]');
+    if (!form || !panel || !resend || !change || !sentTo || !status) return;
+
+    const label = resend.dataset.label ?? '';
+    const waitText = resend.dataset.wait ?? '';
+    let timer: number | undefined;
+
+    // The countdown is shown on the button itself; screen readers hear only
+    // the start and the end (the button's own text change), not every second.
+    const countdown = () => {
+      window.clearInterval(timer);
+      let left = WAIT_SECONDS;
+      resend.disabled = true;
+      const tick = () => {
+        resend.textContent = waitText.replace(/0(?=\D*$)/, String(left));
+        if (left-- <= 0) {
+          window.clearInterval(timer);
+          resend.disabled = false;
+          resend.textContent = label;
+        }
+      };
+      tick();
+      timer = window.setInterval(tick, 1000);
+    };
+
+    form.addEventListener('fodel:success', () => {
+      sentTo.textContent = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
+      status.textContent = '';
+      countdown();
+    });
+
+    resend.addEventListener('click', async () => {
+      countdown();
+      try {
+        // The same submission again: the server gives the open invite a new
+        // link and sends it (the old one stops working).
+        const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+        status.textContent = (res.ok ? status.dataset.ok : status.dataset.fail) ?? '';
+      } catch {
+        status.textContent = status.dataset.fail ?? '';
+      }
+    });
+
+    // Back to the form with every value still in it.
+    change.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.clearInterval(timer);
+      panel.hidden = true;
+      form.hidden = false;
+      const email = form.elements.namedItem('email') as HTMLInputElement;
+      email.focus();
+      email.select();
+    });
+  });
+</script>
+
+<style>
+  .inbox {
+    text-align: left;
+  }
+  .inbox-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--cream);
+  }
+  :global(.on-dark) .inbox-mark {
+    background: var(--cream);
+    color: var(--ink);
+  }
+  .inbox h3 {
+    font-family: var(--serif);
+    font-weight: var(--fw-medium);
+    font-size: clamp(26px, 3.4vw, 34px);
+    letter-spacing: var(--ls-heading);
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .inbox h3:focus {
+    outline: none;
+  }
+  .inbox-to {
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    color: var(--taupe);
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+  }
+  .inbox-to strong {
+    color: var(--ink);
+    font-weight: var(--fw-medium);
+  }
+  .inbox-facts {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 16px;
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  .inbox-facts > div {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 12px;
+    padding: 11px 16px;
+    background: rgba(16, 42, 67, 0.05);
+    font-size: var(--fs-small);
+  }
+  .inbox-facts dt {
+    color: var(--taupe);
+  }
+  .inbox-facts dd {
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .inbox-note {
+    font-size: var(--fs-small);
+    line-height: 1.65;
+    color: var(--taupe);
+    margin-bottom: 20px;
+  }
+  .inbox-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+  }
+  .inbox-resend {
+    min-height: 48px;
+    padding: 0 22px;
+    border-radius: var(--r-pill);
+    border: 1px solid rgba(16, 42, 67, 0.24);
+    font-size: 0.9375rem;
+    font-weight: var(--fw-medium);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+  }
+  .inbox-resend:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+  @media (hover: hover) {
+    .inbox-resend:not(:disabled):hover {
+      background: var(--ink);
+      color: var(--cream);
+    }
+  }
+  .inbox-change {
+    font-size: var(--fs-small);
+    color: var(--taupe);
+  }
+  .inbox-change a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .inbox-status {
+    min-height: 1.4em;
+    margin-top: 12px;
+    font-size: var(--fs-small);
+    color: var(--taupe);
+  }
+
+  /* Dark card (the public submit page). */
+  :global(.on-dark) .inbox h3,
+  :global(.on-dark) .inbox-to strong,
+  :global(.on-dark) .inbox-facts dd,
+  :global(.on-dark) .inbox-change a {
+    color: var(--cream);
+  }
+  :global(.on-dark) .inbox-to,
+  :global(.on-dark) .inbox-note,
+  :global(.on-dark) .inbox-facts dt,
+  :global(.on-dark) .inbox-change,
+  :global(.on-dark) .inbox-status {
+    color: var(--on-dark-body);
+  }
+  :global(.on-dark) .inbox-facts > div {
+    background: rgba(244, 244, 242, 0.07);
+  }
+  :global(.on-dark) .inbox-resend {
+    color: var(--cream);
+    border-color: rgba(244, 244, 242, 0.36);
+  }
+  @media (hover: hover) {
+    :global(.on-dark) .inbox-resend:not(:disabled):hover {
+      background: var(--cream);
+      color: var(--ink);
+    }
+  }
+</style>
