@@ -8,7 +8,7 @@
  *
  * Order of preference: the language the visitor last picked in the switcher
  * (the `fodel_lang` cookie, set by LanguageSwitcher.astro), then the
- * browser's own languages (en-GB, de-AT and fr-BE all count), then Dutch.
+ * browser's own languages (en-GB, de-AT, fr-BE, es-MX and the like all count), then Dutch.
  * Without JavaScript the meta refresh sends everyone to Dutch, and the links
  * below the fold stay usable.
  */
@@ -27,7 +27,7 @@ const fallback = FALLBACK_LOCALE;
     <title>FODEL — Kies uw taal / Válasszon nyelvet / Choose your language</title>
     <meta
       name="description"
-      content="Kies uw taal om verder te gaan. Válasszon nyelvet a folytatáshoz. Choose your language to continue. Wählen Sie Ihre Sprache. Choisissez votre langue."
+      content="Kies uw taal om verder te gaan. Válasszon nyelvet a folytatáshoz. Choose your language to continue. Wählen Sie Ihre Sprache. Choisissez votre langue. Elija su idioma. Prosimy wybrać język. Alegeți limba. Vyberte si jazyk."
     />
     <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href={`${SITE_URL}/${fallback}/`} />

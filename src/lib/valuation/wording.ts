@@ -7,6 +7,7 @@
 import { localizer, LOCALES, type Locale } from '~/i18n/ui';
 import { intlTag } from '~/lib/format';
 import { priceLabel, type ValuationPackage } from '~/lib/valuation/packages';
+import { nOf } from '~/i18n/plural';
 
 export interface ValuationBaseline {
   kind?: string;
@@ -36,9 +37,9 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
   if (baseline.kind === 'ksh') {
     const county = baseline.level === 'county';
     const level = county
-      ? x('vármegye', 'provincie', 'county', 'Komitat', 'comitat')
-      : x('település', 'plaats', 'settlement', 'Ort', 'localité');
-    const records = x(`${n} adat`, `${n} gegevens`, `${n} records`, `${n} Datensätze`, `${n} données`);
+      ? x('vármegye', 'provincie', 'county', 'Komitat', 'comitat', 'condado', 'komitat', 'județ', 'župa')
+      : x('település', 'plaats', 'settlement', 'Ort', 'localité', 'localidad', 'miejscowość', 'localitate', 'obec');
+    const records = x(`${n} adat`, `${n} gegevens`, `${n} records`, `${n} Datensätze`, `${n} données`, `${nOf('es', n, 'dato', 'datos')}`, `${nOf('pl', n, 'rekord', 'rekordy', 'rekordów')}`, `${nOf('ro', n, 'înregistrare', 'înregistrări', 'de înregistrări')}`, `${nOf('sk', n, 'záznam', 'záznamy', 'záznamov')}`);
     return `KSH Ingatlanadattár, ${baseline.year} (${level}, ${records})`;
   }
   if (baseline.kind === 'comps') {
@@ -47,7 +48,11 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
       `${n} vergelijkbare FODEL-advertenties`,
       `${n} comparable FODEL listings`,
       `${n} vergleichbare FODEL-Inserate`,
-      `${n} annonces FODEL comparables`
+      `${n} annonces FODEL comparables`,
+      `${nOf('es', n, 'anuncio FODEL comparable', 'anuncios FODEL comparables')}`,
+      `${nOf('pl', n, 'porównywalne ogłoszenie FODEL', 'porównywalne ogłoszenia FODEL', 'porównywalnych ogłoszeń FODEL')}`,
+      `${nOf('ro', n, 'anunț FODEL comparabil', 'anunțuri FODEL comparabile', 'de anunțuri FODEL comparabile')}`,
+      `${nOf('sk', n, 'porovnateľný inzerát FODEL', 'porovnateľné inzeráty FODEL', 'porovnateľných inzerátov FODEL')}`
     );
   }
   return undefined;
@@ -55,7 +60,7 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
 
 /** "2024, retrieved 12 March 2026" */
 export function valuationSourceDate(locale: Locale, baseline: ValuationBaseline): string {
-  const word = localizer(locale)('letöltve', 'opgehaald', 'retrieved', 'abgerufen', 'consulté le');
+  const word = localizer(locale)('letöltve', 'opgehaald', 'retrieved', 'abgerufen', 'consulté le', 'consultado el', 'stan na', 'consultat la', 'stav k');
   return `${baseline.year}, ${word} ${baseline.retrievedAt ?? '—'}`;
 }
 
@@ -67,7 +72,11 @@ export function payNowLabel(locale: Locale, pkg: ValuationPackage): string {
     `Nu betalen — ${price} (kaart)`,
     `Pay now — ${price} (card)`,
     `Jetzt bezahlen — ${price} (Karte)`,
-    `Payer maintenant — ${price} (carte)`
+    `Payer maintenant — ${price} (carte)`,
+    `Pagar ahora — ${price} (tarjeta)`,
+    `Zapłać teraz — ${price} (karta)`,
+    `Plătiți acum — ${price} (card)`,
+    `Zaplatiť teraz — ${price} (karta)`
   );
 }
 

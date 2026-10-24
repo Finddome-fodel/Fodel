@@ -6,7 +6,11 @@
       "en": "Residential property",
       "nl": "Woningen",
       "de": "Wohnimmobilien",
-      "fr": "Biens résidentiels"
+      "fr": "Biens résidentiels",
+      "es": "Inmuebles residenciales",
+      "pl": "Nieruchomości mieszkaniowe",
+      "ro": "Proprietăți rezidențiale",
+      "sk": "Rezidenčné nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -16,7 +20,11 @@
           "en": "Flat, studio",
           "nl": "Appartement, studio",
           "de": "Wohnung, Studio",
-          "fr": "Appartement, studio"
+          "fr": "Appartement, studio",
+          "es": "Piso, estudio",
+          "pl": "Mieszkanie, kawalerka",
+          "ro": "Apartament, garsonieră",
+          "sk": "Byt, garsónka"
         }
       },
       {
@@ -26,7 +34,11 @@
           "en": "Detached house, villa",
           "nl": "Vrijstaand huis, villa",
           "de": "Einfamilienhaus, Villa",
-          "fr": "Maison individuelle, villa"
+          "fr": "Maison individuelle, villa",
+          "es": "Casa unifamiliar, villa",
+          "pl": "Dom wolnostojący, willa",
+          "ro": "Casă individuală, vilă",
+          "sk": "Rodinný dom, vila"
         }
       },
       {
@@ -36,7 +48,11 @@
           "en": "Semi-detached, terraced house",
           "nl": "Twee-onder-een-kap, rijwoning",
           "de": "Doppelhaus, Reihenhaus",
-          "fr": "Maison jumelée, maison mitoyenne"
+          "fr": "Maison jumelée, maison mitoyenne",
+          "es": "Casa pareada, adosado",
+          "pl": "Bliźniak, szeregowiec",
+          "ro": "Casă tip duplex, casă înșiruită",
+          "sk": "Dvojdom, radový dom"
         }
       },
       {
@@ -46,7 +62,11 @@
           "en": "Penthouse",
           "nl": "Penthouse",
           "de": "Penthouse",
-          "fr": "Penthouse"
+          "fr": "Penthouse",
+          "es": "Ático",
+          "pl": "Penthouse",
+          "ro": "Penthouse",
+          "sk": "Penthouse"
         }
       },
       {
@@ -56,7 +76,11 @@
           "en": "Multi-unit residential building",
           "nl": "Meergezinsgebouw",
           "de": "Mehrfamilienhaus",
-          "fr": "Immeuble résidentiel"
+          "fr": "Immeuble résidentiel",
+          "es": "Edificio de viviendas",
+          "pl": "Budynek wielorodzinny",
+          "ro": "Bloc de locuințe",
+          "sk": "Bytový dom"
         }
       },
       {
@@ -66,7 +90,11 @@
           "en": "Other residential property",
           "nl": "Overige woning",
           "de": "Sonstige Wohnimmobilie",
-          "fr": "Autre bien résidentiel"
+          "fr": "Autre bien résidentiel",
+          "es": "Otro inmueble residencial",
+          "pl": "Inna nieruchomość mieszkaniowa",
+          "ro": "Altă proprietate rezidențială",
+          "sk": "Iná rezidenčná nehnuteľnosť"
         }
       }
     ],
@@ -79,7 +107,11 @@
       "en": "Holiday property",
       "nl": "Vakantiewoningen",
       "de": "Ferienimmobilien",
-      "fr": "Résidences de vacances"
+      "fr": "Résidences de vacances",
+      "es": "Inmuebles vacacionales",
+      "pl": "Nieruchomości wakacyjne",
+      "ro": "Proprietăți de vacanță",
+      "sk": "Rekreačné nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -89,7 +121,11 @@
           "en": "Holiday home, weekend house",
           "nl": "Vakantiehuis, weekendhuis",
           "de": "Ferienhaus, Wochenendhaus",
-          "fr": "Maison de vacances, maison de week-end"
+          "fr": "Maison de vacances, maison de week-end",
+          "es": "Casa de vacaciones, casa de fin de semana",
+          "pl": "Dom wakacyjny, dom letniskowy",
+          "ro": "Casă de vacanță, casă de weekend",
+          "sk": "Rekreačný dom, chata"
         }
       },
       {
@@ -99,7 +135,11 @@
           "en": "Holiday apartment",
           "nl": "Vakantieappartement",
           "de": "Ferienwohnung",
-          "fr": "Appartement de vacances"
+          "fr": "Appartement de vacances",
+          "es": "Apartamento vacacional",
+          "pl": "Apartament wakacyjny",
+          "ro": "Apartament de vacanță",
+          "sk": "Rekreačný apartmán"
         }
       },
       {
@@ -109,7 +149,11 @@
           "en": "Waterfront or seaside property",
           "nl": "Woning aan het water of aan zee",
           "de": "Immobilie am Wasser oder am Meer",
-          "fr": "Bien en bord de mer ou au bord de l’eau"
+          "fr": "Bien en bord de mer ou au bord de l’eau",
+          "es": "Inmueble en primera línea de agua o de mar",
+          "pl": "Nieruchomość nad wodą lub nad morzem",
+          "ro": "Proprietate la malul apei sau al mării",
+          "sk": "Nehnuteľnosť pri vode alebo pri mori"
         }
       },
       {
@@ -119,7 +163,11 @@
           "en": "Mountain retreat, chalet",
           "nl": "Bergwoning, chalet",
           "de": "Berghaus, Chalet",
-          "fr": "Chalet, maison de montagne"
+          "fr": "Chalet, maison de montagne",
+          "es": "Refugio de montaña, chalet",
+          "pl": "Dom w górach, chata",
+          "ro": "Cabană, casă la munte",
+          "sk": "Horská chata, zrub"
         }
       },
       {
@@ -129,7 +177,11 @@
           "en": "Holiday complex",
           "nl": "Vakantiecomplex",
           "de": "Ferienanlage",
-          "fr": "Complexe de vacances"
+          "fr": "Complexe de vacances",
+          "es": "Complejo vacacional",
+          "pl": "Kompleks wypoczynkowy",
+          "ro": "Complex de vacanță",
+          "sk": "Rekreačný areál"
         }
       },
       {
@@ -139,7 +191,11 @@
           "en": "Other holiday property",
           "nl": "Overig vakantieverblijf",
           "de": "Sonstige Ferienimmobilie",
-          "fr": "Autre bien de vacances"
+          "fr": "Autre bien de vacances",
+          "es": "Otro inmueble vacacional",
+          "pl": "Inna nieruchomość wakacyjna",
+          "ro": "Altă proprietate de vacanță",
+          "sk": "Iná rekreačná nehnuteľnosť"
         }
       }
     ],
@@ -152,7 +208,11 @@
       "en": "Agricultural property",
       "nl": "Agrarisch vastgoed",
       "de": "Agrarimmobilien",
-      "fr": "Biens agricoles"
+      "fr": "Biens agricoles",
+      "es": "Inmuebles agrícolas",
+      "pl": "Nieruchomości rolne",
+      "ro": "Proprietăți agricole",
+      "sk": "Poľnohospodárske nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -162,7 +222,11 @@
           "en": "Arable land, farmland",
           "nl": "Akkerland, landbouwgrond",
           "de": "Ackerland, Landwirtschaftsfläche",
-          "fr": "Terre arable, terre agricole"
+          "fr": "Terre arable, terre agricole",
+          "es": "Tierra de cultivo, terreno agrícola",
+          "pl": "Grunty orne, ziemia rolna",
+          "ro": "Teren arabil, teren agricol",
+          "sk": "Orná pôda, poľnohospodárska pôda"
         }
       },
       {
@@ -172,7 +236,11 @@
           "en": "Farm, homestead",
           "nl": "Boerderij, hoeve",
           "de": "Bauernhof, Gehöft",
-          "fr": "Ferme, exploitation"
+          "fr": "Ferme, exploitation",
+          "es": "Finca, granja",
+          "pl": "Gospodarstwo, zagroda",
+          "ro": "Fermă, gospodărie",
+          "sk": "Farma, usadlosť"
         }
       },
       {
@@ -182,7 +250,11 @@
           "en": "Orchard, vineyard",
           "nl": "Boomgaard, wijngaard",
           "de": "Obstplantage, Weinberg",
-          "fr": "Verger, vignoble"
+          "fr": "Verger, vignoble",
+          "es": "Huerto frutal, viñedo",
+          "pl": "Sad, winnica",
+          "ro": "Livadă, viță-de-vie",
+          "sk": "Ovocný sad, vinica"
         }
       },
       {
@@ -192,7 +264,11 @@
           "en": "Forest, pasture",
           "nl": "Bos, weiland",
           "de": "Wald, Weideland",
-          "fr": "Forêt, pâturage"
+          "fr": "Forêt, pâturage",
+          "es": "Bosque, pasto",
+          "pl": "Las, pastwisko",
+          "ro": "Pădure, pășune",
+          "sk": "Les, pasienok"
         }
       },
       {
@@ -202,7 +278,11 @@
           "en": "Livestock facility",
           "nl": "Veeteeltbedrijf",
           "de": "Tierhaltungsbetrieb",
-          "fr": "Installation d’élevage"
+          "fr": "Installation d’élevage",
+          "es": "Explotación ganadera",
+          "pl": "Obiekt hodowlany",
+          "ro": "Fermă zootehnică",
+          "sk": "Chov hospodárskych zvierat"
         }
       },
       {
@@ -212,7 +292,11 @@
           "en": "Agricultural business, estate",
           "nl": "Agrarisch bedrijf, landgoed",
           "de": "Landwirtschaftlicher Betrieb, Gut",
-          "fr": "Exploitation agricole, domaine"
+          "fr": "Exploitation agricole, domaine",
+          "es": "Explotación agrícola, finca",
+          "pl": "Przedsiębiorstwo rolne, majątek",
+          "ro": "Exploatație agricolă, domeniu",
+          "sk": "Poľnohospodársky podnik, statok"
         }
       },
       {
@@ -222,7 +306,11 @@
           "en": "Fishpond, fish farm",
           "nl": "Visvijver, viskwekerij",
           "de": "Fischteich, Fischzuchtbetrieb",
-          "fr": "Étang piscicole, ferme aquacole"
+          "fr": "Étang piscicole, ferme aquacole",
+          "es": "Estanque piscícola, piscifactoría",
+          "pl": "Staw rybny, gospodarstwo rybackie",
+          "ro": "Iaz piscicol, fermă piscicolă",
+          "sk": "Rybník, rybia farma"
         }
       },
       {
@@ -232,7 +320,11 @@
           "en": "Other agricultural property",
           "nl": "Overig agrarisch vastgoed",
           "de": "Sonstige Agrarimmobilie",
-          "fr": "Autre bien agricole"
+          "fr": "Autre bien agricole",
+          "es": "Otro inmueble agrícola",
+          "pl": "Inna nieruchomość rolna",
+          "ro": "Altă proprietate agricolă",
+          "sk": "Iná poľnohospodárska nehnuteľnosť"
         }
       }
     ],
@@ -245,7 +337,11 @@
       "en": "Commercial property",
       "nl": "Commercieel vastgoed",
       "de": "Gewerbeimmobilien",
-      "fr": "Biens commerciaux"
+      "fr": "Biens commerciaux",
+      "es": "Inmuebles comerciales",
+      "pl": "Nieruchomości komercyjne",
+      "ro": "Proprietăți comerciale",
+      "sk": "Komerčné nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -255,7 +351,11 @@
           "en": "Retail unit",
           "nl": "Winkelruimte",
           "de": "Ladenlokal",
-          "fr": "Local commercial"
+          "fr": "Local commercial",
+          "es": "Local comercial",
+          "pl": "Lokal handlowy",
+          "ro": "Spațiu comercial",
+          "sk": "Obchodný priestor"
         }
       },
       {
@@ -265,7 +365,11 @@
           "en": "Office, office building",
           "nl": "Kantoor, kantoorgebouw",
           "de": "Büro, Bürogebäude",
-          "fr": "Bureau, immeuble de bureaux"
+          "fr": "Bureau, immeuble de bureaux",
+          "es": "Oficina, edificio de oficinas",
+          "pl": "Biuro, budynek biurowy",
+          "ro": "Birou, clădire de birouri",
+          "sk": "Kancelária, administratívna budova"
         }
       },
       {
@@ -275,7 +379,11 @@
           "en": "Restaurant, café",
           "nl": "Restaurant, café",
           "de": "Restaurant, Café",
-          "fr": "Restaurant, café"
+          "fr": "Restaurant, café",
+          "es": "Restaurante, cafetería",
+          "pl": "Restauracja, kawiarnia",
+          "ro": "Restaurant, cafenea",
+          "sk": "Reštaurácia, kaviareň"
         }
       },
       {
@@ -285,7 +393,11 @@
           "en": "Hotel, B&B, guesthouse",
           "nl": "Hotel, pension, gastenverblijf",
           "de": "Hotel, Pension, Gästehaus",
-          "fr": "Hôtel, pension, maison d’hôtes"
+          "fr": "Hôtel, pension, maison d’hôtes",
+          "es": "Hotel, hostal, casa de huéspedes",
+          "pl": "Hotel, pensjonat, dom gościnny",
+          "ro": "Hotel, pensiune, casă de oaspeți",
+          "sk": "Hotel, penzión, ubytovanie v súkromí"
         }
       },
       {
@@ -295,7 +407,11 @@
           "en": "Shopping centre",
           "nl": "Winkelcentrum",
           "de": "Einkaufszentrum",
-          "fr": "Centre commercial"
+          "fr": "Centre commercial",
+          "es": "Centro comercial",
+          "pl": "Centrum handlowe",
+          "ro": "Centru comercial",
+          "sk": "Nákupné centrum"
         }
       },
       {
@@ -305,7 +421,11 @@
           "en": "Healthcare, education or sports facility",
           "nl": "Zorg-, onderwijs- of sportvoorziening",
           "de": "Gesundheits-, Bildungs- oder Sporteinrichtung",
-          "fr": "Établissement de santé, d’enseignement ou de sport"
+          "fr": "Établissement de santé, d’enseignement ou de sport",
+          "es": "Centro sanitario, educativo o deportivo",
+          "pl": "Obiekt medyczny, edukacyjny lub sportowy",
+          "ro": "Unitate medicală, educațională sau sportivă",
+          "sk": "Zdravotnícke, vzdelávacie alebo športové zariadenie"
         }
       },
       {
@@ -315,7 +435,11 @@
           "en": "Other commercial property",
           "nl": "Overig commercieel vastgoed",
           "de": "Sonstige Gewerbeimmobilie",
-          "fr": "Autre bien commercial"
+          "fr": "Autre bien commercial",
+          "es": "Otro inmueble comercial",
+          "pl": "Inna nieruchomość komercyjna",
+          "ro": "Altă proprietate comercială",
+          "sk": "Iná komerčná nehnuteľnosť"
         }
       }
     ],
@@ -328,7 +452,11 @@
       "en": "Industrial and logistics property",
       "nl": "Industrieel en logistiek vastgoed",
       "de": "Industrie- und Logistikimmobilien",
-      "fr": "Biens industriels et logistiques"
+      "fr": "Biens industriels et logistiques",
+      "es": "Inmuebles industriales y logísticos",
+      "pl": "Nieruchomości przemysłowe i logistyczne",
+      "ro": "Proprietăți industriale și logistice",
+      "sk": "Priemyselné a logistické nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -338,7 +466,11 @@
           "en": "Factory, plant",
           "nl": "Fabriek, productiebedrijf",
           "de": "Fabrik, Produktionsstätte",
-          "fr": "Usine, site de production"
+          "fr": "Usine, site de production",
+          "es": "Fábrica, planta de producción",
+          "pl": "Fabryka, zakład produkcyjny",
+          "ro": "Fabrică, unitate de producție",
+          "sk": "Továreň, výrobný závod"
         }
       },
       {
@@ -348,7 +480,11 @@
           "en": "Warehouse, logistics centre",
           "nl": "Magazijn, logistiek centrum",
           "de": "Lager, Logistikzentrum",
-          "fr": "Entrepôt, centre logistique"
+          "fr": "Entrepôt, centre logistique",
+          "es": "Almacén, centro logístico",
+          "pl": "Magazyn, centrum logistyczne",
+          "ro": "Depozit, centru logistic",
+          "sk": "Sklad, logistické centrum"
         }
       },
       {
@@ -358,7 +494,11 @@
           "en": "Industrial hall",
           "nl": "Bedrijfshal",
           "de": "Industriehalle",
-          "fr": "Halle industrielle"
+          "fr": "Halle industrielle",
+          "es": "Nave industrial",
+          "pl": "Hala przemysłowa",
+          "ro": "Hală industrială",
+          "sk": "Priemyselná hala"
         }
       },
       {
@@ -368,7 +508,11 @@
           "en": "Workshop, service centre",
           "nl": "Werkplaats, servicebedrijf",
           "de": "Werkstatt, Servicebetrieb",
-          "fr": "Atelier, centre de maintenance"
+          "fr": "Atelier, centre de maintenance",
+          "es": "Taller, centro de servicio",
+          "pl": "Warsztat, punkt serwisowy",
+          "ro": "Atelier, centru de service",
+          "sk": "Dielňa, servisné stredisko"
         }
       },
       {
@@ -378,7 +522,11 @@
           "en": "Food-processing plant",
           "nl": "Voedselverwerkingsbedrijf",
           "de": "Lebensmittelverarbeitungsbetrieb",
-          "fr": "Usine de transformation alimentaire"
+          "fr": "Usine de transformation alimentaire",
+          "es": "Planta de procesamiento de alimentos",
+          "pl": "Zakład przetwórstwa spożywczego",
+          "ro": "Fabrică de procesare a alimentelor",
+          "sk": "Potravinársky závod"
         }
       },
       {
@@ -388,7 +536,11 @@
           "en": "Other industrial property",
           "nl": "Overig industrieel vastgoed",
           "de": "Sonstige Industrieimmobilie",
-          "fr": "Autre bien industriel"
+          "fr": "Autre bien industriel",
+          "es": "Otro inmueble industrial",
+          "pl": "Inna nieruchomość przemysłowa",
+          "ro": "Altă proprietate industrială",
+          "sk": "Iná priemyselná nehnuteľnosť"
         }
       }
     ],
@@ -401,7 +553,11 @@
       "en": "Manor houses and historic property",
       "nl": "Landhuizen en historisch vastgoed",
       "de": "Herrenhäuser und historische Immobilien",
-      "fr": "Manoirs et biens historiques"
+      "fr": "Manoirs et biens historiques",
+      "es": "Casas señoriales e inmuebles históricos",
+      "pl": "Dwory i nieruchomości zabytkowe",
+      "ro": "Conace și proprietăți istorice",
+      "sk": "Kaštiele a historické nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -411,7 +567,11 @@
           "en": "Castle, manor house",
           "nl": "Kasteel, landhuis",
           "de": "Schloss, Herrenhaus",
-          "fr": "Château, manoir"
+          "fr": "Château, manoir",
+          "es": "Castillo, casa señorial",
+          "pl": "Zamek, dwór",
+          "ro": "Castel, conac",
+          "sk": "Zámok, kaštieľ"
         }
       },
       {
@@ -421,7 +581,11 @@
           "en": "Historic villa, country house",
           "nl": "Historische villa, herenhuis",
           "de": "Historische Villa, Gutshaus",
-          "fr": "Villa historique, demeure de caractère"
+          "fr": "Villa historique, demeure de caractère",
+          "es": "Villa histórica, casa solariega",
+          "pl": "Zabytkowa willa, dworek",
+          "ro": "Vilă istorică, casă de țară",
+          "sk": "Historická vila, vidiecke sídlo"
         }
       },
       {
@@ -431,7 +595,11 @@
           "en": "Fortress, monastery or historic building",
           "nl": "Burcht, klooster of historisch gebouw",
           "de": "Burg, Kloster oder historisches Gebäude",
-          "fr": "Forteresse, monastère ou bâtiment historique"
+          "fr": "Forteresse, monastère ou bâtiment historique",
+          "es": "Fortaleza, monasterio o edificio histórico",
+          "pl": "Twierdza, klasztor lub budynek zabytkowy",
+          "ro": "Fortăreață, mănăstire sau clădire istorică",
+          "sk": "Pevnosť, kláštor alebo historická budova"
         }
       },
       {
@@ -441,7 +609,11 @@
           "en": "Listed property",
           "nl": "Monumentaal pand",
           "de": "Denkmalgeschützte Immobilie",
-          "fr": "Bien classé"
+          "fr": "Bien classé",
+          "es": "Inmueble protegido",
+          "pl": "Obiekt wpisany do rejestru zabytków",
+          "ro": "Monument istoric",
+          "sk": "Kultúrna pamiatka"
         }
       },
       {
@@ -451,7 +623,11 @@
           "en": "Other historic property",
           "nl": "Overig historisch vastgoed",
           "de": "Sonstige historische Immobilie",
-          "fr": "Autre bien historique"
+          "fr": "Autre bien historique",
+          "es": "Otro inmueble histórico",
+          "pl": "Inna nieruchomość zabytkowa",
+          "ro": "Altă proprietate istorică",
+          "sk": "Iná historická nehnuteľnosť"
         }
       }
     ],
@@ -464,7 +640,11 @@
       "en": "Land and development sites",
       "nl": "Grond en ontwikkellocaties",
       "de": "Grundstücke und Entwicklungsflächen",
-      "fr": "Terrains et sites à développer"
+      "fr": "Terrains et sites à développer",
+      "es": "Terrenos y suelo para desarrollo",
+      "pl": "Działki i tereny inwestycyjne",
+      "ro": "Terenuri și terenuri pentru dezvoltare",
+      "sk": "Pozemky a rozvojové územia"
     },
     "subtypes": [
       {
@@ -474,7 +654,11 @@
           "en": "Residential building plot",
           "nl": "Bouwkavel voor woningen",
           "de": "Wohnbaugrundstück",
-          "fr": "Terrain constructible résidentiel"
+          "fr": "Terrain constructible résidentiel",
+          "es": "Solar residencial",
+          "pl": "Działka budowlana pod zabudowę mieszkaniową",
+          "ro": "Teren pentru construcții rezidențiale",
+          "sk": "Stavebný pozemok na bývanie"
         }
       },
       {
@@ -484,7 +668,11 @@
           "en": "Commercial or industrial plot",
           "nl": "Commerciële of industriële bouwgrond",
           "de": "Gewerbe- oder Industriegrundstück",
-          "fr": "Terrain commercial ou industriel"
+          "fr": "Terrain commercial ou industriel",
+          "es": "Solar comercial o industrial",
+          "pl": "Działka komercyjna lub przemysłowa",
+          "ro": "Teren comercial sau industrial",
+          "sk": "Pozemok na komerčné alebo priemyselné účely"
         }
       },
       {
@@ -494,7 +682,11 @@
           "en": "Tourism development site",
           "nl": "Toeristische ontwikkellocatie",
           "de": "Touristische Entwicklungsfläche",
-          "fr": "Terrain à vocation touristique"
+          "fr": "Terrain à vocation touristique",
+          "es": "Terreno para desarrollo turístico",
+          "pl": "Teren pod inwestycję turystyczną",
+          "ro": "Teren pentru dezvoltare turistică",
+          "sk": "Pozemok na rozvoj cestovného ruchu"
         }
       },
       {
@@ -504,7 +696,11 @@
           "en": "Large development site",
           "nl": "Grote projectontwikkellocatie",
           "de": "Große Projektentwicklungsfläche",
-          "fr": "Grand terrain à développer"
+          "fr": "Grand terrain à développer",
+          "es": "Gran terreno para desarrollo",
+          "pl": "Duży teren inwestycyjny",
+          "ro": "Teren mare pentru dezvoltare",
+          "sk": "Veľké rozvojové územie"
         }
       },
       {
@@ -514,7 +710,11 @@
           "en": "Agricultural land",
           "nl": "Landbouwgrond",
           "de": "Landwirtschaftliche Fläche",
-          "fr": "Terrain agricole"
+          "fr": "Terrain agricole",
+          "es": "Terreno agrícola",
+          "pl": "Grunt rolny",
+          "ro": "Teren agricol",
+          "sk": "Poľnohospodársky pozemok"
         }
       },
       {
@@ -524,7 +724,11 @@
           "en": "Other land or development site",
           "nl": "Overige grond of ontwikkellocatie",
           "de": "Sonstiges Grundstück oder Entwicklungsfläche",
-          "fr": "Autre terrain ou site à développer"
+          "fr": "Autre terrain ou site à développer",
+          "es": "Otro terreno o suelo para desarrollo",
+          "pl": "Inna działka lub teren inwestycyjny",
+          "ro": "Alt teren sau teren pentru dezvoltare",
+          "sk": "Iný pozemok alebo rozvojové územie"
         }
       }
     ],
@@ -537,7 +741,11 @@
       "en": "Investment property",
       "nl": "Beleggingsvastgoed",
       "de": "Anlageimmobilien",
-      "fr": "Biens d’investissement"
+      "fr": "Biens d’investissement",
+      "es": "Inmuebles de inversión",
+      "pl": "Nieruchomości inwestycyjne",
+      "ro": "Proprietăți de investiții",
+      "sk": "Investičné nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -547,7 +755,11 @@
           "en": "Tenanted residential property",
           "nl": "Verhuurde woning",
           "de": "Vermietete Wohnimmobilie",
-          "fr": "Bien résidentiel loué"
+          "fr": "Bien résidentiel loué",
+          "es": "Inmueble residencial alquilado",
+          "pl": "Wynajęta nieruchomość mieszkaniowa",
+          "ro": "Proprietate rezidențială închiriată",
+          "sk": "Prenajatá rezidenčná nehnuteľnosť"
         }
       },
       {
@@ -557,7 +769,11 @@
           "en": "Multi-unit residential building",
           "nl": "Meergezinsgebouw",
           "de": "Mehrfamilienhaus",
-          "fr": "Immeuble résidentiel"
+          "fr": "Immeuble résidentiel",
+          "es": "Edificio de viviendas",
+          "pl": "Budynek wielorodzinny",
+          "ro": "Bloc de locuințe",
+          "sk": "Bytový dom"
         }
       },
       {
@@ -567,7 +783,11 @@
           "en": "Tenanted commercial or industrial property",
           "nl": "Verhuurd commercieel of industrieel vastgoed",
           "de": "Vermietete Gewerbe- oder Industrieimmobilie",
-          "fr": "Bien commercial ou industriel loué"
+          "fr": "Bien commercial ou industriel loué",
+          "es": "Inmueble comercial o industrial alquilado",
+          "pl": "Wynajęta nieruchomość komercyjna lub przemysłowa",
+          "ro": "Proprietate comercială sau industrială închiriată",
+          "sk": "Prenajatá komerčná alebo priemyselná nehnuteľnosť"
         }
       },
       {
@@ -577,7 +797,11 @@
           "en": "Income-producing property",
           "nl": "Inkomstengenererend vastgoed",
           "de": "Renditeimmobilie",
-          "fr": "Bien de rapport"
+          "fr": "Bien de rapport",
+          "es": "Inmueble con rentabilidad",
+          "pl": "Nieruchomość przynosząca dochód",
+          "ro": "Proprietate generatoare de venit",
+          "sk": "Výnosová nehnuteľnosť"
         }
       },
       {
@@ -587,7 +811,11 @@
           "en": "Property portfolio",
           "nl": "Vastgoedportefeuille",
           "de": "Immobilienportfolio",
-          "fr": "Portefeuille immobilier"
+          "fr": "Portefeuille immobilier",
+          "es": "Cartera inmobiliaria",
+          "pl": "Portfel nieruchomości",
+          "ro": "Portofoliu imobiliar",
+          "sk": "Portfólio nehnuteľností"
         }
       },
       {
@@ -597,7 +825,11 @@
           "en": "Property development project",
           "nl": "Vastgoedontwikkelingsproject",
           "de": "Immobilienentwicklungsprojekt",
-          "fr": "Projet de promotion immobilière"
+          "fr": "Projet de promotion immobilière",
+          "es": "Proyecto de promoción inmobiliaria",
+          "pl": "Projekt deweloperski",
+          "ro": "Proiect de dezvoltare imobiliară",
+          "sk": "Developerský projekt"
         }
       },
       {
@@ -607,7 +839,11 @@
           "en": "Other investment property",
           "nl": "Overig beleggingsvastgoed",
           "de": "Sonstige Anlageimmobilie",
-          "fr": "Autre bien d’investissement"
+          "fr": "Autre bien d’investissement",
+          "es": "Otro inmueble de inversión",
+          "pl": "Inna nieruchomość inwestycyjna",
+          "ro": "Altă proprietate de investiții",
+          "sk": "Iná investičná nehnuteľnosť"
         }
       }
     ],
@@ -616,7 +852,11 @@
       "nl": "beleggingsvastgoed",
       "en": "investment-property",
       "de": "anlageimmobilie",
-      "fr": "bien-investissement"
+      "fr": "bien-investissement",
+      "es": "inmueble-de-inversion",
+      "pl": "nieruchomosc-inwestycyjna",
+      "ro": "proprietate-de-investitie",
+      "sk": "investicna-nehnutelnost"
     }
   },
   {
@@ -626,7 +866,11 @@
       "en": "Other property",
       "nl": "Overig vastgoed",
       "de": "Sonstige Immobilien",
-      "fr": "Autres biens"
+      "fr": "Autres biens",
+      "es": "Otros inmuebles",
+      "pl": "Inne nieruchomości",
+      "ro": "Alte proprietăți",
+      "sk": "Iné nehnuteľnosti"
     },
     "subtypes": [
       {
@@ -636,7 +880,11 @@
           "en": "Garage, parking space",
           "nl": "Garage, parkeerplaats",
           "de": "Garage, Stellplatz",
-          "fr": "Garage, place de parking"
+          "fr": "Garage, place de parking",
+          "es": "Garaje, plaza de aparcamiento",
+          "pl": "Garaż, miejsce parkingowe",
+          "ro": "Garaj, loc de parcare",
+          "sk": "Garáž, parkovacie miesto"
         }
       },
       {
@@ -646,7 +894,11 @@
           "en": "Storage unit, cellar",
           "nl": "Berging, kelder",
           "de": "Lagerraum, Keller",
-          "fr": "Local de stockage, cave"
+          "fr": "Local de stockage, cave",
+          "es": "Trastero, sótano",
+          "pl": "Komórka lokatorska, piwnica",
+          "ro": "Boxă, pivniță",
+          "sk": "Sklad, pivnica"
         }
       },
       {
@@ -656,7 +908,11 @@
           "en": "Wine press house, wine cellar",
           "nl": "Pershuis, wijnkelder",
           "de": "Kelterhaus, Weinkeller",
-          "fr": "Pressoir, cave à vin"
+          "fr": "Pressoir, cave à vin",
+          "es": "Lagar, bodega",
+          "pl": "Tłocznia, piwnica winna",
+          "ro": "Teasc, cramă",
+          "sk": "Lisovňa, vínna pivnica"
         }
       },
       {
@@ -666,7 +922,11 @@
           "en": "Special-purpose property",
           "nl": "Vastgoed met bijzondere bestemming",
           "de": "Immobilie mit besonderer Nutzung",
-          "fr": "Bien à usage spécifique"
+          "fr": "Bien à usage spécifique",
+          "es": "Inmueble de uso especial",
+          "pl": "Nieruchomość specjalnego przeznaczenia",
+          "ro": "Proprietate cu destinație specială",
+          "sk": "Nehnuteľnosť na špeciálne účely"
         }
       },
       {
@@ -676,7 +936,11 @@
           "en": "Other property",
           "nl": "Overig vastgoed",
           "de": "Sonstige Immobilie",
-          "fr": "Autre bien"
+          "fr": "Autre bien",
+          "es": "Otro inmueble",
+          "pl": "Inna nieruchomość",
+          "ro": "Altă proprietate",
+          "sk": "Iná nehnuteľnosť"
         }
       }
     ],
@@ -685,7 +949,11 @@
       "nl": "overig-vastgoed",
       "en": "other-property",
       "de": "sonstige-immobilie",
-      "fr": "autre-bien"
+      "fr": "autre-bien",
+      "es": "otro-inmueble",
+      "pl": "inna-nieruchomosc",
+      "ro": "alta-proprietate",
+      "sk": "ina-nehnutelnost"
     }
   }
 ]

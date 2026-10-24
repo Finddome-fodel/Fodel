@@ -11,7 +11,7 @@ import { test, expect } from '../support/fixtures';
 import type { Page } from '@playwright/test';
 import { LOCALE_META, type Locale } from '../../../src/i18n/ui';
 
-const ROUTE = ['nl', 'en', 'hu', 'de', 'fr', 'nl'] as const;
+const ROUTE = ['nl', 'en', 'hu', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'nl'] as const;
 
 /** The switcher the visitor can actually see on this page and viewport. */
 const visibleToggle = (page: Page) => page.locator('.switcher-toggle:visible').first();
@@ -41,7 +41,7 @@ async function pick(page: Page, code: string, how: 'pointer' | 'keyboard') {
 }
 
 for (const how of ['pointer', 'keyboard'] as const) {
-  test(`switches hu → nl → en → hu → de → fr → nl (${how})`, async ({ page, isMobile }) => {
+  test(`switches hu → nl → en → hu → de → fr → es → pl → ro → sk → nl (${how})`, async ({ page, isMobile }) => {
     test.skip(how === 'keyboard' && isMobile, 'phones have no hardware keyboard');
     await page.goto('/hu/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'hu');
@@ -105,7 +105,8 @@ test('the mobile drawer has the CTA and both account buttons', async ({ page, is
 test('the root page sends each browser language to its own site', async ({ browser }) => {
   const cases: [string, RegExp][] = [
     ['hu-HU', /\/hu\/$/], ['nl-BE', /\/nl\/$/], ['en-GB', /\/en\/$/], ['en-US', /\/en\/$/],
-    ['de-AT', /\/de\/$/], ['fr-BE', /\/fr\/$/], ['it-IT', /\/nl\/$/],
+    ['de-AT', /\/de\/$/], ['fr-BE', /\/fr\/$/], ['es-ES', /\/es\/$/], ['es-MX', /\/es\/$/],
+    ['pl-PL', /\/pl\/$/], ['ro-RO', /\/ro\/$/], ['sk-SK', /\/sk\/$/], ['it-IT', /\/nl\/$/],
   ];
   for (const [locale, expected] of cases) {
     const context = await browser.newContext({ locale });
@@ -117,7 +118,7 @@ test('the root page sends each browser language to its own site', async ({ brows
 });
 
 test('a language picked in the switcher beats the browser language, for every language', async ({ browser, baseURL }) => {
-  for (const code of ['en', 'de', 'fr', 'nl', 'hu'] as const) {
+  for (const code of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'nl', 'hu'] as const) {
     const context = await browser.newContext({ locale: 'hu-HU' });
     await context.addCookies([{ name: 'fodel_lang', value: code, url: baseURL! }]);
     const page = await context.newPage();

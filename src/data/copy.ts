@@ -1,5 +1,5 @@
 /**
- * Page copy, all five languages. Hungarian and Dutch live in this file; English,
+ * Page copy, all nine languages. Hungarian and Dutch live in this file; English,
  * German and French in copy-en.ts, copy-de.ts and copy-fr.ts, each type-checked
  * against the Hungarian shape.
  *
@@ -19,6 +19,10 @@ import { SITE_HOST } from '~/config/site.mjs';
 import { EN } from '~/data/copy-en';
 import { DE } from '~/data/copy-de';
 import { FR } from '~/data/copy-fr';
+import { ES } from '~/data/copy-es';
+import { PL } from '~/data/copy-pl';
+import { RO } from '~/data/copy-ro';
+import { SK } from '~/data/copy-sk';
 
 const REACH_COUNTRIES = COMPANY.reach.countries;
 const REACH_LANGUAGES = COMPANY.reach.languages;
@@ -561,7 +565,7 @@ export type CopyShape = (typeof BASE)['hu'];
 /** Dutch is held to the same shape, so a key missing in either fails the build. */
 const NL: CopyShape = BASE.nl;
 
-export const COPY: Record<Locale, CopyShape> = { hu: BASE.hu, nl: NL, en: EN, de: DE, fr: FR };
+export const COPY: Record<Locale, CopyShape> = { hu: BASE.hu, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK };
 
 export function copy(locale: Locale): CopyShape {
   return COPY[locale];

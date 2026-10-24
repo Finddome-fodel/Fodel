@@ -82,13 +82,13 @@ const all = getCountries()
   .sort((a, b) => collator.compare(a.name, b.name));
 const current = entry(selected);
 
-const exampleLabel = x('Például:', 'Bijvoorbeeld:', 'For example:', 'Zum Beispiel:', 'Par exemple\u00a0:');
+const exampleLabel = x('Például:', 'Bijvoorbeeld:', 'For example:', 'Zum Beispiel:', 'Par exemple\u00a0:', 'Por ejemplo:', 'Na przykład:', 'De exemplu:', 'Napríklad:');
 const t = {
-  country: x('Ország hívószáma', 'Landcode', 'Country dialling code', 'Ländervorwahl', 'Indicatif du pays'),
-  common: x('Gyakori', 'Veelgekozen', 'Common', 'Häufig', 'Courants'),
-  all: x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays'),
-  search: x('Ország keresése', 'Land zoeken', 'Search for a country', 'Land suchen', 'Rechercher un pays'),
-  none: x('Nincs találat', 'Geen resultaten', 'No results', 'Keine Treffer', 'Aucun résultat'),
+  country: x('Ország hívószáma', 'Landcode', 'Country dialling code', 'Ländervorwahl', 'Indicatif du pays', 'Prefijo telefónico del país', 'Numer kierunkowy kraju', 'Prefixul țării', 'Predvoľba krajiny'),
+  common: x('Gyakori', 'Veelgekozen', 'Common', 'Häufig', 'Courants', 'Habituales', 'Najczęstsze', 'Frecvente', 'Najčastejšie'),
+  all: x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays', 'Todos los países', 'Wszystkie kraje', 'Toate țările', 'Všetky krajiny'),
+  search: x('Ország keresése', 'Land zoeken', 'Search for a country', 'Land suchen', 'Rechercher un pays', 'Buscar un país', 'Wyszukaj kraj', 'Căutați o țară', 'Vyhľadať krajinu'),
+  none: x('Nincs találat', 'Geen resultaten', 'No results', 'Keine Treffer', 'Aucun résultat', 'Sin resultados', 'Brak wyników', 'Niciun rezultat', 'Žiadne výsledky'),
   example: (ex: string) => `${exampleLabel} ${ex}`,
 };
 ---

@@ -90,8 +90,8 @@ const LIVE_ROUTES = [
   ['hu/eladoknak/index.html', '/hu/eladoknak/'],
   ['nl/adverteren/index.html', '/nl/adverteren/'],
 ];
-// The three newer languages: the Supabase-backed pages in their own slugs.
-for (const l of ['en', 'de', 'fr']) {
+// The seven newer languages: the Supabase-backed pages in their own slugs.
+for (const l of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk']) {
   for (const key of ['home', 'properties', 'sold', 'submitAd', 'blog', 'priceList', 'sellers']) {
     const p = routePath(l, key);
     LIVE_ROUTES.push([`${p.slice(1)}index.html`, p]);
@@ -199,9 +199,17 @@ console.log('Server-rendered content');
     ['en/faq/index.html', ['commission', 'Hungary']],
     ['de/haeufige-fragen/index.html', ['Provision', 'Ungarn']],
     ['fr/questions-frequentes/index.html', ['commission', 'Hongrie']],
+    ['es/preguntas-frecuentes/index.html', ['comisión', 'Hungría']],
+    ['pl/czeste-pytania/index.html', ['prowizj', 'Węgrzech']],
+    ['ro/intrebari-frecvente/index.html', ['comision', 'Ungaria']],
+    ['sk/caste-otazky/index.html', ['provízi', 'Maďarsk']],
     ['en/prices/index.html', ['69', '129', '179']],
     ['de/preise/index.html', ['69', '129', '179']],
     ['fr/tarifs/index.html', ['69', '129', '179']],
+    ['es/tarifas/index.html', ['69', '129', '179']],
+    ['pl/cennik/index.html', ['69', '129', '179']],
+    ['ro/tarife/index.html', ['69', '129', '179']],
+    ['sk/cennik/index.html', ['69', '129', '179']],
   ];
   for (const [name, needles] of checks) {
     const html = getHtml(name);
@@ -260,7 +268,7 @@ console.log('\nhreflang');
     // need no alternates.
     if (/name="robots" content="noindex/.test(html)) continue;
     const canonical = html.match(/<link rel="canonical" href="(.*?)"/)?.[1];
-    const alts = [...html.matchAll(/<link rel="alternate" hreflang="(hu|nl|en|de|fr)" href="(.*?)"/g)].map(
+    const alts = [...html.matchAll(/<link rel="alternate" hreflang="(hu|nl|en|de|fr|es|pl|ro|sk)" href="(.*?)"/g)].map(
       (m) => m[2]
     );
     if (!canonical) continue;
@@ -290,7 +298,7 @@ console.log('\nhreflang');
   if (!broken) pass(`${graph.size} pages, all hreflang pairs reciprocal`);
 }
 
-/* ── 3b. Five languages ──────────────────────────────────────────────── */
+/* ── 3b. Nine languages ──────────────────────────────────────────────── */
 console.log('\nLanguages');
 {
   const sitemapRaw = await fs.readdir(dist).then((names) => names.filter((n) => /^sitemap.*\.xml$/.test(n)));
@@ -302,7 +310,7 @@ console.log('\nLanguages');
     if (relPath === 'index.html' || relPath === '404.html') continue;
     const locale = relPath.split('/')[0];
     if (!LOCALES.includes(locale)) {
-      fail(`${relPath} is outside the five language folders`);
+      fail(`${relPath} is outside the nine language folders`);
       continue;
     }
     perLocale[locale]++;
@@ -330,11 +338,14 @@ console.log('\nLanguages');
   pass('sitemap lists every language home');
 
   // A translated legal page must carry the courtesy-translation sentence.
-  for (const [l, needle] of [['en', 'translation for convenience'], ['de', 'Übersetzung'], ['fr', 'traduction']]) {
+  for (const [l, needle] of [
+    ['en', 'translation for convenience'], ['de', 'Übersetzung'], ['fr', 'traduction'],
+    ['es', 'traducción'], ['pl', 'tłumaczeniem'], ['ro', 'traducere'], ['sk', 'preklad'],
+  ]) {
     const page = getHtml(`${routePath(l, 'terms').slice(1)}index.html`);
     if (page && !page.includes(needle)) fail(`${routePath(l, 'terms')} lacks the courtesy-translation note`);
   }
-  pass('legal pages in en/de/fr carry the courtesy-translation note');
+  pass('legal pages in en/de/fr/es/pl/ro/sk carry the courtesy-translation note');
 }
 
 /* ── 4. Structured data ──────────────────────────────────────────────── */

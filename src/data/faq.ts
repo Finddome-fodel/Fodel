@@ -21,6 +21,10 @@ import { COMPANY } from '~/config/company';
 import { FAQ_EN } from '~/data/faq-en';
 import { FAQ_DE } from '~/data/faq-de';
 import { FAQ_FR } from '~/data/faq-fr';
+import { FAQ_ES } from '~/data/faq-es';
+import { FAQ_PL } from '~/data/faq-pl';
+import { FAQ_RO } from '~/data/faq-ro';
+import { FAQ_SK } from '~/data/faq-sk';
 
 export type FaqAudience = 'seller' | 'buyer' | 'both';
 
@@ -415,7 +419,12 @@ const HU_NL = {
   ],
 } satisfies Record<'hu' | 'nl', FaqEntry[]>;
 
-export const FAQ: Record<Locale, FaqEntry[]> = { ...HU_NL, en: FAQ_EN, de: FAQ_DE, fr: FAQ_FR };
+export const FAQ: Record<Locale, FaqEntry[]> = { ...HU_NL, en: FAQ_EN, de: FAQ_DE, fr: FAQ_FR,
+  es: FAQ_ES,
+  pl: FAQ_PL,
+  ro: FAQ_RO,
+  sk: FAQ_SK,
+};
 
 /** FAQPage structured data expects plain text, not markup. */
 export function faqAnswerText(entry: FaqEntry): string {

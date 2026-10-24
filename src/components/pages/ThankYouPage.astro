@@ -1,7 +1,7 @@
 ---
 /**
  * Confirmation page for submissions made without JavaScript, one component for
- * all five languages (the route files are one-liners).
+ * all nine languages (the route files are one-liners).
  *
  * noindex: it is a transactional endpoint, not content.
  */
@@ -25,8 +25,8 @@ const { hours } = await getCompany();
 
 <Base
   locale={locale}
-  title={x('Köszönjük a megkeresését', 'Bedankt voor uw bericht', 'Thank you for your message', 'Vielen Dank für Ihre Nachricht', 'Merci pour votre message')}
-  description={x('Megkaptuk az üzenetét.', 'Wij hebben uw bericht ontvangen.', 'We have received your message.', 'Wir haben Ihre Nachricht erhalten.', 'Nous avons bien reçu votre message.')}
+  title={x('Köszönjük a megkeresését', 'Bedankt voor uw bericht', 'Thank you for your message', 'Vielen Dank für Ihre Nachricht', 'Merci pour votre message', 'Gracias por su mensaje', 'Dziękujemy za wiadomość', 'Vă mulțumim pentru mesaj', 'Ďakujeme za vašu správu')}
+  description={x('Megkaptuk az üzenetét.', 'Wij hebben uw bericht ontvangen.', 'We have received your message.', 'Wir haben Ihre Nachricht erhalten.', 'Nous avons bien reçu votre message.', 'Hemos recibido su mensaje.', 'Otrzymaliśmy Państwa wiadomość.', 'Am primit mesajul dumneavoastră.', 'Vašu správu sme prijali.')}
   noindex
 >
   <section class="thanks">
@@ -35,7 +35,7 @@ const { hours } = await getCompany();
         <path d="M5 11.5l4 4 8-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     </span>
-    <Eyebrow center space="18px">{x('Elküldve', 'Verzonden', 'Sent', 'Gesendet', 'Envoyé')}</Eyebrow>
+    <Eyebrow center space="18px">{x('Elküldve', 'Verzonden', 'Sent', 'Gesendet', 'Envoyé', 'Enviado', 'Wysłano', 'Trimis', 'Odoslané')}</Eyebrow>
     <h1>{ui.form.successTitle}</h1>
     <p class="body">{fillHours(ui.form.successBody, hours, locale)}</p>
 

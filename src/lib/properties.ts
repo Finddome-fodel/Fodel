@@ -27,7 +27,7 @@ import type { ImageMetadata } from 'astro';
 import { PROPERTY_GROUPS, canonicalFeature, groupOf, subtypeOf, hasLivingArea, isLandOnly, hasPlot } from '~/lib/listing-catalogue';
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
 
-type LocalisedText = { hu: string; nl?: string; de?: string; en?: string; fr?: string };
+type LocalisedText = { hu: string } & Partial<Record<Exclude<Locale, 'hu'>, string>>;
 
 export type Property = {
   id: string;
@@ -178,7 +178,7 @@ function localisedField(
   const hu = byLocale.hu;
   if(!Object.values(byLocale).some(Boolean))return undefined;
   const out: LocalisedText = { hu:hu||'' };
-  for (const locale of ['nl', 'de', 'en', 'fr'] as const) {
+  for (const locale of ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 'sk'] as const) {
     const value = byLocale[locale];
     if (value) out[locale] = value;
   }
@@ -283,7 +283,8 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
  * Sellers write Hungarian, and pay for a Dutch version (and, as an extra, for
  * more languages). FODEL never translates seller text on the fly. So:
  *   hu, nl      the visitor's language, then Hungarian;
- *   en, de, fr  a translation the seller paid for, then the Dutch text, then
+ *   en, de, fr, es, pl, ro, sk
+ *               a translation the seller paid for, then the Dutch text, then
  *               Hungarian. `from` tells the page when it is not the visitor's
  *               own language, so it can say so.
  */

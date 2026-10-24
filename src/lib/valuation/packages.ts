@@ -32,19 +32,19 @@ const visit = ONSITE_SERVICES.find((service) => service.id === 'onsite-visit')!;
 
 const DEFAULTS: Record<PackageKind, Omit<ValuationPackage, 'kind'>> = {
   indicative: {
-    names: { hu: 'Tájékoztató, piaci alapú becslés', nl: 'Indicatieve marktwaarde', en: 'Indicative, market-based estimate', de: 'Unverbindliche, marktbasierte Einschätzung', fr: 'Estimation indicative fondée sur le marché' },
+    names: { hu: 'Tájékoztató, piaci alapú becslés', nl: 'Indicatieve marktwaarde', en: 'Indicative, market-based estimate', de: 'Unverbindliche, marktbasierte Einschätzung', fr: 'Estimation indicative fondée sur le marché', es: 'Estimación orientativa basada en el mercado', pl: 'Orientacyjna wycena oparta na danych rynkowych', ro: 'Estimare orientativă, bazată pe piață', sk: 'Orientačný odhad založený na trhu' },
     priceEur: 0,
     enabled: true,
     priceLocked: true,
   },
   expert_visit: {
-    names: { hu: 'Gábor helyszíni látogatása', nl: 'Persoonlijk bezoek van Gábor', en: 'A visit from Gábor', de: 'Besuch von Gábor', fr: 'Visite de Gábor' },
+    names: { hu: 'Gábor helyszíni látogatása', nl: 'Persoonlijk bezoek van Gábor', en: 'A visit from Gábor', de: 'Besuch von Gábor', fr: 'Visite de Gábor', es: 'Visita de Gábor', pl: 'Wizyta Gábora', ro: 'Vizita lui Gábor', sk: 'Návšteva Gábora' },
     priceEur: visit.priceEur,
     enabled: true,
     priceLocked: false,
   },
   judicial: {
-    names: { hu: 'Igazságügyi / hivatalos értékbecslés', nl: 'Officiële / gerechtelijke taxatie', en: 'Official / court-appointed valuation', de: 'Amtliches / gerichtliches Gutachten', fr: 'Expertise officielle / judiciaire' },
+    names: { hu: 'Igazságügyi / hivatalos értékbecslés', nl: 'Officiële / gerechtelijke taxatie', en: 'Official / court-appointed valuation', de: 'Amtliches / gerichtliches Gutachten', fr: 'Expertise officielle / judiciaire', es: 'Tasación oficial / judicial', pl: 'Operat szacunkowy / wycena sądowa', ro: 'Evaluare oficială / judiciară', sk: 'Znalecký posudok / súdny posudok' },
     priceEur: null,
     enabled: true,
     priceLocked: false,
@@ -78,7 +78,7 @@ export function isPayable(pkg: ValuationPackage | null): pkg is ValuationPackage
 /** "€ 200", or the on-request wording in the right language. */
 export function priceLabel(pkg: ValuationPackage, locale: Locale): string {
   const x = localizer(locale);
-  if (pkg.priceEur === null) return x('árajánlat alapján', 'op offerte', 'on request', 'auf Anfrage', 'sur demande');
-  if (pkg.priceEur === 0) return x('díjmentes', 'gratis', 'free', 'kostenlos', 'gratuit');
+  if (pkg.priceEur === null) return x('árajánlat alapján', 'op offerte', 'on request', 'auf Anfrage', 'sur demande', 'bajo petición', 'na zapytanie', 'la cerere', 'na požiadanie');
+  if (pkg.priceEur === 0) return x('díjmentes', 'gratis', 'free', 'kostenlos', 'gratuit', 'gratis', 'bezpłatnie', 'gratuit', 'zadarmo');
   return eurCents(pkg.priceEur * 100, locale === 'hu' ? 'nl' : locale);
 }

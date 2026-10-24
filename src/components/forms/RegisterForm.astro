@@ -21,6 +21,7 @@ import { UI, type Locale } from '~/i18n/ui';
 import { senderAddress } from '~/lib/email/routing';
 import { templates } from '~/lib/email/templates';
 import { REGISTRATION_DAYS } from '~/lib/portal/registration';
+import { nOf } from '~/i18n/plural';
 
 interface Props {
   locale: Locale;
@@ -117,6 +118,66 @@ const copies = {
     resendFailed: 'Impossible de renvoyer l’e-mail pour le moment. Réessayez dans une minute.',
     wrong: 'Mauvaise adresse\u202f?',
     change: 'Modifier',
+  },
+  es: {
+    submit: 'Registrarse',
+    title: 'Revise su bandeja de entrada',
+    sentTo: 'Hemos enviado el enlace para establecer su contraseña a:',
+    from: 'Remitente',
+    subject: 'Asunto',
+    validity: `El enlace es válido durante ${REGISTRATION_DAYS} días.`,
+    spam: 'Si no recibe nada en unos minutos, mire también en la carpeta de correo no deseado o de promociones.',
+    resend: 'Reenviar el correo',
+    resendIn: (s: number) => `Podrá reenviarlo en ${s} s`,
+    resent: 'Reenviado.',
+    resendFailed: 'No ha sido posible reenviar el correo en este momento. Vuelva a intentarlo dentro de un minuto.',
+    wrong: '¿Dirección incorrecta?',
+    change: 'Cambiarla',
+  },
+  pl: {
+    submit: 'Zarejestruj się',
+    title: 'Prosimy sprawdzić skrzynkę odbiorczą',
+    sentTo: 'Link do ustawienia hasła wysłaliśmy na adres:',
+    from: 'Nadawca',
+    subject: 'Temat',
+    validity: `Link jest ważny przez ${nOf('pl', REGISTRATION_DAYS, 'dzień', 'dni')}.`,
+    spam: 'Jeśli wiadomość nie dotrze w ciągu kilku minut, prosimy sprawdzić także folder spamu lub ofert.',
+    resend: 'Wyślij wiadomość ponownie',
+    resendIn: (s: number) => `Ponowne wysłanie za ${s} s`,
+    resent: 'Wysłano ponownie.',
+    resendFailed: 'Nie udało się teraz ponownie wysłać wiadomości. Prosimy spróbować za minutę.',
+    wrong: 'Błędny adres?',
+    change: 'Zmień',
+  },
+  ro: {
+    submit: 'Înregistrare',
+    title: 'Verificați-vă căsuța de e-mail',
+    sentTo: 'Am trimis linkul pentru setarea parolei la adresa:',
+    from: 'Expeditor',
+    subject: 'Subiect',
+    validity: `Linkul este valabil ${nOf('ro', REGISTRATION_DAYS, 'zi', 'zile', 'de zile')}.`,
+    spam: 'Dacă nu primiți nimic în câteva minute, verificați și dosarul de spam sau de promoții.',
+    resend: 'Retrimiteți e-mailul',
+    resendIn: (s: number) => `Retrimitere posibilă în ${s} s`,
+    resent: 'Retrimis.',
+    resendFailed: 'Momentan nu am putut retrimite e-mailul. Încercați din nou peste un minut.',
+    wrong: 'Adresă greșită?',
+    change: 'Modificați',
+  },
+  sk: {
+    submit: 'Zaregistrovať sa',
+    title: 'Skontrolujte si doručenú poštu',
+    sentTo: 'Odkaz na nastavenie hesla sme poslali na adresu:',
+    from: 'Odosielateľ',
+    subject: 'Predmet',
+    validity: `Odkaz platí ${nOf('sk', REGISTRATION_DAYS, 'deň', 'dni', 'dní')}.`,
+    spam: 'Ak do niekoľkých minút nič nepríde, pozrite sa aj do priečinka nevyžiadanej pošty alebo reklám.',
+    resend: 'Znova odoslať e-mail',
+    resendIn: (s: number) => `Znova odoslať o ${s} s`,
+    resent: 'Odoslané znova.',
+    resendFailed: 'E-mail sa teraz nepodarilo znova odoslať. Skúste to o minútu.',
+    wrong: 'Nesprávna adresa?',
+    change: 'Zmeniť',
   },
 };
 const t = copies[locale];

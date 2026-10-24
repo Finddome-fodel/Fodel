@@ -21,15 +21,19 @@ const locale = localeOfPath(original) ?? localeFrom(Astro.cookies.get('fodel_lan
 const x = localizer(locale);
 const others = LOCALES.filter((code) => code !== locale);
 
-const title = x('Az oldal nem található', 'Pagina niet gevonden', 'Page not found', 'Seite nicht gefunden', 'Page introuvable');
+const title = x('Az oldal nem található', 'Pagina niet gevonden', 'Page not found', 'Seite nicht gefunden', 'Page introuvable', 'Página no encontrada', 'Nie znaleziono strony', 'Pagina nu a fost găsită', 'Stránka sa nenašla');
 const body = x(
   'A keresett oldal nem létezik, vagy áthelyeztük. Nézze meg a kínálatunkat, vagy vegye fel velünk a kapcsolatot.',
   'De pagina die u zocht bestaat niet of is verplaatst. Bekijk ons aanbod, of neem contact met ons op.',
   'The page you were looking for does not exist or has moved. See our properties, or get in touch.',
   'Die gesuchte Seite gibt es nicht oder sie wurde verschoben. Sehen Sie sich unser Angebot an oder nehmen Sie Kontakt mit uns auf.',
-  'La page que vous cherchez n’existe pas ou a été déplacée. Découvrez nos biens, ou contactez-nous.'
+  'La page que vous cherchez n’existe pas ou a été déplacée. Découvrez nos biens, ou contactez-nous.',
+  'La página que busca no existe o se ha trasladado. Descubra nuestros inmuebles o póngase en contacto con nosotros.',
+  'Strona, której Państwo szukają, nie istnieje lub została przeniesiona. Zapraszamy do przejrzenia naszych nieruchomości lub do kontaktu.',
+  'Pagina pe care o căutați nu există sau a fost mutată. Descoperiți proprietățile noastre sau contactați-ne.',
+  'Stránka, ktorú hľadáte, neexistuje alebo bola presunutá. Pozrite si naše nehnuteľnosti alebo nás kontaktujte.'
 );
-const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another language', 'In einer anderen Sprache', 'Dans une autre langue');
+const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another language', 'In einer anderen Sprache', 'Dans une autre langue', 'En otro idioma', 'W innym języku', 'În altă limbă', 'V inom jazyku');
 ---
 
 <Base locale={locale} title={`404 | ${title}`} description={body} noindex>
@@ -43,8 +47,8 @@ const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another langu
         <div class="col">
           <p class="col-body">{body}</p>
           <div class="actions">
-            <Button variant="dark" href={path(locale, 'properties')}>{x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens')}</Button>
-            <Button variant="text" href={path(locale, 'contact')}>{x('Kapcsolat', 'Contact', 'Contact', 'Kontakt', 'Contact')}</Button>
+            <Button variant="dark" href={path(locale, 'properties')}>{x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens', 'Nuestros inmuebles', 'Nasze nieruchomości', 'Proprietățile noastre', 'Naše nehnuteľnosti')}</Button>
+            <Button variant="text" href={path(locale, 'contact')}>{x('Kapcsolat', 'Contact', 'Contact', 'Kontakt', 'Contact', 'Contacto', 'Kontakt', 'Contact', 'Kontakt')}</Button>
           </div>
         </div>
 

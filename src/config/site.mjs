@@ -15,7 +15,7 @@ export const SITE_URL = 'https://fodel.eu';
 export const SITE_HOST = new URL(SITE_URL).host;
 
 /** Every language the public site exists in, each as a complete site under /<code>/. */
-export const LOCALES = ['hu', 'nl', 'en', 'de', 'fr'];
+export const LOCALES = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'];
 
 export const DEFAULT_LOCALE = 'hu';
 

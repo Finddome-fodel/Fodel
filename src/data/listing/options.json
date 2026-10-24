@@ -7,7 +7,11 @@
         "en": "Newly built",
         "nl": "Nieuwbouw",
         "de": "Neubau",
-        "fr": "Construction neuve"
+        "fr": "Construction neuve",
+        "es": "Obra nueva",
+        "pl": "Nowe budownictwo",
+        "ro": "Construcție nouă",
+        "sk": "Novostavba"
       }
     },
     {
@@ -17,7 +21,11 @@
         "en": "As new",
         "nl": "Zo goed als nieuw",
         "de": "Neuwertig",
-        "fr": "Comme neuf"
+        "fr": "Comme neuf",
+        "es": "Como nuevo",
+        "pl": "Jak nowy",
+        "ro": "Ca nou",
+        "sk": "Ako nový"
       }
     },
     {
@@ -27,7 +35,11 @@
         "en": "Renovated",
         "nl": "Gerenoveerd",
         "de": "Renoviert",
-        "fr": "Rénové"
+        "fr": "Rénové",
+        "es": "Reformado",
+        "pl": "Po remoncie",
+        "ro": "Renovat",
+        "sk": "Zrekonštruovaný"
       }
     },
     {
@@ -37,7 +49,11 @@
         "en": "Good condition",
         "nl": "Goede staat",
         "de": "Guter Zustand",
-        "fr": "Bon état"
+        "fr": "Bon état",
+        "es": "Buen estado",
+        "pl": "Dobry stan",
+        "ro": "Stare bună",
+        "sk": "Dobrý stav"
       }
     },
     {
@@ -47,7 +63,11 @@
         "en": "Average condition",
         "nl": "Redelijke staat",
         "de": "Durchschnittlicher Zustand",
-        "fr": "État moyen"
+        "fr": "État moyen",
+        "es": "Estado aceptable",
+        "pl": "Przeciętny stan",
+        "ro": "Stare medie",
+        "sk": "Priemerný stav"
       }
     },
     {
@@ -57,7 +77,11 @@
         "en": "Needs renovation",
         "nl": "Te renoveren",
         "de": "Renovierungsbedürftig",
-        "fr": "À rénover"
+        "fr": "À rénover",
+        "es": "Para reformar",
+        "pl": "Do remontu",
+        "ro": "Necesită renovare",
+        "sk": "Na rekonštrukciu"
       }
     },
     {
@@ -67,7 +91,11 @@
         "en": "Poor condition / ruin",
         "nl": "Slechte staat / ruïne",
         "de": "Schlechter Zustand / Ruine",
-        "fr": "Mauvais état / ruine"
+        "fr": "Mauvais état / ruine",
+        "es": "Mal estado / ruina",
+        "pl": "Zły stan / ruina",
+        "ro": "Stare proastă / ruină",
+        "sk": "Zlý stav / ruina"
       }
     },
     {
@@ -77,7 +105,11 @@
         "en": "Unfinished construction",
         "nl": "Onvoltooide bouw",
         "de": "Unfertiger Bau",
-        "fr": "Construction inachevée"
+        "fr": "Construction inachevée",
+        "es": "Obra sin terminar",
+        "pl": "Budowa niedokończona",
+        "ro": "Construcție nefinalizată",
+        "sk": "Nedokončená stavba"
       }
     },
     {
@@ -87,7 +119,11 @@
         "en": "Unknown",
         "nl": "Onbekend",
         "de": "Unbekannt",
-        "fr": "Inconnu"
+        "fr": "Inconnu",
+        "es": "Desconocido",
+        "pl": "Nieznany",
+        "ro": "Necunoscut",
+        "sk": "Neznámy"
       }
     }
   ],
@@ -99,7 +135,11 @@
         "en": "Gas heating",
         "nl": "Gasverwarming",
         "de": "Gasheizung",
-        "fr": "Chauffage au gaz"
+        "fr": "Chauffage au gaz",
+        "es": "Calefacción de gas",
+        "pl": "Ogrzewanie gazowe",
+        "ro": "Încălzire pe gaz",
+        "sk": "Plynové kúrenie"
       }
     },
     {
@@ -109,7 +149,11 @@
         "en": "Electric heating",
         "nl": "Elektrische verwarming",
         "de": "Elektroheizung",
-        "fr": "Chauffage électrique"
+        "fr": "Chauffage électrique",
+        "es": "Calefacción eléctrica",
+        "pl": "Ogrzewanie elektryczne",
+        "ro": "Încălzire electrică",
+        "sk": "Elektrické kúrenie"
       }
     },
     {
@@ -119,7 +163,11 @@
         "en": "Wood and solid fuel",
         "nl": "Hout en vaste brandstof",
         "de": "Holz- und Feststoffheizung",
-        "fr": "Bois et combustibles solides"
+        "fr": "Bois et combustibles solides",
+        "es": "Leña y combustibles sólidos",
+        "pl": "Drewno i paliwa stałe",
+        "ro": "Lemne și combustibil solid",
+        "sk": "Drevo a tuhé palivo"
       }
     },
     {
@@ -129,7 +177,11 @@
         "en": "Heat pump",
         "nl": "Warmtepomp",
         "de": "Wärmepumpe",
-        "fr": "Pompe à chaleur"
+        "fr": "Pompe à chaleur",
+        "es": "Bomba de calor",
+        "pl": "Pompa ciepła",
+        "ro": "Pompă de căldură",
+        "sk": "Tepelné čerpadlo"
       }
     },
     {
@@ -139,7 +191,11 @@
         "en": "District heating",
         "nl": "Stadsverwarming",
         "de": "Fernwärme",
-        "fr": "Chauffage urbain"
+        "fr": "Chauffage urbain",
+        "es": "Calefacción urbana",
+        "pl": "Ogrzewanie miejskie",
+        "ro": "Termoficare",
+        "sk": "Diaľkové vykurovanie"
       }
     },
     {
@@ -149,7 +205,11 @@
         "en": "Oil heating",
         "nl": "Olieverwarming",
         "de": "Ölheizung",
-        "fr": "Chauffage au fioul"
+        "fr": "Chauffage au fioul",
+        "es": "Calefacción de gasóleo",
+        "pl": "Ogrzewanie olejowe",
+        "ro": "Încălzire cu motorină",
+        "sk": "Vykurovanie vykurovacím olejom"
       }
     },
     {
@@ -159,7 +219,11 @@
         "en": "Solar heating",
         "nl": "Zonneverwarming",
         "de": "Solarheizung",
-        "fr": "Chauffage solaire"
+        "fr": "Chauffage solaire",
+        "es": "Calefacción solar",
+        "pl": "Ogrzewanie solarne",
+        "ro": "Încălzire solară",
+        "sk": "Solárne vykurovanie"
       }
     },
     {
@@ -169,7 +233,11 @@
         "en": "Mixed heating system",
         "nl": "Gemengd verwarmingssysteem",
         "de": "Gemischtes Heizsystem",
-        "fr": "Système de chauffage mixte"
+        "fr": "Système de chauffage mixte",
+        "es": "Sistema de calefacción mixto",
+        "pl": "Mieszany system ogrzewania",
+        "ro": "Sistem de încălzire mixt",
+        "sk": "Kombinovaný systém vykurovania"
       }
     },
     {
@@ -179,7 +247,11 @@
         "en": "Other",
         "nl": "Overig",
         "de": "Sonstige",
-        "fr": "Autre"
+        "fr": "Autre",
+        "es": "Otro",
+        "pl": "Inne",
+        "ro": "Altele",
+        "sk": "Iné"
       }
     },
     {
@@ -189,7 +261,11 @@
         "en": "No heating",
         "nl": "Geen verwarming",
         "de": "Keine Heizung",
-        "fr": "Sans chauffage"
+        "fr": "Sans chauffage",
+        "es": "Sin calefacción",
+        "pl": "Brak ogrzewania",
+        "ro": "Fără încălzire",
+        "sk": "Bez vykurovania"
       }
     },
     {
@@ -199,7 +275,11 @@
         "en": "Unknown",
         "nl": "Onbekend",
         "de": "Unbekannt",
-        "fr": "Inconnu"
+        "fr": "Inconnu",
+        "es": "Desconocido",
+        "pl": "Nieznany",
+        "ro": "Necunoscut",
+        "sk": "Neznámy"
       }
     }
   ],
@@ -211,7 +291,11 @@
         "en": "Brick",
         "nl": "Baksteen",
         "de": "Ziegel",
-        "fr": "Brique"
+        "fr": "Brique",
+        "es": "Ladrillo",
+        "pl": "Cegła",
+        "ro": "Cărămidă",
+        "sk": "Tehla"
       }
     },
     {
@@ -221,7 +305,11 @@
         "en": "Adobe",
         "nl": "Leem",
         "de": "Lehm",
-        "fr": "Terre crue"
+        "fr": "Terre crue",
+        "es": "Adobe",
+        "pl": "Glina (adobe)",
+        "ro": "Chirpici",
+        "sk": "Nepálená tehla"
       }
     },
     {
@@ -231,7 +319,11 @@
         "en": "Mixed masonry",
         "nl": "Gemengd metselwerk",
         "de": "Mischmauerwerk",
-        "fr": "Maçonnerie mixte"
+        "fr": "Maçonnerie mixte",
+        "es": "Mampostería mixta",
+        "pl": "Mur mieszany",
+        "ro": "Zidărie mixtă",
+        "sk": "Zmiešané murivo"
       }
     },
     {
@@ -241,7 +333,11 @@
         "en": "Concrete / panel",
         "nl": "Beton / panelen",
         "de": "Beton / Plattenbau",
-        "fr": "Béton / panneaux"
+        "fr": "Béton / panneaux",
+        "es": "Hormigón / paneles",
+        "pl": "Beton / wielka płyta",
+        "ro": "Beton / panouri",
+        "sk": "Betón / panel"
       }
     },
     {
@@ -251,7 +347,11 @@
         "en": "Timber / lightweight",
         "nl": "Hout / lichte constructie",
         "de": "Holz / Leichtbau",
-        "fr": "Bois / construction légère"
+        "fr": "Bois / construction légère",
+        "es": "Madera / construcción ligera",
+        "pl": "Drewno / konstrukcja lekka",
+        "ro": "Lemn / structură ușoară",
+        "sk": "Drevo / ľahká konštrukcia"
       }
     },
     {
@@ -261,7 +361,11 @@
         "en": "Stone",
         "nl": "Natuursteen",
         "de": "Stein",
-        "fr": "Pierre"
+        "fr": "Pierre",
+        "es": "Piedra",
+        "pl": "Kamień",
+        "ro": "Piatră",
+        "sk": "Kameň"
       }
     },
     {
@@ -271,7 +375,11 @@
         "en": "Steel frame",
         "nl": "Staalconstructie",
         "de": "Stahlkonstruktion",
-        "fr": "Ossature en acier"
+        "fr": "Ossature en acier",
+        "es": "Estructura de acero",
+        "pl": "Konstrukcja stalowa",
+        "ro": "Structură metalică",
+        "sk": "Oceľová konštrukcia"
       }
     },
     {
@@ -281,7 +389,11 @@
         "en": "Other",
         "nl": "Overig",
         "de": "Sonstige",
-        "fr": "Autre"
+        "fr": "Autre",
+        "es": "Otro",
+        "pl": "Inne",
+        "ro": "Altele",
+        "sk": "Iné"
       }
     },
     {
@@ -291,7 +403,11 @@
         "en": "Unknown",
         "nl": "Onbekend",
         "de": "Unbekannt",
-        "fr": "Inconnu"
+        "fr": "Inconnu",
+        "es": "Desconocido",
+        "pl": "Nieznany",
+        "ro": "Necunoscut",
+        "sk": "Neznámy"
       }
     }
   ]

@@ -19,6 +19,7 @@ import { alternatesFor } from '~/lib/page';
 import { approvedWording } from '~/lib/approved-text';
 import { listingServiceSchema } from '~/lib/seo';
 import { getCompany } from '~/lib/runtime-config';
+import { nOf } from '~/i18n/plural';
 
 interface Props {
   locale: Locale;
@@ -39,11 +40,11 @@ const from = priceFacts(catalog).from;
 const fmt = (n: number) => eurText(locale, n);
 const xp = (id: ExtraId) => fmt(extraPrice(catalog, id));
 const vat = LISTING_VAT_PERCENT;
-const pct = (n: number) => (locale === 'de' || locale === 'fr' ? `${n}\u00a0%` : `${n}%`);
+const pct = (n: number) => (locale === 'de' || locale === 'fr' || locale === 'es' || locale === 'sk' ? `${n}\u00a0%` : `${n}%`);
 const pkgSummary = catalog.packages
   .map((p) => {
-    const price = p.priceEurAbove !== null ? `${fmt(p.priceEur)} ${x('vagy', 'of', 'or', 'oder', 'ou')} ${fmt(p.priceEurAbove)}` : fmt(p.priceEur);
-    return x(`${p.months} hónapos ${price}`, `${p.months} maanden ${price}`, `${p.months}-month listing ${price}`, `${p.months}-monatiges Inserat ${price}`, `annonce de ${p.months} mois à ${price}`);
+    const price = p.priceEurAbove !== null ? `${fmt(p.priceEur)} ${x('vagy', 'of', 'or', 'oder', 'ou', 'o', 'lub', 'sau', 'alebo')} ${fmt(p.priceEurAbove)}` : fmt(p.priceEur);
+    return x(`${p.months} hónapos ${price}`, `${p.months} maanden ${price}`, `${p.months}-month listing ${price}`, `${p.months}-monatiges Inserat ${price}`, `annonce de ${p.months} mois à ${price}`, `anuncio de ${p.months} meses por ${price}`, `ogłoszenie na ${nOf('pl', p.months, 'miesiąc', 'miesiące', 'miesięcy')} za ${price}`, `anunț pe ${nOf('ro', p.months, 'lună', 'luni', 'de luni')} la ${price}`, `inzerát na ${nOf('sk', p.months, 'mesiac', 'mesiace', 'mesiacov')} za ${price}`);
   })
   .join(', ');
 const hl = [extraPrice(catalog, 'category-highlight'), extraPrice(catalog, 'homepage-highlight')].sort((a, b) => a - b);
@@ -216,6 +217,138 @@ const copies = {
     commissionTitle: `${pct(COMMISSION.percent)} net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
     contractFrom: (n: number) => `à partir de ${eurText(locale, n)}`,
   },
+  es: {
+    metaTitle: `Tarifas: anuncios desde ${eurText(locale, from)}`,
+    metaDescription: `Tarifas de los anuncios FODEL: ${pkgSummary}. Traducción ${eurText(locale, translationPrice)} por idioma, destacado ${hlRange} € al mes. Todos los precios incluyen un ${pct(vat)} de IVA neerlandés.`,
+    eyebrow: 'Tarifas',
+    title: 'Tarifas claras,',
+    titleEm: 'sin gastos ocultos',
+    body: `Todos los precios incluyen un ${pct(vat)} de IVA neerlandés. La tarifa del anuncio se paga una sola vez, tras la aprobación; un anuncio aprobado se publica de inmediato. Solo cobramos comisión si somos nosotros quienes traemos al comprador.`,
+    packagesHead: 'Paquetes de anuncio',
+    extrasHead: 'Servicios adicionales',
+    contractsHead: 'Contrato de compraventa bilingüe',
+    commissionHead: 'Comisión',
+    vatNote: `Todos los precios incluyen un ${pct(vat)} de IVA neerlandés.`,
+    cta: 'Publicar un anuncio',
+    ctaNote: 'Tras la aprobación, publicamos de inmediato y recibe la solicitud de pago por correo electrónico.',
+    extras: [
+      { name: 'Traducción (neerlandés, alemán, inglés, francés)', price: xp('translation'), unit: '/ idioma' },
+      { name: 'Destacado en la categoría (mín. 3 meses)', price: xp('category-highlight'), unit: '/ mes' },
+      { name: 'Destacado en la página de inicio (mín. 3 meses)', price: xp('homepage-highlight'), unit: '/ mes' },
+      { name: 'Publicación de un vídeo (el suyo)', price: xp('video'), unit: 'pago único' },
+      { name: 'Añadir fotos más adelante', price: xp('retro-images'), unit: 'pago único' },
+      { name: 'Renovación de un anuncio estándar, 6 meses', price: xp('renewal-6m'), unit: 'pago único' },
+    ],
+    services: ['Obtención del certificado de eficiencia energética'],
+    onsiteUnit: 'pago único, in situ',
+    servicesHead: 'Otros servicios',
+    servicesNote: 'Para estos servicios preparamos un presupuesto a medida. No dude en pedirlo.',
+    contractNote: 'Traducción del contrato de compraventa por combinación de idiomas, precios «desde».',
+    commissionBody:
+      'Solo cobramos comisión si FODEL ha traído al comprador, existe un contrato de compraventa por escrito y se ha pagado la señal. Si el comprador contacta con usted directamente y no necesita nuestra ayuda, no paga nada aparte de la tarifa del anuncio.',
+    refundHead: 'Política de reembolso',
+    commissionTitle: `${pct(COMMISSION.percent)} neto, mín. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `desde ${eurText(locale, n)}`,
+  },
+  pl: {
+    metaTitle: `Cennik: ogłoszenia od ${eurText(locale, from)}`,
+    metaDescription: `Cennik ogłoszeń FODEL: ${pkgSummary}. Tłumaczenie ${eurText(locale, translationPrice)} za język, wyróżnienie ${hlRange} € miesięcznie. Wszystkie ceny zawierają ${pct(vat)} niderlandzkiego VAT.`,
+    eyebrow: 'Cennik',
+    title: 'Przejrzyste ceny,',
+    titleEm: 'bez ukrytych kosztów',
+    body: `Wszystkie ceny zawierają ${pct(vat)} niderlandzkiego VAT. Opłatę za ogłoszenie uiszcza się jednorazowo, po jego zatwierdzeniu; zatwierdzone ogłoszenie od razu trafia do sieci. Prowizję pobieramy tylko wtedy, gdy to my znajdziemy kupującego.`,
+    packagesHead: 'Pakiety ogłoszeń',
+    extrasHead: 'Usługi dodatkowe',
+    contractsHead: 'Dwujęzyczna umowa kupna-sprzedaży',
+    commissionHead: 'Prowizja',
+    vatNote: `Wszystkie ceny zawierają ${pct(vat)} niderlandzkiego VAT.`,
+    cta: 'Dodaj ogłoszenie',
+    ctaNote: 'Po zatwierdzeniu od razu publikujemy ogłoszenie, a Państwo otrzymują e-mailem wezwanie do zapłaty.',
+    extras: [
+      { name: 'Tłumaczenie (niderlandzki, niemiecki, angielski, francuski)', price: xp('translation'), unit: '/ język' },
+      { name: 'Wyróżnienie w kategorii (min. 3 miesiące)', price: xp('category-highlight'), unit: '/ miesiąc' },
+      { name: 'Wyróżnienie na stronie głównej (min. 3 miesiące)', price: xp('homepage-highlight'), unit: '/ miesiąc' },
+      { name: 'Zamieszczenie filmu (własnego)', price: xp('video'), unit: 'jednorazowo' },
+      { name: 'Dodanie zdjęć później', price: xp('retro-images'), unit: 'jednorazowo' },
+      { name: 'Przedłużenie standardowego ogłoszenia, 6 miesięcy', price: xp('renewal-6m'), unit: 'jednorazowo' },
+    ],
+    services: ['Uzyskanie świadectwa charakterystyki energetycznej'],
+    onsiteUnit: 'jednorazowo, na miejscu',
+    servicesHead: 'Inne usługi',
+    servicesNote: 'Na te usługi przygotowujemy indywidualną wycenę. Zapraszamy do kontaktu.',
+    contractNote: 'Tłumaczenie umowy kupna-sprzedaży w danej parze językowej, ceny „od”.',
+    commissionBody:
+      'Prowizję pobieramy tylko wtedy, gdy kupującego znalazł FODEL, zawarto pisemną umowę kupna-sprzedaży i wpłacono zadatek. Jeśli kupujący skontaktuje się z Państwem bezpośrednio i nie potrzebują Państwo naszej pomocy, poza opłatą za ogłoszenie nie płacą Państwo nic.',
+    refundHead: 'Zasady zwrotów',
+    commissionTitle: `${pct(COMMISSION.percent)} netto, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `od ${eurText(locale, n)}`,
+  },
+  ro: {
+    metaTitle: `Tarife: anunțuri de la ${eurText(locale, from)}`,
+    metaDescription: `Tarifele anunțurilor FODEL: ${pkgSummary}. Traducere ${eurText(locale, translationPrice)} per limbă, evidențiere ${hlRange} € pe lună. Toate prețurile includ TVA olandez de ${pct(vat)}.`,
+    eyebrow: 'Tarife',
+    title: 'Tarife clare,',
+    titleEm: 'fără costuri ascunse',
+    body: `Toate prețurile includ TVA olandez de ${pct(vat)}. Taxa de anunț se plătește o singură dată, după aprobare; un anunț aprobat apare imediat online. Percepem comision doar dacă noi aducem cumpărătorul.`,
+    packagesHead: 'Pachete de anunț',
+    extrasHead: 'Servicii suplimentare',
+    contractsHead: 'Contract de vânzare-cumpărare bilingv',
+    commissionHead: 'Comision',
+    vatNote: `Toate prețurile includ TVA olandez de ${pct(vat)}.`,
+    cta: 'Publicați un anunț',
+    ctaNote: 'După aprobare, publicăm imediat, iar dumneavoastră primiți solicitarea de plată prin e-mail.',
+    extras: [
+      { name: 'Traducere (neerlandeză, germană, engleză, franceză)', price: xp('translation'), unit: '/ limbă' },
+      { name: 'Evidențiere în categorie (min. 3 luni)', price: xp('category-highlight'), unit: '/ lună' },
+      { name: 'Evidențiere pe prima pagină (min. 3 luni)', price: xp('homepage-highlight'), unit: '/ lună' },
+      { name: 'Publicarea unui videoclip (al dumneavoastră)', price: xp('video'), unit: 'o singură dată' },
+      { name: 'Adăugarea ulterioară de fotografii', price: xp('retro-images'), unit: 'o singură dată' },
+      { name: 'Prelungirea unui anunț standard, 6 luni', price: xp('renewal-6m'), unit: 'o singură dată' },
+    ],
+    services: ['Obținerea certificatului de performanță energetică'],
+    onsiteUnit: 'o singură dată, la fața locului',
+    servicesHead: 'Alte servicii',
+    servicesNote: 'Pentru acestea întocmim o ofertă personalizată. Nu ezitați să ne întrebați.',
+    contractNote: 'Traducerea contractului de vânzare-cumpărare pe combinație de limbi, prețuri „de la”.',
+    commissionBody:
+      'Percepem comision doar dacă FODEL a adus cumpărătorul, există un contract de vânzare-cumpărare scris și s-a achitat avansul. Dacă cumpărătorul vă contactează direct și nu aveți nevoie de ajutorul nostru, nu plătiți nimic în plus față de taxa de anunț.',
+    refundHead: 'Politica de rambursare',
+    commissionTitle: `${pct(COMMISSION.percent)} net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `de la ${eurText(locale, n)}`,
+  },
+  sk: {
+    metaTitle: `Cenník: inzeráty od ${eurText(locale, from)}`,
+    metaDescription: `Cenník inzerátov FODEL: ${pkgSummary}. Preklad ${eurText(locale, translationPrice)} za jazyk, zvýraznenie ${hlRange} € mesačne. Všetky ceny zahŕňajú ${pct(vat)} holandskú DPH.`,
+    eyebrow: 'Cenník',
+    title: 'Jasné ceny,',
+    titleEm: 'bez skrytých poplatkov',
+    body: `Všetky ceny zahŕňajú ${pct(vat)} holandskú DPH. Poplatok za inzerát sa platí iba raz, po schválení; schválený inzerát je hneď online. Províziu si účtujeme, len ak kupujúceho privedieme my.`,
+    packagesHead: 'Balíky inzerátov',
+    extrasHead: 'Doplnkové služby',
+    contractsHead: 'Dvojjazyčná kúpna zmluva',
+    commissionHead: 'Provízia',
+    vatNote: `Všetky ceny zahŕňajú ${pct(vat)} holandskú DPH.`,
+    cta: 'Pridať inzerát',
+    ctaNote: 'Po schválení inzerát hneď zverejníme a výzvu na platbu dostanete e-mailom.',
+    extras: [
+      { name: 'Preklad (holandčina, nemčina, angličtina, francúzština)', price: xp('translation'), unit: '/ jazyk' },
+      { name: 'Zvýraznenie v kategórii (min. 3 mesiace)', price: xp('category-highlight'), unit: '/ mesiac' },
+      { name: 'Zvýraznenie na úvodnej stránke (min. 3 mesiace)', price: xp('homepage-highlight'), unit: '/ mesiac' },
+      { name: 'Zverejnenie videa (vlastného)', price: xp('video'), unit: 'jednorazovo' },
+      { name: 'Dodatočné pridanie fotografií', price: xp('retro-images'), unit: 'jednorazovo' },
+      { name: 'Predĺženie štandardného inzerátu, 6 mesiacov', price: xp('renewal-6m'), unit: 'jednorazovo' },
+    ],
+    services: ['Vystavenie energetického certifikátu'],
+    onsiteUnit: 'jednorazovo, na mieste',
+    servicesHead: 'Ďalšie služby',
+    servicesNote: 'Na tieto služby pripravíme cenovú ponuku na mieru. Neváhajte sa opýtať.',
+    contractNote: 'Preklad kúpnej zmluvy podľa jazykovej kombinácie, ceny „od“.',
+    commissionBody:
+      'Províziu si účtujeme, len ak kupujúceho priviedol FODEL, existuje písomná kúpna zmluva a bola zaplatená záloha. Ak vás kupujúci kontaktuje priamo a našu pomoc nepotrebujete, okrem poplatku za inzerát neplatíte nič.',
+    refundHead: 'Pravidlá vrátenia platieb',
+    commissionTitle: `${pct(COMMISSION.percent)} bez DPH, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `od ${eurText(locale, n)}`,
+  },
 };
 
 type Copy = (typeof copies)['en'];
@@ -224,10 +357,10 @@ const nlExtra = { refundHead: 'Terugbetalingsbeleid', commissionTitle: `${COMMIS
 const t = { ...copies[locale], ...(locale === 'hu' ? huExtra : locale === 'nl' ? nlExtra : {}) } as Copy;
 
 const contractLabels: Record<string, L10n> = {
-  hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois' },
-  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars', en: 'German–Hungarian', de: 'Deutsch–Ungarisch', fr: 'Allemand–hongrois' },
-  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois' },
-  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois' },
+  hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois', es: 'Húngaro', pl: 'Węgierski', ro: 'Maghiară', sk: 'Maďarčina' },
+  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars', en: 'German–Hungarian', de: 'Deutsch–Ungarisch', fr: 'Allemand–hongrois', es: 'Alemán–húngaro', pl: 'Niemiecki–węgierski', ro: 'Germană–maghiară', sk: 'Nemčina–maďarčina' },
+  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois', es: 'Inglés–húngaro', pl: 'Angielski–węgierski', ro: 'Engleză–maghiară', sk: 'Angličtina–maďarčina' },
+  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois', es: 'Neerlandés–húngaro', pl: 'Niderlandzki–węgierski', ro: 'Neerlandeză–maghiară', sk: 'Holandčina–maďarčina' },
 };
 const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
 

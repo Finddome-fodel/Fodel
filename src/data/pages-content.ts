@@ -14,6 +14,10 @@ import { photoGuideSections } from '~/data/photo-tips';
 import { CONTENT_EN } from '~/data/content-en';
 import { CONTENT_DE } from '~/data/content-de';
 import { CONTENT_FR } from '~/data/content-fr';
+import { CONTENT_ES } from '~/data/content-es';
+import { CONTENT_PL } from '~/data/content-pl';
+import { CONTENT_RO } from '~/data/content-ro';
+import { CONTENT_SK } from '~/data/content-sk';
 
 
 /** The long-form pages, by key. Every language must have all of them. */
@@ -518,4 +522,8 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
   en: CONTENT_EN,
   de: CONTENT_DE,
   fr: CONTENT_FR,
+  es: CONTENT_ES,
+  pl: CONTENT_PL,
+  ro: CONTENT_RO,
+  sk: CONTENT_SK,
 };

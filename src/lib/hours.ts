@@ -31,6 +31,10 @@ export function officeHours(h: Hours, locale: L): string {
     en: `Monday–Friday · ${range}`,
     de: `Montag–Freitag · ${range}`,
     fr: `Lundi–vendredi · ${range}`,
+    es: `De lunes a viernes · ${range}`,
+    pl: `Poniedziałek–piątek · ${range}`,
+    ro: `Luni–vineri · ${range}`,
+    sk: `Pondelok–piatok · ${range}`,
   }[locale];
 }
 
@@ -43,6 +47,10 @@ export function callbackHours(h: Hours, locale: L): string {
     en: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
     de: weekend ? `Rückruf bis ${to} Uhr, auch am Wochenende.` : `Rückruf werktags bis ${to} Uhr.`,
     fr: weekend ? `Rappel jusqu’à ${frTime(to)}, week-end compris.` : `Rappel en semaine jusqu’à ${frTime(to)}.`,
+    es: weekend ? `Le devolvemos la llamada hasta las ${to}, también los fines de semana.` : `Le devolvemos la llamada en días laborables hasta las ${to}.`,
+    pl: weekend ? `Oddzwaniamy do godz. ${to}, także w weekendy.` : `Oddzwaniamy w dni robocze do godz. ${to}.`,
+    ro: weekend ? `Vă sunăm înapoi până la ora ${to}, inclusiv în weekend.` : `Vă sunăm înapoi în zilele lucrătoare până la ora ${to}.`,
+    sk: weekend ? `Spätné volanie do ${to}, aj cez víkend.` : `Spätné volanie v pracovné dni do ${to}.`,
   }[locale];
 }
 
@@ -57,6 +65,10 @@ export function hoursSentence(h: Hours, locale: L): string {
     en: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
     de: `Rufen Sie uns werktags zwischen ${from} und ${to} an; Rückrufe bis ${cb} Uhr${weekend ? ', auch am Wochenende' : ''}.`,
     fr: `Appelez-nous en semaine entre ${frTime(from)} et ${frTime(to)}\u00a0; nous rappelons jusqu’à ${frTime(cb)}${weekend ? ', week-end compris' : ''}.`,
+    es: `Llámenos en días laborables de ${from} a ${to}; le devolvemos la llamada hasta las ${cb}${weekend ? ', también los fines de semana' : ''}.`,
+    pl: `Prosimy dzwonić w dni robocze w godz. ${from}–${to}; oddzwaniamy do godz. ${cb}${weekend ? ', także w weekendy' : ''}.`,
+    ro: `Ne puteți suna în zilele lucrătoare între orele ${from} și ${to}; vă sunăm înapoi până la ora ${cb}${weekend ? ', inclusiv în weekend' : ''}.`,
+    sk: `Volajte nám v pracovné dni od ${from} do ${to}; spätné volanie je možné do ${cb}${weekend ? ', aj cez víkend' : ''}.`,
   }[locale];
 }
 

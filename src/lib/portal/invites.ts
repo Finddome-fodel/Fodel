@@ -3,8 +3,8 @@
  *
  * Hungarian and Dutch have reviewed built-in wording (src/lib/email/copy) that
  * has been in use since 1.0, so they can always be sent; an approved template
- * replaces it once Gábor and Éva supply their final text. English, German and
- * French have no reviewed wording for admin or owner invitations at all, so they can only be sent once an approved
+ * replaces it once Gábor and Éva supply their final text. English, German,
+ * French, Spanish, Polish, Romanian and Slovak have no reviewed wording for admin or owner invitations at all, so they can only be sent once an approved
  * template exists — never with placeholder text (brief §7).
  *
  * The language is always the admin's explicit choice. Nothing is guessed from
@@ -13,11 +13,11 @@
  * Approved templates are the *owner* letter ("Kedves Tulajdonos!"). An admin
  * invite always uses the built-in admin wording, so approving the owner text
  * can never turn a colleague's invite into a letter to a property owner
- * (brief 3 §B.1). English and German therefore have no admin invite at all.
+ * (brief 3 §B.1). The languages without built-in wording therefore have no admin invite at all.
  */
 import { templates, type BuiltEmail, type InviteTemplate } from '~/lib/email/templates';
 
-export const INVITE_LOCALES = ['hu', 'nl', 'en', 'de', 'fr'] as const;
+export const INVITE_LOCALES = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const;
 export type InviteLocale = (typeof INVITE_LOCALES)[number];
 
 const BUILT_IN: ReadonlySet<InviteLocale> = new Set(['hu', 'nl']);

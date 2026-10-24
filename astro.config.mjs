@@ -103,7 +103,7 @@ export default defineConfig({
     sitemap({
       i18n: {
         defaultLocale: DEFAULT_LOCALE,
-        locales: { hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB', de: 'de-DE', fr: 'fr-FR' },
+        locales: { hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', pl: 'pl-PL', ro: 'ro-RO', sk: 'sk-SK' },
       },
       filter: (page) => !page.includes('/api/') && !page.includes('/portal/') && !page.includes('/top-10/'),
     }),

@@ -20,6 +20,7 @@ import { LISTING_PACKAGES, LISTING_EXTRAS } from '~/config/company';
 import { listingRules, type PackageId } from '~/lib/listing-rules';
 import { localizer, type L10n, type Locale } from '~/i18n/ui';
 import { eur } from '~/lib/format';
+import { nOf } from '~/i18n/plural';
 
 /** How a package treats the owner's video: free with it, paid extra, or not offered. */
 export type VideoMode = 'included' | 'extra' | 'none';
@@ -153,28 +154,32 @@ export function packageCard(pkg: ListingPackage, catalog: ListingCatalog, locale
   const translation = extraPrice(catalog, 'translation');
   const features = [
     pkg.maxImages === null
-      ? x('Korlátlan számú kép', 'Onbeperkt aantal foto’s', 'Unlimited number of photos', 'Unbegrenzte Anzahl Fotos', 'Nombre de photos illimité')
-      : x(`Legfeljebb ${pkg.maxImages} kép`, `Maximaal ${pkg.maxImages} foto’s`, `Up to ${pkg.maxImages} photos`, `Bis zu ${pkg.maxImages} Fotos`, `Jusqu’à ${pkg.maxImages} photos`),
+      ? x('Korlátlan számú kép', 'Onbeperkt aantal foto’s', 'Unlimited number of photos', 'Unbegrenzte Anzahl Fotos', 'Nombre de photos illimité', 'Número ilimitado de fotos', 'Nieograniczona liczba zdjęć', 'Număr nelimitat de fotografii', 'Neobmedzený počet fotografií')
+      : x(`Legfeljebb ${pkg.maxImages} kép`, `Maximaal ${pkg.maxImages} foto’s`, `Up to ${pkg.maxImages} photos`, `Bis zu ${pkg.maxImages} Fotos`, `Jusqu’à ${pkg.maxImages} photos`, `Hasta ${pkg.maxImages} fotos`, `Maksymalnie ${nOf('pl', pkg.maxImages, 'zdjęcie', 'zdjęcia', 'zdjęć')}`, `Până la ${nOf('ro', pkg.maxImages, 'fotografie', 'fotografii', 'de fotografii')}`, `Najviac ${nOf('sk', pkg.maxImages, 'fotografia', 'fotografie', 'fotografií')}`),
     pkg.editedImages
-      ? x('A képeket szakszerűen feldolgozzuk', 'Foto’s worden professioneel bewerkt', 'Photos are professionally edited', 'Fotos werden professionell bearbeitet', 'Les photos sont retouchées par des professionnels')
-      : x('A képek az eredeti állapotban jelennek meg', 'Foto’s worden ongewijzigd geplaatst', 'Photos appear as supplied', 'Fotos erscheinen unverändert', 'Les photos sont publiées telles quelles'),
+      ? x('A képeket szakszerűen feldolgozzuk', 'Foto’s worden professioneel bewerkt', 'Photos are professionally edited', 'Fotos werden professionell bearbeitet', 'Les photos sont retouchées par des professionnels', 'Fotos retocadas por profesionales', 'Zdjęcia retuszowane przez profesjonalistów', 'Fotografiile sunt retușate de profesioniști', 'Fotografie upravujú profesionáli')
+      : x('A képek az eredeti állapotban jelennek meg', 'Foto’s worden ongewijzigd geplaatst', 'Photos appear as supplied', 'Fotos erscheinen unverändert', 'Les photos sont publiées telles quelles', 'Las fotos se publican tal como se entregan', 'Zdjęcia publikujemy w otrzymanej postaci', 'Fotografiile sunt publicate așa cum au fost trimise', 'Fotografie zverejňujeme tak, ako ich dodáte'),
     pkg.editedText
-      ? x('A szöveget szakszerűen megszerkesztjük', 'Tekst wordt professioneel geredigeerd', 'The text is professionally edited', 'Der Text wird professionell redigiert', 'Le texte est rédigé et relu par des professionnels')
-      : x('A szöveg a beküldött formában jelenik meg', 'Tekst wordt geplaatst zoals aangeleverd', 'The text appears as supplied', 'Der Text erscheint wie eingereicht', 'Le texte est publié tel que fourni'),
+      ? x('A szöveget szakszerűen megszerkesztjük', 'Tekst wordt professioneel geredigeerd', 'The text is professionally edited', 'Der Text wird professionell redigiert', 'Le texte est rédigé et relu par des professionnels', 'El texto lo redactan y revisan profesionales', 'Tekst redagują i sprawdzają profesjonaliści', 'Textul este redactat și revizuit de profesioniști', 'Text píšu a kontrolujú profesionáli')
+      : x('A szöveg a beküldött formában jelenik meg', 'Tekst wordt geplaatst zoals aangeleverd', 'The text appears as supplied', 'Der Text erscheint wie eingereicht', 'Le texte est publié tel que fourni', 'El texto se publica tal como se entrega', 'Tekst publikujemy w otrzymanej postaci', 'Textul este publicat așa cum a fost trimis', 'Text zverejňujeme tak, ako ho dodáte'),
     pkg.video === 'included'
-      ? x('Videós bemutató a csomag része', 'Video inbegrepen', 'Video included', 'Video inbegriffen', 'Vidéo incluse')
+      ? x('Videós bemutató a csomag része', 'Video inbegrepen', 'Video included', 'Video inbegriffen', 'Vidéo incluse', 'Vídeo incluido', 'Film w cenie', 'Videoclip inclus', 'Video v cene')
       : pkg.video === 'extra'
         ? x(
             `Videós bemutató külön kérhető (${eurText(locale, video)})`,
             `Video als extra (${eurText(locale, video)})`,
             `Video available as an extra (${eurText(locale, video)})`,
             `Video als Zusatzleistung (${eurText(locale, video)})`,
-            `Vidéo en option (${eurText(locale, video)})`
+            `Vidéo en option (${eurText(locale, video)})`,
+            `Vídeo opcional (${eurText(locale, video)})`,
+            `Film jako opcja dodatkowa (${eurText(locale, video)})`,
+            `Videoclip opțional (${eurText(locale, video)})`,
+            `Video za príplatok (${eurText(locale, video)})`
           )
         : null,
     pkg.phone
-      ? x('Az Ön telefonszáma megjelenhet a hirdetésben', 'Uw telefoonnummer kan bij de advertentie staan', 'Your phone number can appear with the listing', 'Ihre Telefonnummer kann beim Inserat stehen', 'Votre numéro de téléphone peut figurer dans l’annonce')
-      : x('Az érdeklődők a FODEL-en keresztül érik el', 'Geïnteresseerden bereiken u via FODEL', 'Interested buyers reach you through FODEL', 'Interessenten erreichen Sie über FODEL', 'Les personnes intéressées vous joignent par FODEL'),
+      ? x('Az Ön telefonszáma megjelenhet a hirdetésben', 'Uw telefoonnummer kan bij de advertentie staan', 'Your phone number can appear with the listing', 'Ihre Telefonnummer kann beim Inserat stehen', 'Votre numéro de téléphone peut figurer dans l’annonce', 'Su número de teléfono puede aparecer en el anuncio', 'Państwa numer telefonu może być widoczny w ogłoszeniu', 'Numărul dumneavoastră de telefon poate apărea în anunț', 'Vaše telefónne číslo môže byť uvedené v inzeráte')
+      : x('Az érdeklődők a FODEL-en keresztül érik el', 'Geïnteresseerden bereiken u via FODEL', 'Interested buyers reach you through FODEL', 'Interessenten erreichen Sie über FODEL', 'Les personnes intéressées vous joignent par FODEL', 'Los interesados contactan con usted a través de FODEL', 'Zainteresowani kontaktują się z Państwem za pośrednictwem FODEL', 'Persoanele interesate vă contactează prin FODEL', 'Záujemcovia vás kontaktujú cez FODEL'),
     ...(opts.withExtras
       ? [
           x(
@@ -182,9 +187,13 @@ export function packageCard(pkg: ListingPackage, catalog: ListingCatalog, locale
             `Vertaling op verzoek (€ ${translation} per taal)`,
             `Translation on request (${eurText(locale, translation)} per language)`,
             `Übersetzung auf Wunsch (${eurText(locale, translation)} pro Sprache)`,
-            `Traduction sur demande (${eurText(locale, translation)} par langue)`
+            `Traduction sur demande (${eurText(locale, translation)} par langue)`,
+            `Traducción bajo petición (${eurText(locale, translation)} por idioma)`,
+            `Tłumaczenie na życzenie (${eurText(locale, translation)} za język)`,
+            `Traducere la cerere (${eurText(locale, translation)} per limbă)`,
+            `Preklad na požiadanie (${eurText(locale, translation)} za jazyk)`
           ),
-          x('Kiemelés külön kérhető', 'Uitlichten op verzoek', 'Highlighting on request', 'Hervorhebung auf Wunsch', 'Mise en avant sur demande'),
+          x('Kiemelés külön kérhető', 'Uitlichten op verzoek', 'Highlighting on request', 'Hervorhebung auf Wunsch', 'Mise en avant sur demande', 'Destacado bajo petición', 'Wyróżnienie na życzenie', 'Evidențiere la cerere', 'Zvýraznenie na požiadanie'),
         ]
       : []),
   ].filter((line): line is string => Boolean(line));
@@ -202,7 +211,11 @@ export function packageCard(pkg: ListingPackage, catalog: ListingCatalog, locale
             `bij een vraagprijs boven ${million(pkg.thresholdHuf)} miljoen HUF`,
             `for a property priced above HUF ${million(pkg.thresholdHuf)} million`,
             `bei Immobilien über ${million(pkg.thresholdHuf)} Mio. HUF`,
-            `pour un bien de plus de ${million(pkg.thresholdHuf)} millions de HUF`
+            `pour un bien de plus de ${million(pkg.thresholdHuf)} millions de HUF`,
+            `para un inmueble de más de ${million(pkg.thresholdHuf)} millones de HUF`,
+            `dla nieruchomości o cenie powyżej ${million(pkg.thresholdHuf)} mln HUF`,
+            `pentru o proprietate de peste ${million(pkg.thresholdHuf)} mil. HUF`,
+            `pre nehnuteľnosť s cenou nad ${million(pkg.thresholdHuf)} mil. HUF`
           ),
         }
       : {}),
@@ -211,7 +224,11 @@ export function packageCard(pkg: ListingPackage, catalog: ListingCatalog, locale
       `${months} ${months === 1 ? 'maand' : 'maanden'}`,
       `${months} ${months === 1 ? 'month' : 'months'}`,
       `${months} ${months === 1 ? 'Monat' : 'Monate'}`,
-      `${months} mois`
+      `${months} mois`,
+      `${nOf('es', months, 'mes', 'meses')}`,
+      `${nOf('pl', months, 'miesiąc', 'miesiące', 'miesięcy')}`,
+      `${nOf('ro', months, 'lună', 'luni', 'de luni')}`,
+      `${nOf('sk', months, 'mesiac', 'mesiace', 'mesiacov')}`
     ),
     featured: pkg.recommended,
     features,

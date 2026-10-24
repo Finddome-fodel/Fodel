@@ -17,6 +17,10 @@ import { SITE_HOST } from '~/config/site.mjs';
 import { LEGAL_EN } from '~/data/legal-en';
 import { LEGAL_DE } from '~/data/legal-de';
 import { LEGAL_FR } from '~/data/legal-fr';
+import { LEGAL_ES } from '~/data/legal-es';
+import { LEGAL_PL } from '~/data/legal-pl';
+import { LEGAL_RO } from '~/data/legal-ro';
+import { LEGAL_SK } from '~/data/legal-sk';
 
 const UPDATED = { hu: '2026. július 27.', nl: '27 juli 2026' };
 
@@ -617,4 +621,8 @@ export const LEGAL: Record<Locale, Record<LegalKey, ContentPageData>> = {
   en: LEGAL_EN,
   de: LEGAL_DE,
   fr: LEGAL_FR,
+  es: LEGAL_ES,
+  pl: LEGAL_PL,
+  ro: LEGAL_RO,
+  sk: LEGAL_SK,
 };

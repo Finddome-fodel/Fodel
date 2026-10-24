@@ -30,6 +30,7 @@ import {
   priceBandLabel,
 } from '~/lib/properties';
 import { breadcrumbSchema } from '~/lib/seo';
+import { nOf } from '~/i18n/plural';
 
 interface Props {
   locale: Locale;
@@ -123,13 +124,17 @@ const mapHref = (() => {
   return query ? `${path(locale, 'map')}?${query}` : path(locale, 'map');
 })();
 
-const title = heading ?? x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens');
+const title = heading ?? x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens', 'Nuestros inmuebles', 'Nasza oferta', 'Proprietățile noastre', 'Naše nehnuteľnosti');
 const defaultDescription = x(
   `${total} magyar ingatlan eladó: házak, tanyák, kúriák, nyaralók és birtokok. Szűrjön típus, régió és ár szerint.`,
   `${total} woningen in Hongarije: huizen, boerderijen, landhuizen en vakantiehuizen. Filter op type, regio en prijs.`,
   `${total} properties in Hungary: houses, farms, manor houses and holiday homes. Filter by type, region and price.`,
   `${total} Immobilien in Ungarn: Häuser, Höfe, Landhäuser und Ferienhäuser. Filtern Sie nach Typ, Region und Preis.`,
-  `${total} biens en Hongrie\u00a0: maisons, fermes, manoirs et maisons de vacances. Filtrez par type, région et prix.`
+  `${total} biens en Hongrie\u00a0: maisons, fermes, manoirs et maisons de vacances. Filtrez par type, région et prix.`,
+  `${total} inmuebles en Hungría: casas, fincas, casas señoriales y casas vacacionales. Filtre por tipo, región y precio.`,
+  `${nOf('pl', total, 'nieruchomość', 'nieruchomości')} na Węgrzech: domy, gospodarstwa, dwory i domy wakacyjne. Filtruj według rodzaju, regionu i ceny.`,
+  `${nOf('ro', total, 'proprietate', 'proprietăți', 'de proprietăți')} în Ungaria: case, ferme, conace și case de vacanță. Filtrați după tip, regiune și preț.`,
+  `${nOf('sk', total, 'nehnuteľnosť', 'nehnuteľnosti', 'nehnuteľností')} v Maďarsku: domy, farmy, kaštiele a rekreačné domy. Filtrujte podľa typu, regiónu a ceny.`
 );
 
 const trail = crumbs(locale, [{ name: title, url: currentPath }]);
@@ -150,21 +155,21 @@ function withParam(key: string, value: string): string {
 
 /** The filters in force, each with a link that removes just that one. */
 const active = [
-  q && { key: 'q', label: x(`„${q}”`, `“${q}”`, `“${q}”`, `„${q}“`, `«\u00a0${q}\u00a0»`) },
+  q && { key: 'q', label: x(`„${q}”`, `“${q}”`, `“${q}”`, `„${q}“`, `«\u00a0${q}\u00a0»`, `«${q}»`, `„${q}”`, `„${q}”`, `„${q}“`) },
   type && { key: 'type', label: categoryLabel(type) },
   country && { key: 'country', label: labelCountry(country, locale) },
   region && { key: 'region', label: region },
   county && { key: 'county', label: county },
   settlement && { key: 'settlement', label: settlement },
   priceBand && { key: 'price', label: priceBandLabel(priceBand) },
-  beds && { key: 'beds', label: x(`${beds}+ szoba`, `${beds}+ slaapkamers`, `${beds}+ bedrooms`, `${beds}+ Schlafzimmer`, `${beds}+ chambres`) },
+  beds && { key: 'beds', label: x(`${beds}+ szoba`, `${beds}+ slaapkamers`, `${beds}+ bedrooms`, `${beds}+ Schlafzimmer`, `${beds}+ chambres`, `${beds}+ dormitorios`, `min. ${nOf('pl', Number(beds), 'sypialnia', 'sypialnie', 'sypialni')}`, `${beds}+ dormitoare`, `min. ${nOf('sk', Number(beds), 'spálňa', 'spálne', 'spální')}`) },
   floorMin && { key: 'floor_min', label: `${ui.filters.area} ≥ ${floorMin} m²` },
   floorMax && { key: 'floor_max', label: `${ui.filters.area} ≤ ${floorMax} m²` },
   plotMin && { key: 'plot_min', label: `${ui.filters.land} ≥ ${plotMin} m²` },
   plotMax && { key: 'plot_max', label: `${ui.filters.land} ≤ ${plotMax} m²` },
   subtype && { key:'subtype',label:subtypeLabel(type,subtype,locale)||subtype },
   excludeAdobe && { key: 'no_adobe', label: ui.filters.excludeAdobe },
-  bbox && { key: 'bbox', label: x('Térképterület', 'Kaartgebied', 'Map area', 'Kartenausschnitt', 'Zone de la carte') },
+  bbox && { key: 'bbox', label: x('Térképterület', 'Kaartgebied', 'Map area', 'Kartenausschnitt', 'Zone de la carte', 'Zona del mapa', 'Obszar mapy', 'Zona hărții', 'Oblasť mapy') },
 ].filter(Boolean) as { key: string; label: string }[];
 
 /** A category page's own category is where the visitor is, not a filter
@@ -191,16 +196,16 @@ const pageItems = (() => {
 
 const countWord = ui.filters.results(total).replace(String(total), '').trim();
 const labels = {
-  filters: x('Szűrés', 'Filters', 'Filters', 'Filter', 'Filtres'),
-  openFilters: x('Szűrők', 'Filters', 'Filters', 'Filter', 'Filtres'),
-  location: x('Elhelyezkedés', 'Locatie', 'Location', 'Lage', 'Localisation'),
-  keyword: x('Szabad szavas keresés', 'Vrij zoeken', 'Free-text search', 'Freitextsuche', 'Recherche libre'),
+  filters: x('Szűrés', 'Filters', 'Filters', 'Filter', 'Filtres', 'Filtros', 'Filtry', 'Filtre', 'Filtre'),
+  openFilters: x('Szűrők', 'Filters', 'Filters', 'Filter', 'Filtres', 'Filtros', 'Filtry', 'Filtre', 'Filtre'),
+  location: x('Elhelyezkedés', 'Locatie', 'Location', 'Lage', 'Localisation', 'Ubicación', 'Lokalizacja', 'Localizare', 'Lokalita'),
+  keyword: x('Szabad szavas keresés', 'Vrij zoeken', 'Free-text search', 'Freitextsuche', 'Recherche libre', 'Búsqueda libre', 'Wyszukiwanie dowolne', 'Căutare liberă', 'Voľné vyhľadávanie'),
   min: 'min.',
   max: 'max.',
-  prev: x('Előző oldal', 'Vorige pagina', 'Previous page', 'Vorherige Seite', 'Page précédente'),
-  next: x('Következő oldal', 'Volgende pagina', 'Next page', 'Nächste Seite', 'Page suivante'),
-  pages: x('Lapozás', 'Paginering', 'Pagination', 'Seitennavigation', 'Pagination'),
-  remove: x('Szűrő eltávolítása', 'Filter verwijderen', 'Remove filter', 'Filter entfernen', 'Retirer le filtre'),
+  prev: x('Előző oldal', 'Vorige pagina', 'Previous page', 'Vorherige Seite', 'Page précédente', 'Página anterior', 'Poprzednia strona', 'Pagina anterioară', 'Predchádzajúca strana'),
+  next: x('Következő oldal', 'Volgende pagina', 'Next page', 'Nächste Seite', 'Page suivante', 'Página siguiente', 'Następna strona', 'Pagina următoare', 'Nasledujúca strana'),
+  pages: x('Lapozás', 'Paginering', 'Pagination', 'Seitennavigation', 'Pagination', 'Paginación', 'Paginacja', 'Paginare', 'Stránkovanie'),
+  remove: x('Szűrő eltávolítása', 'Filter verwijderen', 'Remove filter', 'Filter entfernen', 'Retirer le filtre', 'Quitar el filtro', 'Usuń filtr', 'Eliminați filtrul', 'Odstrániť filter'),
   apply: ui.filters.search,
 };
 ---
@@ -268,7 +273,7 @@ const labels = {
               type="search"
               name="q"
               value={q}
-              placeholder={x('Település, jellemző, azonosító…', 'Plaats, kenmerk, referentie…', 'Town, feature, reference…', 'Ort, Merkmal, Referenz…', 'Localité, caractéristique, référence…')}
+              placeholder={x('Település, jellemző, azonosító…', 'Plaats, kenmerk, referentie…', 'Town, feature, reference…', 'Ort, Merkmal, Referenz…', 'Localité, caractéristique, référence…', 'Localidad, característica, referencia…', 'Miejscowość, cecha, numer referencyjny…', 'Localitate, caracteristică, referință…', 'Obec, vlastnosť, referenčné číslo…')}
               aria-label={labels.keyword}
               enterkeyhint="search"
             />
@@ -331,7 +336,7 @@ const labels = {
             </div>
           </fieldset>
 
-          {<div class="group"><label class="group-title" for="filter-subtype">{locale==='hu'?'Altípus':locale==='nl'?'Subtype':locale==='de'?'Untertyp':locale==='fr'?'Sous-type':'Subtype'}</label><select id="filter-subtype" name="subtype" disabled={!type} data-auto><option value="">{ui.filters.all}</option>{(PROPERTY_GROUPS.find(g=>g.key===groupOf(type))?.subtypes||[]).map(v=><option value={v.key} selected={v.key===subtype}>{labelIn(v.labels,locale)}</option>)}</select></div>}
+          {<div class="group"><label class="group-title" for="filter-subtype">{x('Altípus', 'Subtype', 'Subtype', 'Untertyp', 'Sous-type', 'Subtipo', 'Podtyp', 'Subtip', 'Podtyp')}</label><select id="filter-subtype" name="subtype" disabled={!type} data-auto><option value="">{ui.filters.all}</option>{(PROPERTY_GROUPS.find(g=>g.key===groupOf(type))?.subtypes||[]).map(v=><option value={v.key} selected={v.key===subtype}>{labelIn(v.labels,locale)}</option>)}</select></div>}
           {/* Location */}
           <details class="group group-fold" open={locationOpen}>
             <summary class="group-title">
@@ -344,7 +349,7 @@ const labels = {
                   <div class="field">
                     <label for="f-country">{ui.filters.country}</label>
                     <select id="f-country" name="country" data-auto>
-                      <option value="">{x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays')}</option>
+                      <option value="">{x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays', 'Todos los países', 'Wszystkie kraje', 'Toate țările', 'Všetky krajiny')}</option>
                       {countries.map((code) => (
                         <option value={code} selected={code === country}>{labelCountry(code, locale)}</option>
                       ))}
@@ -435,7 +440,7 @@ const labels = {
                 <input type="hidden" name="bbox" value={bboxParam} />
                 <p class="area-note">
                   {ui.filters.areaFiltered} ·{' '}
-                  <a href={withParam('bbox', '')}>{x('Szűrés törlése', 'Filter wissen', 'Clear filter', 'Filter löschen', 'Effacer le filtre')}</a>
+                  <a href={withParam('bbox', '')}>{x('Szűrés törlése', 'Filter wissen', 'Clear filter', 'Filter löschen', 'Effacer le filtre', 'Borrar el filtro', 'Wyczyść filtr', 'Ștergeți filtrul', 'Zrušiť filter')}</a>
                 </p>
               </>
             )
@@ -497,7 +502,7 @@ const labels = {
 
         {
           chips.length > 0 && (
-            <ul class="active" aria-label={x('Aktív szűrők', 'Actieve filters', 'Active filters', 'Aktive Filter', 'Filtres actifs')}>
+            <ul class="active" aria-label={x('Aktív szűrők', 'Actieve filters', 'Active filters', 'Aktive Filter', 'Filtres actifs', 'Filtros activos', 'Aktywne filtry', 'Filtre active', 'Aktívne filtre')}>
               {chips.map((f) => (
                 <li>
                   <a href={withParam(f.key, '')} aria-label={`${labels.remove}: ${f.label}`}>

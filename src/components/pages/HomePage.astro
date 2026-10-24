@@ -70,7 +70,7 @@ const company = await getCompany();
 // Brief 2 (§1/A): the three newest articles in this language — never another
 // language's, never a case study, and no section at all when there are none.
 const latest = await latestArticles(locale, 3);
-const latestTitle = x('Legfrissebb cikkeink', 'Onze nieuwste artikelen', 'Our latest articles', 'Unsere neuesten Artikel', 'Nos derniers articles');
+const latestTitle = x('Legfrissebb cikkeink', 'Onze nieuwste artikelen', 'Our latest articles', 'Unsere neuesten Artikel', 'Nos derniers articles', 'Nuestros últimos artículos', 'Nasze najnowsze artykuły', 'Cele mai recente articole', 'Naše najnovšie články');
 // The valuation entry point appears only while an admin has confirmed the
 // service is staffed (Beállítások → Szolgáltatások), and says "free" only once
 // that is confirmed too.
@@ -78,8 +78,8 @@ const valuation = company.services.valuationEntry
   ? {
       href: path(locale, 'valuation'),
       label: company.services.valuationFreeConfirmed
-        ? x('Ingyenes értékbecslés', 'Gratis waardebepaling', 'Free valuation', 'Kostenlose Bewertung', 'Estimation gratuite')
-        : x('Mennyit ér az ingatlanom?', 'Wat is mijn woning waard?', 'What is my property worth?', 'Was ist meine Immobilie wert?', 'Que vaut mon bien\u202f?'),
+        ? x('Ingyenes értékbecslés', 'Gratis waardebepaling', 'Free valuation', 'Kostenlose Bewertung', 'Estimation gratuite', 'Valoración gratuita', 'Bezpłatna wycena', 'Evaluare gratuită', 'Bezplatný odhad ceny')
+        : x('Mennyit ér az ingatlanom?', 'Wat is mijn woning waard?', 'What is my property worth?', 'Was ist meine Immobilie wert?', 'Que vaut mon bien\u202f?', '¿Cuánto vale mi inmueble?', 'Ile jest warta moja nieruchomość?', 'Cât valorează proprietatea mea?', 'Koľko má moja nehnuteľnosť hodnotu?'),
     }
   : null;
 // The three packages, named and priced in Beállítások → Szolgáltatások. The free
@@ -163,7 +163,7 @@ const quote = splitOpeningQuote(c.quote);
             <div class="hero-slide" data-active data-hero-fallback>
               <Image
                 src={heroImage}
-                alt={x('Tóparti otthon naplementében', 'Een huis aan het water bij zonsondergang', 'A lakeside home at sunset', 'Ein Haus am See bei Sonnenuntergang', 'Une maison au bord du lac au coucher du soleil')}
+                alt={x('Tóparti otthon naplementében', 'Een huis aan het water bij zonsondergang', 'A lakeside home at sunset', 'Ein Haus am See bei Sonnenuntergang', 'Une maison au bord du lac au coucher du soleil', 'Una casa junto al lago al atardecer', 'Dom nad jeziorem o zachodzie słońca', 'O casă pe malul lacului la apus', 'Dom pri jazere pri západe slnka')}
                 widths={HERO_WIDTHS}
                 sizes={HERO_SIZES}
                 loading="eager"
@@ -244,7 +244,7 @@ const quote = splitOpeningQuote(c.quote);
     <HomeSearch locale={locale} regions={regionsOf(all)} categories={listingCategories(taxonomy)}>
       <p class="search-count">
         <span class="search-count-n num" data-count={String(all.length)}>{all.length}</span>
-        <span class="search-count-text">{x('aktív hirdetés, közvetlenül a tulajdonostól', 'actieve advertenties, direct van de eigenaar', 'active listings, direct from the owner', 'aktive Inserate, direkt vom Eigentümer', 'annonces actives, en direct du propriétaire')}</span>
+        <span class="search-count-text">{x('aktív hirdetés, közvetlenül a tulajdonostól', 'actieve advertenties, direct van de eigenaar', 'active listings, direct from the owner', 'aktive Inserate, direkt vom Eigentümer', 'annonces actives, en direct du propriétaire', 'anuncios activos, directamente del propietario', 'aktywnych ogłoszeń bezpośrednio od właścicieli', 'anunțuri active, direct de la proprietar', 'aktívnych inzerátov priamo od majiteľov')}</span>
       </p>
     </HomeSearch>
   </section>
@@ -253,19 +253,23 @@ const quote = splitOpeningQuote(c.quote);
   {valuation && (
     <section class="valuation-slab slab reveal" aria-labelledby="valuation-slab-title">
       <div class="vs-copy">
-        <SectionHead eyebrow={x('Értékmeghatározás', 'Waardebepaling', 'Valuation', 'Bewertung', 'Estimation')} title={x('Mennyit ér\naz ingatlana?', 'Wat is uw woning\nwaard?', 'What is your\nproperty worth?', 'Was ist Ihre\nImmobilie wert?', 'Que vaut\nvotre bien\u202f?')} size="large" />
+        <SectionHead eyebrow={x('Értékmeghatározás', 'Waardebepaling', 'Valuation', 'Bewertung', 'Estimation', 'Valoración', 'Wycena', 'Evaluare', 'Odhad ceny')} title={x('Mennyit ér\naz ingatlana?', 'Wat is uw woning\nwaard?', 'What is your\nproperty worth?', 'Was ist Ihre\nImmobilie wert?', 'Que vaut\nvotre bien\u202f?', '¿Cuánto vale\nsu inmueble?', 'Ile jest warta\nPaństwa nieruchomość?', 'Cât valorează\nproprietatea dumneavoastră?', 'Akú hodnotu má\nvaša nehnuteľnosť?')} size="large" />
         <p class="vs-body">
           {x(
             'Adja meg, amit tud az ingatlanról: fotókat, alaprajzot, dokumentumokat is csatolhat. Munkatársunk ellenőrzi az eredményt, és e-mailben küldi. Tájékoztató becslés, nem hivatalos szakvélemény.',
             'Vul in wat u van de woning weet; foto’s, plattegronden en documenten kunt u bijvoegen. Onze medewerker controleert het resultaat en stuurt het per e-mail. Indicatief, geen officieel taxatierapport.',
             'Tell us what you know about the property; you can attach photos, floor plans and documents. One of our team checks the result and sends it by email. Indicative only, not an official valuation report.',
             'Geben Sie an, was Sie über die Immobilie wissen; Fotos, Grundrisse und Unterlagen können Sie beifügen. Ein Mitarbeiter prüft das Ergebnis und schickt es per E-Mail. Unverbindliche Einschätzung, kein amtliches Gutachten.',
-            'Indiquez ce que vous savez du bien\u202f; vous pouvez joindre des photos, des plans et des documents. Un collaborateur vérifie le résultat et vous l’envoie par e-mail. Estimation indicative, et non une expertise officielle.'
+            'Indiquez ce que vous savez du bien\u202f; vous pouvez joindre des photos, des plans et des documents. Un collaborateur vérifie le résultat et vous l’envoie par e-mail. Estimation indicative, et non une expertise officielle.',
+            'Indíquenos lo que sabe del inmueble; puede adjuntar fotos, planos y documentos. Un miembro de nuestro equipo revisa el resultado y se lo envía por correo electrónico. Valoración orientativa, no una tasación oficial.',
+            'Prosimy podać, co Państwo wiedzą o nieruchomości; można dołączyć zdjęcia, rzuty i dokumenty. Nasz pracownik sprawdzi wynik i prześle go e-mailem. Wycena ma charakter orientacyjny i nie jest operatem szacunkowym.',
+            'Spuneți-ne ce știți despre proprietate; puteți atașa fotografii, planuri și documente. Un coleg verifică rezultatul și vi-l trimite prin e-mail. Evaluare orientativă, nu o evaluare oficială.',
+            'Napíšte nám, čo o nehnuteľnosti viete; môžete priložiť fotografie, pôdorysy a dokumenty. Náš kolega výsledok skontroluje a pošle vám ho e-mailom. Ide o orientačný odhad, nie o znalecký posudok.'
           )}
         </p>
         <Button variant="dark" href={valuation.href} arrow>{valuation.label}</Button>
       </div>
-      <ul class="vs-tiers" aria-label={x('Értékmeghatározási csomagok', 'Waardebepalingspakketten', 'Valuation packages', 'Bewertungspakete', 'Forfaits d’estimation')}>
+      <ul class="vs-tiers" aria-label={x('Értékmeghatározási csomagok', 'Waardebepalingspakketten', 'Valuation packages', 'Bewertungspakete', 'Forfaits d’estimation', 'Paquetes de valoración', 'Pakiety wyceny', 'Pachete de evaluare', 'Balíky odhadu ceny')}>
         {valuationTiers.map((tier) => (
           <li>
             <span class="vs-name">{tier.name}</span>
@@ -439,7 +443,7 @@ const quote = splitOpeningQuote(c.quote);
             class="reveal"
           />
           <Button variant="outline" href={path(locale, 'blog')} class="latest-all" arrow>
-            {x('Összes cikk', 'Alle artikelen', 'All articles', 'Alle Artikel', 'Tous les articles')}
+            {x('Összes cikk', 'Alle artikelen', 'All articles', 'Alle Artikel', 'Tous les articles', 'Todos los artículos', 'Wszystkie artykuły', 'Toate articolele', 'Všetky články')}
           </Button>
         </div>
         <div class:list={['latest-grid', `count-${latest.length}`]}>
@@ -452,11 +456,11 @@ const quote = splitOpeningQuote(c.quote);
   }
 
   {/* ── NEWSLETTER ── a quiet linen slab, same family as the valuation slab */}
-  <section class="news-slab slab reveal" aria-label={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information')}>
+  <section class="news-slab slab reveal" aria-label={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information', 'Boletín', 'Newsletter', 'Newsletter', 'Newsletter')}>
     <div class="ns-copy">
       <SectionHead
-        eyebrow={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information')}
-        title={x('Új ingatlanok,\nelsőként.', 'Nieuw aanbod,\nals eerste.', 'New listings,\nbefore anyone else.', 'Neue Immobilien,\nals Erste.', 'Les nouveaux biens,\nen premier.')}
+        eyebrow={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information', 'Boletín', 'Newsletter', 'Newsletter', 'Newsletter')}
+        title={x('Új ingatlanok,\nelsőként.', 'Nieuw aanbod,\nals eerste.', 'New listings,\nbefore anyone else.', 'Neue Immobilien,\nals Erste.', 'Les nouveaux biens,\nen premier.', 'Los nuevos inmuebles,\nantes que nadie.', 'Nowe nieruchomości\nprzed wszystkimi.', 'Proprietățile noi,\nînaintea tuturor.', 'Nové nehnuteľnosti\nskôr ako ostatní.')}
         size="large"
       />
       <p class="ns-body">
@@ -465,7 +469,11 @@ const quote = splitOpeningQuote(c.quote);
           'Eén keer per maand het nieuwste aanbod en kort marktnieuws, in het Nederlands. Geen spam, en uitschrijven kan met één klik.',
           'Once a month: the newest listings and short market news, in English. No junk mail, and you can unsubscribe with one click.',
           'Einmal im Monat die neuesten Angebote und kurze Marktnachrichten, auf Deutsch. Keine unerwünschte Post, und die Abmeldung gelingt mit einem Klick.',
-          'Une fois par mois, les nouveaux biens et de courtes nouvelles du marché, en français. Pas de courrier indésirable, et désabonnement en un clic.'
+          'Une fois par mois, les nouveaux biens et de courtes nouvelles du marché, en français. Pas de courrier indésirable, et désabonnement en un clic.',
+          'Una vez al mes, los nuevos inmuebles y breves noticias del mercado, en español. Sin correo basura, y puede darse de baja con un clic.',
+          'Raz w miesiącu nowe nieruchomości i krótkie wiadomości z rynku, po polsku. Bez spamu, a z subskrypcji można zrezygnować jednym kliknięciem.',
+          'O dată pe lună, proprietățile noi și scurte știri de pe piață, în limba română. Fără mesaje nedorite, iar dezabonarea se face cu un singur clic.',
+          'Raz mesačne nové nehnuteľnosti a krátke správy z trhu, po slovensky. Žiadny spam a odhlásiť sa môžete jedným kliknutím.'
         )}
       </p>
     </div>

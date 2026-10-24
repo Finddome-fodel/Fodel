@@ -37,7 +37,7 @@ const steps = copy(locale).steps;
 const catalog = listingCatalog((await getCompany()).services);
 const cheapest = priceFacts(catalog).from;
 const translationFee = extraPrice(catalog, 'translation');
-const space = locale === 'de' || locale === 'fr' ? '\u00a0' : '';
+const space = locale === 'de' || locale === 'fr' || locale === 'es' || locale === 'sk' ? '\u00a0' : '';
 
 // The seller FAQ doubles as FAQPage markup — this is the content answer
 // engines quote when someone asks how selling to foreign buyers works.
@@ -62,7 +62,7 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
     titleEm={c.hero.titleEm}
     body={c.hero.body}
     image={vineyard}
-    imageAlt={x('Szőlőbirtok a Dunántúlon', 'Wijngaard in Transdanubië', 'Vineyard in Transdanubia', 'Weingut in Transdanubien', 'Vignoble en Transdanubie')}
+    imageAlt={x('Szőlőbirtok a Dunántúlon', 'Wijngaard in Transdanubië', 'Vineyard in Transdanubia', 'Weingut in Transdanubien', 'Vignoble en Transdanubie', 'Viñedo en Transdanubia', 'Winnica w Zadunaju', 'Podgorie în Transdanubia', 'Vinica v Zadunajsku')}
     primary={{ label: c.hero.cta, href: path(locale, 'submitAd'), emphasis: true }}
     secondary={{ label: c.hero.secondary, href: path(locale, 'priceList') }}
   />
@@ -110,7 +110,11 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
           `min. € ${COMMISSION.minimumEur} + ${COMMISSION.vatPercent}% btw`,
           `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}% VAT`,
           `mind. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% USt.`,
-          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% de TVA`
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% de TVA`,
+          `mín. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% de IVA`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% VAT`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + TVA ${COMMISSION.vatPercent}${space}%`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% DPH`
         )}
       </span>
     </div>
@@ -119,8 +123,8 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
   {/* ── Pricing summary ── */}
   <section class="pricing slab">
     <SectionHead
-      eyebrow={x('Hirdetési csomagok', 'Advertentiepakketten', 'Listing packages', 'Inseratspakete', 'Forfaits d’annonce')}
-      title={x(`Hirdetés már ${cheapest} €-tól`, `Adverteren vanaf € ${cheapest}`, `Listings from ${eur(cheapest, locale)}`, `Inserieren ab ${eur(cheapest, locale)}`, `Annonces dès ${eur(cheapest, locale)}`)}
+      eyebrow={x('Hirdetési csomagok', 'Advertentiepakketten', 'Listing packages', 'Inseratspakete', 'Forfaits d’annonce', 'Paquetes de anuncio', 'Pakiety ogłoszeń', 'Pachete de anunț', 'Balíky inzerátov')}
+      title={x(`Hirdetés már ${cheapest} €-tól`, `Adverteren vanaf € ${cheapest}`, `Listings from ${eur(cheapest, locale)}`, `Inserieren ab ${eur(cheapest, locale)}`, `Annonces dès ${eur(cheapest, locale)}`, `Anuncios desde ${eur(cheapest, locale)}`, `Ogłoszenia od ${eur(cheapest, locale)}`, `Anunțuri de la ${eur(cheapest, locale)}`, `Inzeráty od ${eur(cheapest, locale)}`)}
       size="large"
       class="reveal"
     />
@@ -131,7 +135,11 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
           `De advertentieprijs omvat het redigeren van de tekst, de beeldbewerking en het opmaken van de advertentie. Vertaling kost € ${translationFee} per taal.`,
           `The listing fee covers editing the text, processing the photos and putting the listing together. A translation costs ${eur(translationFee, locale)} per language.`,
           `Die Inseratsgebühr umfasst das Redigieren des Textes, die Bildbearbeitung und das Zusammenstellen des Inserats. Eine Übersetzung kostet ${eur(translationFee, locale)} pro Sprache.`,
-          `Les frais d’annonce comprennent la relecture du texte, le traitement des photos et la mise en forme de l’annonce. Une traduction coûte ${eur(translationFee, locale)} par langue.`
+          `Les frais d’annonce comprennent la relecture du texte, le traitement des photos et la mise en forme de l’annonce. Une traduction coûte ${eur(translationFee, locale)} par langue.`,
+          `La tarifa del anuncio incluye la revisión del texto, el tratamiento de las fotos y la maquetación del anuncio. Una traducción cuesta ${eur(translationFee, locale)} por idioma.`,
+          `Opłata za ogłoszenie obejmuje redakcję tekstu, obróbkę zdjęć i przygotowanie ogłoszenia. Tłumaczenie kosztuje ${eur(translationFee, locale)} za język.`,
+          `Taxa de anunț include corectarea textului, prelucrarea fotografiilor și realizarea anunțului. O traducere costă ${eur(translationFee, locale)} per limbă.`,
+          `Poplatok za inzerát zahŕňa úpravu textu, spracovanie fotografií a zostavenie inzerátu. Preklad stojí ${eur(translationFee, locale)} za jazyk.`
         )}
       </p>
       <div class="pricing-actions">
@@ -143,11 +151,11 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
 
   {/* ── Seller FAQ ── */}
   <FaqAccordion
-    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes')}
-    title={x('Amit az eladók kérdezni szoktak', 'Wat verkopers ons vragen', 'What sellers ask us', 'Was Verkäufer uns fragen', 'Ce que nous demandent les vendeurs')}
+    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes', 'Preguntas frecuentes', 'Najczęściej zadawane pytania', 'Întrebări frecvente', 'Časté otázky')}
+    title={x('Amit az eladók kérdezni szoktak', 'Wat verkopers ons vragen', 'What sellers ask us', 'Was Verkäufer uns fragen', 'Ce que nous demandent les vendeurs', 'Lo que nos preguntan los vendedores', 'O co pytają nas sprzedający', 'Ce ne întreabă vânzătorii', 'Na čo sa nás pýtajú predávajúci')}
     entries={sellerFaq}
     moreHref={path(locale, 'faq')}
-    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses')}
+    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses', 'Todas las preguntas y respuestas', 'Wszystkie pytania i odpowiedzi', 'Toate întrebările și răspunsurile', 'Všetky otázky a odpovede')}
   />
 </Base>
 

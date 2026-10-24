@@ -25,7 +25,7 @@ interface Props {
 
 const { title, heading, lang = 'hu' } = Astro.props;
 const brandLocale = lang;
-const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en: 'Back to the homepage', de: 'Zurück zur Startseite', fr: 'Retour à l’accueil' }[lang];
+const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en: 'Back to the homepage', de: 'Zurück zur Startseite', fr: 'Retour à l’accueil', es: 'Volver a la página de inicio', pl: 'Powrót do strony głównej', ro: 'Înapoi la prima pagină', sk: 'Späť na úvodnú stránku' }[lang];
 ---
 
 <Portal title={title} bare lang={lang}>

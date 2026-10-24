@@ -20,7 +20,7 @@
  */
 import { ONSITE_SERVICES } from '~/config/company';
 import type { Locale } from '~/i18n/ui';
-import { eurCents } from '~/lib/format';
+import { eurCents, intlTag } from '~/lib/format';
 import type { RequestedExtras } from '~/lib/portal/requested-extras';
 import { listingCatalog, packageOf, isAboveThreshold as tierApplies, type ListingCatalog } from '~/lib/listing-packages';
 
@@ -69,12 +69,12 @@ export type OrderSelection = {
 
 
 const EXTRA_LABEL: Record<string, Record<OrderLocale, string>> = {
-  translation: { hu: 'Fordítás', nl: 'Vertaling', en: 'Translation', de: 'Übersetzung', fr: 'Traduction' },
-  'category-highlight': { hu: 'Kiemelés a kategóriában', nl: 'Uitgelicht in de categorie', en: 'Highlighting in the category', de: 'Hervorhebung in der Kategorie', fr: 'Mise en avant dans la catégorie' },
-  'homepage-highlight': { hu: 'Kiemelés a főoldalon', nl: 'Uitgelicht op de homepage', en: 'Highlighting on the homepage', de: 'Hervorhebung auf der Startseite', fr: 'Mise en avant sur la page d’accueil' },
-  video: { hu: 'Videós bemutató', nl: 'Videopresentatie', en: 'Video presentation', de: 'Videopräsentation', fr: 'Présentation vidéo' },
-  'retro-images': { hu: 'Fotóretusálás', nl: 'Fotobewerking', en: 'Photo editing', de: 'Bildbearbeitung', fr: 'Retouche photo' },
-  'renewal-6m': { hu: 'Hosszabbítás — 6 hónap', nl: 'Verlenging — 6 maanden', en: 'Renewal, 6 months', de: 'Verlängerung, 6 Monate', fr: 'Prolongation, 6 mois' },
+  translation: { hu: 'Fordítás', nl: 'Vertaling', en: 'Translation', de: 'Übersetzung', fr: 'Traduction', es: 'Traducción', pl: 'Tłumaczenie', ro: 'Traducere', sk: 'Preklad' },
+  'category-highlight': { hu: 'Kiemelés a kategóriában', nl: 'Uitgelicht in de categorie', en: 'Highlighting in the category', de: 'Hervorhebung in der Kategorie', fr: 'Mise en avant dans la catégorie', es: 'Destacado en la categoría', pl: 'Wyróżnienie w kategorii', ro: 'Evidențiere în categorie', sk: 'Zvýraznenie v kategórii' },
+  'homepage-highlight': { hu: 'Kiemelés a főoldalon', nl: 'Uitgelicht op de homepage', en: 'Highlighting on the homepage', de: 'Hervorhebung auf der Startseite', fr: 'Mise en avant sur la page d’accueil', es: 'Destacado en la página de inicio', pl: 'Wyróżnienie na stronie głównej', ro: 'Evidențiere pe prima pagină', sk: 'Zvýraznenie na úvodnej stránke' },
+  video: { hu: 'Videós bemutató', nl: 'Videopresentatie', en: 'Video presentation', de: 'Videopräsentation', fr: 'Présentation vidéo', es: 'Presentación en vídeo', pl: 'Prezentacja wideo', ro: 'Prezentare video', sk: 'Videoprezentácia' },
+  'retro-images': { hu: 'Fotóretusálás', nl: 'Fotobewerking', en: 'Photo editing', de: 'Bildbearbeitung', fr: 'Retouche photo', es: 'Retoque fotográfico', pl: 'Retusz zdjęć', ro: 'Retușare foto', sk: 'Úprava fotografií' },
+  'renewal-6m': { hu: 'Hosszabbítás — 6 hónap', nl: 'Verlenging — 6 maanden', en: 'Renewal, 6 months', de: 'Verlängerung, 6 Monate', fr: 'Prolongation, 6 mois', es: 'Prórroga, 6 meses', pl: 'Przedłużenie, 6 miesięcy', ro: 'Prelungire, 6 luni', sk: 'Predĺženie, 6 mesiacov' },
   ...Object.fromEntries(ONSITE_SERVICES.map((service) => [service.id, service.names])),
 };
 
@@ -93,14 +93,23 @@ const NO_UNIT: Record<OrderLocale, { one: string; many: string }> = {
   en: { one: '', many: '' },
   de: { one: '', many: '' },
   fr: { one: '', many: '' },
+  es: { one: '', many: '' },
+  pl: { one: '', many: '' },
+  ro: { one: '', many: '' },
+  sk: { one: '', many: '' },
 };
-const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; many: string }>> = {
+/** `few` is the Slavic/Romanian 2–4 (or 2–19) form; `Intl.PluralRules` picks it. */
+const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; few?: string; many: string }>> = {
   translation: {
     hu: { one: 'nyelv', many: 'nyelv' },
     nl: { one: 'taal', many: 'talen' },
     en: { one: 'language', many: 'languages' },
     de: { one: 'Sprache', many: 'Sprachen' },
     fr: { one: 'langue', many: 'langues' },
+    es: { one: 'idioma', many: 'idiomas' },
+    pl: { one: 'język', few: 'języki', many: 'języków' },
+    ro: { one: 'limbă', few: 'limbi', many: 'de limbi' },
+    sk: { one: 'jazyk', few: 'jazyky', many: 'jazykov' },
   },
   'category-highlight': {
     hu: { one: 'hónap', many: 'hónap' },
@@ -108,6 +117,10 @@ const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; many: string
     en: { one: 'month', many: 'months' },
     de: { one: 'Monat', many: 'Monate' },
     fr: { one: 'mois', many: 'mois' },
+    es: { one: 'mes', many: 'meses' },
+    pl: { one: 'miesiąc', few: 'miesiące', many: 'miesięcy' },
+    ro: { one: 'lună', few: 'luni', many: 'de luni' },
+    sk: { one: 'mesiac', few: 'mesiace', many: 'mesiacov' },
   },
   'homepage-highlight': {
     hu: { one: 'hónap', many: 'hónap' },
@@ -115,6 +128,10 @@ const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; many: string
     en: { one: 'month', many: 'months' },
     de: { one: 'Monat', many: 'Monate' },
     fr: { one: 'mois', many: 'mois' },
+    es: { one: 'mes', many: 'meses' },
+    pl: { one: 'miesiąc', few: 'miesiące', many: 'miesięcy' },
+    ro: { one: 'lună', few: 'luni', many: 'de luni' },
+    sk: { one: 'mesiac', few: 'mesiace', many: 'mesiacov' },
   },
   video: NO_UNIT,
   'retro-images': NO_UNIT,
@@ -133,7 +150,7 @@ const NBSP = ' ';
  * ("€1,234" in English, "1.234 €" in German, "1 234 €" in French).
  */
 export function formatCents(cents: number, locale?: Locale): string {
-  if (locale === 'en' || locale === 'de' || locale === 'fr') return eurCents(cents, locale);
+  if (locale && locale !== 'hu' && locale !== 'nl') return eurCents(cents, locale);
   return `€${NBSP}${(cents / 100).toLocaleString('de-DE', {
     minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
     maximumFractionDigits: 2,
@@ -213,7 +230,8 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
 
     const units = EXTRA_UNIT[extra.id]?.[locale];
     const base = EXTRA_LABEL[extra.id]?.[locale] ?? extra.id;
-    const unit = quantity > 1 ? units?.many : units?.one;
+    const form = new Intl.PluralRules(intlTag(locale)).select(quantity);
+    const unit = form === 'one' ? units?.one : form === 'few' ? (units?.few ?? units?.many) : units?.many;
 
     lines.push({
       kind: 'extra',

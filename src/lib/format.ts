@@ -25,6 +25,10 @@ const LOCALE_TAG: Record<Locale, string> = {
   en: 'en-GB',
   de: 'de-DE',
   fr: 'fr-FR',
+  es: 'es-ES',
+  pl: 'pl-PL',
+  ro: 'ro-RO',
+  sk: 'sk-SK',
 };
 
 /** The BCP 47 tag Intl wants for each page language. */
@@ -43,6 +47,10 @@ const STYLE: Record<Locale, NumberStyle> = {
   en: { group: ',', decimal: '.', euro: 'prefix-tight' },
   de: { group: '.', decimal: ',', euro: 'suffix' },
   fr: { group: NARROW_NBSP, decimal: ',', euro: 'suffix' },
+  es: { group: '.', decimal: ',', euro: 'suffix' },
+  pl: { group: NBSP, decimal: ',', euro: 'suffix' },
+  ro: { group: '.', decimal: ',', euro: 'suffix' },
+  sk: { group: NBSP, decimal: ',', euro: 'suffix' },
 };
 
 /** Decimal separator and thousands separator for a language, for client scripts and tests. */
@@ -51,7 +59,8 @@ export const separators = (locale: Locale) => ({ group: STYLE[locale].group, dec
 /**
  * Thousands the way each language writes them, also for four digits:
  * "1 200 000" (hu, no-break space), "1.200.000" (nl, de), "1,200,000" (en),
- * "1 200 000" (fr, narrow no-break space). Up to two decimals, trailing
+ * "1 200 000" (fr, narrow no-break space; pl, sk, no-break space),
+ * "1.200.000" (es, ro). Up to two decimals, trailing
  * zeros dropped.
  */
 export function grouped(amount: number, locale: Locale): string {

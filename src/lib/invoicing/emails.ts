@@ -75,6 +75,58 @@ const COPY = {
     questions: `Une question\u202f? Répondez à cet e-mail ou écrivez à ${COMPANY.email.primary}.`,
     sign: 'Cordialement,\nFODEL',
   },
+  es: {
+    subject: (kind: string, n: string) => `${kind} ${n} | FODEL`,
+    preheader: 'La factura se adjunta en PDF y también puede consultarse en línea.',
+    heading: (kind: string) => `${kind} disponible`,
+    greeting: (name: string) => `Hola, ${name}:`,
+    body: (kind: string, n: string) => `Adjuntamos el documento ${n} (${kind.toLowerCase()}) en PDF. También puede consultarlo en línea con el botón de abajo.`,
+    settled: 'No hay nada pendiente de pago: ya hemos recibido el importe. Gracias.',
+    pay: 'Le rogamos que transfiera el importe antes de la fecha de vencimiento, indicando el número.',
+    cta: 'Ver el documento',
+    labels: { number: 'Número', amount: 'Importe pendiente', due: 'Fecha de vencimiento', account: 'Cuenta', reference: 'Referencia' },
+    questions: `¿Alguna pregunta? Responda a este correo o escriba a ${COMPANY.email.primary}.`,
+    sign: 'Atentamente,\nFODEL',
+  },
+  pl: {
+    subject: (kind: string, n: string) => `${kind} ${n} | FODEL`,
+    preheader: 'Faktura jest załączona w formacie PDF i dostępna również online.',
+    heading: (kind: string) => `${kind} do pobrania`,
+    greeting: (name: string) => `Dzień dobry, ${name},`,
+    body: (kind: string, n: string) => `w załączniku przesyłamy dokument ${n} (${kind.toLowerCase()}) w formacie PDF. Można go też wyświetlić online za pomocą przycisku poniżej.`,
+    settled: 'Nie ma nic do zapłaty – kwota została już przez nas otrzymana. Dziękujemy.',
+    pay: 'Prosimy o przelanie kwoty przed terminem płatności, z podaniem numeru w tytule.',
+    cta: 'Zobacz dokument',
+    labels: { number: 'Numer', amount: 'Do zapłaty', due: 'Termin płatności', account: 'Rachunek', reference: 'Numer referencyjny' },
+    questions: `Mają Państwo pytania? Prosimy odpowiedzieć na tę wiadomość lub napisać na adres ${COMPANY.email.primary}.`,
+    sign: 'Z poważaniem\nFODEL',
+  },
+  ro: {
+    subject: (kind: string, n: string) => `${kind} ${n} | FODEL`,
+    preheader: 'Factura este atașată în format PDF și poate fi consultată și online.',
+    heading: (kind: string) => `${kind} disponibilă`,
+    greeting: (name: string) => `Bună ziua, ${name},`,
+    body: (kind: string, n: string) => `Vă transmitem atașat documentul ${n} (${kind.toLowerCase()}) în format PDF. Îl puteți consulta și online cu butonul de mai jos.`,
+    settled: 'Nu mai este nimic de plată: suma a fost deja primită. Vă mulțumim.',
+    pay: 'Vă rugăm să virați suma înainte de data scadenței, menționând numărul.',
+    cta: 'Vedeți documentul',
+    labels: { number: 'Număr', amount: 'De plată', due: 'Data scadenței', account: 'Cont', reference: 'Referință' },
+    questions: `Aveți întrebări? Răspundeți la acest e-mail sau scrieți-ne la ${COMPANY.email.primary}.`,
+    sign: 'Cu stimă,\nFODEL',
+  },
+  sk: {
+    subject: (kind: string, n: string) => `${kind} ${n} | FODEL`,
+    preheader: 'Faktúra je priložená vo formáte PDF a dá sa zobraziť aj online.',
+    heading: (kind: string) => `${kind} na stiahnutie`,
+    greeting: (name: string) => `Dobrý deň, ${name},`,
+    body: (kind: string, n: string) => `v prílohe Vám posielame doklad ${n} (${kind.toLowerCase()}) vo formáte PDF. Zobraziť si ho môžete aj online tlačidlom nižšie.`,
+    settled: 'Nie je potrebné nič platiť: sumu sme už prijali. Ďakujeme.',
+    pay: 'Prosíme, uhraďte sumu do dátumu splatnosti a uveďte číslo dokladu.',
+    cta: 'Zobraziť doklad',
+    labels: { number: 'Číslo', amount: 'Na úhradu', due: 'Dátum splatnosti', account: 'Účet', reference: 'Referenčné číslo' },
+    questions: `Máte otázky? Odpovedzte na tento e-mail alebo napíšte na ${COMPANY.email.primary}.`,
+    sign: 'S pozdravom\nFODEL',
+  },
 };
 
 const KIND_NAMES = {
@@ -82,6 +134,10 @@ const KIND_NAMES = {
   en: { invoice: 'Invoice', proforma: 'Pro forma invoice', credit_note: 'Credit note' },
   de: { invoice: 'Rechnung', proforma: 'Proforma-Rechnung', credit_note: 'Gutschrift' },
   fr: { invoice: 'Facture', proforma: 'Facture pro forma', credit_note: 'Avoir' },
+  es: { invoice: 'Factura', proforma: 'Factura proforma', credit_note: 'Factura rectificativa' },
+  pl: { invoice: 'Faktura', proforma: 'Faktura pro forma', credit_note: 'Faktura korygująca' },
+  ro: { invoice: 'Factură', proforma: 'Factură proformă', credit_note: 'Factură de stornare' },
+  sk: { invoice: 'Faktúra', proforma: 'Zálohová faktúra', credit_note: 'Dobropis' },
 } as const;
 const kindName = (doc: InvoiceDoc, locale: Locale) => (locale === 'hu' ? KIND_LABEL[doc.kind].short : KIND_NAMES[locale][doc.kind]);
 
@@ -93,8 +149,8 @@ export function invoiceToCustomer(doc: InvoiceDoc, viewUrl: string): BuiltEmail 
   const kind = kindName(doc, locale);
   const number = doc.number ?? '';
   const hasHuf = Boolean(doc.fxRate);
-  const money = (cents: number) => (locale === 'en' || locale === 'de' || locale === 'fr' ? eurCents(cents, locale) : eur(cents));
-  const when = (iso: string) => (locale === 'en' || locale === 'de' || locale === 'fr' ? formatDate(new Date(iso), locale) : dateHu(iso));
+  const money = (cents: number) => (locale !== 'hu' && locale !== 'nl' ? eurCents(cents, locale) : eur(cents));
+  const when = (iso: string) => (locale !== 'hu' && locale !== 'nl' ? formatDate(new Date(iso), locale) : dateHu(iso));
   const amount = hasHuf ? huf(hufFromCents(t.grossCents * sign, doc.fxRate!)) : money(t.grossCents * sign);
 
   const rows: [string, string][] = [

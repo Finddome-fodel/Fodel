@@ -204,6 +204,22 @@ const FOOTER_COPY = {
     why: 'Vous recevez cet e-mail parce que vous avez un compte FODEL ou que vous avez déposé une annonce chez nous.',
     contact: 'Contact',
   },
+  es: {
+    why: 'Recibe este correo porque tiene una cuenta en FODEL o ha publicado un anuncio con nosotros.',
+    contact: 'Contacto',
+  },
+  pl: {
+    why: 'Otrzymują Państwo tę wiadomość, ponieważ mają Państwo konto w FODEL lub zamieścili u nas ogłoszenie.',
+    contact: 'Kontakt',
+  },
+  ro: {
+    why: 'Primiți acest e-mail deoarece aveți un cont FODEL sau ați publicat un anunț la noi.',
+    contact: 'Contact',
+  },
+  sk: {
+    why: 'Tento e-mail dostávate, pretože máte účet vo FODEL alebo ste u nás podali inzerát.',
+    contact: 'Kontakt',
+  },
 } as const;
 
 function wordmark(locale: ShellLocale): string {

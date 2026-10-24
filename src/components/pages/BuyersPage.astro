@@ -26,6 +26,7 @@ import { alternatesFor } from '~/lib/page';
 import { faqSchema } from '~/lib/seo';
 import { homepageFeatured } from '~/lib/properties';
 import vevoknek from '~/assets/properties/vevoknek.jpg';
+import { nOf } from '~/i18n/plural';
 
 interface Props {
   locale: Locale;
@@ -91,6 +92,46 @@ const wantsByLocale = {
     'Une bonne liaison avec l’aéroport de Budapest',
     'Des biens en Transdanubie',
   ],
+  es: [
+    'Inmuebles en el campo, a un precio realista',
+    'Inmuebles en colinas, con vistas',
+    'Inmuebles en el linde del bosque',
+    'Casas vacacionales en alquiler e inmuebles junto al agua',
+    'Fincas aptas para ganado y caballos',
+    'Grandes parcelas e inmuebles rústicos',
+    'Buena conexión con el aeropuerto de Budapest',
+    'Inmuebles en Transdanubia',
+  ],
+  pl: [
+    'Nieruchomości na wsi w realnej cenie',
+    'Nieruchomości na wzgórzach, z widokiem',
+    'Nieruchomości na skraju lasu',
+    'Domy wakacyjne na wynajem i nieruchomości nad wodą',
+    'Gospodarstwa odpowiednie do hodowli bydła i koni',
+    'Duże działki i nieruchomości rolne',
+    'Dobry dojazd do lotniska w Budapeszcie',
+    'Nieruchomości w Zadunaju',
+  ],
+  ro: [
+    'Proprietăți la țară, la un preț realist',
+    'Proprietăți pe dealuri, cu priveliște',
+    'Proprietăți la marginea pădurii',
+    'Case de vacanță de închiriat și proprietăți lângă apă',
+    'Ferme potrivite pentru animale și cai',
+    'Terenuri mari și proprietăți agricole',
+    'Legătură bună cu aeroportul din Budapesta',
+    'Proprietăți în Transdanubia',
+  ],
+  sk: [
+    'Nehnuteľnosti na vidieku za reálnu cenu',
+    'Nehnuteľnosti na kopcoch s výhľadom',
+    'Nehnuteľnosti na okraji lesa',
+    'Rekreačné domy na prenájom a nehnuteľnosti pri vode',
+    'Farmy vhodné na chov dobytka a koní',
+    'Veľké pozemky a poľnohospodárske nehnuteľnosti',
+    'Dobré spojenie s letiskom v Budapešti',
+    'Nehnuteľnosti v Zadunajsku',
+  ],
 };
 const wants = wantsByLocale[locale];
 ---
@@ -112,7 +153,7 @@ const wants = wantsByLocale[locale];
     titleEm={c.hero.titleEm}
     body={c.hero.body}
     image={vevoknek}
-    imageAlt={x('Felújított magyar parasztház belső tere', 'Interieur van een gerenoveerde Hongaarse woning', 'Interior of a renovated Hungarian farmhouse', 'Innenraum eines renovierten ungarischen Bauernhauses', 'Intérieur d’une maison hongroise rénovée')}
+    imageAlt={x('Felújított magyar parasztház belső tere', 'Interieur van een gerenoveerde Hongaarse woning', 'Interior of a renovated Hungarian farmhouse', 'Innenraum eines renovierten ungarischen Bauernhauses', 'Intérieur d’une maison hongroise rénovée', 'Interior de una casa de campo húngara reformada', 'Wnętrze wyremontowanego węgierskiego domu wiejskiego', 'Interiorul unei case de țară maghiare renovate', 'Interiér zrekonštruovaného maďarského vidieckeho domu')}
     primary={{ label: c.hero.cta, href: path(locale, 'properties') }}
     secondary={{ label: c.hero.secondary, href: path(locale, 'searchRequest') }}
   />
@@ -121,7 +162,7 @@ const wants = wantsByLocale[locale];
   <section class="direct slab surface-ink" data-bg="dark">
     <p class="direct-source reveal">
       <span class="direct-rule draw" aria-hidden="true"></span>
-      {x('A FODEL-modell', 'Het FODEL-model', 'The FODEL model', 'Das FODEL-Modell', 'Le modèle FODEL')}
+      {x('A FODEL-modell', 'Het FODEL-model', 'The FODEL model', 'Das FODEL-Modell', 'Le modèle FODEL', 'El modelo FODEL', 'Model FODEL', 'Modelul FODEL', 'Model FODEL')}
     </p>
     <h2 class="direct-statement" data-words>
       {x(
@@ -129,7 +170,11 @@ const wants = wantsByLocale[locale];
         'Bij de advertentie staan ook de naam en het nummer van de eigenaar.',
         'The owner’s name and number are in the listing too.',
         'Beim Inserat stehen auch Name und Nummer des Eigentümers.',
-        'L’annonce indique aussi le nom et le numéro du propriétaire.'
+        'L’annonce indique aussi le nom et le numéro du propriétaire.',
+        'El anuncio también indica el nombre y el teléfono del propietario.',
+        'W ogłoszeniu podane są również imię i nazwisko oraz numer telefonu właściciela.',
+        'Anunțul conține și numele și numărul de telefon al proprietarului.',
+        'V inzeráte nájdete aj meno a telefónne číslo majiteľa.'
       )}
     </h2>
 
@@ -140,13 +185,17 @@ const wants = wantsByLocale[locale];
           'Dat is geen slogan maar de kern van ons model. Waar de eigenaar daarmee heeft ingestemd, kunt u rechtstreeks contact opnemen. Regelt u de koop zo, dan betaalt niemand courtage. Wij zijn al betaald voor de advertentie.',
           'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
           'Das ist kein Slogan, sondern der Kern unseres Modells. Wo der Eigentümer zugestimmt hat, können Sie ihn direkt kontaktieren. Regeln Sie den Kauf auf diesem Weg, fällt für niemanden Provision an. Wir sind für das Inserat bereits bezahlt.',
-          'Ce n’est pas un slogan, c’est le cœur de notre modèle. Lorsque le propriétaire y a consenti, vous pouvez le contacter directement. Si vous réglez l’achat ainsi, personne ne paie de commission. Nous avons déjà été rémunérés pour l’annonce.'
+          'Ce n’est pas un slogan, c’est le cœur de notre modèle. Lorsque le propriétaire y a consenti, vous pouvez le contacter directement. Si vous réglez l’achat ainsi, personne ne paie de commission. Nous avons déjà été rémunérés pour l’annonce.',
+          'No es un eslogan, sino la esencia de nuestro modelo. Si el propietario lo ha autorizado, puede contactar con él directamente. Si cierra la compra de este modo, nadie paga comisión. Ya hemos cobrado por el anuncio.',
+          'To nie slogan, lecz istota naszego modelu. Jeśli właściciel wyraził na to zgodę, mogą Państwo skontaktować się z nim bezpośrednio. Przy takim zakupie nikt nie płaci prowizji – za ogłoszenie otrzymaliśmy już wynagrodzenie.',
+          'Nu este un slogan, ci esența modelului nostru. Dacă proprietarul a fost de acord, îl puteți contacta direct. Dacă încheiați achiziția astfel, nimeni nu plătește comision. Am fost deja plătiți pentru anunț.',
+          'Nie je to slogan, ale podstata nášho modelu. Ak s tým majiteľ súhlasil, môžete ho kontaktovať priamo. Ak kúpu dohodnete takto, nikto neplatí províziu. Za inzerát sme už dostali zaplatené.'
         )}
       </p>
       <div class="direct-figure reveal">
         <span class="pct num">0<span class="pct-sign">%</span></span>
         <span class="pct-note">
-          {x('jutalék közvetlen üzletkötésnél', 'courtage bij een directe koop', 'commission on a direct purchase', 'Provision bei direktem Kauf', 'de commission en cas d’achat direct')}
+          {x('jutalék közvetlen üzletkötésnél', 'courtage bij een directe koop', 'commission on a direct purchase', 'Provision bei direktem Kauf', 'de commission en cas d’achat direct', 'de comisión en una compra directa', 'prowizji przy zakupie bezpośrednim', 'comision la achiziția directă', 'provízia pri priamej kúpe')}
         </span>
       </div>
     </div>
@@ -160,7 +209,7 @@ const wants = wantsByLocale[locale];
         <PointsList items={c.services.points} />
         <div class="services-more">
           <Button variant="text" href={path(locale, 'services')}>
-            {x('Szolgáltatások és díjak', 'Diensten en tarieven', 'Services and prices', 'Leistungen und Preise', 'Services et tarifs')}
+            {x('Szolgáltatások és díjak', 'Diensten en tarieven', 'Services and prices', 'Leistungen und Preise', 'Services et tarifs', 'Servicios y tarifas', 'Usługi i ceny', 'Servicii și tarife', 'Služby a ceny')}
           </Button>
         </div>
       </div>
@@ -176,17 +225,21 @@ const wants = wantsByLocale[locale];
   <section class="agri">
     <div class="agri-figure reveal" aria-hidden="true">
       <span class="ha num">{AGRI_HECTARE_LIMIT}</span>
-      <span class="ha-unit">{x('hektár', 'hectare', 'hectares', 'Hektar', 'hectares')}</span>
+      <span class="ha-unit">{x('hektár', 'hectare', 'hectares', 'Hektar', 'hectares', 'hectáreas', 'hektarów', 'de hectare', 'hektárov')}</span>
     </div>
     <div class="agri-copy reveal">
       <SectionHead
-        eyebrow={x('Agráringatlan', 'Agrarisch vastgoed', 'Agricultural property', 'Agrarimmobilien', 'Immobilier agricole')}
+        eyebrow={x('Agráringatlan', 'Agrarisch vastgoed', 'Agricultural property', 'Agrarimmobilien', 'Immobilier agricole', 'Inmuebles rústicos', 'Nieruchomości rolne', 'Proprietăți agricole', 'Poľnohospodárske nehnuteľnosti')}
         title={x(
           `Agrárvégzettséggel ${AGRI_HECTARE_LIMIT} hektárig vásárolhat`,
           `Met een agrarische kwalificatie tot ${AGRI_HECTARE_LIMIT} hectare`,
           `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
           `Mit landwirtschaftlicher Qualifikation bis zu ${AGRI_HECTARE_LIMIT} Hektar kaufen`,
-          `Jusqu’à ${AGRI_HECTARE_LIMIT} hectares avec une qualification agricole`
+          `Jusqu’à ${AGRI_HECTARE_LIMIT} hectares avec une qualification agricole`,
+          `Hasta ${AGRI_HECTARE_LIMIT} hectáreas con cualificación agraria`,
+          `Do ${nOf('pl', AGRI_HECTARE_LIMIT, 'hektara', 'hektarów')} z kwalifikacjami rolniczymi`,
+          `Până la ${nOf('ro', AGRI_HECTARE_LIMIT, 'hectar', 'hectare', 'de hectare')} cu calificare agricolă`,
+          `Až ${nOf('sk', AGRI_HECTARE_LIMIT, 'hektár', 'hektáre', 'hektárov')} s poľnohospodárskou kvalifikáciou`
         )}
       />
       <p>
@@ -195,11 +248,15 @@ const wants = wantsByLocale[locale];
           `Een EU-burger met een agrarische kwalificatie mag in Hongarije in totaal ${AGRI_HECTARE_LIMIT} hectare grond verwerven. Die hele procedure regelen wij voor u.`,
           `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
           `Ein EU-Bürger mit landwirtschaftlicher Qualifikation darf in Ungarn insgesamt ${AGRI_HECTARE_LIMIT} Hektar Land erwerben. Das gesamte Verfahren übernehmen wir für Sie.`,
-          `Un citoyen de l’UE titulaire d’une qualification agricole peut acquérir au total ${AGRI_HECTARE_LIMIT} hectares de terres en Hongrie. Nous nous chargeons de toute la procédure.`
+          `Un citoyen de l’UE titulaire d’une qualification agricole peut acquérir au total ${AGRI_HECTARE_LIMIT} hectares de terres en Hongrie. Nous nous chargeons de toute la procédure.`,
+          `Un ciudadano de la UE con cualificación agraria puede adquirir en total ${AGRI_HECTARE_LIMIT} hectáreas de tierra en Hungría. Nos encargamos de todo el procedimiento.`,
+          `Obywatel UE posiadający kwalifikacje rolnicze może nabyć na Węgrzech łącznie ${nOf('pl', AGRI_HECTARE_LIMIT, 'hektar', 'hektary', 'hektarów')} gruntów. Całą procedurę przeprowadzamy za Państwa.`,
+          `Un cetățean UE cu calificare agricolă poate dobândi în Ungaria, în total, ${nOf('ro', AGRI_HECTARE_LIMIT, 'hectar', 'hectare', 'de hectare')} de teren. Ne ocupăm de întreaga procedură.`,
+          `Občan EÚ s poľnohospodárskou kvalifikáciou môže v Maďarsku nadobudnúť spolu ${nOf('sk', AGRI_HECTARE_LIMIT, 'hektár', 'hektáre', 'hektárov')} pôdy. Celý postup vybavíme za vás.`
         )}
       </p>
       <Button variant="outline" href={path(locale, 'agricultural')}>
-        {x('Részletek', 'Meer hierover', 'More on this', 'Mehr dazu', 'En savoir plus')}
+        {x('Részletek', 'Meer hierover', 'More on this', 'Mehr dazu', 'En savoir plus', 'Más información', 'Dowiedz się więcej', 'Aflați mai multe', 'Viac informácií')}
       </Button>
     </div>
   </section>
@@ -209,8 +266,8 @@ const wants = wantsByLocale[locale];
     featured.length > 0 && (
       <section class="featured slab">
         <SectionHead
-          eyebrow={x('Válogatás', 'Selectie', 'Selection', 'Auswahl', 'Sélection')}
-          title={x('Kiemelt ingatlanok', 'Uitgelicht aanbod', 'Featured properties', 'Empfohlene Immobilien', 'Biens à la une')}
+          eyebrow={x('Válogatás', 'Selectie', 'Selection', 'Auswahl', 'Sélection', 'Selección', 'Wybór', 'Selecție', 'Výber')}
+          title={x('Kiemelt ingatlanok', 'Uitgelicht aanbod', 'Featured properties', 'Empfohlene Immobilien', 'Biens à la une', 'Inmuebles destacados', 'Wyróżnione nieruchomości', 'Proprietăți recomandate', 'Vybrané nehnuteľnosti')}
           size="large"
           class="feat-head reveal"
         >
@@ -239,23 +296,27 @@ const wants = wantsByLocale[locale];
 
   {/* ── Buyer FAQ ── */}
   <FaqAccordion
-    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes')}
-    title={x('Amit a vevők kérdezni szoktak', 'Wat kopers ons vragen', 'What buyers ask us', 'Was Käufer uns fragen', 'Ce que nous demandent les acheteurs')}
+    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes', 'Preguntas frecuentes', 'Najczęściej zadawane pytania', 'Întrebări frecvente', 'Časté otázky')}
+    title={x('Amit a vevők kérdezni szoktak', 'Wat kopers ons vragen', 'What buyers ask us', 'Was Käufer uns fragen', 'Ce que nous demandent les acheteurs', 'Lo que nos preguntan los compradores', 'O co pytają nas kupujący', 'Ce ne întreabă cumpărătorii', 'Na čo sa nás pýtajú kupujúci')}
     entries={buyerFaq}
     moreHref={path(locale, 'faq')}
-    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses')}
+    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses', 'Todas las preguntas y respuestas', 'Wszystkie pytania i odpowiedzi', 'Toate întrebările și răspunsurile', 'Všetky otázky a odpovede')}
   />
 
   <ParallaxCta
-    eyebrow={x('Nem találta meg?', 'Niet gevonden?', 'Cannot find it?', 'Nichts Passendes gefunden?', 'Pas trouvé\u202f?')}
-    title={x('Kerestesse velünk', 'Laat ons zoeken', 'Let us search', 'Wir suchen', 'Laissez-nous chercher')}
-    titleEm={x('díjmentesen', 'zonder kosten', 'free of charge', 'kostenlos für Sie', 'gratuitement')}
+    eyebrow={x('Nem találta meg?', 'Niet gevonden?', 'Cannot find it?', 'Nichts Passendes gefunden?', 'Pas trouvé\u202f?', '¿No lo encuentra?', 'Nie znaleźli Państwo?', 'Nu găsiți ce căutați?', 'Nenašli ste?')}
+    title={x('Kerestesse velünk', 'Laat ons zoeken', 'Let us search', 'Wir suchen', 'Laissez-nous chercher', 'Déjenos buscar', 'Poszukamy za Państwa', 'Lăsați-ne pe noi să căutăm', 'Nechajte hľadanie na nás')}
+    titleEm={x('díjmentesen', 'zonder kosten', 'free of charge', 'kostenlos für Sie', 'gratuitement', 'gratis', 'bezpłatnie', 'gratuit', 'bezplatne')}
     body={x(
       'Adja meg, mit keres. A nem hirdetett kínálatból is keresünk Önnek.',
       'Geef door wat u zoekt. Wij zoeken ook buiten het geadverteerde aanbod.',
       'Tell us what you are looking for. We also search beyond the properties we advertise.',
       'Sagen Sie uns, was Sie suchen. Wir suchen auch außerhalb des inserierten Angebots.',
-      'Dites-nous ce que vous cherchez. Nous cherchons aussi au-delà des biens annoncés.'
+      'Dites-nous ce que vous cherchez. Nous cherchons aussi au-delà des biens annoncés.',
+      'Díganos qué busca. También buscamos más allá de los inmuebles que anunciamos.',
+      'Prosimy napisać, czego Państwo szukają. Szukamy także poza ogłoszeniami w naszym serwisie.',
+      'Spuneți-ne ce căutați. Căutăm și dincolo de proprietățile pe care le avem în anunțuri.',
+      'Povedzte nám, čo hľadáte. Hľadáme aj mimo nehnuteľností, ktoré inzerujeme.'
     )}
     primary={{ label: ui.cta.searchRequest, href: path(locale, 'searchRequest') }}
     secondary={{ label: ui.cta.contact, href: path(locale, 'contact') }}
