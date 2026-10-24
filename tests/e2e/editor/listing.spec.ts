@@ -1,0 +1,110 @@
+/** Browser checks use only the explicitly enabled localhost in-memory fixture. */
+import {test,expect} from '@playwright/test';
+const id='10000000-0000-4000-8000-000000000001';
+const path=`/portal/properties/${id}`;
+const fixture='http://127.0.0.1:54401';
+const setSession=async(page:any,role:'admin'|'owner')=>{
+ const id=role==='admin'?'00000000-0000-4000-8000-000000000002':'00000000-0000-4000-8000-000000000001';
+ const now=Math.floor(Date.now()/1000),part=(v:unknown)=>Buffer.from(JSON.stringify(v)).toString('base64url');
+ const email=`${role}@fodel-test.local`;
+ const session={access_token:`${part({alg:'HS256',typ:'JWT'})}.${part({sub:id,email,aud:'authenticated',role:'authenticated',iat:now,exp:now+86400})}.test-fixture-signature`,refresh_token:'local-test-fixture',expires_in:86400,expires_at:now+86400,token_type:'bearer',user:{id,email,role:'authenticated',aud:'authenticated',app_metadata:{provider:'email'},user_metadata:{},created_at:new Date().toISOString()}};
+ await page.context().clearCookies();
+ await page.context().addCookies([{name:'sb-127-auth-token',value:'base64-'+part(session),url:'http://127.0.0.1:4402',httpOnly:true,sameSite:'Lax'}]);
+};
+test.describe('European listing editor',()=>{
+ test.skip(process.env.E2E_EDITOR_FIXTURE!=='1','Requires the isolated local editor fixture');
+ test.beforeEach(async({page,baseURL})=>{
+  expect(new URL(baseURL!).hostname).toBe('127.0.0.1');
+  const health=await page.request.get(`${fixture}/health`);expect((await health.json()).fixture).toBe('fodel-editor-local');
+  await page.request.post(`${fixture}/__reset`);
+  await setSession(page,'admin');
+ });
+ test('nine groups, dependent subtypes, and relevant fields',async({page})=>{
+  await page.goto(path);
+  await expect(page.locator('#f-property_group option')).toHaveCount(9);
+  await page.locator('#f-property_group').selectOption('land');
+  await expect(page.locator('#f-property_subtype option')).toHaveCount(7);
+  await page.locator('#f-property_subtype').selectOption('residential-plot');
+  await expect(page.locator('#f-bedrooms')).toBeHidden();await expect(page.locator('#f-floor_m2')).toBeHidden();await expect(page.locator('#f-year_built')).toBeHidden();await expect(page.locator('#f-plot_m2')).toBeVisible();
+  await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');
+  await expect(page.locator('#f-floor_m2')).toBeVisible();await expect(page.locator('#f-plot_m2')).toBeHidden();
+ });
+ test('the full admin navigation remains available',async({page},testInfo)=>{
+  await page.goto('/portal/dashboard');
+  const nav=page.locator('nav[aria-label="Portál navigáció"]');
+  for(const href of ['/portal/inbox','/portal/enquiries','/portal/valuations','/portal/services','/portal/properties','/portal/database','/portal/users','/portal/content/blog','/portal/newsletter','/portal/payments','/portal/invoices','/portal/settings']){
+   await expect(nav.locator(`a[href="${href}"]`)).toBeAttached();
+  }
+  await expect(nav.locator('a[href="/portal/top10"]')).toHaveCount(0);
+  await expect(page.locator('.pt-brand .tag')).toHaveText('Admin');
+  await expect(page.getByRole('complementary',{name:'Helyi tesztelőnézet'})).toBeVisible();
+  await page.screenshot({path:testInfo.outputPath('admin-navigation-preserved.png'),fullPage:false});
+ });
+ test('country-aware regions and manual coordinates',async({page})=>{
+  await page.goto(path);await expect(page.locator('#listing-regions option')).toHaveCount(20);
+  await page.locator('#f-country').selectOption('CH');await expect(page.locator('[data-region-label]')).toHaveText('Kanton');await expect(page.locator('#listing-regions option')).toHaveCount(26);
+  await expect(page.locator('#f-county')).toHaveValue('');await expect(page.locator('#f-lat')).toHaveValue('');
+  await page.locator('#f-lat').fill('46,123456');await page.locator('#f-lng').fill('8.123456');await page.locator('#f-lng').press('Tab');
+  await expect(page.locator('[name="location_confirmed"]')).toHaveValue('yes');
+  await expect(page.locator('#f-region')).not.toHaveAttribute('required','');
+ });
+ test('hectare conversion is reversible and precise',async({page})=>{
+  await page.goto(path);
+  await expect(page.locator('#f-plot_m2')).toHaveValue('4.25');
+  const unit=page.locator('[name="plot_m2_unit"]');await unit.selectOption('m2');await expect(page.locator('#f-plot_m2')).toHaveValue('42500');
+  await unit.selectOption('ha');await expect(page.locator('#f-plot_m2')).toHaveValue('4.25');
+  await page.locator('#f-plot_m2').fill('0,0001');await unit.selectOption('m2');await expect(page.locator('#f-plot_m2')).toHaveValue('1');
+ });
+ test('unknown energy/build year and four text fields',async({page})=>{
+  await page.goto(path);await expect(page.locator('#f-epc_class')).toBeHidden();
+  await page.locator('#f-epc_status').selectOption('rated');await expect(page.locator('#f-epc_class')).toBeVisible();
+  await page.locator('[name="year_built_unknown"]').check();await expect(page.locator('#f-year_built')).toBeDisabled();
+  await expect(page.locator('[name="subtitle_hu"], [name="tag_hu"], [name="condition_hu"], [name="heating_hu"]')).toHaveCount(0);
+  for(const name of ['title_hu','description_hu','body_hu','internal_note'])await expect(page.locator(`[name="${name}"]`)).toBeAttached();
+ });
+ test('only three promotions, with a quote request for the subtype',async({page})=>{
+  await page.goto(path);await expect(page.locator('#curation .promotion')).toHaveCount(3);
+  await expect(page.locator('[name="homepage_order"],[name="bargain"]')).toHaveCount(0);
+  await expect(page.getByText('Top 10',{exact:false})).toHaveCount(0);
+  await expect(page.locator('[name="topic_highlight_requested"]')).toBeAttached();
+ });
+ test('contact languages are searchable and retain selected values',async({page})=>{
+  await page.goto(path);await page.locator('[data-language-search]').fill('olasz');
+  await expect(page.getByRole('checkbox',{name:'olasz',exact:true})).toBeVisible();
+  await expect(page.getByRole('checkbox',{name:'német',exact:true})).toBeVisible();
+  await expect(page.getByRole('checkbox',{name:'albán',exact:true})).toBeHidden();
+ });
+ test('photo reordering retains the independently selected cover',async({page})=>{
+  await page.goto(path);
+  const first=page.locator('[data-media-grid] [data-media-id]').first();const hero=await first.getAttribute('data-media-id');
+  await first.locator('[data-photo-move="1"]').click();
+  await expect(page.locator('[data-media-grid] [data-media-id]').nth(1)).toHaveAttribute('data-media-id',hero!);
+  await expect(page.locator(`[data-media-id="${hero}"]`)).toHaveAttribute('data-hero','true');
+  await expect(page.locator('[data-replace-photo]')).toHaveCount(3);
+  await expect(page.locator('.photo-meter')).toContainText('/ 20');
+ });
+ test('full save persists the private note and converts hectares once',async({page})=>{
+  await page.goto(path);await page.locator('#f-internal_note').fill('LOCAL PRIVATE NOTE QA');
+  await page.locator('#save-btn').click();await expect(page).toHaveURL(/saved=1/);
+  await expect(page.locator('#f-internal_note')).toHaveValue('LOCAL PRIVATE NOTE QA');await expect(page.locator('#f-plot_m2')).toHaveValue('4.25');
+  await expect(page.locator('#f-original_price')).toHaveValue('90000000');
+ });
+ test('owner setup uses the same property rules and preserves optional services',async({page})=>{
+  await setSession(page,'owner');
+  await page.goto(`${path}/setup#property`);await expect(page.locator('#f-property_group')).toBeVisible();
+  await page.locator('#f-property_group').selectOption('agricultural');await page.locator('#f-property_subtype').selectOption('arable');
+  await expect(page.locator('#f-floor_m2')).toBeHidden();
+  await page.goto(`${path}/setup#description`);for(const name of ['title','description','body','internal_note'])await expect(page.locator(`[name="${name}"]`)).toBeVisible();
+  await page.goto(`${path}/setup#review`);await expect(page.locator('[data-summary="property"]')).not.toHaveText('');
+  await page.goto(`${path}/setup#package`);await expect(page.locator('[name="topicHighlight"]')).toBeVisible();await expect(page.locator('[name="service"]')).toHaveCount(3);
+ });
+ test('responsive layout, with no client exceptions',async({page},testInfo)=>{
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(path);
+  for(const width of [320,390,768,1440]){
+   await page.setViewportSize({width,height:900});
+   await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth),{message:`horizontal overflow at ${width}px`,timeout:3000}).toBeLessThanOrEqual(0);
+   if(width===390||width===1440)await page.screenshot({path:testInfo.outputPath(`editor-${width}.png`),fullPage:false});
+  }
+  expect(errors).toEqual([]);
+ });
+});

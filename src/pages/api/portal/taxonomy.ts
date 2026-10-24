@@ -4,6 +4,7 @@
  * inline convenience edit. Slugs lock once used because they are permanent,
  * indexed and already present in emailed links.
  */
+import {PROPERTY_GROUPS} from '~/lib/listing-catalogue';
 import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
 
@@ -34,12 +35,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const body = await request.json().catch(() => ({}));
   const action = String(body.action ?? '');
   const { supabase } = locals;
+  const propertyGroups=Array.isArray(body.propertyGroups)?[...new Set(body.propertyGroups.map(String).filter((v:string)=>PROPERTY_GROUPS.some(g=>g.key===v)))]:[];
+  const subtypeKeys=Array.isArray(body.subtypeKeys)?[...new Set(body.subtypeKeys.map(String).filter((v:string)=>PROPERTY_GROUPS.some(g=>g.subtypes.some(s=>s.key===v))))]:[];
 
   if (action === 'create') {
     const groupKey = String(body.groupKey ?? '');
     const key = String(body.key ?? '').trim();
     if (!/^[a-z0-9][a-z0-9-]{0,48}$/.test(key)) return json(422, { ok: false, error: 'A kulcs csak kisbetűt, számot és kötőjelet tartalmazhat (pl. uj-kategoria), legfeljebb 49 karakter.' });
-    const row = { group_key: groupKey, key, labels: body.labels, slugs: body.slugs ?? {}, schema_type: body.schemaType || null, sort_order: Number(body.sortOrder ?? 100), enabled: true };
+    if(groupKey==='feature'&&!propertyGroups.length)return json(422,{ok:false,error:'Jelölje ki legalább egy kategóriát a jellemzőhöz.'});
+    const row = {property_groups:propertyGroups,subtype_keys:subtypeKeys, group_key: groupKey, key, labels: body.labels, slugs: body.slugs ?? {}, schema_type: body.schemaType || null, sort_order: Number(body.sortOrder ?? 100), enabled: true };
     const { error } = await supabase.from('taxonomy_terms').insert(row);
     return error ? json(422, { ok: false, error: friendlyError(error.message) }) : json(201, { ok: true });
   }
@@ -61,7 +65,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       const { count } = await supabase.from('taxonomy_terms').select('id', { count: 'exact', head: true }).eq('group_key', 'category').eq('enabled', true).neq('id', id);
       if (!count) return json(422, { ok: false, error: 'Legalább egy aktív kategóriának maradnia kell.' });
     }
-    const patch: Record<string, unknown> = { labels: body.labels, sort_order: Number(body.sortOrder ?? term.sort_order), enabled };
+    if(term.group_key==='feature'&&!propertyGroups.length)return json(422,{ok:false,error:'Jelölje ki legalább egy kategóriát a jellemzőhöz.'});
+    const patch: Record<string, unknown> = {property_groups:propertyGroups,subtype_keys:subtypeKeys, labels: body.labels, sort_order: Number(body.sortOrder ?? term.sort_order), enabled };
     if (counts.total === 0) {
       patch.slugs = body.slugs ?? {};
       patch.schema_type = body.schemaType || null;

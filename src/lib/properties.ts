@@ -24,6 +24,7 @@ import type { Locale } from '~/i18n/ui';
 import { LOCALES, propertyPath } from '~/i18n/ui';
 import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
 import type { ImageMetadata } from 'astro';
+import { PROPERTY_GROUPS, canonicalFeature, groupOf, subtypeOf, hasLivingArea, isLandOnly, hasPlot } from '~/lib/listing-catalogue';
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
 
 type LocalisedText = { hu: string; nl?: string; de?: string; en?: string; fr?: string };
@@ -33,6 +34,8 @@ export type Property = {
   data: {
     ref: string;
     category: string;
+    propertyGroup?: string;
+    propertySubtype?: string;
     categoryLabels: Partial<Record<Locale, string>> & { hu: string; nl: string };
     categorySlugs: Partial<Record<Locale, string>>;
     categorySchema: string;
@@ -51,7 +54,7 @@ export type Property = {
       precision: 'exact' | 'approximate';
       country: string;
     };
-    areas: { floorM2?: number; plotM2: number };
+    areas: { floorM2?: number; buildingM2?: number; plotM2: number };
     rooms?: { bedrooms: number; bathrooms: number };
     building: {
       yearBuilt?: number;
@@ -77,15 +80,11 @@ export type Property = {
     listing: {
       package: 'cheap-6m' | 'normal-12m';
       featured: boolean;
+      topicFeatured?: boolean;
       homepageFeatured: boolean;
-      homepageOrder: number;
       publishedAt: Date;
       expiresAt: Date;
       languages: Locale[];
-      editorsPick: boolean;
-      editorsPickOrder: number;
-      bargain: boolean;
-      bargainSince?: Date;
     };
     seller: { contactVisible: boolean; name?: string; phone?: string; speaks: string[] };
     tag?: LocalisedText;
@@ -114,6 +113,13 @@ type MediaRow = {
 };
 
 type PropertyRow = {
+  property_group?: string;
+  property_subtype?: string;
+  topic_featured?: boolean;
+  public_location_safe?: boolean;
+  building_m2?: number | null;
+  condition_key?: string;
+  heating_key?: string;
   id: string;
   ref: string;
   category: string;
@@ -170,8 +176,8 @@ function localisedField(
 ): LocalisedText | undefined {
   const byLocale = Object.fromEntries(rows.map((r) => [r.locale, r[field]]));
   const hu = byLocale.hu;
-  if (!hu) return undefined;
-  const out: LocalisedText = { hu };
+  if(!Object.values(byLocale).some(Boolean))return undefined;
+  const out: LocalisedText = { hu:hu||'' };
   for (const locale of ['nl', 'de', 'en', 'fr'] as const) {
     const value = byLocale[locale];
     if (value) out[locale] = value;
@@ -180,7 +186,7 @@ function localisedField(
 }
 
 function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
-  const translations = row.property_translations;
+  const translations = row.property_translations.filter(t=>t.title!=='Új hirdetés'||t.description?.trim()||t.body?.trim());
   const media = [...row.property_media].sort((a, b) => a.sort_order - b.sort_order);
   const hero = media.find((m) => m.is_hero) ?? media[0];
   const gallery = media.filter((m) => m !== hero);
@@ -193,14 +199,18 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
   const wall = row.wall_key ? taxonomy.wall.find((term) => term.key === row.wall_key) : undefined;
   // An approximate listing never carries its real point into a page, the map
   // feed or structured data: everything public gets the offset centre.
-  const point = row.precision === 'exact' ? { lat: row.lat, lng: row.lng } : approximateCentre(row.id, row.lat, row.lng);
+  const point = row.precision === 'exact' || row.public_location_safe ? { lat: row.lat, lng: row.lng } : approximateCentre(row.id, row.lat, row.lng);
+  const group=row.property_group||groupOf(row.category),subtype=subtypeOf(row.category,row.property_subtype);
+  const living=hasLivingArea(group,subtype),building=!isLandOnly(group,subtype);
   const fallbackLabels = { hu: row.category, nl: row.category };
   return {
     id: row.id,
     data: {
       ref: row.ref,
       category: row.category,
-      categoryLabels: category?.labels ?? fallbackLabels,
+      propertyGroup: row.property_group || groupOf(row.category),
+      propertySubtype: row.property_subtype,
+      categoryLabels: (PROPERTY_GROUPS.find(g=>g.key===group)?.labels ?? category?.labels ?? fallbackLabels) as Property['data']['categoryLabels'],
       categorySlugs: category?.slugs ?? { hu: row.category, nl: row.category },
       categorySchema: category?.schemaType ?? 'Place',
       status: row.status === 'sold' ? 'sold' : row.reserved ? 'reserved' : 'active',
@@ -223,20 +233,20 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         precision: row.precision,
         country: row.country,
       },
-      areas: { floorM2: row.floor_m2 ?? undefined, plotM2: row.plot_m2 },
+      areas: { floorM2: living?(row.floor_m2 ?? undefined):undefined, buildingM2:building?(row.building_m2??undefined):undefined, plotM2:hasPlot(group,subtype)?row.plot_m2:0 },
       rooms:
-        row.bedrooms != null && row.bathrooms != null
+        living && row.bedrooms != null && row.bathrooms != null
           ? { bedrooms: row.bedrooms, bathrooms: row.bathrooms }
           : undefined,
       building: {
-        yearBuilt: row.year_built ?? undefined,
-        renovatedIn: row.renovated_in ?? undefined,
-        condition: localisedField(translations, 'condition'),
-        heating: localisedField(translations, 'heating'),
+        yearBuilt: building?(row.year_built ?? undefined):undefined,
+        renovatedIn: building?(row.renovated_in ?? undefined):undefined,
+        condition: building ? (taxonomy.condition.find(t=>t.key===row.condition_key)?.labels as LocalisedText || localisedField(translations, 'condition')) : undefined,
+        heating: building ? (taxonomy.heating.find(t=>t.key===row.heating_key)?.labels as LocalisedText || localisedField(translations, 'heating')) : undefined,
         epcClass: row.epc_class,
-        wall: wall ? { key: wall.key, labels: wall.labels } : undefined,
+        wall: building && wall ? { key: wall.key, labels: wall.labels } : undefined,
       },
-      features: row.features,
+      features: [...new Set(row.features.map(canonicalFeature))],
       media: {
         hero: resolveMedia(hero.storage_path),
         heroAlt: (hero.alt as LocalisedText) ?? { hu: '' },
@@ -250,15 +260,11 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
       listing: {
         package: row.package,
         featured: row.featured,
+        topicFeatured: row.topic_featured,
         homepageFeatured: row.homepage_featured,
-        homepageOrder: row.homepage_order,
         publishedAt: new Date(row.published_at ?? row.price_asof),
         expiresAt: new Date(row.expires_at ?? row.price_asof),
         languages,
-        editorsPick: row.editors_pick,
-        editorsPickOrder: row.editors_pick_order,
-        bargain: row.bargain,
-        bargainSince: row.bargain_since ? new Date(row.bargain_since) : undefined,
       },
       seller: {
         contactVisible: row.seller_contact_visible,
@@ -288,7 +294,8 @@ export function resolveText(field: LocalisedText | undefined, locale: Locale): {
     const value = field[candidate];
     if (value) return { text: value, from: candidate };
   }
-  return { text: field.hu ?? '', from: 'hu' };
+  const original=LOCALES.find(candidate=>field[candidate]);
+  return original?{text:field[original]!,from:original}:{text:'',from:locale};
 }
 
 /** Resolve a localised field, falling back as described above. */
@@ -356,12 +363,12 @@ export type SearchParams = {
   plotMin?: number;
   plotMax?: number;
   bedroomsMin?: number;
-  bargain?: boolean;
+  subtype?: string;
   /** "Exclude adobe houses": drops only listings whose wall material is adobe. */
   excludeAdobe?: boolean;
   /** [west, south, east, north] from the browse map's "search this area". */
   bbox?: [number, number, number, number];
-  sort?: 'featured' | 'price-asc' | 'price-desc' | 'area-desc' | 'bargain';
+  sort?: 'featured' | 'price-asc' | 'price-desc' | 'area-desc';
   page?: number;
   perPage?: number;
 };
@@ -399,20 +406,14 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
     p_plot_max: params.plotMax ?? null,
     p_bedrooms_min: params.bedroomsMin ?? null,
     p_bbox: params.bbox ?? null,
-    p_bargain: params.bargain ?? null,
+    p_subtype: params.subtype || null,
     p_sort: params.sort ?? 'featured',
     p_limit: perPage,
     p_offset: (page - 1) * perPage,
   };
-  let { data: matches, error: rpcError } = await getSupabase().rpc('search_properties', {
-    ...args,
-    p_exclude_adobe: params.excludeAdobe ?? null,
+  const { data: matches, error: rpcError } = await getSupabase().rpc('search_european_properties', {
+    ...args, p_exclude_adobe: params.excludeAdobe ?? null,
   });
-  // Before migration 0019 the function has no p_exclude_adobe (and no listing
-  // has a wall material, so there is nothing to exclude): call the old one.
-  if (rpcError && /p_exclude_adobe|PGRST202|function/i.test(`${rpcError.code} ${rpcError.message}`)) {
-    ({ data: matches, error: rpcError } = await getSupabase().rpc('search_properties', args));
-  }
   if (rpcError) throw new Error(`Search failed: ${rpcError.message}`);
 
   const ids = (matches ?? []).map((m: { id: string }) => m.id);
@@ -444,25 +445,11 @@ export async function soldProperties(): Promise<Property[]> {
   return (await fetchAll()).filter((p) => p.data.status === 'sold');
 }
 
-/**
- * Homepage placement is a product FODEL sell (€25/month), so the order is
- * theirs to set via `listing.homepageOrder` rather than falling out of a
- * publish date.
- */
-export async function homepageFeatured(limit = 3): Promise<Property[]> {
-  const active = await activeProperties();
-  const featured = active.filter((p) => p.data.listing.homepageFeatured);
-  return (featured.length ? featured : active)
-    .sort((a, b) => a.data.listing.homepageOrder - b.data.listing.homepageOrder)
-    .slice(0, limit);
-}
-
-/** Editorial recommendations never fall back to paid or newest inventory. */
-export async function editorsPick(limit = 10): Promise<Property[]> {
-  return (await activeProperties())
-    .filter((property) => property.data.listing.editorsPick)
-    .sort((a, b) => a.data.listing.editorsPickOrder - b.data.listing.editorsPickOrder)
-    .slice(0, limit);
+/** Active homepage placements, ordered by publication date. */
+export async function homepageFeatured(limit=3):Promise<Property[]>{
+  const active=await activeProperties();
+  const featured=active.filter(p=>p.data.listing.homepageFeatured);
+  return (featured.length?featured:active).sort((a,b)=>b.data.listing.publishedAt.getTime()-a.data.listing.publishedAt.getTime()).slice(0,limit);
 }
 
 /**
@@ -520,7 +507,7 @@ export function countiesOf(properties: Property[]): string[] {
 }
 
 export function categoriesOf(properties: Property[]): string[] {
-  return [...new Set(properties.map((p) => p.data.category))];
+  return [...new Set(properties.map((p) => p.data.propertyGroup || groupOf(p.data.category)))];
 }
 
 export function countriesOf(properties: Property[]): string[] {

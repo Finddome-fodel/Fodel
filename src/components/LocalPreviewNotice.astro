@@ -1,0 +1,26 @@
+---
+/** Visible only with the explicitly configured localhost QA database. */
+const fixture = import.meta.env.DEV
+  && import.meta.env.SUPABASE_URL === 'http://127.0.0.1:54401'
+  && import.meta.env.SUPABASE_ANON_KEY === 'local-editor-fixture';
+---
+{fixture && (
+  <aside class="local-preview-notice" aria-label="Helyi tesztelőnézet">
+    <strong>Helyi tesztelőnézet · kitalált adatok</strong>
+    <details>
+      <summary>Belépés és tudnivalók</summary>
+      <p>Ez az előnézet nem használja az éles adatbázist. Az éles fiók adatait itt ne adja meg.</p>
+      <p>Admin: <code>admin@fodel-test.local</code> · Hirdető: <code>owner@fodel-test.local</code> · Tesztjelszó: <code>preview</code>.</p>
+      <p>Az előnézet egy kitalált piszkozatot tartalmaz; a valódi hirdetések és fiókok a megszokott oldalon érhetők el.</p>
+    </details>
+  </aside>
+)}
+<style>
+  .local-preview-notice { position: relative; z-index: 101; background: #102a43; color: #fff; padding: 10px 20px; font: 500 13px/1.5 system-ui, sans-serif; }
+  .local-preview-notice strong { font-weight: 650; }
+  details { display: inline; margin-left: 16px; }
+  summary { display: inline; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  details[open] { display: block; margin: 6px 0 0; }
+  p { margin: 6px 0 0; max-width: 100%; overflow-wrap: anywhere; }
+  code { font: inherit; }
+</style>

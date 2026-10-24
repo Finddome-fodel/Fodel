@@ -13,6 +13,7 @@ import { CATEGORY_FALLBACK, LOCALES, type Locale } from '~/i18n/ui';
 import { FEATURES, COUNTIES } from '~/data/features';
 import { overlayLabels } from '~/data/taxonomy-i18n';
 import { getSupabase } from '~/lib/supabase';
+import { PROPERTY_GROUPS, FEATURE_DEFINITIONS, DETAIL_OPTIONS } from '~/lib/listing-catalogue';
 import { WALL_MATERIALS } from '~/data/wall-materials';
 import type { ListingRules } from '~/lib/listing-rules';
 import type { StoredListingPackage } from '~/lib/listing-packages';
@@ -36,6 +37,9 @@ export type TaxonomyTerm = {
   schemaType?: string;
   sortOrder: number;
   enabled: boolean;
+  propertyGroups?: string[];
+  subtypeKeys?: string[];
+  sectionKey?: string;
 };
 
 export type Taxonomy = Record<TaxonomyGroup, TaxonomyTerm[]>;
@@ -193,7 +197,7 @@ export async function getTaxonomy(): Promise<Taxonomy> {
   return cached(taxonomyCache, async () => {
     const { data, error } = await getSupabase()
       .from('taxonomy_terms')
-      .select('id, group_key, key, labels, slugs, schema_type, sort_order, enabled')
+      .select('*')
       .order('sort_order');
     if (error) throw error;
     const taxonomy = emptyTaxonomy();
@@ -209,12 +213,15 @@ export async function getTaxonomy(): Promise<Taxonomy> {
         schemaType: row.schema_type ?? undefined,
         sortOrder: row.sort_order,
         enabled: row.enabled,
+        propertyGroups: row.property_groups ?? FEATURE_DEFINITIONS.find(f=>f.key===row.key)?.propertyGroups,
+        subtypeKeys: row.subtype_keys ?? FEATURE_DEFINITIONS.find(f=>f.key===row.key)?.subtypeKeys ?? [],
+        sectionKey: row.section_key ?? FEATURE_DEFINITIONS.find(f=>f.key===row.key)?.section,
       });
     }
     // Before migration 0019 the database has no wall terms: keep the vocabulary.
     if (taxonomy.wall.length === 0) taxonomy.wall = wallFallback();
-    return taxonomy;
-  }, TAXONOMY_FALLBACK);
+    return completeListingTaxonomy(taxonomy);
+  }, completeListingTaxonomy(TAXONOMY_FALLBACK));
 }
 
 export async function getCompany(): Promise<Company> {
@@ -261,4 +268,30 @@ export function categoryBySlug(taxonomy: Taxonomy, locale: Locale, slug: string)
  */
 export function termLabel(term: TaxonomyTerm | undefined, locale: Locale): string {
   return term?.labels[locale] ?? term?.labels.nl ?? term?.labels.hu ?? term?.key ?? '';
+}
+
+/** Add new brief vocabulary without replacing admin edits or disabling old URLs. */
+function completeListingTaxonomy(taxonomy: Taxonomy): Taxonomy {
+  for (const group of ['feature','condition','heating','wall'] as const) {
+    const definitions = group === 'feature' ? FEATURE_DEFINITIONS : DETAIL_OPTIONS[group];
+    for (const term of definitions) {
+      const found = taxonomy[group].find(t=>t.key===term.key);
+      if (found) {
+        found.labels = {...term.labels,...found.labels} as TaxonomyTerm['labels'];
+        if(group==='feature'){
+          const legacy={...FEATURES[term.key],...overlayLabels('feature',term.key)} as Record<string,string>;
+          for(const [locale,label] of Object.entries(term.labels))if(!found.labels[locale as Locale]||found.labels[locale as Locale]===legacy[locale])found.labels[locale as Locale]=label;
+        }
+        if (group==='feature' && !found.propertyGroups?.length) found.propertyGroups=FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.propertyGroups;
+        if(group==='feature'&&found.subtypeKeys===undefined)found.subtypeKeys=FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.subtypeKeys;
+      } else taxonomy[group].push({groupKey:group,key:term.key,labels:term.labels as TaxonomyTerm['labels'],slugs:{},enabled:true,sortOrder:100,propertyGroups:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.propertyGroups:undefined,subtypeKeys:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.subtypeKeys:undefined,sectionKey:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.section:undefined});
+    }
+  }
+  for (const g of PROPERTY_GROUPS) if(!taxonomy.category.some(t=>t.key===g.key)) taxonomy.category.push({groupKey:'category',key:g.key,labels:g.labels as TaxonomyTerm['labels'],slugs:Object.keys(g.slugs).length?g.slugs:{hu:g.key,nl:g.key,en:g.key,de:g.key,fr:g.key},schemaType:'Place',enabled:true,sortOrder:100});
+  return taxonomy;
+}
+
+/** Nine primary categories in public selectors; historic subtype URLs still resolve through categoryBySlug. */
+export function listingCategories(taxonomy:Taxonomy):TaxonomyTerm[]{
+ return PROPERTY_GROUPS.map(g=>{const term=taxonomy.category.find(t=>t.key===g.key);return term?{...term,labels:g.labels as TaxonomyTerm['labels']}:null;}).filter((t):t is TaxonomyTerm=>Boolean(t?.enabled));
 }

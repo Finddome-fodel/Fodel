@@ -13,20 +13,20 @@
  * Data lives where the 1.x intake already put it — `properties.package`,
  * `properties.requested_extras` (migration 0015), the listing's translation
  * row and the seller columns — so the admin's review screen, suggestSelection()
- * and the order builder read it exactly as before. No new columns.
+ * and the order builder keep the existing workflow. European intake fields and private notes use migration 0022.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { localeFrom } from '~/i18n/ui';
 import type { PortalLang } from '~/lib/portal/auth-copy';
-import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
+import { getCompany, getTaxonomy } from '~/lib/runtime-config';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import { TRANSLATION_LANGUAGES, isOnsiteServiceId } from '~/config/company';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { createServiceRequest } from '~/lib/portal/service-requests';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
-import { geocode } from '~/lib/valuation/nearby';
-import { parseLocaleNumber, type FieldError } from '~/lib/validation';
-import { LOCALE_OPTIONS } from '~/lib/portal/properties';
+import { type FieldError } from '~/lib/validation';
+import { getProperty } from '~/lib/portal/properties';
+import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
 
 export const SETUP_STEPS = ['package', 'property', 'description'] as const;
 export type SetupStep = (typeof SETUP_STEPS)[number];
@@ -34,9 +34,6 @@ export type SetupStep = (typeof SETUP_STEPS)[number];
 export type StepResult = { ok: true } | { ok: false; error: string; errors?: Record<string, FieldError> };
 
 type Existing = { id: string; owner_id: string | null; status: string; package: string };
-
-/** createDraft() pins a new listing to the middle of Hungary until it has a place. */
-const DEFAULT_PIN = { lat: 47.1625, lng: 19.5033 };
 
 /** The longest description the setup accepts — the same ceiling the 1.x form had. */
 export const DESCRIPTION_MAX = 6000;
@@ -81,13 +78,18 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
     translations,
     categoryHighlight: form.get('categoryHighlight') === 'yes',
     homepageHighlight: form.get('homepageHighlight') === 'yes',
+    topicHighlight: form.get('topicHighlight') === 'yes',
     // Only a package that sells video as an extra takes the request.
     video: chosen.video === 'extra' && form.get('video') === 'yes',
     service,
   });
   const { error: extrasError } = await supabase.from('properties').update({ requested_extras: requested }).eq('id', existing.id);
-  if (extrasError) console.error('[setup] requested_extras not stored (migration 0015?)', extrasError.message);
+  if(extrasError)return {ok:false,error:'save-failed'};
 
+  const {error:topicError}=await supabase.from('properties').update({topic_highlight_requested:form.get('topicHighlight')==='yes'}).eq('id',existing.id);
+  if(topicError)return {ok:false,error:'save-failed'};
+  const {error:promotionError}=await supabase.rpc('sync_listing_promotion_requests',{p_id:existing.id});
+  if(promotionError)return {ok:false,error:'save-failed'};
   await syncService(supabase, existing, service);
   return { ok: true };
 }
@@ -135,129 +137,29 @@ async function syncService(supabase: SupabaseClient, existing: Existing, wanted:
 
 /* ── 2. The property ──────────────────────────────────────────────────── */
 
-async function saveProperty(supabase: SupabaseClient, existing: Existing, form: FormData): Promise<StepResult> {
-  const taxonomy = await getTaxonomy();
-  const errors: Record<string, FieldError> = {};
-
-  const category = str(form, 'category');
-  if (!taxonomy.category.some((t) => t.key === category && t.enabled)) errors.category = { code: 'required' };
-
-  const settlement = str(form, 'settlement').slice(0, 120);
-  if (!settlement) errors.settlement = { code: 'required' };
-  const county = str(form, 'county').slice(0, 60);
-  if (!county) errors.county = { code: 'required' };
-
-  const priceHuf = parseLocaleNumber(str(form, 'price_huf'));
-  if (!str(form, 'price_huf')) errors.price_huf = { code: 'required' };
-  else if (priceHuf === null) errors.price_huf = { code: 'number' };
-  else if (priceHuf < 1_000) errors.price_huf = { code: 'min', limit: 1_000 };
-
-  const area = (key: string) => {
-    const raw = str(form, key);
-    if (!raw) return null;
-    const n = parseLocaleNumber(raw);
-    if (n === null) errors[key] = { code: 'number' };
-    else if (n <= 0) errors[key] = { code: 'min', limit: 1 };
-    else if (n > 10_000_000) errors[key] = { code: 'max', limit: 10_000_000 };
-    return n;
-  };
-  const floor = area('floor_m2');
-  const plot = area('plot_m2');
-
-  if (Object.keys(errors).length) return { ok: false, error: 'invalid', errors };
-
-  const pick = (group: 'wall' | 'condition' | 'heating', value: string) =>
-    taxonomy[group].some((t) => t.key === value && t.enabled) ? value : null;
-
-  const { data: current } = await supabase.from('properties').select('settlement, county, lat, lng, price_eur').eq('id', existing.id).maybeSingle();
-
-  // The euro figure is a working placeholder until the office confirms the
-  // rate at review, exactly as the 1.x intake did (properties.ts applyIntake):
-  // the admin-set EUR/HUF rate when there is one, otherwise the same 400.
-  const rate = (await getCompany()).services.eurHufRate || 400;
-
-  const patch: Record<string, unknown> = {
-    category,
-    settlement,
-    county,
-    price_huf: Math.round(priceHuf!),
-    price_eur: Math.max(1, Math.round(priceHuf! / rate)),
-    price_asof: new Date().toISOString().slice(0, 10),
-    floor_m2: floor,
-    precision: str(form, 'precision') === 'exact' ? 'exact' : 'approximate',
-    condition_key: pick('condition', str(form, 'condition_key')),
-    heating_key: pick('heating', str(form, 'heating_key')),
-  };
-  if (plot) patch.plot_m2 = plot;
-
-  // Put the pin on the settlement — once, when the place is new or the pin is
-  // still the placeholder. One Nominatim call; the admin can move it later.
-  const placeChanged = !current || current.settlement !== settlement || current.county !== county;
-  const pinIsDefault = !current || (current.lat === DEFAULT_PIN.lat && current.lng === DEFAULT_PIN.lng);
-  if (placeChanged || pinIsDefault) {
-    const hit = await geocode({ settlement, county }).catch(() => null);
-    if (hit) {
-      patch.lat = hit.lat;
-      patch.lng = hit.lon;
-    }
-  }
-
-  const { error } = await supabase.from('properties').update(patch).eq('id', existing.id);
-  if (error) return { ok: false, error: 'save-failed' };
-
-  // Its own statement: the column arrives with migration 0019.
-  const wall = pick('wall', str(form, 'wall_key'));
-  const { error: wallError } = await supabase.from('properties').update({ wall_key: wall }).eq('id', existing.id);
-  if (wallError) console.warn('[setup] wall_key not saved (migration 0019?)', wallError.message);
-
-  return { ok: true };
+async function saveProperty(supabase:SupabaseClient,existing:Existing,form:FormData):Promise<StepResult>{
+  const current=await getProperty(supabase,existing.id);if(!current)return {ok:false,error:'not-found'};
+  try{
+    const values=await listingInput(form,current,await getTaxonomy(),{allowIncomplete:form.get('partial')==='yes'});
+    const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:values.patch,p_private:values.privateData});
+    return error?{ok:false,error:'save-failed'}:{ok:true};
+  }catch(error){return error instanceof ListingInputError?{ok:false,error:error.message,errors:error.errors}:{ok:false,error:'save-failed'};}
 }
 
 /* ── 3. Description and contact ────────────────────────────────────────── */
 
-async function saveDescription(supabase: SupabaseClient, existing: Existing, form: FormData, locale: PortalLang): Promise<StepResult> {
-  const text = str(form, 'description');
-  if (text.length > DESCRIPTION_MAX) return { ok: false, error: 'invalid', errors: { description: { code: 'too-long', limit: DESCRIPTION_MAX } } };
-
-  const { data: row } = await supabase
-    .from('properties')
-    .select('settlement, category, property_translations(locale, title)')
-    .eq('id', existing.id)
-    .maybeSingle();
-
-  // The seller writes in their own language; the office edits and translates
-  // at review. A title is drafted from the place and the type until then.
-  const taxonomy = await getTaxonomy();
-  const typeLabel = termLabel(taxonomy.category.find((t) => t.key === row?.category), locale);
-  const existingTitle = (row?.property_translations ?? []).find((t: { locale: string }) => t.locale === locale)?.title?.trim();
-  const placeholder = !existingTitle || existingTitle === 'Új hirdetés';
-  const title = placeholder ? [typeLabel, row?.settlement].filter(Boolean).join(', ') || existingTitle || typeLabel : existingTitle;
-
-  if (text || !placeholder) {
-    const { error } = await supabase.from('property_translations').upsert(
-      { property_id: existing.id, locale, title: title.slice(0, 160), description: text.slice(0, 600), body: text },
-      { onConflict: 'property_id,locale' }
-    );
-    if (error) return { ok: false, error: 'save-failed' };
-  }
-
-  const company = await getCompany();
-  const pkg = packageOf(listingCatalog(company.services), existing.package);
-  const speaks = form
-    .getAll('seller_speaks')
-    .map(String)
-    .filter((code, i, all) => LOCALE_OPTIONS.some((o) => o.value === code) && all.indexOf(code) === i);
-
-  const { error } = await supabase
-    .from('properties')
-    .update({
-      seller_speaks: speaks,
-      // The phone can only be shown where the package allows it (and the
-      // public page still checks again — src/lib/listing-rules.ts).
-      seller_contact_visible: pkg.phone && form.get('contact') === 'yes',
-    })
-    .eq('id', existing.id);
-  if (error) return { ok: false, error: 'save-failed' };
-
-  return { ok: true };
+async function saveDescription(supabase:SupabaseClient,existing:Existing,form:FormData,locale:PortalLang):Promise<StepResult>{
+  const title=str(form,'title'),description=str(form,'description'),body=str(form,'body');
+  const errors:Record<string,FieldError>={};
+  const partial=form.get('partial')==='yes';
+  if(!title&&!partial)errors.title={code:'required'};else if(title.length>160)errors.title={code:'too-long',limit:160};
+  if(!description&&!partial)errors.description={code:'required'};else if(description.length>DESCRIPTION_MAX)errors.description={code:'too-long',limit:DESCRIPTION_MAX};
+  if(body.length>30000)errors.body={code:'too-long',limit:30000};
+  if(Object.keys(errors).length)return {ok:false,error:'invalid',errors};
+  const current=await getProperty(supabase,existing.id);if(!current)return {ok:false,error:'not-found'};
+  const pkg=packageOf(listingCatalog((await getCompany()).services),existing.package);
+  const translations=[{locale,title,description,body}];
+  // The office still prepares paid translations. A non-Hungarian original can be submitted without pretending it is a Hungarian translation.
+  const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:pkg.phone&&form.get('contact')==='yes'},p_private:{internal_note:str(form,'internal_note').slice(0,10000)},p_translations:translations});
+  return error?{ok:false,error:'save-failed'}:{ok:true};
 }

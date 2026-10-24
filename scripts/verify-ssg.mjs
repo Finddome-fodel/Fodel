@@ -84,8 +84,6 @@ const LIVE_ROUTES = [
   ['nl/nieuws/index.html', '/nl/nieuws/'],
   ['hu/blog/holland-migracio-okai/index.html', '/hu/blog/holland-migracio-okai/'],
   ['nl/nieuws/wat-kost-een-huis-in-hongarije/index.html', '/nl/nieuws/wat-kost-een-huis-in-hongarije/'],
-  ['hu/top-10/index.html', '/hu/top-10/'],
-  ['nl/top-10/index.html', '/nl/top-10/'],
   // Prices come from the admin's package settings (src/lib/listing-packages.ts).
   ['hu/arlista/index.html', '/hu/arlista/'],
   ['nl/tarieven/index.html', '/nl/tarieven/'],
@@ -94,7 +92,7 @@ const LIVE_ROUTES = [
 ];
 // The three newer languages: the Supabase-backed pages in their own slugs.
 for (const l of ['en', 'de', 'fr']) {
-  for (const key of ['home', 'properties', 'sold', 'submitAd', 'blog', 'priceList', 'sellers', 'top10']) {
+  for (const key of ['home', 'properties', 'sold', 'submitAd', 'blog', 'priceList', 'sellers']) {
     const p = routePath(l, key);
     LIVE_ROUTES.push([`${p.slice(1)}index.html`, p]);
   }

@@ -21,6 +21,7 @@ export type RequestedExtras = {
   translations?: string[];
   categoryHighlight?: boolean;
   homepageHighlight?: boolean;
+  topicHighlight?: boolean;
   video?: boolean;
   service?: OnsiteServiceId | null;
 };
@@ -60,6 +61,7 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
     translations: Array.isArray(raw.translations) ? raw.translations.filter((code): code is string => typeof code === 'string' && LANGS.includes(code)) : [],
     categoryHighlight: raw.categoryHighlight === true,
     homepageHighlight: raw.homepageHighlight === true,
+    topicHighlight: raw.topicHighlight === true,
     video: raw.video === true,
     service: isOnsiteServiceId(raw.service) ? raw.service : null,
   };
@@ -68,7 +70,7 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
 /** True when the owner asked for anything beyond the package. */
 export function hasRequests(extras: RequestedExtras): boolean {
   return Boolean(
-    (extras.translations?.length ?? 0) > 0 || extras.categoryHighlight || extras.homepageHighlight || extras.video || extras.service
+    (extras.translations?.length ?? 0) > 0 || extras.categoryHighlight || extras.homepageHighlight || extras.topicHighlight || extras.video || extras.service
   );
 }
 
@@ -79,6 +81,7 @@ export function describeRequestedExtras(extras: RequestedExtras): string[] {
   if (extras.translations?.length) lines.push(`Fordítás: ${extras.translations.map((code) => LANG_HU[code] ?? code).join(', ')}`);
   if (extras.categoryHighlight) lines.push('Kiemelés a kategóriában');
   if (extras.homepageHighlight) lines.push('Kiemelés a főoldalon');
+  if (extras.topicHighlight) lines.push('Témakörön belüli kiemelés: altípus, egyedi áregyeztetéssel');
   if (extras.video) lines.push('Videós bemutató (saját videó elhelyezése)');
   return lines;
 }

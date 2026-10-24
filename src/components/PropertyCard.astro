@@ -79,7 +79,6 @@ const specs = [
   data-plot={d.areas.plotM2}
   data-beds={d.rooms?.bedrooms ?? 0}
   data-featured={d.listing.featured ? '1' : '0'}
-  data-bargain={d.listing.bargain ? '1' : '0'}
   data-published={d.listing.publishedAt.getTime()}
 >
   <a class="card-link" href={href}>
@@ -102,7 +101,7 @@ const specs = [
       </div>
       <span class="card-tags">
         {rank && <span class="tag tag-rank num">{String(rank).padStart(2, '0')}</span>}
-        {(d.listing.bargain || tag) && <span class="tag">{d.listing.bargain ? CHROME[locale].card.bargain : tag}</span>}
+        {tag && <span class="tag">{tag}</span>}
       </span>
       {
         d.status !== 'active' && (

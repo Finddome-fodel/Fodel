@@ -17,6 +17,7 @@ import Button from '~/components/Button.astro';
 import PropertyCard from '~/components/PropertyCard.astro';
 import { UI, path, localizer, type Locale } from '~/i18n/ui';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
+import { PROPERTY_GROUPS, labelIn, subtypeLabel, validSubtype, groupOf } from '~/lib/listing-catalogue';
 import { countryLabel as labelCountry } from '~/config/countries';
 import { alternatesFor, crumbs } from '~/lib/page';
 import {
@@ -24,7 +25,6 @@ import {
   searchProperties,
   regionsOf,
   countiesOf,
-  categoriesOf,
   countriesOf,
   PRICE_BANDS,
   priceBandLabel,
@@ -51,10 +51,10 @@ const params = Astro.url.searchParams;
 const facetSource = await activeProperties();
 const regions = regionsOf(facetSource);
 const counties = countiesOf(facetSource);
-const categories = categoriesOf(facetSource);
+const categories = PROPERTY_GROUPS.map(g=>g.key);
 const countries = countriesOf(facetSource);
 const taxonomy = await getTaxonomy();
-const categoryLabel = (key: string) => termLabel(taxonomy.category.find((term) => term.key === key), locale) || key;
+const categoryLabel = (key: string) => {const group=PROPERTY_GROUPS.find(g=>g.key===key);return group?labelIn(group.labels,locale):termLabel(taxonomy.category.find(t=>t.key===key),locale)||key;};
 
 const q = params.get('q') ?? '';
 const type = fixedCategory ?? params.get('type') ?? '';
@@ -71,9 +71,10 @@ const floorMin = params.get('floor_min') ?? params.get('floor') ?? '';
 const floorMax = params.get('floor_max') ?? '';
 const plotMin = params.get('plot_min') ?? '';
 const plotMax = params.get('plot_max') ?? '';
-const bargain = params.get('bargain') === '1';
+const askedSubtype=params.get('subtype')||'';
+const subtype=validSubtype(groupOf(type),askedSubtype)?askedSubtype:'';
 const excludeAdobe = params.get('no_adobe') === '1';
-const sort = (params.get('sort') as 'featured' | 'price-asc' | 'price-desc' | 'area-desc' | 'bargain') || 'featured';
+const sort = (params.get('sort') as 'featured' | 'price-asc' | 'price-desc' | 'area-desc') || 'featured';
 const page = Math.max(1, Number(params.get('page') ?? '1') || 1);
 
 const priceBand = PRICE_BANDS.find((b) => b.id === priceBandId);
@@ -98,7 +99,7 @@ const { properties, total, perPage } = await searchProperties({
   plotMin: plotMin ? Number(plotMin) : undefined,
   plotMax: plotMax ? Number(plotMax) : undefined,
   bedroomsMin: beds ? Number(beds) : undefined,
-  bargain: bargain || undefined,
+  subtype: subtype || undefined,
   excludeAdobe: excludeAdobe || undefined,
   bbox,
   sort,
@@ -141,6 +142,7 @@ function withParam(key: string, value: string): string {
   if (value) next.set(key, value);
   else next.delete(key);
   if (key !== 'page') next.delete('page');
+  if(key==='type')next.delete('subtype');
   const base = fixedCategory && key === 'type' ? listPath : currentPath;
   const query = next.toString();
   return query ? `${base}?${query}` : base;
@@ -160,7 +162,7 @@ const active = [
   floorMax && { key: 'floor_max', label: `${ui.filters.area} ≤ ${floorMax} m²` },
   plotMin && { key: 'plot_min', label: `${ui.filters.land} ≥ ${plotMin} m²` },
   plotMax && { key: 'plot_max', label: `${ui.filters.land} ≤ ${plotMax} m²` },
-  bargain && { key: 'bargain', label: ui.filters.bargain },
+  subtype && { key:'subtype',label:subtypeLabel(type,subtype,locale)||subtype },
   excludeAdobe && { key: 'no_adobe', label: ui.filters.excludeAdobe },
   bbox && { key: 'bbox', label: x('Térképterület', 'Kaartgebied', 'Map area', 'Kartenausschnitt', 'Zone de la carte') },
 ].filter(Boolean) as { key: string; label: string }[];
@@ -329,6 +331,7 @@ const labels = {
             </div>
           </fieldset>
 
+          {<div class="group"><label class="group-title" for="filter-subtype">{locale==='hu'?'Altípus':locale==='nl'?'Subtype':locale==='de'?'Untertyp':locale==='fr'?'Sous-type':'Subtype'}</label><select id="filter-subtype" name="subtype" disabled={!type} data-auto><option value="">{ui.filters.all}</option>{(PROPERTY_GROUPS.find(g=>g.key===groupOf(type))?.subtypes||[]).map(v=><option value={v.key} selected={v.key===subtype}>{labelIn(v.labels,locale)}</option>)}</select></div>}
           {/* Location */}
           <details class="group group-fold" open={locationOpen}>
             <summary class="group-title">
@@ -416,13 +419,6 @@ const labels = {
             </div>
           </details>
 
-          {/* Bargains */}
-          <label class="switch-row">
-            <span>{ui.filters.bargain}</span>
-            <input type="checkbox" role="switch" name="bargain" value="1" checked={bargain} data-auto />
-            <span class="switch" aria-hidden="true"></span>
-          </label>
-
           {/* Adobe (vályog) houses: only listings known to be adobe are hidden; unknown stays. */}
           <label class="switch-row">
             <span>{ui.filters.excludeAdobe}</span>
@@ -486,7 +482,6 @@ const labels = {
                 <option value="price-asc" selected={sort === 'price-asc'}>{ui.filters.sortPriceAsc}</option>
                 <option value="price-desc" selected={sort === 'price-desc'}>{ui.filters.sortPriceDesc}</option>
                 <option value="area-desc" selected={sort === 'area-desc'}>{ui.filters.sortAreaDesc}</option>
-                <option value="bargain" selected={sort === 'bargain'}>{ui.filters.bargain}</option>
               </select>
             </label>
 
@@ -594,6 +589,7 @@ const labels = {
 </Base>
 
 <script>
+  import groups from '~/data/listing/groups.json';
   const form = document.getElementById('filters') as HTMLFormElement | null;
   const panel = document.getElementById('filter-panel');
   const body = document.getElementById('filter-body');
@@ -672,7 +668,12 @@ const labels = {
        toolbar, outside the drawer, and always applies at once. */
     const apply = () => form.requestSubmit();
     form.addEventListener('change', (e) => {
-      const target = e.target as HTMLElement;
+      const target = e.target as HTMLInputElement;
+      if(target.name==='type'){
+        const subtype=form.querySelector<HTMLSelectElement>('[name="subtype"]');
+        const language=document.documentElement.lang.split('-')[0];
+        if(subtype){const all=subtype.options[0]?.text||'—';const choices=groups.find(g=>g.key===target.value)?.subtypes||[];subtype.replaceChildren(new Option(all,''),...choices.map(s=>new Option((s.labels as Record<string,string>)[language]||s.labels.en,s.key)));subtype.disabled=!choices.length;}
+      }
       if (target.matches('[data-auto]') && !drawer.matches) apply();
       else form.setAttribute('data-dirty', '');
     });

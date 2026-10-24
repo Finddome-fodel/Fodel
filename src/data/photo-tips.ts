@@ -354,3 +354,11 @@ export function photoGuideSections(
     { type: 'cta', title: t.ctaTitle, primary: { label: t.primary, to: 'submitAd' }, secondary: { label: t.secondary, to: 'priceList' } },
   ];
 }
+
+/** Brief-specific upload advice; the established public guide is retained. */
+export const UPLOAD_TIPS:PhotoTip[]=[
+ TOP_TIPS[0],TOP_TIPS[1],TOP_TIPS[3],
+ {...TOP_TIPS[4],body:{hu:'Törölje meg a lencsét, tartsa stabilan a telefont, és ellenőrizze, hogy a kép éles-e.',nl:'Veeg de lens schoon, houd de telefoon stil en controleer of de foto scherp is.',en:'Wipe the lens, hold the phone steady, and check that the photo is sharp.',de:'Reinigen Sie die Linse, halten Sie das Handy ruhig und prüfen Sie die Bildschärfe.',fr:'Nettoyez l’objectif, stabilisez le téléphone et vérifiez la netteté de la photo.'}},
+ {id:'exterior',icon:'corner',title:{hu:'Kert és melléképületek',nl:'Tuin en bijgebouwen',en:'Garden and outbuildings',de:'Garten und Nebengebäude',fr:'Jardin et dépendances'},body:{hu:'Mutassa meg az ingatlan fontos részeit, a kertet és a melléképületeket is.',nl:'Laat de belangrijkste delen zien, ook de tuin en de bijgebouwen.',en:'Show the important parts of the property, including the garden and outbuildings.',de:'Zeigen Sie die wichtigen Bereiche, auch den Garten und die Nebengebäude.',fr:'Montrez les parties importantes du bien, y compris le jardin et les dépendances.'}},
+ TOP_TIPS[5],
+];

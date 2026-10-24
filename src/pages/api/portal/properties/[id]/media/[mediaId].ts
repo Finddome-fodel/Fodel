@@ -44,10 +44,9 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     .eq('property_id', id)
     .maybeSingle();
   if (!media) return json(404, { ok: false, error: 'not-found' });
-  await deleteImage(auth.supabase, media.storage_path);
-
   const { error } = await auth.supabase.from('property_media').delete().eq('id', mediaId).eq('property_id', id);
   if (error) return json(500, { ok: false, error: error.message });
+  await deleteImage(auth.supabase, media.storage_path);
 
   // Deleting the cover photo must not leave a listing with none. Promote the
   // next one by sort order, or the public page falls back to `media[0]`
@@ -104,13 +103,10 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
   }
 
   if (body.isHero) {
-    await auth.supabase.from('property_media').update({ is_hero: false }).eq('property_id', id);
-    const { error } = await auth.supabase
-      .from('property_media')
-      .update({ is_hero: true })
-      .eq('id', mediaId)
-      .eq('property_id', id);
-    if (error) return json(500, { ok: false, error: error.message });
+    const {data:gallery,error:readError}=await auth.supabase.from('property_media').select('id').eq('property_id',id).order('sort_order');
+    if(readError)return json(500,{ok:false,error:'save-failed'});
+    const {error}=await auth.supabase.rpc('reorder_property_media',{p_id:id,p_ids:(gallery||[]).map(m=>m.id),p_cover:mediaId});
+    if(error)return json(422,{ok:false,error:'save-failed'});
   }
 
   return json(200, { ok: true });

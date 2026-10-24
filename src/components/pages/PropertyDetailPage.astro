@@ -7,6 +7,7 @@
  * That last block is FODEL's actual differentiator, expressed as data.
  */
 import { Image, getImage } from 'astro:assets';
+import { languageName, subtypeLabel } from '~/lib/listing-catalogue';
 import Base from '~/layouts/Base.astro';
 import Eyebrow from '~/components/Eyebrow.astro';
 import PropertyCard from '~/components/PropertyCard.astro';
@@ -24,7 +25,7 @@ import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
 import { eur, huf, area, floorArea, epcLabel, formatDate } from '~/lib/format';
 import { extractYouTubeId } from '~/lib/video';
 import WhatsApp from '~/components/WhatsApp.astro';
-import { getCompany } from '~/lib/runtime-config';
+import { getTaxonomy, termLabel, getCompany } from '~/lib/runtime-config';
 import { abs } from '~/lib/seo';
 import { listingRules, showSellerPhone } from '~/lib/listing-rules';
 import { normalizePhone } from '~/lib/validation';
@@ -36,6 +37,8 @@ interface Props {
 
 const { locale, property } = Astro.props;
 const d = property.data;
+const vocabulary=await getTaxonomy();
+const featureName=(key:string)=>termLabel(vocabulary.feature.find(t=>t.key===key),locale)||featureLabel(key,locale);
 const ui = UI[locale];
 const x = localizer(locale);
 const colon = locale === 'fr' ? '\u00a0:' : ':';
@@ -84,8 +87,12 @@ const specs = [
   d.rooms && { label: ui.property.beds, value: String(d.rooms.bedrooms) },
   d.rooms && { label: ui.property.baths, value: String(d.rooms.bathrooms) },
   d.areas.floorM2 && { label: ui.property.area, value: floorArea(d.areas.floorM2, locale) },
-  { label: ui.property.land, value: area(d.areas.plotM2, locale) },
+  d.areas.plotM2 && { label: ui.property.land, value: area(d.areas.plotM2, locale) },
+  d.areas.buildingM2 && {label:x('Teljes épületterület','Totale gebouwoppervlakte','Total building area','Gesamte Gebäudefläche','Surface totale du bâtiment'),value:floorArea(d.areas.buildingM2,locale)},
+  d.propertySubtype && {label:x('Altípus','Subtype','Subtype','Untertyp','Sous-type'),value:subtypeLabel(d.propertyGroup||d.category,d.propertySubtype,locale)},
   { label: ui.property.epc, value: epc.value },
+  d.building.condition && {label:x('Állapot','Staat','Condition','Zustand','État'),value:text(d.building.condition,locale)},
+  d.building.heating && {label:x('Fűtés','Verwarming','Heating','Heizung','Chauffage'),value:text(d.building.heating,locale)},
   d.building.yearBuilt && { label: ui.property.yearBuilt, value: String(d.building.yearBuilt) },
   d.building.wall && d.building.wall.key !== 'nem-tudom' && { label: x('Falazat', 'Muurwerk', 'Wall material', 'Wandmaterial', 'Matériau des murs'), value: d.building.wall.labels[locale] ?? d.building.wall.labels.nl ?? d.building.wall.labels.hu },
 ].filter(Boolean) as { label: string; value: string }[];
@@ -104,7 +111,7 @@ const mapUrl = `https://www.openstreetmap.org/?mlat=${d.location.lat}&mlon=${d.l
 // A stored E.164 number is shown the way it is dialled from abroad.
 const dialled = d.seller.phone ? normalizePhone(d.seller.phone, 'HU') : { ok: false as const };
 
-const metaDescription = `${title} · ${d.location.settlement}, ${d.location.county}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}, ${area(d.areas.plotM2, locale)}. ${x('Azonosító', 'Referentie', 'Reference', 'Referenz', 'Référence')} ${d.ref}.`;
+const metaDescription = `${title} · ${d.location.settlement}, ${d.location.county}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}${d.areas.plotM2 ? `, ${area(d.areas.plotM2,locale)}` : ''}. ${x('Azonosító', 'Referentie', 'Reference', 'Referenz', 'Référence')} ${d.ref}.`;
 
 const videoId = d.media.videoUrl ? extractYouTubeId(d.media.videoUrl) : null;
 
@@ -286,7 +293,7 @@ const whatsappMessage = x(
           <section class="features">
             <Eyebrow space="14px">{ui.property.features}</Eyebrow>
             <ul>
-              {d.features.map((f) => <li>{featureLabel(f, locale)}</li>)}
+              {d.features.map((f) => <li>{featureName(f)}</li>)}
             </ul>
           </section>
         )
@@ -327,7 +334,7 @@ const whatsappMessage = x(
             {d.seller.speaks.length > 0 && (
               <p class="owner-speaks">
                 {x('Beszélt nyelvek', 'Spreekt', 'Speaks', 'Spricht', 'Langues parlées')}{colon}{' '}
-                {d.seller.speaks.map((s) => s.toUpperCase()).join(' · ')}
+                {d.seller.speaks.map((s) => languageName(s,locale)).join(' · ')}
               </p>
             )}
           </aside>

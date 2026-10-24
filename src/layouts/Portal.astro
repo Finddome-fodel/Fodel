@@ -14,6 +14,7 @@ import '~/styles/global.css';
 import '~/styles/portal.css';
 import { icon, type IconName } from '~/lib/portal/icons';
 import FontPreload from '~/components/FontPreload.astro';
+import LocalPreviewNotice from '~/components/LocalPreviewNotice.astro';
 import { isLocale } from '~/i18n/ui';
 
 interface Props {
@@ -81,7 +82,6 @@ const GROUPS: Group[] = isAdmin
       {
         label: 'Tartalom és pénz',
         items: [
-          { href: '/portal/top10', label: 'Top 10', icon: 'star' },
           { href: '/portal/content/blog', label: 'Blog', icon: 'pen' },
           { href: '/portal/newsletter', label: 'Hírlevél', icon: 'mail' },
           { href: '/portal/payments', label: 'Fizetések', icon: 'card' },
@@ -132,6 +132,7 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
     <FontPreload />
   </head>
   <body class:list={['portal', { bare }]} data-drawer="closed">
+    <LocalPreviewNotice />
     <div class="pt-progress" aria-hidden="true"><i></i></div>
     {
       bare ? (

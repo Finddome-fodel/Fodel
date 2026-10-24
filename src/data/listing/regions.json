@@ -1,0 +1,6181 @@
+{
+  "source": "https://download.geonames.org/export/dump/admin1CodesASCII.txt",
+  "license": "CC BY 4.0",
+  "retrievedAt": "2026-10-24",
+  "countries": {
+    "AL": [
+      {
+        "id": "AL.40",
+        "name": "Berat County",
+        "geonameId": "865730"
+      },
+      {
+        "id": "AL.41",
+        "name": "Dibër County",
+        "geonameId": "865731"
+      },
+      {
+        "id": "AL.43",
+        "name": "Elbasan County",
+        "geonameId": "865732"
+      },
+      {
+        "id": "AL.45",
+        "name": "Gjirokastër County",
+        "geonameId": "865733"
+      },
+      {
+        "id": "AL.46",
+        "name": "Korçë County",
+        "geonameId": "865734"
+      },
+      {
+        "id": "AL.47",
+        "name": "Kukës County",
+        "geonameId": "865735"
+      },
+      {
+        "id": "AL.42",
+        "name": "Durrës County",
+        "geonameId": "3344947"
+      },
+      {
+        "id": "AL.44",
+        "name": "Fier County",
+        "geonameId": "3344948"
+      },
+      {
+        "id": "AL.48",
+        "name": "Lezhë County",
+        "geonameId": "3344949"
+      },
+      {
+        "id": "AL.49",
+        "name": "Shkodër County",
+        "geonameId": "3344950"
+      },
+      {
+        "id": "AL.50",
+        "name": "Tirana",
+        "geonameId": "3344951"
+      },
+      {
+        "id": "AL.51",
+        "name": "Vlorë County",
+        "geonameId": "3344952"
+      }
+    ],
+    "AD": [
+      {
+        "id": "AD.06",
+        "name": "Sant Julià de Loria",
+        "geonameId": "3039162"
+      },
+      {
+        "id": "AD.05",
+        "name": "Ordino",
+        "geonameId": "3039676"
+      },
+      {
+        "id": "AD.04",
+        "name": "La Massana",
+        "geonameId": "3040131"
+      },
+      {
+        "id": "AD.03",
+        "name": "Encamp",
+        "geonameId": "3040684"
+      },
+      {
+        "id": "AD.02",
+        "name": "Canillo",
+        "geonameId": "3041203"
+      },
+      {
+        "id": "AD.07",
+        "name": "Andorra la Vella",
+        "geonameId": "3041566"
+      },
+      {
+        "id": "AD.08",
+        "name": "Escaldes-Engordany",
+        "geonameId": "3338529"
+      }
+    ],
+    "AM": [
+      {
+        "id": "AM.02",
+        "name": "Ararat",
+        "geonameId": "409313"
+      },
+      {
+        "id": "AM.08",
+        "name": "Syunik",
+        "geonameId": "409314"
+      },
+      {
+        "id": "AM.10",
+        "name": "Vayots Dzor",
+        "geonameId": "409315"
+      },
+      {
+        "id": "AM.11",
+        "name": "Yerevan",
+        "geonameId": "616051"
+      },
+      {
+        "id": "AM.01",
+        "name": "Aragatsotn",
+        "geonameId": "828259"
+      },
+      {
+        "id": "AM.03",
+        "name": "Armavir",
+        "geonameId": "828260"
+      },
+      {
+        "id": "AM.04",
+        "name": "Gegharkunik",
+        "geonameId": "828261"
+      },
+      {
+        "id": "AM.05",
+        "name": "Kotayk",
+        "geonameId": "828262"
+      },
+      {
+        "id": "AM.06",
+        "name": "Lori",
+        "geonameId": "828263"
+      },
+      {
+        "id": "AM.07",
+        "name": "Shirak",
+        "geonameId": "828264"
+      },
+      {
+        "id": "AM.09",
+        "name": "Tavush",
+        "geonameId": "828265"
+      }
+    ],
+    "AT": [
+      {
+        "id": "AT.09",
+        "name": "Vienna",
+        "geonameId": "2761367"
+      },
+      {
+        "id": "AT.08",
+        "name": "Vorarlberg",
+        "geonameId": "2762300"
+      },
+      {
+        "id": "AT.07",
+        "name": "Tyrol",
+        "geonameId": "2763586"
+      },
+      {
+        "id": "AT.06",
+        "name": "Styria",
+        "geonameId": "2764581"
+      },
+      {
+        "id": "AT.05",
+        "name": "Salzburg",
+        "geonameId": "2766823"
+      },
+      {
+        "id": "AT.04",
+        "name": "Upper Austria",
+        "geonameId": "2769848"
+      },
+      {
+        "id": "AT.03",
+        "name": "Lower Austria",
+        "geonameId": "2770542"
+      },
+      {
+        "id": "AT.02",
+        "name": "Carinthia",
+        "geonameId": "2774686"
+      },
+      {
+        "id": "AT.01",
+        "name": "Burgenland",
+        "geonameId": "2781194"
+      }
+    ],
+    "AZ": [
+      {
+        "id": "AZ.12",
+        "name": "Beyləqan",
+        "geonameId": "146879"
+      },
+      {
+        "id": "AZ.69",
+        "name": "Zangilan District",
+        "geonameId": "146900"
+      },
+      {
+        "id": "AZ.66",
+        "name": "Yardimli District",
+        "geonameId": "146962"
+      },
+      {
+        "id": "AZ.55",
+        "name": "Shusha",
+        "geonameId": "147163"
+      },
+      {
+        "id": "AZ.49",
+        "name": "Salyan District",
+        "geonameId": "147269"
+      },
+      {
+        "id": "AZ.46",
+        "name": "Sabirabad District",
+        "geonameId": "147284"
+      },
+      {
+        "id": "AZ.45",
+        "name": "Saatlı",
+        "geonameId": "147287"
+      },
+      {
+        "id": "AZ.13",
+        "name": "Bilasuvar District",
+        "geonameId": "147310"
+      },
+      {
+        "id": "AZ.36",
+        "name": "Neftçala",
+        "geonameId": "147422"
+      },
+      {
+        "id": "AZ.35",
+        "name": "Nakhchivan",
+        "geonameId": "147435"
+      },
+      {
+        "id": "AZ.32",
+        "name": "Masally",
+        "geonameId": "147551"
+      },
+      {
+        "id": "AZ.31",
+        "name": "Lerik District",
+        "geonameId": "147610"
+      },
+      {
+        "id": "AZ.29",
+        "name": "Lənkəran",
+        "geonameId": "147613"
+      },
+      {
+        "id": "AZ.28",
+        "name": "Lachin Rayon",
+        "geonameId": "147626"
+      },
+      {
+        "id": "AZ.43",
+        "name": "Qubadlı",
+        "geonameId": "147694"
+      },
+      {
+        "id": "AZ.24",
+        "name": "İmişli",
+        "geonameId": "147983"
+      },
+      {
+        "id": "AZ.18",
+        "name": "Fuzuli District",
+        "geonameId": "148107"
+      },
+      {
+        "id": "AZ.14",
+        "name": "Jabrayil",
+        "geonameId": "148140"
+      },
+      {
+        "id": "AZ.15",
+        "name": "Jalilabad",
+        "geonameId": "148155"
+      },
+      {
+        "id": "AZ.08",
+        "name": "Astara",
+        "geonameId": "148442"
+      },
+      {
+        "id": "AZ.64",
+        "name": "Khojaly",
+        "geonameId": "148449"
+      },
+      {
+        "id": "AZ.02",
+        "name": "Ağcabǝdi",
+        "geonameId": "148615"
+      },
+      {
+        "id": "AZ.03",
+        "name": "Ağdam",
+        "geonameId": "148617"
+      },
+      {
+        "id": "AZ.07",
+        "name": "Shirvan",
+        "geonameId": "409417"
+      },
+      {
+        "id": "AZ.30",
+        "name": "Lankaran Sahari",
+        "geonameId": "409418"
+      },
+      {
+        "id": "AZ.56",
+        "name": "Shusha City",
+        "geonameId": "409419"
+      },
+      {
+        "id": "AZ.57",
+        "name": "Tartar District",
+        "geonameId": "409420"
+      },
+      {
+        "id": "AZ.61",
+        "name": "Xankǝndi",
+        "geonameId": "409421"
+      },
+      {
+        "id": "AZ.65",
+        "name": "Khojavend",
+        "geonameId": "409423"
+      },
+      {
+        "id": "AZ.71",
+        "name": "Zardab",
+        "geonameId": "584583"
+      },
+      {
+        "id": "AZ.70",
+        "name": "Zaqatala District",
+        "geonameId": "584604"
+      },
+      {
+        "id": "AZ.67",
+        "name": "Yevlax",
+        "geonameId": "584650"
+      },
+      {
+        "id": "AZ.37",
+        "name": "Oğuz",
+        "geonameId": "584742"
+      },
+      {
+        "id": "AZ.59",
+        "name": "Ucar",
+        "geonameId": "584783"
+      },
+      {
+        "id": "AZ.58",
+        "name": "Tovuz District",
+        "geonameId": "584861"
+      },
+      {
+        "id": "AZ.50",
+        "name": "Şamaxı",
+        "geonameId": "585030"
+      },
+      {
+        "id": "AZ.47",
+        "name": "Shaki",
+        "geonameId": "585031"
+      },
+      {
+        "id": "AZ.51",
+        "name": "Şǝmkir",
+        "geonameId": "585059"
+      },
+      {
+        "id": "AZ.27",
+        "name": "Kurdamir District",
+        "geonameId": "585686"
+      },
+      {
+        "id": "AZ.38",
+        "name": "Qabala District",
+        "geonameId": "585738"
+      },
+      {
+        "id": "AZ.44",
+        "name": "Qusar District",
+        "geonameId": "585749"
+      },
+      {
+        "id": "AZ.42",
+        "name": "Quba",
+        "geonameId": "585786"
+      },
+      {
+        "id": "AZ.62",
+        "name": "Goygol Rayon",
+        "geonameId": "585967"
+      },
+      {
+        "id": "AZ.60",
+        "name": "Xaçmaz",
+        "geonameId": "586001"
+      },
+      {
+        "id": "AZ.26",
+        "name": "Kalbajar",
+        "geonameId": "586047"
+      },
+      {
+        "id": "AZ.40",
+        "name": "Qazax",
+        "geonameId": "586087"
+      },
+      {
+        "id": "AZ.21",
+        "name": "Goranboy District",
+        "geonameId": "586112"
+      },
+      {
+        "id": "AZ.39",
+        "name": "Qax",
+        "geonameId": "586290"
+      },
+      {
+        "id": "AZ.25",
+        "name": "Ismayilli District",
+        "geonameId": "586320"
+      },
+      {
+        "id": "AZ.22",
+        "name": "Göyçay",
+        "geonameId": "586482"
+      },
+      {
+        "id": "AZ.17",
+        "name": "Shabran",
+        "geonameId": "586725"
+      },
+      {
+        "id": "AZ.16",
+        "name": "Daşkǝsǝn",
+        "geonameId": "586771"
+      },
+      {
+        "id": "AZ.10",
+        "name": "Balakan District",
+        "geonameId": "587010"
+      },
+      {
+        "id": "AZ.11",
+        "name": "Barda",
+        "geonameId": "587056"
+      },
+      {
+        "id": "AZ.09",
+        "name": "Baki",
+        "geonameId": "587081"
+      },
+      {
+        "id": "AZ.01",
+        "name": "Abşeron",
+        "geonameId": "587245"
+      },
+      {
+        "id": "AZ.06",
+        "name": "Agsu District",
+        "geonameId": "587342"
+      },
+      {
+        "id": "AZ.04",
+        "name": "Ağdaş",
+        "geonameId": "587376"
+      },
+      {
+        "id": "AZ.19",
+        "name": "Gadabay District",
+        "geonameId": "627535"
+      },
+      {
+        "id": "AZ.05",
+        "name": "Ağstafa",
+        "geonameId": "828297"
+      },
+      {
+        "id": "AZ.20",
+        "name": "Gǝncǝ",
+        "geonameId": "828298"
+      },
+      {
+        "id": "AZ.33",
+        "name": "Mingacevir City",
+        "geonameId": "828299"
+      },
+      {
+        "id": "AZ.34",
+        "name": "Naftalan",
+        "geonameId": "828300"
+      },
+      {
+        "id": "AZ.41",
+        "name": "Qobustan",
+        "geonameId": "828301"
+      },
+      {
+        "id": "AZ.52",
+        "name": "Samux",
+        "geonameId": "828302"
+      },
+      {
+        "id": "AZ.48",
+        "name": "Shaki City",
+        "geonameId": "828303"
+      },
+      {
+        "id": "AZ.53",
+        "name": "Siyǝzǝn",
+        "geonameId": "828304"
+      },
+      {
+        "id": "AZ.54",
+        "name": "Sumqayit",
+        "geonameId": "828305"
+      },
+      {
+        "id": "AZ.63",
+        "name": "Xızı",
+        "geonameId": "828306"
+      },
+      {
+        "id": "AZ.68",
+        "name": "Yevlax City",
+        "geonameId": "828307"
+      },
+      {
+        "id": "AZ.23",
+        "name": "Hacıqabul",
+        "geonameId": "828315"
+      }
+    ],
+    "BY": [
+      {
+        "id": "BY.07",
+        "name": "Vitebsk",
+        "geonameId": "620134"
+      },
+      {
+        "id": "BY.06",
+        "name": "Mogilev",
+        "geonameId": "625073"
+      },
+      {
+        "id": "BY.05",
+        "name": "Minsk",
+        "geonameId": "625142"
+      },
+      {
+        "id": "BY.04",
+        "name": "Minsk City",
+        "geonameId": "625143"
+      },
+      {
+        "id": "BY.03",
+        "name": "Grodnenskaya",
+        "geonameId": "628035"
+      },
+      {
+        "id": "BY.02",
+        "name": "Homyel’ Voblasc’",
+        "geonameId": "628281"
+      },
+      {
+        "id": "BY.01",
+        "name": "Brest",
+        "geonameId": "629631"
+      }
+    ],
+    "BE": [
+      {
+        "id": "BE.BRU",
+        "name": "Brussels Capital",
+        "geonameId": "2800867"
+      },
+      {
+        "id": "BE.WAL",
+        "name": "Wallonia",
+        "geonameId": "3337387"
+      },
+      {
+        "id": "BE.VLG",
+        "name": "Flanders",
+        "geonameId": "3337388"
+      }
+    ],
+    "BA": [
+      {
+        "id": "BA.01",
+        "name": "Federation of B&H",
+        "geonameId": "3229999"
+      },
+      {
+        "id": "BA.02",
+        "name": "Srpska",
+        "geonameId": "3230000"
+      },
+      {
+        "id": "BA.BRC",
+        "name": "Brčko",
+        "geonameId": "3294903"
+      }
+    ],
+    "BG": [
+      {
+        "id": "BG.52",
+        "name": "Razgrad",
+        "geonameId": "453751"
+      },
+      {
+        "id": "BG.47",
+        "name": "Montana",
+        "geonameId": "453753"
+      },
+      {
+        "id": "BG.64",
+        "name": "Vratsa",
+        "geonameId": "725713"
+      },
+      {
+        "id": "BG.61",
+        "name": "Varna",
+        "geonameId": "726051"
+      },
+      {
+        "id": "BG.40",
+        "name": "Dobrich",
+        "geonameId": "726419"
+      },
+      {
+        "id": "BG.58",
+        "name": "Sofia",
+        "geonameId": "727012"
+      },
+      {
+        "id": "BG.53",
+        "name": "Ruse",
+        "geonameId": "727524"
+      },
+      {
+        "id": "BG.51",
+        "name": "Plovdiv",
+        "geonameId": "728194"
+      },
+      {
+        "id": "BG.50",
+        "name": "Pleven",
+        "geonameId": "728204"
+      },
+      {
+        "id": "BG.49",
+        "name": "Pernik",
+        "geonameId": "728331"
+      },
+      {
+        "id": "BG.48",
+        "name": "Pazardzhik",
+        "geonameId": "728379"
+      },
+      {
+        "id": "BG.46",
+        "name": "Lovech",
+        "geonameId": "729560"
+      },
+      {
+        "id": "BG.43",
+        "name": "Haskovo",
+        "geonameId": "730436"
+      },
+      {
+        "id": "BG.42",
+        "name": "Sofia-Capital",
+        "geonameId": "731061"
+      },
+      {
+        "id": "BG.39",
+        "name": "Burgas",
+        "geonameId": "732771"
+      },
+      {
+        "id": "BG.38",
+        "name": "Blagoevgrad",
+        "geonameId": "733192"
+      },
+      {
+        "id": "BG.41",
+        "name": "Gabrovo",
+        "geonameId": "864552"
+      },
+      {
+        "id": "BG.44",
+        "name": "Kardzhali",
+        "geonameId": "864553"
+      },
+      {
+        "id": "BG.45",
+        "name": "Kyustendil",
+        "geonameId": "864554"
+      },
+      {
+        "id": "BG.54",
+        "name": "Shumen",
+        "geonameId": "864555"
+      },
+      {
+        "id": "BG.55",
+        "name": "Silistra",
+        "geonameId": "864556"
+      },
+      {
+        "id": "BG.56",
+        "name": "Sliven",
+        "geonameId": "864557"
+      },
+      {
+        "id": "BG.57",
+        "name": "Smolyan",
+        "geonameId": "864558"
+      },
+      {
+        "id": "BG.59",
+        "name": "Stara Zagora",
+        "geonameId": "864559"
+      },
+      {
+        "id": "BG.60",
+        "name": "Targovishte",
+        "geonameId": "864560"
+      },
+      {
+        "id": "BG.62",
+        "name": "Veliko Tarnovo",
+        "geonameId": "864561"
+      },
+      {
+        "id": "BG.63",
+        "name": "Vidin",
+        "geonameId": "864562"
+      },
+      {
+        "id": "BG.65",
+        "name": "Yambol",
+        "geonameId": "864563"
+      }
+    ],
+    "HR": [
+      {
+        "id": "HR.01",
+        "name": "Bjelovar-Bilogora",
+        "geonameId": "3337511"
+      },
+      {
+        "id": "HR.02",
+        "name": "Brod-Posavina",
+        "geonameId": "3337512"
+      },
+      {
+        "id": "HR.03",
+        "name": "Dubrovnik-Neretva",
+        "geonameId": "3337513"
+      },
+      {
+        "id": "HR.04",
+        "name": "Istria",
+        "geonameId": "3337514"
+      },
+      {
+        "id": "HR.05",
+        "name": "Karlovac",
+        "geonameId": "3337515"
+      },
+      {
+        "id": "HR.06",
+        "name": "Koprivnica-Križevci",
+        "geonameId": "3337518"
+      },
+      {
+        "id": "HR.07",
+        "name": "Krapina-Zagorje",
+        "geonameId": "3337519"
+      },
+      {
+        "id": "HR.08",
+        "name": "Lika-Senj",
+        "geonameId": "3337520"
+      },
+      {
+        "id": "HR.09",
+        "name": "Međimurje",
+        "geonameId": "3337521"
+      },
+      {
+        "id": "HR.10",
+        "name": "County of Osijek-Baranja",
+        "geonameId": "3337522"
+      },
+      {
+        "id": "HR.11",
+        "name": "Požega-Slavonia",
+        "geonameId": "3337523"
+      },
+      {
+        "id": "HR.12",
+        "name": "Primorje-Gorski Kotar",
+        "geonameId": "3337524"
+      },
+      {
+        "id": "HR.13",
+        "name": "Šibenik-Knin",
+        "geonameId": "3337525"
+      },
+      {
+        "id": "HR.14",
+        "name": "Sisak-Moslavina",
+        "geonameId": "3337526"
+      },
+      {
+        "id": "HR.15",
+        "name": "Split-Dalmatia",
+        "geonameId": "3337527"
+      },
+      {
+        "id": "HR.16",
+        "name": "Varaždin",
+        "geonameId": "3337528"
+      },
+      {
+        "id": "HR.18",
+        "name": "Vukovar-Srijem",
+        "geonameId": "3337529"
+      },
+      {
+        "id": "HR.19",
+        "name": "Zadar",
+        "geonameId": "3337530"
+      },
+      {
+        "id": "HR.20",
+        "name": "Zagreb County",
+        "geonameId": "3337531"
+      },
+      {
+        "id": "HR.21",
+        "name": "Zagreb",
+        "geonameId": "3337532"
+      },
+      {
+        "id": "HR.17",
+        "name": "Virovitica-Podravina",
+        "geonameId": "3337533"
+      }
+    ],
+    "CY": [
+      {
+        "id": "CY.06",
+        "name": "Pafos",
+        "geonameId": "146213"
+      },
+      {
+        "id": "CY.04",
+        "name": "Nicosia",
+        "geonameId": "146267"
+      },
+      {
+        "id": "CY.05",
+        "name": "Limassol",
+        "geonameId": "146383"
+      },
+      {
+        "id": "CY.03",
+        "name": "Larnaka",
+        "geonameId": "146398"
+      },
+      {
+        "id": "CY.02",
+        "name": "Keryneia",
+        "geonameId": "146411"
+      },
+      {
+        "id": "CY.01",
+        "name": "Ammochostos",
+        "geonameId": "146615"
+      }
+    ],
+    "CZ": [
+      {
+        "id": "CZ.52",
+        "name": "Prague",
+        "geonameId": "3067695"
+      },
+      {
+        "id": "CZ.78",
+        "name": "South Moravian",
+        "geonameId": "3339536"
+      },
+      {
+        "id": "CZ.79",
+        "name": "South Bohemian Region",
+        "geonameId": "3339537"
+      },
+      {
+        "id": "CZ.80",
+        "name": "Vysocina",
+        "geonameId": "3339538"
+      },
+      {
+        "id": "CZ.81",
+        "name": "Carlsbad Region",
+        "geonameId": "3339539"
+      },
+      {
+        "id": "CZ.82",
+        "name": "Hradec Králové Region",
+        "geonameId": "3339540"
+      },
+      {
+        "id": "CZ.83",
+        "name": "Liberec Region",
+        "geonameId": "3339541"
+      },
+      {
+        "id": "CZ.84",
+        "name": "Olomouc Region",
+        "geonameId": "3339542"
+      },
+      {
+        "id": "CZ.85",
+        "name": "Moravian-Silesian Region",
+        "geonameId": "3339573"
+      },
+      {
+        "id": "CZ.86",
+        "name": "Pardubice Region",
+        "geonameId": "3339574"
+      },
+      {
+        "id": "CZ.87",
+        "name": "Plzeň Region",
+        "geonameId": "3339575"
+      },
+      {
+        "id": "CZ.88",
+        "name": "Central Bohemia",
+        "geonameId": "3339576"
+      },
+      {
+        "id": "CZ.89",
+        "name": "Ústí nad Labem Region",
+        "geonameId": "3339577"
+      },
+      {
+        "id": "CZ.90",
+        "name": "Zlín",
+        "geonameId": "3339578"
+      }
+    ],
+    "DK": [
+      {
+        "id": "DK.17",
+        "name": "Capital Region",
+        "geonameId": "6418538"
+      },
+      {
+        "id": "DK.18",
+        "name": "Central Jutland",
+        "geonameId": "6418539"
+      },
+      {
+        "id": "DK.19",
+        "name": "North Denmark",
+        "geonameId": "6418540"
+      },
+      {
+        "id": "DK.20",
+        "name": "Zealand",
+        "geonameId": "6418541"
+      },
+      {
+        "id": "DK.21",
+        "name": "South Denmark",
+        "geonameId": "6418542"
+      }
+    ],
+    "EE": [
+      {
+        "id": "EE.21",
+        "name": "Võrumaa",
+        "geonameId": "587448"
+      },
+      {
+        "id": "EE.20",
+        "name": "Viljandimaa",
+        "geonameId": "587590"
+      },
+      {
+        "id": "EE.19",
+        "name": "Valgamaa",
+        "geonameId": "587875"
+      },
+      {
+        "id": "EE.18",
+        "name": "Tartu",
+        "geonameId": "588334"
+      },
+      {
+        "id": "EE.14",
+        "name": "Saare",
+        "geonameId": "588879"
+      },
+      {
+        "id": "EE.13",
+        "name": "Raplamaa",
+        "geonameId": "589115"
+      },
+      {
+        "id": "EE.12",
+        "name": "Põlvamaa",
+        "geonameId": "589373"
+      },
+      {
+        "id": "EE.11",
+        "name": "Pärnumaa",
+        "geonameId": "589576"
+      },
+      {
+        "id": "EE.08",
+        "name": "Lääne-Virumaa",
+        "geonameId": "590854"
+      },
+      {
+        "id": "EE.07",
+        "name": "Lääne",
+        "geonameId": "590856"
+      },
+      {
+        "id": "EE.05",
+        "name": "Jõgevamaa",
+        "geonameId": "591901"
+      },
+      {
+        "id": "EE.04",
+        "name": "Järvamaa",
+        "geonameId": "591961"
+      },
+      {
+        "id": "EE.03",
+        "name": "Ida-Virumaa",
+        "geonameId": "592075"
+      },
+      {
+        "id": "EE.02",
+        "name": "Hiiumaa",
+        "geonameId": "592133"
+      },
+      {
+        "id": "EE.01",
+        "name": "Harjumaa",
+        "geonameId": "592170"
+      }
+    ],
+    "FI": [
+      {
+        "id": "FI.19",
+        "name": "Lapland",
+        "geonameId": "830603"
+      },
+      {
+        "id": "FI.18",
+        "name": "Kainuu",
+        "geonameId": "830664"
+      },
+      {
+        "id": "FI.17",
+        "name": "North Ostrobothnia",
+        "geonameId": "830667"
+      },
+      {
+        "id": "FI.16",
+        "name": "Central Ostrobothnia",
+        "geonameId": "830675"
+      },
+      {
+        "id": "FI.15",
+        "name": "Ostrobothnia",
+        "geonameId": "830676"
+      },
+      {
+        "id": "FI.14",
+        "name": "South Ostrobothnia",
+        "geonameId": "830682"
+      },
+      {
+        "id": "FI.13",
+        "name": "Central Finland",
+        "geonameId": "830685"
+      },
+      {
+        "id": "FI.12",
+        "name": "North Karelia",
+        "geonameId": "830686"
+      },
+      {
+        "id": "FI.11",
+        "name": "North Savo",
+        "geonameId": "830690"
+      },
+      {
+        "id": "FI.10",
+        "name": "South Savo",
+        "geonameId": "830695"
+      },
+      {
+        "id": "FI.09",
+        "name": "South Karelia",
+        "geonameId": "830699"
+      },
+      {
+        "id": "FI.08",
+        "name": "Kymenlaakso",
+        "geonameId": "830703"
+      },
+      {
+        "id": "FI.06",
+        "name": "Pirkanmaa",
+        "geonameId": "830704"
+      },
+      {
+        "id": "FI.05",
+        "name": "Kanta-Häme",
+        "geonameId": "830705"
+      },
+      {
+        "id": "FI.02",
+        "name": "Southwest Finland",
+        "geonameId": "830708"
+      },
+      {
+        "id": "FI.01",
+        "name": "Uusimaa",
+        "geonameId": "830709"
+      },
+      {
+        "id": "FI.07",
+        "name": "Paijat-Hame",
+        "geonameId": "831040"
+      },
+      {
+        "id": "FI.04",
+        "name": "Satakunta",
+        "geonameId": "831041"
+      }
+    ],
+    "FR": [
+      {
+        "id": "FR.93",
+        "name": "Provence-Alpes-Côte d'Azur",
+        "geonameId": "2985244"
+      },
+      {
+        "id": "FR.52",
+        "name": "Pays de la Loire",
+        "geonameId": "2988289"
+      },
+      {
+        "id": "FR.11",
+        "name": "Île-de-France",
+        "geonameId": "3012874"
+      },
+      {
+        "id": "FR.94",
+        "name": "Corsica",
+        "geonameId": "3023519"
+      },
+      {
+        "id": "FR.24",
+        "name": "Centre-Val de Loire",
+        "geonameId": "3027939"
+      },
+      {
+        "id": "FR.53",
+        "name": "Brittany",
+        "geonameId": "3030293"
+      },
+      {
+        "id": "FR.27",
+        "name": "Bourgogne-Franche-Comté",
+        "geonameId": "11071619"
+      },
+      {
+        "id": "FR.75",
+        "name": "New Aquitaine",
+        "geonameId": "11071620"
+      },
+      {
+        "id": "FR.28",
+        "name": "Normandy",
+        "geonameId": "11071621"
+      },
+      {
+        "id": "FR.44",
+        "name": "Grand Est",
+        "geonameId": "11071622"
+      },
+      {
+        "id": "FR.76",
+        "name": "Occitanie",
+        "geonameId": "11071623"
+      },
+      {
+        "id": "FR.32",
+        "name": "Hauts-de-France",
+        "geonameId": "11071624"
+      },
+      {
+        "id": "FR.84",
+        "name": "Auvergne-Rhône-Alpes",
+        "geonameId": "11071625"
+      }
+    ],
+    "GE": [
+      {
+        "id": "GE.51",
+        "name": "Tbilisi",
+        "geonameId": "611716"
+      },
+      {
+        "id": "GE.04",
+        "name": "Adjara",
+        "geonameId": "615929"
+      },
+      {
+        "id": "GE.68",
+        "name": "Kvemo Kartli",
+        "geonameId": "865536"
+      },
+      {
+        "id": "GE.67",
+        "name": "Kakheti",
+        "geonameId": "865537"
+      },
+      {
+        "id": "GE.65",
+        "name": "Guria",
+        "geonameId": "865538"
+      },
+      {
+        "id": "GE.66",
+        "name": "Imereti",
+        "geonameId": "865539"
+      },
+      {
+        "id": "GE.73",
+        "name": "Shida Kartli",
+        "geonameId": "865540"
+      },
+      {
+        "id": "GE.69",
+        "name": "Mtskheta-Mtianeti",
+        "geonameId": "865541"
+      },
+      {
+        "id": "GE.70",
+        "name": "Racha-Lechkhumi and Kvemo Svaneti",
+        "geonameId": "865542"
+      },
+      {
+        "id": "GE.71",
+        "name": "Samegrelo and Zemo Svaneti",
+        "geonameId": "865543"
+      },
+      {
+        "id": "GE.72",
+        "name": "Samtskhe-Javakheti",
+        "geonameId": "865544"
+      },
+      {
+        "id": "GE.02",
+        "name": "Abkhazia",
+        "geonameId": "6643410"
+      }
+    ],
+    "DE": [
+      {
+        "id": "DE.15",
+        "name": "Thuringia",
+        "geonameId": "2822542"
+      },
+      {
+        "id": "DE.10",
+        "name": "Schleswig-Holstein",
+        "geonameId": "2838632"
+      },
+      {
+        "id": "DE.14",
+        "name": "Saxony-Anhalt",
+        "geonameId": "2842565"
+      },
+      {
+        "id": "DE.13",
+        "name": "Saxony",
+        "geonameId": "2842566"
+      },
+      {
+        "id": "DE.09",
+        "name": "Saarland",
+        "geonameId": "2842635"
+      },
+      {
+        "id": "DE.08",
+        "name": "Rheinland-Pfalz",
+        "geonameId": "2847618"
+      },
+      {
+        "id": "DE.07",
+        "name": "North Rhine-Westphalia",
+        "geonameId": "2861876"
+      },
+      {
+        "id": "DE.06",
+        "name": "Lower Saxony",
+        "geonameId": "2862926"
+      },
+      {
+        "id": "DE.12",
+        "name": "Mecklenburg-Vorpommern",
+        "geonameId": "2872567"
+      },
+      {
+        "id": "DE.05",
+        "name": "Hesse",
+        "geonameId": "2905330"
+      },
+      {
+        "id": "DE.04",
+        "name": "Hamburg",
+        "geonameId": "2911297"
+      },
+      {
+        "id": "DE.03",
+        "name": "Bremen",
+        "geonameId": "2944387"
+      },
+      {
+        "id": "DE.11",
+        "name": "Brandenburg",
+        "geonameId": "2945356"
+      },
+      {
+        "id": "DE.16",
+        "name": "State of Berlin",
+        "geonameId": "2950157"
+      },
+      {
+        "id": "DE.02",
+        "name": "Bavaria",
+        "geonameId": "2951839"
+      },
+      {
+        "id": "DE.01",
+        "name": "Baden-Wurttemberg",
+        "geonameId": "2953481"
+      }
+    ],
+    "GR": [
+      {
+        "id": "GR.736572",
+        "name": "Mount Athos",
+        "geonameId": "736572"
+      },
+      {
+        "id": "GR.ESYE31",
+        "name": "Attica",
+        "geonameId": "6692632"
+      },
+      {
+        "id": "GR.ESYE24",
+        "name": "Central Greece",
+        "geonameId": "6697800"
+      },
+      {
+        "id": "GR.ESYE12",
+        "name": "Central Macedonia",
+        "geonameId": "6697801"
+      },
+      {
+        "id": "GR.ESYE43",
+        "name": "Crete",
+        "geonameId": "6697802"
+      },
+      {
+        "id": "GR.ESYE11",
+        "name": "East Macedonia and Thrace",
+        "geonameId": "6697803"
+      },
+      {
+        "id": "GR.ESYE21",
+        "name": "Epirus",
+        "geonameId": "6697804"
+      },
+      {
+        "id": "GR.ESYE22",
+        "name": "Ionian Islands",
+        "geonameId": "6697805"
+      },
+      {
+        "id": "GR.ESYE41",
+        "name": "North Aegean",
+        "geonameId": "6697806"
+      },
+      {
+        "id": "GR.ESYE25",
+        "name": "Peloponnese",
+        "geonameId": "6697807"
+      },
+      {
+        "id": "GR.ESYE42",
+        "name": "South Aegean",
+        "geonameId": "6697808"
+      },
+      {
+        "id": "GR.ESYE14",
+        "name": "Thessaly",
+        "geonameId": "6697809"
+      },
+      {
+        "id": "GR.ESYE23",
+        "name": "West Greece",
+        "geonameId": "6697810"
+      },
+      {
+        "id": "GR.ESYE13",
+        "name": "West Macedonia",
+        "geonameId": "6697811"
+      }
+    ],
+    "HU": [
+      {
+        "id": "HU-0",
+        "name": "Bács-Kiskun"
+      },
+      {
+        "id": "HU-1",
+        "name": "Baranya"
+      },
+      {
+        "id": "HU-2",
+        "name": "Békés"
+      },
+      {
+        "id": "HU-3",
+        "name": "Borsod-Abaúj-Zemplén"
+      },
+      {
+        "id": "HU-4",
+        "name": "Csongrád-Csanád"
+      },
+      {
+        "id": "HU-5",
+        "name": "Fejér"
+      },
+      {
+        "id": "HU-6",
+        "name": "Győr-Moson-Sopron"
+      },
+      {
+        "id": "HU-7",
+        "name": "Hajdú-Bihar"
+      },
+      {
+        "id": "HU-8",
+        "name": "Heves"
+      },
+      {
+        "id": "HU-9",
+        "name": "Jász-Nagykun-Szolnok"
+      },
+      {
+        "id": "HU-10",
+        "name": "Komárom-Esztergom"
+      },
+      {
+        "id": "HU-11",
+        "name": "Nógrád"
+      },
+      {
+        "id": "HU-12",
+        "name": "Pest"
+      },
+      {
+        "id": "HU-13",
+        "name": "Somogy"
+      },
+      {
+        "id": "HU-14",
+        "name": "Szabolcs-Szatmár-Bereg"
+      },
+      {
+        "id": "HU-15",
+        "name": "Tolna"
+      },
+      {
+        "id": "HU-16",
+        "name": "Vas"
+      },
+      {
+        "id": "HU-17",
+        "name": "Veszprém"
+      },
+      {
+        "id": "HU-18",
+        "name": "Zala"
+      },
+      {
+        "id": "HU-19",
+        "name": "Budapest"
+      }
+    ],
+    "IS": [
+      {
+        "id": "IS.41",
+        "name": "Northwest",
+        "geonameId": "3337403"
+      },
+      {
+        "id": "IS.40",
+        "name": "Northeast",
+        "geonameId": "3337404"
+      },
+      {
+        "id": "IS.38",
+        "name": "East",
+        "geonameId": "3337405"
+      },
+      {
+        "id": "IS.42",
+        "name": "South",
+        "geonameId": "3337406"
+      },
+      {
+        "id": "IS.39",
+        "name": "Capital Region",
+        "geonameId": "3426182"
+      },
+      {
+        "id": "IS.43",
+        "name": "Southern Peninsula",
+        "geonameId": "3426183"
+      },
+      {
+        "id": "IS.45",
+        "name": "West",
+        "geonameId": "3426184"
+      },
+      {
+        "id": "IS.44",
+        "name": "Westfjords",
+        "geonameId": "3426185"
+      }
+    ],
+    "IE": [
+      {
+        "id": "IE.C",
+        "name": "Connacht",
+        "geonameId": "7521313"
+      },
+      {
+        "id": "IE.L",
+        "name": "Leinster",
+        "geonameId": "7521314"
+      },
+      {
+        "id": "IE.M",
+        "name": "Munster",
+        "geonameId": "7521315"
+      },
+      {
+        "id": "IE.U",
+        "name": "Ulster",
+        "geonameId": "7521316"
+      }
+    ],
+    "IT": [
+      {
+        "id": "IT.15",
+        "name": "Sicily",
+        "geonameId": "2523119"
+      },
+      {
+        "id": "IT.14",
+        "name": "Sardinia",
+        "geonameId": "2523228"
+      },
+      {
+        "id": "IT.03",
+        "name": "Calabria",
+        "geonameId": "2525468"
+      },
+      {
+        "id": "IT.20",
+        "name": "Veneto",
+        "geonameId": "3164604"
+      },
+      {
+        "id": "IT.19",
+        "name": "Aosta Valley",
+        "geonameId": "3164857"
+      },
+      {
+        "id": "IT.18",
+        "name": "Umbria",
+        "geonameId": "3165048"
+      },
+      {
+        "id": "IT.17",
+        "name": "Trentino-Alto Adige",
+        "geonameId": "3165244"
+      },
+      {
+        "id": "IT.16",
+        "name": "Tuscany",
+        "geonameId": "3165361"
+      },
+      {
+        "id": "IT.13",
+        "name": "Apulia",
+        "geonameId": "3169778"
+      },
+      {
+        "id": "IT.12",
+        "name": "Piedmont",
+        "geonameId": "3170831"
+      },
+      {
+        "id": "IT.11",
+        "name": "Molise",
+        "geonameId": "3173222"
+      },
+      {
+        "id": "IT.10",
+        "name": "The Marches",
+        "geonameId": "3174004"
+      },
+      {
+        "id": "IT.09",
+        "name": "Lombardy",
+        "geonameId": "3174618"
+      },
+      {
+        "id": "IT.08",
+        "name": "Liguria",
+        "geonameId": "3174725"
+      },
+      {
+        "id": "IT.07",
+        "name": "Lazio",
+        "geonameId": "3174976"
+      },
+      {
+        "id": "IT.06",
+        "name": "Friuli Venezia Giulia",
+        "geonameId": "3176525"
+      },
+      {
+        "id": "IT.05",
+        "name": "Emilia-Romagna",
+        "geonameId": "3177401"
+      },
+      {
+        "id": "IT.04",
+        "name": "Campania",
+        "geonameId": "3181042"
+      },
+      {
+        "id": "IT.02",
+        "name": "Basilicate",
+        "geonameId": "3182306"
+      },
+      {
+        "id": "IT.01",
+        "name": "Abruzzo",
+        "geonameId": "3183560"
+      }
+    ],
+    "XK": [
+      {
+        "id": "XK.10096138",
+        "name": "Ferizaj",
+        "geonameId": "10096138"
+      },
+      {
+        "id": "XK.10096859",
+        "name": "Gjakova",
+        "geonameId": "10096859"
+      },
+      {
+        "id": "XK.10097357",
+        "name": "Gjilan",
+        "geonameId": "10097357"
+      },
+      {
+        "id": "XK.10097358",
+        "name": "Mitrovica",
+        "geonameId": "10097358"
+      },
+      {
+        "id": "XK.10097359",
+        "name": "Pec",
+        "geonameId": "10097359"
+      },
+      {
+        "id": "XK.10097360",
+        "name": "Pristina",
+        "geonameId": "10097360"
+      },
+      {
+        "id": "XK.10097361",
+        "name": "Prizren",
+        "geonameId": "10097361"
+      }
+    ],
+    "LV": [
+      {
+        "id": "LV.33",
+        "name": "Ventspils Municipality",
+        "geonameId": "454307"
+      },
+      {
+        "id": "LV.32",
+        "name": "Ventspils",
+        "geonameId": "454311"
+      },
+      {
+        "id": "LV.31",
+        "name": "Valmiera",
+        "geonameId": "454564"
+      },
+      {
+        "id": "LV.30",
+        "name": "Valka",
+        "geonameId": "454571"
+      },
+      {
+        "id": "LV.29",
+        "name": "Tukums Municipality",
+        "geonameId": "454771"
+      },
+      {
+        "id": "LV.28",
+        "name": "Talsu novads",
+        "geonameId": "454968"
+      },
+      {
+        "id": "LV.27",
+        "name": "Saldus Rajons",
+        "geonameId": "455888"
+      },
+      {
+        "id": "LV.25",
+        "name": "Riga",
+        "geonameId": "456173"
+      },
+      {
+        "id": "LV.24",
+        "name": "Rēzekne Municipality",
+        "geonameId": "456197"
+      },
+      {
+        "id": "LV.23",
+        "name": "Rēzekne",
+        "geonameId": "456203"
+      },
+      {
+        "id": "LV.22",
+        "name": "Preiļu novads",
+        "geonameId": "456528"
+      },
+      {
+        "id": "LV.21",
+        "name": "Ogre",
+        "geonameId": "457061"
+      },
+      {
+        "id": "LV.20",
+        "name": "Madonas novads",
+        "geonameId": "457712"
+      },
+      {
+        "id": "LV.19",
+        "name": "Ludza Municipality",
+        "geonameId": "457773"
+      },
+      {
+        "id": "LV.18",
+        "name": "Limbaži Municipality",
+        "geonameId": "457889"
+      },
+      {
+        "id": "LV.16",
+        "name": "Liepaja",
+        "geonameId": "457955"
+      },
+      {
+        "id": "LV.15",
+        "name": "Kuldīga Municipality",
+        "geonameId": "458459"
+      },
+      {
+        "id": "LV.14",
+        "name": "Krāslava Municipality",
+        "geonameId": "458621"
+      },
+      {
+        "id": "LV.13",
+        "name": "Jūrmala",
+        "geonameId": "459202"
+      },
+      {
+        "id": "LV.12",
+        "name": "Jelgava Municipality",
+        "geonameId": "459278"
+      },
+      {
+        "id": "LV.11",
+        "name": "Jelgava",
+        "geonameId": "459281"
+      },
+      {
+        "id": "LV.10",
+        "name": "Jēkabpils Municipality",
+        "geonameId": "459282"
+      },
+      {
+        "id": "LV.09",
+        "name": "Gulbene Municipality",
+        "geonameId": "459664"
+      },
+      {
+        "id": "LV.08",
+        "name": "Dobele Municipality",
+        "geonameId": "460311"
+      },
+      {
+        "id": "LV.06",
+        "name": "Daugavpils",
+        "geonameId": "460414"
+      },
+      {
+        "id": "LV.05",
+        "name": "Cēsis Municipality",
+        "geonameId": "460569"
+      },
+      {
+        "id": "LV.04",
+        "name": "Bauska Municipality",
+        "geonameId": "461112"
+      },
+      {
+        "id": "LV.03",
+        "name": "Balvi Municipality",
+        "geonameId": "461160"
+      },
+      {
+        "id": "LV.02",
+        "name": "Alūksne Municipality",
+        "geonameId": "461525"
+      },
+      {
+        "id": "LV.01",
+        "name": "Aizkraukle Municipality",
+        "geonameId": "461613"
+      },
+      {
+        "id": "LV.95",
+        "name": "Mārupe",
+        "geonameId": "7628319"
+      },
+      {
+        "id": "LV.A2",
+        "name": "Olaine",
+        "geonameId": "7628320"
+      },
+      {
+        "id": "LV.80",
+        "name": "Ķekava",
+        "geonameId": "7628322"
+      },
+      {
+        "id": "LV.C3",
+        "name": "Salaspils Municipality",
+        "geonameId": "7628323"
+      },
+      {
+        "id": "LV.34",
+        "name": "Ādaži",
+        "geonameId": "7628327"
+      },
+      {
+        "id": "LV.90",
+        "name": "Līvāni",
+        "geonameId": "7628341"
+      },
+      {
+        "id": "LV.E1",
+        "name": "Varakļāni Municipality",
+        "geonameId": "7628342"
+      },
+      {
+        "id": "LV.B5",
+        "name": "Ropaži Municipality",
+        "geonameId": "7628359"
+      },
+      {
+        "id": "LV.C7",
+        "name": "Sigulda Municipality",
+        "geonameId": "7628362"
+      },
+      {
+        "id": "LV.C5",
+        "name": "Saulkrasti Municipality",
+        "geonameId": "7628366"
+      },
+      {
+        "id": "LV.D1",
+        "name": "Smiltene Municipality",
+        "geonameId": "7628380"
+      },
+      {
+        "id": "LV.DN",
+        "name": "South Kurzeme Municipality",
+        "geonameId": "12276857"
+      },
+      {
+        "id": "LV.AN",
+        "name": "Augšdaugava Municipality",
+        "geonameId": "12276858"
+      }
+    ],
+    "LI": [
+      {
+        "id": "LI.11",
+        "name": "Vaduz",
+        "geonameId": "3042031"
+      },
+      {
+        "id": "LI.10",
+        "name": "Triesenberg",
+        "geonameId": "3042034"
+      },
+      {
+        "id": "LI.09",
+        "name": "Triesen",
+        "geonameId": "3042036"
+      },
+      {
+        "id": "LI.08",
+        "name": "Schellenberg",
+        "geonameId": "3042038"
+      },
+      {
+        "id": "LI.07",
+        "name": "Schaan",
+        "geonameId": "3042042"
+      },
+      {
+        "id": "LI.06",
+        "name": "Ruggell",
+        "geonameId": "3042047"
+      },
+      {
+        "id": "LI.05",
+        "name": "Planken",
+        "geonameId": "3042050"
+      },
+      {
+        "id": "LI.04",
+        "name": "Mauren",
+        "geonameId": "3042056"
+      },
+      {
+        "id": "LI.03",
+        "name": "Gamprin",
+        "geonameId": "3042063"
+      },
+      {
+        "id": "LI.02",
+        "name": "Eschen",
+        "geonameId": "3042069"
+      },
+      {
+        "id": "LI.01",
+        "name": "Balzers",
+        "geonameId": "3042074"
+      }
+    ],
+    "LT": [
+      {
+        "id": "LT.56",
+        "name": "Alytus",
+        "geonameId": "864389"
+      },
+      {
+        "id": "LT.57",
+        "name": "Kaunas",
+        "geonameId": "864477"
+      },
+      {
+        "id": "LT.58",
+        "name": "Klaipėda County",
+        "geonameId": "864478"
+      },
+      {
+        "id": "LT.59",
+        "name": "Marijampolė County",
+        "geonameId": "864479"
+      },
+      {
+        "id": "LT.60",
+        "name": "Panevėžys",
+        "geonameId": "864480"
+      },
+      {
+        "id": "LT.61",
+        "name": "Siauliai",
+        "geonameId": "864481"
+      },
+      {
+        "id": "LT.62",
+        "name": "Tauragė County",
+        "geonameId": "864482"
+      },
+      {
+        "id": "LT.63",
+        "name": "Telsiai",
+        "geonameId": "864483"
+      },
+      {
+        "id": "LT.64",
+        "name": "Utena",
+        "geonameId": "864484"
+      },
+      {
+        "id": "LT.65",
+        "name": "Vilnius",
+        "geonameId": "864485"
+      }
+    ],
+    "LU": [
+      {
+        "id": "LU.WI",
+        "name": "Wiltz",
+        "geonameId": "2959975"
+      },
+      {
+        "id": "LU.VD",
+        "name": "Vianden",
+        "geonameId": "2960020"
+      },
+      {
+        "id": "LU.RM",
+        "name": "Remich",
+        "geonameId": "2960152"
+      },
+      {
+        "id": "LU.RD",
+        "name": "Redange",
+        "geonameId": "2960161"
+      },
+      {
+        "id": "LU.ME",
+        "name": "Mersch",
+        "geonameId": "2960275"
+      },
+      {
+        "id": "LU.LU",
+        "name": "Luxembourg",
+        "geonameId": "2960315"
+      },
+      {
+        "id": "LU.GR",
+        "name": "Grevenmacher",
+        "geonameId": "2960514"
+      },
+      {
+        "id": "LU.ES",
+        "name": "Esch-sur-Alzette",
+        "geonameId": "2960599"
+      },
+      {
+        "id": "LU.EC",
+        "name": "Echternach",
+        "geonameId": "2960629"
+      },
+      {
+        "id": "LU.DI",
+        "name": "Diekirch",
+        "geonameId": "2960656"
+      },
+      {
+        "id": "LU.CL",
+        "name": "Clervaux",
+        "geonameId": "2960683"
+      },
+      {
+        "id": "LU.CA",
+        "name": "Capellen",
+        "geonameId": "2960696"
+      }
+    ],
+    "MT": [
+      {
+        "id": "MT.01",
+        "name": "Attard",
+        "geonameId": "8299700"
+      },
+      {
+        "id": "MT.02",
+        "name": "Balzan",
+        "geonameId": "8299701"
+      },
+      {
+        "id": "MT.03",
+        "name": "Il-Birgu",
+        "geonameId": "8299702"
+      },
+      {
+        "id": "MT.04",
+        "name": "Birkirkara",
+        "geonameId": "8299703"
+      },
+      {
+        "id": "MT.05",
+        "name": "Birżebbuġa",
+        "geonameId": "8299704"
+      },
+      {
+        "id": "MT.06",
+        "name": "Bormla",
+        "geonameId": "8299705"
+      },
+      {
+        "id": "MT.07",
+        "name": "Dingli",
+        "geonameId": "8299706"
+      },
+      {
+        "id": "MT.08",
+        "name": "Il-Fgura",
+        "geonameId": "8299707"
+      },
+      {
+        "id": "MT.09",
+        "name": "Floriana",
+        "geonameId": "8299708"
+      },
+      {
+        "id": "MT.10",
+        "name": "Il-Fontana",
+        "geonameId": "8299709"
+      },
+      {
+        "id": "MT.11",
+        "name": "Ghajnsielem",
+        "geonameId": "8299710"
+      },
+      {
+        "id": "MT.12",
+        "name": "L-Għarb",
+        "geonameId": "8299711"
+      },
+      {
+        "id": "MT.13",
+        "name": "Ħal Għargħur",
+        "geonameId": "8299712"
+      },
+      {
+        "id": "MT.14",
+        "name": "L-Għasri",
+        "geonameId": "8299713"
+      },
+      {
+        "id": "MT.15",
+        "name": "Ħal Għaxaq",
+        "geonameId": "8299714"
+      },
+      {
+        "id": "MT.16",
+        "name": "Il-Gudja",
+        "geonameId": "8299715"
+      },
+      {
+        "id": "MT.17",
+        "name": "Il-Gżira",
+        "geonameId": "8299716"
+      },
+      {
+        "id": "MT.18",
+        "name": "Il-Ħamrun",
+        "geonameId": "8299717"
+      },
+      {
+        "id": "MT.19",
+        "name": "L-Iklin",
+        "geonameId": "8299718"
+      },
+      {
+        "id": "MT.20",
+        "name": "L-Imdina",
+        "geonameId": "8299719"
+      },
+      {
+        "id": "MT.21",
+        "name": "L-Imġarr",
+        "geonameId": "8299720"
+      },
+      {
+        "id": "MT.22",
+        "name": "L-Imqabba",
+        "geonameId": "8299721"
+      },
+      {
+        "id": "MT.23",
+        "name": "L-Imsida",
+        "geonameId": "8299722"
+      },
+      {
+        "id": "MT.24",
+        "name": "Mtarfa",
+        "geonameId": "8299723"
+      },
+      {
+        "id": "MT.25",
+        "name": "Senglea",
+        "geonameId": "8299724"
+      },
+      {
+        "id": "MT.26",
+        "name": "Il-Kalkara",
+        "geonameId": "8299725"
+      },
+      {
+        "id": "MT.27",
+        "name": "Ta’ Kerċem",
+        "geonameId": "8299726"
+      },
+      {
+        "id": "MT.28",
+        "name": "Kirkop",
+        "geonameId": "8299727"
+      },
+      {
+        "id": "MT.29",
+        "name": "Lija",
+        "geonameId": "8299728"
+      },
+      {
+        "id": "MT.30",
+        "name": "Luqa",
+        "geonameId": "8299729"
+      },
+      {
+        "id": "MT.31",
+        "name": "Il-Marsa",
+        "geonameId": "8299730"
+      },
+      {
+        "id": "MT.32",
+        "name": "Marsaskala",
+        "geonameId": "8299731"
+      },
+      {
+        "id": "MT.33",
+        "name": "Marsaxlokk",
+        "geonameId": "8299732"
+      },
+      {
+        "id": "MT.34",
+        "name": "Il-Mellieħa",
+        "geonameId": "8299733"
+      },
+      {
+        "id": "MT.35",
+        "name": "Il-Mosta",
+        "geonameId": "8299734"
+      },
+      {
+        "id": "MT.36",
+        "name": "Il-Munxar",
+        "geonameId": "8299735"
+      },
+      {
+        "id": "MT.37",
+        "name": "In-Nadur",
+        "geonameId": "8299736"
+      },
+      {
+        "id": "MT.38",
+        "name": "In-Naxxar",
+        "geonameId": "8299737"
+      },
+      {
+        "id": "MT.39",
+        "name": "Paola",
+        "geonameId": "8299738"
+      },
+      {
+        "id": "MT.40",
+        "name": "Pembroke",
+        "geonameId": "8299739"
+      },
+      {
+        "id": "MT.41",
+        "name": "Tal-Pietà",
+        "geonameId": "8299740"
+      },
+      {
+        "id": "MT.42",
+        "name": "Il-Qala",
+        "geonameId": "8299741"
+      },
+      {
+        "id": "MT.43",
+        "name": "Qormi",
+        "geonameId": "8299742"
+      },
+      {
+        "id": "MT.44",
+        "name": "Il-Qrendi",
+        "geonameId": "8299743"
+      },
+      {
+        "id": "MT.45",
+        "name": "Ir-Rabat",
+        "geonameId": "8299744"
+      },
+      {
+        "id": "MT.46",
+        "name": "Victoria",
+        "geonameId": "8299745"
+      },
+      {
+        "id": "MT.47",
+        "name": "Safi",
+        "geonameId": "8299746"
+      },
+      {
+        "id": "MT.48",
+        "name": "Saint John",
+        "geonameId": "8299747"
+      },
+      {
+        "id": "MT.49",
+        "name": "Saint Julian",
+        "geonameId": "8299748"
+      },
+      {
+        "id": "MT.50",
+        "name": "Saint Lawrence",
+        "geonameId": "8299749"
+      },
+      {
+        "id": "MT.51",
+        "name": "Saint Lucia",
+        "geonameId": "8299750"
+      },
+      {
+        "id": "MT.52",
+        "name": "Saint Paul’s Bay",
+        "geonameId": "8299751"
+      },
+      {
+        "id": "MT.53",
+        "name": "Saint Venera",
+        "geonameId": "8299752"
+      },
+      {
+        "id": "MT.54",
+        "name": "Sannat",
+        "geonameId": "8299753"
+      },
+      {
+        "id": "MT.55",
+        "name": "Is-Siġġiewi",
+        "geonameId": "8299754"
+      },
+      {
+        "id": "MT.56",
+        "name": "Tas-Sliema",
+        "geonameId": "8299755"
+      },
+      {
+        "id": "MT.57",
+        "name": "Is-Swieqi",
+        "geonameId": "8299756"
+      },
+      {
+        "id": "MT.58",
+        "name": "Tarxien",
+        "geonameId": "8299757"
+      },
+      {
+        "id": "MT.59",
+        "name": "Ta’ Xbiex",
+        "geonameId": "8299758"
+      },
+      {
+        "id": "MT.61",
+        "name": "Ix-Xagħra",
+        "geonameId": "8299759"
+      },
+      {
+        "id": "MT.62",
+        "name": "Ix-Xewkija",
+        "geonameId": "8299760"
+      },
+      {
+        "id": "MT.63",
+        "name": "Ix-Xgħajra",
+        "geonameId": "8299761"
+      },
+      {
+        "id": "MT.64",
+        "name": "Ħaż-Żabbar",
+        "geonameId": "8299762"
+      },
+      {
+        "id": "MT.65",
+        "name": "Ħaż-Żebbuġ",
+        "geonameId": "8299763"
+      },
+      {
+        "id": "MT.66",
+        "name": "Iż-Żebbuġ",
+        "geonameId": "8299764"
+      },
+      {
+        "id": "MT.67",
+        "name": "Iż-Żejtun",
+        "geonameId": "8299765"
+      },
+      {
+        "id": "MT.68",
+        "name": "Iż-Żurrieq",
+        "geonameId": "8299766"
+      },
+      {
+        "id": "MT.60",
+        "name": "Valletta",
+        "geonameId": "8334638"
+      }
+    ],
+    "MD": [
+      {
+        "id": "MD.73",
+        "name": "Raionul Edineţ",
+        "geonameId": "617077"
+      },
+      {
+        "id": "MD.92",
+        "name": "Ungheni",
+        "geonameId": "617181"
+      },
+      {
+        "id": "MD.91",
+        "name": "Teleneşti",
+        "geonameId": "617255"
+      },
+      {
+        "id": "MD.90",
+        "name": "Taraclia",
+        "geonameId": "617264"
+      },
+      {
+        "id": "MD.88",
+        "name": "Stefan-Voda",
+        "geonameId": "617283"
+      },
+      {
+        "id": "MD.89",
+        "name": "Strășeni",
+        "geonameId": "617301"
+      },
+      {
+        "id": "MD.87",
+        "name": "Soroca District",
+        "geonameId": "617366"
+      },
+      {
+        "id": "MD.84",
+        "name": "Rîşcani",
+        "geonameId": "617483"
+      },
+      {
+        "id": "MD.83",
+        "name": "Rezina",
+        "geonameId": "617501"
+      },
+      {
+        "id": "MD.82",
+        "name": "Orhei",
+        "geonameId": "617639"
+      },
+      {
+        "id": "MD.81",
+        "name": "Raionul Ocniţa",
+        "geonameId": "617656"
+      },
+      {
+        "id": "MD.59",
+        "name": "Anenii Noi",
+        "geonameId": "617715"
+      },
+      {
+        "id": "MD.80",
+        "name": "Nisporeni",
+        "geonameId": "617754"
+      },
+      {
+        "id": "MD.79",
+        "name": "Leova",
+        "geonameId": "617903"
+      },
+      {
+        "id": "MD.85",
+        "name": "Sîngerei",
+        "geonameId": "617913"
+      },
+      {
+        "id": "MD.69",
+        "name": "Criuleni",
+        "geonameId": "617962"
+      },
+      {
+        "id": "MD.78",
+        "name": "Ialoveni",
+        "geonameId": "617991"
+      },
+      {
+        "id": "MD.57",
+        "name": "Chișinău Municipality",
+        "geonameId": "618069"
+      },
+      {
+        "id": "MD.67",
+        "name": "Căuşeni",
+        "geonameId": "618119"
+      },
+      {
+        "id": "MD.65",
+        "name": "Cantemir",
+        "geonameId": "618142"
+      },
+      {
+        "id": "MD.66",
+        "name": "Călăraşi",
+        "geonameId": "618162"
+      },
+      {
+        "id": "MD.64",
+        "name": "Cahul",
+        "geonameId": "618164"
+      },
+      {
+        "id": "MD.76",
+        "name": "Glodeni",
+        "geonameId": "618260"
+      },
+      {
+        "id": "MD.75",
+        "name": "Floreşti",
+        "geonameId": "618331"
+      },
+      {
+        "id": "MD.74",
+        "name": "Fălești",
+        "geonameId": "618345"
+      },
+      {
+        "id": "MD.72",
+        "name": "Dubăsari District",
+        "geonameId": "618363"
+      },
+      {
+        "id": "MD.71",
+        "name": "Drochia",
+        "geonameId": "618369"
+      },
+      {
+        "id": "MD.70",
+        "name": "Donduşeni",
+        "geonameId": "618381"
+      },
+      {
+        "id": "MD.68",
+        "name": "Cimişlia",
+        "geonameId": "618430"
+      },
+      {
+        "id": "MD.63",
+        "name": "Briceni",
+        "geonameId": "618511"
+      },
+      {
+        "id": "MD.61",
+        "name": "Basarabeasca",
+        "geonameId": "618565"
+      },
+      {
+        "id": "MD.77",
+        "name": "Hînceşti",
+        "geonameId": "858803"
+      },
+      {
+        "id": "MD.86",
+        "name": "Şoldăneşti",
+        "geonameId": "858808"
+      },
+      {
+        "id": "MD.58",
+        "name": "Transnistria",
+        "geonameId": "858889"
+      },
+      {
+        "id": "MD.51",
+        "name": "Gagauzia",
+        "geonameId": "858895"
+      },
+      {
+        "id": "MD.62",
+        "name": "Bender Municipality",
+        "geonameId": "861487"
+      },
+      {
+        "id": "MD.60",
+        "name": "Bălţi",
+        "geonameId": "873909"
+      }
+    ],
+    "MC": [
+      {
+        "id": "MC.00",
+        "name": "Municipality of Monaco",
+        "geonameId": "3319178"
+      }
+    ],
+    "ME": [
+      {
+        "id": "ME.17",
+        "name": "Rožaje Municipality",
+        "geonameId": "786233"
+      },
+      {
+        "id": "ME.21",
+        "name": "Opština Žabljak",
+        "geonameId": "3186995"
+      },
+      {
+        "id": "ME.20",
+        "name": "Ulcinj",
+        "geonameId": "3188514"
+      },
+      {
+        "id": "ME.19",
+        "name": "Tivat",
+        "geonameId": "3189071"
+      },
+      {
+        "id": "ME.16",
+        "name": "Podgorica",
+        "geonameId": "3189077"
+      },
+      {
+        "id": "ME.18",
+        "name": "Opština Šavnik",
+        "geonameId": "3191221"
+      },
+      {
+        "id": "ME.15",
+        "name": "Opština Plužine",
+        "geonameId": "3193129"
+      },
+      {
+        "id": "ME.14",
+        "name": "Pljevlja",
+        "geonameId": "3193160"
+      },
+      {
+        "id": "ME.13",
+        "name": "Opština Plav",
+        "geonameId": "3193227"
+      },
+      {
+        "id": "ME.12",
+        "name": "Opština Nikšić",
+        "geonameId": "3194493"
+      },
+      {
+        "id": "ME.11",
+        "name": "Mojkovac",
+        "geonameId": "3194925"
+      },
+      {
+        "id": "ME.10",
+        "name": "Kotor",
+        "geonameId": "3197537"
+      },
+      {
+        "id": "ME.09",
+        "name": "Opština Kolašin",
+        "geonameId": "3197895"
+      },
+      {
+        "id": "ME.03",
+        "name": "Berane",
+        "geonameId": "3199070"
+      },
+      {
+        "id": "ME.08",
+        "name": "Herceg Novi",
+        "geonameId": "3199393"
+      },
+      {
+        "id": "ME.07",
+        "name": "Danilovgrad",
+        "geonameId": "3202193"
+      },
+      {
+        "id": "ME.06",
+        "name": "Cetinje",
+        "geonameId": "3202640"
+      },
+      {
+        "id": "ME.05",
+        "name": "Budva",
+        "geonameId": "3203104"
+      },
+      {
+        "id": "ME.04",
+        "name": "Bijelo Polje",
+        "geonameId": "3204173"
+      },
+      {
+        "id": "ME.02",
+        "name": "Bar",
+        "geonameId": "3204508"
+      },
+      {
+        "id": "ME.01",
+        "name": "Andrijevica",
+        "geonameId": "3343959"
+      },
+      {
+        "id": "ME.22",
+        "name": "Gusinje Municipality",
+        "geonameId": "11497642"
+      },
+      {
+        "id": "ME.23",
+        "name": "Petnjica Municipality",
+        "geonameId": "11497643"
+      },
+      {
+        "id": "ME.24",
+        "name": "Tuzi Municipality",
+        "geonameId": "12104729"
+      },
+      {
+        "id": "ME.25",
+        "name": "Zeta",
+        "geonameId": "12640530"
+      }
+    ],
+    "NL": [
+      {
+        "id": "NL.11",
+        "name": "South Holland",
+        "geonameId": "2743698"
+      },
+      {
+        "id": "NL.10",
+        "name": "Zeeland",
+        "geonameId": "2744011"
+      },
+      {
+        "id": "NL.09",
+        "name": "Utrecht",
+        "geonameId": "2745909"
+      },
+      {
+        "id": "NL.15",
+        "name": "Overijssel",
+        "geonameId": "2748838"
+      },
+      {
+        "id": "NL.07",
+        "name": "North Holland",
+        "geonameId": "2749879"
+      },
+      {
+        "id": "NL.06",
+        "name": "North Brabant",
+        "geonameId": "2749990"
+      },
+      {
+        "id": "NL.05",
+        "name": "Limburg",
+        "geonameId": "2751596"
+      },
+      {
+        "id": "NL.04",
+        "name": "Groningen",
+        "geonameId": "2755249"
+      },
+      {
+        "id": "NL.03",
+        "name": "Gelderland",
+        "geonameId": "2755634"
+      },
+      {
+        "id": "NL.02",
+        "name": "Friesland",
+        "geonameId": "2755812"
+      },
+      {
+        "id": "NL.01",
+        "name": "Drenthe",
+        "geonameId": "2756631"
+      },
+      {
+        "id": "NL.16",
+        "name": "Flevoland",
+        "geonameId": "3319179"
+      }
+    ],
+    "MK": [
+      {
+        "id": "MK.E9",
+        "name": "Valandovo",
+        "geonameId": "784732"
+      },
+      {
+        "id": "MK.86",
+        "name": "Resen",
+        "geonameId": "786339"
+      },
+      {
+        "id": "MK.51",
+        "name": "Kratovo",
+        "geonameId": "789090"
+      },
+      {
+        "id": "MK.78",
+        "name": "Pehchevo",
+        "geonameId": "862938"
+      },
+      {
+        "id": "MK.72",
+        "name": "Novo Selo",
+        "geonameId": "862945"
+      },
+      {
+        "id": "MK.11",
+        "name": "Bosilovo",
+        "geonameId": "862946"
+      },
+      {
+        "id": "MK.A9",
+        "name": "Vasilevo",
+        "geonameId": "862947"
+      },
+      {
+        "id": "MK.E5",
+        "name": "Dojran",
+        "geonameId": "862949"
+      },
+      {
+        "id": "MK.08",
+        "name": "Bogdanci",
+        "geonameId": "862950"
+      },
+      {
+        "id": "MK.47",
+        "name": "Konche",
+        "geonameId": "862953"
+      },
+      {
+        "id": "MK.62",
+        "name": "Makedonska Kamenica",
+        "geonameId": "862956"
+      },
+      {
+        "id": "MK.C6",
+        "name": "Zrnovci",
+        "geonameId": "862958"
+      },
+      {
+        "id": "MK.40",
+        "name": "Karbinci",
+        "geonameId": "862960"
+      },
+      {
+        "id": "MK.25",
+        "name": "Demir Kapija",
+        "geonameId": "862961"
+      },
+      {
+        "id": "MK.87",
+        "name": "Rosoman",
+        "geonameId": "862973"
+      },
+      {
+        "id": "MK.35",
+        "name": "Gradsko",
+        "geonameId": "862974"
+      },
+      {
+        "id": "MK.60",
+        "name": "Lozovo",
+        "geonameId": "862975"
+      },
+      {
+        "id": "MK.19",
+        "name": "Češinovo-Obleševo",
+        "geonameId": "862977"
+      },
+      {
+        "id": "MK.E1",
+        "name": "Novaci",
+        "geonameId": "863468"
+      },
+      {
+        "id": "MK.04",
+        "name": "Berovo",
+        "geonameId": "863485"
+      },
+      {
+        "id": "MK.06",
+        "name": "Bitola",
+        "geonameId": "863486"
+      },
+      {
+        "id": "MK.D9",
+        "name": "Mogila",
+        "geonameId": "863488"
+      },
+      {
+        "id": "MK.01",
+        "name": "Arachinovo",
+        "geonameId": "863831"
+      },
+      {
+        "id": "MK.C7",
+        "name": "Bogovinje",
+        "geonameId": "863834"
+      },
+      {
+        "id": "MK.12",
+        "name": "Brvenica",
+        "geonameId": "863835"
+      },
+      {
+        "id": "MK.C9",
+        "name": "Chashka",
+        "geonameId": "863838"
+      },
+      {
+        "id": "MK.18",
+        "name": "Centar Zhupa",
+        "geonameId": "863841"
+      },
+      {
+        "id": "MK.20",
+        "name": "Chucher Sandevo",
+        "geonameId": "863842"
+      },
+      {
+        "id": "MK.D2",
+        "name": "Debar",
+        "geonameId": "863843"
+      },
+      {
+        "id": "MK.22",
+        "name": "Delchevo",
+        "geonameId": "863844"
+      },
+      {
+        "id": "MK.D3",
+        "name": "Demir Hisar",
+        "geonameId": "863846"
+      },
+      {
+        "id": "MK.28",
+        "name": "Dolneni",
+        "geonameId": "863849"
+      },
+      {
+        "id": "MK.33",
+        "name": "Gevgelija",
+        "geonameId": "863854"
+      },
+      {
+        "id": "MK.D4",
+        "name": "Gostivar",
+        "geonameId": "863855"
+      },
+      {
+        "id": "MK.36",
+        "name": "Ilinden",
+        "geonameId": "863856"
+      },
+      {
+        "id": "MK.D5",
+        "name": "Jegunovce",
+        "geonameId": "863858"
+      },
+      {
+        "id": "MK.D6",
+        "name": "Kavadarci",
+        "geonameId": "863861"
+      },
+      {
+        "id": "MK.43",
+        "name": "Kichevo",
+        "geonameId": "863862"
+      },
+      {
+        "id": "MK.46",
+        "name": "Kochani",
+        "geonameId": "863865"
+      },
+      {
+        "id": "MK.52",
+        "name": "Kriva Palanka",
+        "geonameId": "863869"
+      },
+      {
+        "id": "MK.53",
+        "name": "Krivogashtani",
+        "geonameId": "863870"
+      },
+      {
+        "id": "MK.54",
+        "name": "Krushevo",
+        "geonameId": "863871"
+      },
+      {
+        "id": "MK.D7",
+        "name": "Kumanovo",
+        "geonameId": "863873"
+      },
+      {
+        "id": "MK.59",
+        "name": "Lipkovo",
+        "geonameId": "863875"
+      },
+      {
+        "id": "MK.D8",
+        "name": "Makedonski Brod",
+        "geonameId": "863877"
+      },
+      {
+        "id": "MK.69",
+        "name": "Negotino",
+        "geonameId": "863881"
+      },
+      {
+        "id": "MK.E2",
+        "name": "Ohrid",
+        "geonameId": "863883"
+      },
+      {
+        "id": "MK.79",
+        "name": "Petrovec",
+        "geonameId": "863886"
+      },
+      {
+        "id": "MK.80",
+        "name": "Plasnica",
+        "geonameId": "863887"
+      },
+      {
+        "id": "MK.E3",
+        "name": "Prilep",
+        "geonameId": "863888"
+      },
+      {
+        "id": "MK.83",
+        "name": "Probishtip",
+        "geonameId": "863889"
+      },
+      {
+        "id": "MK.84",
+        "name": "Radovish",
+        "geonameId": "863890"
+      },
+      {
+        "id": "MK.85",
+        "name": "Rankovce",
+        "geonameId": "863891"
+      },
+      {
+        "id": "MK.E4",
+        "name": "Mavrovo and Rostuša",
+        "geonameId": "863892"
+      },
+      {
+        "id": "MK.92",
+        "name": "Sopište",
+        "geonameId": "863896"
+      },
+      {
+        "id": "MK.97",
+        "name": "Staro Nagorichane",
+        "geonameId": "863899"
+      },
+      {
+        "id": "MK.98",
+        "name": "Shtip",
+        "geonameId": "863900"
+      },
+      {
+        "id": "MK.E6",
+        "name": "Struga",
+        "geonameId": "863901"
+      },
+      {
+        "id": "MK.E7",
+        "name": "Strumica",
+        "geonameId": "863902"
+      },
+      {
+        "id": "MK.A2",
+        "name": "Studenichani",
+        "geonameId": "863903"
+      },
+      {
+        "id": "MK.A4",
+        "name": "Sveti Nikole",
+        "geonameId": "863905"
+      },
+      {
+        "id": "MK.A5",
+        "name": "Tearce",
+        "geonameId": "863906"
+      },
+      {
+        "id": "MK.E8",
+        "name": "Tetovo",
+        "geonameId": "863907"
+      },
+      {
+        "id": "MK.F1",
+        "name": "Veles",
+        "geonameId": "863909"
+      },
+      {
+        "id": "MK.B3",
+        "name": "Vevchani",
+        "geonameId": "863911"
+      },
+      {
+        "id": "MK.B4",
+        "name": "Vinica",
+        "geonameId": "863912"
+      },
+      {
+        "id": "MK.B7",
+        "name": "Vrapchishte",
+        "geonameId": "863914"
+      },
+      {
+        "id": "MK.C2",
+        "name": "Zelenikovo",
+        "geonameId": "863918"
+      },
+      {
+        "id": "MK.C3",
+        "name": "Zhelino",
+        "geonameId": "863919"
+      },
+      {
+        "id": "MK.F5",
+        "name": "Debarca",
+        "geonameId": "7056271"
+      },
+      {
+        "id": "MK.F6",
+        "name": "Grad Skopje",
+        "geonameId": "11398357"
+      }
+    ],
+    "NO": [
+      {
+        "id": "NO.05",
+        "name": "Finnmark",
+        "geonameId": "780166"
+      },
+      {
+        "id": "NO.20",
+        "name": "Vestfold",
+        "geonameId": "3132015"
+      },
+      {
+        "id": "NO.18",
+        "name": "Troms",
+        "geonameId": "3133897"
+      },
+      {
+        "id": "NO.17",
+        "name": "Telemark",
+        "geonameId": "3134723"
+      },
+      {
+        "id": "NO.14",
+        "name": "Rogaland",
+        "geonameId": "3141558"
+      },
+      {
+        "id": "NO.13",
+        "name": "Østfold",
+        "geonameId": "3143188"
+      },
+      {
+        "id": "NO.12",
+        "name": "Oslo",
+        "geonameId": "3143242"
+      },
+      {
+        "id": "NO.09",
+        "name": "Nordland",
+        "geonameId": "3144301"
+      },
+      {
+        "id": "NO.08",
+        "name": "Møre og Romsdal",
+        "geonameId": "3145495"
+      },
+      {
+        "id": "NO.04",
+        "name": "Buskerud",
+        "geonameId": "3159665"
+      },
+      {
+        "id": "NO.01",
+        "name": "Akershus",
+        "geonameId": "3163480"
+      },
+      {
+        "id": "NO.21",
+        "name": "Trøndelag",
+        "geonameId": "11862827"
+      },
+      {
+        "id": "NO.42",
+        "name": "Agder",
+        "geonameId": "12110596"
+      },
+      {
+        "id": "NO.34",
+        "name": "Innlandet",
+        "geonameId": "12110598"
+      },
+      {
+        "id": "NO.46",
+        "name": "Vestland",
+        "geonameId": "12110600"
+      }
+    ],
+    "PL": [
+      {
+        "id": "PL.75",
+        "name": "Lublin",
+        "geonameId": "858785"
+      },
+      {
+        "id": "PL.77",
+        "name": "Lesser Poland",
+        "geonameId": "858786"
+      },
+      {
+        "id": "PL.78",
+        "name": "Mazovia",
+        "geonameId": "858787"
+      },
+      {
+        "id": "PL.80",
+        "name": "Subcarpathia",
+        "geonameId": "858788"
+      },
+      {
+        "id": "PL.81",
+        "name": "Podlasie",
+        "geonameId": "858789"
+      },
+      {
+        "id": "PL.84",
+        "name": "Świętokrzyskie",
+        "geonameId": "858790"
+      },
+      {
+        "id": "PL.85",
+        "name": "Warmia-Masuria",
+        "geonameId": "858791"
+      },
+      {
+        "id": "PL.72",
+        "name": "Lower Silesia",
+        "geonameId": "3337492"
+      },
+      {
+        "id": "PL.74",
+        "name": "Łódź Voivodeship",
+        "geonameId": "3337493"
+      },
+      {
+        "id": "PL.76",
+        "name": "Lubusz",
+        "geonameId": "3337494"
+      },
+      {
+        "id": "PL.79",
+        "name": "Opole Voivodeship",
+        "geonameId": "3337495"
+      },
+      {
+        "id": "PL.82",
+        "name": "Pomerania",
+        "geonameId": "3337496"
+      },
+      {
+        "id": "PL.83",
+        "name": "Silesia",
+        "geonameId": "3337497"
+      },
+      {
+        "id": "PL.86",
+        "name": "Greater Poland",
+        "geonameId": "3337498"
+      },
+      {
+        "id": "PL.87",
+        "name": "West Pomerania",
+        "geonameId": "3337499"
+      },
+      {
+        "id": "PL.73",
+        "name": "Kujawsko-Pomorskie",
+        "geonameId": "3337500"
+      }
+    ],
+    "PT": [
+      {
+        "id": "PT.19",
+        "name": "Setúbal",
+        "geonameId": "2262961"
+      },
+      {
+        "id": "PT.18",
+        "name": "Santarém",
+        "geonameId": "2263478"
+      },
+      {
+        "id": "PT.16",
+        "name": "Portalegre",
+        "geonameId": "2264507"
+      },
+      {
+        "id": "PT.14",
+        "name": "Lisbon",
+        "geonameId": "2267056"
+      },
+      {
+        "id": "PT.13",
+        "name": "Leiria",
+        "geonameId": "2267094"
+      },
+      {
+        "id": "PT.09",
+        "name": "Faro",
+        "geonameId": "2268337"
+      },
+      {
+        "id": "PT.08",
+        "name": "Évora",
+        "geonameId": "2268404"
+      },
+      {
+        "id": "PT.06",
+        "name": "Castelo Branco",
+        "geonameId": "2269513"
+      },
+      {
+        "id": "PT.03",
+        "name": "Beja",
+        "geonameId": "2270984"
+      },
+      {
+        "id": "PT.10",
+        "name": "Madeira",
+        "geonameId": "2593105"
+      },
+      {
+        "id": "PT.22",
+        "name": "Viseu",
+        "geonameId": "2732264"
+      },
+      {
+        "id": "PT.21",
+        "name": "Vila Real",
+        "geonameId": "2732437"
+      },
+      {
+        "id": "PT.20",
+        "name": "Viana do Castelo",
+        "geonameId": "2732772"
+      },
+      {
+        "id": "PT.17",
+        "name": "Porto",
+        "geonameId": "2735941"
+      },
+      {
+        "id": "PT.11",
+        "name": "Guarda",
+        "geonameId": "2738782"
+      },
+      {
+        "id": "PT.07",
+        "name": "Coimbra",
+        "geonameId": "2740636"
+      },
+      {
+        "id": "PT.05",
+        "name": "Bragança",
+        "geonameId": "2742026"
+      },
+      {
+        "id": "PT.04",
+        "name": "Braga",
+        "geonameId": "2742031"
+      },
+      {
+        "id": "PT.02",
+        "name": "Aveiro",
+        "geonameId": "2742610"
+      },
+      {
+        "id": "PT.23",
+        "name": "Azores",
+        "geonameId": "3411865"
+      }
+    ],
+    "RO": [
+      {
+        "id": "RO.40",
+        "name": "Vrancea",
+        "geonameId": "662447"
+      },
+      {
+        "id": "RO.39",
+        "name": "Vâlcea County",
+        "geonameId": "662892"
+      },
+      {
+        "id": "RO.38",
+        "name": "Vaslui County",
+        "geonameId": "663116"
+      },
+      {
+        "id": "RO.37",
+        "name": "Tulcea County",
+        "geonameId": "664517"
+      },
+      {
+        "id": "RO.36",
+        "name": "Timiș County",
+        "geonameId": "665091"
+      },
+      {
+        "id": "RO.35",
+        "name": "Teleorman County",
+        "geonameId": "665283"
+      },
+      {
+        "id": "RO.34",
+        "name": "Suceava",
+        "geonameId": "665849"
+      },
+      {
+        "id": "RO.33",
+        "name": "Sibiu County",
+        "geonameId": "667267"
+      },
+      {
+        "id": "RO.32",
+        "name": "Satu Mare County",
+        "geonameId": "667869"
+      },
+      {
+        "id": "RO.31",
+        "name": "Sălaj County",
+        "geonameId": "668248"
+      },
+      {
+        "id": "RO.30",
+        "name": "Prahova",
+        "geonameId": "669737"
+      },
+      {
+        "id": "RO.29",
+        "name": "Olt",
+        "geonameId": "671857"
+      },
+      {
+        "id": "RO.28",
+        "name": "Neamț County",
+        "geonameId": "672460"
+      },
+      {
+        "id": "RO.27",
+        "name": "Mureș County",
+        "geonameId": "672628"
+      },
+      {
+        "id": "RO.26",
+        "name": "Mehedinți County",
+        "geonameId": "673612"
+      },
+      {
+        "id": "RO.25",
+        "name": "Maramureş",
+        "geonameId": "673887"
+      },
+      {
+        "id": "RO.23",
+        "name": "Iași County",
+        "geonameId": "675809"
+      },
+      {
+        "id": "RO.22",
+        "name": "Ialomița County",
+        "geonameId": "675848"
+      },
+      {
+        "id": "RO.21",
+        "name": "Hunedoara County",
+        "geonameId": "675917"
+      },
+      {
+        "id": "RO.20",
+        "name": "Harghita County",
+        "geonameId": "676309"
+      },
+      {
+        "id": "RO.19",
+        "name": "Gorj County",
+        "geonameId": "676898"
+      },
+      {
+        "id": "RO.42",
+        "name": "Giurgiu County",
+        "geonameId": "677104"
+      },
+      {
+        "id": "RO.18",
+        "name": "Galați County",
+        "geonameId": "677692"
+      },
+      {
+        "id": "RO.17",
+        "name": "Dolj",
+        "geonameId": "679134"
+      },
+      {
+        "id": "RO.16",
+        "name": "Dâmbovița County",
+        "geonameId": "679385"
+      },
+      {
+        "id": "RO.15",
+        "name": "Covasna County",
+        "geonameId": "680428"
+      },
+      {
+        "id": "RO.14",
+        "name": "Constanța County",
+        "geonameId": "680962"
+      },
+      {
+        "id": "RO.13",
+        "name": "Cluj County",
+        "geonameId": "681291"
+      },
+      {
+        "id": "RO.12",
+        "name": "Caraș-Severin County",
+        "geonameId": "682714"
+      },
+      {
+        "id": "RO.41",
+        "name": "Călărași County",
+        "geonameId": "683016"
+      },
+      {
+        "id": "RO.11",
+        "name": "Buzău County",
+        "geonameId": "683121"
+      },
+      {
+        "id": "RO.10",
+        "name": "Bucharest",
+        "geonameId": "683504"
+      },
+      {
+        "id": "RO.09",
+        "name": "Brașov County",
+        "geonameId": "683843"
+      },
+      {
+        "id": "RO.08",
+        "name": "Brăila County",
+        "geonameId": "683901"
+      },
+      {
+        "id": "RO.07",
+        "name": "Botoșani County",
+        "geonameId": "684038"
+      },
+      {
+        "id": "RO.06",
+        "name": "Bistrița-Năsăud County",
+        "geonameId": "684647"
+      },
+      {
+        "id": "RO.05",
+        "name": "Bihor County",
+        "geonameId": "684878"
+      },
+      {
+        "id": "RO.04",
+        "name": "Bacău County",
+        "geonameId": "685947"
+      },
+      {
+        "id": "RO.03",
+        "name": "Arges",
+        "geonameId": "686192"
+      },
+      {
+        "id": "RO.02",
+        "name": "Arad County",
+        "geonameId": "686253"
+      },
+      {
+        "id": "RO.01",
+        "name": "Alba County",
+        "geonameId": "686581"
+      },
+      {
+        "id": "RO.43",
+        "name": "Ilfov",
+        "geonameId": "865518"
+      }
+    ],
+    "RU": [
+      {
+        "id": "RU.88",
+        "name": "Yaroslavl Oblast",
+        "geonameId": "468898"
+      },
+      {
+        "id": "RU.86",
+        "name": "Voronezh Oblast",
+        "geonameId": "472039"
+      },
+      {
+        "id": "RU.85",
+        "name": "Vologda Oblast",
+        "geonameId": "472454"
+      },
+      {
+        "id": "RU.84",
+        "name": "Volgograd Oblast",
+        "geonameId": "472755"
+      },
+      {
+        "id": "RU.81",
+        "name": "Ulyanovsk",
+        "geonameId": "479119"
+      },
+      {
+        "id": "RU.80",
+        "name": "Udmurtiya Republic",
+        "geonameId": "479613"
+      },
+      {
+        "id": "RU.77",
+        "name": "Tver Oblast",
+        "geonameId": "480041"
+      },
+      {
+        "id": "RU.76",
+        "name": "Tula Oblast",
+        "geonameId": "480508"
+      },
+      {
+        "id": "RU.73",
+        "name": "Tatarstan Republic",
+        "geonameId": "484048"
+      },
+      {
+        "id": "RU.72",
+        "name": "Tambov Oblast",
+        "geonameId": "484638"
+      },
+      {
+        "id": "RU.70",
+        "name": "Stavropol Kray",
+        "geonameId": "487839"
+      },
+      {
+        "id": "RU.69",
+        "name": "Smolensk Oblast",
+        "geonameId": "491684"
+      },
+      {
+        "id": "RU.67",
+        "name": "Saratov Oblast",
+        "geonameId": "498671"
+      },
+      {
+        "id": "RU.65",
+        "name": "Samara Oblast",
+        "geonameId": "499068"
+      },
+      {
+        "id": "RU.62",
+        "name": "Ryazan Oblast",
+        "geonameId": "500059"
+      },
+      {
+        "id": "RU.61",
+        "name": "Rostov",
+        "geonameId": "501165"
+      },
+      {
+        "id": "RU.60",
+        "name": "Pskov Oblast",
+        "geonameId": "504338"
+      },
+      {
+        "id": "RU.90",
+        "name": "Perm Krai",
+        "geonameId": "511180"
+      },
+      {
+        "id": "RU.57",
+        "name": "Penza Oblast",
+        "geonameId": "511555"
+      },
+      {
+        "id": "RU.56",
+        "name": "Oryol oblast",
+        "geonameId": "514801"
+      },
+      {
+        "id": "RU.55",
+        "name": "Orenburg Oblast",
+        "geonameId": "515001"
+      },
+      {
+        "id": "RU.52",
+        "name": "Novgorod Oblast",
+        "geonameId": "519324"
+      },
+      {
+        "id": "RU.68",
+        "name": "North Ossetia–Alania",
+        "geonameId": "519969"
+      },
+      {
+        "id": "RU.50",
+        "name": "Nenets",
+        "geonameId": "522652"
+      },
+      {
+        "id": "RU.49",
+        "name": "Murmansk",
+        "geonameId": "524304"
+      },
+      {
+        "id": "RU.48",
+        "name": "Moscow",
+        "geonameId": "524894"
+      },
+      {
+        "id": "RU.47",
+        "name": "Moscow Oblast",
+        "geonameId": "524925"
+      },
+      {
+        "id": "RU.46",
+        "name": "Mordoviya Republic",
+        "geonameId": "525369"
+      },
+      {
+        "id": "RU.45",
+        "name": "Mariy-El Republic",
+        "geonameId": "529352"
+      },
+      {
+        "id": "RU.43",
+        "name": "Lipetsk Oblast",
+        "geonameId": "535120"
+      },
+      {
+        "id": "RU.42",
+        "name": "Leningradskaya Oblast'",
+        "geonameId": "536199"
+      },
+      {
+        "id": "RU.66",
+        "name": "St. Petersburg",
+        "geonameId": "536203"
+      },
+      {
+        "id": "RU.41",
+        "name": "Kursk Oblast",
+        "geonameId": "538555"
+      },
+      {
+        "id": "RU.38",
+        "name": "Krasnodar Krai",
+        "geonameId": "542415"
+      },
+      {
+        "id": "RU.37",
+        "name": "Kostroma Oblast",
+        "geonameId": "543871"
+      },
+      {
+        "id": "RU.34",
+        "name": "Komi",
+        "geonameId": "545854"
+      },
+      {
+        "id": "RU.33",
+        "name": "Kirov Oblast",
+        "geonameId": "548389"
+      },
+      {
+        "id": "RU.28",
+        "name": "Karelia",
+        "geonameId": "552548"
+      },
+      {
+        "id": "RU.27",
+        "name": "Karachayevo-Cherkesiya Republic",
+        "geonameId": "552927"
+      },
+      {
+        "id": "RU.25",
+        "name": "Kaluga Oblast",
+        "geonameId": "553899"
+      },
+      {
+        "id": "RU.24",
+        "name": "Kalmykiya Republic",
+        "geonameId": "553972"
+      },
+      {
+        "id": "RU.23",
+        "name": "Kaliningrad Oblast",
+        "geonameId": "554230"
+      },
+      {
+        "id": "RU.22",
+        "name": "Kabardino-Balkariya Republic",
+        "geonameId": "554667"
+      },
+      {
+        "id": "RU.21",
+        "name": "Ivanovo Oblast",
+        "geonameId": "555235"
+      },
+      {
+        "id": "RU.19",
+        "name": "Ingushetiya Republic",
+        "geonameId": "556349"
+      },
+      {
+        "id": "RU.51",
+        "name": "Nizhny Novgorod Oblast",
+        "geonameId": "559838"
+      },
+      {
+        "id": "RU.17",
+        "name": "Dagestan",
+        "geonameId": "567293"
+      },
+      {
+        "id": "RU.16",
+        "name": "Chuvash Republic",
+        "geonameId": "567395"
+      },
+      {
+        "id": "RU.12",
+        "name": "Chechnya",
+        "geonameId": "569665"
+      },
+      {
+        "id": "RU.10",
+        "name": "Bryansk Oblast",
+        "geonameId": "571473"
+      },
+      {
+        "id": "RU.09",
+        "name": "Belgorod Oblast",
+        "geonameId": "578071"
+      },
+      {
+        "id": "RU.08",
+        "name": "Bashkortostan Republic",
+        "geonameId": "578853"
+      },
+      {
+        "id": "RU.07",
+        "name": "Astrakhan Oblast",
+        "geonameId": "580491"
+      },
+      {
+        "id": "RU.06",
+        "name": "Arkhangelskaya",
+        "geonameId": "581043"
+      },
+      {
+        "id": "RU.01",
+        "name": "Adygeya Republic",
+        "geonameId": "584222"
+      },
+      {
+        "id": "RU.83",
+        "name": "Vladimir Oblast",
+        "geonameId": "826294"
+      },
+      {
+        "id": "RU.87",
+        "name": "Yamalo-Nenets",
+        "geonameId": "1486462"
+      },
+      {
+        "id": "RU.78",
+        "name": "Tyumen Oblast",
+        "geonameId": "1488747"
+      },
+      {
+        "id": "RU.79",
+        "name": "Republic of Tyva",
+        "geonameId": "1488873"
+      },
+      {
+        "id": "RU.75",
+        "name": "Tomsk Oblast",
+        "geonameId": "1489421"
+      },
+      {
+        "id": "RU.71",
+        "name": "Sverdlovsk Oblast",
+        "geonameId": "1490542"
+      },
+      {
+        "id": "RU.54",
+        "name": "Omsk Oblast",
+        "geonameId": "1496152"
+      },
+      {
+        "id": "RU.53",
+        "name": "Novosibirsk Oblast",
+        "geonameId": "1496745"
+      },
+      {
+        "id": "RU.40",
+        "name": "Kurgan Oblast",
+        "geonameId": "1501312"
+      },
+      {
+        "id": "RU.91",
+        "name": "Krasnoyarsk Krai",
+        "geonameId": "1502020"
+      },
+      {
+        "id": "RU.32",
+        "name": "Khanty-Mansia",
+        "geonameId": "1503773"
+      },
+      {
+        "id": "RU.31",
+        "name": "Khakasiya Republic",
+        "geonameId": "1503834"
+      },
+      {
+        "id": "RU.29",
+        "name": "Kuzbass",
+        "geonameId": "1503900"
+      },
+      {
+        "id": "RU.03",
+        "name": "Altai",
+        "geonameId": "1506272"
+      },
+      {
+        "id": "RU.13",
+        "name": "Chelyabinsk",
+        "geonameId": "1508290"
+      },
+      {
+        "id": "RU.04",
+        "name": "Altai Krai",
+        "geonameId": "1511732"
+      },
+      {
+        "id": "RU.63",
+        "name": "Sakha",
+        "geonameId": "2013162"
+      },
+      {
+        "id": "RU.59",
+        "name": "Primorye",
+        "geonameId": "2017623"
+      },
+      {
+        "id": "RU.30",
+        "name": "Khabarovsk",
+        "geonameId": "2022888"
+      },
+      {
+        "id": "RU.20",
+        "name": "Irkutsk Oblast",
+        "geonameId": "2023468"
+      },
+      {
+        "id": "RU.89",
+        "name": "Jewish Autonomous Oblast",
+        "geonameId": "2026639"
+      },
+      {
+        "id": "RU.05",
+        "name": "Amur Oblast",
+        "geonameId": "2027748"
+      },
+      {
+        "id": "RU.11",
+        "name": "Buryatiya Republic",
+        "geonameId": "2050915"
+      },
+      {
+        "id": "RU.64",
+        "name": "Sakhalin Oblast",
+        "geonameId": "2121529"
+      },
+      {
+        "id": "RU.44",
+        "name": "Magadan Oblast",
+        "geonameId": "2123627"
+      },
+      {
+        "id": "RU.92",
+        "name": "Kamchatka",
+        "geonameId": "2125072"
+      },
+      {
+        "id": "RU.15",
+        "name": "Chukotka",
+        "geonameId": "2126099"
+      },
+      {
+        "id": "RU.93",
+        "name": "Zabaykalskiy (Transbaikal) Kray",
+        "geonameId": "7779061"
+      }
+    ],
+    "SM": [
+      {
+        "id": "SM.09",
+        "name": "Serravalle",
+        "geonameId": "3166650"
+      },
+      {
+        "id": "SM.02",
+        "name": "Chiesanuova",
+        "geonameId": "3178807"
+      },
+      {
+        "id": "SM.07",
+        "name": "San Marino",
+        "geonameId": "3345302"
+      },
+      {
+        "id": "SM.01",
+        "name": "Acquaviva",
+        "geonameId": "3345303"
+      },
+      {
+        "id": "SM.06",
+        "name": "Borgo Maggiore",
+        "geonameId": "3345304"
+      },
+      {
+        "id": "SM.03",
+        "name": "Domagnano",
+        "geonameId": "3345305"
+      },
+      {
+        "id": "SM.04",
+        "name": "Faetano",
+        "geonameId": "3345306"
+      },
+      {
+        "id": "SM.05",
+        "name": "Fiorentino",
+        "geonameId": "3345307"
+      },
+      {
+        "id": "SM.08",
+        "name": "Montegiardino",
+        "geonameId": "3345308"
+      }
+    ],
+    "RS": [
+      {
+        "id": "RS.VO",
+        "name": "Vojvodina",
+        "geonameId": "784272"
+      },
+      {
+        "id": "RS.SE",
+        "name": "Central Serbia",
+        "geonameId": "785958"
+      }
+    ],
+    "SK": [
+      {
+        "id": "SK.03",
+        "name": "Košice Region",
+        "geonameId": "865084"
+      },
+      {
+        "id": "SK.05",
+        "name": "Prešov Region",
+        "geonameId": "865085"
+      },
+      {
+        "id": "SK.08",
+        "name": "Žilina Region",
+        "geonameId": "3056506"
+      },
+      {
+        "id": "SK.01",
+        "name": "Banská Bystrica Region",
+        "geonameId": "3343954"
+      },
+      {
+        "id": "SK.02",
+        "name": "Bratislava Region",
+        "geonameId": "3343955"
+      },
+      {
+        "id": "SK.04",
+        "name": "Nitra Region",
+        "geonameId": "3343956"
+      },
+      {
+        "id": "SK.06",
+        "name": "Trenčín Region",
+        "geonameId": "3343957"
+      },
+      {
+        "id": "SK.07",
+        "name": "Trnava Region",
+        "geonameId": "3343958"
+      }
+    ],
+    "SI": [
+      {
+        "id": "SI.N5",
+        "name": "Municipality of Žalec",
+        "geonameId": "3186843"
+      },
+      {
+        "id": "SI.E7",
+        "name": "Municipality of Zagorje ob Savi",
+        "geonameId": "3186905"
+      },
+      {
+        "id": "SI.E5",
+        "name": "Municipality of Vrhnika",
+        "geonameId": "3187213"
+      },
+      {
+        "id": "SI.D5",
+        "name": "Municipality of Tržič",
+        "geonameId": "3188687"
+      },
+      {
+        "id": "SI.D4",
+        "name": "Trebnje",
+        "geonameId": "3188885"
+      },
+      {
+        "id": "SI.D3",
+        "name": "Municipality of Trbovlje",
+        "geonameId": "3188914"
+      },
+      {
+        "id": "SI.D2",
+        "name": "Municipality of Tolmin",
+        "geonameId": "3189037"
+      },
+      {
+        "id": "SI.D7",
+        "name": "Urban Municipality of Velenje",
+        "geonameId": "3189074"
+      },
+      {
+        "id": "SI.C5",
+        "name": "Municipality of Šmarje pri Jelšah",
+        "geonameId": "3190509"
+      },
+      {
+        "id": "SI.C4",
+        "name": "Municipality of Slovenske Konjice",
+        "geonameId": "3190529"
+      },
+      {
+        "id": "SI.L8",
+        "name": "Municipality of Slovenska Bistrica",
+        "geonameId": "3190533"
+      },
+      {
+        "id": "SI.C2",
+        "name": "Urban Municipality of Slovenj Gradec",
+        "geonameId": "3190535"
+      },
+      {
+        "id": "SI.B9",
+        "name": "Škofja Loka",
+        "geonameId": "3190716"
+      },
+      {
+        "id": "SI.B7",
+        "name": "Municipality of Sežana",
+        "geonameId": "3190944"
+      },
+      {
+        "id": "SI.B6",
+        "name": "Municipality of Sevnica",
+        "geonameId": "3190949"
+      },
+      {
+        "id": "SI.L7",
+        "name": "Sentjur",
+        "geonameId": "3191028"
+      },
+      {
+        "id": "SI.L1",
+        "name": "Municipality of Ribnica",
+        "geonameId": "3191679"
+      },
+      {
+        "id": "SI.A3",
+        "name": "Radovljica",
+        "geonameId": "3192062"
+      },
+      {
+        "id": "SI.A2",
+        "name": "Municipality of Radlje ob Dravi",
+        "geonameId": "3192120"
+      },
+      {
+        "id": "SI.K7",
+        "name": "Urban Municipality of Ptuj",
+        "geonameId": "3192240"
+      },
+      {
+        "id": "SI.94",
+        "name": "Municipality of Postojna",
+        "geonameId": "3192672"
+      },
+      {
+        "id": "SI.J9",
+        "name": "Municipality of Piran",
+        "geonameId": "3193340"
+      },
+      {
+        "id": "SI.87",
+        "name": "Municipality of Ormož",
+        "geonameId": "3193964"
+      },
+      {
+        "id": "SI.J7",
+        "name": "Urban Municipality of Novo Mesto",
+        "geonameId": "3194350"
+      },
+      {
+        "id": "SI.84",
+        "name": "Urban Municipality of Nova Gorica",
+        "geonameId": "3194451"
+      },
+      {
+        "id": "SI.80",
+        "name": "Urban Municipality of Murska Sobota",
+        "geonameId": "3194647"
+      },
+      {
+        "id": "SI.79",
+        "name": "Municipality of Mozirje",
+        "geonameId": "3194791"
+      },
+      {
+        "id": "SI.73",
+        "name": "Municipality of Metlika",
+        "geonameId": "3195213"
+      },
+      {
+        "id": "SI.J2",
+        "name": "Urban Municipality of Maribor",
+        "geonameId": "3195505"
+      },
+      {
+        "id": "SI.64",
+        "name": "Logatec",
+        "geonameId": "3196288"
+      },
+      {
+        "id": "SI.I6",
+        "name": "Ljutomer",
+        "geonameId": "3196306"
+      },
+      {
+        "id": "SI.I5",
+        "name": "Municipality of Litija",
+        "geonameId": "3196424"
+      },
+      {
+        "id": "SI.I3",
+        "name": "Municipality of Lenart",
+        "geonameId": "3196684"
+      },
+      {
+        "id": "SI.57",
+        "name": "Municipality of Laško",
+        "geonameId": "3196759"
+      },
+      {
+        "id": "SI.54",
+        "name": "Urban Municipality of Krško",
+        "geonameId": "3197146"
+      },
+      {
+        "id": "SI.52",
+        "name": "Urban Municipality of Kranj",
+        "geonameId": "3197377"
+      },
+      {
+        "id": "SI.50",
+        "name": "Urban Municipality of Koper",
+        "geonameId": "3197752"
+      },
+      {
+        "id": "SI.H7",
+        "name": "Municipality of Kočevje",
+        "geonameId": "3197942"
+      },
+      {
+        "id": "SI.H6",
+        "name": "Municipality of Kamnik",
+        "geonameId": "3198364"
+      },
+      {
+        "id": "SI.H4",
+        "name": "Municipality of Jesenice",
+        "geonameId": "3198646"
+      },
+      {
+        "id": "SI.40",
+        "name": "Municipality of Izola",
+        "geonameId": "3199016"
+      },
+      {
+        "id": "SI.38",
+        "name": "Municipality of Ilirska Bistrica",
+        "geonameId": "3199130"
+      },
+      {
+        "id": "SI.36",
+        "name": "Municipality of Idrija",
+        "geonameId": "3199169"
+      },
+      {
+        "id": "SI.34",
+        "name": "Municipality of Hrastnik",
+        "geonameId": "3199296"
+      },
+      {
+        "id": "SI.32",
+        "name": "Municipality of Grosuplje",
+        "geonameId": "3199522"
+      },
+      {
+        "id": "SI.29",
+        "name": "Municipality of Gornja Radgona",
+        "geonameId": "3200196"
+      },
+      {
+        "id": "SI.25",
+        "name": "Municipality of Dravograd",
+        "geonameId": "3201252"
+      },
+      {
+        "id": "SI.G7",
+        "name": "Municipality of Domžale",
+        "geonameId": "3201729"
+      },
+      {
+        "id": "SI.17",
+        "name": "Municipality of Črnomelj",
+        "geonameId": "3202332"
+      },
+      {
+        "id": "SI.13",
+        "name": "Municipality of Cerknica",
+        "geonameId": "3202707"
+      },
+      {
+        "id": "SI.11",
+        "name": "Urban Municipality of Celje",
+        "geonameId": "3202780"
+      },
+      {
+        "id": "SI.08",
+        "name": "Municipality of Brežice",
+        "geonameId": "3203411"
+      },
+      {
+        "id": "SI.01",
+        "name": "Municipality of Ajdovščina",
+        "geonameId": "3204853"
+      },
+      {
+        "id": "SI.35",
+        "name": "Municipality of Hrpelje–Kozina",
+        "geonameId": "3239050"
+      },
+      {
+        "id": "SI.19",
+        "name": "Municipality of Divača",
+        "geonameId": "3239051"
+      },
+      {
+        "id": "SI.91",
+        "name": "Pivka",
+        "geonameId": "3239054"
+      },
+      {
+        "id": "SI.I7",
+        "name": "Municipality of Loška Dolina",
+        "geonameId": "3239056"
+      },
+      {
+        "id": "SI.66",
+        "name": "Municipality of Loški Potok",
+        "geonameId": "3239059"
+      },
+      {
+        "id": "SI.88",
+        "name": "Municipality of Osilnica",
+        "geonameId": "3239061"
+      },
+      {
+        "id": "SI.D8",
+        "name": "Municipality of Velike Lašče",
+        "geonameId": "3239062"
+      },
+      {
+        "id": "SI.C1",
+        "name": "Municipality of Škofljica",
+        "geonameId": "3239066"
+      },
+      {
+        "id": "SI.37",
+        "name": "Municipality of Ig",
+        "geonameId": "3239069"
+      },
+      {
+        "id": "SI.09",
+        "name": "Municipality of Brezovica",
+        "geonameId": "3239071"
+      },
+      {
+        "id": "SI.05",
+        "name": "Municipality of Borovnica",
+        "geonameId": "3239073"
+      },
+      {
+        "id": "SI.E1",
+        "name": "Municipality of Vipava",
+        "geonameId": "3239075"
+      },
+      {
+        "id": "SI.49",
+        "name": "Municipality of Komen",
+        "geonameId": "3239078"
+      },
+      {
+        "id": "SI.J5",
+        "name": "Municipality of Miren–Kostanjevica",
+        "geonameId": "3239080"
+      },
+      {
+        "id": "SI.07",
+        "name": "Municipality of Brda",
+        "geonameId": "3239083"
+      },
+      {
+        "id": "SI.44",
+        "name": "Municipality of Kanal ob Soči",
+        "geonameId": "3239086"
+      },
+      {
+        "id": "SI.F2",
+        "name": "Municipality of Žiri",
+        "geonameId": "3239087"
+      },
+      {
+        "id": "SI.14",
+        "name": "Municipality of Cerkno",
+        "geonameId": "3239091"
+      },
+      {
+        "id": "SI.F1",
+        "name": "Municipality of Železniki",
+        "geonameId": "3239093"
+      },
+      {
+        "id": "SI.27",
+        "name": "Municipality of Gorenja Vas–Poljane",
+        "geonameId": "3239095"
+      },
+      {
+        "id": "SI.G4",
+        "name": "Municipality of Dobrova–Polhov Gradec",
+        "geonameId": "3239096"
+      },
+      {
+        "id": "SI.46",
+        "name": "Municipality of Kobarid",
+        "geonameId": "3239098"
+      },
+      {
+        "id": "SI.06",
+        "name": "Municipality of Bovec",
+        "geonameId": "3239100"
+      },
+      {
+        "id": "SI.04",
+        "name": "Municipality of Bohinj",
+        "geonameId": "3239101"
+      },
+      {
+        "id": "SI.03",
+        "name": "Municipality of Bled",
+        "geonameId": "3239103"
+      },
+      {
+        "id": "SI.82",
+        "name": "Municipality of Naklo",
+        "geonameId": "3239104"
+      },
+      {
+        "id": "SI.53",
+        "name": "Municipality of Kranjska Gora",
+        "geonameId": "3239105"
+      },
+      {
+        "id": "SI.K5",
+        "name": "Municipality of Preddvor",
+        "geonameId": "3239107"
+      },
+      {
+        "id": "SI.12",
+        "name": "Municipality of Cerklje na Gorenjskem",
+        "geonameId": "3239110"
+      },
+      {
+        "id": "SI.B2",
+        "name": "Municipality of Šenčur",
+        "geonameId": "3239111"
+      },
+      {
+        "id": "SI.E3",
+        "name": "Municipality of Vodice",
+        "geonameId": "3239112"
+      },
+      {
+        "id": "SI.71",
+        "name": "Municipality of Medvode",
+        "geonameId": "3239113"
+      },
+      {
+        "id": "SI.72",
+        "name": "Municipality of Mengeš",
+        "geonameId": "3239114"
+      },
+      {
+        "id": "SI.22",
+        "name": "Dol pri Ljubljani",
+        "geonameId": "3239115"
+      },
+      {
+        "id": "SI.77",
+        "name": "Municipality of Moravče",
+        "geonameId": "3239132"
+      },
+      {
+        "id": "SI.30",
+        "name": "Municipality of Gornji Grad",
+        "geonameId": "3239133"
+      },
+      {
+        "id": "SI.I9",
+        "name": "Municipality of Luče",
+        "geonameId": "3239134"
+      },
+      {
+        "id": "SI.K8",
+        "name": "Municipality of Ravne na Koroškem",
+        "geonameId": "3239175"
+      },
+      {
+        "id": "SI.74",
+        "name": "Municipality of Mežica",
+        "geonameId": "3239177"
+      },
+      {
+        "id": "SI.81",
+        "name": "Municipality of Muta",
+        "geonameId": "3239179"
+      },
+      {
+        "id": "SI.E6",
+        "name": "Municipality of Vuzenica",
+        "geonameId": "3239180"
+      },
+      {
+        "id": "SI.16",
+        "name": "Municipality of Črna na Koroškem",
+        "geonameId": "3239181"
+      },
+      {
+        "id": "SI.62",
+        "name": "Municipality of Ljubno",
+        "geonameId": "3239184"
+      },
+      {
+        "id": "SI.C7",
+        "name": "Municipality of Šoštanj",
+        "geonameId": "3239185"
+      },
+      {
+        "id": "SI.C6",
+        "name": "Municipality of Šmartno ob Paki",
+        "geonameId": "3239187"
+      },
+      {
+        "id": "SI.68",
+        "name": "Lukovica",
+        "geonameId": "3239188"
+      },
+      {
+        "id": "SI.99",
+        "name": "Municipality of Radeče",
+        "geonameId": "3239189"
+      },
+      {
+        "id": "SI.39",
+        "name": "Municipality of Ivančna Gorica",
+        "geonameId": "3239191"
+      },
+      {
+        "id": "SI.20",
+        "name": "Municipality of Dobrepolje",
+        "geonameId": "3239193"
+      },
+      {
+        "id": "SI.B1",
+        "name": "Municipality of Semič",
+        "geonameId": "3239195"
+      },
+      {
+        "id": "SI.B4",
+        "name": "Municipality of Šentjernej",
+        "geonameId": "3239197"
+      },
+      {
+        "id": "SI.B8",
+        "name": "Municipality of Škocjan",
+        "geonameId": "3239199"
+      },
+      {
+        "id": "SI.C9",
+        "name": "Municipality of Štore",
+        "geonameId": "3239200"
+      },
+      {
+        "id": "SI.N3",
+        "name": "Municipality of Vojnik",
+        "geonameId": "3239202"
+      },
+      {
+        "id": "SI.E2",
+        "name": "Municipality of Vitanje",
+        "geonameId": "3239204"
+      },
+      {
+        "id": "SI.F3",
+        "name": "Municipality of Zreče",
+        "geonameId": "3239205"
+      },
+      {
+        "id": "SI.76",
+        "name": "Municipality of Mislinja",
+        "geonameId": "3239207"
+      },
+      {
+        "id": "SI.L3",
+        "name": "Municipality of Ruše",
+        "geonameId": "3239211"
+      },
+      {
+        "id": "SI.55",
+        "name": "Municipality of Kungota",
+        "geonameId": "3239213"
+      },
+      {
+        "id": "SI.B3",
+        "name": "Municipality of Šentilj",
+        "geonameId": "3239214"
+      },
+      {
+        "id": "SI.89",
+        "name": "Pesnica",
+        "geonameId": "3239215"
+      },
+      {
+        "id": "SI.26",
+        "name": "Municipality of Duplek",
+        "geonameId": "3239216"
+      },
+      {
+        "id": "SI.98",
+        "name": "Municipality of Rače–Fram",
+        "geonameId": "3239224"
+      },
+      {
+        "id": "SI.C8",
+        "name": "Municipality of Starše",
+        "geonameId": "3239226"
+      },
+      {
+        "id": "SI.45",
+        "name": "Municipality of Kidričevo",
+        "geonameId": "3239227"
+      },
+      {
+        "id": "SI.J1",
+        "name": "Municipality of Majšperk",
+        "geonameId": "3239229"
+      },
+      {
+        "id": "SI.N2",
+        "name": "Municipality of Videm",
+        "geonameId": "3239231"
+      },
+      {
+        "id": "SI.A7",
+        "name": "Municipality of Rogaška Slatina",
+        "geonameId": "3239234"
+      },
+      {
+        "id": "SI.A8",
+        "name": "Municipality of Rogatec",
+        "geonameId": "3239237"
+      },
+      {
+        "id": "SI.92",
+        "name": "Municipality of Podčetrtek",
+        "geonameId": "3239241"
+      },
+      {
+        "id": "SI.51",
+        "name": "Municipality of Kozje",
+        "geonameId": "3239243"
+      },
+      {
+        "id": "SI.28",
+        "name": "Municipality of Gorišnica",
+        "geonameId": "3239245"
+      },
+      {
+        "id": "SI.E9",
+        "name": "Municipality of Zavrč",
+        "geonameId": "3239247"
+      },
+      {
+        "id": "SI.24",
+        "name": "Municipality of Dornava",
+        "geonameId": "3239248"
+      },
+      {
+        "id": "SI.42",
+        "name": "Municipality of Juršinci",
+        "geonameId": "3239251"
+      },
+      {
+        "id": "SI.D1",
+        "name": "Municipality of Sveti Jurij ob Ščavnici",
+        "geonameId": "3239259"
+      },
+      {
+        "id": "SI.A1",
+        "name": "Municipality of Radenci",
+        "geonameId": "3239262"
+      },
+      {
+        "id": "SI.97",
+        "name": "Municipality of Puconci",
+        "geonameId": "3239268"
+      },
+      {
+        "id": "SI.A6",
+        "name": "Municipality of Rogašovci",
+        "geonameId": "3239270"
+      },
+      {
+        "id": "SI.I2",
+        "name": "Municipality of Kuzma",
+        "geonameId": "3239272"
+      },
+      {
+        "id": "SI.31",
+        "name": "Municipality of Gornji Petrovci",
+        "geonameId": "3239275"
+      },
+      {
+        "id": "SI.78",
+        "name": "Municipality of Moravske Toplice",
+        "geonameId": "3239279"
+      },
+      {
+        "id": "SI.47",
+        "name": "Municipality of Kobilje",
+        "geonameId": "3239280"
+      },
+      {
+        "id": "SI.02",
+        "name": "Municipality of Beltinci",
+        "geonameId": "3239282"
+      },
+      {
+        "id": "SI.D6",
+        "name": "Municipality of Turnišče",
+        "geonameId": "3239283"
+      },
+      {
+        "id": "SI.86",
+        "name": "Municipality of Odranci",
+        "geonameId": "3239285"
+      },
+      {
+        "id": "SI.15",
+        "name": "Municipality of Črenšovci",
+        "geonameId": "3239286"
+      },
+      {
+        "id": "SI.83",
+        "name": "Municipality of Nazarje",
+        "geonameId": "3239294"
+      },
+      {
+        "id": "SI.61",
+        "name": "Ljubljana",
+        "geonameId": "3239318"
+      },
+      {
+        "id": "SI.N7",
+        "name": "Municipality of Žirovnica",
+        "geonameId": "3344893"
+      },
+      {
+        "id": "SI.H5",
+        "name": "Municipality of Jezersko",
+        "geonameId": "3344894"
+      },
+      {
+        "id": "SI.M2",
+        "name": "Municipality of Solčava",
+        "geonameId": "3344895"
+      },
+      {
+        "id": "SI.H8",
+        "name": "Komenda",
+        "geonameId": "3344896"
+      },
+      {
+        "id": "SI.H3",
+        "name": "Municipality of Horjul",
+        "geonameId": "3344897"
+      },
+      {
+        "id": "SI.L6",
+        "name": "Municipality of Šempeter–Vrtojba",
+        "geonameId": "3344898"
+      },
+      {
+        "id": "SI.F6",
+        "name": "Municipality of Bloke",
+        "geonameId": "3344899"
+      },
+      {
+        "id": "SI.M1",
+        "name": "Municipality of Sodražica",
+        "geonameId": "3344900"
+      },
+      {
+        "id": "SI.M8",
+        "name": "Municipality of Trzin",
+        "geonameId": "3344901"
+      },
+      {
+        "id": "SI.K6",
+        "name": "Municipality of Prevalje",
+        "geonameId": "3344902"
+      },
+      {
+        "id": "SI.N4",
+        "name": "Municipality of Vransko",
+        "geonameId": "3344903"
+      },
+      {
+        "id": "SI.M5",
+        "name": "Municipality of Tabor",
+        "geonameId": "3344904"
+      },
+      {
+        "id": "SI.F7",
+        "name": "Municipality of Braslovče",
+        "geonameId": "3344905"
+      },
+      {
+        "id": "SI.K3",
+        "name": "Municipality of Polzela",
+        "geonameId": "3344906"
+      },
+      {
+        "id": "SI.K4",
+        "name": "Prebold",
+        "geonameId": "3344907"
+      },
+      {
+        "id": "SI.H9",
+        "name": "Municipality of Kostel",
+        "geonameId": "3344908"
+      },
+      {
+        "id": "SI.N8",
+        "name": "Municipality of Žužemberk",
+        "geonameId": "3344909"
+      },
+      {
+        "id": "SI.G6",
+        "name": "Dolenjske Toplice",
+        "geonameId": "3344910"
+      },
+      {
+        "id": "SI.J6",
+        "name": "Municipality of Mirna Peč",
+        "geonameId": "3344911"
+      },
+      {
+        "id": "SI.F5",
+        "name": "Municipality of Bistrica ob Sotli",
+        "geonameId": "3344912"
+      },
+      {
+        "id": "SI.G2",
+        "name": "Municipality of Dobje",
+        "geonameId": "3344913"
+      },
+      {
+        "id": "SI.G3",
+        "name": "Dobrna",
+        "geonameId": "3344914"
+      },
+      {
+        "id": "SI.J8",
+        "name": "Municipality of Oplotnica",
+        "geonameId": "3344915"
+      },
+      {
+        "id": "SI.K2",
+        "name": "Municipality of Podvelka",
+        "geonameId": "3344916"
+      },
+      {
+        "id": "SI.L2",
+        "name": "Municipality of Ribnica na Pohorju",
+        "geonameId": "3344917"
+      },
+      {
+        "id": "SI.I8",
+        "name": "Municipality of Lovrenc na Pohorju",
+        "geonameId": "3344918"
+      },
+      {
+        "id": "SI.L5",
+        "name": "Municipality of Selnica ob Dravi",
+        "geonameId": "3344919"
+      },
+      {
+        "id": "SI.H1",
+        "name": "Municipality of Hoče–Slivnica",
+        "geonameId": "3344920"
+      },
+      {
+        "id": "SI.J4",
+        "name": "Municipality of Miklavž na Dravskem Polju",
+        "geonameId": "3344921"
+      },
+      {
+        "id": "SI.G9",
+        "name": "Hajdina",
+        "geonameId": "3344922"
+      },
+      {
+        "id": "SI.N6",
+        "name": "Municipality of Žetale",
+        "geonameId": "3344923"
+      },
+      {
+        "id": "SI.K1",
+        "name": "Municipality of Podlehnik",
+        "geonameId": "3344924"
+      },
+      {
+        "id": "SI.J3",
+        "name": "Municipality of Markovci",
+        "geonameId": "3344925"
+      },
+      {
+        "id": "SI.G1",
+        "name": "Destrnik",
+        "geonameId": "3344926"
+      },
+      {
+        "id": "SI.M7",
+        "name": "Municipality of Trnovska Vas",
+        "geonameId": "3344927"
+      },
+      {
+        "id": "SI.M4",
+        "name": "Municipality of Sveti Andraž v Slovenskih Goricah",
+        "geonameId": "3344928"
+      },
+      {
+        "id": "SI.F9",
+        "name": "Municipality of Cerkvenjak",
+        "geonameId": "3344929"
+      },
+      {
+        "id": "SI.F4",
+        "name": "Municipality of Benedikt",
+        "geonameId": "3344930"
+      },
+      {
+        "id": "SI.M3",
+        "name": "Municipality of Sveta Ana",
+        "geonameId": "3344931"
+      },
+      {
+        "id": "SI.I1",
+        "name": "Municipality of Križevci",
+        "geonameId": "3344932"
+      },
+      {
+        "id": "SI.N1",
+        "name": "Municipality of Veržej",
+        "geonameId": "3344933"
+      },
+      {
+        "id": "SI.M9",
+        "name": "Municipality of Velika Polana",
+        "geonameId": "3344934"
+      },
+      {
+        "id": "SI.I4",
+        "name": "Municipality of Lendava",
+        "geonameId": "3344935"
+      },
+      {
+        "id": "SI.G5",
+        "name": "Municipality of Dobrovnik",
+        "geonameId": "3344936"
+      },
+      {
+        "id": "SI.M6",
+        "name": "Municipality of Tišina",
+        "geonameId": "3344937"
+      },
+      {
+        "id": "SI.F8",
+        "name": "Municipality of Cankova",
+        "geonameId": "3344938"
+      },
+      {
+        "id": "SI.G8",
+        "name": "Grad",
+        "geonameId": "3344939"
+      },
+      {
+        "id": "SI.H2",
+        "name": "Municipality of Hodoš",
+        "geonameId": "3344940"
+      },
+      {
+        "id": "SI.K9",
+        "name": "Municipality of Razkrižje",
+        "geonameId": "3344941"
+      },
+      {
+        "id": "SI.L9",
+        "name": "Municipality of Šmartno pri Litiji",
+        "geonameId": "3344942"
+      },
+      {
+        "id": "SI.L4",
+        "name": "Municipality of Šalovci",
+        "geonameId": "3344943"
+      },
+      {
+        "id": "SI.N9",
+        "name": "Municipality of Apače",
+        "geonameId": "8133579"
+      },
+      {
+        "id": "SI.O1",
+        "name": "Municipality of Cirkulane",
+        "geonameId": "8133580"
+      },
+      {
+        "id": "SI.O3",
+        "name": "Municipality of Kostanjevica na Krki",
+        "geonameId": "8133581"
+      },
+      {
+        "id": "SI.O4",
+        "name": "Log–Dragomer",
+        "geonameId": "8133582"
+      },
+      {
+        "id": "SI.O5",
+        "name": "Municipality of Makole",
+        "geonameId": "8133583"
+      },
+      {
+        "id": "SI.O7",
+        "name": "Municipality of Mokronog–Trebelno",
+        "geonameId": "8133584"
+      },
+      {
+        "id": "SI.O8",
+        "name": "Municipality of Poljčane",
+        "geonameId": "8133585"
+      },
+      {
+        "id": "SI.O9",
+        "name": "Municipality of Rečica ob Savinji",
+        "geonameId": "8133586"
+      },
+      {
+        "id": "SI.P1",
+        "name": "Municipality of Renče–Vogrsko",
+        "geonameId": "8133587"
+      },
+      {
+        "id": "SI.P4",
+        "name": "Municipality of Središče ob Dravi",
+        "geonameId": "8133588"
+      },
+      {
+        "id": "SI.P5",
+        "name": "Municipality of Straža",
+        "geonameId": "8133589"
+      },
+      {
+        "id": "SI.P6",
+        "name": "Municipality of Sveta Trojica v Slovenskih Goricah",
+        "geonameId": "8133590"
+      },
+      {
+        "id": "SI.P8",
+        "name": "Municipality of Sveti Tomaž",
+        "geonameId": "8133591"
+      },
+      {
+        "id": "SI.P2",
+        "name": "Municipality of Šentrupert",
+        "geonameId": "8133592"
+      },
+      {
+        "id": "SI.P3",
+        "name": "Municipality of Šmarješke Toplice",
+        "geonameId": "8133593"
+      },
+      {
+        "id": "SI.P7",
+        "name": "Municipality of Sveti Jurij v Slovenskih Goricah",
+        "geonameId": "8469236"
+      },
+      {
+        "id": "SI.O2",
+        "name": "Gorje",
+        "geonameId": "8986279"
+      },
+      {
+        "id": "SI.P9",
+        "name": "Municipality of Ankaran",
+        "geonameId": "11288217"
+      },
+      {
+        "id": "SI.O6",
+        "name": "Municipality of Mirna",
+        "geonameId": "11288255"
+      }
+    ],
+    "ES": [
+      {
+        "id": "ES.31",
+        "name": "Murcia",
+        "geonameId": "2513413"
+      },
+      {
+        "id": "ES.CE",
+        "name": "Ceuta",
+        "geonameId": "2519582"
+      },
+      {
+        "id": "ES.07",
+        "name": "Balearic Islands",
+        "geonameId": "2521383"
+      },
+      {
+        "id": "ES.51",
+        "name": "Andalusia",
+        "geonameId": "2593109"
+      },
+      {
+        "id": "ES.53",
+        "name": "Canary Islands",
+        "geonameId": "2593110"
+      },
+      {
+        "id": "ES.54",
+        "name": "Castille-La Mancha",
+        "geonameId": "2593111"
+      },
+      {
+        "id": "ES.57",
+        "name": "Extremadura",
+        "geonameId": "2593112"
+      },
+      {
+        "id": "ES.60",
+        "name": "Valencia",
+        "geonameId": "2593113"
+      },
+      {
+        "id": "ES.34",
+        "name": "Asturias",
+        "geonameId": "3114710"
+      },
+      {
+        "id": "ES.32",
+        "name": "Navarre",
+        "geonameId": "3115609"
+      },
+      {
+        "id": "ES.29",
+        "name": "Madrid",
+        "geonameId": "3117732"
+      },
+      {
+        "id": "ES.27",
+        "name": "La Rioja",
+        "geonameId": "3336897"
+      },
+      {
+        "id": "ES.39",
+        "name": "Cantabria",
+        "geonameId": "3336898"
+      },
+      {
+        "id": "ES.52",
+        "name": "Aragon",
+        "geonameId": "3336899"
+      },
+      {
+        "id": "ES.55",
+        "name": "Castille and León",
+        "geonameId": "3336900"
+      },
+      {
+        "id": "ES.56",
+        "name": "Catalonia",
+        "geonameId": "3336901"
+      },
+      {
+        "id": "ES.58",
+        "name": "Galicia",
+        "geonameId": "3336902"
+      },
+      {
+        "id": "ES.59",
+        "name": "Basque Country",
+        "geonameId": "3336903"
+      },
+      {
+        "id": "ES.ML",
+        "name": "Melilla",
+        "geonameId": "6362988"
+      }
+    ],
+    "SE": [
+      {
+        "id": "SE.14",
+        "name": "Norrbotten",
+        "geonameId": "604010"
+      },
+      {
+        "id": "SE.25",
+        "name": "Västmanland",
+        "geonameId": "2664179"
+      },
+      {
+        "id": "SE.24",
+        "name": "Västernorrland",
+        "geonameId": "2664292"
+      },
+      {
+        "id": "SE.23",
+        "name": "Västerbotten",
+        "geonameId": "2664415"
+      },
+      {
+        "id": "SE.22",
+        "name": "Värmland",
+        "geonameId": "2664870"
+      },
+      {
+        "id": "SE.21",
+        "name": "Uppsala",
+        "geonameId": "2666218"
+      },
+      {
+        "id": "SE.26",
+        "name": "Stockholm",
+        "geonameId": "2673722"
+      },
+      {
+        "id": "SE.18",
+        "name": "Södermanland",
+        "geonameId": "2676207"
+      },
+      {
+        "id": "SE.16",
+        "name": "Östergötland",
+        "geonameId": "2685867"
+      },
+      {
+        "id": "SE.15",
+        "name": "Örebro",
+        "geonameId": "2686655"
+      },
+      {
+        "id": "SE.12",
+        "name": "Kronoberg",
+        "geonameId": "2699050"
+      },
+      {
+        "id": "SE.10",
+        "name": "Dalarna",
+        "geonameId": "2699767"
+      },
+      {
+        "id": "SE.09",
+        "name": "Kalmar",
+        "geonameId": "2702259"
+      },
+      {
+        "id": "SE.08",
+        "name": "Jönköping",
+        "geonameId": "2702976"
+      },
+      {
+        "id": "SE.07",
+        "name": "Jämtland",
+        "geonameId": "2703330"
+      },
+      {
+        "id": "SE.06",
+        "name": "Halland",
+        "geonameId": "2708794"
+      },
+      {
+        "id": "SE.05",
+        "name": "Gotland",
+        "geonameId": "2711508"
+      },
+      {
+        "id": "SE.03",
+        "name": "Gävleborg",
+        "geonameId": "2712411"
+      },
+      {
+        "id": "SE.02",
+        "name": "Blekinge",
+        "geonameId": "2721357"
+      },
+      {
+        "id": "SE.27",
+        "name": "Skåne",
+        "geonameId": "3337385"
+      },
+      {
+        "id": "SE.28",
+        "name": "Västra Götaland",
+        "geonameId": "3337386"
+      }
+    ],
+    "CH": [
+      {
+        "id": "CH.ZH",
+        "name": "Zurich",
+        "geonameId": "2657895"
+      },
+      {
+        "id": "CH.ZG",
+        "name": "Zug",
+        "geonameId": "2657907"
+      },
+      {
+        "id": "CH.VD",
+        "name": "Vaud",
+        "geonameId": "2658182"
+      },
+      {
+        "id": "CH.VS",
+        "name": "Valais",
+        "geonameId": "2658205"
+      },
+      {
+        "id": "CH.UR",
+        "name": "Uri",
+        "geonameId": "2658226"
+      },
+      {
+        "id": "CH.TI",
+        "name": "Ticino",
+        "geonameId": "2658370"
+      },
+      {
+        "id": "CH.TG",
+        "name": "Thurgau",
+        "geonameId": "2658372"
+      },
+      {
+        "id": "CH.SO",
+        "name": "Solothurn",
+        "geonameId": "2658563"
+      },
+      {
+        "id": "CH.SZ",
+        "name": "Schwyz",
+        "geonameId": "2658664"
+      },
+      {
+        "id": "CH.SH",
+        "name": "Schaffhausen",
+        "geonameId": "2658760"
+      },
+      {
+        "id": "CH.SG",
+        "name": "Saint Gallen",
+        "geonameId": "2658821"
+      },
+      {
+        "id": "CH.OW",
+        "name": "Obwalden",
+        "geonameId": "2659315"
+      },
+      {
+        "id": "CH.NW",
+        "name": "Nidwalden",
+        "geonameId": "2659471"
+      },
+      {
+        "id": "CH.NE",
+        "name": "Neuchâtel",
+        "geonameId": "2659495"
+      },
+      {
+        "id": "CH.LU",
+        "name": "Lucerne",
+        "geonameId": "2659810"
+      },
+      {
+        "id": "CH.JU",
+        "name": "Jura",
+        "geonameId": "2660207"
+      },
+      {
+        "id": "CH.GR",
+        "name": "Grisons",
+        "geonameId": "2660522"
+      },
+      {
+        "id": "CH.GL",
+        "name": "Glarus",
+        "geonameId": "2660593"
+      },
+      {
+        "id": "CH.GE",
+        "name": "Geneva",
+        "geonameId": "2660645"
+      },
+      {
+        "id": "CH.FR",
+        "name": "Fribourg",
+        "geonameId": "2660717"
+      },
+      {
+        "id": "CH.BE",
+        "name": "Bern",
+        "geonameId": "2661551"
+      },
+      {
+        "id": "CH.BS",
+        "name": "Basel-City",
+        "geonameId": "2661602"
+      },
+      {
+        "id": "CH.BL",
+        "name": "Basel-Landschaft",
+        "geonameId": "2661603"
+      },
+      {
+        "id": "CH.AR",
+        "name": "Appenzell Ausserrhoden",
+        "geonameId": "2661739"
+      },
+      {
+        "id": "CH.AI",
+        "name": "Appenzell Innerrhoden",
+        "geonameId": "2661741"
+      },
+      {
+        "id": "CH.AG",
+        "name": "Aargau",
+        "geonameId": "2661876"
+      }
+    ],
+    "TR": [
+      {
+        "id": "TR.66",
+        "name": "Yozgat",
+        "geonameId": "296560"
+      },
+      {
+        "id": "TR.65",
+        "name": "Van",
+        "geonameId": "298113"
+      },
+      {
+        "id": "TR.64",
+        "name": "Uşak",
+        "geonameId": "298298"
+      },
+      {
+        "id": "TR.63",
+        "name": "Şanlıurfa",
+        "geonameId": "298332"
+      },
+      {
+        "id": "TR.62",
+        "name": "Tunceli",
+        "geonameId": "298845"
+      },
+      {
+        "id": "TR.58",
+        "name": "Sivas",
+        "geonameId": "300617"
+      },
+      {
+        "id": "TR.74",
+        "name": "Siirt",
+        "geonameId": "300821"
+      },
+      {
+        "id": "TR.73",
+        "name": "Niğde Province",
+        "geonameId": "303826"
+      },
+      {
+        "id": "TR.50",
+        "name": "Nevşehir Province",
+        "geonameId": "303830"
+      },
+      {
+        "id": "TR.49",
+        "name": "Muş",
+        "geonameId": "304041"
+      },
+      {
+        "id": "TR.48",
+        "name": "Muğla",
+        "geonameId": "304183"
+      },
+      {
+        "id": "TR.72",
+        "name": "Mardin",
+        "geonameId": "304794"
+      },
+      {
+        "id": "TR.45",
+        "name": "Manisa",
+        "geonameId": "304825"
+      },
+      {
+        "id": "TR.44",
+        "name": "Malatya",
+        "geonameId": "304919"
+      },
+      {
+        "id": "TR.43",
+        "name": "Kütahya",
+        "geonameId": "305267"
+      },
+      {
+        "id": "TR.71",
+        "name": "Konya",
+        "geonameId": "306569"
+      },
+      {
+        "id": "TR.40",
+        "name": "Kırşehir",
+        "geonameId": "307513"
+      },
+      {
+        "id": "TR.38",
+        "name": "Kayseri",
+        "geonameId": "308463"
+      },
+      {
+        "id": "TR.46",
+        "name": "Kahramanmaraş",
+        "geonameId": "310858"
+      },
+      {
+        "id": "TR.35",
+        "name": "İzmir Province",
+        "geonameId": "311044"
+      },
+      {
+        "id": "TR.33",
+        "name": "Isparta",
+        "geonameId": "311071"
+      },
+      {
+        "id": "TR.32",
+        "name": "Mersin",
+        "geonameId": "311728"
+      },
+      {
+        "id": "TR.31",
+        "name": "Hatay",
+        "geonameId": "312394"
+      },
+      {
+        "id": "TR.70",
+        "name": "Hakkâri",
+        "geonameId": "312888"
+      },
+      {
+        "id": "TR.83",
+        "name": "Gaziantep",
+        "geonameId": "314829"
+      },
+      {
+        "id": "TR.26",
+        "name": "Eskişehir",
+        "geonameId": "315201"
+      },
+      {
+        "id": "TR.25",
+        "name": "Erzurum",
+        "geonameId": "315367"
+      },
+      {
+        "id": "TR.24",
+        "name": "Erzincan",
+        "geonameId": "315372"
+      },
+      {
+        "id": "TR.23",
+        "name": "Elazığ",
+        "geonameId": "315807"
+      },
+      {
+        "id": "TR.21",
+        "name": "Diyarbakır Province",
+        "geonameId": "316540"
+      },
+      {
+        "id": "TR.20",
+        "name": "Denizli",
+        "geonameId": "317106"
+      },
+      {
+        "id": "TR.15",
+        "name": "Burdur",
+        "geonameId": "320390"
+      },
+      {
+        "id": "TR.13",
+        "name": "Bitlis",
+        "geonameId": "321022"
+      },
+      {
+        "id": "TR.12",
+        "name": "Bingöl",
+        "geonameId": "321079"
+      },
+      {
+        "id": "TR.11",
+        "name": "Bilecik",
+        "geonameId": "321122"
+      },
+      {
+        "id": "TR.10",
+        "name": "Balıkesir",
+        "geonameId": "322164"
+      },
+      {
+        "id": "TR.09",
+        "name": "Aydın",
+        "geonameId": "322819"
+      },
+      {
+        "id": "TR.07",
+        "name": "Antalya",
+        "geonameId": "323776"
+      },
+      {
+        "id": "TR.68",
+        "name": "Ankara",
+        "geonameId": "323784"
+      },
+      {
+        "id": "TR.04",
+        "name": "Ağrı",
+        "geonameId": "325163"
+      },
+      {
+        "id": "TR.03",
+        "name": "Afyonkarahisar Province",
+        "geonameId": "325302"
+      },
+      {
+        "id": "TR.02",
+        "name": "Adıyaman Province",
+        "geonameId": "325329"
+      },
+      {
+        "id": "TR.81",
+        "name": "Adana",
+        "geonameId": "325361"
+      },
+      {
+        "id": "TR.91",
+        "name": "Osmaniye",
+        "geonameId": "443183"
+      },
+      {
+        "id": "TR.88",
+        "name": "Iğdır",
+        "geonameId": "443184"
+      },
+      {
+        "id": "TR.75",
+        "name": "Aksaray",
+        "geonameId": "443185"
+      },
+      {
+        "id": "TR.76",
+        "name": "Batman",
+        "geonameId": "443186"
+      },
+      {
+        "id": "TR.78",
+        "name": "Karaman",
+        "geonameId": "443187"
+      },
+      {
+        "id": "TR.79",
+        "name": "Kırıkkale",
+        "geonameId": "443188"
+      },
+      {
+        "id": "TR.80",
+        "name": "Şırnak",
+        "geonameId": "443189"
+      },
+      {
+        "id": "TR.90",
+        "name": "Kilis",
+        "geonameId": "443213"
+      },
+      {
+        "id": "TR.85",
+        "name": "Zonguldak Province",
+        "geonameId": "737021"
+      },
+      {
+        "id": "TR.61",
+        "name": "Trabzon",
+        "geonameId": "738647"
+      },
+      {
+        "id": "TR.60",
+        "name": "Tokat Province",
+        "geonameId": "738742"
+      },
+      {
+        "id": "TR.59",
+        "name": "Tekirdağ",
+        "geonameId": "738926"
+      },
+      {
+        "id": "TR.57",
+        "name": "Sinop",
+        "geonameId": "739598"
+      },
+      {
+        "id": "TR.55",
+        "name": "Samsun",
+        "geonameId": "740263"
+      },
+      {
+        "id": "TR.54",
+        "name": "Sakarya",
+        "geonameId": "740352"
+      },
+      {
+        "id": "TR.53",
+        "name": "Rize Province",
+        "geonameId": "740481"
+      },
+      {
+        "id": "TR.52",
+        "name": "Ordu",
+        "geonameId": "741098"
+      },
+      {
+        "id": "TR.41",
+        "name": "Kocaeli",
+        "geonameId": "742865"
+      },
+      {
+        "id": "TR.39",
+        "name": "Kırklareli",
+        "geonameId": "743165"
+      },
+      {
+        "id": "TR.37",
+        "name": "Kastamonu",
+        "geonameId": "743881"
+      },
+      {
+        "id": "TR.84",
+        "name": "Kars Province",
+        "geonameId": "743942"
+      },
+      {
+        "id": "TR.34",
+        "name": "Istanbul",
+        "geonameId": "745042"
+      },
+      {
+        "id": "TR.69",
+        "name": "Gümüşhane Province",
+        "geonameId": "746423"
+      },
+      {
+        "id": "TR.28",
+        "name": "Giresun",
+        "geonameId": "746878"
+      },
+      {
+        "id": "TR.22",
+        "name": "Edirne",
+        "geonameId": "747711"
+      },
+      {
+        "id": "TR.19",
+        "name": "Çorum",
+        "geonameId": "748877"
+      },
+      {
+        "id": "TR.82",
+        "name": "Çankırı",
+        "geonameId": "749747"
+      },
+      {
+        "id": "TR.17",
+        "name": "Canakkale",
+        "geonameId": "749778"
+      },
+      {
+        "id": "TR.16",
+        "name": "Bursa Province",
+        "geonameId": "750268"
+      },
+      {
+        "id": "TR.14",
+        "name": "Bolu",
+        "geonameId": "750510"
+      },
+      {
+        "id": "TR.08",
+        "name": "Artvin",
+        "geonameId": "751816"
+      },
+      {
+        "id": "TR.05",
+        "name": "Amasya",
+        "geonameId": "752014"
+      },
+      {
+        "id": "TR.87",
+        "name": "Bartın",
+        "geonameId": "862467"
+      },
+      {
+        "id": "TR.89",
+        "name": "Karabük Province",
+        "geonameId": "862468"
+      },
+      {
+        "id": "TR.92",
+        "name": "Yalova",
+        "geonameId": "862469"
+      },
+      {
+        "id": "TR.86",
+        "name": "Ardahan",
+        "geonameId": "862470"
+      },
+      {
+        "id": "TR.77",
+        "name": "Bayburt Province",
+        "geonameId": "862471"
+      },
+      {
+        "id": "TR.93",
+        "name": "Düzce",
+        "geonameId": "865521"
+      }
+    ],
+    "UA": [
+      {
+        "id": "UA.27",
+        "name": "Zhytomyr Oblast",
+        "geonameId": "686966"
+      },
+      {
+        "id": "UA.26",
+        "name": "Zaporizhzhia",
+        "geonameId": "687699"
+      },
+      {
+        "id": "UA.25",
+        "name": "Zakarpattia",
+        "geonameId": "687869"
+      },
+      {
+        "id": "UA.24",
+        "name": "Volyn",
+        "geonameId": "689064"
+      },
+      {
+        "id": "UA.23",
+        "name": "Vinnytsia",
+        "geonameId": "689559"
+      },
+      {
+        "id": "UA.22",
+        "name": "Ternopil",
+        "geonameId": "691649"
+      },
+      {
+        "id": "UA.21",
+        "name": "Sumy",
+        "geonameId": "692196"
+      },
+      {
+        "id": "UA.20",
+        "name": "Sevastopol City",
+        "geonameId": "694422"
+      },
+      {
+        "id": "UA.19",
+        "name": "Rivne Oblast",
+        "geonameId": "695592"
+      },
+      {
+        "id": "UA.18",
+        "name": "Poltava",
+        "geonameId": "696634"
+      },
+      {
+        "id": "UA.17",
+        "name": "Odesa",
+        "geonameId": "698738"
+      },
+      {
+        "id": "UA.16",
+        "name": "Mykolaiv",
+        "geonameId": "700567"
+      },
+      {
+        "id": "UA.15",
+        "name": "Lviv",
+        "geonameId": "702549"
+      },
+      {
+        "id": "UA.14",
+        "name": "Luhansk",
+        "geonameId": "702657"
+      },
+      {
+        "id": "UA.13",
+        "name": "Kyiv Oblast",
+        "geonameId": "703446"
+      },
+      {
+        "id": "UA.12",
+        "name": "Kyiv City",
+        "geonameId": "703447"
+      },
+      {
+        "id": "UA.11",
+        "name": "Crimea",
+        "geonameId": "703883"
+      },
+      {
+        "id": "UA.10",
+        "name": "Kirovohrad",
+        "geonameId": "705811"
+      },
+      {
+        "id": "UA.09",
+        "name": "Khmelnytskyi",
+        "geonameId": "706370"
+      },
+      {
+        "id": "UA.08",
+        "name": "Kherson",
+        "geonameId": "706442"
+      },
+      {
+        "id": "UA.07",
+        "name": "Kharkiv",
+        "geonameId": "706482"
+      },
+      {
+        "id": "UA.06",
+        "name": "Ivano-Frankivsk",
+        "geonameId": "707470"
+      },
+      {
+        "id": "UA.05",
+        "name": "Donetsk",
+        "geonameId": "709716"
+      },
+      {
+        "id": "UA.04",
+        "name": "Dnipropetrovsk",
+        "geonameId": "709929"
+      },
+      {
+        "id": "UA.03",
+        "name": "Chernivtsi",
+        "geonameId": "710720"
+      },
+      {
+        "id": "UA.02",
+        "name": "Chernihiv Oblast",
+        "geonameId": "710734"
+      },
+      {
+        "id": "UA.01",
+        "name": "Cherkasy",
+        "geonameId": "710802"
+      }
+    ],
+    "GB": [
+      {
+        "id": "GB.WLS",
+        "name": "Wales",
+        "geonameId": "2634895"
+      },
+      {
+        "id": "GB.SCT",
+        "name": "Scotland",
+        "geonameId": "2638360"
+      },
+      {
+        "id": "GB.NIR",
+        "name": "Northern Ireland",
+        "geonameId": "2641364"
+      },
+      {
+        "id": "GB.ENG",
+        "name": "England",
+        "geonameId": "6269131"
+      }
+    ],
+    "VA": []
+  }
+}

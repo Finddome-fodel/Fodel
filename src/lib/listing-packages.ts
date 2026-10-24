@@ -80,7 +80,7 @@ function defaults(): ListingPackage[] {
     priceEurAbove: 'priceEurAbove' in pkg ? pkg.priceEurAbove : null,
     thresholdHuf: 'thresholdHuf' in pkg ? pkg.thresholdHuf : null,
     months: pkg.months,
-    maxImages: pkg.maxImages,
+    maxImages: 20,
     // Today both packages charge the €36 video extra — the published tariff.
     video: 'extra',
     phone: false,
@@ -95,7 +95,6 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
   const phone = listingRules(services as any).packagePhone;
   const packages = defaults().map((base): ListingPackage => {
     const s = services?.listingPackages?.[base.id] ?? {};
-    const hasMax = 'maxImages' in s;
     return {
       id: base.id,
       names: { ...base.names, hu: s.names?.hu?.trim() || base.names.hu, nl: s.names?.nl?.trim() || base.names.nl },
@@ -103,7 +102,7 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
       priceEurAbove: 'priceEurAbove' in s ? (s.priceEurAbove == null ? null : num(s.priceEurAbove, base.priceEurAbove ?? 0, 0, PRICE_MAX)) : base.priceEurAbove,
       thresholdHuf: 'thresholdHuf' in s ? (s.thresholdHuf == null ? null : num(s.thresholdHuf, base.thresholdHuf ?? 0, 1, 100_000_000_000)) : base.thresholdHuf,
       months: num(s.months, base.months, 1, 36),
-      maxImages: hasMax ? (s.maxImages == null ? null : num(s.maxImages, base.maxImages ?? 20, 1, IMAGES_MAX)) : base.maxImages,
+      maxImages: 20,
       video: VIDEO_MODES.includes(s.video as VideoMode) ? (s.video as VideoMode) : base.video,
       phone: phone[base.id],
       editedImages: bool(s.editedImages, base.editedImages),

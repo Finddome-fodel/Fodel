@@ -26,7 +26,7 @@ interface Props {
   locale: Locale;
   name: string;
   label: string;
-  type?: 'text' | 'email' | 'tel' | 'number' | 'url' | 'textarea' | 'select' | 'postcode';
+  type?: 'text' | 'email' | 'tel' | 'number' | 'url' | 'textarea' | 'select' | 'postcode' | 'coordinate';
   required?: boolean;
   placeholder?: string;
   autocomplete?: string;
@@ -75,10 +75,10 @@ const hintId = hint ? `${id}-hint` : undefined;
 const describedBy = [hintId, errorId].filter(Boolean).join(' ');
 
 /** What FormShell and the server check this value against. */
-const rule = { email: 'email', tel: 'phone', number: 'number', url: 'url', postcode: 'postcode' }[type as string];
-const htmlType = (type === 'number' || type === 'postcode' ? 'text' : type) as 'text' | 'email' | 'tel' | 'url';
+const rule = { email: 'email', tel: 'phone', number: 'number', url: 'url', postcode: 'postcode', coordinate:'coordinate' }[type as string];
+const htmlType = (type === 'number' || type === 'postcode' || type === 'coordinate' ? 'text' : type) as 'text' | 'email' | 'tel' | 'url';
 const keyboard =
-  inputmode ?? (type === 'number' ? 'decimal' : type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'url' ? 'url' : undefined);
+  inputmode ?? (type === 'number' || type==='coordinate' ? 'decimal' : type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'url' ? 'url' : undefined);
 const autoComplete =
   autocomplete ?? (type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'postcode' ? 'postal-code' : undefined);
 ---

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "FODEL Ingatlan / FODEL Vastgoed — Hungarian property advertised across Western Europe",
+  "description": "FODEL Ingatlan / FODEL Vastgoed \u2014 Hungarian property advertised across Western Europe",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -22,7 +22,10 @@
     "verify:workflow": "node scripts/verify-workflow.mjs",
     "test:rules": "node scripts/test-rules.mjs",
     "test:e2e": "playwright test",
-    "test:e2e:webkit": "playwright test --project=webkit --project=mobile-safari"
+    "test:e2e:webkit": "playwright test --project=webkit --project=mobile-safari",
+    "test:listing:migration": "node scripts/test-listing-migration.mjs",
+    "test:listing": "node scripts/test-listing-input.mjs",
+    "local:prepare": "python3 scripts/local-workspace.py"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -44,6 +47,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@electric-sql/pglite": "^0.5.11",
     "@playwright/test": "^1.64.1",
     "typescript": "^5.9.3"
   }

@@ -105,7 +105,7 @@ export default defineConfig({
         defaultLocale: DEFAULT_LOCALE,
         locales: { hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB', de: 'de-DE', fr: 'fr-FR' },
       },
-      filter: (page) => !page.includes('/api/'),
+      filter: (page) => !page.includes('/api/') && !page.includes('/portal/') && !page.includes('/top-10/'),
     }),
   ],
 

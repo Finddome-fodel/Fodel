@@ -131,7 +131,7 @@ export function epcLabel(
   epc: string,
   labels: { epcMissing: string }
 ): { value: string; isPending: boolean } {
-  if (epc === 'pending') return { value: labels.epcMissing, isPending: true };
-  if (epc === 'exempt') return { value: '—', isPending: true };
+  if (epc === 'pending' || epc==='unknown') return { value: labels.epcMissing, isPending: true };
+  if (epc === 'exempt' || epc==='not-applicable') return { value: '—', isPending: true };
   return { value: epc, isPending: false };
 }

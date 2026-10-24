@@ -41,6 +41,19 @@ export type PortalProperty = {
   status: string;
   reserved: boolean;
   category: string;
+  location_confirmed?: boolean;
+  property_group?: string;
+  property_subtype?: string;
+  original_price?: number | null;
+  original_currency?: string | null;
+  exchange_rate?: number | null;
+  exchange_source?: string | null;
+  price_calculated_at?: string | null;
+  building_m2?: number | null;
+  year_built_unknown?: boolean;
+  topic_featured?: boolean;
+  topic_highlight_requested?: boolean;
+  internal_note?: string;
   country: string;
   condition_key: string | null;
   heating_key: string | null;
@@ -104,8 +117,10 @@ export async function getProperty(
   const { data, error } = await supabase.from('properties').select(SELECT).eq('id', id).maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) return null;
+  const { data: privateData } = await supabase.from('property_private').select('lat,lng,internal_note').eq('property_id',id).maybeSingle();
   return {
     ...(data as any),
+    ...(privateData ?? {}),
     translations: (data as any).property_translations ?? [],
     media: ((data as any).property_media ?? []).sort(
       (a: PortalMedia, b: PortalMedia) => a.sort_order - b.sort_order

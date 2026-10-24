@@ -109,13 +109,12 @@ const ownerLocale = portalLang(ownerProfile?.locale);
 // Automatic hints (brief 3 §G.2) — pre-tick what can be measured; everything
 // else (people in photos, darkness, sharpness) stays a human judgement.
 const hints = photoHints(property.media);
-const huText = property.translations.find((t) => t.locale === 'hu');
+const huText = property.translations.find((t) => t.locale === 'hu') || property.translations.find(t=>t.title&&t.description);
 const autoFailed = new Set<string>([
   ...(hints.tooFew ? ['photos-count'] : []),
   ...(hints.portrait > 0 ? ['photos-horizontal'] : []),
   ...(property.price_eur <= 1 || property.price_huf <= 1 ? ['data-price'] : []),
-  ...(!property.settlement || !property.county ? ['data-settlement'] : []),
-  ...(!property.floor_m2 && !['land', 'agricultural'].includes(property.category) ? ['data-area'] : []),
+  ...(!property.country || !property.location_confirmed ? ['data-settlement'] : []),
   ...(!huText?.description?.trim() ? ['data-description'] : []),
 ]);
 const checklistPayload = {
@@ -175,6 +174,7 @@ const { data: creditableReferral } = property.owner_id
   <div class="preview card-block">
     {hero && <img src={mediaSrc(hero.storage_path)} alt="" class="hero" />}
     <dl class="facts">
+      {property.topic_highlight_requested && <div><dt>Témaköri kiemelés</dt><dd>Az eladó igényelte. Áregyeztetés szükséges; automatikus terhelés nem történik.</dd></div>}
       <div><dt>Típus</dt><dd>{categoryLabel || property.category}</dd></div>
       <div><dt>Település</dt><dd>{property.settlement}, {property.county}</dd></div>
       <div><dt>Ár</dt><dd>{eur(property.price_eur)} / {huf(property.price_huf, 'hu')}</dd></div>

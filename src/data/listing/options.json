@@ -1,0 +1,298 @@
+{
+  "condition": [
+    {
+      "key": "new-build",
+      "labels": {
+        "hu": "Új építésű",
+        "en": "Newly built",
+        "nl": "Nieuwbouw",
+        "de": "Neubau",
+        "fr": "Construction neuve"
+      }
+    },
+    {
+      "key": "new",
+      "labels": {
+        "hu": "Újszerű",
+        "en": "As new",
+        "nl": "Zo goed als nieuw",
+        "de": "Neuwertig",
+        "fr": "Comme neuf"
+      }
+    },
+    {
+      "key": "renovated",
+      "labels": {
+        "hu": "Felújított",
+        "en": "Renovated",
+        "nl": "Gerenoveerd",
+        "de": "Renoviert",
+        "fr": "Rénové"
+      }
+    },
+    {
+      "key": "good",
+      "labels": {
+        "hu": "Jó állapotú",
+        "en": "Good condition",
+        "nl": "Goede staat",
+        "de": "Guter Zustand",
+        "fr": "Bon état"
+      }
+    },
+    {
+      "key": "average",
+      "labels": {
+        "hu": "Közepes állapotú",
+        "en": "Average condition",
+        "nl": "Redelijke staat",
+        "de": "Durchschnittlicher Zustand",
+        "fr": "État moyen"
+      }
+    },
+    {
+      "key": "needs-renovation",
+      "labels": {
+        "hu": "Felújítandó",
+        "en": "Needs renovation",
+        "nl": "Te renoveren",
+        "de": "Renovierungsbedürftig",
+        "fr": "À rénover"
+      }
+    },
+    {
+      "key": "ruin",
+      "labels": {
+        "hu": "Rossz állapotú / romos",
+        "en": "Poor condition / ruin",
+        "nl": "Slechte staat / ruïne",
+        "de": "Schlechter Zustand / Ruine",
+        "fr": "Mauvais état / ruine"
+      }
+    },
+    {
+      "key": "unfinished",
+      "labels": {
+        "hu": "Befejezetlen építésű",
+        "en": "Unfinished construction",
+        "nl": "Onvoltooide bouw",
+        "de": "Unfertiger Bau",
+        "fr": "Construction inachevée"
+      }
+    },
+    {
+      "key": "unknown",
+      "labels": {
+        "hu": "Nem ismert",
+        "en": "Unknown",
+        "nl": "Onbekend",
+        "de": "Unbekannt",
+        "fr": "Inconnu"
+      }
+    }
+  ],
+  "heating": [
+    {
+      "key": "gas",
+      "labels": {
+        "hu": "Gázfűtés",
+        "en": "Gas heating",
+        "nl": "Gasverwarming",
+        "de": "Gasheizung",
+        "fr": "Chauffage au gaz"
+      }
+    },
+    {
+      "key": "electric",
+      "labels": {
+        "hu": "Elektromos fűtés",
+        "en": "Electric heating",
+        "nl": "Elektrische verwarming",
+        "de": "Elektroheizung",
+        "fr": "Chauffage électrique"
+      }
+    },
+    {
+      "key": "wood",
+      "labels": {
+        "hu": "Fa- és szilárd tüzelés",
+        "en": "Wood and solid fuel",
+        "nl": "Hout en vaste brandstof",
+        "de": "Holz- und Feststoffheizung",
+        "fr": "Bois et combustibles solides"
+      }
+    },
+    {
+      "key": "heat-pump",
+      "labels": {
+        "hu": "Hőszivattyú",
+        "en": "Heat pump",
+        "nl": "Warmtepomp",
+        "de": "Wärmepumpe",
+        "fr": "Pompe à chaleur"
+      }
+    },
+    {
+      "key": "district",
+      "labels": {
+        "hu": "Távfűtés",
+        "en": "District heating",
+        "nl": "Stadsverwarming",
+        "de": "Fernwärme",
+        "fr": "Chauffage urbain"
+      }
+    },
+    {
+      "key": "oil",
+      "labels": {
+        "hu": "Olajfűtés",
+        "en": "Oil heating",
+        "nl": "Olieverwarming",
+        "de": "Ölheizung",
+        "fr": "Chauffage au fioul"
+      }
+    },
+    {
+      "key": "solar-heating",
+      "labels": {
+        "hu": "Napenergiával működő fűtés",
+        "en": "Solar heating",
+        "nl": "Zonneverwarming",
+        "de": "Solarheizung",
+        "fr": "Chauffage solaire"
+      }
+    },
+    {
+      "key": "mixed",
+      "labels": {
+        "hu": "Vegyes fűtési rendszer",
+        "en": "Mixed heating system",
+        "nl": "Gemengd verwarmingssysteem",
+        "de": "Gemischtes Heizsystem",
+        "fr": "Système de chauffage mixte"
+      }
+    },
+    {
+      "key": "other",
+      "labels": {
+        "hu": "Egyéb",
+        "en": "Other",
+        "nl": "Overig",
+        "de": "Sonstige",
+        "fr": "Autre"
+      }
+    },
+    {
+      "key": "none",
+      "labels": {
+        "hu": "Nincs fűtés",
+        "en": "No heating",
+        "nl": "Geen verwarming",
+        "de": "Keine Heizung",
+        "fr": "Sans chauffage"
+      }
+    },
+    {
+      "key": "unknown",
+      "labels": {
+        "hu": "Nem ismert",
+        "en": "Unknown",
+        "nl": "Onbekend",
+        "de": "Unbekannt",
+        "fr": "Inconnu"
+      }
+    }
+  ],
+  "wall": [
+    {
+      "key": "tegla",
+      "labels": {
+        "hu": "Tégla",
+        "en": "Brick",
+        "nl": "Baksteen",
+        "de": "Ziegel",
+        "fr": "Brique"
+      }
+    },
+    {
+      "key": "valyog",
+      "labels": {
+        "hu": "Vályog",
+        "en": "Adobe",
+        "nl": "Leem",
+        "de": "Lehm",
+        "fr": "Terre crue"
+      }
+    },
+    {
+      "key": "vegyes",
+      "labels": {
+        "hu": "Vegyes falazat",
+        "en": "Mixed masonry",
+        "nl": "Gemengd metselwerk",
+        "de": "Mischmauerwerk",
+        "fr": "Maçonnerie mixte"
+      }
+    },
+    {
+      "key": "panel",
+      "labels": {
+        "hu": "Beton / panel",
+        "en": "Concrete / panel",
+        "nl": "Beton / panelen",
+        "de": "Beton / Plattenbau",
+        "fr": "Béton / panneaux"
+      }
+    },
+    {
+      "key": "fa",
+      "labels": {
+        "hu": "Fa / könnyűszerkezet",
+        "en": "Timber / lightweight",
+        "nl": "Hout / lichte constructie",
+        "de": "Holz / Leichtbau",
+        "fr": "Bois / construction légère"
+      }
+    },
+    {
+      "key": "ko",
+      "labels": {
+        "hu": "Kő",
+        "en": "Stone",
+        "nl": "Natuursteen",
+        "de": "Stein",
+        "fr": "Pierre"
+      }
+    },
+    {
+      "key": "acel",
+      "labels": {
+        "hu": "Acélszerkezet",
+        "en": "Steel frame",
+        "nl": "Staalconstructie",
+        "de": "Stahlkonstruktion",
+        "fr": "Ossature en acier"
+      }
+    },
+    {
+      "key": "egyeb",
+      "labels": {
+        "hu": "Egyéb",
+        "en": "Other",
+        "nl": "Overig",
+        "de": "Sonstige",
+        "fr": "Autre"
+      }
+    },
+    {
+      "key": "nem-tudom",
+      "labels": {
+        "hu": "Nem ismert",
+        "en": "Unknown",
+        "nl": "Onbekend",
+        "de": "Unbekannt",
+        "fr": "Inconnu"
+      }
+    }
+  ]
+}

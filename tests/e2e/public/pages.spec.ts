@@ -7,7 +7,7 @@ import { LOCALES, path as routePath, type RouteKey } from '../../../src/i18n/ui'
 
 const KEYS: RouteKey[] = [
   'home', 'submitAd', 'contact', 'searchRequest', 'properties', 'map', 'priceList', 'sellers', 'buyers',
-  'about', 'faq', 'valuation', 'services', 'top10', 'sold', 'blog', 'photoGuide', 'privacy', 'terms',
+  'about', 'faq', 'valuation', 'services', 'sold', 'blog', 'photoGuide', 'privacy', 'terms',
 ];
 const PATHS = [
   ...LOCALES.flatMap((l) => KEYS.map((key) => routePath(l, key))),

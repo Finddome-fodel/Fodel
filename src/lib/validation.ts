@@ -159,7 +159,7 @@ export function normalizePostcode(value: string, country: string): string {
 
 /* ── One field ─────────────────────────────────────────────────────────── */
 
-export type FieldRule = 'text' | 'email' | 'phone' | 'postcode' | 'number' | 'url';
+export type FieldRule = 'text' | 'email' | 'phone' | 'postcode' | 'number' | 'url' | 'coordinate';
 
 export type FieldSpec = {
   rule?: FieldRule;
@@ -216,6 +216,15 @@ export function validateField(spec: FieldSpec, raw: string, country?: string): F
     case 'postcode': {
       const format = country ? POSTCODES[country] : undefined;
       return !format || format.pattern.test(value) ? null : { code: 'postcode', country, example: format.example };
+    }
+    case 'coordinate': {
+      const v=value.replace(/\s/g,'').replace(',','.');
+      if(!/^-?\d+(?:\.\d+)?$/.test(v))return {code:'number'};
+      const n=Number(v);
+      if(!Number.isFinite(n))return {code:'number'};
+      if(spec.min!==undefined&&n<spec.min)return {code:'min',limit:spec.min};
+      if(spec.max!==undefined&&n>spec.max)return {code:'max',limit:spec.max};
+      return null;
     }
     case 'number': {
       // A plain machine number ("47.1625", "-3") is read as one; anything else

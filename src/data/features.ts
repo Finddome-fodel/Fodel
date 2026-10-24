@@ -7,6 +7,7 @@
  * hillside views, forest edge, waterfront, land for livestock, parking.
  */
 
+import { FEATURE_DEFINITIONS, canonicalFeature, labelIn } from '~/lib/listing-catalogue';
 import type { Locale } from '~/i18n/ui';
 import { FEATURE_LABELS } from '~/data/taxonomy-i18n';
 
@@ -43,6 +44,8 @@ export const FEATURES: Record<string, { hu: string; nl: string }> = {
 };
 
 export function featureLabel(key: string, locale: Locale): string {
+  const definition=FEATURE_DEFINITIONS.find(f=>f.key===canonicalFeature(key));
+  if(definition)return labelIn(definition.labels,locale);
   const base = FEATURES[key];
   if (!base) return key;
   return locale === 'hu' || locale === 'nl' ? base[locale] : FEATURE_LABELS[key]?.[locale] ?? base.nl;

@@ -1,0 +1,691 @@
+[
+  {
+    "key": "house",
+    "labels": {
+      "hu": "Lakóingatlanok",
+      "en": "Residential property",
+      "nl": "Woningen",
+      "de": "Wohnimmobilien",
+      "fr": "Biens résidentiels"
+    },
+    "subtypes": [
+      {
+        "key": "apartment",
+        "labels": {
+          "hu": "Lakás, garzon",
+          "en": "Flat, studio",
+          "nl": "Appartement, studio",
+          "de": "Wohnung, Studio",
+          "fr": "Appartement, studio"
+        }
+      },
+      {
+        "key": "house-villa",
+        "labels": {
+          "hu": "Családi ház, villa",
+          "en": "Detached house, villa",
+          "nl": "Vrijstaand huis, villa",
+          "de": "Einfamilienhaus, Villa",
+          "fr": "Maison individuelle, villa"
+        }
+      },
+      {
+        "key": "terraced",
+        "labels": {
+          "hu": "Ikerház, sorház",
+          "en": "Semi-detached, terraced house",
+          "nl": "Twee-onder-een-kap, rijwoning",
+          "de": "Doppelhaus, Reihenhaus",
+          "fr": "Maison jumelée, maison mitoyenne"
+        }
+      },
+      {
+        "key": "penthouse",
+        "labels": {
+          "hu": "Penthouse",
+          "en": "Penthouse",
+          "nl": "Penthouse",
+          "de": "Penthouse",
+          "fr": "Penthouse"
+        }
+      },
+      {
+        "key": "residential-building",
+        "labels": {
+          "hu": "Többlakásos épület",
+          "en": "Multi-unit residential building",
+          "nl": "Meergezinsgebouw",
+          "de": "Mehrfamilienhaus",
+          "fr": "Immeuble résidentiel"
+        }
+      },
+      {
+        "key": "residential-other",
+        "labels": {
+          "hu": "Egyéb lakóingatlan",
+          "en": "Other residential property",
+          "nl": "Overige woning",
+          "de": "Sonstige Wohnimmobilie",
+          "fr": "Autre bien résidentiel"
+        }
+      }
+    ],
+    "slugs": {}
+  },
+  {
+    "key": "holiday",
+    "labels": {
+      "hu": "Nyaralók és üdülőingatlanok",
+      "en": "Holiday property",
+      "nl": "Vakantiewoningen",
+      "de": "Ferienimmobilien",
+      "fr": "Résidences de vacances"
+    },
+    "subtypes": [
+      {
+        "key": "holiday-house",
+        "labels": {
+          "hu": "Nyaraló, hétvégi ház",
+          "en": "Holiday home, weekend house",
+          "nl": "Vakantiehuis, weekendhuis",
+          "de": "Ferienhaus, Wochenendhaus",
+          "fr": "Maison de vacances, maison de week-end"
+        }
+      },
+      {
+        "key": "holiday-apartment",
+        "labels": {
+          "hu": "Üdülőapartman",
+          "en": "Holiday apartment",
+          "nl": "Vakantieappartement",
+          "de": "Ferienwohnung",
+          "fr": "Appartement de vacances"
+        }
+      },
+      {
+        "key": "waterfront-home",
+        "labels": {
+          "hu": "Vízparti vagy tengerparti ingatlan",
+          "en": "Waterfront or seaside property",
+          "nl": "Woning aan het water of aan zee",
+          "de": "Immobilie am Wasser oder am Meer",
+          "fr": "Bien en bord de mer ou au bord de l’eau"
+        }
+      },
+      {
+        "key": "chalet",
+        "labels": {
+          "hu": "Hegyi nyaraló, faház",
+          "en": "Mountain retreat, chalet",
+          "nl": "Bergwoning, chalet",
+          "de": "Berghaus, Chalet",
+          "fr": "Chalet, maison de montagne"
+        }
+      },
+      {
+        "key": "holiday-complex",
+        "labels": {
+          "hu": "Üdülőkomplexum",
+          "en": "Holiday complex",
+          "nl": "Vakantiecomplex",
+          "de": "Ferienanlage",
+          "fr": "Complexe de vacances"
+        }
+      },
+      {
+        "key": "holiday-other",
+        "labels": {
+          "hu": "Egyéb üdülőingatlan",
+          "en": "Other holiday property",
+          "nl": "Overig vakantieverblijf",
+          "de": "Sonstige Ferienimmobilie",
+          "fr": "Autre bien de vacances"
+        }
+      }
+    ],
+    "slugs": {}
+  },
+  {
+    "key": "agricultural",
+    "labels": {
+      "hu": "Mezőgazdasági ingatlanok",
+      "en": "Agricultural property",
+      "nl": "Agrarisch vastgoed",
+      "de": "Agrarimmobilien",
+      "fr": "Biens agricoles"
+    },
+    "subtypes": [
+      {
+        "key": "arable",
+        "labels": {
+          "hu": "Szántóföld, termőföld",
+          "en": "Arable land, farmland",
+          "nl": "Akkerland, landbouwgrond",
+          "de": "Ackerland, Landwirtschaftsfläche",
+          "fr": "Terre arable, terre agricole"
+        }
+      },
+      {
+        "key": "farm",
+        "labels": {
+          "hu": "Tanya, farm",
+          "en": "Farm, homestead",
+          "nl": "Boerderij, hoeve",
+          "de": "Bauernhof, Gehöft",
+          "fr": "Ferme, exploitation"
+        }
+      },
+      {
+        "key": "orchard-vineyard",
+        "labels": {
+          "hu": "Gyümölcsös, szőlőültetvény",
+          "en": "Orchard, vineyard",
+          "nl": "Boomgaard, wijngaard",
+          "de": "Obstplantage, Weinberg",
+          "fr": "Verger, vignoble"
+        }
+      },
+      {
+        "key": "forest-pasture",
+        "labels": {
+          "hu": "Erdő, legelő",
+          "en": "Forest, pasture",
+          "nl": "Bos, weiland",
+          "de": "Wald, Weideland",
+          "fr": "Forêt, pâturage"
+        }
+      },
+      {
+        "key": "livestock",
+        "labels": {
+          "hu": "Állattartó telep",
+          "en": "Livestock facility",
+          "nl": "Veeteeltbedrijf",
+          "de": "Tierhaltungsbetrieb",
+          "fr": "Installation d’élevage"
+        }
+      },
+      {
+        "key": "agricultural-estate",
+        "labels": {
+          "hu": "Mezőgazdasági üzem, birtok",
+          "en": "Agricultural business, estate",
+          "nl": "Agrarisch bedrijf, landgoed",
+          "de": "Landwirtschaftlicher Betrieb, Gut",
+          "fr": "Exploitation agricole, domaine"
+        }
+      },
+      {
+        "key": "fish-farm",
+        "labels": {
+          "hu": "Halastó, haltenyésztő telep",
+          "en": "Fishpond, fish farm",
+          "nl": "Visvijver, viskwekerij",
+          "de": "Fischteich, Fischzuchtbetrieb",
+          "fr": "Étang piscicole, ferme aquacole"
+        }
+      },
+      {
+        "key": "agricultural-other",
+        "labels": {
+          "hu": "Egyéb mezőgazdasági ingatlan",
+          "en": "Other agricultural property",
+          "nl": "Overig agrarisch vastgoed",
+          "de": "Sonstige Agrarimmobilie",
+          "fr": "Autre bien agricole"
+        }
+      }
+    ],
+    "slugs": {}
+  },
+  {
+    "key": "commercial",
+    "labels": {
+      "hu": "Üzleti és kereskedelmi ingatlanok",
+      "en": "Commercial property",
+      "nl": "Commercieel vastgoed",
+      "de": "Gewerbeimmobilien",
+      "fr": "Biens commerciaux"
+    },
+    "subtypes": [
+      {
+        "key": "retail",
+        "labels": {
+          "hu": "Üzlethelyiség",
+          "en": "Retail unit",
+          "nl": "Winkelruimte",
+          "de": "Ladenlokal",
+          "fr": "Local commercial"
+        }
+      },
+      {
+        "key": "office",
+        "labels": {
+          "hu": "Iroda, irodaház",
+          "en": "Office, office building",
+          "nl": "Kantoor, kantoorgebouw",
+          "de": "Büro, Bürogebäude",
+          "fr": "Bureau, immeuble de bureaux"
+        }
+      },
+      {
+        "key": "restaurant",
+        "labels": {
+          "hu": "Étterem, kávézó",
+          "en": "Restaurant, café",
+          "nl": "Restaurant, café",
+          "de": "Restaurant, Café",
+          "fr": "Restaurant, café"
+        }
+      },
+      {
+        "key": "hotel",
+        "labels": {
+          "hu": "Szálloda, panzió, vendégház",
+          "en": "Hotel, B&B, guesthouse",
+          "nl": "Hotel, pension, gastenverblijf",
+          "de": "Hotel, Pension, Gästehaus",
+          "fr": "Hôtel, pension, maison d’hôtes"
+        }
+      },
+      {
+        "key": "shopping-centre",
+        "labels": {
+          "hu": "Bevásárlóközpont",
+          "en": "Shopping centre",
+          "nl": "Winkelcentrum",
+          "de": "Einkaufszentrum",
+          "fr": "Centre commercial"
+        }
+      },
+      {
+        "key": "institution",
+        "labels": {
+          "hu": "Egészségügyi, oktatási vagy sportlétesítmény",
+          "en": "Healthcare, education or sports facility",
+          "nl": "Zorg-, onderwijs- of sportvoorziening",
+          "de": "Gesundheits-, Bildungs- oder Sporteinrichtung",
+          "fr": "Établissement de santé, d’enseignement ou de sport"
+        }
+      },
+      {
+        "key": "commercial-other",
+        "labels": {
+          "hu": "Egyéb üzleti ingatlan",
+          "en": "Other commercial property",
+          "nl": "Overig commercieel vastgoed",
+          "de": "Sonstige Gewerbeimmobilie",
+          "fr": "Autre bien commercial"
+        }
+      }
+    ],
+    "slugs": {}
+  },
+  {
+    "key": "industrial",
+    "labels": {
+      "hu": "Ipari és logisztikai ingatlanok",
+      "en": "Industrial and logistics property",
+      "nl": "Industrieel en logistiek vastgoed",
+      "de": "Industrie- und Logistikimmobilien",
+      "fr": "Biens industriels et logistiques"
+    },
+    "subtypes": [
+      {
+        "key": "factory",
+        "labels": {
+          "hu": "Gyár, üzem",
+          "en": "Factory, plant",
+          "nl": "Fabriek, productiebedrijf",
+          "de": "Fabrik, Produktionsstätte",
+          "fr": "Usine, site de production"
+        }
+      },
+      {
+        "key": "warehouse",
+        "labels": {
+          "hu": "Raktár, logisztikai központ",
+          "en": "Warehouse, logistics centre",
+          "nl": "Magazijn, logistiek centrum",
+          "de": "Lager, Logistikzentrum",
+          "fr": "Entrepôt, centre logistique"
+        }
+      },
+      {
+        "key": "industrial-hall",
+        "labels": {
+          "hu": "Ipari csarnok",
+          "en": "Industrial hall",
+          "nl": "Bedrijfshal",
+          "de": "Industriehalle",
+          "fr": "Halle industrielle"
+        }
+      },
+      {
+        "key": "workshop",
+        "labels": {
+          "hu": "Műhely, szerviz",
+          "en": "Workshop, service centre",
+          "nl": "Werkplaats, servicebedrijf",
+          "de": "Werkstatt, Servicebetrieb",
+          "fr": "Atelier, centre de maintenance"
+        }
+      },
+      {
+        "key": "food-processing",
+        "labels": {
+          "hu": "Élelmiszer-feldolgozó üzem",
+          "en": "Food-processing plant",
+          "nl": "Voedselverwerkingsbedrijf",
+          "de": "Lebensmittelverarbeitungsbetrieb",
+          "fr": "Usine de transformation alimentaire"
+        }
+      },
+      {
+        "key": "industrial-other",
+        "labels": {
+          "hu": "Egyéb ipari ingatlan",
+          "en": "Other industrial property",
+          "nl": "Overig industrieel vastgoed",
+          "de": "Sonstige Industrieimmobilie",
+          "fr": "Autre bien industriel"
+        }
+      }
+    ],
+    "slugs": {}
+  },
+  {
+    "key": "mansion",
+    "labels": {
+      "hu": "Kúriák, kastélyok és történelmi ingatlanok",
+      "en": "Manor houses and historic property",
+      "nl": "Landhuizen en historisch vastgoed",
+      "de": "Herrenhäuser und historische Immobilien",
+      "fr": "Manoirs et biens historiques"
+    },
+    "subtypes": [
+      {
+        "key": "castle-manor",
+        "labels": {
+          "hu": "Kastély, kúria",
+          "en": "Castle, manor house",
+          "nl": "Kasteel, landhuis",
+          "de": "Schloss, Herrenhaus",
+          "fr": "Château, manoir"
+        }
+      },
+      {
+        "key": "historic-villa",
+        "labels": {
+          "hu": "Történelmi villa vagy udvarház",
+          "en": "Historic villa, country house",
+          "nl": "Historische villa, herenhuis",
+          "de": "Historische Villa, Gutshaus",
+          "fr": "Villa historique, demeure de caractère"
+        }
+      },
+      {
+        "key": "historic-building",
+        "labels": {
+          "hu": "Vár, kolostor vagy más történelmi épület",
+          "en": "Fortress, monastery or historic building",
+          "nl": "Burcht, klooster of historisch gebouw",
+          "de": "Burg, Kloster oder historisches Gebäude",
+          "fr": "Forteresse, monastère ou bâtiment historique"
+        }
+      },
+      {
+        "key": "listed-building",
+        "labels": {
+          "hu": "Műemléki ingatlan",
+          "en": "Listed property",
+          "nl": "Monumentaal pand",
+          "de": "Denkmalgeschützte Immobilie",
+          "fr": "Bien classé"
+        }
+      },
+      {
+        "key": "historic-other",
+        "labels": {
+          "hu": "Egyéb történelmi ingatlan",
+          "en": "Other historic property",
+          "nl": "Overig historisch vastgoed",
+          "de": "Sonstige historische Immobilie",
+          "fr": "Autre bien historique"
+        }
+      }
+    ],
+    "slugs": {}
+  },
+  {
+    "key": "land",
+    "labels": {
+      "hu": "Telkek és fejlesztési területek",
+      "en": "Land and development sites",
+      "nl": "Grond en ontwikkellocaties",
+      "de": "Grundstücke und Entwicklungsflächen",
+      "fr": "Terrains et sites à développer"
+    },
+    "subtypes": [
+      {
+        "key": "residential-plot",
+        "labels": {
+          "hu": "Lakóépítési telek",
+          "en": "Residential building plot",
+          "nl": "Bouwkavel voor woningen",
+          "de": "Wohnbaugrundstück",
+          "fr": "Terrain constructible résidentiel"
+        }
+      },
+      {
+        "key": "commercial-plot",
+        "labels": {
+          "hu": "Kereskedelmi vagy ipari telek",
+          "en": "Commercial or industrial plot",
+          "nl": "Commerciële of industriële bouwgrond",
+          "de": "Gewerbe- oder Industriegrundstück",
+          "fr": "Terrain commercial ou industriel"
+        }
+      },
+      {
+        "key": "tourism-land",
+        "labels": {
+          "hu": "Turisztikai fejlesztési terület",
+          "en": "Tourism development site",
+          "nl": "Toeristische ontwikkellocatie",
+          "de": "Touristische Entwicklungsfläche",
+          "fr": "Terrain à vocation touristique"
+        }
+      },
+      {
+        "key": "development-land",
+        "labels": {
+          "hu": "Nagyobb fejlesztési projektterület",
+          "en": "Large development site",
+          "nl": "Grote projectontwikkellocatie",
+          "de": "Große Projektentwicklungsfläche",
+          "fr": "Grand terrain à développer"
+        }
+      },
+      {
+        "key": "agricultural-land",
+        "labels": {
+          "hu": "Mezőgazdasági földterület",
+          "en": "Agricultural land",
+          "nl": "Landbouwgrond",
+          "de": "Landwirtschaftliche Fläche",
+          "fr": "Terrain agricole"
+        }
+      },
+      {
+        "key": "land-other",
+        "labels": {
+          "hu": "Egyéb telek vagy fejlesztési terület",
+          "en": "Other land or development site",
+          "nl": "Overige grond of ontwikkellocatie",
+          "de": "Sonstiges Grundstück oder Entwicklungsfläche",
+          "fr": "Autre terrain ou site à développer"
+        }
+      }
+    ],
+    "slugs": {}
+  },
+  {
+    "key": "investment",
+    "labels": {
+      "hu": "Befektetési ingatlanok",
+      "en": "Investment property",
+      "nl": "Beleggingsvastgoed",
+      "de": "Anlageimmobilien",
+      "fr": "Biens d’investissement"
+    },
+    "subtypes": [
+      {
+        "key": "rented-home",
+        "labels": {
+          "hu": "Bérbe adott lakóingatlan",
+          "en": "Tenanted residential property",
+          "nl": "Verhuurde woning",
+          "de": "Vermietete Wohnimmobilie",
+          "fr": "Bien résidentiel loué"
+        }
+      },
+      {
+        "key": "investment-building",
+        "labels": {
+          "hu": "Többlakásos épület",
+          "en": "Multi-unit residential building",
+          "nl": "Meergezinsgebouw",
+          "de": "Mehrfamilienhaus",
+          "fr": "Immeuble résidentiel"
+        }
+      },
+      {
+        "key": "rented-commercial",
+        "labels": {
+          "hu": "Bérbe adott üzleti vagy ipari ingatlan",
+          "en": "Tenanted commercial or industrial property",
+          "nl": "Verhuurd commercieel of industrieel vastgoed",
+          "de": "Vermietete Gewerbe- oder Industrieimmobilie",
+          "fr": "Bien commercial ou industriel loué"
+        }
+      },
+      {
+        "key": "income-property",
+        "labels": {
+          "hu": "Jövedelemtermelő ingatlan",
+          "en": "Income-producing property",
+          "nl": "Inkomstengenererend vastgoed",
+          "de": "Renditeimmobilie",
+          "fr": "Bien de rapport"
+        }
+      },
+      {
+        "key": "portfolio",
+        "labels": {
+          "hu": "Több ingatlanból álló portfólió",
+          "en": "Property portfolio",
+          "nl": "Vastgoedportefeuille",
+          "de": "Immobilienportfolio",
+          "fr": "Portefeuille immobilier"
+        }
+      },
+      {
+        "key": "development-project",
+        "labels": {
+          "hu": "Ingatlanfejlesztési projekt",
+          "en": "Property development project",
+          "nl": "Vastgoedontwikkelingsproject",
+          "de": "Immobilienentwicklungsprojekt",
+          "fr": "Projet de promotion immobilière"
+        }
+      },
+      {
+        "key": "investment-other",
+        "labels": {
+          "hu": "Egyéb befektetési ingatlan",
+          "en": "Other investment property",
+          "nl": "Overig beleggingsvastgoed",
+          "de": "Sonstige Anlageimmobilie",
+          "fr": "Autre bien d’investissement"
+        }
+      }
+    ],
+    "slugs": {
+      "hu": "befektetesi-ingatlan",
+      "nl": "beleggingsvastgoed",
+      "en": "investment-property",
+      "de": "anlageimmobilie",
+      "fr": "bien-investissement"
+    }
+  },
+  {
+    "key": "other",
+    "labels": {
+      "hu": "Egyéb ingatlanok",
+      "en": "Other property",
+      "nl": "Overig vastgoed",
+      "de": "Sonstige Immobilien",
+      "fr": "Autres biens"
+    },
+    "subtypes": [
+      {
+        "key": "garage-parking",
+        "labels": {
+          "hu": "Garázs, parkoló",
+          "en": "Garage, parking space",
+          "nl": "Garage, parkeerplaats",
+          "de": "Garage, Stellplatz",
+          "fr": "Garage, place de parking"
+        }
+      },
+      {
+        "key": "storage-cellar",
+        "labels": {
+          "hu": "Tároló, pince",
+          "en": "Storage unit, cellar",
+          "nl": "Berging, kelder",
+          "de": "Lagerraum, Keller",
+          "fr": "Local de stockage, cave"
+        }
+      },
+      {
+        "key": "wine-cellar",
+        "labels": {
+          "hu": "Présház, borospince",
+          "en": "Wine press house, wine cellar",
+          "nl": "Pershuis, wijnkelder",
+          "de": "Kelterhaus, Weinkeller",
+          "fr": "Pressoir, cave à vin"
+        }
+      },
+      {
+        "key": "special-purpose",
+        "labels": {
+          "hu": "Speciális rendeltetésű ingatlan",
+          "en": "Special-purpose property",
+          "nl": "Vastgoed met bijzondere bestemming",
+          "de": "Immobilie mit besonderer Nutzung",
+          "fr": "Bien à usage spécifique"
+        }
+      },
+      {
+        "key": "other-property",
+        "labels": {
+          "hu": "Egyéb ingatlan",
+          "en": "Other property",
+          "nl": "Overig vastgoed",
+          "de": "Sonstige Immobilie",
+          "fr": "Autre bien"
+        }
+      }
+    ],
+    "slugs": {
+      "hu": "egyeb-ingatlan",
+      "nl": "overig-vastgoed",
+      "en": "other-property",
+      "de": "sonstige-immobilie",
+      "fr": "autre-bien"
+    }
+  }
+]

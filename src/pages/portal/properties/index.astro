@@ -44,7 +44,7 @@ const silent = (p: (typeof all)[number]) => p.status === 'published' && isUnresp
 const properties =
   view === 'curation'
     ? // Deliberate exception: the editors' pick keeps its curated order.
-      scoped.filter((p) => p.editors_pick || p.bargain).sort((a, b) => a.editors_pick_order - b.editors_pick_order)
+      scoped.filter((p) => p.featured || p.homepage_featured || p.topic_featured)
     : view === 'expiring'
       ? // Deliberate exception: a deadline list, soonest expiry first.
         scoped.filter(expiringSoon).sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)))
@@ -72,8 +72,7 @@ const flags = (p: (typeof properties)[number]) =>
   [
     p.featured && 'Kategória',
     p.homepage_featured && 'Főoldal',
-    p.editors_pick && `Top ${p.editors_pick_order}`,
-    p.bargain && 'Alkalmi',
+    p.topic_featured && 'Témakör',
   ].filter(Boolean) as string[];
 
 const chips: [string, string][] = isAdmin
@@ -98,7 +97,7 @@ const chips: [string, string][] = isAdmin
 
   <div class="bar">
     <div class="filters">
-      {isAdmin && <a href="/portal/properties?view=curation" aria-current={view === 'curation' ? 'page' : undefined}>Top 10 és alkalmi vételek</a>}
+      {isAdmin && <a href="/portal/properties?view=curation" aria-current={view === 'curation' ? 'page' : undefined}>Kiemelt megjelenések</a>}
       {isAdmin && <a href="/portal/properties?view=expiring" aria-current={view === 'expiring' ? 'page' : undefined}>Hamarosan lejár</a>}
       {isAdmin && <a href="/portal/properties?view=silent" aria-current={view === 'silent' ? 'page' : undefined}>Nem válaszolt</a>}
       {chips.map(([value, label]) => (

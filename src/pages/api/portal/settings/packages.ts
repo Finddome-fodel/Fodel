@@ -33,7 +33,6 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   for (const pkg of current.packages) {
     const k = (field: string) => `${pkg.id}_${field}`;
     const tiered = form.get(k('tiered')) === 'yes';
-    const unlimited = form.get(k('unlimited')) === 'yes';
     const video = text(k('video')) as VideoMode;
     const thresholdM = numOrNull(k('threshold_m'));
     listingPackages[pkg.id] = {
@@ -42,7 +41,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
       priceEurAbove: tiered ? numOrNull(k('price_above')) : null,
       thresholdHuf: tiered && thresholdM !== null ? thresholdM * 1_000_000 : null,
       months: numOrNull(k('months')) ?? pkg.months,
-      maxImages: unlimited ? null : numOrNull(k('max_images')) ?? pkg.maxImages ?? 20,
+      maxImages: 20,
       video: VIDEO_MODES.includes(video) ? video : pkg.video,
       editedImages: form.get(k('edited_images')) === 'yes',
       editedText: form.get(k('edited_text')) === 'yes',

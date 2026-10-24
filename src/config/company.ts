@@ -160,7 +160,7 @@ export const LISTING_PACKAGES = [
     /** The €179 tier applies above 150M HUF. */
     thresholdHuf: 150_000_000,
     months: 12,
-    maxImages: null,
+    maxImages: 20,
     editedImages: true,
     editedText: true,
   },

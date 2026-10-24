@@ -172,8 +172,8 @@ const listUrl = path(locale, 'properties');
     const feedUrl = (bounds = map.getBounds()) => {
       const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
       const filters = new URLSearchParams(window.location.search);
-      const extra = filters.get('no_adobe') === '1' ? '&no_adobe=1' : '';
-      return `/api/map/properties.geojson?locale=${locale}&bbox=${encodeURIComponent(bbox)}${extra}`;
+      filters.set('locale',locale);filters.set('bbox',bbox);filters.delete('page');
+      return `/api/map/properties.geojson?${filters}`;
     };
 
     const markers = new Map<string, Marker>();

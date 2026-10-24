@@ -1,0 +1,1173 @@
+[
+  {
+    "key": "flat-land",
+    "labels": {
+      "hu": "Sík telek",
+      "en": "Level land",
+      "nl": "Vlak terrein",
+      "de": "Ebenes Grundstück",
+      "fr": "Terrain plat"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "agricultural",
+      "land"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "sloping-land",
+    "labels": {
+      "hu": "Lankás vagy lejtős telek",
+      "en": "Sloping land",
+      "nl": "Hellend terrein",
+      "de": "Geneigtes Grundstück",
+      "fr": "Terrain en pente"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "agricultural",
+      "land"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "forest-adjacent",
+    "labels": {
+      "hu": "Erdős környezet",
+      "en": "Wooded surroundings",
+      "nl": "Bosrijke omgeving",
+      "de": "Waldreiche Umgebung",
+      "fr": "Environnement boisé"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "panoramic-view",
+    "labels": {
+      "hu": "Panorámás kilátás",
+      "en": "Panoramic views",
+      "nl": "Panoramisch uitzicht",
+      "de": "Panoramablick",
+      "fr": "Vue panoramique"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "land"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "waterfront",
+    "labels": {
+      "hu": "Közvetlen vízpart",
+      "en": "Direct waterfront",
+      "nl": "Direct aan het water",
+      "de": "Direkte Wasserlage",
+      "fr": "Accès direct à l’eau"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "land"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "terrace",
+    "labels": {
+      "hu": "Terasz vagy erkély",
+      "en": "Terrace or balcony",
+      "nl": "Terras of balkon",
+      "de": "Terrasse oder Balkon",
+      "fr": "Terrasse ou balcon"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "commercial"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "parking",
+    "labels": {
+      "hu": "Garázs vagy parkoló",
+      "en": "Garage or parking",
+      "nl": "Garage of parkeerplaats",
+      "de": "Garage oder Stellplatz",
+      "fr": "Garage ou parking"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "commercial",
+      "other"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "pool",
+    "labels": {
+      "hu": "Medence",
+      "en": "Swimming pool",
+      "nl": "Zwembad",
+      "de": "Pool",
+      "fr": "Piscine"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "sauna",
+    "labels": {
+      "hu": "Szauna vagy jakuzzi",
+      "en": "Sauna or hot tub",
+      "nl": "Sauna of jacuzzi",
+      "de": "Sauna oder Whirlpool",
+      "fr": "Sauna ou jacuzzi"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "fireplace",
+    "labels": {
+      "hu": "Kandalló",
+      "en": "Fireplace",
+      "nl": "Open haard",
+      "de": "Kamin",
+      "fr": "Cheminée"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "solar",
+    "labels": {
+      "hu": "Napelem",
+      "en": "Solar panels",
+      "nl": "Zonnepanelen",
+      "de": "Solaranlage",
+      "fr": "Panneaux solaires"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "storage",
+    "labels": {
+      "hu": "Pince vagy tároló",
+      "en": "Cellar or storage",
+      "nl": "Kelder of berging",
+      "de": "Keller oder Lagerraum",
+      "fr": "Cave ou rangement"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "other"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "park",
+    "labels": {
+      "hu": "Parkosított kert",
+      "en": "Landscaped garden",
+      "nl": "Aangelegde tuin",
+      "de": "Gepflegter Garten",
+      "fr": "Jardin paysager"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "kennel",
+    "labels": {
+      "hu": "Kutyaház vagy kutyakennel",
+      "en": "Dog house or kennel",
+      "nl": "Hondenhok of kennel",
+      "de": "Hundehütte oder Hundezwinger",
+      "fr": "Niche ou chenil"
+    },
+    "propertyGroups": [
+      "house",
+      "holiday",
+      "mansion",
+      "agricultural"
+    ],
+    "section": "outdoor"
+  },
+  {
+    "key": "private-shore",
+    "labels": {
+      "hu": "Saját partszakasz",
+      "en": "Private shoreline",
+      "nl": "Eigen oever",
+      "de": "Eigener Uferabschnitt",
+      "fr": "Rive privée"
+    },
+    "propertyGroups": [
+      "holiday"
+    ],
+    "section": "water"
+  },
+  {
+    "key": "private-jetty",
+    "labels": {
+      "hu": "Saját stég vagy kikötő",
+      "en": "Private jetty or mooring",
+      "nl": "Eigen steiger of aanlegplaats",
+      "de": "Eigener Steg oder Liegeplatz",
+      "fr": "Ponton ou amarrage privé"
+    },
+    "propertyGroups": [
+      "holiday"
+    ],
+    "section": "water"
+  },
+  {
+    "key": "boathouse",
+    "labels": {
+      "hu": "Csónak- vagy hajótároló",
+      "en": "Boat storage",
+      "nl": "Botenstalling",
+      "de": "Bootslager",
+      "fr": "Abri pour bateau"
+    },
+    "propertyGroups": [
+      "holiday"
+    ],
+    "section": "water"
+  },
+  {
+    "key": "mountain-land",
+    "labels": {
+      "hu": "Hegyvidéki terület",
+      "en": "Mountain terrain",
+      "nl": "Bergterrein",
+      "de": "Berggelände",
+      "fr": "Terrain de montagne"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "land"
+    ],
+    "section": "terrain"
+  },
+  {
+    "key": "wooded-land",
+    "labels": {
+      "hu": "Erdős terület",
+      "en": "Woodland",
+      "nl": "Bosgrond",
+      "de": "Waldfläche",
+      "fr": "Terrain boisé"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "land"
+    ],
+    "section": "terrain"
+  },
+  {
+    "key": "part-wooded",
+    "labels": {
+      "hu": "Részben erdős terület",
+      "en": "Partly wooded land",
+      "nl": "Gedeeltelijk bebost terrein",
+      "de": "Teilweise bewaldetes Gelände",
+      "fr": "Terrain partiellement boisé"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "land"
+    ],
+    "section": "terrain"
+  },
+  {
+    "key": "arable-land",
+    "labels": {
+      "hu": "Szántóföld",
+      "en": "Arable land",
+      "nl": "Akkerland",
+      "de": "Ackerland",
+      "fr": "Terre arable"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "land"
+    ],
+    "section": "terrain"
+  },
+  {
+    "key": "pasture",
+    "labels": {
+      "hu": "Legelő vagy kaszáló",
+      "en": "Pasture or meadow",
+      "nl": "Weiland of hooiland",
+      "de": "Weide oder Wiese",
+      "fr": "Pâturage ou prairie"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "land"
+    ],
+    "section": "terrain"
+  },
+  {
+    "key": "orchard",
+    "labels": {
+      "hu": "Gyümölcsös vagy szőlőültetvény",
+      "en": "Orchard or vineyard",
+      "nl": "Boomgaard of wijngaard",
+      "de": "Obstplantage oder Weinberg",
+      "fr": "Verger ou vignoble"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "land"
+    ],
+    "section": "terrain"
+  },
+  {
+    "key": "pond",
+    "labels": {
+      "hu": "Halastó vagy vízpart",
+      "en": "Fishpond or waterfront",
+      "nl": "Visvijver of waterkant",
+      "de": "Fischteich oder Wasserlage",
+      "fr": "Étang piscicole ou bord de l’eau"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "land"
+    ],
+    "section": "terrain"
+  },
+  {
+    "key": "outbuildings",
+    "labels": {
+      "hu": "Gazdasági épületek",
+      "en": "Agricultural buildings",
+      "nl": "Agrarische gebouwen",
+      "de": "Landwirtschaftliche Gebäude",
+      "fr": "Bâtiments agricoles"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "mansion"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "farm",
+      "agricultural-estate",
+      "livestock",
+      "agricultural-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
+  },
+  {
+    "key": "animal-housing",
+    "labels": {
+      "hu": "Állattartásra alkalmas ólak",
+      "en": "Animal housing",
+      "nl": "Dierenverblijven",
+      "de": "Tierställe",
+      "fr": "Bâtiments d’élevage"
+    },
+    "propertyGroups": [
+      "agricultural"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "farm",
+      "agricultural-estate",
+      "livestock",
+      "agricultural-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
+  },
+  {
+    "key": "stables",
+    "labels": {
+      "hu": "Istálló vagy karám",
+      "en": "Stable or paddock",
+      "nl": "Stal of paddock",
+      "de": "Stall oder Koppel",
+      "fr": "Écurie ou enclos"
+    },
+    "propertyGroups": [
+      "agricultural"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "farm",
+      "agricultural-estate",
+      "livestock",
+      "agricultural-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
+  },
+  {
+    "key": "riding-arena",
+    "labels": {
+      "hu": "Lovarda",
+      "en": "Riding arena",
+      "nl": "Manege",
+      "de": "Reitanlage",
+      "fr": "Centre équestre"
+    },
+    "propertyGroups": [
+      "agricultural"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "farm",
+      "agricultural-estate",
+      "livestock",
+      "agricultural-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
+  },
+  {
+    "key": "machinery-storage",
+    "labels": {
+      "hu": "Gép- és eszköztároló",
+      "en": "Machinery and tool storage",
+      "nl": "Machine- en gereedschapsopslag",
+      "de": "Maschinen- und Gerätelager",
+      "fr": "Stockage de machines et d’outils"
+    },
+    "propertyGroups": [
+      "agricultural"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "farm",
+      "agricultural-estate",
+      "livestock",
+      "agricultural-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
+  },
+  {
+    "key": "feed-storage",
+    "labels": {
+      "hu": "Takarmánytároló",
+      "en": "Feed storage",
+      "nl": "Voederopslag",
+      "de": "Futtermittellager",
+      "fr": "Stockage de fourrage"
+    },
+    "propertyGroups": [
+      "agricultural"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "farm",
+      "agricultural-estate",
+      "livestock",
+      "agricultural-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
+  },
+  {
+    "key": "irrigation",
+    "labels": {
+      "hu": "Öntözőrendszer",
+      "en": "Irrigation system",
+      "nl": "Irrigatiesysteem",
+      "de": "Bewässerungsanlage",
+      "fr": "Système d’irrigation"
+    },
+    "propertyGroups": [
+      "agricultural"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "well",
+    "labels": {
+      "hu": "Saját kút",
+      "en": "Private well",
+      "nl": "Eigen put",
+      "de": "Eigener Brunnen",
+      "fr": "Puits privé"
+    },
+    "propertyGroups": [
+      "agricultural"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "guesthouse",
+    "labels": {
+      "hu": "Vendégház",
+      "en": "Guesthouse",
+      "nl": "Gastenverblijf",
+      "de": "Gästehaus",
+      "fr": "Maison d’hôtes"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "mansion"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "farm",
+      "agricultural-estate",
+      "livestock",
+      "agricultural-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
+  },
+  {
+    "key": "cellar",
+    "labels": {
+      "hu": "Borospince",
+      "en": "Wine cellar",
+      "nl": "Wijnkelder",
+      "de": "Weinkeller",
+      "fr": "Cave à vin"
+    },
+    "propertyGroups": [
+      "agricultural",
+      "mansion",
+      "other"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "street-front",
+    "labels": {
+      "hu": "Utcafronti elhelyezkedés",
+      "en": "Street frontage",
+      "nl": "Ligging aan de straat",
+      "de": "Straßenlage",
+      "fr": "Façade sur rue"
+    },
+    "propertyGroups": [
+      "commercial"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "shopfront",
+    "labels": {
+      "hu": "Kirakatos üzlethelyiség",
+      "en": "Display windows",
+      "nl": "Winkelpui met etalage",
+      "de": "Schaufenster",
+      "fr": "Vitrine commerciale"
+    },
+    "propertyGroups": [
+      "commercial"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "loading",
+    "labels": {
+      "hu": "Rakodási lehetőség",
+      "en": "Loading access",
+      "nl": "Laad- en losmogelijkheid",
+      "de": "Lademöglichkeit",
+      "fr": "Accès pour le chargement"
+    },
+    "propertyGroups": [
+      "commercial"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "catering",
+    "labels": {
+      "hu": "Vendéglátásra alkalmas",
+      "en": "Suitable for hospitality",
+      "nl": "Geschikt voor horeca",
+      "de": "Für Gastronomie geeignet",
+      "fr": "Adapté à la restauration"
+    },
+    "propertyGroups": [
+      "commercial"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "kitchen",
+    "labels": {
+      "hu": "Konyhával felszerelt",
+      "en": "Equipped kitchen",
+      "nl": "Met keuken",
+      "de": "Ausgestattete Küche",
+      "fr": "Cuisine équipée"
+    },
+    "propertyGroups": [
+      "commercial"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "accessible",
+    "labels": {
+      "hu": "Akadálymentesített",
+      "en": "Accessible",
+      "nl": "Toegankelijk voor mindervaliden",
+      "de": "Barrierefrei",
+      "fr": "Accessible aux personnes à mobilité réduite"
+    },
+    "propertyGroups": [
+      "commercial"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "warehouse-space",
+    "labels": {
+      "hu": "Raktárhelyiség",
+      "en": "Storage space",
+      "nl": "Magazijnruimte",
+      "de": "Lagerraum",
+      "fr": "Espace de stockage"
+    },
+    "propertyGroups": [
+      "commercial",
+      "industrial"
+    ],
+    "section": "facilities"
+  },
+  {
+    "key": "high-ceiling",
+    "labels": {
+      "hu": "Nagy belmagasság",
+      "en": "High ceilings",
+      "nl": "Grote vrije hoogte",
+      "de": "Hohe Decken",
+      "fr": "Grande hauteur sous plafond"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "industrial-power",
+    "labels": {
+      "hu": "Ipari áramellátás",
+      "en": "Industrial power supply",
+      "nl": "Krachtstroom",
+      "de": "Industrielle Stromversorgung",
+      "fr": "Alimentation électrique industrielle"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "loading-ramp",
+    "labels": {
+      "hu": "Rakodórámpa",
+      "en": "Loading dock",
+      "nl": "Laadperron",
+      "de": "Laderampe",
+      "fr": "Quai de chargement"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "truck-bay",
+    "labels": {
+      "hu": "Teherautó-beálló",
+      "en": "Truck bay",
+      "nl": "Vrachtwageninrit",
+      "de": "Lkw-Einfahrt",
+      "fr": "Accès pour camion"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "truck-parking",
+    "labels": {
+      "hu": "Kamionparkoló",
+      "en": "Lorry parking",
+      "nl": "Vrachtwagenparking",
+      "de": "Lkw-Parkplatz",
+      "fr": "Parking pour poids lourds"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "crane",
+    "labels": {
+      "hu": "Daru vagy darupálya",
+      "en": "Crane or crane runway",
+      "nl": "Kraan of kraanbaan",
+      "de": "Kran oder Kranbahn",
+      "fr": "Grue ou chemin de roulement"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "heavy-floor",
+    "labels": {
+      "hu": "Nagy teherbírású padló",
+      "en": "Heavy-duty floor",
+      "nl": "Vloer met hoge draagkracht",
+      "de": "Schwerlastboden",
+      "fr": "Sol à forte capacité de charge"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "workshop-space",
+    "labels": {
+      "hu": "Műhely",
+      "en": "Workshop",
+      "nl": "Werkplaats",
+      "de": "Werkstatt",
+      "fr": "Atelier"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "office-space",
+    "labels": {
+      "hu": "Irodahelyiség",
+      "en": "Office space",
+      "nl": "Kantoorruimte",
+      "de": "Büroräume",
+      "fr": "Bureaux"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "staff-facilities",
+    "labels": {
+      "hu": "Szociális helyiségek",
+      "en": "Staff facilities",
+      "nl": "Personeelsvoorzieningen",
+      "de": "Sozialräume",
+      "fr": "Locaux sociaux"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "truck-access",
+    "labels": {
+      "hu": "Kamionnal megközelíthető",
+      "en": "Lorry access",
+      "nl": "Bereikbaar per vrachtwagen",
+      "de": "Mit Lkw erreichbar",
+      "fr": "Accessible aux poids lourds"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "listed",
+    "labels": {
+      "hu": "Műemléki jelleg",
+      "en": "Listed or heritage character",
+      "nl": "Monumentaal karakter",
+      "de": "Denkmalcharakter",
+      "fr": "Caractère patrimonial"
+    },
+    "propertyGroups": [
+      "mansion"
+    ],
+    "section": "heritage"
+  },
+  {
+    "key": "historic-elements",
+    "labels": {
+      "hu": "Történelmi építészeti elemek",
+      "en": "Historic architectural features",
+      "nl": "Historische architectuurelementen",
+      "de": "Historische Architekturelemente",
+      "fr": "Éléments architecturaux historiques"
+    },
+    "propertyGroups": [
+      "mansion"
+    ],
+    "section": "heritage"
+  },
+  {
+    "key": "wooded-estate",
+    "labels": {
+      "hu": "Erdős birtok",
+      "en": "Wooded estate",
+      "nl": "Bosrijk landgoed",
+      "de": "Bewaldetes Anwesen",
+      "fr": "Domaine boisé"
+    },
+    "propertyGroups": [
+      "mansion"
+    ],
+    "section": "heritage"
+  },
+  {
+    "key": "chapel",
+    "labels": {
+      "hu": "Saját kápolna",
+      "en": "Private chapel",
+      "nl": "Eigen kapel",
+      "de": "Eigene Kapelle",
+      "fr": "Chapelle privée"
+    },
+    "propertyGroups": [
+      "mansion"
+    ],
+    "section": "heritage"
+  },
+  {
+    "key": "steep-land",
+    "labels": {
+      "hu": "Meredek terület",
+      "en": "Steep land",
+      "nl": "Steil terrein",
+      "de": "Steiles Gelände",
+      "fr": "Terrain escarpé"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "grassland",
+    "labels": {
+      "hu": "Füves terület",
+      "en": "Grassland",
+      "nl": "Grasland",
+      "de": "Grünfläche",
+      "fr": "Terrain herbeux"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "road-access",
+    "labels": {
+      "hu": "Közútról megközelíthető",
+      "en": "Public-road access",
+      "nl": "Bereikbaar via de openbare weg",
+      "de": "Von öffentlicher Straße erreichbar",
+      "fr": "Accès depuis la voie publique"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "paved-road",
+    "labels": {
+      "hu": "Aszfaltozott út",
+      "en": "Paved road",
+      "nl": "Verharde weg",
+      "de": "Asphaltierte Straße",
+      "fr": "Route goudronnée"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "dirt-road",
+    "labels": {
+      "hu": "Földút",
+      "en": "Unpaved road",
+      "nl": "Onverharde weg",
+      "de": "Unbefestigter Weg",
+      "fr": "Chemin de terre"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "electricity",
+    "labels": {
+      "hu": "Villamos energia elérhető",
+      "en": "Electricity available",
+      "nl": "Elektriciteit beschikbaar",
+      "de": "Strom verfügbar",
+      "fr": "Électricité disponible"
+    },
+    "propertyGroups": [
+      "land",
+      "other"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "water",
+    "labels": {
+      "hu": "Vízellátás elérhető",
+      "en": "Water supply available",
+      "nl": "Water beschikbaar",
+      "de": "Wasserversorgung verfügbar",
+      "fr": "Eau disponible"
+    },
+    "propertyGroups": [
+      "land",
+      "other"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "sewer",
+    "labels": {
+      "hu": "Csatorna elérhető",
+      "en": "Mains drainage available",
+      "nl": "Riolering beschikbaar",
+      "de": "Kanalisation verfügbar",
+      "fr": "Assainissement disponible"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "gas-supply",
+    "labels": {
+      "hu": "Gáz elérhető",
+      "en": "Gas available",
+      "nl": "Gas beschikbaar",
+      "de": "Gas verfügbar",
+      "fr": "Gaz disponible"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "telecom",
+    "labels": {
+      "hu": "Telekommunikáció elérhető",
+      "en": "Telecommunications available",
+      "nl": "Telecommunicatie beschikbaar",
+      "de": "Telekommunikation verfügbar",
+      "fr": "Télécommunications disponibles"
+    },
+    "propertyGroups": [
+      "land"
+    ],
+    "section": "access"
+  },
+  {
+    "key": "tenanted",
+    "labels": {
+      "hu": "Bérbe adott",
+      "en": "Tenanted",
+      "nl": "Verhuurd",
+      "de": "Vermietet",
+      "fr": "Loué"
+    },
+    "propertyGroups": [
+      "investment"
+    ],
+    "section": "investment"
+  },
+  {
+    "key": "sold-with-tenant",
+    "labels": {
+      "hu": "Bérlővel együtt értékesíthető",
+      "en": "Sold with tenant",
+      "nl": "Te koop met huurder",
+      "de": "Verkauf mit Mieter möglich",
+      "fr": "Vente avec locataire possible"
+    },
+    "propertyGroups": [
+      "investment"
+    ],
+    "section": "investment"
+  },
+  {
+    "key": "multiple-units",
+    "labels": {
+      "hu": "Több bérleményből áll",
+      "en": "Multiple rental units",
+      "nl": "Meerdere verhuureenheden",
+      "de": "Mehrere Mieteinheiten",
+      "fr": "Plusieurs lots loués"
+    },
+    "propertyGroups": [
+      "investment"
+    ],
+    "section": "investment"
+  },
+  {
+    "key": "multiple-buildings",
+    "labels": {
+      "hu": "Több épületből áll",
+      "en": "Multiple buildings",
+      "nl": "Meerdere gebouwen",
+      "de": "Mehrere Gebäude",
+      "fr": "Plusieurs bâtiments"
+    },
+    "propertyGroups": [
+      "investment"
+    ],
+    "section": "investment"
+  },
+  {
+    "key": "going-concern",
+    "labels": {
+      "hu": "Működő vállalkozással együtt értékesíthető",
+      "en": "Sold with operating business",
+      "nl": "Te koop met lopend bedrijf",
+      "de": "Verkauf mit laufendem Betrieb möglich",
+      "fr": "Vente avec activité en cours possible"
+    },
+    "propertyGroups": [
+      "investment"
+    ],
+    "section": "investment"
+  },
+  {
+    "key": "income-producing",
+    "labels": {
+      "hu": "Jövedelemtermelő",
+      "en": "Income-producing",
+      "nl": "Inkomstengenererend",
+      "de": "Ertragsbringend",
+      "fr": "Générateur de revenus"
+    },
+    "propertyGroups": [
+      "investment"
+    ],
+    "section": "investment"
+  },
+  {
+    "key": "development-potential",
+    "labels": {
+      "hu": "Fejlesztési lehetőséget kínál",
+      "en": "Development potential",
+      "nl": "Ontwikkelingsmogelijkheden",
+      "de": "Entwicklungspotenzial",
+      "fr": "Potentiel de développement"
+    },
+    "propertyGroups": [
+      "investment"
+    ],
+    "section": "investment"
+  },
+  {
+    "key": "enclosed-parking",
+    "labels": {
+      "hu": "Zárt parkoló",
+      "en": "Enclosed parking",
+      "nl": "Afgesloten parkeerplaats",
+      "de": "Abgeschlossener Parkplatz",
+      "fr": "Parking fermé"
+    },
+    "propertyGroups": [
+      "other"
+    ],
+    "section": "facilities",
+    "subtypeKeys": [
+      "garage-parking",
+      "special-purpose",
+      "other-property"
+    ]
+  }
+]

@@ -98,14 +98,7 @@ const extraMeta: Record<ExtraId, { label: string; unit: string; note?: string }>
 
               <div class="pk-block">
                 <p class="pk-label">Tartalom</p>
-                <div class="pk-photos">
-                  <label class="f"><span>Képek száma</span><span class="unit"><input type="number" name={k('max_images')} min="1" max={IMAGES_MAX} step="1" value={pkg.maxImages ?? 20} disabled={pkg.maxImages === null} data-bind="images" /><i>kép</i></span></label>
-                  <label class="sw compact">
-                    <input type="checkbox" name={k('unlimited')} value="yes" checked={pkg.maxImages === null} data-toggle="unlimited" />
-                    <span class="sw-ui" aria-hidden="true"></span>
-                    <span><strong>Korlátlan</strong></span>
-                  </label>
-                </div>
+                <div class="pk-photos"><label class="f"><span>Képek száma</span><span class="unit"><input type="number" value="20" readonly data-bind="images" aria-label="Egységesen legfeljebb 20 kép"/><i>kép</i></span></label></div>
 
                 <div class="f">
                   <span>Videó</span>

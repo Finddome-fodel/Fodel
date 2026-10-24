@@ -8,7 +8,7 @@
  * `variant="portal"` matches the admin/owner portal's flatter look;
  * `variant="public"` sits inside the FODEL 2.0 public pages.
  */
-import { TOP_TIPS, WHY_IT_MATTERS } from '~/data/photo-tips';
+import { TOP_TIPS, UPLOAD_TIPS, WHY_IT_MATTERS } from '~/data/photo-tips';
 import { path, type Locale } from '~/i18n/ui';
 import { CHROME } from '~/i18n/chrome';
 
@@ -29,7 +29,7 @@ const headingId = `photo-tips-${variant}`;
 <section class:list={['tips', `tips-${variant}`]} aria-labelledby={headingId}>
   <h2 class="tips-head" id={headingId}>{heading ?? t.heading}</h2>
   <ol class="tips-list">
-    {TOP_TIPS.map((tip) => (
+    {(variant==='portal'?UPLOAD_TIPS:TOP_TIPS).map((tip) => (
       <li class="tip">
         <span class="tip-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">

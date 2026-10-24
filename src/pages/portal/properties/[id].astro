@@ -13,12 +13,15 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import ListingFields from '~/components/portal/ListingFields.astro';
+import PromotionChoices from '~/components/portal/PromotionChoices.astro';
+import ContactLanguages from '~/components/portal/ContactLanguages.astro';
 import Field from '~/components/forms/Field.astro';
 import PhotoUploader from '~/components/portal/PhotoUploader.astro';
 import { ONSITE_SERVICES } from '~/config/company';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
-import { getProperty, STATUS_LABEL, EPC_OPTIONS, LOCALE_OPTIONS, OWNER_EDITABLE } from '~/lib/portal/properties';
-import { getTaxonomy, getCompany, termLabel } from '~/lib/runtime-config';
+import { getProperty, STATUS_LABEL, LOCALE_OPTIONS, OWNER_EDITABLE } from '~/lib/portal/properties';
+import { getTaxonomy, getCompany } from '~/lib/runtime-config';
 import { formatCents, type OrderLine } from '~/lib/orders';
 import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
@@ -27,7 +30,6 @@ import { COMPANY } from '~/config/company';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import BillingForm from '~/components/BillingForm.astro';
 import { billingComplete } from '~/lib/invoicing/model';
-import { COUNTRIES } from '~/config/countries';
 import { SITE_HOST } from '~/config/site.mjs';
 import { listingRules, daysLeft, isUnresponsive } from '~/lib/listing-rules';
 
@@ -61,17 +63,6 @@ const [taxonomy, suggestionsResult, notesResult, orderResult, company, serviceRe
   // (migration not yet run) simply hides the section's status.
   supabase.from('service_requests').select('id, service_id, status, scheduled_for').eq('property_id', property.id).in('status', ['requested', 'scheduled']).order('created_at', { ascending: false }).limit(1).maybeSingle(),
 ]);
-// County is stored as a free-text label on properties (no FK — see 0011's
-// rationale), so options are keyed by label. A saved county whose taxonomy
-// term was disabled — or that predates the taxonomy entirely — must stay
-// selectable, or saving the form would silently overwrite it.
-const countyOptions = taxonomy.county
-  .filter((term) => term.enabled || termLabel(term, 'hu') === property.county)
-  .map((term) => ({ value: termLabel(term, 'hu'), label: termLabel(term, 'hu') }));
-if (property.county && !countyOptions.some((o) => o.value === property.county)) {
-  countyOptions.push({ value: property.county, label: property.county });
-}
-
 const editable = isAdmin || OWNER_EDITABLE.includes(property.status);
 
 const saved = Astro.url.searchParams.get('saved') === '1';
@@ -116,10 +107,8 @@ const blockers: string[] = [];
 if (property.media.length === 0) blockers.push('Legalább egy fényképet fel kell tölteni.');
 if (!trByLocale.hu?.title?.trim()) blockers.push('A magyar cím kitöltése kötelező.');
 if (!trByLocale.hu?.description?.trim()) blockers.push('A magyar rövid leírás kitöltése kötelező.');
-if (!property.settlement || !property.county || !property.region) {
-  blockers.push('A helyszín mezők (település, megye, régió) kitöltése kötelező.');
-}
-if (property.price_eur <= 1 || property.price_huf <= 1) blockers.push('Adja meg az irányárat.');
+if (!property.country || !Number.isFinite(property.lat) || !Number.isFinite(property.lng) || property.location_confirmed===false) blockers.push('Adja meg az országot és a helyet.');
+if (!(property.original_price && property.original_price>0) && (property.price_eur <= 1 || property.price_huf <= 1)) blockers.push('Adja meg az irányárat.');
 
 const openService = serviceResult.data;
 const servicesAvailable = !serviceResult.error;
@@ -129,8 +118,8 @@ const canRequestService = servicesAvailable && isOwnProperty && OWNER_EDITABLE.i
 const checks = [
   { label: 'Magyar cím', done: Boolean(trByLocale.hu?.title?.trim()) },
   { label: 'Rövid leírás', done: Boolean(trByLocale.hu?.description?.trim()) },
-  { label: 'Település, megye és régió', done: Boolean(property.settlement && property.county && property.region) },
-  { label: 'Irányár', done: property.price_eur > 1 && property.price_huf > 1 },
+  { label: 'Ország és térképi hely', done: Boolean(property.country && Number.isFinite(property.lat) && Number.isFinite(property.lng) && property.location_confirmed!==false) },
+  { label: 'Irányár', done: Boolean(property.original_price && property.original_price>0) || (property.price_eur > 1 && property.price_huf > 1) },
   { label: 'Legalább egy fénykép', done: property.media.length > 0 },
 ];
 const doneCount = checks.filter((check) => check.done).length;
@@ -141,8 +130,8 @@ const railItems = [
   { id: 'basics', label: 'Alapadatok' },
   { id: 'location', label: 'Elhelyezkedés' },
   { id: 'details', label: 'Részletek' },
-  ...(isAdmin ? [{ id: 'curation', label: 'Kiemelések' }] : []),
   { id: 'features', label: 'Jellemzők' },
+  { id: 'curation', label: 'Kiemelések' },
   { id: 'seller', label: 'Eladó' },
   { id: 'translations', label: 'Szövegek' },
   { id: 'media', label: 'Fényképek' },
@@ -162,7 +151,7 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
 
 // The package's photo limit (admin-set in Szolgáltatások). Admins may exceed it.
 const listingPackage = packageOf(listingCatalog(company.services), property.package);
-const photoLimit = listingPackage.maxImages;
+const photoLimit = 20;
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
@@ -248,97 +237,8 @@ const photoLimit = listingPackage.maxImages;
   <form method="POST" action={`/api/portal/properties/${property.id}/update`} class="editor" id="editor-form">
     <fieldset disabled={!editable}>
 
-      <section id="basics" class="ed-card">
-        <header class="card-head"><div><h2>Alapadatok</h2><p>Mi ez az ingatlan, és hogyan azonosítjuk.</p></div></header>
-        <div class="grid-2">
-          <Field locale="hu" name="category" label="Típus" type="select" required
-            options={taxonomy.category.filter((term) => term.enabled || term.key === property.category).map((term) => ({ value: term.key, label: termLabel(term, 'hu') }))}
-            value={property.category} />
-          <div class="field">
-            <label>Azonosító</label>
-            <p class="readonly">#{property.ref}</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="location" class="ed-card">
-        <header class="card-head"><div><h2>Elhelyezkedés</h2><p>Hol található — a pontos cím nem jelenik meg, ha közelítőt választ.</p></div></header>
-        <div class="grid-2">
-          <Field locale="hu" name="settlement" label="Település" required value={property.settlement} />
-          <Field locale="hu" name="country" label="Ország" type="select" required value={property.country}
-            options={Object.keys(COUNTRIES).map((code) => ({ value: code, label: COUNTRIES[code].labels.hu }))} />
-          <Field locale="hu" name="county" label="Megye" type="select" required value={property.county}
-            options={countyOptions} />
-          <Field locale="hu" name="region" label="Régió" required value={property.region} />
-          <Field locale="hu" name="precision" label="Pontosság" type="select" value={property.precision}
-            options={[{ value: 'approximate', label: 'Közelítő — puha kör, a pontos cím rejtve marad' }, { value: 'exact', label: 'Pontos — tű a pontos helyen' }]}
-            hint="Közelítőnél a térkép egy kb. 1 km-es kört mutat, eltolt középponttal, így a cím nem következtethető ki." />
-          <Field locale="hu" name="lat" label="Szélesség (lat)" type="number" required value={String(property.lat)}
-            min={-90} max={90}
-            hint="Google Maps-en jobb klikk a helyre megadja. A kiválasztott ország határain belül legyen." />
-          <Field locale="hu" name="lng" label="Hosszúság (lng)" type="number" required value={String(property.lng)}
-            min={-180} max={180}
-            hint="A kiválasztott ország határain belül legyen." />
-        </div>
-      </section>
-
-      <section id="details" class="ed-card">
-        <header class="card-head"><div><h2>Részletek</h2><p>Ár, méretek és állapot. Ezek alapján szűrnek a vevők.</p></div></header>
-        <div class="grid-2">
-          <Field locale="hu" name="price_eur" label="Ár (EUR)" type="number" required value={String(property.price_eur)} />
-          <Field locale="hu" name="price_huf" label="Ár (HUF)" type="number" required value={String(property.price_huf)} />
-          <Field locale="hu" name="price_asof" label="Árfolyam dátuma" type="text" value={property.price_asof}
-            hint="ÉÉÉÉ-HH-NN formátumban" />
-          <Field locale="hu" name="floor_m2" label="Alapterület (m²)" type="number" value={property.floor_m2 != null ? String(property.floor_m2) : ''} />
-          <Field locale="hu" name="plot_m2" label="Telekterület (m²)" type="number" required value={String(property.plot_m2)} />
-          <Field locale="hu" name="bedrooms" label="Hálószobák" type="number" value={property.bedrooms != null ? String(property.bedrooms) : ''} />
-          <Field locale="hu" name="bathrooms" label="Fürdőszobák" type="number" value={property.bathrooms != null ? String(property.bathrooms) : ''} />
-          <Field locale="hu" name="year_built" label="Építés éve" type="number" value={property.year_built != null ? String(property.year_built) : ''} />
-          <Field locale="hu" name="renovated_in" label="Felújítás éve" type="number" value={property.renovated_in != null ? String(property.renovated_in) : ''} />
-          <Field locale="hu" name="epc_class" label="Energetikai besorolás" type="select" value={property.epc_class}
-            options={EPC_OPTIONS.map((v) => ({ value: v, label: v === 'pending' ? 'Folyamatban' : v === 'exempt' ? 'Nem kötelező' : v }))} />
-          <Field locale="hu" name="video_url" label="Videó URL (YouTube)" type="url" value={property.video_url ?? ''} />
-          <Field locale="hu" name="condition_key" label="Állapot (szótár)" type="select" value={property.condition_key ?? ''}
-            options={[{value:'',label:'Nincs kiválasztva'}, ...taxonomy.condition.filter((term) => term.enabled).map((term) => ({value:term.key,label:termLabel(term,'hu')}))]} />
-          <Field locale="hu" name="heating_key" label="Fűtés (szótár)" type="select" value={property.heating_key ?? ''}
-            options={[{value:'',label:'Nincs kiválasztva'}, ...taxonomy.heating.filter((term) => term.enabled).map((term) => ({value:term.key,label:termLabel(term,'hu')}))]} />
-          <Field locale="hu" name="wall_key" label="Falazat" type="select" value={property.wall_key ?? ''}
-            options={[{value:'',label:'Nincs kiválasztva'}, ...taxonomy.wall.filter((term) => term.enabled || term.key === property.wall_key).map((term) => ({value:term.key,label:termLabel(term,'hu')}))]}
-            hint="A „vályogház kizárása” keresőszűrő ez alapján dolgozik." />
-        </div>
-        <label class="checkbox">
-          <input type="checkbox" name="price_negotiable" value="yes" checked={property.price_negotiable} />
-          Az ár alkuképes
-        </label>
-        {property.status === 'published' && (
-          <label class="checkbox">
-            <input type="checkbox" name="reserved" value="yes" checked={property.reserved} />
-            Foglalt (ideiglenesen levéve a piacról, de a hirdetés élő marad)
-          </label>
-        )}
-      </section>
-
-      {isAdmin && <section id="curation" class="ed-card"><header class="card-head"><div><h2>Kiemelések</h2><p>Csak az adminisztrátorok látják.</p></div></header><div class="checkbox-grid">
-        <label class="checkbox"><input type="checkbox" name="featured" value="yes" checked={property.featured} /> Fizetős kategória-kiemelés</label>
-        <label class="checkbox"><input type="checkbox" name="homepage_featured" value="yes" checked={property.homepage_featured} /> Fizetős főoldali kiemelés</label>
-        <label class="checkbox"><input type="checkbox" name="bargain" value="yes" checked={property.bargain} /> Alkalmi vétel</label>
-      </div><div class="grid-2"><Field locale="hu" name="homepage_order" label="Főoldali sorrend (fizetős kiemelés)" type="number" value={String(property.homepage_order)} /></div>
-      <p class="hint">
-        FODEL Top 10: {property.editors_pick ? `a válogatás ${property.editors_pick_order}. helyén` : 'nem szerepel'} —
-        a szerkesztői válogatás a <a href="/portal/top10">Top 10</a> oldalon kezelhető.
-      </p></section>}
-
-      <section id="features" class="ed-card">
-        <header class="card-head"><div><h2>Jellemzők</h2><p>Jelölje be, ami igaz az ingatlanra.</p></div></header>
-        <div class="checkbox-grid">
-          {taxonomy.feature.filter((term) => term.enabled || property.features.includes(term.key)).map((term) => (
-            <label class="checkbox">
-              <input type="checkbox" name="features" value={term.key} checked={property.features.includes(term.key)} />
-              {termLabel(term, 'hu')}
-            </label>
-          ))}
-        </div>
-      </section>
+      <div class="ed-card"><ListingFields property={property} taxonomy={taxonomy} locale="hu" /></div>
+      <div class="ed-card"><PromotionChoices property={property} isAdmin={isAdmin}/></div>
 
       <section id="seller" class="ed-card">
         <header class="card-head"><div><h2>Eladó elérhetősége</h2><p>Ha engedi, a vevő közvetlenül is felveheti Önnel a kapcsolatot.</p></div></header>
@@ -354,14 +254,8 @@ const photoLimit = listingPackage.maxImages;
           <Field locale="hu" name="seller_name" label="Név" value={property.seller_name ?? ''} />
           <Field locale="hu" name="seller_phone" label="Telefonszám" type="tel" value={property.seller_phone ?? ''} />
         </div>
-        <div class="checkbox-grid">
-          {LOCALE_OPTIONS.map((l) => (
-            <label class="checkbox">
-              <input type="checkbox" name="seller_speaks" value={l.value} checked={property.seller_speaks.includes(l.value)} />
-              {l.label}
-            </label>
-          ))}
-        </div>
+        <h3>Kapcsolattartás nyelvei</h3><p class="hint">Azok a nyelvek, amelyeken az érdeklődőkkel beszélni tud. Ez a hirdetés fordításától független.</p>
+        <ContactLanguages selected={property.seller_speaks} locale="hu"/>
       </section>
 
       <section id="translations" class="ed-card">
@@ -379,17 +273,10 @@ const photoLimit = listingPackage.maxImages;
           const suggestion = suggestionByLocale[l.value];
           return (
             <div class="locale-panel" data-locale-panel={l.value} hidden={i !== 0}>
-              <Field locale="hu" name={`title_${l.value}`} label="Cím" required={required} value={t?.title ?? ''} />
-              <Field locale="hu" name={`subtitle_${l.value}`} label="Alcím" value={t?.subtitle ?? ''} />
+              <Field locale="hu" name={`title_${l.value}`} label="Hirdetés címe" required={required} value={t?.title ?? ''} />
               <Field locale="hu" name={`description_${l.value}`} label="Rövid leírás" type="textarea" rows={3} required={required} value={t?.description ?? ''} />
               <Field locale="hu" name={`body_${l.value}`} label="Részletes leírás" type="textarea" rows={8} value={t?.body ?? ''}
                 hint="Bekezdéseket üres sorral válasszon el." />
-              <div class="grid-2">
-                <Field locale="hu" name={`condition_${l.value}`} label="Állapot" value={t?.condition ?? ''} />
-                <Field locale="hu" name={`heating_${l.value}`} label="Fűtés" value={t?.heating ?? ''} />
-                <Field locale="hu" name={`tag_${l.value}`} label="Kiemelő címke (pl. Kiemelt, Vízpart)" value={t?.tag ?? ''} />
-              </div>
-
               {isAiEnabled() && t && (
                 <div class="ai-box" data-ai-locale={l.value}>
                   {suggestion ? (
@@ -404,7 +291,7 @@ const photoLimit = listingPackage.maxImages;
                       )}
                       <button type="button" class="btn ghost small ai-accept">Elfogadom</button>
                       <button type="button" class="btn ghost small ai-reject">Elvetem</button>
-                      <p class="hint">Az "Elfogadom" a teljes szöveget (cím, alcím, rövid és részletes leírás) lecseréli — mentés előtt még szerkesztheti a fenti mezőkben.</p>
+                      <p class="hint">Az "Elfogadom" a teljes szöveget (cím, rövid és részletes leírás) lecseréli — mentés előtt még szerkesztheti a fenti mezőkben.</p>
                     </div>
                   ) : (
                     <button type="button" class="btn ghost small ai-request">Szövegjavaslat kérése</button>
@@ -415,6 +302,7 @@ const photoLimit = listingPackage.maxImages;
             </div>
           );
         })}
+        <Field locale="hu" name="internal_note" label="Megjegyzés (belső használatra)" type="textarea" rows={3} value={property.internal_note||''} hint="Csak Ön és a FODEL munkatársai láthatják. A nyilvános hirdetésben soha nem jelenik meg." maxlength={10000}/>
       </section>
 
       {editable && (
@@ -1005,7 +893,7 @@ const photoLimit = listingPackage.maxImages;
   @media (max-width: 1100px) {
     .ed-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
     /* The rail becomes a strip you can swipe, pinned under the mobile bar. */
-    .ed-rail { position: sticky; top: 68px; z-index: 25; margin: 0 -18px; padding: 8px 18px; background: linear-gradient(var(--cream) 70%, transparent); overflow-x: auto; scrollbar-width: none; }
+    .ed-rail { position: sticky; top: 68px; z-index: 25; contain:layout paint; width:100%;min-width:0;max-width:100%;margin:0;padding:8px 1px; background: linear-gradient(var(--cream) 70%, transparent); overflow-x: auto; scrollbar-width: none; }
     .ed-rail::-webkit-scrollbar { display: none; }
     .ed-rail ul { display: flex; gap: 6px; width: max-content; }
     .ed-rail a { white-space: nowrap; background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); }

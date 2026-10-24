@@ -17,7 +17,13 @@ export const GET: APIRoute = async ({ url }) => {
   const excludeAdobe = url.searchParams.get('no_adobe') === '1';
 
   const bbox = url.searchParams.get('bbox')?.split(',').map(Number);
+  const type=url.searchParams.get('type'),subtype=url.searchParams.get('subtype'),country=url.searchParams.get('country'),county=url.searchParams.get('county'),region=url.searchParams.get('region');
   const properties = (await activeProperties()).filter((property) =>
+    (!type||property.data.propertyGroup===type||property.data.category===type)&&
+    (!subtype||property.data.propertySubtype===subtype)&&
+    (!country||property.data.location.country===country)&&
+    (!county||property.data.location.county===county)&&
+    (!region||property.data.location.region===region)&&
     passesAdobeFilter(property.data.building.wall?.key, excludeAdobe) &&
     (!bbox || bbox.length !== 4 || (
       property.data.location.lng >= bbox[0] && property.data.location.lng <= bbox[2] &&

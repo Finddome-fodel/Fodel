@@ -1,0 +1,21 @@
+---
+import { CONTACT_LANGUAGES, languageName } from '~/lib/listing-catalogue';
+interface Props { selected:string[];locale?:string }
+const {selected,locale='hu'}=Astro.props;
+const x=(hu:string,nl:string,en:string)=>locale==='hu'?hu:locale==='nl'?nl:en;
+const languages=[...new Set([...CONTACT_LANGUAGES,...selected])].sort((a,b)=>languageName(a,locale).localeCompare(languageName(b,locale),locale));
+---
+<div class="languages" data-contact-languages>
+ <label class="language-search"><span>{x('Nyelvek keresése','Talen zoeken','Find languages')}</span><input type="search" data-language-search placeholder={x('Pl. magyar, német…','Bijv. Hongaars, Duits…','For example Hungarian, German…')} aria-label={x('Kapcsolattartási nyelvek keresése','Contacttalen zoeken','Search contact languages')}/></label>
+ <div class="language-list">{languages.map(code=><label data-language-label={languageName(code,locale)}><input type="checkbox" name="seller_speaks" value={code} checked={selected.includes(code)}/><span>{languageName(code,locale)}</span></label>)}</div>
+</div>
+<script>
+ for(const root of document.querySelectorAll<HTMLElement>('[data-contact-languages]')){
+  const search=root.querySelector<HTMLInputElement>('[data-language-search]')!;
+  const normal=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  search.addEventListener('input',()=>{for(const label of root.querySelectorAll<HTMLElement>('[data-language-label]'))label.hidden=!label.querySelector<HTMLInputElement>('input')?.checked&&!normal(label.dataset.languageLabel||'').includes(normal(search.value));});
+ }
+</script>
+<style>
+ .languages{border:1px solid var(--pt-hair,var(--border));border-radius:14px;padding:16px}.language-search{display:grid;gap:7px;font-size:13px;color:var(--ink-quiet)}.language-search input{min-height:44px;font-size:16px}.language-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px;margin-top:12px;max-height:220px;overflow:auto;overscroll-behavior:contain}.language-list label{display:flex;gap:9px;align-items:center;font-size:14px;min-height:40px;cursor:pointer}.language-list input{accent-color:var(--ink);width:18px;height:18px;flex-shrink:0}.language-list [hidden]{display:none}@media(max-width:600px){.language-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>

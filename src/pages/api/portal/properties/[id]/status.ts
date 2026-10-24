@@ -27,6 +27,7 @@
  * half that matters most for security (who owns what) stays in the database.
  */
 import type { Locale } from '~/i18n/ui';
+import {validSubtype} from '~/lib/listing-catalogue';
 import type { APIRoute } from 'astro';
 import { approvedWording } from '~/lib/approved-text';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
@@ -77,7 +78,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   const { data: property } = await supabase
     .from('properties')
     .select(
-      'id, ref, category, status, owner_id, package, price_huf, price_eur, settlement, county, video_url, homepage_featured, featured, free_listing, property_translations(locale)'
+      'id, ref, category, status, owner_id, package, price_huf, price_eur, settlement, county, video_url, homepage_featured, featured, free_listing, country, lat, lng, location_confirmed, original_price, property_group, property_subtype, property_translations(locale,title,description)'
     )
     .eq('id', id)
     .maybeSingle();
@@ -100,6 +101,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       .select('id', { count: 'exact', head: true })
       .eq('property_id', id);
     if (!mediaCount) return json(422, { ok: false, error: 'no-photos' });
+    if(!property.country || !property.location_confirmed || !validSubtype(property.property_group,property.property_subtype) || !(property.original_price>0) || !property.property_translations.some((t:{title:string;description:string})=>t.title?.trim()&&t.description?.trim())) return json(422,{ok:false,error:'incomplete-listing'});
 
     const { error } = await supabase
       .from('properties')
