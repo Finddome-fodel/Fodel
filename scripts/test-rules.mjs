@@ -22,7 +22,7 @@ import {
   defaultPhoneCountry, countryOfNumber, formatPhoneAsYouType,
 } from '../src/lib/validation.ts';
 import { errorMessage } from '../src/lib/validation-server.ts';
-import { LOCALES, ROUTES, path, localizer, localeFrom, isLocale } from '../src/i18n/ui.ts';
+import { LOCALES, ROUTES, UI, path, localizer, localeFrom, isLocale } from '../src/i18n/ui.ts';
 import { eur, huf, area, grouped } from '../src/lib/format.ts';
 import { withRetry, isRetryable } from '../src/lib/email/retry.ts';
 
@@ -183,6 +183,10 @@ test('default country follows the language', () => {
   assert.equal(defaultPhoneCountry('en'), 'GB');
   assert.equal(defaultPhoneCountry('de'), 'DE');
   assert.equal(defaultPhoneCountry('fr'), 'FR');
+  assert.equal(defaultPhoneCountry('es'), 'ES');
+  assert.equal(defaultPhoneCountry('pl'), 'PL');
+  assert.equal(defaultPhoneCountry('ro'), 'RO');
+  assert.equal(defaultPhoneCountry('sk'), 'SK');
   assert.equal(countryOfNumber('+4915112345678'), 'DE');
 });
 test('as-you-type formatting', () => assert.equal(formatPhoneAsYouType('+31612345678', 'NL'), '+31 6 12345678'));
@@ -217,7 +221,7 @@ test('email and url', () => {
   assert.equal(validateField({ rule: 'url' }, 'fodel')?.code, 'url');
 });
 
-console.log('Five languages');
+console.log('Nine languages');
 const ERROR_CASES = [
   { code: 'required' }, { code: 'email' }, { code: 'phone', country: 'NL', example: '+31 6 12345678' },
   { code: 'postcode', country: 'NL', example: '1234 AB' }, { code: 'number' }, { code: 'min', limit: 5 },
@@ -246,10 +250,16 @@ test('routes: same pages, own slugs, unique inside a language', () => {
 });
 test('locale helpers', () => {
   assert.equal(isLocale('fr'), true);
+  for (const l of ['es', 'pl', 'ro', 'sk']) assert.equal(isLocale(l), true);
   assert.equal(isLocale('xx'), false);
   assert.equal(localeFrom('de-AT', 'nl'), 'nl');
   assert.equal(localeFrom('de', 'nl'), 'de');
-  assert.equal(localizer('fr')('a', 'b', 'c', 'd', 'e'), 'e');
+  const nine = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+  assert.equal(localizer('fr')(...nine), 'e');
+  assert.equal(localizer('es')(...nine), 'f');
+  assert.equal(localizer('pl')(...nine), 'g');
+  assert.equal(localizer('ro')(...nine), 'h');
+  assert.equal(localizer('sk')(...nine), 'i');
 });
 test('money and area in the house style of each language', () => {
   assert.equal(eur(178000, 'hu'), '€\u00a0178\u00a0000');
@@ -262,6 +272,18 @@ test('money and area in the house style of each language', () => {
   assert.match(area(120, 'de'), /^120\u00a0m²$/);
   assert.match(area(15000, 'en'), /^1\.50\u00a0ha$/);
   assert.match(area(15000, 'fr'), /^1,50\u00a0ha$/);
+  assert.equal(eur(178000, 'es'), '178.000\u00a0€');
+  assert.equal(eur(178000, 'pl'), '178\u00a0000\u00a0€');
+  assert.equal(eur(178000, 'ro'), '178.000\u00a0€');
+  assert.equal(eur(178000, 'sk'), '178\u00a0000\u00a0€');
+  for (const l of ['es', 'pl', 'ro', 'sk']) assert.match(area(15000, l), /^1,50\u00a0ha$/);
+});
+test('result counts use each language’s plural forms', () => {
+  const counts = (l) => [1, 2, 5, 21, 22, 101].map((n) => UI[l].filters.results(n));
+  assert.deepEqual(counts('es'), ['1 inmueble', '2 inmuebles', '5 inmuebles', '21 inmuebles', '22 inmuebles', '101 inmuebles']);
+  assert.deepEqual(counts('pl'), ['1 nieruchomość', '2 nieruchomości', '5 nieruchomości', '21 nieruchomości', '22 nieruchomości', '101 nieruchomości']);
+  assert.deepEqual(counts('ro'), ['1 proprietate', '2 proprietăți', '5 proprietăți', '21 de proprietăți', '22 de proprietăți', '101 proprietăți']);
+  assert.deepEqual(counts('sk'), ['1 nehnuteľnosť', '2 nehnuteľnosti', '5 nehnuteľností', '21 nehnuteľností', '22 nehnuteľností', '101 nehnuteľností']);
 });
 
 console.log('Email retries');

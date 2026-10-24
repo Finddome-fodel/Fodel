@@ -6,7 +6,11 @@
       "en": "Level land",
       "nl": "Vlak terrein",
       "de": "Ebenes Grundstück",
-      "fr": "Terrain plat"
+      "fr": "Terrain plat",
+      "es": "Terreno llano",
+      "pl": "Płaska działka",
+      "ro": "Teren plat",
+      "sk": "Rovinatý pozemok"
     },
     "propertyGroups": [
       "house",
@@ -24,7 +28,11 @@
       "en": "Sloping land",
       "nl": "Hellend terrein",
       "de": "Geneigtes Grundstück",
-      "fr": "Terrain en pente"
+      "fr": "Terrain en pente",
+      "es": "Terreno en pendiente",
+      "pl": "Działka na zboczu",
+      "ro": "Teren în pantă",
+      "sk": "Svahovitý pozemok"
     },
     "propertyGroups": [
       "house",
@@ -42,7 +50,11 @@
       "en": "Wooded surroundings",
       "nl": "Bosrijke omgeving",
       "de": "Waldreiche Umgebung",
-      "fr": "Environnement boisé"
+      "fr": "Environnement boisé",
+      "es": "Entorno boscoso",
+      "pl": "Zalesiona okolica",
+      "ro": "Împrejurimi împădurite",
+      "sk": "Zalesené okolie"
     },
     "propertyGroups": [
       "house",
@@ -58,7 +70,11 @@
       "en": "Panoramic views",
       "nl": "Panoramisch uitzicht",
       "de": "Panoramablick",
-      "fr": "Vue panoramique"
+      "fr": "Vue panoramique",
+      "es": "Vistas panorámicas",
+      "pl": "Widok panoramiczny",
+      "ro": "Priveliște panoramică",
+      "sk": "Panoramatický výhľad"
     },
     "propertyGroups": [
       "house",
@@ -75,7 +91,11 @@
       "en": "Direct waterfront",
       "nl": "Direct aan het water",
       "de": "Direkte Wasserlage",
-      "fr": "Accès direct à l’eau"
+      "fr": "Accès direct à l’eau",
+      "es": "Acceso directo al agua",
+      "pl": "Bezpośredni dostęp do wody",
+      "ro": "Acces direct la apă",
+      "sk": "Priamy prístup k vode"
     },
     "propertyGroups": [
       "house",
@@ -92,7 +112,11 @@
       "en": "Terrace or balcony",
       "nl": "Terras of balkon",
       "de": "Terrasse oder Balkon",
-      "fr": "Terrasse ou balcon"
+      "fr": "Terrasse ou balcon",
+      "es": "Terraza o balcón",
+      "pl": "Taras lub balkon",
+      "ro": "Terasă sau balcon",
+      "sk": "Terasa alebo balkón"
     },
     "propertyGroups": [
       "house",
@@ -109,7 +133,11 @@
       "en": "Garage or parking",
       "nl": "Garage of parkeerplaats",
       "de": "Garage oder Stellplatz",
-      "fr": "Garage ou parking"
+      "fr": "Garage ou parking",
+      "es": "Garaje o aparcamiento",
+      "pl": "Garaż lub miejsce parkingowe",
+      "ro": "Garaj sau loc de parcare",
+      "sk": "Garáž alebo parkovanie"
     },
     "propertyGroups": [
       "house",
@@ -127,7 +155,11 @@
       "en": "Swimming pool",
       "nl": "Zwembad",
       "de": "Pool",
-      "fr": "Piscine"
+      "fr": "Piscine",
+      "es": "Piscina",
+      "pl": "Basen",
+      "ro": "Piscină",
+      "sk": "Bazén"
     },
     "propertyGroups": [
       "house",
@@ -143,7 +175,11 @@
       "en": "Sauna or hot tub",
       "nl": "Sauna of jacuzzi",
       "de": "Sauna oder Whirlpool",
-      "fr": "Sauna ou jacuzzi"
+      "fr": "Sauna ou jacuzzi",
+      "es": "Sauna o jacuzzi",
+      "pl": "Sauna lub jacuzzi",
+      "ro": "Saună sau jacuzzi",
+      "sk": "Sauna alebo vírivka"
     },
     "propertyGroups": [
       "house",
@@ -159,7 +195,11 @@
       "en": "Fireplace",
       "nl": "Open haard",
       "de": "Kamin",
-      "fr": "Cheminée"
+      "fr": "Cheminée",
+      "es": "Chimenea",
+      "pl": "Kominek",
+      "ro": "Șemineu",
+      "sk": "Krb"
     },
     "propertyGroups": [
       "house",
@@ -175,7 +215,11 @@
       "en": "Solar panels",
       "nl": "Zonnepanelen",
       "de": "Solaranlage",
-      "fr": "Panneaux solaires"
+      "fr": "Panneaux solaires",
+      "es": "Placas solares",
+      "pl": "Panele słoneczne",
+      "ro": "Panouri solare",
+      "sk": "Solárne panely"
     },
     "propertyGroups": [
       "house",
@@ -191,7 +235,11 @@
       "en": "Cellar or storage",
       "nl": "Kelder of berging",
       "de": "Keller oder Lagerraum",
-      "fr": "Cave ou rangement"
+      "fr": "Cave ou rangement",
+      "es": "Sótano o trastero",
+      "pl": "Piwnica lub schowek",
+      "ro": "Pivniță sau spațiu de depozitare",
+      "sk": "Pivnica alebo sklad"
     },
     "propertyGroups": [
       "house",
@@ -208,7 +256,11 @@
       "en": "Landscaped garden",
       "nl": "Aangelegde tuin",
       "de": "Gepflegter Garten",
-      "fr": "Jardin paysager"
+      "fr": "Jardin paysager",
+      "es": "Jardín paisajístico",
+      "pl": "Zagospodarowany ogród",
+      "ro": "Grădină amenajată",
+      "sk": "Upravená záhrada"
     },
     "propertyGroups": [
       "house",
@@ -224,7 +276,11 @@
       "en": "Dog house or kennel",
       "nl": "Hondenhok of kennel",
       "de": "Hundehütte oder Hundezwinger",
-      "fr": "Niche ou chenil"
+      "fr": "Niche ou chenil",
+      "es": "Caseta o perrera",
+      "pl": "Buda lub kojec dla psa",
+      "ro": "Cușcă sau padoc pentru câini",
+      "sk": "Búda alebo koterec"
     },
     "propertyGroups": [
       "house",
@@ -241,7 +297,11 @@
       "en": "Private shoreline",
       "nl": "Eigen oever",
       "de": "Eigener Uferabschnitt",
-      "fr": "Rive privée"
+      "fr": "Rive privée",
+      "es": "Orilla privada",
+      "pl": "Prywatny brzeg",
+      "ro": "Mal privat",
+      "sk": "Súkromný breh"
     },
     "propertyGroups": [
       "holiday"
@@ -255,7 +315,11 @@
       "en": "Private jetty or mooring",
       "nl": "Eigen steiger of aanlegplaats",
       "de": "Eigener Steg oder Liegeplatz",
-      "fr": "Ponton ou amarrage privé"
+      "fr": "Ponton ou amarrage privé",
+      "es": "Embarcadero o amarre privado",
+      "pl": "Prywatny pomost lub miejsce cumowania",
+      "ro": "Ponton sau loc de acostare privat",
+      "sk": "Súkromné mólo alebo kotvisko"
     },
     "propertyGroups": [
       "holiday"
@@ -269,7 +333,11 @@
       "en": "Boat storage",
       "nl": "Botenstalling",
       "de": "Bootslager",
-      "fr": "Abri pour bateau"
+      "fr": "Abri pour bateau",
+      "es": "Cobertizo para barcos",
+      "pl": "Przechowalnia łodzi",
+      "ro": "Adăpost pentru bărci",
+      "sk": "Úschovňa lodí"
     },
     "propertyGroups": [
       "holiday"
@@ -283,7 +351,11 @@
       "en": "Mountain terrain",
       "nl": "Bergterrein",
       "de": "Berggelände",
-      "fr": "Terrain de montagne"
+      "fr": "Terrain de montagne",
+      "es": "Terreno de montaña",
+      "pl": "Teren górski",
+      "ro": "Teren montan",
+      "sk": "Horský terén"
     },
     "propertyGroups": [
       "agricultural",
@@ -298,7 +370,11 @@
       "en": "Woodland",
       "nl": "Bosgrond",
       "de": "Waldfläche",
-      "fr": "Terrain boisé"
+      "fr": "Terrain boisé",
+      "es": "Terreno forestal",
+      "pl": "Teren leśny",
+      "ro": "Teren împădurit",
+      "sk": "Lesný pozemok"
     },
     "propertyGroups": [
       "agricultural",
@@ -313,7 +389,11 @@
       "en": "Partly wooded land",
       "nl": "Gedeeltelijk bebost terrein",
       "de": "Teilweise bewaldetes Gelände",
-      "fr": "Terrain partiellement boisé"
+      "fr": "Terrain partiellement boisé",
+      "es": "Terreno parcialmente arbolado",
+      "pl": "Teren częściowo zalesiony",
+      "ro": "Teren parțial împădurit",
+      "sk": "Čiastočne zalesený pozemok"
     },
     "propertyGroups": [
       "agricultural",
@@ -328,7 +408,11 @@
       "en": "Arable land",
       "nl": "Akkerland",
       "de": "Ackerland",
-      "fr": "Terre arable"
+      "fr": "Terre arable",
+      "es": "Tierra de cultivo",
+      "pl": "Grunt orny",
+      "ro": "Teren arabil",
+      "sk": "Orná pôda"
     },
     "propertyGroups": [
       "agricultural",
@@ -343,7 +427,11 @@
       "en": "Pasture or meadow",
       "nl": "Weiland of hooiland",
       "de": "Weide oder Wiese",
-      "fr": "Pâturage ou prairie"
+      "fr": "Pâturage ou prairie",
+      "es": "Pasto o prado",
+      "pl": "Pastwisko lub łąka",
+      "ro": "Pășune sau fâneață",
+      "sk": "Pasienok alebo lúka"
     },
     "propertyGroups": [
       "agricultural",
@@ -358,7 +446,11 @@
       "en": "Orchard or vineyard",
       "nl": "Boomgaard of wijngaard",
       "de": "Obstplantage oder Weinberg",
-      "fr": "Verger ou vignoble"
+      "fr": "Verger ou vignoble",
+      "es": "Huerto frutal o viñedo",
+      "pl": "Sad lub winnica",
+      "ro": "Livadă sau viță-de-vie",
+      "sk": "Ovocný sad alebo vinica"
     },
     "propertyGroups": [
       "agricultural",
@@ -373,7 +465,11 @@
       "en": "Fishpond or waterfront",
       "nl": "Visvijver of waterkant",
       "de": "Fischteich oder Wasserlage",
-      "fr": "Étang piscicole ou bord de l’eau"
+      "fr": "Étang piscicole ou bord de l’eau",
+      "es": "Estanque piscícola u orilla",
+      "pl": "Staw rybny lub brzeg wody",
+      "ro": "Iaz piscicol sau mal de apă",
+      "sk": "Rybník alebo pozemok pri vode"
     },
     "propertyGroups": [
       "agricultural",
@@ -388,7 +484,11 @@
       "en": "Agricultural buildings",
       "nl": "Agrarische gebouwen",
       "de": "Landwirtschaftliche Gebäude",
-      "fr": "Bâtiments agricoles"
+      "fr": "Bâtiments agricoles",
+      "es": "Edificaciones agrícolas",
+      "pl": "Budynki gospodarcze",
+      "ro": "Clădiri agricole",
+      "sk": "Hospodárske budovy"
     },
     "propertyGroups": [
       "agricultural",
@@ -414,7 +514,11 @@
       "en": "Animal housing",
       "nl": "Dierenverblijven",
       "de": "Tierställe",
-      "fr": "Bâtiments d’élevage"
+      "fr": "Bâtiments d’élevage",
+      "es": "Instalaciones ganaderas",
+      "pl": "Budynki inwentarskie",
+      "ro": "Adăposturi pentru animale",
+      "sk": "Maštale"
     },
     "propertyGroups": [
       "agricultural"
@@ -439,7 +543,11 @@
       "en": "Stable or paddock",
       "nl": "Stal of paddock",
       "de": "Stall oder Koppel",
-      "fr": "Écurie ou enclos"
+      "fr": "Écurie ou enclos",
+      "es": "Cuadra o cercado",
+      "pl": "Stajnia lub padok",
+      "ro": "Grajd sau padoc",
+      "sk": "Stajňa alebo výbeh"
     },
     "propertyGroups": [
       "agricultural"
@@ -464,7 +572,11 @@
       "en": "Riding arena",
       "nl": "Manege",
       "de": "Reitanlage",
-      "fr": "Centre équestre"
+      "fr": "Centre équestre",
+      "es": "Pista de equitación",
+      "pl": "Ujeżdżalnia",
+      "ro": "Manej",
+      "sk": "Jazdecká hala"
     },
     "propertyGroups": [
       "agricultural"
@@ -489,7 +601,11 @@
       "en": "Machinery and tool storage",
       "nl": "Machine- en gereedschapsopslag",
       "de": "Maschinen- und Gerätelager",
-      "fr": "Stockage de machines et d’outils"
+      "fr": "Stockage de machines et d’outils",
+      "es": "Almacén de maquinaria y herramientas",
+      "pl": "Magazyn maszyn i narzędzi",
+      "ro": "Depozit pentru utilaje și unelte",
+      "sk": "Sklad strojov a náradia"
     },
     "propertyGroups": [
       "agricultural"
@@ -514,7 +630,11 @@
       "en": "Feed storage",
       "nl": "Voederopslag",
       "de": "Futtermittellager",
-      "fr": "Stockage de fourrage"
+      "fr": "Stockage de fourrage",
+      "es": "Almacén de forraje",
+      "pl": "Magazyn pasz",
+      "ro": "Depozit de furaje",
+      "sk": "Sklad krmiva"
     },
     "propertyGroups": [
       "agricultural"
@@ -539,7 +659,11 @@
       "en": "Irrigation system",
       "nl": "Irrigatiesysteem",
       "de": "Bewässerungsanlage",
-      "fr": "Système d’irrigation"
+      "fr": "Système d’irrigation",
+      "es": "Sistema de riego",
+      "pl": "System nawadniania",
+      "ro": "Sistem de irigații",
+      "sk": "Zavlažovací systém"
     },
     "propertyGroups": [
       "agricultural"
@@ -553,7 +677,11 @@
       "en": "Private well",
       "nl": "Eigen put",
       "de": "Eigener Brunnen",
-      "fr": "Puits privé"
+      "fr": "Puits privé",
+      "es": "Pozo propio",
+      "pl": "Własna studnia",
+      "ro": "Fântână proprie",
+      "sk": "Vlastná studňa"
     },
     "propertyGroups": [
       "agricultural"
@@ -567,7 +695,11 @@
       "en": "Guesthouse",
       "nl": "Gastenverblijf",
       "de": "Gästehaus",
-      "fr": "Maison d’hôtes"
+      "fr": "Maison d’hôtes",
+      "es": "Casa de invitados",
+      "pl": "Dom gościnny",
+      "ro": "Casă de oaspeți",
+      "sk": "Dom pre hostí"
     },
     "propertyGroups": [
       "agricultural",
@@ -593,7 +725,11 @@
       "en": "Wine cellar",
       "nl": "Wijnkelder",
       "de": "Weinkeller",
-      "fr": "Cave à vin"
+      "fr": "Cave à vin",
+      "es": "Bodega",
+      "pl": "Piwnica winna",
+      "ro": "Pivniță de vin",
+      "sk": "Vínna pivnica"
     },
     "propertyGroups": [
       "agricultural",
@@ -609,7 +745,11 @@
       "en": "Street frontage",
       "nl": "Ligging aan de straat",
       "de": "Straßenlage",
-      "fr": "Façade sur rue"
+      "fr": "Façade sur rue",
+      "es": "Fachada a la calle",
+      "pl": "Front od ulicy",
+      "ro": "Front stradal",
+      "sk": "Priečelie do ulice"
     },
     "propertyGroups": [
       "commercial"
@@ -623,7 +763,11 @@
       "en": "Display windows",
       "nl": "Winkelpui met etalage",
       "de": "Schaufenster",
-      "fr": "Vitrine commerciale"
+      "fr": "Vitrine commerciale",
+      "es": "Escaparates",
+      "pl": "Witryny sklepowe",
+      "ro": "Vitrine",
+      "sk": "Výklady"
     },
     "propertyGroups": [
       "commercial"
@@ -637,7 +781,11 @@
       "en": "Loading access",
       "nl": "Laad- en losmogelijkheid",
       "de": "Lademöglichkeit",
-      "fr": "Accès pour le chargement"
+      "fr": "Accès pour le chargement",
+      "es": "Acceso para carga y descarga",
+      "pl": "Dostęp dla rozładunku",
+      "ro": "Acces pentru încărcare",
+      "sk": "Prístup na nakládku"
     },
     "propertyGroups": [
       "commercial"
@@ -651,7 +799,11 @@
       "en": "Suitable for hospitality",
       "nl": "Geschikt voor horeca",
       "de": "Für Gastronomie geeignet",
-      "fr": "Adapté à la restauration"
+      "fr": "Adapté à la restauration",
+      "es": "Apto para hostelería",
+      "pl": "Odpowiedni na działalność gastronomiczną",
+      "ro": "Potrivit pentru HoReCa",
+      "sk": "Vhodné na gastronómiu"
     },
     "propertyGroups": [
       "commercial"
@@ -665,7 +817,11 @@
       "en": "Equipped kitchen",
       "nl": "Met keuken",
       "de": "Ausgestattete Küche",
-      "fr": "Cuisine équipée"
+      "fr": "Cuisine équipée",
+      "es": "Cocina equipada",
+      "pl": "Wyposażona kuchnia",
+      "ro": "Bucătărie utilată",
+      "sk": "Vybavená kuchyňa"
     },
     "propertyGroups": [
       "commercial"
@@ -679,7 +835,11 @@
       "en": "Accessible",
       "nl": "Toegankelijk voor mindervaliden",
       "de": "Barrierefrei",
-      "fr": "Accessible aux personnes à mobilité réduite"
+      "fr": "Accessible aux personnes à mobilité réduite",
+      "es": "Accesible para personas con movilidad reducida",
+      "pl": "Dostosowane do potrzeb osób z niepełnosprawnościami",
+      "ro": "Accesibil persoanelor cu mobilitate redusă",
+      "sk": "Bezbariérový prístup"
     },
     "propertyGroups": [
       "commercial"
@@ -693,7 +853,11 @@
       "en": "Storage space",
       "nl": "Magazijnruimte",
       "de": "Lagerraum",
-      "fr": "Espace de stockage"
+      "fr": "Espace de stockage",
+      "es": "Espacio de almacenamiento",
+      "pl": "Powierzchnia magazynowa",
+      "ro": "Spațiu de depozitare",
+      "sk": "Skladový priestor"
     },
     "propertyGroups": [
       "commercial",
@@ -708,7 +872,11 @@
       "en": "High ceilings",
       "nl": "Grote vrije hoogte",
       "de": "Hohe Decken",
-      "fr": "Grande hauteur sous plafond"
+      "fr": "Grande hauteur sous plafond",
+      "es": "Techos altos",
+      "pl": "Wysokie stropy",
+      "ro": "Tavane înalte",
+      "sk": "Vysoké stropy"
     },
     "propertyGroups": [
       "industrial"
@@ -722,7 +890,11 @@
       "en": "Industrial power supply",
       "nl": "Krachtstroom",
       "de": "Industrielle Stromversorgung",
-      "fr": "Alimentation électrique industrielle"
+      "fr": "Alimentation électrique industrielle",
+      "es": "Suministro eléctrico industrial",
+      "pl": "Przyłącze prądu siłowego",
+      "ro": "Alimentare electrică industrială",
+      "sk": "Priemyselná prípojka elektriny"
     },
     "propertyGroups": [
       "industrial"
@@ -736,7 +908,11 @@
       "en": "Loading dock",
       "nl": "Laadperron",
       "de": "Laderampe",
-      "fr": "Quai de chargement"
+      "fr": "Quai de chargement",
+      "es": "Muelle de carga",
+      "pl": "Rampa załadunkowa",
+      "ro": "Rampă de încărcare",
+      "sk": "Nakladacia rampa"
     },
     "propertyGroups": [
       "industrial"
@@ -750,7 +926,11 @@
       "en": "Truck bay",
       "nl": "Vrachtwageninrit",
       "de": "Lkw-Einfahrt",
-      "fr": "Accès pour camion"
+      "fr": "Accès pour camion",
+      "es": "Zona de carga para camiones",
+      "pl": "Stanowisko dla ciężarówek",
+      "ro": "Loc de acostare pentru camioane",
+      "sk": "Stanovište pre nákladné autá"
     },
     "propertyGroups": [
       "industrial"
@@ -764,7 +944,11 @@
       "en": "Lorry parking",
       "nl": "Vrachtwagenparking",
       "de": "Lkw-Parkplatz",
-      "fr": "Parking pour poids lourds"
+      "fr": "Parking pour poids lourds",
+      "es": "Aparcamiento para camiones",
+      "pl": "Parking dla ciężarówek",
+      "ro": "Parcare pentru camioane",
+      "sk": "Parkovisko pre nákladné autá"
     },
     "propertyGroups": [
       "industrial"
@@ -778,7 +962,11 @@
       "en": "Crane or crane runway",
       "nl": "Kraan of kraanbaan",
       "de": "Kran oder Kranbahn",
-      "fr": "Grue ou chemin de roulement"
+      "fr": "Grue ou chemin de roulement",
+      "es": "Grúa o vía de rodadura",
+      "pl": "Suwnica lub tor suwnicy",
+      "ro": "Macara sau cale de rulare",
+      "sk": "Žeriav alebo žeriavová dráha"
     },
     "propertyGroups": [
       "industrial"
@@ -792,7 +980,11 @@
       "en": "Heavy-duty floor",
       "nl": "Vloer met hoge draagkracht",
       "de": "Schwerlastboden",
-      "fr": "Sol à forte capacité de charge"
+      "fr": "Sol à forte capacité de charge",
+      "es": "Suelo de alta resistencia",
+      "pl": "Posadzka o wysokiej nośności",
+      "ro": "Pardoseală cu capacitate portantă mare",
+      "sk": "Podlaha s vysokou nosnosťou"
     },
     "propertyGroups": [
       "industrial"
@@ -806,7 +998,11 @@
       "en": "Workshop",
       "nl": "Werkplaats",
       "de": "Werkstatt",
-      "fr": "Atelier"
+      "fr": "Atelier",
+      "es": "Taller",
+      "pl": "Warsztat",
+      "ro": "Atelier",
+      "sk": "Dielňa"
     },
     "propertyGroups": [
       "industrial"
@@ -820,7 +1016,11 @@
       "en": "Office space",
       "nl": "Kantoorruimte",
       "de": "Büroräume",
-      "fr": "Bureaux"
+      "fr": "Bureaux",
+      "es": "Oficinas",
+      "pl": "Powierzchnia biurowa",
+      "ro": "Spațiu de birouri",
+      "sk": "Kancelárske priestory"
     },
     "propertyGroups": [
       "industrial"
@@ -834,7 +1034,11 @@
       "en": "Staff facilities",
       "nl": "Personeelsvoorzieningen",
       "de": "Sozialräume",
-      "fr": "Locaux sociaux"
+      "fr": "Locaux sociaux",
+      "es": "Instalaciones para el personal",
+      "pl": "Pomieszczenia socjalne",
+      "ro": "Spații pentru personal",
+      "sk": "Sociálne zariadenia"
     },
     "propertyGroups": [
       "industrial"
@@ -848,7 +1052,11 @@
       "en": "Lorry access",
       "nl": "Bereikbaar per vrachtwagen",
       "de": "Mit Lkw erreichbar",
-      "fr": "Accessible aux poids lourds"
+      "fr": "Accessible aux poids lourds",
+      "es": "Acceso para camiones",
+      "pl": "Dojazd dla ciężarówek",
+      "ro": "Acces pentru camioane",
+      "sk": "Prístup pre nákladné autá"
     },
     "propertyGroups": [
       "industrial"
@@ -862,7 +1070,11 @@
       "en": "Listed or heritage character",
       "nl": "Monumentaal karakter",
       "de": "Denkmalcharakter",
-      "fr": "Caractère patrimonial"
+      "fr": "Caractère patrimonial",
+      "es": "Carácter patrimonial",
+      "pl": "Charakter zabytkowy",
+      "ro": "Caracter de patrimoniu",
+      "sk": "Pamiatkový charakter"
     },
     "propertyGroups": [
       "mansion"
@@ -876,7 +1088,11 @@
       "en": "Historic architectural features",
       "nl": "Historische architectuurelementen",
       "de": "Historische Architekturelemente",
-      "fr": "Éléments architecturaux historiques"
+      "fr": "Éléments architecturaux historiques",
+      "es": "Elementos arquitectónicos históricos",
+      "pl": "Zabytkowe elementy architektoniczne",
+      "ro": "Elemente arhitecturale istorice",
+      "sk": "Historické architektonické prvky"
     },
     "propertyGroups": [
       "mansion"
@@ -890,7 +1106,11 @@
       "en": "Wooded estate",
       "nl": "Bosrijk landgoed",
       "de": "Bewaldetes Anwesen",
-      "fr": "Domaine boisé"
+      "fr": "Domaine boisé",
+      "es": "Finca arbolada",
+      "pl": "Zalesiony majątek",
+      "ro": "Domeniu împădurit",
+      "sk": "Zalesený statok"
     },
     "propertyGroups": [
       "mansion"
@@ -904,7 +1124,11 @@
       "en": "Private chapel",
       "nl": "Eigen kapel",
       "de": "Eigene Kapelle",
-      "fr": "Chapelle privée"
+      "fr": "Chapelle privée",
+      "es": "Capilla privada",
+      "pl": "Prywatna kaplica",
+      "ro": "Capelă privată",
+      "sk": "Súkromná kaplnka"
     },
     "propertyGroups": [
       "mansion"
@@ -918,7 +1142,11 @@
       "en": "Steep land",
       "nl": "Steil terrein",
       "de": "Steiles Gelände",
-      "fr": "Terrain escarpé"
+      "fr": "Terrain escarpé",
+      "es": "Terreno escarpado",
+      "pl": "Strome zbocze",
+      "ro": "Teren abrupt",
+      "sk": "Strmý pozemok"
     },
     "propertyGroups": [
       "land"
@@ -932,7 +1160,11 @@
       "en": "Grassland",
       "nl": "Grasland",
       "de": "Grünfläche",
-      "fr": "Terrain herbeux"
+      "fr": "Terrain herbeux",
+      "es": "Pradera",
+      "pl": "Teren trawiasty",
+      "ro": "Pajiște",
+      "sk": "Trávnatý pozemok"
     },
     "propertyGroups": [
       "land"
@@ -946,7 +1178,11 @@
       "en": "Public-road access",
       "nl": "Bereikbaar via de openbare weg",
       "de": "Von öffentlicher Straße erreichbar",
-      "fr": "Accès depuis la voie publique"
+      "fr": "Accès depuis la voie publique",
+      "es": "Acceso desde vía pública",
+      "pl": "Dostęp z drogi publicznej",
+      "ro": "Acces din drum public",
+      "sk": "Prístup z verejnej komunikácie"
     },
     "propertyGroups": [
       "land"
@@ -960,7 +1196,11 @@
       "en": "Paved road",
       "nl": "Verharde weg",
       "de": "Asphaltierte Straße",
-      "fr": "Route goudronnée"
+      "fr": "Route goudronnée",
+      "es": "Carretera asfaltada",
+      "pl": "Droga asfaltowa",
+      "ro": "Drum asfaltat",
+      "sk": "Asfaltová cesta"
     },
     "propertyGroups": [
       "land"
@@ -974,7 +1214,11 @@
       "en": "Unpaved road",
       "nl": "Onverharde weg",
       "de": "Unbefestigter Weg",
-      "fr": "Chemin de terre"
+      "fr": "Chemin de terre",
+      "es": "Camino de tierra",
+      "pl": "Droga gruntowa",
+      "ro": "Drum de pământ",
+      "sk": "Nespevnená cesta"
     },
     "propertyGroups": [
       "land"
@@ -988,7 +1232,11 @@
       "en": "Electricity available",
       "nl": "Elektriciteit beschikbaar",
       "de": "Strom verfügbar",
-      "fr": "Électricité disponible"
+      "fr": "Électricité disponible",
+      "es": "Electricidad disponible",
+      "pl": "Dostępny prąd",
+      "ro": "Electricitate disponibilă",
+      "sk": "Elektrina k dispozícii"
     },
     "propertyGroups": [
       "land",
@@ -1003,7 +1251,11 @@
       "en": "Water supply available",
       "nl": "Water beschikbaar",
       "de": "Wasserversorgung verfügbar",
-      "fr": "Eau disponible"
+      "fr": "Eau disponible",
+      "es": "Agua disponible",
+      "pl": "Dostępna woda",
+      "ro": "Apă disponibilă",
+      "sk": "Voda k dispozícii"
     },
     "propertyGroups": [
       "land",
@@ -1018,7 +1270,11 @@
       "en": "Mains drainage available",
       "nl": "Riolering beschikbaar",
       "de": "Kanalisation verfügbar",
-      "fr": "Assainissement disponible"
+      "fr": "Assainissement disponible",
+      "es": "Alcantarillado disponible",
+      "pl": "Dostępna kanalizacja",
+      "ro": "Canalizare disponibilă",
+      "sk": "Kanalizácia k dispozícii"
     },
     "propertyGroups": [
       "land"
@@ -1032,7 +1288,11 @@
       "en": "Gas available",
       "nl": "Gas beschikbaar",
       "de": "Gas verfügbar",
-      "fr": "Gaz disponible"
+      "fr": "Gaz disponible",
+      "es": "Gas disponible",
+      "pl": "Dostępny gaz",
+      "ro": "Gaz disponibil",
+      "sk": "Plyn k dispozícii"
     },
     "propertyGroups": [
       "land"
@@ -1046,7 +1306,11 @@
       "en": "Telecommunications available",
       "nl": "Telecommunicatie beschikbaar",
       "de": "Telekommunikation verfügbar",
-      "fr": "Télécommunications disponibles"
+      "fr": "Télécommunications disponibles",
+      "es": "Telecomunicaciones disponibles",
+      "pl": "Dostępna telekomunikacja",
+      "ro": "Telecomunicații disponibile",
+      "sk": "Telekomunikácie k dispozícii"
     },
     "propertyGroups": [
       "land"
@@ -1060,7 +1324,11 @@
       "en": "Tenanted",
       "nl": "Verhuurd",
       "de": "Vermietet",
-      "fr": "Loué"
+      "fr": "Loué",
+      "es": "Alquilado",
+      "pl": "Wynajęte",
+      "ro": "Închiriat",
+      "sk": "Prenajaté"
     },
     "propertyGroups": [
       "investment"
@@ -1074,7 +1342,11 @@
       "en": "Sold with tenant",
       "nl": "Te koop met huurder",
       "de": "Verkauf mit Mieter möglich",
-      "fr": "Vente avec locataire possible"
+      "fr": "Vente avec locataire possible",
+      "es": "Venta con inquilino posible",
+      "pl": "Możliwa sprzedaż z najemcą",
+      "ro": "Vânzare posibilă cu chiriaș",
+      "sk": "Možný predaj s nájomcom"
     },
     "propertyGroups": [
       "investment"
@@ -1088,7 +1360,11 @@
       "en": "Multiple rental units",
       "nl": "Meerdere verhuureenheden",
       "de": "Mehrere Mieteinheiten",
-      "fr": "Plusieurs lots loués"
+      "fr": "Plusieurs lots loués",
+      "es": "Varias unidades alquiladas",
+      "pl": "Kilka lokali na wynajem",
+      "ro": "Mai multe unități închiriate",
+      "sk": "Viacero prenajatých jednotiek"
     },
     "propertyGroups": [
       "investment"
@@ -1102,7 +1378,11 @@
       "en": "Multiple buildings",
       "nl": "Meerdere gebouwen",
       "de": "Mehrere Gebäude",
-      "fr": "Plusieurs bâtiments"
+      "fr": "Plusieurs bâtiments",
+      "es": "Varios edificios",
+      "pl": "Kilka budynków",
+      "ro": "Mai multe clădiri",
+      "sk": "Viacero budov"
     },
     "propertyGroups": [
       "investment"
@@ -1116,7 +1396,11 @@
       "en": "Sold with operating business",
       "nl": "Te koop met lopend bedrijf",
       "de": "Verkauf mit laufendem Betrieb möglich",
-      "fr": "Vente avec activité en cours possible"
+      "fr": "Vente avec activité en cours possible",
+      "es": "Venta posible con negocio en funcionamiento",
+      "pl": "Możliwa sprzedaż z działającą firmą",
+      "ro": "Vânzare posibilă cu afacerea în funcțiune",
+      "sk": "Možný predaj s fungujúcou prevádzkou"
     },
     "propertyGroups": [
       "investment"
@@ -1130,7 +1414,11 @@
       "en": "Income-producing",
       "nl": "Inkomstengenererend",
       "de": "Ertragsbringend",
-      "fr": "Générateur de revenus"
+      "fr": "Générateur de revenus",
+      "es": "Genera ingresos",
+      "pl": "Przynosi dochód",
+      "ro": "Generează venit",
+      "sk": "Generuje príjem"
     },
     "propertyGroups": [
       "investment"
@@ -1144,7 +1432,11 @@
       "en": "Development potential",
       "nl": "Ontwikkelingsmogelijkheden",
       "de": "Entwicklungspotenzial",
-      "fr": "Potentiel de développement"
+      "fr": "Potentiel de développement",
+      "es": "Potencial de desarrollo",
+      "pl": "Potencjał inwestycyjny",
+      "ro": "Potențial de dezvoltare",
+      "sk": "Rozvojový potenciál"
     },
     "propertyGroups": [
       "investment"
@@ -1158,7 +1450,11 @@
       "en": "Enclosed parking",
       "nl": "Afgesloten parkeerplaats",
       "de": "Abgeschlossener Parkplatz",
-      "fr": "Parking fermé"
+      "fr": "Parking fermé",
+      "es": "Aparcamiento cerrado",
+      "pl": "Zamknięty parking",
+      "ro": "Parcare închisă",
+      "sk": "Uzavreté parkovanie"
     },
     "propertyGroups": [
       "other"

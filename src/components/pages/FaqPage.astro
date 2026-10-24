@@ -105,6 +105,66 @@ const copies = {
     stillHead: 'Pas de réponse à votre question',
     stillBody: '{hours} Demandez gratuitement à être rappelé, ou écrivez-nous.',
   },
+  es: {
+    metaTitle: 'Preguntas frecuentes: comprar en Hungría',
+    metaDescription:
+      '¿Puedo comprar en Hungría siendo ciudadano de la UE? ¿Cuánto cuesta su intermediación? ¿Tengo que desplazarme para firmar? Las preguntas que más nos hacen los compradores.',
+    eyebrow: 'Preguntas frecuentes',
+    title: 'Preguntas y',
+    titleEm: 'respuestas',
+    body: 'Estas son las preguntas que recibimos con más frecuencia. Si la suya no aparece, llámenos o solicite que le devolvamos la llamada gratis.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'Para compradores' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: '¿No encuentra respuesta a su pregunta?',
+    stillBody: '{hours} Solicite que le devolvamos la llamada gratis o escríbanos.',
+  },
+  pl: {
+    metaTitle: 'Najczęstsze pytania: zakup na Węgrzech',
+    metaDescription:
+      'Czy jako obywatel UE mogę kupić nieruchomość na Węgrzech? Ile kosztuje Państwa pośrednictwo? Czy muszę przyjechać, aby podpisać umowę? Pytania, które kupujący zadają nam najczęściej.',
+    eyebrow: 'Najczęściej zadawane pytania',
+    title: 'Pytania',
+    titleEm: 'i odpowiedzi',
+    body: 'Oto pytania, które otrzymujemy najczęściej. Jeśli nie ma wśród nich Państwa pytania, prosimy do nas zadzwonić lub poprosić o bezpłatny telefon zwrotny.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'Dla kupujących' },
+      { id: 'both' as FaqAudience, label: 'Ogólne' },
+    ],
+    stillHead: 'Nie znaleźli Państwo odpowiedzi?',
+    stillBody: '{hours} Prosimy poprosić o bezpłatny telefon zwrotny lub napisać do nas.',
+  },
+  ro: {
+    metaTitle: 'Întrebări frecvente: cumpărarea în Ungaria',
+    metaDescription:
+      'Pot cumpăra în Ungaria în calitate de cetățean UE? Cât costă intermedierea dumneavoastră? Trebuie să mă deplasez pentru semnare? Întrebările pe care ni le pun cel mai des cumpărătorii.',
+    eyebrow: 'Întrebări frecvente',
+    title: 'Întrebări și',
+    titleEm: 'răspunsuri',
+    body: 'Iată întrebările pe care le primim cel mai des. Dacă a dumneavoastră nu se află printre ele, sunați-ne sau solicitați să vă sunăm gratuit înapoi.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'Pentru cumpărători' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Nu ați găsit răspunsul?',
+    stillBody: '{hours} Solicitați să vă sunăm gratuit înapoi sau scrieți-ne.',
+  },
+  sk: {
+    metaTitle: 'Časté otázky: kúpa v Maďarsku',
+    metaDescription:
+      'Môžem ako občan EÚ kúpiť nehnuteľnosť v Maďarsku? Koľko stojí vaše sprostredkovanie? Musím na podpis prísť osobne? Otázky, ktoré nám kupujúci kladú najčastejšie.',
+    eyebrow: 'Časté otázky',
+    title: 'Otázky',
+    titleEm: 'a odpovede',
+    body: 'Toto sú otázky, ktoré dostávame najčastejšie. Ak medzi nimi vaša nie je, zavolajte nám alebo si vyžiadajte bezplatné spätné volanie.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'Pre kupujúcich' },
+      { id: 'both' as FaqAudience, label: 'Všeobecné' },
+    ],
+    stillHead: 'Nenašli ste odpoveď?',
+    stillBody: '{hours} Vyžiadajte si bezplatné spätné volanie alebo nám napíšte.',
+  },
 };
 const t = copies[locale];
 
@@ -123,7 +183,7 @@ const grouped = t.groups
   <PageHeader eyebrow={t.eyebrow} title={t.title} titleEm={t.titleEm} body={t.body} compact />
 
   <div class="faq-page">
-    <nav class="toc no-print" aria-label={x('Kérdések', 'Vragen', 'Questions', 'Fragen', 'Questions')}>
+    <nav class="toc no-print" aria-label={x('Kérdések', 'Vragen', 'Questions', 'Fragen', 'Questions', 'Preguntas', 'Pytania', 'Întrebări', 'Otázky')}>
       {
         grouped.map((group) => (
           <div class="toc-group">

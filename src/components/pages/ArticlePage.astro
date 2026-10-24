@@ -49,7 +49,7 @@ const versions: Partial<Record<Locale, string>> = Object.fromEntries(
 );
 const hreflang = standIn ? {} : versions;
 const switcher: Partial<Record<Locale, string>> = Object.fromEntries(
-  (['hu', 'nl', 'en', 'de', 'fr'] as const).map((code) => [code, versions[code] ?? postPathIn(code, post.slug)])
+  (['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const).map((code) => [code, versions[code] ?? postPathIn(code, post.slug)])
 );
 
 // The article's own share picture, cut to the 1200×630 the page's og:image
@@ -68,9 +68,9 @@ if (shareSource) {
 const isCase = post.kind === 'case_study';
 const caseSections = isCase
   ? [
-      { title: x('Módszertan', 'Methode', 'Method', 'Methode', 'Méthode'), md: post.case_method },
-      { title: x('Eredmények', 'Resultaten', 'Results', 'Ergebnisse', 'Résultats'), md: post.case_results },
-      { title: x('Források', 'Bronnen', 'Sources', 'Quellen', 'Sources'), md: post.case_sources },
+      { title: x('Módszertan', 'Methode', 'Method', 'Methode', 'Méthode', 'Método', 'Metoda', 'Metodă', 'Metóda'), md: post.case_method },
+      { title: x('Eredmények', 'Resultaten', 'Results', 'Ergebnisse', 'Résultats', 'Resultados', 'Wyniki', 'Rezultate', 'Výsledky'), md: post.case_results },
+      { title: x('Források', 'Bronnen', 'Sources', 'Quellen', 'Sources', 'Fuentes', 'Źródła', 'Surse', 'Zdroje'), md: post.case_sources },
     ].filter((section) => section.md?.trim())
   : [];
 
@@ -113,14 +113,14 @@ const trail = crumbs(locale, [
 
   <article class="article">
     <header>
-      <span class="pill">{isCase ? x('Esettanulmány', 'Casestudy', 'Case study', 'Fallstudie', 'Étude de cas') : post.category}</span>
+      <span class="pill">{isCase ? x('Esettanulmány', 'Casestudy', 'Case study', 'Fallstudie', 'Étude de cas', 'Caso práctico', 'Studium przypadku', 'Studiu de caz', 'Prípadová štúdia') : post.category}</span>
       <h1>{post.title}</h1>
       <p class="meta">
         {post.published_at && (
           <time datetime={post.published_at.toISOString()}>{formatDate(post.published_at, locale)}</time>
         )}
         <span aria-hidden="true">·</span>
-        <span>{x(`${post.reading_minutes} perc olvasás`, `${post.reading_minutes} min. lezen`, `${post.reading_minutes} min read`, `${post.reading_minutes} Min. Lesezeit`, `${post.reading_minutes} min de lecture`)}</span>
+        <span>{x(`${post.reading_minutes} perc olvasás`, `${post.reading_minutes} min. lezen`, `${post.reading_minutes} min read`, `${post.reading_minutes} Min. Lesezeit`, `${post.reading_minutes} min de lecture`, `${post.reading_minutes} min de lectura`, `${post.reading_minutes} min czytania`, `${post.reading_minutes} min de lectură`, `${post.reading_minutes} min čítania`)}</span>
         <span aria-hidden="true">·</span>
         <span>{post.author}</span>
       </p>

@@ -11,8 +11,12 @@ import { copy as nl } from './validation-copy/nl.ts';
 import { copy as en } from './validation-copy/en.ts';
 import { copy as de } from './validation-copy/de.ts';
 import { copy as fr } from './validation-copy/fr.ts';
+import { copy as es } from './validation-copy/es.ts';
+import { copy as pl } from './validation-copy/pl.ts';
+import { copy as ro } from './validation-copy/ro.ts';
+import { copy as sk } from './validation-copy/sk.ts';
 
-const COPY: Record<string, ValidationCopy> = { hu, nl, en, de, fr };
+const COPY: Record<string, ValidationCopy> = { hu, nl, en, de, fr, es, pl, ro, sk };
 
 /** An unknown language gets Dutch, the site's default for visitors we cannot place. */
 const copyFor = (locale: string): ValidationCopy => COPY[locale] ?? nl;

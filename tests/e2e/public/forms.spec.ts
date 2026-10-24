@@ -14,7 +14,8 @@ const REGISTER = { hu: '/hu/hirdetes-feladasa/', nl: '/nl/advertentie-plaatsen/'
 /** The phone field's starting country and the example it shows, per language. */
 const PHONE: Record<Locale, { country: string; prefix: string }> = {
   hu: { country: 'HU', prefix: '+36' }, nl: { country: 'NL', prefix: '+31' }, en: { country: 'GB', prefix: '+44' },
-  de: { country: 'DE', prefix: '+49' }, fr: { country: 'FR', prefix: '+33' },
+  de: { country: 'DE', prefix: '+49' }, fr: { country: 'FR', prefix: '+33' }, es: { country: 'ES', prefix: '+34' },
+  pl: { country: 'PL', prefix: '+48' }, ro: { country: 'RO', prefix: '+40' }, sk: { country: 'SK', prefix: '+421' },
 };
 
 const form = (page: Page) => page.locator('#listing-order');

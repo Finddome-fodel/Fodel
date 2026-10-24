@@ -365,4 +365,8 @@ export const LOCALE_OPTIONS = [
   { value: 'de', label: 'Német' },
   { value: 'en', label: 'Angol' },
   { value: 'fr', label: 'Francia' },
+  { value: 'es', label: 'Spanyol' },
+  { value: 'pl', label: 'Lengyel' },
+  { value: 'ro', label: 'Román' },
+  { value: 'sk', label: 'Szlovák' },
 ];

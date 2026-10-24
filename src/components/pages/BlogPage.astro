@@ -49,7 +49,7 @@ const noteOf = (index: number) => {
   const entry = index < 0 ? leadEntry : restEntries[index];
   return entry ? sourceNote(locale, entry.from, 'article') : null;
 };
-const minutes = (n: number) => x(`${n} perc olvasás`, `${n} min. lezen`, `${n} min read`, `${n} Min. Lesezeit`, `${n} min de lecture`);
+const minutes = (n: number) => x(`${n} perc olvasás`, `${n} min. lezen`, `${n} min read`, `${n} Min. Lesezeit`, `${n} min de lecture`, `${n} min de lectura`, `${n} min czytania`, `${n} min de lectură`, `${n} min čítania`);
 
 const t = {
   metaTitle: x(
@@ -57,35 +57,51 @@ const t = {
     'Nieuws en achtergrond: markt, emigratie, advies',
     'News and articles: market, moving, advice',
     'Neuigkeiten und Artikel: Markt, Auswanderung, Ratgeber',
-    'Actualités et articles\u00a0: marché, installation, conseils'
+    'Actualités et articles\u00a0: marché, installation, conseils',
+    'Noticias y artículos: mercado, mudanza, consejos',
+    'Aktualności i artykuły: rynek, przeprowadzka, porady',
+    'Noutăți și articole: piață, mutare, sfaturi',
+    'Novinky a články: trh, sťahovanie, rady'
   ),
   metaDescription: x(
     'Elemzések a magyar ingatlanpiacról és a nyugat-európai vevőkről: miért költöznek a hollandok Magyarországra, és mit jelent ez az eladóknak.',
     'Analyses over de Hongaarse vastgoedmarkt en West-Europese kopers: waarom Nederlanders naar Hongarije verhuizen, en wat dat betekent.',
     'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
     'Analysen zum ungarischen Immobilienmarkt und zu Käufern aus Westeuropa: warum Niederländer nach Ungarn ziehen und was das bedeutet.',
-    'Analyses du marché immobilier hongrois et des acheteurs d’Europe de l’Ouest\u00a0: pourquoi des Néerlandais s’installent en Hongrie, et ce que cela signifie.'
+    'Analyses du marché immobilier hongrois et des acheteurs d’Europe de l’Ouest\u00a0: pourquoi des Néerlandais s’installent en Hongrie, et ce que cela signifie.',
+    'Análisis del mercado inmobiliario húngaro y de los compradores de Europa occidental: por qué los neerlandeses se mudan a Hungría y qué significa.',
+    'Analizy węgierskiego rynku nieruchomości i kupujących z Europy Zachodniej: dlaczego Holendrzy przeprowadzają się na Węgry i co to oznacza.',
+    'Analize ale pieței imobiliare din Ungaria și ale cumpărătorilor din Europa de Vest: de ce se mută olandezii în Ungaria și ce înseamnă acest lucru.',
+    'Analýzy maďarského realitného trhu a kupujúcich zo západnej Európy: prečo sa Holanďania sťahujú do Maďarska a čo to znamená.'
   ),
-  eyebrow: x('Hírek és cikkek', 'Nieuws', 'News and articles', 'Neuigkeiten und Artikel', 'Actualités et articles'),
-  title: x('Piac,', 'Markt,', 'Market,', 'Markt,', 'Marché,'),
-  titleEm: x('háttér, tanácsok', 'achtergrond, advies', 'background, advice', 'Hintergrund, Ratgeber', 'contexte, conseils'),
+  eyebrow: x('Hírek és cikkek', 'Nieuws', 'News and articles', 'Neuigkeiten und Artikel', 'Actualités et articles', 'Noticias y artículos', 'Aktualności i artykuły', 'Noutăți și articole', 'Novinky a články'),
+  title: x('Piac,', 'Markt,', 'Market,', 'Markt,', 'Marché,', 'Mercado,', 'Rynek,', 'Piață,', 'Trh,'),
+  titleEm: x('háttér, tanácsok', 'achtergrond, advies', 'background, advice', 'Hintergrund, Ratgeber', 'contexte, conseils', 'contexto, consejos', 'tło, porady', 'context, sfaturi', 'súvislosti, rady'),
   intro: x(
     'Amit a magyar ingatlanpiacról és a nyugat-európai vevőkről érdemes tudni.',
     'Wat u moet weten over de Hongaarse vastgoedmarkt en de kopers uit West-Europa.',
     'What you should know about the Hungarian property market and buyers from Western Europe.',
     'Was Sie über den ungarischen Immobilienmarkt und die Käufer aus Westeuropa wissen sollten.',
-    'Ce qu’il faut savoir sur le marché immobilier hongrois et les acheteurs d’Europe de l’Ouest.'
+    'Ce qu’il faut savoir sur le marché immobilier hongrois et les acheteurs d’Europe de l’Ouest.',
+    'Lo que conviene saber sobre el mercado inmobiliario húngaro y los compradores de Europa occidental.',
+    'Co warto wiedzieć o węgierskim rynku nieruchomości i kupujących z Europy Zachodniej.',
+    'Ce trebuie să știți despre piața imobiliară din Ungaria și despre cumpărătorii din Europa de Vest.',
+    'Čo by ste mali vedieť o maďarskom realitnom trhu a kupujúcich zo západnej Európy.'
   ),
   empty: x(
     'Hamarosan új cikkekkel jelentkezünk.',
     'Binnenkort verschijnen hier nieuwe artikelen.',
     'New articles are coming soon.',
     'Bald erscheinen hier neue Artikel.',
-    'De nouveaux articles arrivent bientôt.'
+    'De nouveaux articles arrivent bientôt.',
+    'Pronto publicaremos nuevos artículos.',
+    'Wkrótce pojawią się nowe artykuły.',
+    'În curând vor apărea articole noi.',
+    'Nové články čoskoro pribudnú.'
   ),
-  kinds: x('Tartalomtípus', 'Soort inhoud', 'Content type', 'Art des Inhalts', 'Type de contenu'),
-  articles: x('Cikkek', 'Artikelen', 'Articles', 'Artikel', 'Articles'),
-  cases: x('Esettanulmányok', 'Casestudies', 'Case studies', 'Fallstudien', 'Études de cas'),
+  kinds: x('Tartalomtípus', 'Soort inhoud', 'Content type', 'Art des Inhalts', 'Type de contenu', 'Tipo de contenido', 'Rodzaj treści', 'Tip de conținut', 'Typ obsahu'),
+  articles: x('Cikkek', 'Artikelen', 'Articles', 'Artikel', 'Articles', 'Artículos', 'Artykuły', 'Articole', 'Články'),
+  cases: x('Esettanulmányok', 'Casestudies', 'Case studies', 'Fallstudien', 'Études de cas', 'Casos prácticos', 'Studia przypadków', 'Studii de caz', 'Prípadové štúdie'),
 };
 ---
 
@@ -169,7 +185,7 @@ const t = {
                       </time>
                     )}
                     <span aria-hidden="true">·</span>
-                    <span>{post.reading_minutes} {x('perc', 'min.', 'min', 'Min.', 'min')}</span>
+                    <span>{post.reading_minutes} {x('perc', 'min.', 'min', 'Min.', 'min', 'min', 'min', 'min', 'min')}</span>
                   </p>
                 </div>
               </a>

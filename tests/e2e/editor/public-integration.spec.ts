@@ -40,7 +40,7 @@ test('a published property still supplies the hero photograph and link',async({p
  }finally{await request.post(`${fixture}/__reset`);}
 });
 
-test('public category selectors, photo limits and retired routes across all five languages',async({request,baseURL})=>{
+test('public category selectors, photo limits and retired routes across all nine languages',async({request,baseURL})=>{
  expect(new URL(baseURL!).hostname).toBe('127.0.0.1');
  for(const locale of LOCALES){
   const home=await request.get(routePath(locale,'home'));expect(home.status()).toBe(200);const html=await home.text();

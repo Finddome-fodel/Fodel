@@ -267,6 +267,38 @@ const ACK = {
        <p>C’est urgent&#8239;? Appelez-nous au ${escapeHtml(phones)}.</p>
        <p>Cordialement,<br>FODEL Immobilier</p>`,
   },
+  es: {
+    subject: 'Gracias por su mensaje | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Hola, ${escapeHtml(name)}:` : 'Hola:'}</p>
+       <p>Gracias por su mensaje. Lo hemos recibido y un miembro de nuestro equipo le responderá muy pronto. ${escapeHtml(hours)}</p>
+       <p>¿Es urgente? Llámenos al ${escapeHtml(phones)}.</p>
+       <p>Atentamente,<br>FODEL Inmobiliaria</p>`,
+  },
+  pl: {
+    subject: 'Dziękujemy za wiadomość | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Dzień dobry, ${escapeHtml(name)},` : 'Dzień dobry,'}</p>
+       <p>dziękujemy za wiadomość. Otrzymaliśmy ją, a nasz pracownik wkrótce się z Państwem skontaktuje. ${escapeHtml(hours)}</p>
+       <p>Sprawa jest pilna? Prosimy zadzwonić: ${escapeHtml(phones)}.</p>
+       <p>Z poważaniem<br>FODEL Nieruchomości</p>`,
+  },
+  ro: {
+    subject: 'Vă mulțumim pentru mesaj | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Bună ziua, ${escapeHtml(name)},` : 'Bună ziua,'}</p>
+       <p>Vă mulțumim pentru mesaj. L-am primit, iar un coleg vă va răspunde în cel mai scurt timp. ${escapeHtml(hours)}</p>
+       <p>Este urgent? Sunați-ne la ${escapeHtml(phones)}.</p>
+       <p>Cu stimă,<br>FODEL Imobiliare</p>`,
+  },
+  sk: {
+    subject: 'Ďakujeme za vašu správu | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Dobrý deň, ${escapeHtml(name)},` : 'Dobrý deň,'}</p>
+       <p>ďakujeme za Vašu správu. Dostali sme ju a náš kolega Vám čoskoro odpovie. ${escapeHtml(hours)}</p>
+       <p>Je to naliehavé? Zavolajte nám na ${escapeHtml(phones)}.</p>
+       <p>S pozdravom<br>FODEL Nehnuteľnosti</p>`,
+  },
 } as const;
 
 /**

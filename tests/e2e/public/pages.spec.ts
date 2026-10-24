@@ -1,6 +1,6 @@
 /**
  * Every public page answers, throws no script errors and never scrolls
- * sideways, in all five languages, at the widths the brief names.
+ * sideways, in all nine languages, at the widths the brief names.
  */
 import { test, expect, expectNoHorizontalOverflow } from '../support/fixtures';
 import { LOCALES, path as routePath, type RouteKey } from '../../../src/i18n/ui';

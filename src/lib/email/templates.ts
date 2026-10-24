@@ -17,6 +17,10 @@ import { NL } from './copy/nl';
 import { EN } from './copy/en';
 import { DE } from './copy/de';
 import { FR } from './copy/fr';
+import { ES } from './copy/es';
+import { PL } from './copy/pl';
+import { RO } from './copy/ro';
+import { SK } from './copy/sk';
 import {
   shell,
   textShell,
@@ -47,7 +51,7 @@ export type OrderLine = { label: string; amount: string };
  * written for the office, which reads Hungarian: they always use HU, whatever
  * language the seller writes in.
  */
-const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR };
+const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK };
 
 function copyFor(locale: EmailLocale) {
   return COPY[locale];
@@ -216,6 +220,10 @@ export const INVITE_SYSTEM_TEXT: Record<ShellLocale, { linkFallback: string; exp
   en: { linkFallback: EN.common.linkFallback, expiry: EN.invite.expiry },
   de: { linkFallback: DE.common.linkFallback, expiry: DE.invite.expiry },
   fr: { linkFallback: FR.common.linkFallback, expiry: FR.invite.expiry },
+  es: { linkFallback: ES.common.linkFallback, expiry: ES.invite.expiry },
+  pl: { linkFallback: PL.common.linkFallback, expiry: PL.invite.expiry },
+  ro: { linkFallback: RO.common.linkFallback, expiry: RO.invite.expiry },
+  sk: { linkFallback: SK.common.linkFallback, expiry: SK.invite.expiry },
 };
 
 export function inviteFromTemplate(

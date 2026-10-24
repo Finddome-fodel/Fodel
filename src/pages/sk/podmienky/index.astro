@@ -1,0 +1,7 @@
+---
+export const prerender = true;
+import ContentPage from '~/components/pages/ContentPage.astro';
+import { LEGAL } from '~/data/pages-legal';
+---
+
+<ContentPage locale="sk" routeKey="terms" data={LEGAL.sk.terms} />

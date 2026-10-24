@@ -24,7 +24,7 @@ interface Props {
 }
 
 const { locale, routeKey, data, noindex = false } = Astro.props;
-const onThisPage = localizer(locale)('Ezen az oldalon', 'Op deze pagina', 'On this page', 'Auf dieser Seite', 'Sur cette page');
+const onThisPage = localizer(locale)('Ezen az oldalon', 'Op deze pagina', 'On this page', 'Auf dieser Seite', 'Sur cette page', 'En esta página', 'Na tej stronie', 'Pe această pagină', 'Na tejto stránke');
 const path = (key: RouteKey) => routePath(locale, key);
 const { hours } = await getCompany();
 

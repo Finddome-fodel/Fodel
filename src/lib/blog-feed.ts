@@ -17,6 +17,10 @@ const FEED: Record<Locale, { title: string; description: string }> = {
   en: { title: 'FODEL Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
   de: { title: 'FODEL Immobilien: Neuigkeiten und Artikel', description: 'Analysen zum ungarischen Immobilienmarkt und zu Käufern aus Westeuropa.' },
   fr: { title: 'FODEL Immobilier : actualités et articles', description: 'Analyses du marché immobilier hongrois et des acheteurs d’Europe de l’Ouest.' },
+  es: { title: 'FODEL Inmobiliaria: noticias y artículos', description: 'Análisis del mercado inmobiliario húngaro y de los compradores de Europa Occidental.' },
+  pl: { title: 'FODEL Nieruchomości: aktualności i artykuły', description: 'Analizy węgierskiego rynku nieruchomości i kupujących z Europy Zachodniej.' },
+  ro: { title: 'FODEL Imobiliare: noutăți și articole', description: 'Analize ale pieței imobiliare din Ungaria și ale cumpărătorilor din Europa de Vest.' },
+  sk: { title: 'FODEL Nehnuteľnosti: novinky a články', description: 'Analýzy maďarského realitného trhu a kupujúcich zo západnej Európy.' },
 };
 
 export async function blogFeed(locale: Locale, context: APIContext) {

@@ -20,7 +20,7 @@ export const hasLivingArea = (group: string, subtype: string) => ['house', 'holi
 export const hasPlot = (_group: string, subtype: string) => !['apartment', 'penthouse', 'holiday-apartment', 'retail', 'office', 'garage-parking', 'storage-cellar'].includes(subtype);
 export const CONTACT_LANGUAGES = 'hu nl en de fr sq hy az eu be bs bg ca hr cs da et fi ka el is ga it lv lt lb mk mt cnr no pl pt ro rm ru sr sk sl es sv tr uk cy yi'.split(' ');
 export function languageName(code: string, locale: string): string {
-  if(code==='cnr')return ({hu:'montenegrói',nl:'Montenegrijns',en:'Montenegrin',de:'Montenegrinisch',fr:'monténégrin'} as Record<string,string>)[locale]||'Montenegrin';
+  if(code==='cnr')return ({hu:'montenegrói',nl:'Montenegrijns',en:'Montenegrin',de:'Montenegrinisch',fr:'monténégrin',es:'montenegrino',pl:'czarnogórski',ro:'muntenegreană',sk:'čiernohorčina'} as Record<string,string>)[locale]||'Montenegrin';
   try { return new Intl.DisplayNames([locale], { type: 'language' }).of(code) || code; } catch { return code; }
 }
 

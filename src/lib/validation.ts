@@ -50,7 +50,7 @@ export type FieldError = { code: ErrorCode; country?: string; example?: string; 
 /* ── Phone ─────────────────────────────────────────────────────────────── */
 
 /** Shown first in the country picker: where FODEL's sellers and buyers live. */
-export const COMMON_PHONE_COUNTRIES = ['HU', 'NL', 'BE', 'DE', 'AT', 'GB', 'FR', 'CH', 'SK', 'RO', 'HR', 'SI'] as const;
+export const COMMON_PHONE_COUNTRIES = ['HU', 'NL', 'BE', 'DE', 'AT', 'GB', 'FR', 'CH', 'ES', 'PL', 'SK', 'RO', 'HR', 'SI'] as const;
 
 /** The country a phone field starts on: where the page's language is spoken. */
 export function defaultPhoneCountry(locale: string): CountryCode {
@@ -63,6 +63,14 @@ export function defaultPhoneCountry(locale: string): CountryCode {
       return 'DE';
     case 'fr':
       return 'FR';
+    case 'es':
+      return 'ES';
+    case 'pl':
+      return 'PL';
+    case 'ro':
+      return 'RO';
+    case 'sk':
+      return 'SK';
     default:
       return 'HU';
   }

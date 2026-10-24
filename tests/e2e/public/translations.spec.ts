@@ -1,5 +1,5 @@
 /**
- * The five languages as a whole: every page has its counterpart in every
+ * The nine languages as a whole: every page has its counterpart in every
  * language and each counterpart points back (hreflang), no page shows another
  * language's wording, legal pages carry the courtesy-translation note, and
  * the 404 speaks the language of the URL.
@@ -13,7 +13,7 @@ const KEYS: RouteKey[] = [
 ];
 const abs = (p: string) => `https://fodel.eu${p}`;
 
-test('hreflang: every page lists all five languages and every counterpart lists it back', async ({ request }) => {
+test('hreflang: every page lists all nine languages and every counterpart lists it back', async ({ request }) => {
   test.setTimeout(240_000);
   const problems: string[] = [];
   for (const key of KEYS) {
@@ -58,7 +58,7 @@ test('the sitemap lists every language (static build only)', async ({ request })
 const DUTCH = /(?<![\p{L}])(het|een|voor|niet|ook|uw|wij|naar|geen|worden|deze|bent|kunt|onze|woning)(?![\p{L}])/iu;
 const HUNGARIAN = /[őűŐŰ]|(?<![\p{L}])(és|hogy|vagy|nincs|egy|ingatlan|hirdetés|kérjük)(?![\p{L}])/iu;
 
-for (const locale of ['en', 'de', 'fr'] as const) {
+for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const) {
   test(`${locale}: no Dutch or Hungarian wording is left on the static pages`, async ({ page }) => {
     test.setTimeout(240_000);
     const leftovers: string[] = [];
@@ -82,9 +82,12 @@ for (const locale of ['en', 'de', 'fr'] as const) {
   });
 }
 
-for (const locale of ['en', 'de', 'fr'] as const) {
+for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const) {
   test(`${locale}: the legal pages say they are a courtesy translation`, async ({ page }) => {
-    const needle = { en: /translation for convenience/i, de: /Übersetzung/, fr: /traduction/i }[locale];
+    const needle = {
+      en: /translation for convenience/i, de: /Übersetzung/, fr: /traduction/i,
+      es: /traducción/i, pl: /tłumaczeni/i, ro: /traducere/i, sk: /preklad/i,
+    }[locale];
     for (const key of ['privacy', 'terms', 'cookies', 'imprint'] as const) {
       await page.goto(routePath(locale, key));
       await expect(page.locator('main')).toContainText(needle);
@@ -95,6 +98,7 @@ for (const locale of ['en', 'de', 'fr'] as const) {
 test('an unknown page answers 404 in the language of its URL', async ({ request }) => {
   const heading: Record<Locale, RegExp> = {
     hu: /nem található|404/i, nl: /niet gevonden|404/i, en: /not found|404/i, de: /nicht gefunden|404/i, fr: /introuvable|404/i,
+    es: /no encontrada|404/i, pl: /nie znaleziono|404/i, ro: /nu a fost găsită|404/i, sk: /sa nenašla|404/i,
   };
   for (const locale of LOCALES) {
     const response = await request.get(`/${locale}/this-page-does-not-exist/`);

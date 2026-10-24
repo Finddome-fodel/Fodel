@@ -4,7 +4,7 @@ export const NEWSLETTER_STATUS_LABEL: Record<string, string> = {
   confirmed: 'Feliratkozott',
   unsubscribed: 'Leiratkozott',
 };
-export const NEWSLETTER_LOCALE_LABEL: Record<string, string> = { hu: 'Magyar', nl: 'Holland', en: 'Angol', de: 'Német', fr: 'Francia' };
+export const NEWSLETTER_LOCALE_LABEL: Record<string, string> = { hu: 'Magyar', nl: 'Holland', en: 'Angol', de: 'Német', fr: 'Francia', es: 'Spanyol', pl: 'Lengyel', ro: 'Román', sk: 'Szlovák' };
 
 export type NewsletterFilters = { status: string; locale: string; q: string };
 

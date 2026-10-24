@@ -81,7 +81,7 @@ const paymentLabel: Record<string, string> = { pending: 'Fizetésre vár', paid:
 
 const canCompute = ['queued', 'needs_info', 'insufficient_data'].includes(v.status);
 const canDecide = v.status !== 'queued';
-const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'németül', fr: 'franciául' } as Record<string, string>)[String(v.locale)] ?? 'magyarul';
+const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'németül', fr: 'franciául', es: 'spanyolul', pl: 'lengyelül', ro: 'románul', sk: 'szlovákul' } as Record<string, string>)[String(v.locale)] ?? 'magyarul';
 ---
 
 <Portal title="Értékbecslés">

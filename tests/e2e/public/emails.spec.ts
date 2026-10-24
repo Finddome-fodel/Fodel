@@ -1,5 +1,5 @@
 /**
- * Every email template, in all five languages, through the preview route:
+ * Every email template, in all nine languages, through the preview route:
  * it renders, has a subject, no leftover "undefined"/"NaN", a plain-text part,
  * and every link points at the production origin (never localhost).
  */
@@ -8,7 +8,7 @@ import { LOCALES } from '../../../src/i18n/ui';
 
 const ORIGIN = 'https://fodel.eu';
 
-test('every template renders in hu, nl, en, de and fr with clean text and production links', async ({ request }) => {
+test('every template renders in all nine languages with clean text and production links', async ({ request }) => {
   test.setTimeout(600_000);
   const index = await (await request.get('/dev/emails')).text();
   const names = [...new Set([...index.matchAll(/[?&]t=([\w.-]+)/g)].map((m) => m[1]))];
@@ -19,7 +19,7 @@ test('every template renders in hu, nl, en, de and fr with clean text and produc
     for (const locale of LOCALES) {
       const html = await request.get(`/dev/emails?t=${name}&locale=${locale}`);
       const text = await request.get(`/dev/emails?t=${name}&locale=${locale}&format=text`);
-      // Admin invitations exist only in hu and nl: en, de and fr need an approved template first.
+      // Admin invitations exist only in hu and nl: the other seven need an approved template first.
       if (html.status() === 404 && name === 'inviteAdminAfterApproval' && !['hu', 'nl'].includes(locale)) continue;
       if (html.status() !== 200) { problems.push(`${name}/${locale}: html ${html.status()}`); continue; }
       if (text.status() !== 200) problems.push(`${name}/${locale}: text ${text.status()}`);
