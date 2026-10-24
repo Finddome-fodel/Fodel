@@ -424,7 +424,7 @@ deliberately turned on. To move host, swap the adapter in `astro.config.mjs`
 database-backed pages) means the new host must support SSR, not just static
 hosting.
 
-**After launch:** submit `https://fodel.eu/sitemap-index.xml` to Search Console
+**After launch:** submit `https://finddome.com/sitemap-index.xml` to Search Console
 (the canonical origin is `SITE_URL` in `src/config/site.mjs` — the only place it
 is written), and set up the 301 map from the old fodel.nl / fodel.hu / eladod.com URLs when the real inventory
 migrates. Those URLs carry thirteen years of accumulated authority.

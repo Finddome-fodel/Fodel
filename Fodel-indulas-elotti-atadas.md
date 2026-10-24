@@ -63,9 +63,9 @@ Rövid, gyakorlati összefoglaló a „launch readiness” körről. Semmi nincs
 
 A kód felkészült: kulcs nélkül naplóz és nem száll el; `EMAIL_TRANSPORT=capture` esetén a leveleket fájlba írja (`.e2e/outbox/`); kulccsal 429 és 5xx hibánál háromszor újra próbál (400 ms, 800 ms), hibás kérést nem ismétel; a feladó, válaszcím és fogadó a `FODEL_FROM`, `FODEL_REPLY_TO`, `FODEL_INBOX` változókból jön. Minden sablon renderel hu és nl nyelven, van szöveges változat, a linkek az éles domainre mutatnak (tesztelve).
 
-1. Resend → Domains → **Add domain `fodel.eu`**. A megadott **SPF (TXT)**, **DKIM (3 db CNAME/TXT)** rekordokat vegye fel a DNS-nél. Várja meg a „Verified” állapotot.
-2. **DMARC** TXT rekord a `_dmarc.fodel.eu` névre, például `v=DMARC1; p=none; rua=mailto:info@fodel.eu` (később szigorítható).
-3. Resend → API Keys → kulcs („Sending access”). Vercel → Environment Variables: `RESEND_API_KEY`, és ellenőrizze: `FODEL_FROM="FODEL <info@fodel.eu>"`, `FODEL_INBOX`, `FODEL_REPLY_TO`.
+1. Resend → Domains → **Add domain `finddome.com`**. A megadott **SPF (TXT)**, **DKIM (3 db CNAME/TXT)** rekordokat vegye fel a DNS-nél. Várja meg a „Verified” állapotot.
+2. **DMARC** TXT rekord a `_dmarc.finddome.com` névre, például `v=DMARC1; p=none; rua=mailto:info@finddome.com` (később szigorítható).
+3. Resend → API Keys → kulcs („Sending access”). Vercel → Environment Variables: `RESEND_API_KEY`, és ellenőrizze: `FODEL_FROM="FODEL <info@finddome.com>"`, `FODEL_INBOX`, `FODEL_REPLY_TO`.
 4. Hírlevélhez: Resend → Audiences → hozzon létre egyet, az azonosítóját tegye `RESEND_AUDIENCE_ID`-ként. Nélküle az adatbázis a lista, ez is működik.
 5. **Füstteszt:** a portálon vagy a kapcsolat űrlapon küldjön egyet, és külön egy tesztet a `delivered@resend.dev` címre. A Resend irányítópultján „Delivered” állapotot kell látnia.
 6. `EMAIL_TRANSPORT` éles környezetben **maradjon üres**.
@@ -75,7 +75,7 @@ A kód felkészült: kulcs nélkül naplóz és nem száll el; `EMAIL_TRANSPORT=
 A kód felkészült: a Checkout összege mindig a tárolt rendelésből jön, sosem a kérésből; `STRIPE_ENABLED` kikapcsolva a teljes átutalásos út működik, kártyás gomb nélkül; a webhook aláírást ellenőriz és hibás aláírásnál 400-at ad; minden eseményre 200-zal válaszol, hogy a Stripe ne ismételgessen; ismételt kézbesítés nem fizet és nem publikál kétszer. Új: a késleltetett fizetési módok (`async_payment_succeeded` / `failed`) kezelése.
 
 1. Stripe → Developers → API keys: **teszt** kulcsok először. Vercel: `STRIPE_ENABLED=true`, `STRIPE_SECRET_KEY=sk_test_…`. A változás **újratelepítést** igényel (build-időben olvassa).
-2. Stripe → Developers → Webhooks → Add endpoint: `https://fodel.eu/api/stripe/webhook`. Pontosan ezekre az eseményekre iratkozzon fel:
+2. Stripe → Developers → Webhooks → Add endpoint: `https://finddome.com/api/stripe/webhook`. Pontosan ezekre az eseményekre iratkozzon fel:
    - `checkout.session.completed`
    - `checkout.session.async_payment_succeeded`
    - `checkout.session.async_payment_failed`

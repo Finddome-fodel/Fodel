@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 import { LOCALES } from '../../../src/i18n/ui';
 
-const ORIGIN = 'https://fodel.eu';
+const ORIGIN = 'https://finddome.com';
 
 test('every template renders in all nine languages with clean text and production links', async ({ request }) => {
   test.setTimeout(600_000);
@@ -33,7 +33,7 @@ test('every template renders in all nine languages with clean text and productio
       for (const href of markup.matchAll(/href="(https?:[^"]+)"/g)) {
         const url = href[1].replace(/&amp;/g, '&');
         const host = new URL(url).origin;
-        if (![ORIGIN, 'https://www.fodel.eu', 'https://example.com'].includes(host) && url.includes('fodel') && host !== ORIGIN) problems.push(`${name}/${locale}: link to ${host}`);
+        if (![ORIGIN, 'https://www.finddome.com', 'https://example.com'].includes(host) && url.includes('fodel') && host !== ORIGIN) problems.push(`${name}/${locale}: link to ${host}`);
       }
     }
   }

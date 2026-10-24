@@ -217,7 +217,7 @@ test('number limits', () => {
 test('email and url', () => {
   assert.equal(validateField({ rule: 'email' }, 'a@b.hu'), null);
   assert.equal(validateField({ rule: 'email' }, 'a@b')?.code, 'email');
-  assert.equal(validateField({ rule: 'url' }, 'https://fodel.eu'), null);
+  assert.equal(validateField({ rule: 'url' }, 'https://finddome.com'), null);
   assert.equal(validateField({ rule: 'url' }, 'fodel')?.code, 'url');
 });
 

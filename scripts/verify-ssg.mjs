@@ -320,7 +320,7 @@ console.log('\nLanguages');
     const canonical = html.match(/<link rel="canonical" href="(.*?)"/)?.[1] ?? '';
     // A blog stand-in (an article shown in another language) points at its original.
     const standIn = /\/(blog|nieuws)\/[^/]+\//.test(relPath);
-    if (!standIn && !canonical.startsWith(`https://fodel.eu/${locale}/`)) fail(`${relPath} canonical is ${canonical}`);
+    if (!standIn && !canonical.startsWith(`https://finddome.com/${locale}/`)) fail(`${relPath} canonical is ${canonical}`);
     if (!/name="robots" content="noindex/.test(html) && !standIn) {
       const alts = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)"/g)].map((m) => m[1]);
       const want = [...LOCALES.map((l) => LOCALE_META[l].hreflang), 'x-default'];
@@ -332,7 +332,7 @@ console.log('\nLanguages');
   }
   pass(`${checked} pages: right lang, canonical and the full hreflang set (${LOCALES.map((l) => `${l} ${perLocale[l]}`).join(', ')})`);
   for (const l of LOCALES) {
-    const home = `https://fodel.eu/${l}/`;
+    const home = `https://finddome.com/${l}/`;
     if (!sitemap.includes(home)) fail(`sitemap does not list ${home}`);
   }
   pass('sitemap lists every language home');
