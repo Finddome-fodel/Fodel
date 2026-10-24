@@ -9,7 +9,7 @@
  * summary may cite); it never moves the price band by itself.
  */
 
-const USER_AGENT = 'FODEL-valuation/1.0 (+https://fodel.eu; info@fodel.eu)';
+const USER_AGENT = 'FODEL-valuation/1.0 (+https://finddome.com; info@finddome.com)';
 const NEAR_M = 2000;
 const FAR_M = 15000;
 

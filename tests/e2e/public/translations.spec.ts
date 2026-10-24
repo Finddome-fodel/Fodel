@@ -11,7 +11,7 @@ const KEYS: RouteKey[] = [
   'home', 'submitAd', 'contact', 'searchRequest', 'priceList', 'sellers', 'buyers', 'about', 'faq', 'valuation',
   'services', 'agricultural', 'photoGuide', 'buyingGuide', 'emigration', 'privacy', 'terms', 'cookies', 'imprint', 'accessibility',
 ];
-const abs = (p: string) => `https://fodel.eu${p}`;
+const abs = (p: string) => `https://finddome.com${p}`;
 
 test('hreflang: every page lists all nine languages and every counterpart lists it back', async ({ request }) => {
   test.setTimeout(240_000);
