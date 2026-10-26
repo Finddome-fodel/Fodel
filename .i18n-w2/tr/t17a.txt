@@ -1,0 +1,315 @@
+@1191
+it: Cosa significa “direttamente dal proprietario”?
+pt: O que significa «diretamente ao proprietário»?
+el: Τι σημαίνει «απευθείας από τον ιδιοκτήτη»;
+cs: Co znamená „přímo od majitele“?
+sl: Kaj pomeni „neposredno od lastnika“?
+sv: Vad betyder ”direkt av ägaren”?
+@1192
+it: Per gran parte della nostra offerta pubblichiamo nome e numero di telefono del proprietario accanto ai nostri recapiti. Potete contattare direttamente il venditore.
+pt: Para grande parte da nossa oferta publicamos o nome e o telefone do proprietário ao lado dos nossos contactos. Pode contactar diretamente o vendedor.
+el: Για μεγάλο μέρος του χαρτοφυλακίου μας δημοσιεύουμε το όνομα και το τηλέφωνο του ιδιοκτήτη δίπλα στα δικά μας στοιχεία. Μπορείτε να επικοινωνήσετε απευθείας με τον πωλητή.
+cs: U velké části naší nabídky zveřejňujeme vedle našich údajů i jméno a telefon majitele. Prodávajícího můžete kontaktovat přímo.
+sl: Pri velikem delu naše ponudbe poleg naših podatkov objavimo ime in telefonsko številko lastnika. Prodajalca lahko kontaktirate neposredno.
+sv: För en stor del av vårt utbud publicerar vi ägarens namn och telefonnummer bredvid våra egna uppgifter. Du kan kontakta säljaren direkt.
+@1193
+it: Se lo contattate direttamente e concludete l’acquisto tra voi, nessuno paga provvigioni: né voi né il venditore. In tal caso veniamo pagati solo per l’annuncio.
+pt: Se o contactar diretamente e tratarem da compra entre si, ninguém paga comissão: nem o comprador nem o vendedor. Nesse caso, somos pagos apenas pelo anúncio.
+el: Αν επικοινωνήσετε απευθείας και κανονίσετε την αγορά μεταξύ σας, κανείς δεν πληρώνει προμήθεια: ούτε εσείς ούτε ο πωλητής. Τότε αμειβόμαστε μόνο για την αγγελία.
+cs: Pokud ho kontaktujete přímo a koupi si domluvíte mezi sebou, nikdo neplatí provizi: ani vy, ani prodávající. My jsme pak placeni jen za inzerát.
+sl: Če ga kontaktirate neposredno in se o nakupu dogovorite sami, nihče ne plača provizije: ne vi ne prodajalec. V tem primeru smo plačani le za oglas.
+sv: Om du kontaktar säljaren direkt och ni gör upp köpet själva betalar ingen provision: varken du eller säljaren. Vi får då bara betalt för annonsen.
+@1194
+it: Quanto costa la vostra intermediazione?
+pt: Quanto custa a vossa mediação?
+el: Πόσο κοστίζει η μεσιτεία σας;
+cs: Kolik stojí vaše zprostředkování?
+sl: Koliko stane vaše posredovanje?
+sv: Vad kostar er förmedling?
+@1195
+it: La nostra provvigione è del ${COMMISSION.percent}% netto con un minimo di ${eur(COMMISSION.minimumEur, L)}, più il ${COMMISSION.vatPercent}% di IVA olandese. La paga il venditore ungherese, non voi.
+pt: A nossa comissão é de ${COMMISSION.percent}% líquida, com um mínimo de ${eur(COMMISSION.minimumEur, L)}, acrescida de ${COMMISSION.vatPercent}% de IVA neerlandês. É paga pelo vendedor húngaro, não por si.
+el: Η προμήθειά μας είναι ${COMMISSION.percent}% καθαρό, με ελάχιστο ποσό ${eur(COMMISSION.minimumEur, L)}, πλέον ${COMMISSION.vatPercent}% ολλανδικού ΦΠΑ. Την πληρώνει ο Ούγγρος πωλητής, όχι εσείς.
+cs: Naše provize činí ${COMMISSION.percent} % netto, nejméně ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nizozemské DPH. Platí ji maďarský prodávající, nikoli vy.
+sl: Naša provizija znaša ${COMMISSION.percent} % neto, najmanj ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nizozemskega DDV. Plača jo madžarski prodajalec, ne vi.
+sv: Vår provision är ${COMMISSION.percent} % netto, minst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nederländsk moms. Den betalas av den ungerska säljaren, inte av dig.
+@1196
+it: Fatturiamo solo quando sono soddisfatte tutte e tre le condizioni: esiste un contratto di compravendita scritto, l’acquirente è stato presentato da FODEL e la caparra è stata versata.
+pt: Só faturamos quando se verificam as três condições: existe um contrato de compra e venda escrito, o comprador foi apresentado pela FODEL e o sinal foi pago.
+el: Τιμολογούμε μόνο όταν πληρούνται και οι τρεις προϋποθέσεις: υπάρχει γραπτό συμβόλαιο αγοραπωλησίας, τον αγοραστή έφερε η FODEL και έχει καταβληθεί η προκαταβολή.
+cs: Fakturujeme jen tehdy, když jsou splněny všechny tři podmínky: existuje písemná kupní smlouva, kupujícího přivedla FODEL a byla zaplacena záloha.
+sl: Račun izstavimo le, ko so izpolnjeni vsi trije pogoji: obstaja pisna prodajna pogodba, kupca je pripeljal FODEL in ara je bila plačana.
+sv: Vi fakturerar bara när alla tre villkor är uppfyllda: det finns ett skriftligt köpeavtal, köparen har presenterats av FODEL och handpenningen har betalats.
+@1197
+it: Come cittadino UE posso acquistare un immobile in Ungheria?
+pt: Como cidadão da UE, posso comprar um imóvel na Hungria?
+el: Μπορώ ως πολίτης της ΕΕ να αγοράσω ακίνητο στην Ουγγαρία;
+cs: Mohu jako občan EU koupit nemovitost v Maďarsku?
+sl: Ali lahko kot državljan EU kupim nepremičnino na Madžarskem?
+sv: Kan jag som EU-medborgare köpa en fastighet i Ungern?
+@1198
+it: Sì. Come cittadini UE acquistate case e terreni in Ungheria praticamente alle stesse condizioni di un ungherese. Quasi il 100% degli immobili ungheresi sorge su terreno in piena proprietà. Forme di diritto di superficie come l’erfpacht olandese sono rare.
+pt: Sim. Como cidadão da UE compra casas e terrenos na Hungria praticamente nas mesmas condições que um húngaro. Quase 100% dos imóveis húngaros assentam em terreno de propriedade plena. Regimes de direito de superfície como o erfpacht neerlandês são raros.
+el: Ναι. Ως πολίτης της ΕΕ αγοράζετε σπίτια και οικόπεδα στην Ουγγαρία ουσιαστικά με τους ίδιους όρους με έναν Ούγγρο. Σχεδόν το 100% των ουγγρικών ακινήτων βρίσκεται σε γη πλήρους κυριότητας. Καθεστώτα επιφανειακού δικαιώματος, όπως το ολλανδικό erfpacht, είναι σπάνια.
+cs: Ano. Jako občan EU kupujete v Maďarsku domy a pozemky prakticky za stejných podmínek jako Maďar. Téměř 100 % maďarských nemovitostí stojí na pozemcích v plném vlastnictví. Právo stavby, jako je nizozemský erfpacht, je vzácné.
+sl: Da. Kot državljan EU na Madžarskem kupujete hiše in zemljišča praktično pod enakimi pogoji kot Madžar. Skoraj 100 % madžarskih nepremičnin stoji na zemljišču v polni lasti. Stavbna pravica, kot je nizozemski erfpacht, je redka.
+sv: Ja. Som EU-medborgare köper du hus och tomter i Ungern på i princip samma villkor som en ungrare. Nästan 100 % av de ungerska fastigheterna står på mark med full äganderätt. Tomträtt som den nederländska erfpacht är ovanlig.
+@1199
+it: Per i terreni agricoli valgono regole a parte. Un cittadino UE con qualifica agricola può acquistare fino a ${AGRI_HECTARE_LIMIT} ettari in Ungheria; gestiamo noi l’intera procedura.
+pt: Para terrenos agrícolas aplicam-se regras próprias. Um cidadão da UE com qualificação agrícola pode adquirir até ${AGRI_HECTARE_LIMIT} hectares na Hungria; tratamos de todo esse processo.
+el: Για την αγροτική γη ισχύουν ξεχωριστοί κανόνες. Πολίτης της ΕΕ με γεωργικά προσόντα μπορεί να αποκτήσει έως ${AGRI_HECTARE_LIMIT} εκτάρια στην Ουγγαρία· αναλαμβάνουμε πλήρως αυτή τη διαδικασία.
+cs: Pro zemědělskou půdu platí zvláštní pravidla. Občan EU se zemědělskou kvalifikací může v Maďarsku nabýt až ${AGRI_HECTARE_LIMIT} hektarů; toto řízení zajistíme celé.
+sl: Za kmetijska zemljišča veljajo posebna pravila. Državljan EU s kmetijsko izobrazbo lahko na Madžarskem pridobi do ${AGRI_HECTARE_LIMIT} hektarjev; ta postopek v celoti izpeljemo mi.
+sv: För jordbruksmark gäller särskilda regler. En EU-medborgare med jordbruksutbildning får förvärva upp till ${AGRI_HECTARE_LIMIT} hektar i Ungern; vi sköter hela det förfarandet.
+@1200
+it: Devo recarmi in Ungheria per firmare?
+pt: Tenho de viajar até à Hungria para assinar?
+el: Πρέπει να ταξιδέψω στην Ουγγαρία για την υπογραφή;
+cs: Musím kvůli podpisu cestovat do Maďarska?
+sl: Ali moram za podpis potovati na Madžarsko?
+sv: Måste jag resa till Ungern för att skriva under?
+@1201
+it: No. Possiamo rappresentarvi in Ungheria tramite procura, quindi non dovete venire per la firma.
+pt: Não. Podemos representá-lo na Hungria através de uma procuração, pelo que não precisa de vir para a assinatura.
+el: Όχι. Μπορούμε να σας εκπροσωπήσουμε στην Ουγγαρία με πληρεξούσιο, οπότε δεν χρειάζεται να έρθετε για την υπογραφή.
+cs: Ne. Na základě plné moci vás můžeme v Maďarsku zastoupit, takže k podpisu nemusíte přijíždět.
+sl: Ne. Na Madžarskem vas lahko zastopamo s pooblastilom, zato vam za podpis ni treba priti.
+sv: Nej. Vi kan företräda dig i Ungern med fullmakt, så du behöver inte komma dit för undertecknandet.
+@1202
+it: Ci occupiamo anche dell’iscrizione al catasto ungherese e del passaggio delle utenze.
+pt: Tratamos também do registo predial húngaro e da transferência dos serviços.
+el: Φροντίζουμε επίσης για την εγγραφή στο ουγγρικό κτηματολόγιο και τη μεταβίβαση των παροχών.
+cs: Postaráme se také o zápis do maďarského katastru a převod energií.
+sl: Poskrbimo tudi za vpis v madžarsko zemljiško knjigo in prenos komunalnih priključkov.
+sv: Vi sköter även inskrivningen i det ungerska fastighetsregistret och överföringen av el och vatten.
+@1203
+it: In quale lingua viene redatto il contratto di compravendita?
+pt: Em que língua é redigido o contrato de compra e venda?
+el: Σε ποια γλώσσα συντάσσεται το συμβόλαιο αγοραπωλησίας;
+cs: V jakém jazyce se kupní smlouva sepisuje?
+sl: V katerem jeziku je sestavljena prodajna pogodba?
+sv: På vilket språk upprättas köpeavtalet?
+@1204
+it: Facciamo redigere contratti bilingui, così leggete ciò che firmate.
+pt: Mandamos redigir contratos bilingues, para que leia o que assina.
+el: Φροντίζουμε για τη σύνταξη δίγλωσσων συμβολαίων, ώστε να διαβάζετε αυτό που υπογράφετε.
+cs: Necháváme vypracovat dvojjazyčné smlouvy, takže čtete, co podepisujete.
+sl: Poskrbimo za dvojezične pogodbe, tako da preberete, kar podpišete.
+sv: Vi låter upprätta tvåspråkiga avtal, så att du kan läsa det du skriver under.
+@1205
+it: Prezzi indicativi: ungherese da ${price('hu')}, tedesco–ungherese e inglese–ungherese da ${price('de-hu')}, olandese–ungherese da ${price('nl-hu')}.
+pt: Preços indicativos: húngaro desde ${price('hu')}, alemão–húngaro e inglês–húngaro desde ${price('de-hu')}, neerlandês–húngaro desde ${price('nl-hu')}.
+el: Ενδεικτικές τιμές: ουγγρικά από ${price('hu')}, γερμανικά–ουγγρικά και αγγλικά–ουγγρικά από ${price('de-hu')}, ολλανδικά–ουγγρικά από ${price('nl-hu')}.
+cs: Orientační ceny: maďarsky od ${price('hu')}, německy–maďarsky a anglicky–maďarsky od ${price('de-hu')}, nizozemsky–maďarsky od ${price('nl-hu')}.
+sl: Okvirne cene: madžarsko od ${price('hu')}, nemško–madžarsko in angleško–madžarsko od ${price('de-hu')}, nizozemsko–madžarsko od ${price('nl-hu')}.
+sv: Vägledande priser: ungerska från ${price('hu')}, tyska–ungerska och engelska–ungerska från ${price('de-hu')}, nederländska–ungerska från ${price('nl-hu')}.
+@1206
+it: Di cosa si occupa esattamente FODEL quando acquistate?
+pt: O que trata exatamente a FODEL quando compra?
+el: Τι ακριβώς αναλαμβάνει η FODEL όταν αγοράζετε;
+cs: Co přesně FODEL při koupi zajistí?
+sl: Kaj natanko FODEL uredi pri nakupu?
+sv: Vad exakt ordnar FODEL när du köper?
+@1207
+it: - Consulenza telefonica e via e-mail e comunicazione tra le due parti
+pt: - Aconselhamento por telefone e e-mail e comunicação entre as partes
+el: - Συμβουλευτική μέσω τηλεφώνου και email και επικοινωνία μεταξύ των δύο μερών
+cs: - Konzultace po telefonu a e-mailem a komunikace mezi oběma stranami
+sl: - Svetovanje po telefonu in e-pošti ter komunikacija med obema stranema
+sv: - Rådgivning per telefon och e-post samt kommunikation mellan parterna
+@1208
+it: - Appuntamenti personali e visite in loco
+pt: - Encontros pessoais e visitas no local
+el: - Προσωπικά ραντεβού και επισκέψεις επί τόπου
+cs: - Osobní schůzky a prohlídky na místě
+sl: - Osebni sestanki in ogledi na kraju samem
+sv: - Personliga möten och visningar på plats
+@1209
+it: - Un collega che parla la vostra lingua e viaggia con voi
+pt: - Um colega que fala a sua língua e viaja consigo
+el: - Συνεργάτης που μιλά τη γλώσσα σας και ταξιδεύει μαζί σας
+cs: - Kolega, který mluví vaším jazykem a cestuje s vámi
+sl: - Sodelavec, ki govori vaš jezik in potuje z vami
+sv: - En kollega som talar ditt språk och reser med dig
+@1210
+it: - Supporto nella trattativa sul prezzo
+pt: - Apoio na negociação do preço
+el: - Υποστήριξη στη διαπραγμάτευση της τιμής
+cs: - Podpora při vyjednávání o ceně
+sl: - Podpora pri pogajanjih o ceni
+sv: - Stöd i prisförhandlingen
+@1211
+it: - Redazione del contratto multilingue
+pt: - Elaboração do contrato multilingue
+el: - Σύνταξη του πολύγλωσσου συμβολαίου
+cs: - Vypracování vícejazyčné smlouvy
+sl: - Priprava večjezične pogodbe
+sv: - Upprättande av det flerspråkiga avtalet
+@1212
+it: - Gestione dell’intero acquisto
+pt: - Tratamento de toda a compra
+el: - Διεκπεραίωση ολόκληρης της αγοράς
+cs: - Vyřízení celé koupě
+sl: - Izvedba celotnega nakupa
+sv: - Hantering av hela köpet
+@1213
+it: - Iscrizione del nuovo proprietario e passaggio delle utenze
+pt: - Registo do novo proprietário e transferência dos serviços
+el: - Εγγραφή του νέου ιδιοκτήτη και μεταβίβαση των παροχών
+cs: - Zápis nového vlastníka a převod energií
+sl: - Vpis novega lastnika in prenos komunalnih priključkov
+sv: - Inskrivning av den nya ägaren och överföring av el och vatten
+@1214
+it: Perché gli acquirenti dell’Europa occidentale scelgono l’Ungheria?
+pt: Porque é que os compradores da Europa Ocidental escolhem a Hungria?
+el: Γιατί οι αγοραστές από τη Δυτική Ευρώπη επιλέγουν την Ουγγαρία;
+cs: Proč si kupující ze západní Evropy vybírají Maďarsko?
+sl: Zakaj kupci iz zahodne Evrope izberejo Madžarsko?
+sv: Varför väljer köpare från Västeuropa Ungern?
+@1215
+it: - I costi degli immobili e della vita sono decisamente più bassi
+pt: - Os custos dos imóveis e de vida são bastante mais baixos
+el: - Το κόστος των ακινήτων και της ζωής είναι σημαντικά χαμηλότερο
+cs: - Ceny nemovitostí i životní náklady jsou výrazně nižší
+sl: - Cene nepremičnin in življenjski stroški so precej nižji
+sv: - Fastighetspriser och levnadskostnader är betydligt lägre
+@1216
+it: - In Ungheria di norma non si paga l’imposta sugli immobili
+pt: - Na Hungria, em regra, não é cobrado imposto sobre imóveis
+el: - Στην Ουγγαρία κατά κανόνα δεν επιβάλλεται φόρος ακινήτων
+cs: - Daň z nemovitostí se v Maďarsku obvykle nevybírá
+sl: - Davek na nepremičnine se na Madžarskem praviloma ne obračunava
+sv: - Fastighetsskatt tas i regel inte ut i Ungern
+@1217
+it: - Più sole e un clima più mite
+pt: - Mais sol e um clima mais ameno
+el: - Περισσότερος ήλιος και ηπιότερο κλίμα
+cs: - Více slunce a mírnější podnebí
+sl: - Več sonca in milejše podnebje
+sv: - Mer sol och ett mildare klimat
+@1218
+it: - Il Paese si trova sopra il livello del mare, al centro del continente
+pt: - O país situa-se acima do nível do mar, no centro do continente
+el: - Η χώρα βρίσκεται πάνω από τη στάθμη της θάλασσας, στο κέντρο της ηπείρου
+cs: - Země leží nad hladinou moře, uprostřed kontinentu
+sl: - Država leži nad morsko gladino, sredi celine
+sv: - Landet ligger över havsytan, mitt på kontinenten
+@1219
+it: - L’Ungheria è uno Stato membro dell’UE
+pt: - A Hungria é um Estado-Membro da UE
+el: - Η Ουγγαρία είναι κράτος μέλος της ΕΕ
+cs: - Maďarsko je členským státem EU
+sl: - Madžarska je država članica EU
+sv: - Ungern är medlem i EU
+@1220
+it: - Quasi tutti gli immobili sorgono su terreno in piena proprietà
+pt: - Quase todos os imóveis assentam em terreno de propriedade plena
+el: - Σχεδόν όλα τα ακίνητα βρίσκονται σε γη πλήρους κυριότητας
+cs: - Téměř všechny nemovitosti stojí na pozemcích v plném vlastnictví
+sl: - Skoraj vse nepremičnine stojijo na zemljiščih v polni lasti
+sv: - Nästan alla fastigheter står på mark med full äganderätt
+@1221
+it: Un immobile ungherese ha l’attestato di prestazione energetica?
+pt: Um imóvel húngaro tem certificado energético?
+el: Διαθέτει ένα ουγγρικό ακίνητο πιστοποιητικό ενεργειακής απόδοσης;
+cs: Má maďarská nemovitost průkaz energetické náročnosti?
+sl: Ali ima madžarska nepremičnina energetsko izkaznico?
+sv: Har en ungersk fastighet en energideklaration?
+@1222
+it: Sì. L’Ungheria richiede l’attestato di prestazione energetica (energiatanúsítvány), che deve essere indicato nell’annuncio. Nei nostri annunci la classe è riportata tra le caratteristiche; “in corso” significa che l’attestato è ancora in preparazione.
+pt: Sim. A Hungria exige um certificado energético (energiatanúsítvány), que tem de constar do anúncio. Nos nossos anúncios a classe aparece nas características; «em curso» significa que o certificado ainda está a ser preparado.
+el: Ναι. Η Ουγγαρία απαιτεί πιστοποιητικό ενεργειακής απόδοσης (energiatanúsítvány), το οποίο πρέπει να αναφέρεται στην αγγελία. Στις αγγελίες μας η κατηγορία εμφανίζεται στα χαρακτηριστικά· «σε εξέλιξη» σημαίνει ότι το πιστοποιητικό ετοιμάζεται ακόμη.
+cs: Ano. Maďarsko vyžaduje průkaz energetické náročnosti (energiatanúsítvány), který musí být uveden v inzerátu. V našich inzerátech je třída uvedena mezi vlastnostmi; „připravuje se“ znamená, že průkaz se teprve zpracovává.
+sl: Da. Madžarska zahteva energetsko izkaznico (energiatanúsítvány), ki mora biti navedena v oglasu. V naših oglasih je razred naveden med lastnostmi; „v pripravi“ pomeni, da se izkaznica še pripravlja.
+sv: Ja. Ungern kräver en energideklaration (energiatanúsítvány), och den ska anges i annonsen. I våra annonser visas klassningen bland egenskaperna; ”pågår” betyder att deklarationen fortfarande tas fram.
+@1223
+it: Se il venditore lo desidera, possiamo far preparare l’attestato per lui.
+pt: Se o vendedor quiser, podemos tratar da emissão do certificado.
+el: Αν το επιθυμεί ο πωλητής, μπορούμε να φροντίσουμε για την έκδοση του πιστοποιητικού.
+cs: Pokud si to prodávající přeje, můžeme mu průkaz nechat vypracovat.
+sl: Če prodajalec želi, lahko poskrbimo za izdelavo izkaznice.
+sv: Om säljaren önskar kan vi ordna energideklarationen åt hen.
+@1224
+it: Che cos’è il servizio di ricerca e quanto costa?
+pt: O que é o serviço de pesquisa e quanto custa?
+el: Τι είναι η υπηρεσία αναζήτησης και πόσο κοστίζει;
+cs: Co je vyhledávací služba a kolik stojí?
+sl: Kaj je storitev iskanja in koliko stane?
+sv: Vad är söktjänsten och vad kostar den?
+@1225
+it: Il servizio di ricerca è gratuito. Ci dite cosa cercate (tipologia, zona, budget e desideri) e cerchiamo per voi, anche oltre gli immobili presenti su questo sito.
+pt: O serviço de pesquisa é gratuito. Diz-nos o que procura (tipo, zona, orçamento e preferências) e nós procuramos por si, também para além dos imóveis deste site.
+el: Η υπηρεσία αναζήτησης είναι δωρεάν. Μας λέτε τι αναζητάτε (τύπο, περιοχή, προϋπολογισμό και επιθυμίες) και ψάχνουμε για εσάς, και πέρα από τα ακίνητα αυτού του ιστότοπου.
+cs: Vyhledávací služba je zdarma. Řeknete nám, co hledáte (typ, oblast, rozpočet a přání), a my hledáme za vás, i mimo nemovitosti na tomto webu.
+sl: Storitev iskanja je brezplačna. Poveste nam, kaj iščete (vrsto, območje, proračun in želje), mi pa iščemo namesto vas, tudi zunaj nepremičnin na tej spletni strani.
+sv: Söktjänsten är kostnadsfri. Du berättar vad du letar efter (typ, område, budget och önskemål) och vi söker åt dig, även utanför fastigheterna på den här webbplatsen.
+@1226
+it: I nostri colleghi di lingua ungherese aiutano nella trattativa e fanno sì che il contratto sia redatto correttamente dal punto di vista giuridico. Ricevete un’e-mail non appena compare qualcosa di adatto.
+pt: Os nossos colegas que falam húngaro ajudam na negociação e asseguram que o contrato é redigido corretamente do ponto de vista jurídico. Recebe um e-mail assim que surgir algo adequado.
+el: Οι ουγγρόφωνοι συνεργάτες μας βοηθούν στη διαπραγμάτευση και φροντίζουν ώστε το συμβόλαιο να συνταχθεί νομικά ορθά. Λαμβάνετε email μόλις εμφανιστεί κάτι κατάλληλο.
+cs: Naši maďarsky mluvící kolegové pomáhají s vyjednáváním a dbají na to, aby smlouva byla právně správně sepsána. Jakmile se objeví něco vhodného, dostanete e-mail.
+sl: Naši madžarsko govoreči sodelavci pomagajo pri pogajanjih in poskrbijo, da je pogodba pravno pravilno sestavljena. Ko se pojavi kaj primernega, prejmete e-pošto.
+sv: Våra ungerskspråkiga kollegor hjälper till i förhandlingen och ser till att avtalet upprättas juridiskt korrekt. Du får ett e-postmeddelande så snart något passande dyker upp.
+@1227
+it: Quali zone coprite?
+pt: Que zonas abrangem?
+el: Ποιες περιοχές καλύπτετε;
+cs: Které oblasti pokrýváte?
+sl: Katera območja pokrivate?
+sv: Vilka områden täcker ni?
+@1228
+it: Il fulcro è la Transdanubia, con le contee di Baranya, Tolna, Zala, Somogy e Veszprém, oltre al lago Balaton e agli altopiani del Balaton.
+pt: O foco é a Transdanúbia, com os condados de Baranya, Tolna, Zala, Somogy e Veszprém, além do lago Balaton e das terras altas do Balaton.
+el: Το επίκεντρο είναι η Υπερδουνάβια, με τους νομούς Baranya, Tolna, Zala, Somogy και Veszprém, καθώς και η λίμνη Μπάλατον και τα υψίπεδα του Μπάλατον.
+cs: Těžištěm je Zadunají s župami Baranya, Tolna, Zala, Somogy a Veszprém a také Balaton a Balatonská vrchovina.
+sl: Poudarek je na Prekdonavju z županijami Baranya, Tolna, Zala, Somogy in Veszprém ter na Blatnem jezeru in Blatenskem višavju.
+sv: Fokus ligger på Transdanubien med länen Baranya, Tolna, Zala, Somogy och Veszprém, samt Balatonsjön och Balatonhöglandet.
+@1229
+it: Abbiamo immobili anche in pianura e in zone ben collegate all’aeroporto di Budapest.
+pt: Temos também imóveis na planície e em zonas com boas ligações ao aeroporto de Budapeste.
+el: Έχουμε επίσης ακίνητα στην πεδιάδα και σε περιοχές με καλή σύνδεση με το αεροδρόμιο της Βουδαπέστης.
+cs: Máme i nemovitosti v nížině a v oblastech s dobrým spojením na budapešťské letiště.
+sl: Imamo tudi nepremičnine na nižini in na območjih z dobro povezavo do budimpeštanskega letališča.
+sv: Vi har även fastigheter på slätten och i områden med goda förbindelser till Budapests flygplats.
+@1230
+it: Non parlo ungherese. È un problema?
+pt: Não falo húngaro. Isso é um problema?
+el: Δεν μιλώ ουγγρικά. Είναι πρόβλημα;
+cs: Nemluvím maďarsky. Je to problém?
+sl: Ne govorim madžarsko. Je to težava?
+sv: Jag talar inte ungerska. Är det ett problem?
+@1231
+it: No. Ogni annuncio indica quali lingue parla il proprietario, così lo sapete in anticipo.
+pt: Não. Cada anúncio indica as línguas que o proprietário fala, para que saiba de antemão.
+el: Όχι. Κάθε αγγελία αναφέρει ποιες γλώσσες μιλά ο ιδιοκτήτης, ώστε να το γνωρίζετε εκ των προτέρων.
+cs: Ne. U každého inzerátu je uvedeno, jakými jazyky majitel mluví, takže to víte předem.
+sl: Ne. Pri vsakem oglasu je navedeno, katere jezike govori lastnik, zato to veste vnaprej.
+sv: Nej. I varje annons står det vilka språk ägaren talar, så du vet det i förväg.
+@1232
+it: Il nostro team parla olandese, tedesco, inglese, francese e ungherese e vi accompagna alla visita.
+pt: A nossa equipa fala neerlandês, alemão, inglês, francês e húngaro, e acompanha-o na visita.
+el: Η ομάδα μας μιλά ολλανδικά, γερμανικά, αγγλικά, γαλλικά και ουγγρικά και σας συνοδεύει στην επίσκεψη.
+cs: Náš tým mluví nizozemsky, německy, anglicky, francouzsky a maďarsky a doprovodí vás na prohlídku.
+sl: Naša ekipa govori nizozemsko, nemško, angleško, francosko in madžarsko ter vas pospremi na ogled.
+sv: Vårt team talar nederländska, tyska, engelska, franska och ungerska och följer med på visningen.
+@1233
+it: Quando posso contattarvi?
+pt: Quando vos posso contactar?
+el: Πότε μπορώ να επικοινωνήσω μαζί σας;
+cs: Kdy vás zastihnu?
+sl: Kdaj vas lahko dosežem?
+sv: När kan jag nå er?
+@1234
+it: Nei giorni feriali tra le ${COMPANY.hours.weekdays.from} e le ${COMPANY.hours.weekdays.to}. Se richiedete una richiamata, chiamiamo fino alle ${COMPANY.hours.callback.to}, anche nel fine settimana.
+pt: Nos dias úteis entre as ${COMPANY.hours.weekdays.from} e as ${COMPANY.hours.weekdays.to}. Se pedir que lhe liguemos, ligamos até às ${COMPANY.hours.callback.to}, incluindo fins de semana.
+el: Τις καθημερινές από ${COMPANY.hours.weekdays.from} έως ${COMPANY.hours.weekdays.to}. Αν ζητήσετε επανάκληση, καλούμε έως τις ${COMPANY.hours.callback.to}, και τα Σαββατοκύριακα.
+cs: V pracovní dny mezi ${COMPANY.hours.weekdays.from} a ${COMPANY.hours.weekdays.to}. Pokud požádáte o zavolání zpět, voláme do ${COMPANY.hours.callback.to}, i o víkendech.
+sl: Ob delavnikih med ${COMPANY.hours.weekdays.from} in ${COMPANY.hours.weekdays.to}. Če prosite za povratni klic, kličemo do ${COMPANY.hours.callback.to}, tudi ob koncih tedna.
+sv: Vardagar mellan ${COMPANY.hours.weekdays.from} och ${COMPANY.hours.weekdays.to}. Om du ber om återuppringning ringer vi fram till ${COMPANY.hours.callback.to}, även på helger.
+@1235
+it: La richiamata non vi costa nulla. La chiamata è a nostro carico.
+pt: A chamada não lhe custa nada. Somos nós que pagamos.
+el: Η επανάκληση δεν σας κοστίζει τίποτα. Την κλήση την πληρώνουμε εμείς.
+cs: Zavolání zpět vás nic nestojí. Hovor platíme my.
+sl: Povratni klic vas nič ne stane. Klic plačamo mi.
+sv: Återuppringningen kostar dig ingenting. Vi betalar samtalet.

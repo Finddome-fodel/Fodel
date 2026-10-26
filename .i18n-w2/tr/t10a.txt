@@ -1,0 +1,413 @@
+@727
+it: Il link è scaduto o è incompleto. Risponda all’e-mail con cui lo ha ricevuto e La aiuteremo.
+pt: A ligação expirou ou está incompleta. Responda ao e-mail em que a recebeu e ajudamos.
+el: Ο σύνδεσμος έχει λήξει ή είναι ελλιπής. Απαντήστε στο email με το οποίο τον λάβατε και θα σας βοηθήσουμε.
+cs: Platnost odkazu vypršela nebo je neúplný. Odpovězte na e-mail, ve kterém jste ho dostali, a pomůžeme vám.
+sl: Povezava je potekla ali je nepopolna. Odgovorite na sporočilo, v katerem ste jo prejeli, in pomagali vam bomo.
+sv: Länken har gått ut eller är ofullständig. Svara på mejlet du fick den i, så hjälper vi dig.
+@728
+it: Questo annuncio non è più attivo
+pt: Este anúncio já não está ativo
+el: Η αγγελία δεν είναι πλέον ενεργή
+cs: Tento inzerát již není aktivní
+sl: Ta oglas ni več aktiven
+sv: Annonsen är inte längre aktiv
+@729
+it: L’annuncio risulta ora venduto, scaduto o offline, quindi questo passaggio non è più possibile.
+pt: O anúncio aparece agora como vendido, expirado ou offline, por isso este passo já não é possível.
+el: Η αγγελία εμφανίζεται πλέον ως πωλημένη, ληγμένη ή εκτός σύνδεσης, οπότε αυτό το βήμα δεν είναι πια δυνατό.
+cs: Inzerát je nyní veden jako prodaný, vypršelý nebo offline, takže tento krok již nelze provést.
+sl: Oglas je zdaj označen kot prodan, potekel ali neobjavljen, zato tega koraka ni več mogoče izvesti.
+sv: Annonsen visas nu som såld, utgången eller offline, så det här steget går inte längre att göra.
+@730
+it: Grazie, ne abbiamo preso nota
+pt: Obrigado, registámos
+el: Σας ευχαριστούμε, το σημειώσαμε
+cs: Děkujeme, zaznamenali jsme to
+sl: Hvala, zabeležili smo
+sv: Tack, vi har noterat det
+@731
+it: L’annuncio resta attivo. Glielo chiederemo di nuovo tra un mese.
+pt: O anúncio continua ativo. Voltaremos a perguntar daqui a um mês.
+el: Η αγγελία παραμένει ενεργή. Θα σας ρωτήσουμε ξανά σε έναν μήνα.
+cs: Inzerát zůstává aktivní. Za měsíc se zeptáme znovu.
+sl: Oglas ostaja aktiven. Čez mesec dni vas bomo vprašali znova.
+sv: Annonsen förblir aktiv. Vi frågar igen om en månad.
+@732
+it: Nuovo prezzo richiesto
+pt: Novo preço pedido
+el: Νέα ζητούμενη τιμή
+cs: Nová požadovaná cena
+sl: Nova zahtevana cena
+sv: Nytt begärt pris
+@733
+it: Inserisca il nuovo prezzo. L’annuncio viene aggiornato subito, senza una nuova verifica.
+pt: Introduza o novo preço. O anúncio é atualizado de imediato, sem nova revisão.
+el: Εισαγάγετε τη νέα τιμή. Η αγγελία ενημερώνεται αμέσως, χωρίς νέο έλεγχο.
+cs: Zadejte novou cenu. Inzerát se aktualizuje okamžitě, bez nové kontroly.
+sl: Vnesite novo ceno. Oglas se takoj posodobi, brez ponovnega pregleda.
+sv: Ange det nya priset. Annonsen uppdateras direkt, utan ny granskning.
+@734
+it: Nuovo prezzo (€)
+pt: Novo preço (€)
+el: Νέα τιμή (€)
+cs: Nová cena (€)
+sl: Nova cena (€)
+sv: Nytt pris (€)
+@735
+it: Prezzo attuale
+pt: Preço atual
+el: Τρέχουσα τιμή
+cs: Současná cena
+sl: Trenutna cena
+sv: Nuvarande pris
+@736
+it: Salva il nuovo prezzo
+pt: Guardar novo preço
+el: Αποθήκευση νέας τιμής
+cs: Uložit novou cenu
+sl: Shrani novo ceno
+sv: Spara nytt pris
+@737
+it: Il nuovo prezzo è ora nell’annuncio
+pt: O novo preço já consta do anúncio
+el: Η νέα τιμή εμφανίζεται πλέον στην αγγελία
+cs: Nová cena je nyní v inzerátu
+sl: Nova cena je zdaj v oglasu
+sv: Det nya priset står nu i annonsen
+@738
+it: Inserisca un numero intero positivo.
+pt: Introduza um número inteiro positivo.
+el: Εισαγάγετε θετικό ακέραιο αριθμό.
+cs: Zadejte kladné celé číslo.
+sl: Vnesite pozitivno celo število.
+sv: Ange ett positivt heltal.
+@739
+it: Ha venduto l’immobile?
+pt: Vendeu o imóvel?
+el: Πουλήσατε το ακίνητο;
+cs: Prodali jste nemovitost?
+sl: Ste prodali nepremičnino?
+sv: Har du sålt fastigheten?
+@740
+it: Una volta confermato, l’annuncio esce dalla nostra offerta e passa tra gli immobili venduti. Congratulazioni.
+pt: Depois de confirmar, o anúncio sai da nossa oferta e passa para os imóveis vendidos. Parabéns.
+el: Μόλις επιβεβαιώσετε, η αγγελία αποσύρεται από την προσφορά μας και μεταφέρεται στα πωλημένα ακίνητα. Συγχαρητήρια.
+cs: Po potvrzení inzerát z naší nabídky zmizí a přesune se mezi prodané nemovitosti. Gratulujeme.
+sl: Ko potrdite, se oglas umakne iz naše ponudbe in premakne med prodane nepremičnine. Čestitamo.
+sv: När du bekräftar lämnar annonsen vårt utbud och flyttas till sålda fastigheter. Grattis.
+@741
+it: Sì, è venduto
+pt: Sim, está vendido
+el: Ναι, πουλήθηκε
+cs: Ano, je prodáno
+sl: Da, prodano je
+sv: Ja, den är såld
+@742
+it: Congratulazioni per la vendita
+pt: Parabéns pela venda
+el: Συγχαρητήρια για την πώληση
+cs: Gratulujeme k prodeji
+sl: Čestitamo za prodajo
+sv: Grattis till försäljningen
+@743
+it: L’annuncio è ora tra gli immobili venduti. Un membro del nostro team La contatterà se resta qualcosa da sistemare.
+pt: O anúncio está agora nos imóveis vendidos. Um membro da nossa equipa entrará em contacto consigo se ficar algo por tratar.
+el: Η αγγελία βρίσκεται πλέον στα πωλημένα ακίνητα. Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας αν απομένει κάτι να διευθετηθεί.
+cs: Inzerát je nyní mezi prodanými nemovitostmi. Pokud zbývá něco vyřídit, ozve se vám náš kolega.
+sl: Oglas je zdaj med prodanimi nepremičninami. Če je treba še kaj urediti, vas bo kontaktiral naš sodelavec.
+sv: Annonsen finns nu bland de sålda fastigheterna. Någon i vårt team hör av sig om något återstår att ordna.
+@744
+it: Prolunghi il Suo annuncio
+pt: Prolongue o seu anúncio
+el: Παρατείνετε την αγγελία σας
+cs: Prodlužte svůj inzerát
+sl: Podaljšajte svoj oglas
+sv: Förläng din annons
+@745
+it: Altri 6 mesi di visibilità: ${price}. La proroga parte dalla data di scadenza; se l’annuncio è già scaduto, torna online subito dopo il pagamento.
+pt: Mais 6 meses de visibilidade: ${price}. A prorrogação começa na data de expiração; se o anúncio já tiver expirado, volta a estar online logo após o pagamento.
+el: 6 επιπλέον μήνες προβολής: ${price}. Η παράταση ξεκινά από την ημερομηνία λήξης· αν η αγγελία έχει ήδη λήξει, επανέρχεται online αμέσως μετά την πληρωμή.
+cs: Dalších 6 měsíců viditelnosti: ${price}. Prodloužení začíná dnem vypršení; pokud už inzerát vypršel, je online ihned po zaplacení.
+sl: Še 6 mesecev vidnosti: ${price}. Podaljšanje začne veljati na dan poteka; če je oglas že potekel, je znova objavljen takoj po plačilu.
+sv: 6 månader till av synlighet: ${price}. Förlängningen börjar på utgångsdatumet; om annonsen redan har löpt ut är den online igen direkt efter betalningen.
+@746
+it: Scaduto
+pt: Expirado
+el: Έληξε
+cs: Vypršelo
+sl: Poteklo
+sv: Utgången
+@747
+it: Paghi con carta
+pt: Pagar com cartão
+el: Πληρωμή με κάρτα
+cs: Zaplatit kartou
+sl: Plačilo s kartico
+sv: Betala med kort
+@748
+it: Paghi con bonifico
+pt: Pagar por transferência bancária
+el: Πληρωμή με τραπεζική μεταφορά
+cs: Zaplatit převodem
+sl: Plačilo z nakazilom
+sv: Betala med banköverföring
+@749
+it: Dati per il bonifico
+pt: Dados para transferência
+el: Στοιχεία μεταφοράς
+cs: Údaje pro převod
+sl: Podatki za nakazilo
+sv: Uppgifter för överföring
+@750
+it: Appena riceviamo l’importo prolunghiamo l’annuncio e Le inviamo un’e-mail. Gli stessi dati sono nella Sua casella di posta.
+pt: Assim que o montante chegar, prolongamos o anúncio e enviamos-lhe um e-mail. Os mesmos dados estão na sua caixa de correio.
+el: Μόλις λάβουμε το ποσό, παρατείνουμε την αγγελία και σας ενημερώνουμε με email. Τα ίδια στοιχεία βρίσκονται στα εισερχόμενά σας.
+cs: Jakmile částka dorazí, inzerát prodloužíme a pošleme vám e-mail. Stejné údaje najdete ve své schránce.
+sl: Takoj ko znesek prispe, oglas podaljšamo in vam pošljemo sporočilo. Iste podatke najdete v svojem nabiralniku.
+sv: Så snart beloppet har kommit in förlänger vi annonsen och mejlar dig. Samma uppgifter finns i din inkorg.
+@751
+it: Grazie per il pagamento
+pt: Obrigado pelo seu pagamento
+el: Σας ευχαριστούμε για την πληρωμή
+cs: Děkujeme za platbu
+sl: Hvala za plačilo
+sv: Tack för din betalning
+@752
+it: La proroga viene elaborata in pochi minuti e confermata via e-mail.
+pt: A prorrogação é processada em poucos minutos e confirmada por e-mail.
+el: Η παράταση ολοκληρώνεται μέσα σε λίγα λεπτά και επιβεβαιώνεται με email.
+cs: Prodloužení se zpracuje během několika minut a potvrdíme ho e-mailem.
+sl: Podaljšanje bo obdelano v nekaj minutah in potrjeno po e-pošti.
+sv: Förlängningen behandlas inom några minuter och bekräftas via e-post.
+@753
+it: Questo annuncio non può essere prolungato (venduto o offline). Domande? Ci scriva.
+pt: Este anúncio não pode ser prolongado (vendido ou offline). Dúvidas? Escreva-nos.
+el: Η αγγελία δεν μπορεί να παραταθεί (πουλήθηκε ή είναι εκτός σύνδεσης). Ερωτήσεις; Γράψτε μας.
+cs: Tento inzerát nelze prodloužit (prodáno nebo offline). Máte otázky? Napište nám.
+sl: Tega oglasa ni mogoče podaljšati (prodan ali neobjavljen). Imate vprašanja? Pišite nam.
+sv: Annonsen kan inte förlängas (såld eller offline). Frågor? Skriv till oss.
+@754
+it: Qualcosa è andato storto. Riprovi o ci scriva.
+pt: Algo correu mal. Tente novamente ou escreva-nos.
+el: Κάτι πήγε στραβά. Δοκιμάστε ξανά ή γράψτε μας.
+cs: Něco se pokazilo. Zkuste to znovu nebo nám napište.
+sl: Nekaj je šlo narobe. Poskusite znova ali nam pišite.
+sv: Något gick fel. Försök igen eller skriv till oss.
+@755
+it: Il proprietario
+pt: O proprietário
+el: Ο ιδιοκτήτης
+cs: Majitel
+sl: Lastnik
+sv: Ägaren
+@756
+it: proroga
+pt: prorrogação
+el: παράταση
+cs: prodloužení
+sl: podaljšanje
+sv: förlängning
+@757
+it: Le abbiamo inviato un’e-mail di conferma. L’iscrizione inizia quando clicca sul pulsante al suo interno.
+pt: Enviámos-lhe um e-mail de confirmação. A subscrição começa quando clicar no botão que contém.
+el: Σας στείλαμε email επιβεβαίωσης. Η εγγραφή σας ξεκινά μόλις πατήσετε το κουμπί που περιέχει.
+cs: Poslali jsme vám potvrzovací e-mail. Odběr začne, jakmile kliknete na tlačítko v něm.
+sl: Poslali smo vam potrditveno sporočilo. Naročnina začne veljati, ko kliknete gumb v njem.
+sv: Vi har skickat ett bekräftelsemejl till dig. Prenumerationen börjar när du klickar på knappen i det.
+@758
+it: Non è stato possibile
+pt: Não foi possível
+el: Δεν ήταν δυνατό
+cs: Nepodařilo se
+sl: Ni uspelo
+sv: Det gick inte
+@759
+it: Controlli l’indirizzo e-mail e riprovi.
+pt: Verifique o endereço de e-mail e tente novamente.
+el: Ελέγξτε τη διεύθυνση email και δοκιμάστε ξανά.
+cs: Zkontrolujte e-mailovou adresu a zkuste to znovu.
+sl: Preverite e-poštni naslov in poskusite znova.
+sv: Kontrollera e-postadressen och försök igen.
+@760
+it: Iscrizione completata
+pt: Subscrição concluída
+el: Η εγγραφή ολοκληρώθηκε
+cs: Odběr je aktivní
+sl: Naročeni ste
+sv: Du prenumererar nu
+@761
+it: Grazie. Riceverà la nostra prossima newsletter.
+pt: Obrigado. Irá receber a nossa próxima newsletter.
+el: Σας ευχαριστούμε. Θα λάβετε το επόμενο ενημερωτικό μας δελτίο.
+cs: Děkujeme. Obdržíte náš příští newsletter.
+sl: Hvala. Prejeli boste naše naslednje novice.
+sv: Tack. Du får vårt nästa nyhetsbrev.
+@762
+it: Iscrizione annullata
+pt: Subscrição cancelada
+el: Η διαγραφή ολοκληρώθηκε
+cs: Odběr zrušen
+sl: Odjava je uspela
+sv: Prenumerationen avslutad
+@763
+it: Non invieremo più newsletter a questo indirizzo. Ha cambiato idea? Può iscriversi di nuovo in qualsiasi momento.
+pt: Não enviaremos mais newsletters para este endereço. Mudou de ideias? Pode voltar a subscrever a qualquer momento.
+el: Δεν θα στέλνουμε πλέον ενημερωτικά δελτία σε αυτή τη διεύθυνση. Αλλάξατε γνώμη; Μπορείτε να εγγραφείτε ξανά οποιαδήποτε στιγμή.
+cs: Na tuto adresu již nebudeme posílat žádné newslettery. Změnili jste názor? Znovu se můžete přihlásit kdykoli.
+sl: Na ta naslov ne bomo več pošiljali novic. Ste si premislili? Znova se lahko prijavite kadar koli.
+sv: Vi skickar inga fler nyhetsbrev till den här adressen. Ändrat dig? Du kan prenumerera igen när som helst.
+@764
+it: I link di conferma sono validi per 14 giorni. Si iscriva di nuovo e Le invieremo un nuovo link.
+pt: As ligações de confirmação são válidas durante 14 dias. Subscreva novamente e enviamos-lhe uma nova.
+el: Οι σύνδεσμοι επιβεβαίωσης ισχύουν για 14 ημέρες. Εγγραφείτε ξανά και θα σας στείλουμε νέο.
+cs: Potvrzovací odkazy platí 14 dní. Přihlaste se znovu a pošleme vám nový.
+sl: Potrditvene povezave veljajo 14 dni. Znova se prijavite in poslali vam bomo novo.
+sv: Bekräftelselänkar gäller i 14 dagar. Prenumerera igen så skickar vi en ny.
+@765
+it: Nuovo articolo
+pt: Novo artigo
+el: Νέο άρθρο
+cs: Nový článek
+sl: Nov članek
+sv: Ny artikel
+@766
+it: nuovo-articolo
+pt: novo-artigo
+el: neo-arthro
+cs: novy-clanek
+sl: nov-clanek
+sv: ny-artikel
+@767
+it: Imposti la password
+pt: Defina a sua palavra-passe
+el: Ορίστε τον κωδικό σας
+cs: Nastavte si heslo
+sl: Nastavite geslo
+sv: Välj ditt lösenord
+@768
+it: Invito
+pt: Convite
+el: Πρόσκληση
+cs: Pozvánka
+sl: Povabilo
+sv: Inbjudan
+@769
+it: Imposti la password
+pt: Defina a sua palavra-passe
+el: Ορίστε τον κωδικό σας
+cs: Nastavte si heslo
+sl: Nastavite geslo
+sv: Välj ditt lösenord
+@770
+it: Questo link è scaduto
+pt: Esta ligação expirou
+el: Ο σύνδεσμος έχει λήξει
+cs: Platnost odkazu vypršela
+sl: Ta povezava je potekla
+sv: Länken har gått ut
+@771
+it: Questo link è già stato utilizzato
+pt: Esta ligação já foi utilizada
+el: Ο σύνδεσμος έχει ήδη χρησιμοποιηθεί
+cs: Tento odkaz již byl použit
+sl: Ta povezava je bila že uporabljena
+sv: Länken har redan använts
+@772
+it: Questo link non è valido
+pt: Esta ligação não é válida
+el: Ο σύνδεσμος δεν είναι έγκυρος
+cs: Tento odkaz není platný
+sl: Ta povezava ni veljavna
+sv: Länken är inte giltig
+@773
+it: L’ultimo passaggio prima che il Suo account sia pronto.
+pt: O último passo antes de a sua conta ficar pronta.
+el: Το τελευταίο βήμα πριν είναι έτοιμος ο λογαριασμός σας.
+cs: Poslední krok, než bude váš účet připraven.
+sl: Zadnji korak, preden bo vaš račun pripravljen.
+sv: Sista steget innan ditt konto är klart.
+@774
+it: Nome e cognome
+pt: Nome completo
+el: Ονοματεπώνυμο
+cs: Celé jméno
+sl: Ime in priimek
+sv: Fullständigt namn
+@775
+it: Salva e continua
+pt: Guardar e continuar
+el: Αποθήκευση και συνέχεια
+cs: Uložit a pokračovat
+sl: Shrani in nadaljuj
+sv: Spara och fortsätt
+@776
+it: Almeno 8 caratteri
+pt: Pelo menos 8 caracteres
+el: Τουλάχιστον 8 χαρακτήρες
+cs: Alespoň 8 znaků
+sl: Najmanj 8 znakov
+sv: Minst 8 tecken
+@777
+it: Mostra
+pt: Mostrar
+el: Εμφάνιση
+cs: Zobrazit
+sl: Pokaži
+sv: Visa
+@778
+it: Nascondi
+pt: Ocultar
+el: Απόκρυψη
+cs: Skrýt
+sl: Skrij
+sv: Dölj
+@779
+it: Per la Sua sicurezza ogni link è valido per 7 giorni. Ne richieda uno nuovo e lo invieremo allo stesso indirizzo.
+pt: Por segurança, cada ligação é válida durante 7 dias. Peça uma nova e enviamo-la para o mesmo endereço.
+el: Για την ασφάλειά σας κάθε σύνδεσμος ισχύει για 7 ημέρες. Ζητήστε νέο και θα τον στείλουμε στην ίδια διεύθυνση.
+cs: Kvůli vaší bezpečnosti platí každý odkaz 7 dní. Požádejte o nový a pošleme ho na stejnou adresu.
+sl: Zaradi vaše varnosti vsaka povezava velja 7 dni. Zahtevajte novo in poslali jo bomo na isti naslov.
+sv: För din säkerhet gäller varje länk i 7 dagar. Be om en ny så skickar vi den till samma adress.
+@780
+it: Questo link è già associato a un account. Acceda oppure imposti una nuova password se l’ha dimenticata.
+pt: Esta ligação já pertence a uma conta. Inicie sessão ou defina uma nova palavra-passe se a tiver esquecido.
+el: Ο σύνδεσμος ανήκει ήδη σε λογαριασμό. Συνδεθείτε ή ορίστε νέο κωδικό αν τον ξεχάσατε.
+cs: Tento odkaz již patří k účtu. Přihlaste se, nebo si nastavte nové heslo, pokud jste ho zapomněli.
+sl: Ta povezava že pripada računu. Prijavite se ali nastavite novo geslo, če ste ga pozabili.
+sv: Länken hör redan till ett konto. Logga in, eller välj ett nytt lösenord om du har glömt det.
+@781
+it: Forse nel frattempo ha richiesto un link più recente, che sostituisce questo. Inserisca il Suo indirizzo e-mail e Le invieremo un nuovo link.
+pt: Talvez tenha entretanto pedido uma ligação mais recente, que substitui esta. Introduza o seu endereço de e-mail e enviamos-lhe uma nova.
+el: Ίσως ζητήσατε στο μεταξύ νεότερο σύνδεσμο, που αντικαθιστά αυτόν. Εισαγάγετε τη διεύθυνση email σας και θα σας στείλουμε νέο.
+cs: Možná jste si mezitím vyžádali novější odkaz, který tento nahradil. Zadejte svou e-mailovou adresu a pošleme vám nový.
+sl: Morda ste medtem zahtevali novejšo povezavo, ki to nadomesti. Vnesite svoj e-poštni naslov in poslali vam bomo novo.
+sv: Du kan ha begärt en nyare länk sedan dess, vilket gör att den här inte längre gäller. Ange din e-postadress så skickar vi en ny.
+@782
+it: Se conosciamo questo indirizzo, un nuovo link è in arrivo. Se non arriva nulla entro pochi minuti, controlli la cartella spam.
+pt: Se conhecermos este endereço, uma nova ligação está a caminho. Se nada chegar dentro de alguns minutos, verifique a pasta de spam.
+el: Αν γνωρίζουμε αυτή τη διεύθυνση, ένας νέος σύνδεσμος είναι καθ’ οδόν. Αν δεν λάβετε τίποτα μέσα σε λίγα λεπτά, ελέγξτε τον φάκελο ανεπιθύμητων.
+cs: Pokud tuto adresu známe, nový odkaz je na cestě. Pokud do několika minut nic nepřijde, zkontrolujte složku se spamem.
+sl: Če ta naslov poznamo, je nova povezava že na poti. Če v nekaj minutah ne prejmete ničesar, preverite mapo z neželeno pošto.
+sv: Om vi känner till adressen är en ny länk på väg. Om inget kommer inom några minuter, kontrollera skräppostmappen.
+@783
+it: Inserisca il Suo nome e una password di almeno 8 caratteri.
+pt: Indique o seu nome e uma palavra-passe com pelo menos 8 caracteres.
+el: Εισαγάγετε το όνομά σας και κωδικό τουλάχιστον 8 χαρακτήρων.
+cs: Zadejte své jméno a heslo o délce alespoň 8 znaků.
+sl: Vnesite svoje ime in geslo z najmanj 8 znaki.
+sv: Ange ditt namn och ett lösenord på minst 8 tecken.
+@784
+it: Questo link è scaduto o non è più valido. Ne richieda uno nuovo qui sotto.
+pt: Esta ligação expirou ou já não é válida. Peça uma nova abaixo.
+el: Ο σύνδεσμος έχει λήξει ή δεν ισχύει πλέον. Ζητήστε νέο παρακάτω.
+cs: Platnost odkazu vypršela nebo již není platný. Níže si vyžádejte nový.
+sl: Povezava je potekla ali ni več veljavna. Spodaj zahtevajte novo.
+sv: Länken har gått ut eller är inte längre giltig. Begär en ny nedan.
+@785
+it: Non è stato possibile creare l’account. Riprovi o ci contatti.
+pt: Não foi possível criar a conta. Tente novamente ou contacte-nos.
+el: Δεν ήταν δυνατή η δημιουργία του λογαριασμού. Δοκιμάστε ξανά ή επικοινωνήστε μαζί μας.
+cs: Účet se nepodařilo vytvořit. Zkuste to znovu nebo nás kontaktujte.
+sl: Računa ni bilo mogoče ustvariti. Poskusite znova ali nas kontaktirajte.
+sv: Kontot kunde inte skapas. Försök igen eller kontakta oss.

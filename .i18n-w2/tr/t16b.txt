@@ -1,0 +1,504 @@
+@1119
+da: Se priser
+no: Se priser
+fi: Katso hinnat
+et: Vaata hindu
+lv: Skatīt cenas
+lt: Peržiūrėti kainas
+@1120
+da: Fordelene
+no: Fordelene
+fi: Edut
+et: Eelised
+lv: Priekšrocības
+lt: Privalumai
+@1121
+da: Hvad en udenlandsk køber bidrager med
+no: Hva en utenlandsk kjøper bidrar med
+fi: Mitä ulkomainen ostaja tuo tullessaan
+et: Mida välismaine ostja kaasa toob
+lv: Ko sniedz ārvalstu pircējs
+lt: Ką suteikia užsienio pirkėjas
+@1122
+da: Købere med egne midler: ingen ventetid på lån eller tilskud.
+no: Kjøpere med egne midler: ingen venting på boliglån eller tilskudd.
+fi: Ostajat omin varoin: ei odottelua asuntolainan tai tuen takia.
+et: Omavahenditega ostjad: ei mingit ootamist laenu või toetuse järele.
+lv: Pircēji ar saviem līdzekļiem: nav jāgaida hipotekārais kredīts vai subsīdija.
+lt: Pirkėjai su nuosavomis lėšomis: nereikia laukti paskolos ar subsidijos.
+@1123
+da: Betaling i ét hug via bankoverførsel, hurtigt og sikkert.
+no: Betaling i én omgang via bankoverføring, raskt og trygt.
+fi: Maksu kerralla pankkisiirtona, nopeasti ja turvallisesti.
+et: Makse korraga pangaülekandega, kiiresti ja turvaliselt.
+lv: Samaksa vienā reizē ar bankas pārskaitījumu, ātri un droši.
+lt: Mokėjimas vienu kartu banko pavedimu, greitai ir saugiai.
+@1124
+da: Seriøse hensigter: en enkelt fremvisning koster dem to dage og 200–300 €.
+no: Seriøse hensikter: én visning koster dem to dager og 200–300 €.
+fi: Vakava aikomus: yksi esittely maksaa heille kaksi päivää ja 200–300 €.
+et: Tõsine kavatsus: üksainus vaatamine maksab neile kaks päeva ja 200–300 €.
+lv: Nopietns nodoms: viena apskate viņiem izmaksā divas dienas un 200–300 €.
+lt: Rimti ketinimai: viena apžiūra jiems kainuoja dvi dienas ir 200–300 €.
+@1125
+da: Realistisk prissætning: ingen urimelig prutning.
+no: Realistisk prising: ingen urimelig pruting.
+fi: Realistinen hinnoittelu: ei kohtuutonta tinkimistä.
+et: Realistlik hinnakujundus: ei mingit põhjendamatut tingimist.
+lv: Reālistiskas cenas: nekādas nesaprātīgas kaulēšanās.
+lt: Realios kainos: jokio nepagrįsto derėjimosi.
+@1126
+da: FODEL vurderer hver køber personligt, før der aftales et møde.
+no: FODEL vurderer hver kjøper personlig før det avtales noe møte.
+fi: FODEL arvioi jokaisen ostajan henkilökohtaisesti ennen kuin aikaa sovitaan.
+et: FODEL hindab iga ostjat isiklikult enne, kui mõni kohtumine kokku lepitakse.
+lv: FODEL personīgi izvērtē katru pircēju, pirms tiek norunāta tikšanās.
+lt: FODEL asmeniškai įvertina kiekvieną pirkėją prieš sutardama bet kokį susitikimą.
+@1127
+da: Køberne
+no: Kjøperne
+fi: Ostajat
+et: Ostjad
+lv: Pircēji
+lt: Pirkėjai
+@1128
+da: Hvem vores købere er
+no: Hvem kjøperne våre er
+fi: Keitä ostajamme ovat
+et: Kes on meie ostjad
+lv: Kas ir mūsu pircēji
+lt: Kas yra mūsų pirkėjai
+@1129
+da: Pensionister
+no: Pensjonister
+fi: Eläkeläiset
+et: Pensionärid
+lv: Pensionāri
+lt: Pensininkai
+@1130
+da: Søger lavere leveomkostninger, skattefordele og overkommelig sundhedspleje i Ungarn.
+no: Søker lavere levekostnader, skattefordeler og rimelig helsehjelp i Ungarn.
+fi: Etsivät Unkarista alhaisempia elinkustannuksia, veroetuja ja edullista terveydenhuoltoa.
+et: Otsivad Ungarist madalamaid elamiskulusid, maksusoodustusi ja taskukohast tervishoidu.
+lv: Ungārijā meklē zemākas dzīves izmaksas, nodokļu priekšrocības un pieejamu veselības aprūpi.
+lt: Vengrijoje ieško mažesnių pragyvenimo išlaidų, mokesčių lengvatų ir prieinamos sveikatos priežiūros.
+@1131
+da: Familier
+no: Familier
+fi: Perheet
+et: Pered
+lv: Ģimenes
+lt: Šeimos
+@1132
+da: Søger plads, natur og livet på landet. Ofte et landbrug, en gård eller et sommerhus.
+no: Søker plass, natur og livet på landet. Ofte en gård, et småbruk eller en fritidsbolig.
+fi: Etsivät tilaa, luontoa ja maalaiselämää. Usein maatilaa, tilaa tai vapaa-ajan asuntoa.
+et: Otsivad ruumi, loodust ja maaelu. Sageli talu, taluhoonet või puhkemaja.
+lv: Meklē plašumu, dabu un lauku dzīvi. Bieži lauku saimniecību, viensētu vai brīvdienu māju.
+lt: Ieško erdvės, gamtos ir gyvenimo kaime. Dažnai ūkio, sodybos ar poilsio namo.
+@1133
+da: Investorer
+no: Investorer
+fi: Sijoittajat
+et: Investorid
+lv: Investori
+lt: Investuotojai
+@1134
+da: Søger erhvervsejendomme, vingårde og landbrugsjord.
+no: Søker næringseiendom, vingårder og landbruksjord.
+fi: Etsivät liikekiinteistöjä, viinitarhoja ja maatalousmaata.
+et: Otsivad ärikinnisvara, viinamarjaistandusi ja põllumajandusmaad.
+lv: Meklē komercīpašumus, vīna dārzus un lauksaimniecības zemi.
+lt: Ieško komercinio turto, vynuogynų ir žemės ūkio paskirties žemės.
+@1135
+da: Livsstilsudvandrere
+no: Livsstilsutvandrere
+fi: Elämäntapamuuttajat
+et: Elustiilist lähtuvad väljarändajad
+lv: Dzīvesveida emigranti
+lt: Gyvenimo būdo emigrantai
+@1136
+da: Forlader høje leveomkostninger og trængsel til fordel for en autentisk europæisk livsstil.
+no: Forlater høye levekostnader og trengsel, på jakt etter en autentisk europeisk livsstil.
+fi: Jättävät taakseen korkeat elinkustannukset ja ruuhkat ja etsivät aitoa eurooppalaista elämäntapaa.
+et: Jätavad selja taha kõrged elamiskulud ja rahvamassid ning otsivad ehedat Euroopa eluviisi.
+lv: Atstāj aiz muguras augstās dzīves izmaksas un drūzmu, meklējot autentisku Eiropas dzīvesveidu.
+lt: Palieka aukštas pragyvenimo išlaidas ir spūstis, ieškodami autentiško europietiško gyvenimo būdo.
+@1137
+da: Trin for trin
+no: Steg for steg
+fi: Vaihe vaiheelta
+et: Samm-sammult
+lv: Soli pa solim
+lt: Žingsnis po žingsnio
+@1138
+da: FODEL-modellen
+no: FODEL-modellen
+fi: FODEL-malli
+et: FODELi mudel
+lv: FODEL modelis
+lt: FODEL modelis
+@1139
+da: Salær kun\nved gennemført salg
+no: Provisjon bare\nved gjennomført salg
+fi: Palkkio vain\nonnistuneesta kaupasta
+et: Vahendustasu ainult\nedukalt müügilt
+lv: Komisija tikai\npar veiksmīgu pārdošanu
+lt: Komisinis tik\nsėkmingai pardavus
+@1140
+da: Hvis køberen kontakter dig direkte, og du ikke har brug for vores hjælp, betaler du intet ud over annoncegebyret. Hvis FODEL formidler salget: ${COMMISSION.percent} % netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent} % hollandsk moms.
+no: Hvis kjøperen kontakter deg direkte og du ikke trenger vår hjelp, betaler du ingenting utover annonseprisen. Hvis FODEL formidler salget: ${COMMISSION.percent} % netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent} % nederlandsk mva.
+fi: Jos ostaja ottaa sinuun suoraan yhteyttä etkä tarvitse apuamme, et maksa mitään ilmoitusmaksun lisäksi. Jos FODEL välittää kaupan: ${COMMISSION.percent} % netto (väh. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent} % Alankomaiden ALV.
+et: Kui ostja võtab teiega otse ühendust ja te ei vaja meie abi, ei maksa te peale kuulutuse tasu midagi. Kui müüki vahendab FODEL: ${COMMISSION.percent}% neto (min ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Hollandi käibemaks.
+lv: Ja pircējs sazinās ar jums tieši un jums nav vajadzīga mūsu palīdzība, jūs nemaksājat neko papildus sludinājuma maksai. Ja pārdošanā starpnieks ir FODEL: ${COMMISSION.percent}% neto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Nīderlandes PVN.
+lt: Jei pirkėjas susisiekia su jumis tiesiogiai ir jums nereikia mūsų pagalbos, be skelbimo mokesčio nieko nemokate. Jei pardavimą tarpininkauja FODEL: ${COMMISSION.percent} % be mokesčių (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent} % Nyderlandų PVM.
+@1141
+da: For købere | Køb af ejendom i Ungarn
+no: For kjøpere | Kjøpe eiendom i Ungarn
+fi: Ostajille | Kiinteistön ostaminen Unkarista
+et: Ostjatele | Kinnisvara ostmine Ungaris
+lv: Pircējiem | Īpašuma iegāde Ungārijā
+lt: Pirkėjams | Turto pirkimas Vengrijoje
+@1142
+da: Sådan køber du sikkert ejendom i Ungarn: tosproget aftale, repræsentation ved fuldmagt og tinglysning. Plus en gratis søgeservice.
+no: Slik kjøper du eiendom i Ungarn på en trygg måte: tospråklig kontrakt, representasjon med fullmakt og tinglysing. I tillegg en gratis søketjeneste.
+fi: Näin ostat kiinteistön Unkarista turvallisesti: kaksikielinen sopimus, edustus valtakirjalla ja kiinteistörekisteröinti. Lisäksi maksuton hakupalvelu.
+et: Kuidas osta Ungaris kinnisvara turvaliselt: kakskeelne leping, esindamine volikirja alusel ja kinnistusraamatusse kandmine. Lisaks tasuta otsinguteenus.
+lv: Kā droši iegādāties īpašumu Ungārijā: divvalodu līgums, pārstāvība ar pilnvaru un reģistrācija zemesgrāmatā. Turklāt bezmaksas meklēšanas pakalpojums.
+lt: Kaip saugiai įsigyti turtą Vengrijoje: dvikalbė sutartis, atstovavimas pagal įgaliojimą ir įregistravimas registre. Be to, nemokama paieškos paslauga.
+@1143
+da: Køb i Ungarn,
+no: Kjøpe i Ungarn,
+fi: Osta Unkarista,
+et: Ostke Ungaris,
+lv: Pirkums Ungārijā,
+lt: Pirkimas Vengrijoje,
+@1144
+da: uden overraskelser
+no: uten overraskelser
+fi: ilman yllätyksiä
+et: ilma üllatusteta
+lv: bez pārsteigumiem
+lt: be staigmenų
+@1145
+da: Mange af vores annoncer oplyser ejeren. Du kan forhandle direkte eller overlade hele forløbet til os.
+no: Mange av annonsene våre oppgir eieren. Du kan forhandle direkte eller overlate hele prosessen til oss.
+fi: Monessa ilmoituksessamme kerrotaan omistaja. Voit neuvotella suoraan tai jättää koko prosessin meille.
+et: Paljudes meie kuulutustes on märgitud omanik. Võite pidada läbirääkimisi otse või jätta kogu protsessi meie hooleks.
+lv: Daudzos mūsu sludinājumos norādīts īpašnieks. Varat vienoties tieši vai uzticēt visu procesu mums.
+lt: Daugelyje mūsų skelbimų nurodytas savininkas. Galite derėtis tiesiogiai arba visą procesą patikėti mums.
+@1146
+da: Det klarer vi
+no: Dette ordner vi
+fi: Mitä hoidamme
+et: Mida korraldame
+lv: Par ko parūpējamies
+lt: Kuo pasirūpiname
+@1147
+da: Fuld støtte
+no: Full støtte
+fi: Täysi tuki
+et: Täielik tugi
+lv: Pilns atbalsts
+lt: Visapusiška pagalba
+@1148
+da: Kommunikation mellem dig og sælger, også via tolk.
+no: Kommunikasjon mellom deg og selger, også via tolk.
+fi: Viestintä sinun ja myyjän välillä tulkit mukaan lukien.
+et: Suhtlus teie ja müüja vahel, vajaduse korral tõlgi abil.
+lv: Saziņa starp jums un pārdevēju, arī ar tulku palīdzību.
+lt: Bendravimas tarp jūsų ir pardavėjo, prireikus per vertėjus.
+@1149
+da: Fremvisninger med en kollega, der taler dit sprog.
+no: Visninger, med en kollega som snakker ditt språk.
+fi: Esittelyt kieltäsi puhuvan kollegan kanssa.
+et: Vaatamised koos kolleegiga, kes räägib teie keelt.
+lv: Apskates kopā ar kolēģi, kurš runā jūsu valodā.
+lt: Apžiūros su kolega, kalbančiu jūsų kalba.
+@1150
+da: Støtte i prisforhandlingen og ved udarbejdelsen af den tosprogede aftale.
+no: Støtte i prisforhandlingen og ved utarbeidelsen av den tospråklige kontrakten.
+fi: Tukea hintaneuvotteluissa ja kaksikielisen sopimuksen laatimisessa.
+et: Tugi hinnaläbirääkimistel ja kakskeelse lepingu koostamisel.
+lv: Atbalsts cenu sarunās un divvalodu līguma sagatavošanā.
+lt: Pagalba derantis dėl kainos ir rengiant dvikalbę sutartį.
+@1151
+da: Repræsentation ved fuldmagt: du behøver ikke rejse til Ungarn for at skrive under.
+no: Representasjon med fullmakt: du trenger ikke reise til Ungarn for å signere.
+fi: Edustus valtakirjalla: sinun ei tarvitse matkustaa Unkariin allekirjoittamaan.
+et: Esindamine volikirja alusel: allkirjastamiseks ei pea te Ungarisse sõitma.
+lv: Pārstāvība ar pilnvaru: lai parakstītu, jums nav jābrauc uz Ungāriju.
+lt: Atstovavimas pagal įgaliojimą: pasirašyti nereikia vykti į Vengriją.
+@1152
+da: Tinglysning og overdragelse af forsyninger.
+no: Tinglysing og overføring av strøm og vann.
+fi: Kiinteistörekisteröinti ja liittymien siirto.
+et: Kinnistusraamatusse kandmine ja kommunaalteenuste üleandmine.
+lv: Reģistrācija zemesgrāmatā un komunālo pakalpojumu pārņemšana.
+lt: Įregistravimas registre ir komunalinių paslaugų perėmimas.
+@1153
+da: Hvorfor Ungarn
+no: Hvorfor Ungarn
+fi: Miksi Unkari
+et: Miks Ungari
+lv: Kāpēc Ungārija
+lt: Kodėl Vengrija
+@1154
+da: Hvad vesteuropæiske købere søger
+no: Hva vesteuropeiske kjøpere ser etter
+fi: Mitä länsieurooppalaiset ostajat etsivät
+et: Mida otsivad Lääne-Euroopa ostjad
+lv: Ko meklē Rietumeiropas pircēji
+lt: Ko ieško Vakarų Europos pirkėjai
+@1155
+da: Om os | En bro mellem to verdener
+no: Om oss | En bro mellom to verdener
+fi: Meistä | Silta kahden maailman välillä
+et: Meist | Sild kahe maailma vahel
+lv: Par mums | Tilts starp divām pasaulēm
+lt: Apie mus | Tiltas tarp dviejų pasaulių
+@1156
+da: Siden 2013 har vi bragt ungarske sælgere og vesteuropæiske købere sammen. Diskret, gennemsigtigt og uden eksklusivaftale.
+no: Siden 2013 har vi brakt ungarske selgere og vesteuropeiske kjøpere sammen. Diskret, åpent og uten eksklusivitetsavtale.
+fi: Olemme vuodesta 2013 tuoneet yhteen unkarilaisia myyjiä ja länsieurooppalaisia ostajia. Hienotunteisesti, läpinäkyvästi ja ilman yksinoikeussopimusta.
+et: Alates 2013. aastast viime kokku Ungari müüjaid ja Lääne-Euroopa ostjaid. Diskreetselt, läbipaistvalt ja ilma ainuõiguslepinguta.
+lv: Kopš 2013. gada savedam kopā Ungārijas pārdevējus un Rietumeiropas pircējus. Diskrēti, pārredzami un bez ekskluzivitātes līguma.
+lt: Nuo 2013 m. suvedame Vengrijos pardavėjus ir Vakarų Europos pirkėjus. Diskretiškai, skaidriai ir be išimtinės sutarties.
+@1157
+da: Om os
+no: Om oss
+fi: Meistä
+et: Meist
+lv: Par mums
+lt: Apie mus
+@1158
+da: En bro mellem
+no: En bro mellom
+fi: Silta kahden
+et: Sild kahe
+lv: Tilts starp
+lt: Tiltas tarp
+@1159
+da: to verdener
+no: to verdener
+fi: maailman välillä
+et: maailma vahel
+lv: divām pasaulēm
+lt: dviejų pasaulių
+@1160
+da: Siden 2013 har vi hjulpet ungarske sælgere med at finde den rette udenlandske køber: diskret, effektivt og uden eksklusivaftale.
+no: Siden 2013 har vi hjulpet ungarske selgere med å finne riktig utenlandsk kjøper: diskret, effektivt og uten eksklusivitetsavtale.
+fi: Olemme vuodesta 2013 auttaneet unkarilaisia myyjiä löytämään oikean ulkomaisen ostajan: hienotunteisesti, tehokkaasti ja ilman yksinoikeussopimusta.
+et: Alates 2013. aastast aitame Ungari müüjatel leida õige välismaise ostja: diskreetselt, tõhusalt ja ilma ainuõiguslepinguta.
+lv: Kopš 2013. gada palīdzam Ungārijas pārdevējiem atrast īsto ārvalstu pircēju: diskrēti, efektīvi un bez ekskluzivitātes līguma.
+lt: Nuo 2013 m. padedame Vengrijos pardavėjams rasti tinkamą užsienio pirkėją: diskretiškai, veiksmingai ir be išimtinės sutarties.
+@1161
+da: Begyndelsen · Almere-Buiten, 2013
+no: Begynnelsen · Almere-Buiten, 2013
+fi: Alku · Almere-Buiten, 2013
+et: Algus · Almere-Buiten, 2013
+lv: Sākums · Almere-Buiten, 2013
+lt: Pradžia · Almere-Buiten, 2013
+@1162
+da: “Da vi boede i Almere-Buiten, så vi, hvor meget hollændere længes efter en autentisk europæisk livsstil, mens de smukkeste ejendomme i Ungarn venter upåagtet på en ejer.”
+no: «Da vi bodde i Almere-Buiten, så vi hvor sterkt nederlendere lengter etter en autentisk europeisk livsstil, mens de fineste eiendommene i Ungarn venter upåaktet på en eier.»
+fi: ”Almere-Buitenissa asuessamme näimme, kuinka paljon hollantilaiset kaipaavat aitoa eurooppalaista elämäntapaa, kun taas Unkarissa hienoimmat kiinteistöt odottavat huomaamatta omistajaansa.”
+et: „Almere-Buitenis elades nägime, kui väga hollandlased igatsevad ehedat Euroopa eluviisi, samal ajal kui Ungaris ootavad kauneimad kinnistud märkamatult omanikku.“
+lv: „Dzīvojot Almere-Buitenā, redzējām, cik ļoti nīderlandieši ilgojas pēc autentiska Eiropas dzīvesveida, kamēr Ungārijā skaistākie īpašumi nepamanīti gaida savu saimnieku.“
+lt: „Gyvendami Almere-Buitene matėme, kaip labai nyderlandai trokšta autentiško europietiško gyvenimo būdo, o Vengrijoje gražiausi objektai nepastebėti laukia savo savininko.“
+@1163
+da: Det, vi står for
+no: Det vi står for
+fi: Mitä edustamme
+et: Mille seisame
+lv: Mūsu vērtības
+lt: Kam atstovaujame
+@1164
+da: Det, vi bygger på
+no: Det vi bygger på
+fi: Mihin rakennamme
+et: Millele toetume
+lv: Uz ko balstāmies
+lt: Kuo remiamės
+@1165
+da: Diskretion
+no: Diskresjon
+fi: Hienotunteisuus
+et: Diskreetsus
+lv: Diskrētums
+lt: Diskretiškumas
+@1166
+da: Vi behandler sælgeres og køberes oplysninger med størst mulig omhu. Personoplysninger vises kun med samtykke.
+no: Vi behandler selgeres og kjøperes opplysninger med størst mulig omhu. Personopplysninger vises bare med samtykke.
+fi: Käsittelemme myyjien ja ostajien tietoja mahdollisimman huolellisesti. Henkilötiedot näytetään vain suostumuksella.
+et: Käsitleme müüjate ja ostjate andmeid suurima hoolega. Isikuandmed kuvatakse ainult nõusolekul.
+lv: Ar pārdevēju un pircēju datiem apejamies ar vislielāko rūpību. Personas dati tiek rādīti tikai ar piekrišanu.
+lt: Su pardavėjų ir pirkėjų duomenimis elgiamės itin atsargiai. Asmens duomenys rodomi tik gavus sutikimą.
+@1167
+da: Gennemsigtighed
+no: Åpenhet
+fi: Läpinäkyvyys
+et: Läbipaistvus
+lv: Pārredzamība
+lt: Skaidrumas
+@1168
+da: Ingen skjulte omkostninger. Vores priser og salær er offentliggjort på dette websted, og vi holder dig orienteret undervejs.
+no: Ingen skjulte kostnader. Prisene og provisjonen vår er publisert på dette nettstedet, og vi holder deg orientert i hvert steg.
+fi: Ei piilokuluja. Hintamme ja palkkiomme on julkaistu tällä sivustolla, ja pidämme sinut ajan tasalla joka vaiheessa.
+et: Varjatud kulusid ei ole. Meie hinnad ja vahendustasu on avaldatud sellel saidil ning hoiame teid igas etapis kursis.
+lv: Nekādu slēptu izmaksu. Mūsu cenas un komisija ir publicētas šajā vietnē, un mēs jūs informējam par katru soli.
+lt: Jokių paslėptų išlaidų. Mūsų kainos ir komisinis skelbiami šioje svetainėje, o apie kiekvieną žingsnį jus informuojame.
+@1169
+da: Tosproget ekspertise
+no: Tospråklig ekspertise
+fi: Kaksikielinen asiantuntemus
+et: Kakskeelne asjatundlikkus
+lv: Divvalodu kompetence
+lt: Dvikalbė kompetencija
+@1170
+da: Vi kender begge markeder indefra. Vores team taler hollandsk, tysk, engelsk, fransk og ungarsk.
+no: Vi kjenner begge markedene innenfra. Teamet vårt snakker nederlandsk, tysk, engelsk, fransk og ungarsk.
+fi: Tunnemme molemmat markkinat sisältäpäin. Tiimimme puhuu hollantia, saksaa, englantia, ranskaa ja unkaria.
+et: Tunneme mõlemat turgu seestpoolt. Meie meeskond räägib hollandi, saksa, inglise, prantsuse ja ungari keelt.
+lv: Mēs pazīstam abus tirgus no iekšpuses. Mūsu komanda runā nīderlandiešu, vācu, angļu, franču un ungāru valodā.
+lt: Abi rinkas pažįstame iš vidaus. Mūsų komanda kalba nyderlandų, vokiečių, anglų, prancūzų ir vengrų kalbomis.
+@1171
+da: Vores tilgang
+no: Vår tilnærming
+fi: Toimintatapamme
+et: Meie lähenemine
+lv: Mūsu pieeja
+lt: Mūsų požiūris
+@1172
+da: Vi er ikke et stort kontor.
+no: Vi er ikke et stort kontor.
+fi: Emme ole suuri toimisto.
+et: Me ei ole suur büroo.
+lv: Mēs neesam liels birojs.
+lt: Nesame didelis biuras.
+@1173
+da: Det er vores styrke.
+no: Det er vår styrke.
+fi: Se on vahvuutemme.
+et: See on meie tugevus.
+lv: Tā ir mūsu stiprā puse.
+lt: Tai mūsų stiprybė.
+@1174
+da: Hver kunde får personlig kontakt: intet callcenter, ingen anonym skranke.
+no: Hver kunde får personlig kontakt: ikke noe kundesenter, ingen anonym skranke.
+fi: Jokainen asiakas saa henkilökohtaisen yhteyshenkilön: ei puhelinpalvelukeskusta, ei kasvotonta palvelutiskiä.
+et: Iga klient saab isikliku kontakti: ei kõnekeskust ega anonüümset lauda.
+lv: Katram klientam ir personīgs kontakts: nekāda zvanu centra, nekāda anonīma lodziņa.
+lt: Kiekvienas klientas turi asmeninį kontaktą: jokio skambučių centro, jokio anoniminio langelio.
+@1175
+da: Vi kender begge kulturer indefra og vurderer ejendomme med både hollandske og ungarske øjne.
+no: Vi kjenner begge kulturene innenfra og vurderer eiendommer med både nederlandske og ungarske øyne.
+fi: Tunnemme molemmat kulttuurit sisältäpäin ja arvioimme kiinteistöjä yhtä lailla hollantilaisin kuin unkarilaisin silmin.
+et: Tunneme mõlemat kultuuri seestpoolt ning hindame kinnisvara nii Hollandi kui ka Ungari pilguga.
+lv: Mēs pazīstam abas kultūras no iekšpuses un vērtējam īpašumus gan ar nīderlandiešu, gan ungāru acīm.
+lt: Abi kultūras pažįstame iš vidaus ir turtą vertiname tiek nyderlandų, tiek vengrų akimis.
+@1176
+da: At bringe ejendom og køber sammen er vores ansvar, ikke et tilfælde.
+no: Å bringe eiendom og kjøper sammen er vårt ansvar, ikke en tilfeldighet.
+fi: Kiinteistön ja ostajan yhteen saattaminen on meidän vastuullamme, ei sattuman kauppaa.
+et: Kinnisvara ja ostja kokkuviimine on meie vastutus, mitte juhuse asi.
+lv: Savest kopā īpašumu un pircēju ir mūsu atbildība, nevis nejaušība.
+lt: Suvesti turtą ir pirkėją – mūsų atsakomybė, o ne atsitiktinumas.
+@1177
+da: Vi arbejder uden eksklusivitet, fordi vi hellere vil overbevise med resultater.
+no: Vi jobber uten eksklusivitet fordi vi heller vil overbevise med resultater.
+fi: Toimimme ilman yksinoikeutta, koska vakuutamme mieluummin tuloksilla.
+et: Töötame ilma ainuõiguseta, sest eelistame veenda tulemustega.
+lv: Strādājam bez ekskluzivitātes, jo labāk pārliecinām ar rezultātiem.
+lt: Dirbame be išimtinių teisių, nes mieliau įtikiname rezultatais.
+@1178
+da: Broen, vi
+no: Broen vi
+fi: Silta, jonka
+et: Sild, mille
+lv: Tilts, ko
+lt: Tiltas, kurį
+@1179
+da: har bygget
+no: har bygget
+fi: olemme rakentaneet
+et: oleme ehitanud
+lv: esam uzbūvējuši
+lt: pastatėme
+@1180
+da: FODEL blev grundlagt af ungarere bosat i Nederlandene. Vi begyndte i Almere-Buiten i 2013, hvor vi lagde mærke til, hvor mange hollændere og belgiere der ønskede at købe et autentisk ungarsk hus, men ikke vidste, hvor de skulle begynde.
+no: FODEL ble grunnlagt av ungarere bosatt i Nederland. Vi startet i Almere-Buiten i 2013, der vi la merke til hvor mange nederlendere og belgiere som ønsket å kjøpe et autentisk ungarsk hus, men ikke visste hvor de skulle begynne.
+fi: FODELin perustivat Alankomaissa asuvat unkarilaiset. Aloitimme Almere-Buitenissa vuonna 2013, jolloin huomasimme, kuinka moni hollantilainen ja belgialainen halusi ostaa aidon unkarilaisen kodin tietämättä, mistä aloittaa.
+et: FODELi asutasid Hollandis elavad ungarlased. Alustasime 2013. aastal Almere-Buitenis, kus märkasime, kui paljud hollandlased ja belglased tahtsid osta ehedat Ungari kodu, kuid ei teadnud, kust alustada.
+lv: FODEL dibināja Nīderlandē dzīvojoši ungāri. Sākām 2013. gadā Almere-Buitenā, kur pamanījām, cik daudz nīderlandiešu un beļģu vēlas iegādāties autentisku ungāru māju, bet nezina, ar ko sākt.
+lt: FODEL įkūrė Nyderlanduose gyvenantys vengrai. Pradėjome 2013 m. Almere-Buitene, kur pastebėjome, kiek daug nyderlandų ir belgų norėjo įsigyti autentišką vengrišką namą, bet nežinojo, nuo ko pradėti.
+@1181
+da: I dag annoncerer vi i ${REACH_COUNTRIES} lande og på ${REACH_LANGUAGES} sprog og følger hver handel fra start til slut: tosproget købsaftale, repræsentation ved fuldmagt og tinglysning. Vores kontor ligger i Haag.
+no: I dag annonserer vi i ${REACH_COUNTRIES} land og på ${REACH_LANGUAGES} språk og følger hver handel fra start til slutt: tospråklig kjøpekontrakt, representasjon med fullmakt og tinglysing. Kontoret vårt ligger i Haag.
+fi: Nykyään ilmoitamme ${REACH_COUNTRIES} maassa ja ${REACH_LANGUAGES} kielellä ja ohjaamme jokaisen kaupan alusta loppuun: kaksikielinen kauppakirja, edustus valtakirjalla ja kiinteistörekisteröinti. Toimistomme sijaitsee Haagissa.
+et: Täna kuulutame ${REACH_COUNTRIES} riigis ja ${REACH_LANGUAGES} keeles ning juhendame iga tehingut algusest lõpuni: kakskeelne müügileping, esindamine volikirja alusel ja kinnistusraamatusse kandmine. Meie kontor asub Haagis.
+lv: Šodien sludinām ${REACH_COUNTRIES} valstīs un ${REACH_LANGUAGES} valodās un pavadām katru darījumu no sākuma līdz beigām: divvalodu pirkuma līgums, pārstāvība ar pilnvaru un reģistrācija zemesgrāmatā. Mūsu birojs atrodas Hāgā.
+lt: Šiandien skelbiamės ${REACH_COUNTRIES} šalyse ${REACH_LANGUAGES} kalbomis ir lydime kiekvieną sandorį nuo pradžios iki pabaigos: dvikalbė pirkimo–pardavimo sutartis, atstovavimas pagal įgaliojimą ir įregistravimas registre. Mūsų biuras yra Hagoje.
+@1182
+da: Kontakt | Vi ringer gerne tilbage
+no: Kontakt | Vi ringer deg gjerne tilbake
+fi: Yhteystiedot | Soitamme mielellämme takaisin
+et: Kontakt | Helistame teile meelsasti tagasi
+lv: Kontakti | Ar prieku jums atzvanīsim
+lt: Kontaktai | Mielai jums paskambinsime
+@1183
+da: Ring til os på hverdage mellem ${COMPANY.hours.weekdays.from} og ${COMPANY.hours.weekdays.to}, eller bed om at blive ringet op. Opkaldet koster dig ingenting.
+no: Ring oss på hverdager mellom ${COMPANY.hours.weekdays.from} og ${COMPANY.hours.weekdays.to}, eller be om å bli oppringt. Samtalen koster deg ingenting.
+fi: Soita meille arkisin klo ${COMPANY.hours.weekdays.from}–${COMPANY.hours.weekdays.to} tai pyydä takaisinsoittoa. Puhelu ei maksa sinulle mitään.
+et: Helistage meile tööpäeviti kell ${COMPANY.hours.weekdays.from}–${COMPANY.hours.weekdays.to} või paluge tagasihelistamist. Kõne ei maksa teile midagi.
+lv: Zvaniet mums darba dienās no ${COMPANY.hours.weekdays.from} līdz ${COMPANY.hours.weekdays.to} vai piesakiet atzvanu. Zvans jums neko nemaksā.
+lt: Skambinkite mums darbo dienomis nuo ${COMPANY.hours.weekdays.from} iki ${COMPANY.hours.weekdays.to} arba užsisakykite perskambinimą. Skambutis jums nieko nekainuoja.
+@1184
+da: Bed om at blive ringet op
+no: Be om å bli oppringt
+fi: Pyydä takaisinsoittoa
+et: Palu tagasihelistamist
+lv: Pieteikt atzvanu
+lt: Užsakyti perskambinimą
+@1185
+da: Spørgsmål om en ejendom
+no: Spørsmål om en eiendom
+fi: Kysymys kohteesta
+et: Küsimus objekti kohta
+lv: Jautājums par īpašumu
+lt: Klausimas apie objektą
+@1186
+da: Annoncere en ejendom
+no: Annonsere en eiendom
+fi: Kiinteistön ilmoittaminen
+et: Kinnisvara kuulutamine
+lv: Īpašuma sludināšana
+lt: Turto skelbimas
+@1187
+da: Anmod om priser
+no: Be om priser
+fi: Pyydä hinnat
+et: Küsi hindu
+lv: Pieprasīt cenas
+lt: Gauti kainas
+@1188
+da: Anmodning om opkald
+no: Forespørsel om oppringning
+fi: Takaisinsoittopyyntö
+et: Tagasihelistamise taotlus
+lv: Atzvana pieprasījums
+lt: Perskambinimo užklausa
+@1189
+da: Andet
+no: Annet
+fi: Muu
+et: Muu
+lv: Cits
+lt: Kita
+@1190
+da: Opkaldet koster dig ingenting: vi betaler for samtalen. Vi ringer tilbage indtil kl. ${COMPANY.hours.callback.to}, også i weekenden.
+no: Det koster deg ingenting å bli oppringt: vi betaler samtalen. Vi ringer tilbake fram til kl. ${COMPANY.hours.callback.to}, også i helgene.
+fi: Takaisinsoitto ei maksa sinulle mitään: maksamme puhelun. Soitamme takaisin klo ${COMPANY.hours.callback.to} asti, myös viikonloppuisin.
+et: Tagasihelistamine ei maksa teile midagi: kõne eest maksame meie. Helistame tagasi kuni kella ${COMPANY.hours.callback.to}, ka nädalavahetustel.
+lv: Atzvans jums neko nemaksā: par zvanu maksājam mēs. Atzvanām līdz ${COMPANY.hours.callback.to}, arī brīvdienās.
+lt: Perskambinimas jums nieko nekainuoja: už skambutį mokame mes. Perskambiname iki ${COMPANY.hours.callback.to}, taip pat savaitgaliais.

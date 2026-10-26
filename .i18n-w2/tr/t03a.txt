@@ -1,0 +1,420 @@
+@157
+it: Su OpenStreetMap
+pt: No OpenStreetMap
+el: Στο OpenStreetMap
+cs: Na OpenStreetMap
+sl: Na OpenStreetMap
+sv: På OpenStreetMap
+@158
+it: Tasso di cambio
+pt: Taxa de câmbio
+el: Συναλλαγματική ισοτιμία
+cs: Směnný kurz
+sl: Menjalni tečaj
+sv: Växelkurs
+@159
+it: Stampa
+pt: Imprimir
+el: Εκτύπωση
+cs: Tisk
+sl: Natisni
+sv: Skriv ut
+@160
+it: Dettagli
+pt: Detalhes
+el: Λεπτομέρειες
+cs: Podrobnosti
+sl: Podrobnosti
+sv: Detaljer
+@161
+it: Parla
+pt: Fala
+el: Μιλά
+cs: Mluví
+sl: Govori
+sv: Talar
+@162
+it: La garanzia FODEL
+pt: A garantia FODEL
+el: Η εγγύηση FODEL
+cs: Záruka FODEL
+sl: Jamstvo FODEL
+sv: FODEL-garantin
+@163
+it: Ogni inserzionista è stato identificato da noi. Su richiesta sono disponibili un contratto di compravendita bilingue, la rappresentanza tramite procura e la registrazione al catasto.
+pt: Todos os anunciantes foram identificados por nós. Mediante pedido, disponibilizamos contrato de compra e venda bilingue, representação por procuração e registo na conservatória do registo predial.
+el: Κάθε διαφημιζόμενος έχει ταυτοποιηθεί από εμάς. Κατόπιν αιτήματος διατίθενται δίγλωσσο συμβόλαιο αγοραπωλησίας, εκπροσώπηση με πληρεξούσιο και εγγραφή στο κτηματολόγιο.
+cs: Každého inzerenta jsme ověřili. Na požádání zajistíme dvojjazyčnou kupní smlouvu, zastoupení na základě plné moci i zápis do katastru nemovitostí.
+sl: Vsakega oglaševalca smo identificirali. Na zahtevo zagotovimo dvojezično kupoprodajno pogodbo, zastopanje na podlagi pooblastila in vpis v zemljiško knjigo.
+sv: Varje annonsör har identifierats av oss. På begäran erbjuder vi ett tvåspråkigt köpekontrakt, ombud med fullmakt och inskrivning i fastighetsregistret.
+@164
+it: Richiesta di richiamata
+pt: Pedir uma chamada
+el: Ζητήστε να σας καλέσουμε
+cs: Požádat o zavolání zpět
+sl: Prosim za povratni klic
+sv: Bli uppringd
+@165
+it: Grazie, la richiameremo
+pt: Obrigado, vamos ligar-lhe
+el: Ευχαριστούμε, θα σας καλέσουμε
+cs: Děkujeme, zavoláme vám zpět
+sl: Hvala, poklicali vas bomo
+sv: Tack, vi ringer upp dig
+@166
+it: Un membro del nostro team la contatterà entro 24 ore.
+pt: Um membro da nossa equipa entrará em contacto consigo no prazo de 24 horas.
+el: Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας εντός 24 ωρών.
+cs: Někdo z našeho týmu vás bude kontaktovat do 24 hodin.
+sl: Član naše ekipe vas bo kontaktiral v 24 urah.
+sv: Någon i vårt team kontaktar dig inom 24 timmar.
+@167
+it: Come preferisce essere contattato
+pt: Como prefere ser contactado
+el: Πώς να επικοινωνήσουμε μαζί σας
+cs: Jak vás máme kontaktovat
+sl: Kako naj vas kontaktiramo
+sv: Hur vi ska kontakta dig
+@168
+it: Entro 24 ore
+pt: No prazo de 24 horas
+el: Εντός 24 ωρών
+cs: Do 24 hodin
+sl: V 24 urah
+sv: Inom 24 timmar
+@169
+it: Per e-mail
+pt: Por e-mail
+el: Με email
+cs: E-mailem
+sl: Po e-pošti
+sv: Via mejl
+@170
+it: Rispondiamo per iscritto
+pt: Respondemos por escrito
+el: Απαντάμε γραπτώς
+cs: Odpovíme písemně
+sl: Odgovorimo pisno
+sv: Vi svarar skriftligt
+@171
+it: Oppure ci chiami
+pt: Ou ligue-nos
+el: Ή καλέστε μας
+cs: Nebo nám zavolejte
+sl: Ali nas pokličite
+sv: Eller ring oss
+@172
+it: Ricerca immobili: una richiesta di ricerca gratuita per l’Ungheria
+pt: Procura de imóveis: um pedido de pesquisa gratuito para a Hungria
+el: Αναζήτηση ακινήτου: δωρεάν αίτημα αναζήτησης για την Ουγγαρία
+cs: Hledání nemovitosti: bezplatná poptávka v Maďarsku
+sl: Iskanje nepremičnine: brezplačno iskalno naročilo za Madžarsko
+sv: Fastighetssökning: ett kostnadsfritt sökuppdrag i Ungern
+@173
+it: Non ha trovato ciò che cerca? Ci dica cosa desidera e lo cercheremo per lei, anche oltre i nostri annunci. Il servizio di ricerca è gratuito.
+pt: Não encontrou o que procura? Diga-nos o que pretende e procuramos por si, também para além dos nossos anúncios. O serviço de pesquisa é gratuito.
+el: Δεν βρήκατε αυτό που ψάχνετε; Πείτε μας τι θέλετε και θα το αναζητήσουμε για εσάς, και πέρα από τις δικές μας αγγελίες. Η υπηρεσία αναζήτησης είναι δωρεάν.
+cs: Nenašli jste, co hledáte? Napište nám, co si přejete, a vyhledáme to za vás, i mimo naše inzeráty. Vyhledávací služba je zdarma.
+sl: Niste našli, kar iščete? Povejte nam, kaj želite, in poiskali bomo za vas, tudi zunaj naših oglasov. Storitev iskanja je brezplačna.
+sv: Hittar du inte det du söker? Berätta vad du vill ha så söker vi åt dig, även utanför våra egna annonser. Söktjänsten är kostnadsfri.
+@174
+it: Ricerca immobili
+pt: Procura de imóveis
+el: Αναζήτηση ακινήτου
+cs: Hledání nemovitosti
+sl: Iskanje nepremičnine
+sv: Fastighetssökning
+@175
+it: Ci dica cosa cerca,
+pt: Diga-nos o que procura,
+el: Πείτε μας τι ψάχνετε,
+cs: Napište nám, co hledáte,
+sl: Povejte nam, kaj iščete,
+sv: Berätta vad du söker,
+@176
+it: lo cerchiamo noi
+pt: nós procuramos
+el: εμείς θα ψάξουμε
+cs: my to najdeme
+sl: mi bomo poiskali
+sv: så söker vi
+@177
+it: Se l’immobile giusto non è tra i nostri annunci, ci dica cosa desidera. Grazie alla nostra rete di partner ungheresi raggiungiamo anche immobili non ancora pubblicati online. Il servizio è gratuito.
+pt: Se o imóvel certo não estiver entre os nossos anúncios, diga-nos o que pretende. Através da nossa rede de parceiros húngaros chegamos também a imóveis que ainda não estão online. O serviço é gratuito.
+el: Αν το κατάλληλο ακίνητο δεν βρίσκεται στις αγγελίες μας, πείτε μας τι θέλετε. Μέσω του δικτύου των Ούγγρων συνεργατών μας έχουμε πρόσβαση και σε ακίνητα που δεν έχουν ακόμη δημοσιευτεί στο διαδίκτυο. Η υπηρεσία είναι δωρεάν.
+cs: Pokud mezi našimi inzeráty není ta pravá nemovitost, napište nám, co si přejete. Díky síti maďarských partnerů se dostaneme i k nemovitostem, které ještě nejsou na internetu. Služba je zdarma.
+sl: Če prave nepremičnine ni med našimi oglasi, nam povejte, kaj želite. Prek mreže madžarskih partnerjev dosežemo tudi nepremičnine, ki še niso objavljene na spletu. Storitev je brezplačna.
+sv: Om rätt fastighet inte finns bland våra annonser, berätta vad du vill ha. Genom vårt ungerska partnernätverk når vi även fastigheter som ännu inte finns på nätet. Tjänsten är kostnadsfri.
+@178
+it: Come funziona
+pt: Como funciona
+el: Πώς λειτουργεί
+cs: Jak to funguje
+sl: Kako poteka
+sv: Så fungerar det
+@179
+it: Compila il modulo
+pt: Preenche o formulário
+el: Συμπληρώνετε τη φόρμα
+cs: Vyplníte formulář
+sl: Izpolnite obrazec
+sv: Du fyller i formuläret
+@180
+it: Tipologia, zona, budget e le sue esigenze particolari.
+pt: Tipo, zona, orçamento e os seus desejos específicos.
+el: Τύπος, περιοχή, προϋπολογισμός και οι ιδιαίτερες επιθυμίες σας.
+cs: Typ, oblast, rozpočet a vaše konkrétní přání.
+sl: Vrsta, območje, proračun in vaše posebne želje.
+sv: Typ, område, budget och dina särskilda önskemål.
+@181
+it: Cerchiamo
+pt: Procuramos
+el: Αναζητούμε
+cs: Hledáme
+sl: Iščemo
+sv: Vi söker
+@182
+it: Insieme ai nostri partner, anche oltre gli immobili che pubblicizziamo.
+pt: Em conjunto com os nossos parceiros, também para além dos imóveis que anunciamos.
+el: Μαζί με τους συνεργάτες μας, και πέρα από τα ακίνητα που διαφημίζουμε.
+cs: Společně s partnery, i mimo nemovitosti, které sami inzerujeme.
+sl: Skupaj s partnerji, tudi zunaj nepremičnin, ki jih oglašujemo.
+sv: Tillsammans med våra partner, även utöver de fastigheter vi annonserar.
+@183
+it: Le diamo notizie
+pt: Damos-lhe notícias
+el: Σας ενημερώνουμε
+cs: Ozveme se vám
+sl: Oglasimo se vam
+sv: Du hör av oss
+@184
+it: Riceve per e-mail tutto ciò che corrisponde ai suoi criteri.
+pt: Recebe por e-mail tudo o que corresponda aos seus critérios.
+el: Λαμβάνετε με email ό,τι ταιριάζει στα κριτήριά σας.
+cs: E-mailem vám pošleme vše, co odpovídá vašim kritériím.
+sl: Po e-pošti prejmete vse, kar ustreza vašim merilom.
+sv: Du får via mejl allt som matchar dina kriterier.
+@185
+it: La accompagniamo
+pt: Acompanhamo-lo
+el: Σας καθοδηγούμε
+cs: Provedeme vás
+sl: Vodimo vas
+sv: Vi guidar dig
+@186
+it: Visita, trattativa e contratto bilingue: restiamo al suo fianco fino alla fine.
+pt: Visita, negociação e contrato bilingue: acompanhamo-lo do princípio ao fim.
+el: Επίσκεψη, διαπραγμάτευση και δίγλωσσο συμβόλαιο: είμαστε δίπλα σας σε όλη τη διαδικασία.
+cs: Prohlídka, vyjednávání i dvojjazyčná smlouva: jsme s vámi po celou dobu.
+sl: Ogled, pogajanja in dvojezična pogodba: ob vas smo ves čas.
+sv: Visning, förhandling och tvåspråkigt kontrakt: vi finns med dig hela vägen.
+@187
+it: Richiesta di ricerca gratuita
+pt: Pedido de pesquisa gratuito
+el: Δωρεάν αίτημα αναζήτησης
+cs: Bezplatná poptávka
+sl: Brezplačno iskalno naročilo
+sv: Kostnadsfritt sökuppdrag
+@188
+it: Gratuito
+pt: Gratuito
+el: Δωρεάν
+cs: Zdarma
+sl: Brezplačno
+sv: Kostnadsfritt
+@189
+it: Invia la richiesta di ricerca
+pt: Enviar pedido de pesquisa
+el: Αποστολή αιτήματος αναζήτησης
+cs: Odeslat poptávku
+sl: Pošlji iskalno naročilo
+sv: Skicka sökuppdrag
+@190
+it: Grazie
+pt: Obrigado
+el: Ευχαριστούμε
+cs: Děkujeme
+sl: Hvala
+sv: Tack
+@191
+it: Abbiamo ricevuto la sua richiesta di ricerca. Appena troveremo qualcosa che corrisponde ai suoi criteri, le scriveremo per e-mail.
+pt: Recebemos o seu pedido de pesquisa. Assim que encontrarmos algo que corresponda aos seus critérios, enviamos-lhe um e-mail.
+el: Λάβαμε το αίτημα αναζήτησής σας. Μόλις βρούμε κάτι που ταιριάζει στα κριτήριά σας, θα σας στείλουμε email.
+cs: Vaši poptávku jsme přijali. Jakmile najdeme něco, co odpovídá vašim kritériím, napíšeme vám e-mail.
+sl: Vaše iskalno naročilo smo prejeli. Takoj ko najdemo kaj, kar ustreza vašim merilom, vam pišemo po e-pošti.
+sv: Vi har tagit emot ditt sökuppdrag. Så snart vi hittar något som matchar dina kriterier mejlar vi dig.
+@192
+it: Tipologia di immobile cercata
+pt: Tipo de imóvel pretendido
+el: Τύπος ακινήτου που αναζητάτε
+cs: Hledaný typ nemovitosti
+sl: Iskana vrsta nepremičnine
+sv: Önskad typ av fastighet
+@193
+it: Regione, contea o località
+pt: Região, condado ou localidade
+el: Περιφέρεια, νομός ή πόλη
+cs: Region, župa nebo obec
+sl: Regija, županija ali kraj
+sv: Region, län eller ort
+@194
+it: ad es. Lago Balaton, contea di Zala
+pt: p. ex. Lago Balaton, condado de Zala
+el: π.χ. Λίμνη Μπάλατον, νομός Ζάλα
+cs: např. Balaton, župa Zala
+sl: npr. Blatno jezero, županija Zala
+sv: t.ex. Balatonsjön, Zala län
+@195
+it: Budget da (€)
+pt: Orçamento a partir de (€)
+el: Προϋπολογισμός από (€)
+cs: Rozpočet od (€)
+sl: Proračun od (€)
+sv: Budget från (€)
+@196
+it: Budget fino a (€)
+pt: Orçamento até (€)
+el: Προϋπολογισμός έως (€)
+cs: Rozpočet do (€)
+sl: Proračun do (€)
+sv: Budget upp till (€)
+@197
+it: Desideri ed esigenze
+pt: Desejos e requisitos
+el: Επιθυμίες και απαιτήσεις
+cs: Přání a požadavky
+sl: Želje in zahteve
+sv: Önskemål och krav
+@198
+it: Ad esempio: vicino all’acqua, ai margini di un bosco, con vista, spazio per animali, possibilità di affitto, buona connessione internet, distanza da un aeroporto.
+pt: Por exemplo: perto de água, na orla de uma floresta, com vista, espaço para animais, potencial de arrendamento, boa internet, distância a um aeroporto.
+el: Για παράδειγμα: κοντά στο νερό, στην άκρη δάσους, με θέα, χώρο για ζώα, δυνατότητα ενοικίασης, καλό ίντερνετ, απόσταση από αεροδρόμιο.
+cs: Například: u vody, na okraji lesa, s výhledem, prostor pro zvířata, možnost pronájmu, dobrý internet, vzdálenost od letiště.
+sl: Na primer: blizu vode, na robu gozda, razgled, prostor za živali, možnost oddajanja, dober internet, oddaljenost od letališča.
+sv: Till exempel: nära vatten, i skogskanten, utsikt, plats för djur, uthyrningsmöjlighet, bra internet, avstånd till en flygplats.
+@199
+it: Vigneto in Transdanubia
+pt: Vinha na Transdanúbia
+el: Αμπελώνας στην Υπερδουνάβια
+cs: Vinice v Zadunají
+sl: Vinograd v Prekdonavju
+sv: Vingård i Transdanubien
+@200
+it: min. ${eur(COMMISSION.minimumEur, locale)} + IVA ${COMMISSION.vatPercent}${space}%
+pt: mín. ${eur(COMMISSION.minimumEur, locale)} + IVA ${COMMISSION.vatPercent}${space}%
+el: ελάχ. ${eur(COMMISSION.minimumEur, locale)} + ΦΠΑ ${COMMISSION.vatPercent}${space}%
+cs: min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% DPH
+sl: najmanj ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% DDV
+sv: minst ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% moms
+@201
+it: Annunci da ${eur(cheapest, locale)}
+pt: Anúncios a partir de ${eur(cheapest, locale)}
+el: Αγγελίες από ${eur(cheapest, locale)}
+cs: Inzeráty od ${eur(cheapest, locale)}
+sl: Oglasi od ${eur(cheapest, locale)}
+sv: Annonser från ${eur(cheapest, locale)}
+@202
+it: La tariffa dell’annuncio comprende la revisione del testo, l’elaborazione delle foto e la composizione dell’annuncio. Una traduzione costa ${eur(translationFee, locale)} per lingua.
+pt: A taxa do anúncio inclui a revisão do texto, o tratamento das fotografias e a montagem do anúncio. Uma tradução custa ${eur(translationFee, locale)} por idioma.
+el: Το τέλος της αγγελίας περιλαμβάνει την επιμέλεια του κειμένου, την επεξεργασία των φωτογραφιών και τη σύνταξη της αγγελίας. Μια μετάφραση κοστίζει ${eur(translationFee, locale)} ανά γλώσσα.
+cs: Poplatek za inzerát zahrnuje úpravu textu, zpracování fotografií a sestavení inzerátu. Překlad stojí ${eur(translationFee, locale)} za jazyk.
+sl: Pristojbina za oglas vključuje urejanje besedila, obdelavo fotografij in pripravo oglasa. Prevod stane ${eur(translationFee, locale)} na jezik.
+sv: Annonsavgiften omfattar textredigering, bildbehandling och sammanställning av annonsen. En översättning kostar ${eur(translationFee, locale)} per språk.
+@203
+it: Cosa ci chiedono i venditori
+pt: O que os vendedores nos perguntam
+el: Τι μας ρωτούν οι πωλητές
+cs: Na co se nás prodávající ptají
+sl: Kaj nas sprašujejo prodajalci
+sv: Vad säljare frågar oss
+@204
+it: Venduti: transazioni concluse
+pt: Vendidos: transações concluídas
+el: Πωλήθηκαν: ολοκληρωμένες συναλλαγές
+cs: Prodáno: uzavřené obchody
+sl: Prodano: zaključeni posli
+sv: Sålda: genomförda affärer
+@205
+it: Immobili venduti tramite FODEL ad acquirenti dell’Europa occidentale.
+pt: Imóveis vendidos através da FODEL a compradores da Europa Ocidental.
+el: Ακίνητα που πωλήθηκαν μέσω της FODEL σε αγοραστές από τη Δυτική Ευρώπη.
+cs: Nemovitosti prodané prostřednictvím FODEL kupujícím ze západní Evropy.
+sl: Nepremičnine, prodane prek FODEL kupcem iz zahodne Evrope.
+sv: Fastigheter sålda via FODEL till köpare från Västeuropa.
+@206
+it: Venduti
+pt: Vendidos
+el: Πωλήθηκαν
+cs: Prodáno
+sl: Prodano
+sv: Sålda
+@207
+it: Transazioni
+pt: Transações
+el: Ολοκληρωμένες
+cs: Uzavřené
+sl: Zaključeni
+sv: Genomförda
+@208
+it: concluse
+pt: concluídas
+el: συναλλαγές
+cs: obchody
+sl: posli
+sv: affärer
+@209
+it: Questi immobili hanno trovato un nuovo proprietario tramite FODEL.
+pt: Estes imóveis encontraram um novo proprietário através da FODEL.
+el: Αυτά τα ακίνητα βρήκαν νέο ιδιοκτήτη μέσω της FODEL.
+cs: Tyto nemovitosti našly nového majitele díky FODEL.
+sl: Te nepremičnine so prek FODEL dobile novega lastnika.
+sv: Dessa fastigheter har fått en ny ägare genom FODEL.
+@210
+it: Presto questa pagina mostrerà le transazioni concluse.
+pt: Em breve esta página mostrará as transações concluídas.
+el: Σύντομα αυτή η σελίδα θα περιλαμβάνει ολοκληρωμένες συναλλαγές.
+cs: Brzy zde najdete uzavřené obchody.
+sl: Kmalu bodo tu objavljeni zaključeni posli.
+sv: Snart fylls den här sidan med genomförda affärer.
+@211
+it: Nel frattempo, veda gli immobili attuali.
+pt: Entretanto, veja os imóveis atuais.
+el: Στο μεταξύ, δείτε τα τρέχοντα ακίνητα.
+cs: Mezitím si prohlédněte aktuální nabídku.
+sl: Medtem si oglejte aktualne nepremičnine.
+sv: Under tiden kan du se de aktuella fastigheterna.
+@212
+it: Pubblica un annuncio: promuova il suo immobile in Europa occidentale
+pt: Publicar um anúncio: anuncie o seu imóvel na Europa Ocidental
+el: Δημοσίευση αγγελίας: διαφημίστε το ακίνητό σας στη Δυτική Ευρώπη
+cs: Podat inzerát: nabídněte svou nemovitost v západní Evropě
+sl: Oddajte oglas: oglašujte svojo nepremičnino v zahodni Evropi
+sv: Lägg in en annons: annonsera din fastighet i Västeuropa
+@213
+it: Pubblichi il suo annuncio da ${eur(fromEur, locale)}. Una volta approvato, appare subito in ${R.languages} lingue in ${R.countries} paesi, senza pagamento anticipato e senza esclusiva.
+pt: Publique o seu anúncio a partir de ${eur(fromEur, locale)}. Depois de aprovado, aparece de imediato em ${R.languages} idiomas em ${R.countries} países, sem pagamento antecipado e sem exclusividade.
+el: Δημοσιεύστε την αγγελία σας από ${eur(fromEur, locale)}. Μόλις εγκριθεί, εμφανίζεται αμέσως σε ${R.languages} γλώσσες σε ${R.countries} χώρες, χωρίς προκαταβολή και χωρίς αποκλειστικότητα.
+cs: Inzerát podáte již od ${eur(fromEur, locale)}. Po schválení se hned zobrazí v ${nOf('cs', R.languages, 'jazyce', 'jazycích')} v ${nOf('cs', R.countries, 'zemi', 'zemích')}, bez platby předem a bez výhradního zastoupení.
+sl: Oglas oddate že od ${eur(fromEur, locale)}. Po odobritvi se takoj prikaže v ${nOf('sl', R.languages, 'jeziku', 'jezikih', 'jezikih', 'jezikih')} v ${nOf('sl', R.countries, 'državi', 'državah', 'državah', 'državah')}, brez predplačila in brez izključnosti.
+sv: Lägg in din fastighetsannons från ${eur(fromEur, locale)}. När den har godkänts syns den direkt på ${R.languages} språk i ${R.countries} länder, utan förskottsbetalning och utan ensamrätt.
+@214
+it: Promuova il suo immobile
+pt: Anuncie o seu imóvel
+el: Διαφημίστε το ακίνητό σας
+cs: Nabídněte svou nemovitost
+sl: Oglašujte svojo nepremičnino
+sv: Annonsera din fastighet
+@215
+it: in Europa occidentale
+pt: na Europa Ocidental
+el: στη Δυτική Ευρώπη
+cs: v západní Evropě
+sl: v zahodni Evropi
+sv: i Västeuropa
+@216
+it: Si registri con pochi dati. Riceverà un’e-mail con un link per impostare la password, poi comporrà l’annuncio passo dopo passo nella sua area personale, foto comprese. Non paga nulla in anticipo: esaminiamo l’annuncio e lo pubblichiamo non appena approvato.
+pt: Registe-se com poucos dados. Recebe um e-mail com uma ligação para definir a palavra-passe e depois monta o anúncio passo a passo na sua área pessoal, fotografias incluídas. Não paga nada antecipadamente: analisamos o anúncio e publicamo-lo assim que for aprovado.
+el: Εγγραφείτε με λίγα στοιχεία. Θα λάβετε email με σύνδεσμο για να ορίσετε τον κωδικό σας και μετά δημιουργείτε την αγγελία βήμα προς βήμα στον προσωπικό σας χώρο, μαζί με τις φωτογραφίες. Δεν πληρώνετε τίποτα προκαταβολικά: ελέγχουμε την αγγελία και τη δημοσιεύουμε μόλις εγκριθεί.
+cs: Zaregistrujte se s několika údaji. Obdržíte e-mail s odkazem pro nastavení hesla a pak inzerát krok za krokem sestavíte ve svém účtu, včetně fotografií. Předem nic neplatíte: inzerát zkontrolujeme a po schválení ho hned zveřejníme.
+sl: Registrirajte se z nekaj podatki. Prejeli boste e-poštno sporočilo s povezavo za nastavitev gesla, nato pa oglas korak za korakom pripravite v svojem računu, skupaj s fotografijami. Vnaprej ne plačate ničesar: oglas pregledamo in ga objavimo takoj po odobritvi.
+sv: Registrera dig med några få uppgifter. Du får ett mejl med en länk för att välja lösenord och sätter sedan ihop annonsen steg för steg på ditt eget konto, inklusive foton. Du betalar inget i förväg: vi granskar annonsen och publicerar den så snart den är godkänd.

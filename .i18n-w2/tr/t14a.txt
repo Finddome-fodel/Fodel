@@ -1,0 +1,231 @@
+@1035
+it: Con una procura La rappresentiamo alla firma, al catasto e nel trasferimento delle utenze. L’acquisto può quindi procedere anche se non può o non desidera viaggiare.
+pt: Mediante procuração representamo-lo na assinatura, no registo predial e na transferência dos serviços. Assim, a compra pode avançar mesmo que não possa ou não queira viajar.
+el: Με πληρεξούσιο σας εκπροσωπούμε στην υπογραφή, στο κτηματολόγιο και στη μεταφορά των παροχών. Έτσι η αγορά μπορεί να ολοκληρωθεί ακόμη κι αν δεν μπορείτε ή δεν θέλετε να ταξιδέψετε.
+cs: Na základě plné moci vás zastoupíme při podpisu, na katastru i při převodu energií. Koupě tak může proběhnout, i když nemůžete nebo nechcete cestovat.
+sl: S pooblastilom vas zastopamo pri podpisu, v zemljiški knjigi in pri prenosu komunalnih priključkov. Nakup lahko tako poteka, tudi če ne morete ali ne želite potovati.
+sv: Med fullmakt företräder vi dig vid undertecknandet, vid inskrivningen och när el och vatten förs över. Köpet kan alltså genomföras även om du inte kan eller vill resa.
+@1036
+it: Attestato di prestazione energetica
+pt: Certificado energético
+el: Πιστοποιητικό ενεργειακής απόδοσης
+cs: Průkaz energetické náročnosti
+sl: Energetska izkaznica
+sv: Energideklaration
+@1037
+it: In Ungheria è obbligatorio l’attestato di prestazione energetica (APE), che secondo le norme UE deve comparire anche nell’annuncio. Nei nostri annunci trova la classe tra le caratteristiche; “in corso” significa che l’attestato è ancora in preparazione.
+pt: Na Hungria é obrigatório o certificado energético, que segundo as regras da UE também tem de constar do anúncio. Nos nossos anúncios encontra a classe nas características; “pendente” significa que o certificado ainda está a ser emitido.
+el: Στην Ουγγαρία απαιτείται πιστοποιητικό ενεργειακής απόδοσης, το οποίο σύμφωνα με τους κανόνες της ΕΕ πρέπει να αναγράφεται και στην αγγελία. Στις αγγελίες μας θα βρείτε την κατηγορία στα χαρακτηριστικά· «σε εκκρεμότητα» σημαίνει ότι το πιστοποιητικό ετοιμάζεται ακόμη.
+cs: V Maďarsku je povinný průkaz energetické náročnosti (PENB), který podle pravidel EU musí být uveden i v inzerátu. V našich inzerátech najdete třídu mezi vlastnostmi; „vyřizuje se“ znamená, že se průkaz teprve připravuje.
+sl: Na Madžarskem je obvezna energetska izkaznica, ki mora biti po pravilih EU navedena tudi v oglasu. V naših oglasih najdete razred med lastnostmi; »v pripravi« pomeni, da izkaznica še nastaja.
+sv: Ungern kräver en energideklaration, som enligt EU:s regler också måste anges i annonsen. I våra annonser hittar du energiklassen bland egenskaperna; ”på gång” betyder att deklarationen fortfarande tas fram.
+@1038
+it: Cominciamo?
+pt: Vamos começar?
+el: Ξεκινάμε;
+cs: Začneme?
+sl: Začnemo?
+sv: Ska vi sätta igång?
+@1039
+it: Sfogli gli immobili o ci dica cosa sta cercando. Non Le costa nulla.
+pt: Veja os imóveis ou diga-nos o que procura. Não lhe custa nada.
+el: Δείτε τα ακίνητα ή πείτε μας τι αναζητάτε. Δεν σας κοστίζει τίποτα.
+cs: Prohlédněte si nemovitosti, nebo nám řekněte, co hledáte. Nic vás to nestojí.
+sl: Prebrskajte nepremičnine ali nam povejte, kaj iščete. Nič vas ne stane.
+sv: Bläddra bland objekten eller berätta vad du letar efter. Det kostar dig ingenting.
+@1040
+it: Trasferirsi in Ungheria: perché gli olandesi fanno il passo
+pt: Mudar-se para a Hungria: porque é que os neerlandeses dão o passo
+el: Μετακόμιση στην Ουγγαρία: γιατί οι Ολλανδοί κάνουν το βήμα
+cs: Stěhování do Maďarska: proč se Nizozemci rozhodnou
+sl: Selitev na Madžarsko: zakaj se Nizozemci odločijo
+sv: Flytta till Ungern: därför tar nederländare steget
+@1041
+it: I quattro motivi per cui acquirenti olandesi e belgi si trasferiscono in Ungheria: rapporto qualità-prezzo, spazio, costo della vita più basso e posizione.
+pt: As quatro razões pelas quais compradores neerlandeses e belgas se mudam para a Hungria: relação qualidade-preço, espaço, custo de vida mais baixo e localização.
+el: Οι τέσσερις λόγοι για τους οποίους Ολλανδοί και Βέλγοι αγοραστές μετακομίζουν στην Ουγγαρία: σχέση ποιότητας-τιμής, χώρος, χαμηλότερο κόστος ζωής και τοποθεσία.
+cs: Čtyři důvody, proč se nizozemští a belgičtí kupující stěhují do Maďarska: poměr ceny a kvality, prostor, nižší životní náklady a poloha.
+sl: Štirje razlogi, zakaj se nizozemski in belgijski kupci selijo na Madžarsko: razmerje med ceno in kakovostjo, prostor, nižji življenjski stroški in lega.
+sv: De fyra skälen till att nederländska och belgiska köpare flyttar till Ungern: valuta för pengarna, utrymme, lägre levnadskostnader och läge.
+@1042
+it: Contesto
+pt: Contexto
+el: Πλαίσιο
+cs: Souvislosti
+sl: Ozadje
+sv: Bakgrund
+@1043
+it: Trasferirsi in
+pt: Mudar-se para a
+el: Μετακόμιση στην
+cs: Stěhování do
+sl: Selitev na
+sv: Flytta till
+@1044
+it: Molti olandesi e belgi scelgono l’Ungheria. In centinaia di colloqui con i nostri clienti emergono sempre gli stessi quattro motivi.
+pt: Muitos neerlandeses e belgas escolhem a Hungria. Em centenas de conversas com os nossos clientes surgem sempre as mesmas quatro razões.
+el: Πολλοί Ολλανδοί και Βέλγοι επιλέγουν την Ουγγαρία. Σε εκατοντάδες συζητήσεις με τους πελάτες μας επανέρχονται συνεχώς οι ίδιοι τέσσερις λόγοι.
+cs: Mnoho Nizozemců a Belgičanů si vybírá Maďarsko. Ve stovkách rozhovorů s našimi klienty se stále opakují tytéž čtyři důvody.
+sl: Veliko Nizozemcev in Belgijcev izbere Madžarsko. V stotinah pogovorov z našimi strankami se vedno znova pojavljajo isti štirje razlogi.
+sv: Många nederländare och belgare väljer Ungern. I hundratals samtal med våra kunder återkommer samma fyra skäl gång på gång.
+@1045
+it: Rapporto qualità-prezzo
+pt: Relação qualidade-preço
+el: Σχέση ποιότητας-τιμής
+cs: Poměr ceny a kvality
+sl: Razmerje med ceno in kakovostjo
+sv: Valuta för pengarna
+@1046
+it: Gli immobili rurali ungheresi sono tra i più convenienti d’Europa. Nei Paesi Bassi un lotto edificabile di 125 m² costa facilmente 88.000 € e un garage circa 100.000 €. Con la stessa cifra, nella campagna ungherese si acquista un’ampia casa familiare, spesso con molto terreno.
+pt: Os imóveis rurais húngaros estão entre os de melhor relação qualidade-preço da Europa. Nos Países Baixos, um lote de construção de 125 m² custa facilmente 88 000 € e uma garagem cerca de 100 000 €. Pelo mesmo valor, no interior da Hungria compra uma moradia familiar espaçosa, muitas vezes com bastante terreno.
+el: Τα αγροτικά ακίνητα της Ουγγαρίας είναι από τα πιο συμφέροντα στην Ευρώπη. Στην Ολλανδία ένα οικόπεδο 125 m² κοστίζει εύκολα 88.000 € και ένα γκαράζ περίπου 100.000 €. Με τα ίδια χρήματα στην ουγγρική ύπαιθρο αγοράζετε ένα ευρύχωρο οικογενειακό σπίτι, συχνά με αρκετή γη.
+cs: Venkovské nemovitosti v Maďarsku patří k cenově nejvýhodnějším v Evropě. V Nizozemsku stojí stavební pozemek o rozloze 125 m² klidně 88 000 € a garáž kolem 100 000 €. Za stejné peníze si na maďarském venkově koupíte prostorný rodinný dům, často se slušným kusem pozemku.
+sl: Podeželske nepremičnine na Madžarskem so med cenovno najugodnejšimi v Evropi. Na Nizozemskem stane gradbena parcela s 125 m² hitro 88.000 €, garaža pa okoli 100.000 €. Za isti denar na madžarskem podeželju kupite prostorno družinsko hišo, pogosto z veliko zemlje.
+sv: Ungerska fastigheter på landsbygden hör till de mest prisvärda i Europa. I Nederländerna kostar en tomt på 125 m² lätt 88 000 € och ett garage runt 100 000 €. För samma pengar köper du på den ungerska landsbygden ett rymligt familjehus, ofta med en hel del mark.
+@1047
+it: Spazio
+pt: Espaço
+el: Χώρος
+cs: Prostor
+sl: Prostor
+sv: Utrymme
+@1048
+it: I Paesi Bassi hanno una densità di 482 abitanti per km² con circa 17 milioni di abitanti, e una parte considerevole del Paese è acqua. La mancanza di spazio non è un problema astratto ma un’esperienza quotidiana, ed è il motivo citato più spesso.
+pt: Os Países Baixos têm uma densidade populacional de 482 habitantes por km², com cerca de 17 milhões de habitantes, e uma parte considerável do país é água. A falta de espaço não é um problema abstrato, mas uma experiência diária, e é a razão mais referida.
+el: Η Ολλανδία έχει πυκνότητα πληθυσμού 482 κατοίκους ανά km² με περίπου 17 εκατομμύρια κατοίκους, ενώ σημαντικό μέρος της χώρας είναι νερό. Η έλλειψη χώρου δεν είναι αφηρημένο πρόβλημα αλλά καθημερινή εμπειρία και ο λόγος που αναφέρεται συχνότερα.
+cs: Nizozemsko má hustotu zalidnění 482 obyvatel na km² při zhruba 17 milionech obyvatel a značnou část země tvoří voda. Nedostatek místa není abstraktní problém, ale každodenní zkušenost a nejčastěji uváděný důvod.
+sl: Nizozemska ima gostoto prebivalstva 482 prebivalcev na km² ob približno 17 milijonih prebivalcev, precejšen del države pa je voda. Pomanjkanje prostora ni abstrakten problem, temveč vsakdanja izkušnja in najpogosteje omenjeni razlog.
+sv: Nederländerna har en befolkningstäthet på 482 invånare per km² med omkring 17 miljoner invånare, och en betydande del av landet är vatten. Platsbristen är inget abstrakt problem utan en vardaglig upplevelse, och det skäl som nämns oftast.
+@1049
+it: Costo della vita
+pt: Custo de vida
+el: Κόστος ζωής
+cs: Životní náklady
+sl: Življenjski stroški
+sv: Levnadskostnader
+@1050
+it: Gran parte dei nostri acquirenti è in pensione o vicina alla pensione. Per loro, il costo della vita più basso, l’assenza di un’imposta sugli immobili e un’assistenza sanitaria accessibile si traducono in un tenore di vita che la stessa pensione non garantirebbe nei Paesi Bassi.
+pt: Grande parte dos nossos compradores está reformada ou perto disso. Para eles, o custo de vida mais baixo, a ausência de imposto sobre imóveis e cuidados de saúde acessíveis traduzem-se num nível de vida que a mesma pensão não garantiria nos Países Baixos.
+el: Μεγάλο μέρος των αγοραστών μας είναι συνταξιούχοι ή κοντά στη σύνταξη. Για αυτούς, το χαμηλότερο κόστος ζωής, η απουσία φόρου ακινήτων και η οικονομικά προσιτή υγειονομική περίθαλψη εξασφαλίζουν ένα βιοτικό επίπεδο που η ίδια σύνταξη δεν θα πρόσφερε στην Ολλανδία.
+cs: Velká část našich kupujících je v důchodu nebo krátce před ním. Nižší životní náklady, absence daně z nemovitostí a dostupná zdravotní péče jim společně zajišťují životní úroveň, kterou by jim stejný důchod v Nizozemsku neposkytl.
+sl: Velik del naših kupcev je upokojenih ali tik pred upokojitvijo. Zanje nižji življenjski stroški, odsotnost davka na nepremičnine in dostopno zdravstvo skupaj pomenijo življenjski standard, ki ga ista pokojnina na Nizozemskem ne bi omogočila.
+sv: En stor del av våra köpare är pensionärer eller snart pensionärer. För dem ger lägre levnadskostnader, ingen fastighetsskatt och prisvärd sjukvård tillsammans en levnadsstandard som samma pension inte skulle ge i Nederländerna.
+@1051
+it: Posizione
+pt: Localização
+el: Τοποθεσία
+cs: Poloha
+sl: Lega
+sv: Läge
+@1052
+it: Dopo l’alluvione del 1953 i Paesi Bassi hanno costruito un enorme sistema di difese contro le inondazioni. La preoccupazione per l’innalzamento del livello del mare pesa su molte decisioni: l’Ungheria si trova al centro del continente, sopra il livello del mare.
+pt: Desde as cheias catastróficas de 1953, os Países Baixos construíram um enorme sistema de defesa contra inundações. A preocupação com a subida do nível do mar pesa em muitas decisões: a Hungria fica no centro do continente, acima do nível do mar.
+el: Μετά την καταστροφική πλημμύρα του 1953 η Ολλανδία έχτισε ένα τεράστιο σύστημα αντιπλημμυρικής προστασίας. Η ανησυχία για την άνοδο της στάθμης της θάλασσας επηρεάζει πολλές αποφάσεις: η Ουγγαρία βρίσκεται στο κέντρο της ηπείρου, πάνω από το επίπεδο της θάλασσας.
+cs: Od povodňové katastrofy v roce 1953 vybudovalo Nizozemsko obrovský systém protipovodňové ochrany. Obavy ze stoupající hladiny moří hrají roli v mnoha rozhodnutích: Maďarsko leží uprostřed kontinentu, nad úrovní moře.
+sl: Po poplavni katastrofi leta 1953 je Nizozemska zgradila ogromen sistem protipoplavne zaščite. Skrb zaradi naraščanja morske gladine vpliva na številne odločitve: Madžarska leži sredi celine, nad morsko gladino.
+sv: Sedan översvämningskatastrofen 1953 har Nederländerna byggt ett enormt system av vallar och skydd. Oron för stigande havsnivåer påverkar många beslut: Ungern ligger mitt på kontinenten, över havsytan.
+@1053
+it: È il momento di scoprire
+pt: Hora de explorar
+el: Ώρα για εξερεύνηση
+cs: Čas objevovat
+sl: Čas za raziskovanje
+sv: Dags att upptäcka
+@1054
+it: Sfogli i nostri immobili o lasci che cerchiamo noi ciò che ha in mente.
+pt: Veja os nossos imóveis ou deixe-nos procurar o que tem em mente.
+el: Δείτε τα ακίνητά μας ή αφήστε μας να αναζητήσουμε αυτό που έχετε στο μυαλό σας.
+cs: Prohlédněte si naše nemovitosti, nebo nechte nás najít to, co máte na mysli.
+sl: Prebrskajte naše nepremičnine ali pa prepustite nam, da poiščemo, kar imate v mislih.
+sv: Bläddra bland våra objekt eller låt oss leta efter det du har i tankarna.
+@1055
+it: Acquistare in Ungheria
+pt: Comprar na Hungria
+el: Αγορά στην Ουγγαρία
+cs: Koupě v Maďarsku
+sl: Nakup na Madžarskem
+sv: Köpa i Ungern
+@1056
+it: =
+pt: =
+el: =
+cs: =
+sl: =
+sv: =
+@1057
+it: Guida fotografica per gli inserzionisti
+pt: Guia de fotografia para anunciantes
+el: Οδηγός φωτογράφισης για αγγελιοδότες
+cs: Fotografický průvodce pro inzerenty
+sl: Fotografski vodnik za oglaševalce
+sv: Fotoguide för annonsörer
+@1058
+it: Le buone foto sono lo strumento più importante per vendere in fretta. La guida fotografica FODEL: luce, orientamento, risoluzione e gli errori più comuni.
+pt: Boas fotografias são a ferramenta mais importante para vender depressa. O guia de fotografia FODEL: luz, orientação, resolução e os erros mais comuns.
+el: Οι καλές φωτογραφίες είναι το σημαντικότερο εργαλείο για γρήγορη πώληση. Ο οδηγός φωτογράφισης της FODEL: φως, προσανατολισμός, ανάλυση και τα πιο συνηθισμένα λάθη.
+cs: Dobré fotografie jsou nejdůležitějším nástrojem pro rychlý prodej. Fotografický průvodce FODEL: světlo, orientace, rozlišení a nejčastější chyby.
+sl: Dobre fotografije so najpomembnejše orodje za hitro prodajo. Fotografski vodnik FODEL: svetloba, usmerjenost, ločljivost in najpogostejše napake.
+sv: Bra bilder är det viktigaste verktyget för en snabb försäljning. FODEL:s fotoguide: ljus, orientering, upplösning och de vanligaste misstagen.
+@1059
+it: Per i venditori
+pt: Para vendedores
+el: Για πωλητές
+cs: Pro prodávající
+sl: Za prodajalce
+sv: För säljare
+@1060
+it: Guida
+pt: Guia de
+el: Οδηγός
+cs: Fotografický
+sl: Fotografski
+sv: Guide till
+@1061
+it: I potenziali acquirenti stranieri vedono prima le foto, spesso solo le foto. Queste regole contano più di qualsiasi testo dell’annuncio.
+pt: Os interessados estrangeiros veem primeiro as fotografias, muitas vezes só as fotografias. Estas regras valem mais do que qualquer texto do anúncio.
+el: Οι ενδιαφερόμενοι από το εξωτερικό βλέπουν πρώτα τις φωτογραφίες, συχνά μόνο τις φωτογραφίες. Αυτοί οι κανόνες κάνουν περισσότερα από οποιοδήποτε κείμενο αγγελίας.
+cs: Zahraniční zájemci vidí nejdříve fotografie, často jen fotografie. Tato pravidla udělají víc než jakýkoli text inzerátu.
+sl: Tuji interesenti najprej vidijo fotografije, pogosto samo fotografije. Ta pravila naredijo več kot katero koli besedilo oglasa.
+sv: Utländska spekulanter ser bilderna först, ofta bara bilderna. De här reglerna gör mer än någon annonstext.
+@1062
+it: Le sei regole più importanti
+pt: As seis regras mais importantes
+el: Οι έξι σημαντικότεροι κανόνες
+cs: Šest nejdůležitějších pravidel
+sl: Šest najpomembnejših pravil
+sv: De sex viktigaste reglerna
+@1063
+it: Preferisce affidarlo a noi?
+pt: Prefere delegar?
+el: Προτιμάτε να το αναθέσετε;
+cs: Raději to svěříte jiným?
+sl: Bi raje to prepustili drugim?
+sv: Hellre lämna över det?
+@1064
+it: Si affidi a un professionista. Può sceglierlo con un clic quando pubblica l’annuncio: ${lines.join('; ')}. Entrambi sono facoltativi; un membro del nostro team La contatterà per fissare una data.
+pt: Recorra a um profissional. Pode escolher esta opção com um clique ao publicar o anúncio: ${lines.join('; ')}. Ambos são opcionais; um membro da nossa equipa entrará em contacto consigo para marcar uma data.
+el: Αναθέστε το σε επαγγελματία. Μπορείτε να το επιλέξετε με ένα κλικ όταν δημοσιεύετε την αγγελία: ${lines.join('; ')}. Και τα δύο είναι προαιρετικά· ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας για να ορίσετε ημερομηνία.
+cs: Přizvěte profesionála. Můžete si to zvolit jedním kliknutím při zadávání inzerátu: ${lines.join('; ')}. Obojí je volitelné; někdo z našeho týmu vás kontaktuje a domluví termín.
+sl: Pokličite strokovnjaka. To lahko izberete z enim klikom ob oddaji oglasa: ${lines.join('; ')}. Oboje je neobvezno; nekdo iz naše ekipe vas bo kontaktiral in se dogovoril za termin.
+sv: Anlita ett proffs. Du kan välja det med ett klick när du lägger in din annons: ${lines.join('; ')}. Båda är valfria; någon i vårt team kontaktar dig för att boka en tid.
+@1065
+it: Pronto a pubblicare il Suo immobile?
+pt: Pronto para anunciar o seu imóvel?
+el: Έτοιμοι να καταχωρίσετε το ακίνητό σας;
+cs: Připraveni inzerovat svou nemovitost?
+sl: Ste pripravljeni oglaševati svojo nepremičnino?
+sv: Redo att annonsera din bostad?
+@1066
+it: Pubblica un annuncio
+pt: Publicar anúncio
+el: Καταχώριση αγγελίας
+cs: Zadat inzerát
+sl: Oddaj oglas
+sv: Lägg in annons
+@1067
+it: Prezzi
+pt: Preços
+el: Τιμές
+cs: Ceník
+sl: Cenik
+sv: Priser

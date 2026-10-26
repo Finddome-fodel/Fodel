@@ -1,0 +1,735 @@
+@288
+da: Slå datostemplet fra på kameraet.
+no: Slå av datostempelet på kameraet.
+fi: Poista kameran päiväysleima käytöstä.
+et: Lülitage kaameras kuupäevatempel välja.
+lv: Izslēdziet kamerā datuma zīmogu.
+lt: Fotoaparate išjunkite datos žymę.
+@289
+da: Tør telefonens linse af. En fedtet linse er den hyppigste årsag til slørede billeder.
+no: Tørk av linsen på telefonen. En fettete linse er den vanligste årsaken til tåkete bilder.
+fi: Pyyhi puhelimen linssi. Rasvainen linssi on yleisin syy sumeisiin kuviin.
+et: Pühkige telefoni objektiiv puhtaks. Rasvane objektiiv on uduste fotode kõige sagedasem põhjus.
+lv: Noslaukiet tālruņa objektīvu. Taukains objektīvs ir visbiežākais miglainu fotoattēlu cēlonis.
+lt: Nuvalykite telefono objektyvą. Riebaluotas objektyvas – dažniausia miglotų nuotraukų priežastis.
+@290
+da: Lys
+no: Lys
+fi: Valo
+et: Valgus
+lv: Gaisma
+lt: Šviesa
+@291
+da: Fotografér i solskin, både inde og ude.
+no: Ta bilder i solskinn, både inne og ute.
+fi: Kuvaa aurinkoisella säällä, sisällä ja ulkona.
+et: Pildistage päikesepaistelise ilmaga, nii sees kui ka väljas.
+lv: Fotografējiet saulainā laikā, gan iekšā, gan ārā.
+lt: Fotografuokite saulėtą dieną – ir viduje, ir lauke.
+@292
+da: Undgå overskyet vejr, tusmørke og aften.
+no: Unngå overskyet vær, skumring og kveld.
+fi: Vältä pilvistä säätä, hämärää ja iltaa.
+et: Vältige pilves ilma, hämarikku ja õhtut.
+lv: Izvairieties no apmākušās debess, krēslas un vakara.
+lt: Venkite debesuoto oro, prieblandos ir vakaro.
+@293
+da: Tænd lyset i alle rum.
+no: Slå på lyset i alle rom.
+fi: Sytytä valot jokaiseen huoneeseen.
+et: Lülitage tuled sisse igas toas.
+lv: Ieslēdziet gaismu katrā telpā.
+lt: Įjunkite šviesą kiekviename kambaryje.
+@294
+da: Træk gardinerne fra, og rul persienner og skodder op.
+no: Trekk fra gardinene og trekk opp persienner og skodder.
+fi: Vedä verhot sivuun ja nosta kaihtimet ja ikkunaluukut.
+et: Tõmmake kardinad eest ning ribakardinad ja aknaluugid üles.
+lv: Atvelciet aizkarus un paceliet žalūzijas un slēģus.
+lt: Atitraukite užuolaidas ir pakelkite žaliuzes bei langines.
+@295
+da: Brug aldrig blitz.
+no: Bruk aldri blits.
+fi: Älä koskaan käytä salamaa.
+et: Ärge kunagi kasutage välku.
+lv: Nekad neizmantojiet zibspuldzi.
+lt: Niekada nenaudokite blykstės.
+@296
+da: Udsnit og komposition
+no: Utsnitt og komposisjon
+fi: Rajaus ja sommittelu
+et: Kaadrikompositsioon
+lv: Kadrējums un kompozīcija
+lt: Kadravimas ir kompozicija
+@297
+da: Hold altid telefonen vandret (liggende). Tag ikke billeder på højkant.
+no: Hold alltid telefonen vannrett (liggende). Ikke ta stående bilder.
+fi: Pidä puhelinta aina vaakasuunnassa. Älä ota pystykuvia.
+et: Hoidke telefoni alati rõhtsalt. Ärge pildistage püstformaadis.
+lv: Vienmēr turiet tālruni horizontāli. Neuzņemiet vertikālus fotoattēlus.
+lt: Telefoną visada laikykite horizontaliai. Nefotografuokite vertikaliai.
+@298
+da: Stil dig i et hjørne af rummet, og fotografér i brysthøjde, så hele rummet kommer med i billedet.
+no: Still deg i et hjørne av rommet og ta bildet i brysthøyde, slik at hele rommet kommer med.
+fi: Asetu huoneen nurkkaan ja kuvaa rinnan korkeudelta, niin koko huone mahtuu kuvaan.
+et: Seiske toa nurka ja pildistage rinna kõrguselt, et kogu tuba jääks kaadrisse.
+lv: Nostājieties telpas stūrī un fotografējiet krūšu augstumā, lai kadrā būtu visa telpa.
+lt: Atsistokite kambario kampe ir fotografuokite krūtinės aukštyje, kad į kadrą patektų visas kambarys.
+@299
+da: Ret vandrette flader ind efter skærmens øverste kant.
+no: Rett inn vannrette flater etter overkanten av skjermen.
+fi: Kohdista vaakasuorat pinnat näytön yläreunan suuntaisiksi.
+et: Joondage horisontaalsed pinnad ekraani ülaservaga.
+lv: Izlīdziniet horizontālās virsmas ar ekrāna augšējo malu.
+lt: Horizontalius paviršius sulygiuokite su viršutiniu ekrano kraštu.
+@300
+da: Hvis rummet ikke kan være med, så tag et skridt tilbage.
+no: Hvis rommet ikke får plass, ta et skritt tilbake.
+fi: Jos huone ei mahdu kuvaan, ota askel taaksepäin.
+et: Kui tuba kaadrisse ei mahu, astuge samm tagasi.
+lv: Ja telpa neietilpst kadrā, paejiet soli atpakaļ.
+lt: Jei kambarys netelpa, žengtelėkite atgal.
+@301
+da: Ved et fritliggende hus: tag også et billede oppefra.
+no: For en enebolig: ta også et bilde ovenfra.
+fi: Omakotitalosta ota myös kuva ylhäältä.
+et: Eramaja puhul tehke ka foto ülevalt.
+lv: Savrupmājai uzņemiet arī fotoattēlu no augšas.
+lt: Jei tai atskiras namas, nufotografuokite jį ir iš viršaus.
+@302
+da: Vis hele bygningen på facadebilledet.
+no: Vis hele bygningen på fasadebildet.
+fi: Näytä julkisivukuvassa koko rakennus.
+et: Fassaadi pildistades näidake kogu hoonet.
+lv: Fasādes fotoattēlā parādiet visu ēku.
+lt: Fotografuodami fasadą parodykite visą pastatą.
+@303
+da: Undgå billeder domineret af asfalt, loft eller hegn.
+no: Unngå bilder dominert av asfalt, tak eller gjerde.
+fi: Vältä kuvia, joissa näkyy pääasiassa asfalttia, kattoa tai aitaa.
+et: Vältige kaadreid, kus domineerivad asfalt, lagi või aed.
+lv: Izvairieties no kadriem, kuros dominē asfalts, griesti vai žogs.
+lt: Venkite kadrų, kuriuose vyrauja asfaltas, lubos ar tvora.
+@304
+da: Sørg for, at ingen er med på billederne, heller ikke i et spejl eller et vindue.
+no: Pass på at ingen er med på bildene, heller ikke i et speil eller et vindu.
+fi: Varmista, ettei kuvissa näy ketään, ei edes peilissä tai ikkunassa.
+et: Veenduge, et fotodel poleks kedagi, isegi mitte peeglis või aknas.
+lv: Pārliecinieties, ka fotoattēlos nav neviena, pat ne spogulī vai logā.
+lt: Pasirūpinkite, kad nuotraukose nebūtų nė vieno žmogaus, net veidrodyje ar lange.
+@305
+da: Billedkvalitet
+no: Bildekvalitet
+fi: Kuvanlaatu
+et: Pildikvaliteet
+lv: Attēla kvalitāte
+lt: Vaizdo kokybė
+@306
+da: Brug aktuelle billeder, ikke gamle.
+no: Bruk aktuelle bilder, ikke gamle.
+fi: Käytä tuoreita kuvia, älä vanhoja.
+et: Kasutage värskeid fotosid, mitte vanu.
+lv: Izmantojiet aktuālus fotoattēlus, nevis vecus.
+lt: Naudokite naujas nuotraukas, o ne senas.
+@307
+da: Upload de originale filer: mindst 3 megapixel og 1.500 pixel i bredden.
+no: Last opp originalfilene: minst 3 megapiksler og 1 500 piksler i bredden.
+fi: Lataa alkuperäiset tiedostot: vähintään 3 megapikseliä ja 1 500 pikseliä leveitä.
+et: Laadige üles originaalfailid: vähemalt 3 megapikslit ja 1500 pikslit lai.
+lv: Augšupielādējiet oriģinālos failus: vismaz 3 megapikseļi un 1500 pikseļu platumā.
+lt: Įkelkite originalius failus: ne mažiau kaip 3 megapikseliai ir 1500 pikselių pločio.
+@308
+da: Upload ikke versioner, der er komprimeret af e-mail.
+no: Ikke last opp versjoner som er komprimert av e-post.
+fi: Älä lataa sähköpostin pakkaamia versioita.
+et: Ärge laadige üles e-posti poolt tihendatud versioone.
+lv: Neaugšupielādējiet e-pastā saspiestas versijas.
+lt: Neįkelkite el. paštu suspaustų versijų.
+@309
+da: Træk vejret ind, og hold vejret et sekund, mens du trykker på knappen; det forhindrer rystede billeder.
+no: Pust inn og hold pusten et sekund mens du trykker på knappen; det hindrer bevegelsesuskarphet.
+fi: Hengitä sisään ja pidätä hengitystä hetki, kun painat laukaisinta; se estää liike-epäterävyyden.
+et: Hingake sisse ja hoidke nupule vajutades sekund hinge kinni – nii väldite liikumisest tingitud hägusust.
+lv: Ieelpojiet un uz sekundi aizturiet elpu, nospiežot pogu; tas novērš kustības izplūšanu.
+lt: Įkvėpkite ir spausdami mygtuką sekundei sulaikykite kvėpavimą – taip išvengsite judesio susiliejimo.
+@310
+da: Kontrollér bagefter, at hvert billede er skarpt.
+no: Kontroller etterpå at hvert bilde er skarpt.
+fi: Tarkista jälkikäteen jokaisen kuvan terävyys.
+et: Kontrollige hiljem iga foto teravust.
+lv: Pēc tam pārbaudiet katra fotoattēla asumu.
+lt: Vėliau patikrinkite kiekvienos nuotraukos ryškumą.
+@311
+da: De hyppigste fejl
+no: De vanligste feilene
+fi: Yleisimmät virheet
+et: Kõige sagedasemad vead
+lv: Biežākās kļūdas
+lt: Dažniausios klaidos
+@312
+da: Dystre billeder taget i overskyet vejr
+no: Dystre bilder tatt i overskyet vær
+fi: Synkät kuvat pilvisellä säällä
+et: Pilves ilmaga tehtud sünged fotod
+lv: Drūmi fotoattēli, uzņemti apmākušā laikā
+lt: Niūrios nuotraukos, darytos debesuotą dieną
+@313
+da: For mørke billeder indefra
+no: For mørke innendørsbilder
+fi: Liian tummat sisäkuvat
+et: Liiga tumedad sisevaated
+lv: Pārāk tumši interjera kadri
+lt: Per tamsios interjero nuotraukos
+@314
+da: Skævt udsnit
+no: Skjevt utsnitt
+fi: Vino rajaus
+et: Viltune kaader
+lv: Šķībs kadrējums
+lt: Kreivas kadras
+@315
+da: Uskarpe, rystede eller slørede billeder
+no: Uskarpe, ristede eller tåkete bilder
+fi: Epäterävät, tärähtäneet tai sumeat kuvat
+et: Udused, värisenud või hägused fotod
+lv: Izplūduši, sakustināti vai miglaini fotoattēli
+lt: Neryškios, sujudintos ar miglotos nuotraukos
+@316
+da: Billeder i lav opløsning eller på højkant
+no: Bilder med lav oppløsning eller i stående format
+fi: Matalaresoluutioiset tai pystymuotoiset kuvat
+et: Madala eraldusvõimega või püstformaadis fotod
+lv: Zemas izšķirtspējas vai vertikāli fotoattēli
+lt: Mažos raiškos ar vertikalios nuotraukos
+@317
+da: Personer på billedet
+no: Personer på bildet
+fi: Ihmisiä kuvassa
+et: Inimesed pildil
+lv: Cilvēki kadrā
+lt: Žmonės kadre
+@318
+da: Gentagne, unødvendige billeder
+no: Gjentakende, unødvendige bilder
+fi: Toistuvat, tarpeettomat kuvat
+et: Korduvad, ebavajalikud kaadrid
+lv: Atkārtoti, nevajadzīgi kadri
+lt: Pasikartojantys, nereikalingi kadrai
+@319
+da: Tør linsen af, hold telefonen stille, og kontrollér, at billedet er skarpt.
+no: Tørk av linsen, hold telefonen stødig og sjekk at bildet er skarpt.
+fi: Pyyhi linssi, pidä puhelin vakaana ja tarkista, että kuva on terävä.
+et: Pühkige objektiiv puhtaks, hoidke telefoni kindlalt ja kontrollige, et foto oleks terav.
+lv: Noslaukiet objektīvu, turiet tālruni stabili un pārbaudiet, vai fotoattēls ir ass.
+lt: Nuvalykite objektyvą, laikykite telefoną stabiliai ir patikrinkite, ar nuotrauka ryški.
+@320
+da: Have og udhuse
+no: Hage og uthus
+fi: Puutarha ja ulkorakennukset
+et: Aed ja kõrvalhooned
+lv: Dārzs un saimniecības ēkas
+lt: Sodas ir ūkiniai pastatai
+@321
+da: Vis ejendommens vigtige dele, også haven og udhusene.
+no: Vis de viktige delene av eiendommen, også hagen og uthusene.
+fi: Näytä kiinteistön tärkeät osat, myös puutarha ja ulkorakennukset.
+et: Näidake kinnisvara olulisi osi, sealhulgas aeda ja kõrvalhooneid.
+lv: Parādiet svarīgākās īpašuma daļas, arī dārzu un saimniecības ēkas.
+lt: Parodykite svarbiausias turto dalis, taip pat sodą ir ūkinius pastatus.
+@322
+da: Panoramaudsigt
+no: Panoramautsikt
+fi: Panoraamanäkymä
+et: Panoraamvaade
+lv: Panorāmas skats
+lt: Panoraminis vaizdas
+@323
+da: Ved vandet
+no: Ved vannet
+fi: Rannalla
+et: Vee ääres
+lv: Pie ūdens
+lt: Prie vandens
+@324
+da: Egen bådebro
+no: Egen brygge
+fi: Oma laituri
+et: Oma kai
+lv: Privāta laivu piestātne
+lt: Privati prieplauka
+@325
+da: Bådehus
+no: Naust
+fi: Venevaja
+et: Paadikuur
+lv: Laivu māja
+lt: Valčių namelis
+@326
+da: På en bakketop
+no: På en høyde
+fi: Kukkulan laella
+et: Mäe otsas
+lv: Kalna virsotnē
+lt: Ant kalvos
+@327
+da: Nær skoven
+no: Nær skogen
+fi: Metsän lähellä
+et: Metsa lähedal
+lv: Pie meža
+lt: Prie miško
+@328
+da: Vinmark
+no: Vinmark
+fi: Viinitarha
+et: Viinamägi
+lv: Vīnogulāji
+lt: Vynuogynas
+@329
+da: Vingård i drift
+no: Vingård i drift
+fi: Toimiva viinitila
+et: Tegutsev veinitalu
+lv: Strādājoša vīna darītava
+lt: Veikianti vyno darykla
+@330
+da: Vinkælder
+no: Vinkjeller
+fi: Viinikellari
+et: Veinikelder
+lv: Vīna pagrabs
+lt: Vyno rūsys
+@331
+da: Frugthave
+no: Frukthage
+fi: Hedelmätarha
+et: Viljapuuaed
+lv: Augļu dārzs
+lt: Vaismedžių sodas
+@332
+da: Egen brønd
+no: Egen brønn
+fi: Oma kaivo
+et: Oma kaev
+lv: Sava aka
+lt: Nuosavas šulinys
+@333
+da: Udhuse
+no: Uthus
+fi: Ulkorakennukset
+et: Kõrvalhooned
+lv: Saimniecības ēkas
+lt: Ūkiniai pastatai
+@334
+da: Stalde
+no: Stall
+fi: Talli
+et: Tallid
+lv: Zirgu staļļi
+lt: Arklidės
+@335
+da: Gæstehus
+no: Gjestehus
+fi: Vierasmaja
+et: Külalistemaja
+lv: Viesu māja
+lt: Svečių namas
+@336
+da: Park
+no: Park
+fi: Puisto
+et: Park
+lv: Parks
+lt: Parkas
+@337
+da: Terrasse
+no: Terrasse
+fi: Terassi
+et: Terrass
+lv: Terase
+lt: Terasa
+@338
+da: Originale bjælker
+no: Originale bjelker
+fi: Alkuperäiset palkit
+et: Algupärased talad
+lv: Oriģinālās sijas
+lt: Originalios sijos
+@339
+da: Renoveret
+no: Renovert
+fi: Remontoitu
+et: Renoveeritud
+lv: Renovēts
+lt: Renovuotas
+@340
+da: Parkering på grunden
+no: Parkering på tomten
+fi: Pysäköinti tontilla
+et: Parkimine krundil
+lv: Autostāvvieta zemesgabalā
+lt: Automobilių stovėjimo vieta sklype
+@341
+da: Garage
+no: Garasje
+fi: Autotalli
+et: Garaaž
+lv: Garāža
+lt: Garažas
+@342
+da: Pool
+no: Basseng
+fi: Uima-allas
+et: Bassein
+lv: Baseins
+lt: Baseinas
+@343
+da: Altan
+no: Balkong
+fi: Parveke
+et: Rõdu
+lv: Balkons
+lt: Balkonas
+@344
+da: Carport
+no: Carport
+fi: Autokatos
+et: Autovarjualune
+lv: Nojume automašīnai
+lt: Stoginė automobiliui
+@345
+da: Lagerbygning
+no: Lagerbygning
+fi: Varastorakennus
+et: Laohoone
+lv: Noliktavas ēka
+lt: Sandėlis
+@346
+da: Lade eller hal
+no: Låve eller hall
+fi: Lato tai halli
+et: Küün või angaar
+lv: Šķūnis vai angārs
+lt: Daržinė arba angaras
+@347
+da: Dyrestald
+no: Dyrehus
+fi: Eläinsuoja
+et: Loomapidamishoone
+lv: Kūts
+lt: Tvartas
+@348
+da: Lysthus
+no: Lysthus
+fi: Huvimaja
+et: Lehtla
+lv: Lapene
+lt: Pavėsinė
+@349
+da: Udendørs ovn
+no: Utendørs ovn
+fi: Ulkouuni
+et: Õueahi
+lv: Āra krāsns
+lt: Lauko krosnis
+@350
+da: Som ny
+no: Som ny
+fi: Kuin uusi
+et: Nagu uus
+lv: Kā jauns
+lt: Kaip naujas
+@351
+da: God stand
+no: God stand
+fi: Hyvä kunto
+et: Heas seisukorras
+lv: Labā stāvoklī
+lt: Geros būklės
+@352
+da: Trænger til renovering
+no: Oppussingsbehov
+fi: Remontin tarpeessa
+et: Vajab renoveerimist
+lv: Nepieciešama renovācija
+lt: Reikia renovuoti
+@353
+da: Gasvarme
+no: Gassoppvarming
+fi: Kaasulämmitys
+et: Gaasiküte
+lv: Gāzes apkure
+lt: Dujinis šildymas
+@354
+da: Elvarme
+no: Elektrisk oppvarming
+fi: Sähkölämmitys
+et: Elektriküte
+lv: Elektriskā apkure
+lt: Elektrinis šildymas
+@355
+da: Brændefyring
+no: Vedfyring
+fi: Puulämmitys
+et: Puiduküte
+lv: Malkas apkure
+lt: Šildymas malkomis
+@356
+da: Varmepumpe
+no: Varmepumpe
+fi: Lämpöpumppu
+et: Soojuspump
+lv: Siltumsūknis
+lt: Šilumos siurblys
+@357
+da: Markedsanalyse
+no: Markedsanalyse
+fi: Markkina-analyysi
+et: Turuanalüüs
+lv: Tirgus analīze
+lt: Rinkos analizė
+@358
+da: Købervejledning
+no: Kjøperguide
+fi: Ostajan opas
+et: Ostja teejuht
+lv: Pircēja ceļvedis
+lt: Pirkėjo gidas
+@359
+da: Nyheder
+no: Nyheter
+fi: Uutiset
+et: Uudised
+lv: Jaunumi
+lt: Naujienos
+@360
+da: Mursten
+no: Tegl
+fi: Tiili
+et: Telliskivi
+lv: Ķieģelis
+lt: Plytos
+@361
+da: Lersten (soltørret)
+no: Leirstein (soltørket)
+fi: Savitiili (polttamaton)
+et: Savitellis (põletamata)
+lv: Māla ķieģelis (nededzināts)
+lt: Molio plytos (nedegtos)
+@362
+da: Blandet
+no: Blandet
+fi: Sekarakenne
+et: Segamaterjal
+lv: Jaukts
+lt: Mišrios
+@363
+da: Beton / elementer
+no: Betong / element
+fi: Betoni / elementti
+et: Betoon / paneel
+lv: Betons / paneļi
+lt: Betonas / plokštės
+@364
+da: Træ / let konstruktion
+no: Tre / lett konstruksjon
+fi: Puu / kevytrakenne
+et: Puit / kergkonstruktsioon
+lv: Koks / viegla konstrukcija
+lt: Mediena / lengvos konstrukcijos
+@365
+da: Sten
+no: Stein
+fi: Kivi
+et: Kivi
+lv: Akmens
+lt: Akmuo
+@366
+da: Andet
+no: Annet
+fi: Muu
+et: Muu
+lv: Cits
+lt: Kita
+@367
+da: Ukendt
+no: Ukjent
+fi: Tuntematon
+et: Teadmata
+lv: Nezināms
+lt: Nežinoma
+@368
+da: Ved ikke
+no: Vet ikke
+fi: En tiedä
+et: Ei tea
+lv: Nezinu
+lt: Nežinau
+@369
+da: Ja
+no: Ja
+fi: Kyllä
+et: Jah
+lv: Jā
+lt: Taip
+@370
+da: Nej
+no: Nei
+fi: Ei
+et: Ei
+lv: Nē
+lt: Ne
+@371
+da: Grænser op til grunden
+no: Grenser til tomten
+fi: Rajautuu tonttiin
+et: Piirneb krundiga
+lv: Robežojas ar zemesgabalu
+lt: Ribojasi su sklypu
+@372
+da: Inden for gåafstand
+no: I gangavstand
+fi: Kävelymatkan päässä
+et: Jalutuskäigu kaugusel
+lv: Ejama attāluma robežās
+lt: Pėsčiomis pasiekiamas
+@373
+da: Ikke i nærheden
+no: Ikke i nærheten
+fi: Ei lähellä
+et: Ei ole lähedal
+lv: Nav tuvumā
+lt: Nėra netoliese
+@374
+da: Hvilken slags vej fører til ejendommen?
+no: Hva slags vei fører til eiendommen?
+fi: Millainen tie kiinteistölle johtaa?
+et: Milline tee viib kinnistuni?
+lv: Kāds ceļš ved uz īpašumu?
+lt: Koks kelias veda į turtą?
+@375
+da: Asfaltvej
+no: Asfaltvei
+fi: Asfalttitie
+et: Asfalttee
+lv: Asfaltēts ceļš
+lt: Asfaltuotas kelias
+@376
+da: Grus- eller skærvevej
+no: Grus- eller pukkvei
+fi: Sora- tai sepelitie
+et: Kruusa- või killustikutee
+lv: Grants vai šķembu ceļš
+lt: Žvyrkelis arba skaldos kelias
+@377
+da: Jordvej
+no: Jordvei
+fi: Hiekkapolku
+et: Pinnasetee
+lv: Grunts ceļš
+lt: Gruntkelis
+@378
+da: Er der en mærkbar støjkilde i nærheden (trafikeret vej, jernbane, fabrik)?
+no: Finnes det en merkbar støykilde i nærheten (trafikkert vei, jernbane, fabrikk)?
+fi: Onko lähellä huomattava melunlähde (vilkas tie, rautatie, tehdas)?
+et: Kas läheduses on märgatav müraallikas (tihe liiklus, raudtee, tehas)?
+lv: Vai tuvumā ir jūtams trokšņa avots (noslogots ceļš, dzelzceļš, rūpnīca)?
+lt: Ar netoliese yra juntamas triukšmo šaltinis (judrus kelias, geležinkelis, gamykla)?
+@379
+da: Hvilken internetforbindelse er der?
+no: Hvilken internettforbindelse finnes det?
+fi: Millainen internetyhteys on käytettävissä?
+et: Milline internetiühendus on olemas?
+lv: Kāds interneta pieslēgums ir pieejams?
+lt: Koks yra interneto ryšys?
+@380
+da: Fastnet eller fiber
+no: Fastlinje eller fiber
+fi: Kiinteä yhteys tai valokuitu
+et: Püsiühendus või valguskaabel
+lv: Fiksētais pieslēgums vai optiskā šķiedra
+lt: Laidinis ryšys arba šviesolaidis
+@381
+da: Kun mobilt internet
+no: Kun mobilt internett
+fi: Vain mobiili-internet
+et: Ainult mobiilne internet
+lv: Tikai mobilais internets
+lt: Tik mobilusis internetas
+@382
+da: Ingen
+no: Ingen
+fi: Ei mitään
+et: Puudub
+lv: Nav
+lt: Nėra
+@383
+da: Har ejendommen udsigt / panorama?
+no: Har eiendommen utsikt / panorama?
+fi: Onko kiinteistöstä näköala / panoraama?
+et: Kas kinnistult avaneb vaade / panoraam?
+lv: Vai no īpašuma paveras skats / panorāma?
+lt: Ar iš turto atsiveria vaizdas / panorama?
+@384
+da: Er der en sø, et vandløb eller en bred i nærheden?
+no: Er det en innsjø, bekk eller strandkant i nærheten?
+fi: Onko lähellä järvi, puro tai ranta?
+et: Kas läheduses on järv, oja või kallas?
+lv: Vai tuvumā ir ezers, strauts vai krasts?
+lt: Ar netoliese yra ežeras, upelis ar pakrantė?
+@385
+da: Er der skov i nærheden?
+no: Er det skog i nærheten?
+fi: Onko lähellä metsää?
+et: Kas läheduses on metsa?
+lv: Vai tuvumā ir mežs?
+lt: Ar netoliese yra miškas?
+@386
+da: Er der et landbrug eller husdyrbrug i nærheden?
+no: Er det et gårdsbruk eller husdyrhold i nærheten?
+fi: Onko lähellä maatila tai kotieläintila?
+et: Kas läheduses on talu või loomakasvatusettevõte?
+lv: Vai tuvumā ir saimniecība vai lopkopības ferma?
+lt: Ar netoliese yra ūkis ar gyvulininkystės ferma?
+@387
+da: Går der højspændingsledninger hen over eller tæt på ejendommen?
+no: Går det høyspentledninger over eller nær eiendommen?
+fi: Kulkeeko suurjännitelinjoja kiinteistön yli tai sen lähellä?
+et: Kas kõrgepingeliinid kulgevad üle kinnistu või selle lähedal?
+lv: Vai pāri īpašumam vai tā tuvumā iet augstsprieguma līnijas?
+lt: Ar virš turto arba netoli jo eina aukštosios įtampos linijos?
+@388
+da: Ja, hen over grunden
+no: Ja, over tomten
+fi: Kyllä, tontin yli
+et: Jah, üle krundi
+lv: Jā, pāri zemesgabalam
+lt: Taip, virš sklypo
+@389
+da: Ja, i nærheden
+no: Ja, i nærheten
+fi: Kyllä, lähellä
+et: Jah, läheduses
+lv: Jā, tuvumā
+lt: Taip, netoliese
+@390
+da: Etageadskillelse
+no: Etasjeskiller
+fi: Välipohjarakenne
+et: Vahelagede konstruktsioon
+lv: Pārsegumu konstrukcija
+lt: Perdangų konstrukcija
+@391
+da: Tagkonstruktion
+no: Takkonstruksjon
+fi: Kattorakenne
+et: Katusekonstruktsioon
+lv: Jumta konstrukcija
+lt: Stogo konstrukcija
+@392
+da: Tagbeklædning
+no: Taktekking
+fi: Katemateriaali
+et: Katusekate
+lv: Jumta segums
+lt: Stogo danga

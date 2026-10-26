@@ -1,0 +1,399 @@
+@925
+it: Elettricità disponibile
+pt: Eletricidade disponível
+el: Διαθέσιμο ρεύμα
+cs: Elektřina k dispozici
+sl: Elektrika na voljo
+sv: El finns
+@926
+it: Acqua disponibile
+pt: Água disponível
+el: Διαθέσιμη ύδρευση
+cs: Voda k dispozici
+sl: Voda na voljo
+sv: Vatten finns
+@927
+it: Allaccio alla fognatura
+pt: Rede de esgotos disponível
+el: Σύνδεση με αποχέτευση
+cs: Kanalizace k dispozici
+sl: Kanalizacija na voljo
+sv: Kommunalt avlopp
+@928
+it: Gas disponibile
+pt: Gás disponível
+el: Διαθέσιμο φυσικό αέριο
+cs: Plyn k dispozici
+sl: Plin na voljo
+sv: Gas finns
+@929
+it: Telecomunicazioni disponibili
+pt: Telecomunicações disponíveis
+el: Διαθέσιμες τηλεπικοινωνίες
+cs: Telekomunikace k dispozici
+sl: Telekomunikacije na voljo
+sv: Tele och bredband finns
+@930
+it: Locato
+pt: Arrendado
+el: Μισθωμένο
+cs: Pronajato
+sl: Oddano
+sv: Uthyrd
+@931
+it: Venduto con inquilino
+pt: Vendido com inquilino
+el: Πωλείται με ενοικιαστή
+cs: Prodej s nájemníkem
+sl: Prodaja z najemnikom
+sv: Säljs med hyresgäst
+@932
+it: Più unità in affitto
+pt: Várias frações arrendáveis
+el: Πολλαπλές μισθώσιμες μονάδες
+cs: Více nájemních jednotek
+sl: Več najemnih enot
+sv: Flera hyresenheter
+@933
+it: Più edifici
+pt: Vários edifícios
+el: Πολλαπλά κτίρια
+cs: Více budov
+sl: Več stavb
+sv: Flera byggnader
+@934
+it: Venduto con attività avviata
+pt: Vendido com negócio em funcionamento
+el: Πωλείται με λειτουργούσα επιχείρηση
+cs: Prodej s fungujícím podnikem
+sl: Prodaja z delujočim podjetjem
+sv: Säljs med pågående verksamhet
+@935
+it: A reddito
+pt: Com rendimento
+el: Αποφέρει εισόδημα
+cs: Výnosové
+sl: Prinaša dohodek
+sv: Avkastningsgivande
+@936
+it: Potenziale di sviluppo
+pt: Potencial de valorização
+el: Αναπτυξιακές δυνατότητες
+cs: Rozvojový potenciál
+sl: Razvojni potencial
+sv: Utvecklingspotential
+@937
+it: Parcheggio coperto
+pt: Estacionamento coberto
+el: Κλειστή θέση στάθμευσης
+cs: Krytá parkovací místa
+sl: Pokrito parkirišče
+sv: Inbyggd parkering
+@938
+it: da ${eur(CONTRACT_PRICES.find((price) => price.id === id)!.fromEur, L)}
+pt: desde ${eur(CONTRACT_PRICES.find((price) => price.id === id)!.fromEur, L)}
+el: από ${eur(CONTRACT_PRICES.find((price) => price.id === id)!.fromEur, L)}
+cs: od ${eur(CONTRACT_PRICES.find((price) => price.id === id)!.fromEur, L)}
+sl: od ${eur(CONTRACT_PRICES.find((price) => price.id === id)!.fromEur, L)}
+sv: från ${eur(CONTRACT_PRICES.find((price) => price.id === id)!.fromEur, L)}
+@939
+it: Servizi: gestione della vendita, contratti, fotografia
+pt: Serviços: gestão da venda, contratos, fotografia
+el: Υπηρεσίες: διαχείριση πώλησης, συμβόλαια, φωτογράφιση
+cs: Služby: zajištění prodeje, smlouvy, fotografie
+sl: Storitve: izvedba prodaje, pogodbe, fotografiranje
+sv: Tjänster: försäljning, avtal, fotografering
+@940
+it: Contratto di compravendita bilingue ${from('hu')}, rappresentanza tramite procura, iscrizione al catasto, attestato di prestazione energetica, fotografie dell’immobile e riprese con drone.
+pt: Contrato de compra e venda bilingue ${from('hu')}, representação por procuração, registo predial, certificado energético, fotografia do imóvel e imagens de drone.
+el: Δίγλωσσο συμβόλαιο αγοραπωλησίας ${from('hu')}, εκπροσώπηση με πληρεξούσιο, εγγραφή στο κτηματολόγιο, πιστοποιητικό ενεργειακής απόδοσης, φωτογράφιση ακινήτου και λήψεις με drone.
+cs: Dvojjazyčná kupní smlouva ${from('hu')}, zastoupení na základě plné moci, zápis do katastru nemovitostí, průkaz energetické náročnosti, fotografie nemovitosti a záběry z dronu.
+sl: Dvojezična prodajna pogodba ${from('hu')}, zastopanje s pooblastilom, vpis v zemljiško knjigo, energetska izkaznica, fotografiranje nepremičnine in posnetki z dronom.
+sv: Tvåspråkigt köpeavtal ${from('hu')}, ombud med fullmakt, inskrivning i fastighetsregistret, energideklaration, fastighetsfotografering och drönarbilder.
+@941
+it: Servizi
+pt: Serviços
+el: Υπηρεσίες
+cs: Služby
+sl: Storitve
+sv: Tjänster
+@942
+it: Cosa facciamo oltre
+pt: O que fazemos além
+el: Τι κάνουμε πέρα
+cs: Co děláme nad rámec
+sl: Kaj naredimo poleg
+sv: Vad vi gör utöver
+@943
+it: l’annuncio
+pt: do anúncio
+el: από την αγγελία
+cs: inzerátu
+sl: oglasa
+sv: annonsen
+@944
+it: L’annuncio è solo il primo passo. Con i servizi qui sotto ci occupiamo noi dell’intero processo di acquisto, nel rispetto delle norme di entrambi i Paesi.
+pt: O anúncio é apenas o primeiro passo. Com os serviços abaixo tratamos de todo o processo de compra por si, de acordo com as regras de ambos os países.
+el: Η αγγελία είναι μόνο το πρώτο βήμα. Με τις παρακάτω υπηρεσίες αναλαμβάνουμε για εσάς ολόκληρη τη διαδικασία αγοράς, σύμφωνα με τους κανόνες και των δύο χωρών.
+cs: Inzerát je jen prvním krokem. Díky níže uvedeným službám za vás zajistíme celý proces koupě v souladu s pravidly obou zemí.
+sl: Oglas je le prvi korak. S spodnjimi storitvami za vas izpeljemo celoten nakupni postopek v skladu s pravili obeh držav.
+sv: Annonsen är bara första steget. Med tjänsterna nedan tar vi hand om hela köpprocessen åt dig, enligt reglerna i båda länderna.
+@945
+it: Come si svolge la vendita
+pt: Como decorre a venda
+el: Πώς γίνεται η πώληση
+cs: Jak probíhá prodej
+sl: Kako poteka prodaja
+sv: Så går försäljningen till
+@946
+it: Contatto
+pt: Contacto
+el: Επικοινωνία
+cs: Kontakt
+sl: Stik
+sv: Kontakt
+@947
+it: Consulenza telefonica e via e-mail, comunicazione con entrambe le parti, anche tramite interpreti.
+pt: Aconselhamento por telefone e e-mail, comunicação com ambas as partes, incluindo intérpretes.
+el: Συμβουλευτική μέσω τηλεφώνου και email, επικοινωνία και με τα δύο μέρη, με τη βοήθεια διερμηνέων όπου χρειάζεται.
+cs: Konzultace po telefonu a e-mailem, komunikace s oběma stranami včetně tlumočníků.
+sl: Svetovanje po telefonu in e-pošti, komunikacija z obema stranema, vključno s tolmači.
+sv: Rådgivning per telefon och e-post, kommunikation med båda parter, även via tolk.
+@948
+it: Verifica degli acquirenti
+pt: Verificação dos compradores
+el: Έλεγχος αγοραστών
+cs: Prověření kupujících
+sl: Preverjanje kupcev
+sv: Kontroll av köpare
+@949
+it: Verifichiamo il profilo, l’intenzione di acquisto e la solidità finanziaria.
+pt: Verificamos o perfil, a intenção de compra e a capacidade financeira.
+el: Ελέγχουμε το ιστορικό, την πρόθεση αγοράς και την οικονομική κατάσταση.
+cs: Prověřujeme pozadí, kupní záměr a finanční situaci.
+sl: Preverimo ozadje, nakupni namen in finančno stanje.
+sv: Vi kontrollerar bakgrund, köpavsikt och ekonomisk ställning.
+@950
+it: Visita
+pt: Visita
+el: Επίσκεψη
+cs: Prohlídka
+sl: Ogled
+sv: Visning
+@951
+it: Fissiamo gli appuntamenti e vi accompagniamo, con un collega che parla la vostra lingua.
+pt: Marcamos as visitas e acompanhamo-lo, com um colega que fala a sua língua.
+el: Κανονίζουμε τα ραντεβού και σας συνοδεύουμε, μαζί με συνεργάτη που μιλά τη γλώσσα σας.
+cs: Domluvíme termíny a půjdeme s vámi, spolu s kolegou, který mluví vaším jazykem.
+sl: Dogovorimo termine in vas pospremimo, s sodelavcem, ki govori vaš jezik.
+sv: Vi bokar tider och följer med, tillsammans med en kollega som talar ditt språk.
+@952
+it: Trattativa
+pt: Negociação
+el: Διαπραγμάτευση
+cs: Vyjednávání
+sl: Pogajanja
+sv: Förhandling
+@953
+it: Assistenza in entrambe le lingue, entro una forbice di prezzo realistica.
+pt: Apoio em ambas as línguas, dentro de uma margem de preço realista.
+el: Υποστήριξη και στις δύο γλώσσες, μέσα σε ρεαλιστικό εύρος τιμής.
+cs: Podpora v obou jazycích v rámci realistického cenového rozpětí.
+sl: Podpora v obeh jezikih, v realističnem cenovnem razponu.
+sv: Stöd på båda språken, inom ett realistiskt prisintervall.
+@954
+it: Contratto
+pt: Contrato
+el: Συμβόλαιο
+cs: Smlouva
+sl: Pogodba
+sv: Avtal
+@955
+it: Un contratto di compravendita bilingue, redatto con un avvocato.
+pt: Um contrato de compra e venda bilingue, elaborado com um advogado.
+el: Δίγλωσσο συμβόλαιο αγοραπωλησίας, συνταγμένο με δικηγόρο.
+cs: Dvojjazyčná kupní smlouva vypracovaná s advokátem.
+sl: Dvojezična prodajna pogodba, pripravljena z odvetnikom.
+sv: Ett tvåspråkigt köpeavtal, upprättat tillsammans med en advokat.
+@956
+it: Rogito
+pt: Escritura
+el: Ολοκλήρωση
+cs: Dokončení
+sl: Zaključek
+sv: Tillträde
+@957
+it: Catasto, utenze e, se necessario, rappresentanza tramite procura.
+pt: Registo predial, serviços e, se necessário, representação por procuração.
+el: Κτηματολόγιο, παροχές κοινής ωφέλειας και, όπου χρειάζεται, εκπροσώπηση με πληρεξούσιο.
+cs: Katastr nemovitostí, energie a v případě potřeby zastoupení na základě plné moci.
+sl: Zemljiška knjiga, komunalni priključki in po potrebi zastopanje s pooblastilom.
+sv: Fastighetsregister, el och vatten samt vid behov ombud med fullmakt.
+@958
+it: Contratto di compravendita bilingue
+pt: Contrato de compra e venda bilingue
+el: Δίγλωσσο συμβόλαιο αγοραπωλησίας
+cs: Dvojjazyčná kupní smlouva
+sl: Dvojezična prodajna pogodba
+sv: Tvåspråkigt köpeavtal
+@959
+it: Prezzi indicativi per combinazione linguistica. Il prezzo finale dipende dalla lunghezza del contratto.
+pt: Preços indicativos por combinação de línguas. O preço final depende da extensão do contrato.
+el: Ενδεικτικές τιμές ανά συνδυασμό γλωσσών. Η τελική τιμή εξαρτάται από την έκταση του συμβολαίου.
+cs: Orientační ceny podle jazykové kombinace. Konečná cena závisí na délce smlouvy.
+sl: Okvirne cene glede na jezikovno kombinacijo. Končna cena je odvisna od dolžine pogodbe.
+sv: Vägledande priser per språkkombination. Slutpriset beror på avtalets längd.
+@960
+it: Ungherese
+pt: Húngaro
+el: Ουγγρικά
+cs: Maďarština
+sl: Madžarščina
+sv: Ungerska
+@961
+it: Tedesco–ungherese
+pt: Alemão–húngaro
+el: Γερμανικά–ουγγρικά
+cs: Němčina–maďarština
+sl: Nemščina–madžarščina
+sv: Tyska–ungerska
+@962
+it: Inglese–ungherese
+pt: Inglês–húngaro
+el: Αγγλικά–ουγγρικά
+cs: Angličtina–maďarština
+sl: Angleščina–madžarščina
+sv: Engelska–ungerska
+@963
+it: Olandese–ungherese
+pt: Neerlandês–húngaro
+el: Ολλανδικά–ουγγρικά
+cs: Nizozemština–maďarština
+sl: Nizozemščina–madžarščina
+sv: Nederländska–ungerska
+@964
+it: Servizi aggiuntivi
+pt: Serviços adicionais
+el: Πρόσθετες υπηρεσίες
+cs: Doplňkové služby
+sl: Dodatne storitve
+sv: Tilläggstjänster
+@965
+it: Per questi prepariamo un preventivo su misura:
+pt: Para estes preparamos um orçamento personalizado:
+el: Για αυτές ετοιμάζουμε εξατομικευμένη προσφορά:
+cs: Na tyto služby připravíme individuální nabídku:
+sl: Zanje pripravimo prilagojeno ponudbo:
+sv: För dessa tar vi fram en skräddarsydd offert:
+@966
+it: Richiesta dell’attestato di prestazione energetica: obbligatorio nell’annuncio secondo le norme UE
+pt: Pedido do certificado energético: obrigatório no anúncio segundo as regras da UE
+el: Έκδοση πιστοποιητικού ενεργειακής απόδοσης: υποχρεωτικό στην αγγελία βάσει των κανόνων της ΕΕ
+cs: Vyřízení průkazu energetické náročnosti: podle pravidel EU povinný v inzerátu
+sl: Pridobitev energetske izkaznice: po pravilih EU obvezna v oglasu
+sv: Beställning av energideklaration: obligatorisk i annonsen enligt EU:s regler
+@967
+it: Fotografia immobiliare professionale
+pt: Fotografia imobiliária profissional
+el: Επαγγελματική φωτογράφιση ακινήτου
+cs: Profesionální fotografie nemovitosti
+sl: Profesionalno fotografiranje nepremičnine
+sv: Professionell fastighetsfotografering
+@968
+it: Riprese con drone: particolarmente efficaci per grandi terreni e panorami
+pt: Imagens de drone: especialmente eficazes para grandes terrenos e vistas
+el: Λήψεις με drone: ιδιαίτερα αποτελεσματικές για μεγάλα οικόπεδα και θέα
+cs: Záběry z dronu: obzvlášť účinné u velkých pozemků a výhledů
+sl: Posnetki z dronom: posebej učinkoviti pri velikih zemljiščih in razgledih
+sv: Drönarbilder: särskilt effektivt för stora tomter och utsikter
+@969
+it: Video con l’annuncio (${eur(video, L)})
+pt: Vídeo com o anúncio (${eur(video, L)})
+el: Βίντεο μαζί με την αγγελία (${eur(video, L)})
+cs: Video k inzerátu (${eur(video, L)})
+sl: Video z oglasom (${eur(video, L)})
+sv: Video till annonsen (${eur(video, L)})
+@970
+it: Rappresentanza tramite procura
+pt: Representação por procuração
+el: Εκπροσώπηση με πληρεξούσιο
+cs: Zastoupení na základě plné moci
+sl: Zastopanje s pooblastilom
+sv: Ombud med fullmakt
+@971
+it: Non è necessario recarsi in Ungheria per firmare: con una procura vi rappresentiamo alla firma, al catasto e nel passaggio delle utenze.
+pt: Não precisa de viajar até à Hungria para assinar: com uma procuração representamo-lo na assinatura, no registo predial e na transferência dos serviços.
+el: Δεν χρειάζεται να ταξιδέψετε στην Ουγγαρία για την υπογραφή: με πληρεξούσιο σας εκπροσωπούμε στην υπογραφή, στο κτηματολόγιο και στη μεταβίβαση των παροχών.
+cs: Kvůli podpisu nemusíte cestovat do Maďarska: na základě plné moci vás zastoupíme při podpisu, na katastru i při převodu energií.
+sl: Za podpis vam ni treba potovati na Madžarsko: s pooblastilom vas zastopamo pri podpisu, v zemljiški knjigi in pri prenosu komunalnih priključkov.
+sv: Du behöver inte resa till Ungern för att skriva under: med fullmakt företräder vi dig vid undertecknandet, hos fastighetsregistret och vid överföringen av el och vatten.
+@972
+it: Quando è dovuta la provvigione
+pt: Quando é devida a comissão
+el: Πότε οφείλεται η προμήθεια
+cs: Kdy je splatná provize
+sl: Kdaj je treba plačati provizijo
+sv: När provisionen ska betalas
+@973
+it: Applichiamo la provvigione solo se FODEL ha presentato l’acquirente, esiste un contratto di compravendita scritto e la caparra è stata versata. L’aliquota è del ${COMMISSION.percent}% netto, con un minimo di ${eur(COMMISSION.minimumEur, L)}, più il ${COMMISSION.vatPercent}% di IVA olandese. La paga il venditore, non l’acquirente.
+pt: Só cobramos comissão quando a FODEL apresentou o comprador, existe um contrato de compra e venda escrito e o sinal foi pago. A taxa é de ${COMMISSION.percent}% líquida, com um mínimo de ${eur(COMMISSION.minimumEur, L)}, acrescida de ${COMMISSION.vatPercent}% de IVA neerlandês. Quem paga é o vendedor, não o comprador.
+el: Χρεώνουμε προμήθεια μόνο όταν η FODEL έχει φέρει τον αγοραστή, υπάρχει γραπτό συμβόλαιο αγοραπωλησίας και έχει καταβληθεί η προκαταβολή. Το ποσοστό είναι ${COMMISSION.percent}% καθαρό, με ελάχιστο ποσό ${eur(COMMISSION.minimumEur, L)}, πλέον ${COMMISSION.vatPercent}% ολλανδικού ΦΠΑ. Πληρώνει ο πωλητής, όχι ο αγοραστής.
+cs: Provizi účtujeme jen tehdy, když kupujícího přivedla FODEL, existuje písemná kupní smlouva a byla zaplacena záloha. Sazba činí ${COMMISSION.percent} % netto, nejméně však ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nizozemské DPH. Platí prodávající, nikoli kupující.
+sl: Provizijo zaračunamo le, če je kupca pripeljal FODEL, obstaja pisna prodajna pogodba in je bila plačana ara. Stopnja znaša ${COMMISSION.percent} % neto, najmanj ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nizozemskega DDV. Plača prodajalec, ne kupec.
+sv: Vi tar ut provision endast när FODEL har presenterat köparen, det finns ett skriftligt köpeavtal och handpenningen har betalats. Provisionen är ${COMMISSION.percent} % netto, minst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nederländsk moms. Det är säljaren som betalar, inte köparen.
+@974
+it: Domande sul processo
+pt: Dúvidas sobre o processo
+el: Ερωτήσεις για τη διαδικασία
+cs: Otázky k průběhu
+sl: Vprašanja o postopku
+sv: Frågor om processen
+@975
+it: {hours} Richiedete una richiamata gratuita o scriveteci.
+pt: {hours} Peça uma chamada gratuita ou escreva-nos.
+el: {hours} Ζητήστε δωρεάν επανάκληση ή γράψτε μας.
+cs: {hours} Požádejte o bezplatné zavolání zpět, nebo nám napište.
+sl: {hours} Prosite za brezplačen povratni klic ali nam pišite.
+sv: {hours} Be om en kostnadsfri återuppringning eller skriv till oss.
+@976
+it: Contattateci
+pt: Contacte-nos
+el: Επικοινωνήστε μαζί μας
+cs: Kontaktujte nás
+sl: Pišite nam
+sv: Kontakta oss
+@977
+it: Domande frequenti
+pt: Perguntas frequentes
+el: Συχνές ερωτήσεις
+cs: Časté dotazy
+sl: Pogosta vprašanja
+sv: Vanliga frågor
+@978
+it: Immobili agricoli: fino a ${AGRI_HECTARE_LIMIT} ettari in Ungheria
+pt: Imóveis agrícolas: até ${AGRI_HECTARE_LIMIT} hectares na Hungria
+el: Αγροτικά ακίνητα: έως ${AGRI_HECTARE_LIMIT} εκτάρια στην Ουγγαρία
+cs: Zemědělské nemovitosti: až ${AGRI_HECTARE_LIMIT} hektarů v Maďarsku
+sl: Kmetijske nepremičnine: do ${AGRI_HECTARE_LIMIT} hektarjev na Madžarskem
+sv: Jordbruksfastigheter: upp till ${AGRI_HECTARE_LIMIT} hektar i Ungern
+@979
+it: Un cittadino UE con qualifica agricola può acquistare fino a ${AGRI_HECTARE_LIMIT} ettari di terreno in Ungheria. FODEL gestisce l’intera procedura.
+pt: Um cidadão da UE com qualificação agrícola pode adquirir até ${AGRI_HECTARE_LIMIT} hectares de terreno na Hungria. A FODEL trata de todo o processo.
+el: Πολίτης της ΕΕ με γεωργικά προσόντα μπορεί να αποκτήσει έως ${AGRI_HECTARE_LIMIT} εκτάρια γης στην Ουγγαρία. Η FODEL χειρίζεται ολόκληρη τη διαδικασία.
+cs: Občan EU se zemědělskou kvalifikací může v Maďarsku nabýt až ${AGRI_HECTARE_LIMIT} hektarů půdy. FODEL zajistí celé řízení.
+sl: Državljan EU s kmetijsko izobrazbo lahko na Madžarskem pridobi do ${AGRI_HECTARE_LIMIT} hektarjev zemljišč. FODEL izpelje celoten postopek.
+sv: En EU-medborgare med jordbruksutbildning får förvärva upp till ${AGRI_HECTARE_LIMIT} hektar mark i Ungern. FODEL sköter hela förfarandet.
+@980
+it: Immobili agricoli
+pt: Imóveis agrícolas
+el: Αγροτικά ακίνητα
+cs: Zemědělské nemovitosti
+sl: Kmetijske nepremičnine
+sv: Jordbruksfastigheter
+@981
+it: Terreni agricoli e
+pt: Terras agrícolas e
+el: Γεωργική γη και
+cs: Zemědělská půda a
+sl: Kmetijska zemljišča in
+sv: Jordbruksmark och

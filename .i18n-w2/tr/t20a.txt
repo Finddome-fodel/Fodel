@@ -1,0 +1,567 @@
+@1441
+it: Qualcuno è interessato al vostro immobile.
+pt: Alguém está interessado no seu imóvel.
+el: Κάποιος ενδιαφέρεται για το ακίνητό σας.
+cs: Někdo má zájem o vaši nemovitost.
+sl: Nekdo se zanima za vašo nepremičnino.
+sv: Någon är intresserad av din fastighet.
+@1442
+it: Nuova risposta al vostro annuncio
+pt: Nova resposta ao seu anúncio
+el: Νέα απάντηση στην αγγελία σας
+cs: Nová odpověď na váš inzerát
+sl: Nov odziv na vaš oglas
+sv: Nytt svar på din annons
+@1443
+it: Qualcuno ha risposto al vostro annuncio “${title}” (#${ref}):
+pt: Alguém respondeu ao seu anúncio «${title}» (#${ref}):
+el: Κάποιος απάντησε στην αγγελία σας «${title}» (#${ref}):
+cs: Někdo reagoval na váš inzerát „${title}“ (#${ref}):
+sl: Nekdo se je odzval na vaš oglas „${title}“ (#${ref}):
+sv: Någon har svarat på din annons ”${title}” (#${ref}):
+@1444
+it: Nome
+pt: Nome
+el: Όνομα
+cs: Jméno
+sl: Ime
+sv: Namn
+@1445
+it: Il suo messaggio
+pt: A mensagem
+el: Το μήνυμά του
+cs: Zpráva
+sl: Sporočilo
+sv: Meddelande
+@1446
+it: Se possibile, mettetevi in contatto entro due giorni: una risposta rapida è di gran lunga il fattore più importante perché la vendita vada a buon fine.
+pt: Se possível, entre em contacto no prazo de dois dias: uma resposta rápida é de longe o fator mais importante para que a venda se concretize.
+el: Αν μπορείτε, επικοινωνήστε μέσα σε δύο ημέρες: η γρήγορη απάντηση είναι με διαφορά ο σημαντικότερος παράγοντας για να γίνει η πώληση.
+cs: Pokud můžete, ozvěte se do dvou dnů: rychlá odpověď je zdaleka nejdůležitějším faktorem, zda k prodeji dojde.
+sl: Če lahko, se oglasite v dveh dneh: hiter odziv je daleč najpomembnejši dejavnik za uspešno prodajo.
+sv: Hör gärna av dig inom två dagar: ett snabbt svar är den överlägset viktigaste faktorn för att en försäljning blir av.
+@1447
+it: Reimpostate la password | portale FODEL
+pt: Redefina a sua palavra-passe | portal FODEL
+el: Επαναφορά κωδικού | πύλη FODEL
+cs: Obnovení hesla | portál FODEL
+sl: Ponastavitev gesla | portal FODEL
+sv: Återställ ditt lösenord | FODEL-portalen
+@1448
+it: Il link è valido per un’ora.
+pt: A ligação é válida durante uma hora.
+el: Ο σύνδεσμος ισχύει για μία ώρα.
+cs: Odkaz platí jednu hodinu.
+sl: Povezava velja eno uro.
+sv: Länken gäller i en timme.
+@1449
+it: Reimpostate la password
+pt: Redefina a sua palavra-passe
+el: Επαναφορά κωδικού
+cs: Obnovte si heslo
+sl: Ponastavite geslo
+sv: Återställ ditt lösenord
+@1450
+it: Abbiamo ricevuto una richiesta di reimpostazione della password del vostro account sul portale FODEL. Cliccate sul pulsante qui sotto per impostarne una nuova.
+pt: Recebemos um pedido para redefinir a palavra-passe da sua conta no portal FODEL. Clique no botão abaixo para definir uma nova.
+el: Λάβαμε αίτημα επαναφοράς του κωδικού του λογαριασμού σας στην πύλη FODEL. Πατήστε το παρακάτω κουμπί για να ορίσετε νέο.
+cs: Obdrželi jsme žádost o obnovení hesla k vašemu účtu v portálu FODEL. Nové heslo nastavíte kliknutím na tlačítko níže.
+sl: Prejeli smo zahtevo za ponastavitev gesla vašega računa na portalu FODEL. Za novo geslo kliknite spodnji gumb.
+sv: Vi har fått en begäran om att återställa lösenordet till ditt konto på FODEL-portalen. Klicka på knappen nedan för att välja ett nytt.
+@1451
+it: Imposta una nuova password
+pt: Definir nova palavra-passe
+el: Ορισμός νέου κωδικού
+cs: Nastavit nové heslo
+sl: Nastavi novo geslo
+sv: Välj nytt lösenord
+@1452
+it: Il link è valido per un’ora e può essere usato una sola volta.
+pt: A ligação é válida durante uma hora e só pode ser usada uma vez.
+el: Ο σύνδεσμος ισχύει για μία ώρα και μπορεί να χρησιμοποιηθεί μία φορά.
+cs: Odkaz platí jednu hodinu a lze jej použít jednou.
+sl: Povezava velja eno uro in jo lahko uporabite enkrat.
+sv: Länken gäller i en timme och kan användas en gång.
+@1453
+it: Se non l’avete richiesto voi, ignorate questa e-mail. La password resta invariata e non succede nulla.
+pt: Se não foi o próprio a pedir, ignore este e-mail. A sua palavra-passe mantém-se e nada acontece.
+el: Αν δεν το ζητήσατε εσείς, αγνοήστε αυτό το email. Ο κωδικός σας παραμένει ίδιος και δεν συμβαίνει τίποτα.
+cs: Pokud jste o to nežádali, tento e-mail ignorujte. Vaše heslo zůstane beze změny a nic se nestane.
+sl: Če tega niste zahtevali vi, sporočilo prezrite. Vaše geslo ostane nespremenjeno in nič se ne zgodi.
+sv: Om du inte har bett om detta kan du bortse från mejlet. Ditt lösenord förblir oförändrat och ingenting händer.
+@1454
+it: Abbiamo ricevuto la vostra segnalazione | FODEL
+pt: Recebemos a sua recomendação | FODEL
+el: Λάβαμε τη σύστασή σας | FODEL
+cs: Vaše doporučení jsme obdrželi | FODEL
+sl: Vaše priporočilo smo prejeli | FODEL
+sv: Vi har tagit emot din rekommendation | FODEL
+@1455
+it: Un membro del nostro team contatterà presto la persona che avete segnalato.
+pt: Um membro da nossa equipa vai contactar em breve a pessoa que recomendou.
+el: Ένα μέλος της ομάδας μας θα επικοινωνήσει σύντομα με το άτομο που προτείνατε.
+cs: Někdo z našeho týmu brzy kontaktuje osobu, kterou jste doporučili.
+sl: Član naše ekipe bo kmalu stopil v stik z osebo, ki ste jo priporočili.
+sv: Någon i vårt team kontaktar snart personen du rekommenderade.
+@1456
+it: Grazie per la segnalazione
+pt: Obrigado pela recomendação
+el: Σας ευχαριστούμε για τη σύσταση
+cs: Děkujeme za doporučení
+sl: Hvala za priporočilo
+sv: Tack för rekommendationen
+@1457
+it: Abbiamo ricevuto i dati della persona segnalata (${referredName}). Un membro del nostro team la contatterà e, una volta pubblicato l’annuncio, vi accrediteremo uno sconto del 10% sul costo del vostro prossimo annuncio.
+pt: Recebemos os dados da pessoa recomendada (${referredName}). Um membro da nossa equipa vai contactá-la e, assim que o anúncio for publicado, creditamos-lhe 10% de desconto no seu próximo anúncio.
+el: Λάβαμε τα στοιχεία του ατόμου που προτείνατε (${referredName}). Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί του και, μόλις καταχωριστεί η αγγελία, θα σας πιστώσουμε έκπτωση 10% στο κόστος της επόμενης αγγελίας σας.
+cs: Obdrželi jsme údaje doporučené osoby (${referredName}). Někdo z našeho týmu ji osloví, a jakmile podá inzerát, odečteme vám 10 % z ceny vašeho dalšího inzerátu.
+sl: Prejeli smo podatke priporočene osebe (${referredName}). Član naše ekipe jo bo kontaktiral, in ko bo oglas objavljen, vam bomo odobrili 10-odstotni popust pri vašem naslednjem oglasu.
+sv: Vi har tagit emot uppgifterna om den rekommenderade personen (${referredName}). Någon i vårt team kontaktar personen, och när annonsen har lagts in krediterar vi dig 10 % av kostnaden för din nästa annons.
+@1458
+it: L’accredito viene applicato manualmente, dopo il pagamento dell’inserzionista. Vi avviseremo non appena sarà possibile.
+pt: O crédito é aplicado manualmente, depois de o anunciante pagar. Avisamo-lo assim que for possível.
+el: Η πίστωση γίνεται χειροκίνητα, αφού πληρώσει ο αγγελιοδότης. Θα σας ενημερώσουμε μόλις είναι δυνατό.
+cs: Odpočet provádíme ručně, až inzerent zaplatí. Dáme vám vědět, jakmile to bude možné.
+sl: Dobropis uveljavimo ročno, ko oglaševalec plača. Obvestili vas bomo, takoj ko bo mogoče.
+sv: Krediteringen görs manuellt, efter att annonsören har betalat. Vi meddelar dig så snart det är möjligt.
+@1459
+it: Abbiamo ricevuto la vostra richiesta di valutazione
+pt: Recebemos o seu pedido de avaliação
+el: Λάβαμε το αίτημα εκτίμησής σας
+cs: Vaši žádost o ocenění jsme obdrželi
+sl: Vašo zahtevo za oceno smo prejeli
+sv: Vi har tagit emot din värderingsförfrågan
+@1460
+it: Un membro del nostro team verifica i dati dell’immobile e la base dati, poi vi invia via e-mail la valutazione indicativa basata sul mercato.
+pt: Um membro da nossa equipa verifica os dados do imóvel e a base de dados e depois envia-lhe por e-mail a avaliação indicativa baseada no mercado.
+el: Ένα μέλος της ομάδας μας ελέγχει τα στοιχεία του ακινήτου και τη βάση δεδομένων και στη συνέχεια σας στέλνει με email την ενδεικτική εκτίμηση βάσει αγοράς.
+cs: Někdo z našeho týmu zkontroluje údaje o nemovitosti a datový podklad a poté vám e-mailem pošle orientační tržní ocenění.
+sl: Član naše ekipe preveri podatke o nepremičnini in podatkovno osnovo ter vam nato po e-pošti pošlje okvirno tržno oceno.
+sv: Någon i vårt team kontrollerar fastighetsuppgifterna och dataunderlaget och mejlar dig sedan den vägledande, marknadsbaserade värderingen.
+@1461
+it: La vostra valutazione è pronta | FODEL
+pt: A sua avaliação está pronta | FODEL
+el: Η εκτίμησή σας είναι έτοιμη | FODEL
+cs: Vaše ocenění je hotové | FODEL
+sl: Vaša ocena je pripravljena | FODEL
+sv: Din värdering är klar | FODEL
+@1462
+it: Abbiamo effettuato una stima indicativa del vostro immobile.
+pt: Fizemos uma estimativa indicativa para o seu imóvel.
+el: Κάναμε μια ενδεικτική εκτίμηση για το ακίνητό σας.
+cs: Pro vaši nemovitost jsme připravili orientační odhad.
+sl: Za vašo nepremičnino smo pripravili okvirno oceno.
+sv: Vi har gjort en vägledande uppskattning av din fastighet.
+@1463
+it: La vostra valutazione è pronta
+pt: A sua avaliação está pronta
+el: Η εκτίμησή σας είναι έτοιμη
+cs: Vaše ocenění je hotové
+sl: Vaša ocena je pripravljena
+sv: Din värdering är klar
+@1464
+it: In base ai dati forniti e a immobili comparabili, la nostra stima indicativa è: ${range}.
+pt: Com base nos dados fornecidos e em imóveis comparáveis, a nossa estimativa indicativa é: ${range}.
+el: Με βάση τα στοιχεία που δώσατε και συγκρίσιμα ακίνητα, η ενδεικτική εκτίμησή μας είναι: ${range}.
+cs: Na základě poskytnutých údajů a srovnatelných nemovitostí je náš orientační odhad: ${range}.
+sl: Na podlagi posredovanih podatkov in primerljivih nepremičnin je naša okvirna ocena: ${range}.
+sv: Utifrån de lämnade uppgifterna och jämförbara fastigheter är vår vägledande uppskattning: ${range}.
+@1465
+it: Questa stima è indicativa, non è una perizia e non sostituisce una valutazione ufficiale. Immobili comparabili considerati: ${n}.
+pt: Esta estimativa é indicativa, não é um relatório de avaliação e não substitui uma avaliação oficial. Imóveis comparáveis considerados: ${n}.
+el: Η εκτίμηση αυτή είναι ενδεικτική, δεν αποτελεί έκθεση εκτίμησης και δεν αντικαθιστά επίσημη εκτίμηση. Συγκρίσιμα ακίνητα που ελήφθησαν υπόψη: ${n}.
+cs: Tento odhad je orientační, nejde o znalecký posudek a nenahrazuje oficiální ocenění. Počet srovnatelných nemovitostí: ${n}.
+sl: Ta ocena je okvirna, ni cenilno poročilo in ne nadomešča uradne cenitve. Število primerljivih nepremičnin: ${n}.
+sv: Uppskattningen är vägledande, ingen värderingsrapport, och ersätter inte en officiell värdering. Antal jämförbara fastigheter: ${n}.
+@1466
+it: Questa stima è indicativa, non è una perizia e non sostituisce una valutazione ufficiale.
+pt: Esta estimativa é indicativa, não é um relatório de avaliação e não substitui uma avaliação oficial.
+el: Η εκτίμηση αυτή είναι ενδεικτική, δεν αποτελεί έκθεση εκτίμησης και δεν αντικαθιστά επίσημη εκτίμηση.
+cs: Tento odhad je orientační, nejde o znalecký posudek a nenahrazuje oficiální ocenění.
+sl: Ta ocena je okvirna, ni cenilno poročilo in ne nadomešča uradne cenitve.
+sv: Uppskattningen är vägledande, ingen värderingsrapport, och ersätter inte en officiell värdering.
+@1467
+it: Pubblicalo ora
+pt: Anuncie agora
+el: Καταχωρίστε το τώρα
+cs: Inzerovat nyní
+sl: Objavite zdaj
+sv: Annonsera nu
+@1468
+it: =
+pt: =
+el: =
+cs: =
+sl: =
+sv: =
+@1469
+it: In base ai dati forniti, il valore indicativo di mercato è: ${range}.
+pt: Com base nos dados fornecidos, o valor indicativo de mercado é: ${range}.
+el: Με βάση τα στοιχεία που δώσατε, η ενδεικτική αγοραία αξία είναι: ${range}.
+cs: Na základě poskytnutých údajů je orientační tržní hodnota: ${range}.
+sl: Na podlagi posredovanih podatkov je okvirna tržna vrednost: ${range}.
+sv: Utifrån de lämnade uppgifterna är det vägledande marknadsvärdet: ${range}.
+@1470
+it: Valore medio
+pt: Valor médio
+el: Μέση τιμή
+cs: Střední hodnota
+sl: Srednja vrednost
+sv: Mittvärde
+@1471
+it: Base dati
+pt: Base de dados
+el: Βάση δεδομένων
+cs: Datový podklad
+sl: Podatkovna osnova
+sv: Dataunderlag
+@1472
+it: Data del tasso di cambio
+pt: Data da taxa de câmbio
+el: Ημερομηνία συναλλαγματικής ισοτιμίας
+cs: Datum kurzu
+sl: Datum tečaja
+sv: Valutakursdatum
+@1473
+it: Fonte
+pt: Fonte
+el: Πηγή
+cs: Zdroj
+sl: Vir
+sv: Källa
+@1474
+it: Fattori
+pt: Fatores
+el: Παράγοντες
+cs: Faktory
+sl: Dejavniki
+sv: Faktorer
+@1475
+it: Aumenta il valore
+pt: Aumenta o valor
+el: Αυξάνει την αξία
+cs: Zvyšuje hodnotu
+sl: Zvišuje vrednost
+sv: Höjer värdet
+@1476
+it: Riduce il valore
+pt: Diminui o valor
+el: Μειώνει την αξία
+cs: Snižuje hodnotu
+sl: Znižuje vrednost
+sv: Sänker värdet
+@1477
+it: Incerto
+pt: Incerto
+el: Αβέβαιο
+cs: Nejisté
+sl: Negotovo
+sv: Osäkert
+@1478
+it: Richiedete una visita di Gábor
+pt: Peça uma visita do Gábor
+el: Ζητήστε επίσκεψη από τον Gábor
+cs: Požádejte o návštěvu Gábora
+sl: Naročite obisk Gábora
+sv: Boka ett besök av Gábor
+@1479
+it: Richiedete una valutazione ufficiale
+pt: Peça uma avaliação oficial
+el: Ζητήστε επίσημη εκτίμηση
+cs: Požádejte o oficiální ocenění
+sl: Naročite uradno cenitev
+sv: Begär en officiell värdering
+@1480
+it: La vostra richiesta di valutazione | FODEL
+pt: O seu pedido de avaliação | FODEL
+el: Το αίτημα εκτίμησής σας | FODEL
+cs: Vaše žádost o ocenění | FODEL
+sl: Vaša zahteva za oceno | FODEL
+sv: Din värderingsförfrågan | FODEL
+@1481
+it: Un membro del nostro team vi contatterà personalmente.
+pt: Um membro da nossa equipa vai contactá-lo pessoalmente.
+el: Ένα μέλος της ομάδας μας θα επικοινωνήσει προσωπικά μαζί σας.
+cs: Někdo z našeho týmu vás bude osobně kontaktovat.
+sl: Član naše ekipe vas bo osebno kontaktiral.
+sv: Någon i vårt team kontaktar dig personligen.
+@1482
+it: Grazie per la vostra richiesta
+pt: Obrigado pelo seu pedido
+el: Σας ευχαριστούμε για το αίτημά σας
+cs: Děkujeme za vaši žádost
+sl: Hvala za vašo zahtevo
+sv: Tack för din förfrågan
+@1483
+it: In base ai dati forniti, al momento disponiamo di troppo pochi immobili comparabili per una stima affidabile. Un membro del nostro team vi contatterà personalmente.
+pt: Com base nos dados fornecidos, temos de momento poucos imóveis comparáveis para uma estimativa fiável. Um membro da nossa equipa vai contactá-lo pessoalmente.
+el: Με βάση τα στοιχεία που δώσατε, προς το παρόν έχουμε πολύ λίγα συγκρίσιμα ακίνητα για αξιόπιστη εκτίμηση. Ένα μέλος της ομάδας μας θα επικοινωνήσει προσωπικά μαζί σας.
+cs: Na základě poskytnutých údajů máme momentálně příliš málo srovnatelných nemovitostí pro spolehlivý odhad. Někdo z našeho týmu vás bude osobně kontaktovat.
+sl: Na podlagi posredovanih podatkov imamo trenutno premalo primerljivih nepremičnin za zanesljivo oceno. Član naše ekipe vas bo osebno kontaktiral.
+sv: Utifrån de lämnade uppgifterna har vi för närvarande för få jämförbara fastigheter för en tillförlitlig uppskattning. Någon i vårt team kontaktar dig personligen.
+@1484
+it: Valutazione: ci servono ancora alcuni dati
+pt: Avaliação: precisamos de mais alguns dados
+el: Εκτίμηση: χρειαζόμαστε μερικά ακόμη στοιχεία
+cs: Ocenění: potřebujeme ještě několik údajů
+sl: Ocena: potrebujemo še nekaj podatkov
+sv: Värdering: vi behöver några fler uppgifter
+@1485
+it: Per la stima ci servono alcune informazioni in più.
+pt: Precisamos de um pouco mais de informação para a estimativa.
+el: Χρειαζόμαστε λίγες ακόμη πληροφορίες για την εκτίμηση.
+cs: K odhadu potřebujeme trochu více informací.
+sl: Za oceno potrebujemo nekaj več informacij.
+sv: Vi behöver lite mer information för uppskattningen.
+@1486
+it: Ci servono ancora alcuni dati
+pt: Precisamos de mais alguns dados
+el: Χρειαζόμαστε μερικά ακόμη στοιχεία
+cs: Potřebujeme ještě několik údajů
+sl: Potrebujemo še nekaj podatkov
+sv: Vi behöver några fler uppgifter
+@1487
+it: Grazie per la vostra richiesta di valutazione. Per la stima, un membro del nostro team vi chiede quanto segue:
+pt: Obrigado pelo seu pedido de avaliação. Para a estimativa, um membro da nossa equipa pede-lhe o seguinte:
+el: Σας ευχαριστούμε για το αίτημα εκτίμησης. Για την εκτίμηση, ένα μέλος της ομάδας μας σας ζητά τα εξής:
+cs: Děkujeme za vaši žádost o ocenění. K odhadu vás někdo z našeho týmu žádá o následující:
+sl: Hvala za vašo zahtevo za oceno. Za oceno vas član naše ekipe prosi za naslednje:
+sv: Tack för din värderingsförfrågan. För uppskattningen ber någon i vårt team dig om följande:
+@1488
+it: Rispondete a questa e-mail con i dati mancanti. Non appena li riceviamo, effettueremo la stima.
+pt: Responda a este e-mail com os dados em falta. Assim que os recebermos, faremos a estimativa.
+el: Απαντήστε σε αυτό το email με τα στοιχεία που λείπουν. Μόλις τα λάβουμε, θα κάνουμε την εκτίμηση.
+cs: Odpovězte na tento e-mail a doplňte chybějící údaje. Jakmile je obdržíme, odhad připravíme.
+sl: Odgovorite na to sporočilo z manjkajočimi podatki. Takoj ko jih prejmemo, pripravimo oceno.
+sv: Svara på det här mejlet med de uppgifter som saknas. Så snart vi har dem gör vi uppskattningen.
+@1489
+it: Il vostro annuncio non può essere pubblicato (#${ref})
+pt: O seu anúncio não pode ser publicado (#${ref})
+el: Η αγγελία σας δεν μπορεί να δημοσιευθεί (#${ref})
+cs: Váš inzerát nelze zveřejnit (#${ref})
+sl: Vašega oglasa ni mogoče objaviti (#${ref})
+sv: Din annons kan inte publiceras (#${ref})
+@1490
+it: L’esito della verifica e la motivazione.
+pt: O resultado da análise e a explicação.
+el: Το αποτέλεσμα του ελέγχου και η αιτιολόγηση.
+cs: Výsledek kontroly a zdůvodnění.
+sl: Izid pregleda in obrazložitev.
+sv: Resultatet av granskningen och förklaringen.
+@1491
+it: Non possiamo pubblicare l’annuncio
+pt: Não podemos publicar o anúncio
+el: Δεν μπορούμε να δημοσιεύσουμε την αγγελία
+cs: Inzerát nemůžeme zveřejnit
+sl: Oglasa ne moremo objaviti
+sv: Vi kan inte publicera annonsen
+@1492
+it: Ci dispiace: dopo la verifica, il nostro team non ha approvato il vostro annuncio “${title}” (#${ref}). La motivazione:
+pt: Lamentamos: após análise, a nossa equipa não aprovou o seu anúncio «${title}» (#${ref}). A explicação:
+el: Λυπούμαστε: μετά τον έλεγχο, η ομάδα μας δεν ενέκρινε την αγγελία σας «${title}» (#${ref}). Η αιτιολόγηση:
+cs: Je nám líto: po kontrole náš tým váš inzerát „${title}“ (#${ref}) neschválil. Zdůvodnění:
+sl: Žal nam je: po pregledu naša ekipa ni odobrila vašega oglasa „${title}“ (#${ref}). Obrazložitev:
+sv: Vi beklagar: efter granskning har vårt team inte godkänt din annons ”${title}” (#${ref}). Förklaringen:
+@1493
+it: Se avete già pagato l’annuncio, vi contatteremo separatamente per il rimborso.
+pt: Se já pagou o anúncio, contactá-lo-emos separadamente sobre o reembolso.
+el: Αν έχετε ήδη πληρώσει την αγγελία, θα επικοινωνήσουμε ξεχωριστά μαζί σας για την επιστροφή χρημάτων.
+cs: Pokud jste za inzerát již zaplatili, ozveme se vám ohledně vrácení peněz zvlášť.
+sl: Če ste oglas že plačali, vas bomo glede vračila kontaktirali posebej.
+sv: Om du redan har betalat för annonsen kontaktar vi dig separat om återbetalningen.
+@1494
+it: Se avete domande o pensate che ci sia stato un malinteso, rispondete semplicemente a questa e-mail.
+pt: Se tiver alguma dúvida ou achar que houve um mal-entendido, basta responder a este e-mail.
+el: Αν έχετε ερώτηση ή πιστεύετε ότι υπήρξε παρεξήγηση, απλώς απαντήστε σε αυτό το email.
+cs: Máte-li dotaz nebo si myslíte, že došlo k nedorozumění, stačí odpovědět na tento e-mail.
+sl: Če imate vprašanje ali menite, da je prišlo do nesporazuma, preprosto odgovorite na to sporočilo.
+sv: Om du har en fråga eller tror att det har blivit ett missförstånd kan du bara svara på det här mejlet.
+@1495
+it: Fattura ${number}
+pt: Fatura ${number}
+el: Τιμολόγιο ${number}
+cs: Faktura ${number}
+sl: Račun ${number}
+sv: Faktura ${number}
+@1496
+it: La fattura è pronta; potete visualizzarla o scaricarla tramite il link.
+pt: A fatura está pronta; pode consultá-la ou descarregá-la através da ligação.
+el: Το τιμολόγιο είναι έτοιμο· μπορείτε να το δείτε ή να το κατεβάσετε μέσω του συνδέσμου.
+cs: Faktura je připravena; můžete si ji prohlédnout nebo stáhnout přes odkaz.
+sl: Račun je pripravljen; ogledate ali prenesete ga lahko prek povezave.
+sv: Fakturan är klar; du kan visa eller ladda ner den via länken.
+@1497
+it: La vostra fattura è pronta
+pt: A sua fatura está pronta
+el: Το τιμολόγιό σας είναι έτοιμο
+cs: Vaše faktura je připravena
+sl: Vaš račun je pripravljen
+sv: Din faktura är klar
+@1498
+it: La fattura ${number} per il vostro annuncio “${title}” (#${ref}) è pronta.
+pt: A fatura ${number} relativa ao seu anúncio «${title}» (#${ref}) está pronta.
+el: Το τιμολόγιο ${number} για την αγγελία σας «${title}» (#${ref}) είναι έτοιμο.
+cs: Faktura ${number} za váš inzerát „${title}“ (#${ref}) je připravena.
+sl: Račun ${number} za vaš oglas „${title}“ (#${ref}) je pripravljen.
+sv: Faktura ${number} för din annons ”${title}” (#${ref}) är klar.
+@1499
+it: Vedi fattura
+pt: Ver fatura
+el: Προβολή τιμολογίου
+cs: Zobrazit fakturu
+sl: Ogled računa
+sv: Visa faktura
+@1500
+it: Nota di credito ${number}
+pt: Nota de crédito ${number}
+el: Πιστωτικό τιμολόγιο ${number}
+cs: Dobropis ${number}
+sl: Dobropis ${number}
+sv: Kreditfaktura ${number}
+@1501
+it: Abbiamo emesso una nota di credito per la vostra fattura precedente.
+pt: Emitimos uma nota de crédito relativa à sua fatura anterior.
+el: Εκδώσαμε πιστωτικό τιμολόγιο για το προηγούμενο τιμολόγιό σας.
+cs: K vaší dřívější faktuře jsme vystavili dobropis.
+sl: Za vaš prejšnji račun smo izdali dobropis.
+sv: Vi har utfärdat en kreditfaktura för din tidigare faktura.
+@1502
+it: Nota di credito pronta
+pt: Nota de crédito pronta
+el: Το πιστωτικό τιμολόγιο είναι έτοιμο
+cs: Dobropis je připraven
+sl: Dobropis je pripravljen
+sv: Kreditfakturan är klar
+@1503
+it: Abbiamo emesso la nota di credito ${number} a storno della fattura ${correctsNumber} per il vostro annuncio “${title}” (#${ref}).
+pt: Emitimos a nota de crédito ${number} relativa à fatura ${correctsNumber} do seu anúncio «${title}» (#${ref}).
+el: Εκδώσαμε το πιστωτικό τιμολόγιο ${number} έναντι του τιμολογίου ${correctsNumber} για την αγγελία σας «${title}» (#${ref}).
+cs: K faktuře ${correctsNumber} za váš inzerát „${title}“ (#${ref}) jsme vystavili dobropis ${number}.
+sl: K računu ${correctsNumber} za vaš oglas „${title}“ (#${ref}) smo izdali dobropis ${number}.
+sv: Vi har utfärdat kreditfaktura ${number} mot faktura ${correctsNumber} för din annons ”${title}” (#${ref}).
+@1504
+it: Vedi nota di credito
+pt: Ver nota de crédito
+el: Προβολή πιστωτικού
+cs: Zobrazit dobropis
+sl: Ogled dobropisa
+sv: Visa kreditfaktura
+@1505
+it: Abbiamo ricevuto la vostra richiesta | FODEL
+pt: Recebemos o seu pedido | FODEL
+el: Λάβαμε το αίτημά σας | FODEL
+cs: Vaši žádost jsme obdrželi | FODEL
+sl: Vašo zahtevo smo prejeli | FODEL
+sv: Vi har tagit emot din förfrågan | FODEL
+@1506
+it: Un membro del nostro team vi contatterà per fissare una data.
+pt: Um membro da nossa equipa vai contactá-lo para marcar uma data.
+el: Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας για να ορίσετε ημερομηνία.
+cs: Někdo z našeho týmu vás bude kontaktovat kvůli domluvení termínu.
+sl: Član naše ekipe vas bo kontaktiral za dogovor o terminu.
+sv: Någon i vårt team kontaktar dig för att boka en tid.
+@1507
+it: Abbiamo ricevuto la vostra richiesta
+pt: Recebemos o seu pedido
+el: Λάβαμε το αίτημά σας
+cs: Vaši žádost jsme obdrželi
+sl: Vašo zahtevo smo prejeli
+sv: Vi har tagit emot din förfrågan
+@1508
+it: Grazie, abbiamo registrato la vostra richiesta: ${service} (${price}).
+pt: Obrigado, registámos o seu pedido: ${service} (${price}).
+el: Σας ευχαριστούμε, καταγράψαμε το αίτημά σας: ${service} (${price}).
+cs: Děkujeme, vaši žádost jsme zaznamenali: ${service} (${price}).
+sl: Hvala, vašo zahtevo smo zabeležili: ${service} (${price}).
+sv: Tack, vi har noterat din förfrågan: ${service} (${price}).
+@1509
+it: Vi daremo indicazioni sul pagamento quando fisseremo la data. Ora non pagate nulla.
+pt: Informamo-lo sobre o pagamento quando marcarmos a data. Agora não paga nada.
+el: Θα σας ενημερώσουμε για την πληρωμή όταν ορίσουμε την ημερομηνία. Τώρα δεν πληρώνετε τίποτα.
+cs: O platbě vás budeme informovat při domlouvání termínu. Teď nic neplatíte.
+sl: O plačilu vas bomo obvestili ob dogovoru o terminu. Zdaj ne plačate ničesar.
+sv: Vi berättar om betalningen när vi bokar tiden. Du betalar ingenting nu.
+@1510
+it: Avete cambiato idea? Rispondete semplicemente a questa e-mail.
+pt: Mudou de ideias? Basta responder a este e-mail.
+el: Αλλάξατε γνώμη; Απλώς απαντήστε σε αυτό το email.
+cs: Rozmysleli jste si to? Stačí odpovědět na tento e-mail.
+sl: Ste si premislili? Preprosto odgovorite na to sporočilo.
+sv: Har du ändrat dig? Svara bara på det här mejlet.
+@1511
+it: Conferma di pagamento | valutazione FODEL
+pt: Confirmação de pagamento | avaliação FODEL
+el: Επιβεβαίωση πληρωμής | εκτίμηση FODEL
+cs: Potvrzení platby | ocenění FODEL
+sl: Potrdilo o plačilu | ocena FODEL
+sv: Betalningsbekräftelse | FODEL-värdering
+@1512
+it: Grazie, il vostro pagamento è arrivato.
+pt: Obrigado, o seu pagamento chegou.
+el: Σας ευχαριστούμε, η πληρωμή σας ελήφθη.
+cs: Děkujeme, vaše platba dorazila.
+sl: Hvala, vaše plačilo je prispelo.
+sv: Tack, din betalning har kommit in.
+@1513
+it: Abbiamo ricevuto il pagamento per “${service}”.
+pt: Recebemos o pagamento de «${service}».
+el: Λάβαμε την πληρωμή για «${service}».
+cs: Obdrželi jsme platbu za „${service}“.
+sl: Prejeli smo plačilo za „${service}“.
+sv: Vi har tagit emot betalningen för ”${service}”.
+@1514
+it: Voce
+pt: Item
+el: Είδος
+cs: Položka
+sl: Postavka
+sv: Post
+@1515
+it: Pagato il
+pt: Pago em
+el: Πληρώθηκε στις
+cs: Zaplaceno dne
+sl: Plačano dne
+sv: Betald den
+@1516
+it: Un membro del nostro team vi contatterà presto per i prossimi passi.
+pt: Um membro da nossa equipa vai contactá-lo em breve sobre os próximos passos.
+el: Ένα μέλος της ομάδας μας θα επικοινωνήσει σύντομα μαζί σας για τα επόμενα βήματα.
+cs: Někdo z našeho týmu vás brzy kontaktuje ohledně dalších kroků.
+sl: Član naše ekipe vas bo kmalu kontaktiral glede nadaljnjih korakov.
+sv: Någon i vårt team kontaktar dig snart om nästa steg.
+@1517
+it: Vi serve una fattura? Rispondete semplicemente a questa e-mail.
+pt: Precisa de fatura? Basta responder a este e-mail.
+el: Χρειάζεστε τιμολόγιο; Απλώς απαντήστε σε αυτό το email.
+cs: Potřebujete fakturu? Stačí odpovědět na tento e-mail.
+sl: Potrebujete račun? Preprosto odgovorite na to sporočilo.
+sv: Behöver du en faktura? Svara bara på det här mejlet.
+@1518
+it: Richiesta di valutazione ufficiale | FODEL
+pt: Pedido de avaliação oficial | FODEL
+el: Αίτημα επίσημης εκτίμησης | FODEL
+cs: Žádost o oficiální ocenění | FODEL
+sl: Zahteva za uradno cenitev | FODEL
+sv: Förfrågan om officiell värdering | FODEL
+@1519
+it: Un membro del nostro team vi contatterà per illustrarvi le possibilità.
+pt: Um membro da nossa equipa vai contactá-lo sobre as opções.
+el: Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας για τις επιλογές.
+cs: Někdo z našeho týmu vás bude kontaktovat ohledně možností.
+sl: Član naše ekipe vas bo kontaktiral glede možnosti.
+sv: Någon i vårt team kontaktar dig om alternativen.
+@1520
+it: Grazie, abbiamo registrato che desiderate una valutazione ufficiale (giudiziaria) da parte di un perito. Non è la stessa cosa della valutazione indicativa di mercato sul nostro sito: la esegue un perito autorizzato, sulla base di un preventivo.
+pt: Obrigado, registámos que pretende uma avaliação oficial (judicial) por um perito. Não é o mesmo que a avaliação indicativa de mercado do nosso site: é feita por um perito autorizado, mediante orçamento.
+el: Σας ευχαριστούμε, καταγράψαμε ότι επιθυμείτε επίσημη (δικαστική) εκτίμηση από πραγματογνώμονα. Δεν είναι το ίδιο με την ενδεικτική εκτίμηση βάσει αγοράς στον ιστότοπό μας: τη διενεργεί εξουσιοδοτημένος πραγματογνώμονας, βάσει προσφοράς.
+cs: Děkujeme, zaznamenali jsme, že máte zájem o oficiální (soudní) ocenění znalcem. Nejde o totéž co orientační tržní ocenění na našem webu: provádí ho autorizovaný znalec na základě cenové nabídky.
+sl: Hvala, zabeležili smo, da želite uradno (sodno) cenitev s strani cenilca. To ni enako kot okvirna tržna ocena na naši spletni strani: opravi jo pooblaščeni cenilec na podlagi ponudbe.
+sv: Tack, vi har noterat att du vill ha en officiell (rättslig) värdering av en sakkunnig. Den är inte samma sak som den vägledande, marknadsbaserade värderingen på vår webbplats: den utförs av en auktoriserad sakkunnig, utifrån en offert.
+@1521
+it: Un membro del nostro team vi contatterà per illustrarvi le possibilità e il preventivo.
+pt: Um membro da nossa equipa vai contactá-lo sobre as opções e o orçamento.
+el: Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας για τις επιλογές και την προσφορά.
+cs: Někdo z našeho týmu vás bude kontaktovat ohledně možností a cenové nabídky.
+sl: Član naše ekipe vas bo kontaktiral glede možnosti in ponudbe.
+sv: Någon i vårt team kontaktar dig om alternativen och offerten.

@@ -1,0 +1,861 @@
+@1236
+it: 27 luglio 2026
+pt: 27 de julho de 2026
+el: 27 Ιουλίου 2026
+cs: 27. července 2026
+sl: 27. julij 2026
+sv: 27 juli 2026
+@1237
+it: Questa è una traduzione di cortesia. In caso di divergenze prevale l’originale olandese (per le questioni di diritto olandese) o ungherese.
+pt: Esta é uma tradução para sua conveniência. Em caso de divergência, prevalece o original neerlandês (em matérias de direito neerlandês) ou húngaro.
+el: Πρόκειται για μετάφραση για διευκόλυνσή σας. Σε περίπτωση απόκλισης υπερισχύει το ολλανδικό (για θέματα ολλανδικού δικαίου) ή το ουγγρικό πρωτότυπο.
+cs: Jde o překlad pro vaše pohodlí. V případě rozporu má přednost nizozemský (ve věcech nizozemského práva) nebo maďarský originál.
+sl: To je prevod za lažje razumevanje. V primeru razhajanj velja nizozemski (pri zadevah nizozemskega prava) ali madžarski izvirnik.
+sv: Detta är en översättning för din bekvämlighet. Vid avvikelser gäller det nederländska (i frågor enligt nederländsk rätt) eller det ungerska originalet.
+@1238
+it: Note legali: dati aziendali
+pt: Ficha técnica: dados da empresa
+el: Νομικές πληροφορίες: στοιχεία εταιρείας
+cs: Tiráž: údaje o společnosti
+sl: Impresum: podatki o podjetju
+sv: Företagsinformation: uppgifter om bolaget
+@1239
+it: Dati aziendali di ${COMPANY.names.legal}: sede legale, partita IVA, numero KvK e recapiti.
+pt: Dados da empresa ${COMPANY.names.legal}: sede, número de IVA, número KvK e contactos.
+el: Στοιχεία της εταιρείας ${COMPANY.names.legal}: έδρα, ΑΦΜ ΦΠΑ, αριθμός KvK και στοιχεία επικοινωνίας.
+cs: Údaje o společnosti ${COMPANY.names.legal}: sídlo, DIČ, číslo KvK a kontaktní údaje.
+sl: Podatki o podjetju ${COMPANY.names.legal}: sedež, ID za DDV, številka KvK in kontaktni podatki.
+sv: Uppgifter om ${COMPANY.names.legal}: säte, momsregistreringsnummer, KvK-nummer och kontaktuppgifter.
+@1240
+it: Note legali
+pt: Ficha técnica
+el: Νομικές πληροφορίες
+cs: Tiráž
+sl: Impresum
+sv: Företagsinformation
+@1241
+it: Dati aziendali
+pt: Dados da empresa
+el: Στοιχεία εταιρείας
+cs: Údaje o společnosti
+sl: Podatki o podjetju
+sv: Företagsuppgifter
+@1242
+it: Dati del fornitore del servizio
+pt: Dados do prestador de serviços
+el: Στοιχεία του παρόχου υπηρεσιών
+cs: Údaje o poskytovateli služby
+sl: Podatki o ponudniku storitve
+sv: Uppgifter om tjänsteleverantören
+@1243
+it: Ragione sociale
+pt: Denominação social
+el: Επωνυμία
+cs: Název společnosti
+sl: Ime podjetja
+sv: Företagsnamn
+@1244
+it: Sede legale
+pt: Sede
+el: Έδρα
+cs: Sídlo
+sl: Sedež
+sv: Säte
+@1245
+it: Partita IVA
+pt: Número de IVA
+el: ΑΦΜ ΦΠΑ
+cs: DIČ
+sl: ID za DDV
+sv: Momsregistreringsnummer
+@1246
+it: Numero KvK (Camera di commercio olandese)
+pt: Número KvK (Câmara de Comércio neerlandesa)
+el: Αριθμός KvK (Ολλανδικό Εμπορικό Επιμελητήριο)
+cs: Číslo KvK (nizozemská obchodní komora)
+sl: Številka KvK (nizozemska gospodarska zbornica)
+sv: KvK-nummer (nederländska handelskammaren)
+@1247
+it: Rappresentante
+pt: Representante
+el: Εκπρόσωπος
+cs: Zástupce
+sl: Zastopnik
+sv: Företrädare
+@1248
+it: E-mail
+pt: E-mail
+el: Email
+cs: E-mail
+sl: E-pošta
+sv: E-post
+@1249
+it: Telefono
+pt: Telefone
+el: Τηλέφωνο
+cs: Telefon
+sl: Telefon
+sv: Telefon
+@1250
+it: Conti bancari
+pt: Contas bancárias
+el: Τραπεζικοί λογαριασμοί
+cs: Bankovní účty
+sl: Bančni računi
+sv: Bankkonton
+@1251
+it: Paesi Bassi
+pt: Países Baixos
+el: Ολλανδία
+cs: Nizozemsko
+sl: Nizozemska
+sv: Nederländerna
+@1252
+it: =
+pt: =
+el: =
+cs: =
+sl: =
+sv: =
+@1253
+it: Controversie
+pt: Litígios
+el: Διαφορές
+cs: Spory
+sl: Spori
+sv: Tvister
+@1254
+it: In caso di controversia con un consumatore potete rivolgervi anche alla piattaforma europea ODR: ec.europa.eu/consumers/odr
+pt: Em caso de litígio de consumo, pode também recorrer à plataforma europeia de RLL: ec.europa.eu/consumers/odr
+el: Σε καταναλωτική διαφορά μπορείτε επίσης να χρησιμοποιήσετε την ευρωπαϊκή πλατφόρμα ΕΕΔ: ec.europa.eu/consumers/odr
+cs: Při spotřebitelském sporu můžete využít také evropskou platformu ODR: ec.europa.eu/consumers/odr
+sl: Pri potrošniškem sporu lahko uporabite tudi evropsko platformo za spletno reševanje sporov: ec.europa.eu/consumers/odr
+sv: Vid en konsumenttvist kan du också använda EU:s plattform för tvistlösning online: ec.europa.eu/consumers/odr
+@1255
+it: Informativa sulla privacy
+pt: Política de privacidade
+el: Πολιτική απορρήτου
+cs: Zásady ochrany osobních údajů
+sl: Obvestilo o zasebnosti
+sv: Så hanterar vi personuppgifter
+@1256
+it: Come FODEL tratta i vostri dati personali: quali dati trattiamo, per quanto tempo li conserviamo e quali diritti avete ai sensi del GDPR.
+pt: Como a FODEL trata os seus dados pessoais: que dados tratamos, durante quanto tempo os conservamos e que direitos tem ao abrigo do RGPD.
+el: Πώς η FODEL χειρίζεται τα προσωπικά σας δεδομένα: ποια δεδομένα επεξεργαζόμαστε, για πόσο καιρό τα διατηρούμε και ποια δικαιώματα έχετε βάσει του ΓΚΠΔ.
+cs: Jak FODEL nakládá s vašimi osobními údaji: které údaje zpracováváme, jak dlouho je uchováváme a jaká práva máte podle GDPR.
+sl: Kako FODEL ravna z vašimi osebnimi podatki: katere podatke obdelujemo, kako dolgo jih hranimo in katere pravice imate po GDPR.
+sv: Hur FODEL hanterar dina personuppgifter: vilka uppgifter vi behandlar, hur länge vi sparar dem och vilka rättigheter du har enligt GDPR.
+@1257
+it: Privacy
+pt: Privacidade
+el: Απόρρητο
+cs: Soukromí
+sl: Zasebnost
+sv: Integritet
+@1258
+it: La presente informativa descrive come trattiamo i dati personali che ci fornite tramite questo sito, in conformità al GDPR.
+pt: Esta política descreve como tratamos os dados pessoais que nos fornece através deste site, em conformidade com o RGPD.
+el: Η παρούσα πολιτική περιγράφει πώς χειριζόμαστε τα προσωπικά δεδομένα που μας δίνετε μέσω αυτού του ιστότοπου, σύμφωνα με τον ΓΚΠΔ.
+cs: Tyto zásady popisují, jak nakládáme s osobními údaji, které nám poskytnete prostřednictvím tohoto webu, v souladu s GDPR.
+sl: To obvestilo opisuje, kako v skladu z GDPR ravnamo z osebnimi podatki, ki nam jih posredujete prek te spletne strani.
+sv: Den här informationen beskriver hur vi hanterar de personuppgifter du lämnar via webbplatsen, i enlighet med GDPR.
+@1259
+it: Titolare del trattamento
+pt: Responsável pelo tratamento
+el: Υπεύθυνος επεξεργασίας
+cs: Správce údajů
+sl: Upravljavec podatkov
+sv: Personuppgiftsansvarig
+@1260
+it: Titolare
+pt: Responsável
+el: Υπεύθυνος
+cs: Správce
+sl: Upravljavec
+sv: Ansvarig
+@1261
+it: Indirizzo
+pt: Morada
+el: Διεύθυνση
+cs: Adresa
+sl: Naslov
+sv: Adress
+@1262
+it: Quali dati trattiamo
+pt: Que dados tratamos
+el: Ποια δεδομένα επεξεργαζόμαστε
+cs: Jaké údaje zpracováváme
+sl: Katere podatke obdelujemo
+sv: Vilka uppgifter vi behandlar
+@1263
+it: Solo i dati che inserite voi stessi nei nostri moduli:
+pt: Apenas os dados que introduz nos nossos formulários:
+el: Μόνο τα δεδομένα που εισάγετε εσείς στις φόρμες μας:
+cs: Pouze údaje, které sami vyplníte v našich formulářích:
+sl: Samo podatke, ki jih sami vnesete v naše obrazce:
+sv: Endast de uppgifter du själv anger i våra formulär:
+@1264
+it: Nome, indirizzo e-mail e numero di telefono: per poter rispondere alla vostra richiesta
+pt: Nome, endereço de e-mail e número de telefone: para podermos responder ao seu pedido
+el: Όνομα, διεύθυνση email και αριθμός τηλεφώνου: ώστε να απαντήσουμε στο αίτημά σας
+cs: Jméno, e-mailová adresa a telefonní číslo: abychom mohli odpovědět na váš dotaz
+sl: Ime, e-poštni naslov in telefonska številka: da lahko odgovorimo na vaše povpraševanje
+sv: Namn, e-postadress och telefonnummer: så att vi kan besvara din förfrågan
+@1265
+it: L’oggetto e il contenuto del vostro messaggio
+pt: O assunto e o conteúdo da sua mensagem
+el: Το θέμα και το περιεχόμενο του μηνύματός σας
+cs: Předmět a obsah vaší zprávy
+sl: Zadeva in vsebina vašega sporočila
+sv: Ämnet och innehållet i ditt meddelande
+@1266
+it: Per un annuncio: i dati dell’immobile e i vostri dati di fatturazione
+pt: Para um anúncio: os dados do imóvel e os seus dados de faturação
+el: Για αγγελία: τα στοιχεία του ακινήτου και τα στοιχεία τιμολόγησής σας
+cs: U inzerátu: údaje o nemovitosti a vaše fakturační údaje
+sl: Pri oglasu: podatki o nepremičnini in vaši podatki za račun
+sv: För en annons: uppgifter om fastigheten och dina faktureringsuppgifter
+@1267
+it: Per una richiesta di ricerca: i vostri criteri di ricerca
+pt: Para um pedido de pesquisa: os seus critérios de pesquisa
+el: Για αίτημα αναζήτησης: τα κριτήρια αναζήτησής σας
+cs: U požadavku na vyhledání: vaše kritéria hledání
+sl: Pri iskalni zahtevi: vaša merila iskanja
+sv: För en sökförfrågan: dina sökkriterier
+@1268
+it: Per l’amministrazione interna: quando e quale modulo avete compilato e quando avete effettuato l’accesso al portale, senza memorizzare l’indirizzo IP
+pt: Para a administração interna: quando e que formulário preencheu e quando iniciou sessão no portal, sem guardar o endereço IP
+el: Για την εσωτερική διαχείριση: πότε και ποια φόρμα συμπληρώσατε και πότε συνδεθήκατε στην πύλη, χωρίς αποθήκευση της διεύθυνσης IP
+cs: Pro interní správu: kdy a jaký formulář jste vyplnili a kdy jste se přihlásili do portálu, bez ukládání IP adresy
+sl: Za notranjo administracijo: kdaj in kateri obrazec ste izpolnili ter kdaj ste se prijavili v portal, brez shranjevanja naslova IP
+sv: För intern administration: när och vilket formulär du fyllde i och när du loggade in på portalen, utan att IP-adressen sparas
+@1269
+it: Base giuridica e periodo di conservazione
+pt: Fundamento jurídico e prazo de conservação
+el: Νομική βάση και διάρκεια διατήρησης
+cs: Právní základ a doba uchování
+sl: Pravna podlaga in obdobje hrambe
+sv: Rättslig grund och lagringstid
+@1270
+it: Contatto e richiesta di richiamata
+pt: Contacto e pedido de chamada
+el: Επικοινωνία και αίτημα επανάκλησης
+cs: Kontakt a žádost o zavolání
+sl: Stik in prošnja za povratni klic
+sv: Kontakt och begäran om återuppringning
+@1271
+it: Consenso (art. 6, par. 1, lett. a) GDPR): 12 mesi
+pt: Consentimento (art. 6.º, n.º 1, alínea a), do RGPD): 12 meses
+el: Συγκατάθεση (άρθ. 6 παρ. 1 στοιχ. α΄ ΓΚΠΔ): 12 μήνες
+cs: Souhlas (čl. 6 odst. 1 písm. a) GDPR): 12 měsíců
+sl: Privolitev (točka (a) člena 6(1) GDPR): 12 mesecev
+sv: Samtycke (art. 6.1 a GDPR): 12 månader
+@1272
+it: Ordine di annuncio
+pt: Encomenda de anúncio
+el: Παραγγελία αγγελίας
+cs: Objednávka inzerátu
+sl: Naročilo oglasa
+sv: Annonsbeställning
+@1273
+it: Esecuzione di un contratto (art. 6, par. 1, lett. b)): 7 anni, obbligo fiscale di conservazione
+pt: Execução de um contrato (art. 6.º, n.º 1, alínea b)): 7 anos, conservação fiscal obrigatória
+el: Εκτέλεση σύμβασης (άρθ. 6 παρ. 1 στοιχ. β΄): 7 έτη, υποχρεωτική φορολογική διατήρηση
+cs: Plnění smlouvy (čl. 6 odst. 1 písm. b)): 7 let, zákonná daňová archivace
+sl: Izvajanje pogodbe (točka (b) člena 6(1)): 7 let, zakonska davčna hramba
+sv: Fullgörande av avtal (art. 6.1 b): 7 år, lagstadgad bokföringsskyldighet
+@1274
+it: Richiesta di ricerca
+pt: Pedido de pesquisa
+el: Αίτημα αναζήτησης
+cs: Požadavek na vyhledání
+sl: Iskalna zahteva
+sv: Sökförfrågan
+@1275
+it: Consenso: fino al completamento, al massimo 24 mesi
+pt: Consentimento: até à conclusão, no máximo 24 meses
+el: Συγκατάθεση: έως την ολοκλήρωση, το πολύ 24 μήνες
+cs: Souhlas: do vyřízení, nejvýše 24 měsíců
+sl: Privolitev: do zaključka, največ 24 mesecev
+sv: Samtycke: tills ärendet är klart, högst 24 månader
+@1276
+it: Registro interno delle attività
+pt: Registo interno de atividades
+el: Εσωτερικό αρχείο δραστηριότητας
+cs: Interní záznam činností
+sl: Notranji dnevnik dejavnosti
+sv: Intern aktivitetslogg
+@1277
+it: Legittimo interesse (art. 6, par. 1, lett. f)): corretta amministrazione e individuazione degli abusi: al massimo 24 mesi
+pt: Interesse legítimo (art. 6.º, n.º 1, alínea f)): boa administração e deteção de abusos: no máximo 24 meses
+el: Έννομο συμφέρον (άρθ. 6 παρ. 1 στοιχ. στ΄): εύρυθμη διαχείριση και εντοπισμός καταχρήσεων: το πολύ 24 μήνες
+cs: Oprávněný zájem (čl. 6 odst. 1 písm. f)): řádná správa a odhalování zneužití: nejvýše 24 měsíců
+sl: Zakoniti interes (točka (f) člena 6(1)): urejena administracija in odkrivanje zlorab: največ 24 mesecev
+sv: Berättigat intresse (art. 6.1 f): ordnad administration och upptäckt av missbruk: högst 24 månader
+@1278
+it: Con chi condividiamo i dati
+pt: Com quem partilhamos dados
+el: Με ποιους μοιραζόμαστε δεδομένα
+cs: S kým údaje sdílíme
+sl: S kom delimo podatke
+sv: Vilka vi delar uppgifter med
+@1279
+it: Non vendiamo i vostri dati e non li condividiamo a fini di marketing. I nostri responsabili del trattamento sono:
+pt: Não vendemos os seus dados nem os partilhamos para fins de marketing. Os nossos subcontratantes são:
+el: Δεν πωλούμε τα δεδομένα σας και δεν τα μοιραζόμαστε για σκοπούς μάρκετινγκ. Οι εκτελούντες την επεξεργασία για λογαριασμό μας είναι:
+cs: Vaše údaje neprodáváme a nesdílíme je pro marketingové účely. Našimi zpracovateli jsou:
+sl: Vaših podatkov ne prodajamo in jih ne delimo za namene trženja. Naši obdelovalci so:
+sv: Vi säljer inte dina uppgifter och delar dem inte i marknadsföringssyfte. Våra personuppgiftsbiträden är:
+@1280
+it: Il nostro fornitore di posta elettronica, con trattamento all’interno dell’UE
+pt: O nosso fornecedor de e-mail, com tratamento dentro da UE
+el: Ο πάροχος email μας, με επεξεργασία εντός της ΕΕ
+cs: Náš poskytovatel e-mailu, se zpracováním v rámci EU
+sl: Naš ponudnik e-pošte, z obdelavo znotraj EU
+sv: Vår e-postleverantör, med behandling inom EU
+@1281
+it: Il fornitore di hosting di questo sito
+pt: O fornecedor de alojamento deste site
+el: Ο πάροχος φιλοξενίας αυτού του ιστότοπου
+cs: Poskytovatel hostingu tohoto webu
+sl: Ponudnik gostovanja te spletne strani
+sv: Webbhotellet för den här webbplatsen
+@1282
+it: In caso di acquisto, e solo su vostra richiesta: l’altra parte e l’avvocato coinvolto
+pt: Em caso de compra, e apenas a seu pedido: a outra parte e o advogado envolvido
+el: Σε περίπτωση αγοράς, και μόνο κατόπιν αιτήματός σας: το άλλο μέρος και ο εμπλεκόμενος δικηγόρος
+cs: Při koupi, a pouze na vaši žádost: druhá strana a zúčastněný advokát
+sl: Pri nakupu, in le na vašo zahtevo: druga stranka in vključeni odvetnik
+sv: Vid köp, och endast på din begäran: motparten och den inblandade advokaten
+@1283
+it: Sugli annunci
+pt: Sobre os anúncios
+el: Σχετικά με τις αγγελίες
+cs: K inzerátům
+sl: O oglasih
+sv: Om annonser
+@1284
+it: Come inserzionisti potete autorizzarci a mostrare il vostro nome e numero di telefono nell’annuncio, così che gli interessati possano contattarvi direttamente. Potete revocare l’autorizzazione in qualsiasi momento; in tal caso rimuoviamo i dati dall’annuncio.
+pt: Como anunciante, pode autorizar-nos a mostrar o seu nome e telefone no anúncio, para que os interessados o contactem diretamente. Pode retirar essa autorização a qualquer momento; nesse caso removemos os dados do anúncio.
+el: Ως αγγελιοδότης μπορείτε να μας επιτρέψετε να εμφανίζουμε το όνομα και το τηλέφωνό σας στην αγγελία, ώστε οι ενδιαφερόμενοι να επικοινωνούν απευθείας μαζί σας. Μπορείτε να ανακαλέσετε την άδεια οποιαδήποτε στιγμή· τότε αφαιρούμε τα στοιχεία από την αγγελία.
+cs: Jako inzerent nám můžete udělit souhlas se zobrazením vašeho jména a telefonního čísla u inzerátu, aby vás zájemci mohli kontaktovat přímo. Souhlas můžete kdykoli odvolat; údaje pak z inzerátu odstraníme.
+sl: Kot oglaševalec nam lahko dovolite, da ob oglasu prikažemo vaše ime in telefonsko številko, da vas lahko zainteresirani kontaktirajo neposredno. Dovoljenje lahko kadar koli prekličete; podatke nato odstranimo iz oglasa.
+sv: Som annonsör kan du ge oss tillåtelse att visa ditt namn och telefonnummer i annonsen, så att intresserade kan kontakta dig direkt. Du kan när som helst återkalla tillåtelsen; då tar vi bort uppgifterna från annonsen.
+@1285
+it: Newsletter
+pt: Newsletter
+el: Ενημερωτικό δελτίο
+cs: Newsletter
+sl: E-novice
+sv: Nyhetsbrev
+@1286
+it: Se vi iscrivete alla nostra newsletter, trattiamo il vostro indirizzo e-mail, la lingua scelta e la data di iscrizione e di conferma, esclusivamente per inviarvi la newsletter, sulla base del vostro consenso. L’iscrizione avviene in due passaggi: non inviamo nulla finché non avete cliccato il pulsante nell’e-mail di conferma. In ogni e-mail potete disiscrivervi con un clic e smettiamo immediatamente. Per l’invio utilizziamo il servizio Resend.
+pt: Se subscrever a nossa newsletter, tratamos o seu endereço de e-mail, a língua escolhida e a data de subscrição e de confirmação, exclusivamente para lhe enviar a newsletter, com base no seu consentimento. A subscrição tem dois passos: não enviamos nada até clicar no botão do e-mail de confirmação. Em cada e-mail pode cancelar a subscrição com um clique, e paramos de imediato. Para o envio utilizamos o serviço Resend.
+el: Αν εγγραφείτε στο ενημερωτικό μας δελτίο, επεξεργαζόμαστε τη διεύθυνση email σας, τη γλώσσα που επιλέξατε και τον χρόνο εγγραφής και επιβεβαίωσης, αποκλειστικά για να σας στέλνουμε το δελτίο, βάσει της συγκατάθεσής σας. Η εγγραφή γίνεται σε δύο βήματα: δεν στέλνουμε τίποτα μέχρι να πατήσετε το κουμπί στο email επιβεβαίωσης. Σε κάθε email μπορείτε να διαγραφείτε με ένα κλικ και σταματάμε αμέσως. Για την αποστολή χρησιμοποιούμε την υπηρεσία Resend.
+cs: Pokud se přihlásíte k odběru našeho newsletteru, zpracováváme vaši e-mailovou adresu, zvolený jazyk a čas přihlášení a potvrzení, výhradně za účelem zasílání newsletteru, na základě vašeho souhlasu. Přihlášení má dva kroky: nic nepošleme, dokud neklepnete na tlačítko v potvrzovacím e-mailu. V každém e-mailu se můžete jedním kliknutím odhlásit a my okamžitě přestaneme. K rozesílání používáme službu Resend.
+sl: Če se naročite na naše e-novice, obdelujemo vaš e-poštni naslov, izbrani jezik ter čas prijave in potrditve, izključno za pošiljanje e-novic, na podlagi vaše privolitve. Prijava poteka v dveh korakih: ničesar ne pošljemo, dokler ne kliknete gumba v potrditvenem sporočilu. V vsakem sporočilu se lahko odjavite z enim klikom in takoj prenehamo. Za pošiljanje uporabljamo storitev Resend.
+sv: Om du prenumererar på vårt nyhetsbrev behandlar vi din e-postadress, valt språk och tidpunkten för anmälan och bekräftelse, enbart för att skicka nyhetsbrevet, med stöd av ditt samtycke. Anmälan sker i två steg: vi skickar ingenting förrän du har klickat på knappen i bekräftelsemejlet. I varje mejl kan du avsluta prenumerationen med ett klick, och vi slutar direkt. Vi använder tjänsten Resend för utskicket.
+@1287
+it: I vostri diritti
+pt: Os seus direitos
+el: Τα δικαιώματά σας
+cs: Vaše práva
+sl: Vaše pravice
+sv: Dina rättigheter
+@1288
+it: Accesso ai dati che trattiamo su di voi
+pt: Acesso aos dados que tratamos sobre si
+el: Πρόσβαση στα δεδομένα που επεξεργαζόμαστε για εσάς
+cs: Přístup k údajům, které o vás zpracováváme
+sl: Dostop do podatkov, ki jih obdelujemo o vas
+sv: Tillgång till de uppgifter vi behandlar om dig
+@1289
+it: Rettifica e cancellazione
+pt: Retificação e apagamento
+el: Διόρθωση και διαγραφή
+cs: Oprava a výmaz
+sl: Popravek in izbris
+sv: Rättelse och radering
+@1290
+it: Limitazione del trattamento od opposizione allo stesso
+pt: Limitação do tratamento ou oposição ao mesmo
+el: Περιορισμός της επεξεργασίας ή εναντίωση σε αυτήν
+cs: Omezení zpracování nebo námitka proti němu
+sl: Omejitev obdelave ali ugovor zoper njo
+sv: Begränsning av eller invändning mot behandlingen
+@1291
+it: Portabilità dei dati
+pt: Portabilidade dos dados
+el: Φορητότητα δεδομένων
+cs: Přenositelnost údajů
+sl: Prenosljivost podatkov
+sv: Dataportabilitet
+@1292
+it: Revoca del consenso in qualsiasi momento
+pt: Retirar o seu consentimento a qualquer momento
+el: Ανάκληση της συγκατάθεσής σας ανά πάσα στιγμή
+cs: Kdykoli odvolat svůj souhlas
+sl: Kadar koli preklicati privolitev
+sv: Att när som helst återkalla ditt samtycke
+@1293
+it: Proporre reclamo all’Autorità olandese per la protezione dei dati (Autoriteit Persoonsgegevens)
+pt: Apresentar reclamação à autoridade neerlandesa de proteção de dados (Autoriteit Persoonsgegevens)
+el: Υποβολή καταγγελίας στην ολλανδική Αρχή Προστασίας Δεδομένων (Autoriteit Persoonsgegevens)
+cs: Podání stížnosti u nizozemského úřadu pro ochranu osobních údajů (Autoriteit Persoonsgegevens)
+sl: Vložitev pritožbe pri nizozemskem organu za varstvo podatkov (Autoriteit Persoonsgegevens)
+sv: Att lämna klagomål till den nederländska dataskyddsmyndigheten (Autoriteit Persoonsgegevens)
+@1294
+it: Contatti per la privacy
+pt: Contacto sobre privacidade
+el: Επικοινωνία για θέματα απορρήτου
+cs: Kontakt ve věcech ochrany údajů
+sl: Stik glede zasebnosti
+sv: Kontakt om integritet
+@1295
+it: Potete inviare domande o richieste a ${COMPANY.email.primary}. Rispondiamo entro 30 giorni al più tardi.
+pt: Pode enviar perguntas ou pedidos para ${COMPANY.email.primary}. Respondemos no prazo máximo de 30 dias.
+el: Μπορείτε να στείλετε ερωτήσεις ή αιτήματα στο ${COMPANY.email.primary}. Απαντάμε το αργότερο εντός 30 ημερών.
+cs: Dotazy nebo žádosti můžete posílat na ${COMPANY.email.primary}. Odpovíme nejpozději do 30 dnů.
+sl: Vprašanja ali zahteve lahko pošljete na ${COMPANY.email.primary}. Odgovorimo najpozneje v 30 dneh.
+sv: Frågor eller begäranden kan du skicka till ${COMPANY.email.primary}. Vi svarar senast inom 30 dagar.
+@1296
+it: Informativa sui cookie
+pt: Política de cookies
+el: Πολιτική cookies
+cs: Zásady používání cookies
+sl: Obvestilo o piškotkih
+sv: Information om cookies
+@1297
+it: Quali cookie utilizza ${SITE_HOST} e come modificare la vostra scelta.
+pt: Que cookies o ${SITE_HOST} utiliza e como alterar a sua escolha.
+el: Ποια cookies χρησιμοποιεί το ${SITE_HOST} και πώς να αλλάξετε την επιλογή σας.
+cs: Jaké soubory cookie ${SITE_HOST} používá a jak změnit svou volbu.
+sl: Katere piškotke uporablja ${SITE_HOST} in kako spremenite svojo izbiro.
+sv: Vilka cookies ${SITE_HOST} använder och hur du ändrar ditt val.
+@1298
+it: Cookie
+pt: Cookies
+el: Cookies
+cs: Cookies
+sl: Piškotki
+sv: Cookies
+@1299
+it: Informativa
+pt: Política de
+el: Πολιτική
+cs: Zásady používání
+sl: Obvestilo o
+sv: Information om
+@1300
+it: Al momento questo sito utilizza solo memorizzazioni tecnicamente necessarie. Non usiamo script pubblicitari o di tracciamento e non condividiamo nulla con i social network.
+pt: De momento, este site utiliza apenas armazenamento tecnicamente necessário. Não utilizamos scripts de publicidade ou de rastreamento e não partilhamos nada com redes sociais.
+el: Προς το παρόν ο ιστότοπος χρησιμοποιεί μόνο τεχνικά απαραίτητη αποθήκευση. Δεν εκτελούμε διαφημιστικά σενάρια ή σενάρια παρακολούθησης και δεν μοιραζόμαστε τίποτα με κοινωνικά δίκτυα.
+cs: Tento web v současnosti používá pouze technicky nezbytné ukládání. Nespouštíme žádné reklamní ani sledovací skripty a nic nesdílíme se sociálními sítěmi.
+sl: Ta spletna stran trenutno uporablja le tehnično nujno shranjevanje. Ne uporabljamo oglaševalskih ali sledilnih skript in ničesar ne delimo z družbenimi omrežji.
+sv: För närvarande använder webbplatsen endast tekniskt nödvändig lagring. Vi kör inga reklam- eller spårningsskript och delar ingenting med sociala medier.
+@1301
+it: Cosa memorizziamo
+pt: O que guardamos
+el: Τι αποθηκεύουμε
+cs: Co ukládáme
+sl: Kaj shranjujemo
+sv: Vad vi lagrar
+@1302
+it: La vostra scelta sui cookie (accettati o rifiutati). Viene conservata nel vostro browser e non ci viene trasmessa. Conservazione: 12 mesi.
+pt: A sua escolha relativamente aos cookies (aceites ou recusados). Fica guardada no seu navegador e não nos chega. Conservação: 12 meses.
+el: Η επιλογή σας για τα cookies (αποδοχή ή απόρριψη). Διατηρείται στο πρόγραμμα περιήγησής σας και δεν φτάνει σε εμάς. Διάρκεια διατήρησης: 12 μήνες.
+cs: Vaše volba ohledně cookies (přijato nebo odmítnuto). Uchovává se ve vašem prohlížeči a k nám se nedostane. Doba uchování: 12 měsíců.
+sl: Vaša izbira glede piškotkov (sprejeto ali zavrnjeno). Shrani se v vašem brskalniku in ne pride do nas. Hramba: 12 mesecev.
+sv: Ditt val om cookies (godkänt eller avvisat). Sparas i din webbläsare och når inte oss. Lagringstid: 12 månader.
+@1303
+it: Statistiche
+pt: Estatísticas
+el: Στατιστικά
+cs: Statistiky
+sl: Statistika
+sv: Statistik
+@1304
+it: Se un giorno raccoglieremo statistiche sui visitatori, le attiveremo solo con il vostro consenso preventivo ed esplicito. Il rifiuto non limita in alcun modo l’uso del sito.
+pt: Se algum dia recolhermos estatísticas de visitantes, só as ativaremos com o seu consentimento prévio e explícito. Recusar não limita de forma alguma a utilização do site.
+el: Αν ποτέ τηρήσουμε στατιστικά επισκεπτών, θα τα ενεργοποιήσουμε μόνο με την προηγούμενη ρητή συγκατάθεσή σας. Η άρνηση δεν περιορίζει με κανέναν τρόπο τη χρήση του ιστότοπου.
+cs: Pokud bychom někdy vedli statistiky návštěvnosti, zapneme je jen s vaším předchozím výslovným souhlasem. Odmítnutí nijak neomezuje používání webu.
+sl: Če bomo kdaj vodili statistiko obiskov, jo bomo vklopili le z vašo predhodno izrecno privolitvijo. Zavrnitev nikakor ne omejuje uporabe strani.
+sv: Om vi någon gång för besöksstatistik slår vi bara på den med ditt föregående, uttryckliga samtycke. Att avböja begränsar inte din användning av webbplatsen på något sätt.
+@1305
+it: Modificare la scelta
+pt: Alterar a sua escolha
+el: Αλλαγή της επιλογής σας
+cs: Změna volby
+sl: Sprememba izbire
+sv: Ändra ditt val
+@1306
+it: Potete modificare la scelta in qualsiasi momento cancellando i dati del browser memorizzati per questo sito; l’avviso sui cookie comparirà di nuovo.
+pt: Pode alterar a sua escolha a qualquer momento apagando os dados do navegador guardados para este site; o aviso de cookies volta então a aparecer.
+el: Μπορείτε να αλλάξετε την επιλογή σας οποιαδήποτε στιγμή διαγράφοντας τα αποθηκευμένα δεδομένα του προγράμματος περιήγησης για αυτόν τον ιστότοπο· τότε η ειδοποίηση για τα cookies εμφανίζεται ξανά.
+cs: Svou volbu můžete kdykoli změnit vymazáním uložených dat prohlížeče pro tento web; oznámení o cookies se pak znovu zobrazí.
+sl: Izbiro lahko kadar koli spremenite tako, da izbrišete shranjene podatke brskalnika za to stran; obvestilo o piškotkih se nato znova prikaže.
+sv: Du kan när som helst ändra ditt val genom att rensa sparade webbläsardata för den här webbplatsen; då visas cookiemeddelandet igen.
+@1307
+it: Termini e condizioni
+pt: Termos e condições
+el: Όροι και προϋποθέσεις
+cs: Obchodní podmínky
+sl: Splošni pogoji
+sv: Allmänna villkor
+@1308
+it: Le condizioni del servizio pubblicitario e di intermediazione di FODEL: prezzi, provvigione, ritiro e responsabilità.
+pt: As condições do serviço de publicidade e mediação da FODEL: preços, comissão, retirada e responsabilidade.
+el: Οι όροι της υπηρεσίας διαφήμισης και μεσιτείας της FODEL: τιμές, προμήθεια, απόσυρση και ευθύνη.
+cs: Podmínky inzertní a zprostředkovatelské služby FODEL: ceny, provize, stažení a odpovědnost.
+sl: Pogoji oglaševalske in posredniške storitve FODEL: cene, provizija, umik in odgovornost.
+sv: Villkoren för FODEL:s annons- och förmedlingstjänst: priser, provision, återkallelse och ansvar.
+@1309
+it: Condizioni
+pt: Termos
+el: Όροι
+cs: Podmínky
+sl: Pogoji
+sv: Villkor
+@1310
+it: Termini e
+pt: Termos e
+el: Όροι και
+cs: Obchodní
+sl: Splošni
+sv: Allmänna
+@1311
+it: Attenzione
+pt: Atenção
+el: Σημείωση
+cs: Upozornění
+sl: Opomba
+sv: Observera
+@1312
+it: Questa pagina è un riepilogo. Le condizioni complete e vincolanti sono disponibili in PDF; in caso di divergenza prevale il PDF.
+pt: Esta página é um resumo. Os termos completos e vinculativos estão disponíveis em PDF; em caso de divergência, prevalece o PDF.
+el: Η σελίδα αυτή είναι περίληψη. Οι πλήρεις, δεσμευτικοί όροι διατίθενται σε PDF· σε περίπτωση απόκλισης υπερισχύει το PDF.
+cs: Tato stránka je shrnutím. Úplné a závazné podmínky jsou k dispozici v PDF; v případě rozporu má přednost PDF.
+sl: Ta stran je povzetek. Celotni zavezujoči pogoji so na voljo v PDF; v primeru razhajanj velja PDF.
+sv: Den här sidan är en sammanfattning. De fullständiga, bindande villkoren finns som PDF; vid avvikelser gäller PDF:en.
+@1313
+it: 1. Il servizio
+pt: 1. O serviço
+el: 1. Η υπηρεσία
+cs: 1. Služba
+sl: 1. Storitev
+sv: 1. Tjänsten
+@1314
+it: FODEL pubblicizza immobili ungheresi sui propri siti multilingue e, sulla base di un accordo separato, assiste nella conclusione della vendita.
+pt: A FODEL publicita imóveis húngaros nos seus próprios sites multilingues e, mediante acordo separado, presta apoio na conclusão da venda.
+el: Η FODEL διαφημίζει ουγγρικά ακίνητα στους δικούς της πολύγλωσσους ιστότοπους και, βάσει χωριστής συμφωνίας, συνδράμει στην ολοκλήρωση της πώλησης.
+cs: FODEL inzeruje maďarské nemovitosti na vlastních vícejazyčných webech a na základě samostatné smlouvy pomáhá s dokončením prodeje.
+sl: FODEL oglašuje madžarske nepremičnine na lastnih večjezičnih spletnih straneh in na podlagi ločene pogodbe pomaga pri izvedbi prodaje.
+sv: FODEL annonserar ungerska fastigheter på sina egna flerspråkiga webbplatser och hjälper, enligt separat avtal, till med att genomföra försäljningen.
+@1315
+it: Il servizio pubblicitario non comporta esclusiva: il venditore può offrire e vendere l’immobile anche attraverso altri canali.
+pt: O serviço de publicidade não tem exclusividade: o vendedor pode também oferecer e vender o imóvel através de outros canais.
+el: Η υπηρεσία διαφήμισης δεν προβλέπει αποκλειστικότητα: ο πωλητής μπορεί να προσφέρει και να πουλήσει το ακίνητο και μέσω άλλων καναλιών.
+cs: Inzertní služba není exkluzivní: prodávající může nemovitost nabízet a prodat i jinými cestami.
+sl: Oglaševalska storitev ni izključna: prodajalec lahko nepremičnino ponuja in proda tudi po drugih poteh.
+sv: Annonstjänsten innebär ingen ensamrätt: säljaren får även erbjuda och sälja fastigheten via andra kanaler.
+@1316
+it: 2. Pubblicare un annuncio
+pt: 2. Publicar um anúncio
+el: 2. Καταχώριση αγγελίας
+cs: 2. Zadání inzerátu
+sl: 2. Objava oglasa
+sv: 2. Lägga in en annons
+@1317
+it: Il venditore compila il modulo di registrazione.
+pt: O vendedor preenche o formulário de registo.
+el: Ο πωλητής συμπληρώνει τη φόρμα εγγραφής.
+cs: Prodávající vyplní registrační formulář.
+sl: Prodajalec izpolni prijavni obrazec.
+sv: Säljaren fyller i registreringsformuläret.
+@1318
+it: FODEL invia una richiesta di pagamento per il pacchetto scelto.
+pt: A FODEL envia um pedido de pagamento para o pacote escolhido.
+el: Η FODEL στέλνει αίτημα πληρωμής για το επιλεγμένο πακέτο.
+cs: FODEL zašle výzvu k platbě za zvolený balíček.
+sl: FODEL pošlje zahtevek za plačilo izbranega paketa.
+sv: FODEL skickar en betalningsbegäran för det valda paketet.
+@1319
+it: Il venditore paga tramite bonifico bancario.
+pt: O vendedor paga por transferência bancária.
+el: Ο πωλητής πληρώνει με τραπεζικό έμβασμα.
+cs: Prodávající zaplatí bankovním převodem.
+sl: Prodajalec plača z bančnim nakazilom.
+sv: Säljaren betalar via banköverföring.
+@1320
+it: Al ricevimento del pagamento, il venditore ottiene il diritto di caricare le foto.
+pt: Após a receção, o vendedor recebe o direito de carregar fotografias.
+el: Με την παραλαβή της πληρωμής, ο πωλητής αποκτά δικαίωμα να ανεβάσει φωτογραφίες.
+cs: Po přijetí platby získá prodávající právo nahrát fotografie.
+sl: Po prejemu plačila prodajalec dobi pravico do nalaganja fotografij.
+sv: När betalningen har kommit in får säljaren rätt att ladda upp foton.
+@1321
+it: FODEL si occupa della traduzione e pubblica l’annuncio.
+pt: A FODEL trata da tradução e publica o anúncio.
+el: Η FODEL αναλαμβάνει τη μετάφραση και δημοσιεύει την αγγελία.
+cs: FODEL zajistí překlad a inzerát zveřejní.
+sl: FODEL poskrbi za prevod in objavi oglas.
+sv: FODEL sköter översättningen och publicerar annonsen.
+@1322
+it: 3. Prezzi
+pt: 3. Preços
+el: 3. Τιμές
+cs: 3. Ceny
+sl: 3. Cene
+sv: 3. Priser
+@1323
+it: Tutti i prezzi includono l’IVA olandese del ${LISTING_VAT_PERCENT}%. Il quadro completo è alla pagina Prezzi.
+pt: Todos os preços incluem ${LISTING_VAT_PERCENT}% de IVA neerlandês. Consulte a página Preços para a visão completa.
+el: Όλες οι τιμές περιλαμβάνουν ${LISTING_VAT_PERCENT}% ολλανδικό ΦΠΑ. Δείτε τη σελίδα Τιμές για την πλήρη εικόνα.
+cs: Všechny ceny zahrnují ${LISTING_VAT_PERCENT} % nizozemské DPH. Úplný přehled najdete na stránce Ceny.
+sl: Vse cene vključujejo ${LISTING_VAT_PERCENT} % nizozemskega DDV. Celoten pregled je na strani Cene.
+sv: Alla priser inkluderar ${LISTING_VAT_PERCENT} % nederländsk moms. Se sidan Priser för en fullständig översikt.
+@1324
+it: Annuncio economico (${cheap.months} mesi)
+pt: Anúncio económico (${cheap.months} meses)
+el: Οικονομική αγγελία (${cheap.months} μήνες)
+cs: Úsporný inzerát (${cheap.months} měsíců)
+sl: Varčni oglas (${cheap.months} mesecev)
+sv: Basannons (${cheap.months} månader)
+@1325
+it: Annuncio standard (${normal.months} mesi)
+pt: Anúncio padrão (${normal.months} meses)
+el: Τυπική αγγελία (${normal.months} μήνες)
+cs: Standardní inzerát (${normal.months} měsíců)
+sl: Standardni oglas (${normal.months} mesecev)
+sv: Standardannons (${normal.months} månader)
+@1326
+it: =
+pt: =
+el: =
+cs: =
+sl: =
+sv: =
+@1327
+it: Traduzione
+pt: Tradução
+el: Μετάφραση
+cs: Překlad
+sl: Prevod
+sv: Översättning
+@1328
+it: ${eur(extra('translation').priceEur, L)} per lingua
+pt: ${eur(extra('translation').priceEur, L)} por língua
+el: ${eur(extra('translation').priceEur, L)} ανά γλώσσα
+cs: ${eur(extra('translation').priceEur, L)} za jazyk
+sl: ${eur(extra('translation').priceEur, L)} na jezik
+sv: ${eur(extra('translation').priceEur, L)} per språk
+@1329
+it: Messa in evidenza
+pt: Destaque
+el: Προβολή
+cs: Zvýraznění
+sl: Izpostavitev
+sv: Framhävning
+@1330
+it: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} al mese (min. ${minMonths} mesi)
+pt: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} por mês (mín. ${minMonths} meses)
+el: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} τον μήνα (ελάχ. ${minMonths} μήνες)
+cs: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} měsíčně (min. ${minMonths} měsíce)
+sl: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} na mesec (najmanj ${minMonths} mesece)
+sv: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} per månad (minst ${minMonths} månader)
+@1331
+it: 4. Provvigione
+pt: 4. Comissão
+el: 4. Προμήθεια
+cs: 4. Provize
+sl: 4. Provizija
+sv: 4. Provision
+@1332
+it: La provvigione è dovuta solo se ricorrono tutte le seguenti condizioni: un contratto di compravendita scritto, un acquirente presentato da FODEL e una caparra versata.
+pt: A comissão só é devida quando se verificam todas as condições seguintes: um contrato de compra e venda escrito, um comprador apresentado pela FODEL e um sinal pago.
+el: Η προμήθεια οφείλεται μόνο όταν ισχύουν όλα τα εξής: γραπτό συμβόλαιο αγοραπωλησίας, αγοραστής που έφερε η FODEL και καταβληθείσα προκαταβολή.
+cs: Provize je splatná pouze při splnění všech těchto podmínek: písemná kupní smlouva, kupující přivedený FODEL a zaplacená záloha.
+sl: Provizija zapade v plačilo le, če so izpolnjeni vsi naslednji pogoji: pisna prodajna pogodba, kupec, ki ga je pripeljal FODEL, in plačana ara.
+sv: Provision ska betalas endast när allt följande gäller: ett skriftligt köpeavtal, en köpare som presenterats av FODEL och en handpenning som har betalats.
+@1333
+it: La provvigione è del ${COMMISSION.percent}% netto con un minimo di ${eur(COMMISSION.minimumEur, L)}, più il ${COMMISSION.vatPercent}% di IVA olandese.
+pt: A comissão é de ${COMMISSION.percent}% líquida, com um mínimo de ${eur(COMMISSION.minimumEur, L)}, acrescida de ${COMMISSION.vatPercent}% de IVA neerlandês.
+el: Η προμήθεια είναι ${COMMISSION.percent}% καθαρό, με ελάχιστο ποσό ${eur(COMMISSION.minimumEur, L)}, πλέον ${COMMISSION.vatPercent}% ολλανδικού ΦΠΑ.
+cs: Provize činí ${COMMISSION.percent} % netto, nejméně ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nizozemské DPH.
+sl: Provizija znaša ${COMMISSION.percent} % neto, najmanj ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nizozemskega DDV.
+sv: Provisionen är ${COMMISSION.percent} % netto, minst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % nederländsk moms.
+@1334
+it: Se l’interessato contatta direttamente il venditore e il nostro aiuto per la conclusione non è necessario, non è dovuto nulla oltre al costo dell’annuncio.
+pt: Se o interessado contactar diretamente o vendedor e a nossa ajuda na conclusão não for necessária, nada é devido além do preço do anúncio.
+el: Αν ο ενδιαφερόμενος επικοινωνήσει απευθείας με τον πωλητή και δεν χρειαστεί η βοήθειά μας για την ολοκλήρωση, δεν οφείλεται τίποτα πέραν του κόστους της αγγελίας.
+cs: Pokud zájemce kontaktuje prodávajícího přímo a naše pomoc s dokončením není potřeba, nic dalšího kromě poplatku za inzerát se neplatí.
+sl: Če zainteresirani neposredno kontaktira prodajalca in naša pomoč pri izvedbi ni potrebna, se poleg cene oglasa ne plača nič.
+sv: Om den intresserade kontaktar säljaren direkt och vår hjälp med genomförandet inte behövs, ska inget betalas utöver annonsavgiften.
+@1335
+it: 5. Ritiro dell’annuncio
+pt: 5. Retirada do anúncio
+el: 5. Απόσυρση της αγγελίας
+cs: 5. Stažení inzerátu
+sl: 5. Umik oglasa
+sv: 5. Återkalla annonsen
+@1336
+it: Il venditore può ritirare l’annuncio prima della scadenza. In tal caso i costi dell’annuncio già pagati non vengono rimborsati.
+pt: O vendedor pode retirar o anúncio antes da data de expiração. Nesse caso, os valores do anúncio já pagos não são reembolsados.
+el: Ο πωλητής μπορεί να αποσύρει την αγγελία πριν από τη λήξη της. Στην περίπτωση αυτή τα ήδη καταβληθέντα τέλη αγγελίας δεν επιστρέφονται.
+cs: Prodávající může inzerát stáhnout před datem uplynutí. Již zaplacené poplatky za inzerát se v takovém případě nevracejí.
+sl: Prodajalec lahko oglas umakne pred iztekom. Že plačani stroški oglasa se v tem primeru ne vrnejo.
+sv: Säljaren kan återkalla annonsen före slutdatumet. Redan betalda annonsavgifter återbetalas i så fall inte.
+@1337
+it: 6. Responsabilità
+pt: 6. Responsabilidade
+el: 6. Ευθύνη
+cs: 6. Odpovědnost
+sl: 6. Odgovornost
+sv: 6. Ansvar
+@1338
+it: Il venditore è responsabile dell’esattezza dei dati sull’immobile. FODEL riproduce i dati forniti e non risponde della loro esattezza.
+pt: O vendedor é responsável pela exatidão dos dados sobre o imóvel. A FODEL reproduz os dados fornecidos e não se responsabiliza pela sua exatidão.
+el: Ο πωλητής ευθύνεται για την ακρίβεια των στοιχείων του ακινήτου. Η FODEL αναπαράγει τα στοιχεία που της δίνονται και δεν φέρει ευθύνη για την ακρίβειά τους.
+cs: Za správnost údajů o nemovitosti odpovídá prodávající. FODEL přebírá dodané údaje a za jejich správnost neručí.
+sl: Za točnost podatkov o nepremičnini odgovarja prodajalec. FODEL objavi posredovane podatke in ne odgovarja za njihovo točnost.
+sv: Säljaren ansvarar för att uppgifterna om fastigheten är korrekta. FODEL återger de lämnade uppgifterna och ansvarar inte för deras riktighet.
+@1339
+it: Le traduzioni presenti su questo sito sono a scopo informativo; in caso di controversia prevale la versione ungherese.
+pt: As traduções neste site são meramente informativas; em caso de litígio, prevalece a versão húngara.
+el: Οι μεταφράσεις στον ιστότοπο έχουν ενημερωτικό χαρακτήρα· σε περίπτωση διαφοράς υπερισχύει η ουγγρική εκδοχή.
+cs: Překlady na tomto webu mají informativní charakter; ve sporu má přednost maďarská verze.
+sl: Prevodi na tej spletni strani so informativni; v primeru spora velja madžarska različica.
+sv: Översättningarna på webbplatsen är informativa; vid tvist gäller den ungerska versionen.
+@1340
+it: 7. Diritto di recesso
+pt: 7. Direito de livre resolução
+el: 7. Δικαίωμα υπαναχώρησης
+cs: 7. Právo na odstoupení od smlouvy
+sl: 7. Pravica do odstopa
+sv: 7. Ångerrätt
+@1341
+it: Il venditore che è un consumatore gode del diritto di recesso previsto dalla legge per i contratti a distanza. Se il venditore chiede espressamente l’esecuzione immediata, il diritto di recesso si riduce in proporzione al servizio già prestato.
+pt: O vendedor que seja consumidor tem o direito legal de livre resolução nos contratos à distância. Se o vendedor pedir expressamente a execução imediata, o direito de livre resolução é reduzido na proporção do serviço já prestado.
+el: Ο πωλητής που είναι καταναλωτής έχει το νόμιμο δικαίωμα υπαναχώρησης για συμβάσεις από απόσταση. Αν ο πωλητής ζητήσει ρητά άμεση εκτέλεση, το δικαίωμα υπαναχώρησης περιορίζεται ανάλογα με την υπηρεσία που έχει ήδη παρασχεθεί.
+cs: Prodávající, který je spotřebitelem, má zákonné právo odstoupit od smlouvy uzavřené na dálku. Pokud prodávající výslovně požádá o okamžité plnění, právo na odstoupení se úměrně sníží podle již poskytnuté služby.
+sl: Prodajalec, ki je potrošnik, ima zakonsko pravico do odstopa od pogodbe, sklenjene na daljavo. Če prodajalec izrecno zahteva takojšnjo izvedbo, se pravica do odstopa zmanjša sorazmerno z že opravljeno storitvijo.
+sv: En säljare som är konsument har lagstadgad ångerrätt vid distansavtal. Om säljaren uttryckligen begär omedelbart fullgörande minskar ångerrätten i proportion till den tjänst som redan har utförts.
+@1342
+it: Dichiarazione di accessibilità
+pt: Declaração de acessibilidade
+el: Δήλωση προσβασιμότητας
+cs: Prohlášení o přístupnosti
+sl: Izjava o dostopnosti
+sv: Redogörelse för tillgänglighet
+@1343
+it: Il livello di accessibilità di ${SITE_HOST}, lo standard che seguiamo e come inviarci un riscontro.
+pt: O nível de acessibilidade do ${SITE_HOST}, a norma que seguimos e como nos enviar comentários.
+el: Το επίπεδο προσβασιμότητας του ${SITE_HOST}, το πρότυπο που ακολουθούμε και πώς να μας στείλετε σχόλια.
+cs: Úroveň přístupnosti ${SITE_HOST}, standard, který dodržujeme, a jak nám poslat zpětnou vazbu.
+sl: Raven dostopnosti ${SITE_HOST}, standard, ki ga upoštevamo, in kako nam sporočite povratne informacije.
+sv: Tillgänglighetsnivån för ${SITE_HOST}, standarden vi följer och hur du ger oss återkoppling.
+@1344
+it: Accessibilità
+pt: Acessibilidade
+el: Προσβασιμότητα
+cs: Přístupnost
+sl: Dostopnost
+sv: Tillgänglighet
+@1345
+it: Vogliamo che questo sito sia utilizzabile da tutti, compresi i visitatori che usano uno screen reader, la tastiera o l’ingrandimento.
+pt: Queremos que este site possa ser usado por todos, incluindo visitantes que utilizam um leitor de ecrã, o teclado ou ampliação.
+el: Θέλουμε ο ιστότοπος να είναι χρηστικός για όλους, και για επισκέπτες που χρησιμοποιούν αναγνώστη οθόνης, πληκτρολόγιο ή μεγέθυνση.
+cs: Chceme, aby tento web mohl používat každý, včetně návštěvníků, kteří používají čtečku obrazovky, klávesnici nebo zvětšení.
+sl: Želimo, da je ta spletna stran uporabna za vse, tudi za obiskovalce, ki uporabljajo bralnik zaslona, tipkovnico ali povečavo.
+sv: Vi vill att webbplatsen ska kunna användas av alla, även besökare som använder skärmläsare, tangentbord eller förstoring.
+@1346
+it: Realizziamo il sito secondo le WCAG 2.2 livello AA. Una parte considerevole dei nostri visitatori è in pensione, quindi dimensione del testo, contrasto e uso da tastiera hanno la priorità.
+pt: Construímos o site segundo as WCAG 2.2, nível AA. Uma parte considerável dos nossos visitantes é reformada, por isso o tamanho do texto, o contraste e a utilização por teclado têm prioridade.
+el: Κατασκευάζουμε τον ιστότοπο σύμφωνα με τις WCAG 2.2 επιπέδου AA. Σημαντικό μέρος των επισκεπτών μας είναι συνταξιούχοι, γι’ αυτό το μέγεθος κειμένου, η αντίθεση και ο χειρισμός με πληκτρολόγιο έχουν προτεραιότητα.
+cs: Web vytváříme podle WCAG 2.2 na úrovni AA. Značná část našich návštěvníků je v důchodu, proto mají přednost velikost písma, kontrast a ovládání klávesnicí.
+sl: Stran gradimo po smernicah WCAG 2.2, raven AA. Precejšen del naših obiskovalcev je upokojenih, zato imajo prednost velikost besedila, kontrast in upravljanje s tipkovnico.
+sv: Vi bygger webbplatsen enligt WCAG 2.2 nivå AA. En stor del av våra besökare är pensionärer, så textstorlek, kontrast och tangentbordsstyrning prioriteras.
+@1347
+it: Cosa è già disponibile
+pt: O que já está implementado
+el: Τι έχει ήδη υλοποιηθεί
+cs: Co je již zavedeno
+sl: Kaj je že urejeno
+sv: Vad som finns på plats
+@1348
+it: Tutti i testi hanno un rapporto di contrasto di almeno 4,5:1
+pt: Todo o texto tem uma relação de contraste de, pelo menos, 4,5:1
+el: Όλο το κείμενο έχει λόγο αντίθεσης τουλάχιστον 4,5:1
+cs: Veškerý text má kontrastní poměr alespoň 4,5 : 1
+sl: Vse besedilo ima kontrastno razmerje najmanj 4,5 : 1
+sv: All text har ett kontrastförhållande på minst 4,5:1
+@1349
+it: Uso completo da tastiera con indicazione visibile del focus
+pt: Utilização completa por teclado com indicação visível do foco
+el: Πλήρης χειρισμός με πληκτρολόγιο με ορατή ένδειξη εστίασης
+cs: Úplné ovládání klávesnicí s viditelným zvýrazněním fokusu
+sl: Popolno upravljanje s tipkovnico z vidnim označevanjem fokusa
+sv: Full tangentbordsstyrning med synlig fokusmarkering
+@1350
+it: Un link “salta al contenuto” in cima a ogni pagina
+pt: Uma ligação «saltar para o conteúdo» no topo de cada página
+el: Σύνδεσμος «μετάβαση στο περιεχόμενο» στην κορυφή κάθε σελίδας
+cs: Odkaz „přeskočit na obsah“ v horní části každé stránky
+sl: Povezava „preskoči na vsebino“ na vrhu vsake strani
+sv: En länk ”hoppa till innehållet” högst upp på varje sida
+@1351
+it: Testi alternativi significativi per tutte le immagini
+pt: Textos alternativos significativos para todas as imagens
+el: Ουσιαστικά εναλλακτικά κείμενα για όλες τις εικόνες
+cs: Smysluplné alternativní texty u všech obrázků
+sl: Smiselna nadomestna besedila za vse slike
+sv: Meningsfulla alternativtexter för alla bilder
+@1352
+it: Campi del modulo con etichette collegate e messaggi di errore testuali
+pt: Campos de formulário com etiquetas associadas e mensagens de erro em texto
+el: Πεδία φορμών με συνδεδεμένες ετικέτες και μηνύματα σφάλματος σε κείμενο
+cs: Formulářová pole s propojenými popisky a textovými chybovými hlášeními
+sl: Polja obrazcev s povezanimi oznakami in besedilnimi sporočili o napakah
+sv: Formulärfält med kopplade etiketter och felmeddelanden i text
+@1353
+it: Rispetto dell’impostazione di sistema “riduci movimento”
+pt: Respeito pela definição do sistema «reduzir movimento»
+el: Σεβασμός της ρύθμισης συστήματος «μείωση κίνησης»
+cs: Respektování systémového nastavení „omezit pohyb“
+sl: Upoštevanje sistemske nastavitve „zmanjšaj gibanje“
+sv: Hänsyn till systeminställningen ”minska rörelse”
+@1354
+it: Il sito è leggibile e utilizzabile senza JavaScript
+pt: O site é legível e utilizável sem JavaScript
+el: Ο ιστότοπος είναι αναγνώσιμος και λειτουργικός χωρίς JavaScript
+cs: Web je čitelný a použitelný i bez JavaScriptu
+sl: Stran je berljiva in uporabna tudi brez JavaScripta
+sv: Webbplatsen går att läsa och använda utan JavaScript
+@1355
+it: Limitazioni note
+pt: Limitações conhecidas
+el: Γνωστοί περιορισμοί
+cs: Známá omezení
+sl: Znane omejitve
+sv: Kända begränsningar
+@1356
+it: Non abbiamo alcuna influenza sull’accessibilità di contenuti di terzi, come un servizio di mappe.
+pt: Não temos influência sobre a acessibilidade de conteúdos de terceiros, como um serviço de mapas.
+el: Δεν έχουμε καμία επιρροή στην προσβασιμότητα περιεχομένου τρίτων, όπως μιας υπηρεσίας χαρτών.
+cs: Na přístupnost obsahu třetích stran, například mapové služby, nemáme vliv.
+sl: Na dostopnost vsebin tretjih oseb, kot je storitev zemljevidov, nimamo vpliva.
+sv: Vi kan inte påverka tillgängligheten hos innehåll från tredje part, till exempel en karttjänst.
+@1357
+it: Riscontri
+pt: Comentários
+el: Σχόλια
+cs: Zpětná vazba
+sl: Povratne informacije
+sv: Återkoppling
+@1358
+it: Se incontrate un ostacolo, segnalatecelo a ${COMPANY.email.primary} o per telefono. Risolviamo le segnalazioni il prima possibile.
+pt: Se encontrar alguma barreira, informe-nos através de ${COMPANY.email.primary} ou por telefone. Resolvemos as comunicações o mais depressa possível.
+el: Αν συναντήσετε κάποιο εμπόδιο, ενημερώστε μας στο ${COMPANY.email.primary} ή τηλεφωνικά. Επιλύουμε τις αναφορές όσο το δυνατόν γρηγορότερα.
+cs: Pokud narazíte na překážku, dejte nám vědět na ${COMPANY.email.primary} nebo telefonicky. Hlášení řešíme co nejrychleji.
+sl: Če naletite na oviro, nam to sporočite na ${COMPANY.email.primary} ali po telefonu. Prijave rešujemo čim hitreje.
+sv: Om du stöter på ett hinder, meddela oss på ${COMPANY.email.primary} eller per telefon. Vi åtgärdar anmälningar så snabbt vi kan.

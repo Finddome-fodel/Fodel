@@ -1,0 +1,371 @@
+@982
+it: tenute agricole
+pt: propriedades rurais
+el: αγροτικά κτήματα
+cs: venkovská sídla
+sl: podeželska posestva
+sv: lantegendomar
+@983
+it: Il mercato fondiario ungherese ha regole proprie. Chi conosce le condizioni accede a vigneti, terreni agricoli, aziende agricole e boschi.
+pt: O mercado fundiário húngaro tem regras próprias. Quem conhece as condições tem acesso a vinhas, terras aráveis, quintas e floresta.
+el: Η ουγγρική αγορά γης έχει τους δικούς της κανόνες. Όποιος γνωρίζει τις προϋποθέσεις αποκτά πρόσβαση σε αμπελώνες, καλλιεργήσιμη γη, αγροκτήματα και δασικές εκτάσεις.
+cs: Maďarský trh s půdou má svá vlastní pravidla. Kdo zná podmínky, získá přístup k vinicím, orné půdě, statkům i lesům.
+sl: Madžarski trg z zemljišči ima svoja pravila. Kdor pozna pogoje, pride do vinogradov, njiv, kmetij in gozdov.
+sv: Den ungerska jordmarknaden har egna regler. Den som känner till villkoren får tillgång till vingårdar, åkermark, gårdar och skog.
+@984
+it: Il limite di ${AGRI_HECTARE_LIMIT} ettari
+pt: O limite de ${AGRI_HECTARE_LIMIT} hectares
+el: Το όριο των ${AGRI_HECTARE_LIMIT} εκταρίων
+cs: Limit ${AGRI_HECTARE_LIMIT} hektarů
+sl: Omejitev ${AGRI_HECTARE_LIMIT} hektarjev
+sv: Gränsen på ${AGRI_HECTARE_LIMIT} hektar
+@985
+it: Un cittadino UE con una qualifica agricola può acquistare in Ungheria fino a ${AGRI_HECTARE_LIMIT} ettari di terreno in totale. Seguiamo per intero questa procedura.
+pt: Um cidadão da UE com qualificação agrícola pode adquirir na Hungria até ${AGRI_HECTARE_LIMIT} hectares de terreno no total. Tratamos desse procedimento por completo.
+el: Ένας πολίτης της ΕΕ με γεωργικά προσόντα μπορεί να αποκτήσει στην Ουγγαρία συνολικά έως ${AGRI_HECTARE_LIMIT} εκτάρια γης. Αναλαμβάνουμε εξ ολοκλήρου αυτή τη διαδικασία.
+cs: Občan EU se zemědělskou kvalifikací může v Maďarsku nabýt celkem až ${AGRI_HECTARE_LIMIT} hektarů půdy. Celý tento postup zajistíme za vás.
+sl: Državljan EU z kmetijsko izobrazbo lahko na Madžarskem pridobi skupaj do ${AGRI_HECTARE_LIMIT} hektarjev zemljišč. Celoten postopek uredimo namesto vas.
+sv: En EU-medborgare med jordbruksutbildning får förvärva sammanlagt ${AGRI_HECTARE_LIMIT} hektar mark i Ungern. Vi sköter hela det förfarandet.
+@986
+it: La procedura prevede più passaggi presso le autorità e inizia con il riconoscimento della qualifica. Il nostro team La accompagna in tutto il percorso e prepara i documenti in entrambe le lingue.
+pt: O processo tem várias etapas junto das autoridades e começa com o reconhecimento da sua qualificação. A nossa equipa acompanha-o em todo o processo e prepara os documentos nas duas línguas.
+el: Η διαδικασία περιλαμβάνει πολλά στάδια ενώπιον των αρχών και ξεκινά με την αναγνώριση των προσόντων σας. Η ομάδα μας σας καθοδηγεί σε όλη τη διαδικασία και ετοιμάζει τα έγγραφα και στις δύο γλώσσες.
+cs: Řízení má u úřadů několik kroků a začíná uznáním vaší kvalifikace. Náš tým vás celým procesem provede a připraví dokumenty v obou jazycích.
+sl: Postopek pri organih ima več korakov in se začne s priznanjem vaše izobrazbe. Naša ekipa vas vodi skozi celoten postopek in pripravi dokumente v obeh jezikih.
+sv: Processen har flera steg hos myndigheterna och börjar med att din utbildning erkänns. Vårt team guidar dig genom hela processen och tar fram dokumenten på båda språken.
+@987
+it: Cosa acquistano i nostri clienti
+pt: O que os nossos clientes adquirem
+el: Τι αποκτούν οι πελάτες μας
+cs: Co naši klienti kupují
+sl: Kaj kupujejo naše stranke
+sv: Vad våra kunder köper
+@988
+it: Vigneti, con o senza cantina in funzione
+pt: Vinhas, com ou sem adega em funcionamento
+el: Αμπελώνες, με ή χωρίς λειτουργικό οινοποιείο
+cs: Vinice s fungujícím sklepem i bez něj
+sl: Vinogradi z delujočo kletjo ali brez nje
+sv: Vingårdar, med eller utan fungerande vinkällare
+@989
+it: Terreni agricoli, ammissibili ai sostegni UE
+pt: Terras aráveis, elegíveis para apoios da UE
+el: Καλλιεργήσιμη γη, επιλέξιμη για ενισχύσεις της ΕΕ
+cs: Orná půda způsobilá pro dotace EU
+sl: Njive, upravičene do podpore EU
+sv: Åkermark som är berättigad till EU-stöd
+@990
+it: Aziende agricole con annessi, adatte all’allevamento
+pt: Quintas com anexos, adequadas para criação de gado
+el: Αγροκτήματα με βοηθητικά κτίσματα, κατάλληλα για κτηνοτροφία
+cs: Statky s hospodářskými budovami vhodné pro chov zvířat
+sl: Kmetije z gospodarskimi poslopji, primerne za živinorejo
+sv: Gårdar med ekonomibyggnader, lämpliga för djurhållning
+@991
+it: Boschi e tenute a uso misto
+pt: Florestas e propriedades de uso misto
+el: Δασικές εκτάσεις και κτήματα μικτής χρήσης
+cs: Lesy a smíšeně využívané pozemky
+sl: Gozdovi in posestva z mešano rabo
+sv: Skog och gårdar med blandad användning
+@992
+it: Appezzamenti contigui più grandi come investimento
+pt: Parcelas contíguas maiores como investimento
+el: Μεγαλύτερα ενιαία αγροτεμάχια ως επένδυση
+cs: Větší souvislé pozemky jako investice
+sl: Večja strnjena zemljišča kot naložba
+sv: Större sammanhängande skiften som investering
+@993
+it: La procedura
+pt: O processo
+el: Η διαδικασία
+cs: Postup
+sl: Postopek
+sv: Processen
+@994
+it: Consulenza
+pt: Consulta
+el: Συμβουλευτική συνάντηση
+cs: Konzultace
+sl: Posvet
+sv: Rådgivning
+@995
+it: Discutiamo i Suoi progetti e il budget disponibile.
+pt: Analisamos os seus planos e o orçamento disponível.
+el: Συζητάμε τα σχέδιά σας και τον διαθέσιμο προϋπολογισμό.
+cs: Probereme vaše plány a dostupný rozpočet.
+sl: Pogovorimo se o vaših načrtih in razpoložljivem proračunu.
+sv: Vi går igenom dina planer och din budget.
+@996
+it: Riconoscimento della qualifica
+pt: Reconhecimento da qualificação
+el: Αναγνώριση προσόντων
+cs: Uznání kvalifikace
+sl: Priznanje izobrazbe
+sv: Erkännande av utbildning
+@997
+it: Ci occupiamo del riconoscimento della Sua qualifica agricola in Ungheria.
+pt: Tratamos do reconhecimento da sua qualificação agrícola na Hungria.
+el: Φροντίζουμε για την αναγνώριση των γεωργικών σας προσόντων στην Ουγγαρία.
+cs: Zajistíme uznání vaší zemědělské kvalifikace v Maďarsku.
+sl: Uredimo priznanje vaše kmetijske izobrazbe na Madžarskem.
+sv: Vi ser till att din jordbruksutbildning erkänns i Ungern.
+@998
+it: Ricerca
+pt: Pesquisa
+el: Αναζήτηση
+cs: Hledání
+sl: Iskanje
+sv: Sökning
+@999
+it: Con i nostri partner cerchiamo terreni che soddisfano le condizioni.
+pt: Com os nossos parceiros procuramos terrenos que cumpram as condições.
+el: Με τους συνεργάτες μας αναζητούμε γη που πληροί τις προϋποθέσεις.
+cs: S našimi partnery hledáme pozemky, které splňují podmínky.
+sl: S partnerji iščemo zemljišča, ki izpolnjujejo pogoje.
+sv: Tillsammans med våra partner söker vi mark som uppfyller villkoren.
+@1000
+it: Autorizzazioni
+pt: Autorizações
+el: Άδειες
+cs: Povolení
+sl: Dovoljenja
+sv: Tillstånd
+@1001
+it: Richiesta delle autorizzazioni necessarie per l’acquisto del terreno.
+pt: Pedido das autorizações necessárias para adquirir o terreno.
+el: Αίτηση για τις άδειες που απαιτούνται για την απόκτηση της γης.
+cs: Žádost o povolení potřebná k nabytí půdy.
+sl: Vložitev zahtevkov za dovoljenja, potrebna za pridobitev zemljišča.
+sv: Ansökan om de tillstånd som krävs för att förvärva marken.
+@1002
+it: Acquisto
+pt: Compra
+el: Αγορά
+cs: Koupě
+sl: Nakup
+sv: Köp
+@1003
+it: Contratto bilingue, iscrizione al catasto, trasferimento dei diritti ai contributi.
+pt: Contrato bilingue, registo predial, transferência dos direitos a subsídios.
+el: Δίγλωσσο συμβόλαιο, εγγραφή στο κτηματολόγιο, μεταβίβαση δικαιωμάτων ενισχύσεων.
+cs: Dvojjazyčná smlouva, zápis do katastru nemovitostí, převod nároků na dotace.
+sl: Dvojezična pogodba, vpis v zemljiško knjigo, prenos pravic do subvencij.
+sv: Tvåspråkigt avtal, inskrivning i fastighetsregistret, överföring av stödrätter.
+@1004
+it: Importante
+pt: Importante
+el: Σημαντικό
+cs: Důležité
+sl: Pomembno
+sv: Viktigt
+@1005
+it: Le regole sull’acquisto di terreni agricoli cambiano periodicamente e dipendono dalla Sua situazione specifica. Quanto riportato qui ha valore puramente informativo. Per un progetto concreto si rivolga sempre a noi e a un avvocato specializzato.
+pt: As regras de aquisição de terrenos agrícolas mudam periodicamente e dependem da sua situação concreta. O que aqui se escreve é meramente informativo. Para um projeto concreto, consulte-nos sempre a nós e a um advogado especializado.
+el: Οι κανόνες για την απόκτηση γεωργικής γης αλλάζουν κατά διαστήματα και εξαρτώνται από τις συγκεκριμένες συνθήκες σας. Όσα αναφέρονται εδώ είναι μόνο ενημερωτικά. Για ένα συγκεκριμένο σχέδιο συμβουλευτείτε πάντα εμάς και έναν εξειδικευμένο δικηγόρο.
+cs: Pravidla pro nabývání zemědělské půdy se čas od času mění a závisejí na vaší konkrétní situaci. Zde uvedené informace mají pouze informativní charakter. S konkrétním záměrem se vždy obraťte na nás a na specializovaného advokáta.
+sl: Pravila za pridobivanje kmetijskih zemljišč se občasno spreminjajo in so odvisna od vaših okoliščin. Tukaj zapisano je zgolj informativno. Za konkreten načrt se vedno posvetujte z nami in s specializiranim odvetnikom.
+sv: Reglerna för förvärv av jordbruksmark ändras då och då och beror på din situation. Det som står här är endast information. Rådgör alltid med oss och en specialiserad advokat inför ett konkret köp.
+@1006
+it: Cerca un immobile agricolo?
+pt: Procura um imóvel agrícola?
+el: Αναζητάτε αγροτικό ακίνητο;
+cs: Hledáte zemědělskou nemovitost?
+sl: Iščete kmetijsko nepremičnino?
+sv: Letar du efter en jordbruksfastighet?
+@1007
+it: Ci dica cosa desidera: cerchiamo anche oltre gli immobili che pubblichiamo.
+pt: Diga-nos o que procura: também pesquisamos para além dos imóveis que anunciamos.
+el: Πείτε μας τι θέλετε· αναζητούμε και πέρα από τα ακίνητα που προβάλλουμε.
+cs: Řekněte nám, co hledáte – hledáme i mimo nemovitosti, které inzerujeme.
+sl: Povejte nam, kaj želite – iščemo tudi zunaj nepremičnin, ki jih oglašujemo.
+sv: Berätta vad du söker – vi letar även bortom de objekt vi annonserar.
+@1008
+it: Ricerca immobile gratuita
+pt: Pesquisa de imóvel gratuita
+el: Δωρεάν αναζήτηση ακινήτου
+cs: Bezplatné vyhledání nemovitosti
+sl: Brezplačno iskanje nepremičnine
+sv: Kostnadsfri objektsökning
+@1009
+it: =
+pt: =
+el: =
+cs: =
+sl: =
+sv: =
+@1010
+it: I nostri immobili
+pt: Os nossos imóveis
+el: Τα ακίνητά μας
+cs: Naše nemovitosti
+sl: Naše nepremičnine
+sv: Våra objekt
+@1011
+it: Acquistare in Ungheria: la procedura passo dopo passo
+pt: Comprar na Hungria: o processo passo a passo
+el: Αγορά στην Ουγγαρία: η διαδικασία βήμα προς βήμα
+cs: Koupě v Maďarsku: postup krok za krokem
+sl: Nakup na Madžarskem: postopek korak za korakom
+sv: Köpa i Ungern: processen steg för steg
+@1012
+it: Come si svolge un acquisto in Ungheria per un acquirente straniero: contratto, caparra, catasto, utenze e i costi da prevedere.
+pt: Como decorre uma compra na Hungria para um comprador estrangeiro: contrato, sinal, registo predial, serviços e os custos a prever.
+el: Πώς γίνεται μια αγορά στην Ουγγαρία για αλλοδαπό αγοραστή: συμβόλαιο, προκαταβολή, κτηματολόγιο, παροχές κοινής ωφέλειας και τα αναμενόμενα κόστη.
+cs: Jak probíhá koupě v Maďarsku pro zahraničního kupujícího: smlouva, záloha, katastr, energie a náklady, se kterými je třeba počítat.
+sl: Kako poteka nakup na Madžarskem za tujega kupca: pogodba, ara, zemljiška knjiga, komunalni priključki in stroški, ki jih je treba predvideti.
+sv: Så går ett köp i Ungern till för en utländsk köpare: avtal, handpenning, fastighetsregister, el och vatten samt kostnaderna att räkna med.
+@1013
+it: Per gli acquirenti
+pt: Para compradores
+el: Για αγοραστές
+cs: Pro kupující
+sl: Za kupce
+sv: För köpare
+@1014
+it: Acquistare in
+pt: Comprar na
+el: Αγορά στην
+cs: Koupě v
+sl: Nakup na
+sv: Köpa i
+@1015
+it: Ungheria
+pt: Hungria
+el: Ουγγαρία
+cs: Maďarsku
+sl: Madžarskem
+sv: Ungern
+@1016
+it: La procedura di acquisto ungherese è piuttosto prevedibile, una volta noti i passaggi. Questa guida La accompagna attraverso ciascuno di essi.
+pt: O processo de compra húngaro é bastante previsível quando se conhecem as etapas. Este guia acompanha-o em cada uma delas.
+el: Η ουγγρική διαδικασία αγοράς είναι αρκετά προβλέψιμη όταν γνωρίζετε τα βήματα. Αυτός ο οδηγός σας καθοδηγεί σε καθένα από αυτά.
+cs: Maďarský postup koupě je docela předvídatelný, jakmile znáte jednotlivé kroky. Tento průvodce vás jimi provede.
+sl: Madžarski postopek nakupa je precej predvidljiv, ko poznate korake. Ta vodnik vas popelje skozi njih.
+sv: Den ungerska köpprocessen är ganska förutsägbar när du väl känner till stegen. Den här guiden tar dig igenom dem.
+@1017
+it: Scelta
+pt: Escolha
+el: Επιλογή
+cs: Výběr
+sl: Izbira
+sv: Urval
+@1018
+it: Sceglie tra i nostri immobili oppure invia una richiesta di ricerca gratuita.
+pt: Escolhe entre os nossos imóveis ou faz um pedido de pesquisa gratuito.
+el: Επιλέγετε από τα ακίνητά μας ή υποβάλλετε δωρεάν αίτημα αναζήτησης.
+cs: Vyberete si z našich nemovitostí, nebo zadáte bezplatnou poptávku.
+sl: Izberete med našimi nepremičninami ali oddate brezplačno iskalno zahtevo.
+sv: Du väljer bland våra objekt eller skickar en kostnadsfri sökförfrågan.
+@1019
+it: Organizziamo il viaggio e la visita, con un interprete.
+pt: Organizamos a viagem e a visita, com intérprete.
+el: Οργανώνουμε το ταξίδι και την επίσκεψη, με διερμηνέα.
+cs: Zorganizujeme cestu a prohlídku s tlumočníkem.
+sl: Organiziramo pot in ogled s tolmačem.
+sv: Vi ordnar resan och visningen, med tolk.
+@1020
+it: Offerta
+pt: Proposta
+el: Προσφορά
+cs: Nabídka
+sl: Ponudba
+sv: Bud
+@1021
+it: La aiutiamo a formulare un’offerta realistica e a negoziare.
+pt: Ajudamo-lo a fazer uma proposta realista e a negociar.
+el: Σας βοηθάμε να κάνετε μια ρεαλιστική προσφορά και να διαπραγματευτείτε.
+cs: Pomůžeme vám podat realistickou nabídku a vyjednávat.
+sl: Pomagamo vam oddati realno ponudbo in se pogajati.
+sv: Vi hjälper dig att lägga ett realistiskt bud och förhandla.
+@1022
+it: Contratto e caparra
+pt: Contrato e sinal
+el: Συμβόλαιο και προκαταβολή
+cs: Smlouva a záloha
+sl: Pogodba in ara
+sv: Avtal och handpenning
+@1023
+it: Un contratto di compravendita bilingue, di solito con una caparra del 10%.
+pt: Um contrato de compra e venda bilingue, normalmente com um sinal de 10%.
+el: Δίγλωσσο συμβόλαιο αγοραπωλησίας, συνήθως με προκαταβολή 10%.
+cs: Dvojjazyčná kupní smlouva, obvykle se zálohou 10 %.
+sl: Dvojezična prodajna pogodba, običajno z 10-odstotno aro.
+sv: Ett tvåspråkigt köpeavtal, vanligen med 10 % i handpenning.
+@1024
+it: Prezzo di acquisto
+pt: Preço de compra
+el: Τίμημα
+cs: Kupní cena
+sl: Kupnina
+sv: Köpeskilling
+@1025
+it: Il saldo del prezzo tramite bonifico bancario, come stabilito nel contratto.
+pt: O restante do preço por transferência bancária, conforme o contrato.
+el: Το υπόλοιπο τίμημα με τραπεζικό έμβασμα, όπως ορίζεται στο συμβόλαιο.
+cs: Zbytek kupní ceny bankovním převodem podle smlouvy.
+sl: Preostanek kupnine z bančnim nakazilom, kot določa pogodba.
+sv: Resten av köpeskillingen via banköverföring enligt avtalet.
+@1026
+it: Consegna
+pt: Entrega
+el: Παράδοση
+cs: Předání
+sl: Predaja
+sv: Tillträde
+@1027
+it: Iscrizione al catasto, utenze, consegna delle chiavi.
+pt: Registo predial, serviços, entrega das chaves.
+el: Εγγραφή στο κτηματολόγιο, παροχές, παράδοση κλειδιών.
+cs: Zápis do katastru, energie, předání klíčů.
+sl: Vpis v zemljiško knjigo, komunalni priključki, predaja ključev.
+sv: Inskrivning, el och vatten, nyckelöverlämning.
+@1028
+it: Costi oltre al prezzo di acquisto
+pt: Custos além do preço de compra
+el: Κόστη πέραν του τιμήματος
+cs: Náklady nad rámec kupní ceny
+sl: Stroški poleg kupnine
+sv: Kostnader utöver köpeskillingen
+@1029
+it: Imposta sul trasferimento: l’aliquota dipende dal tipo di immobile e dalla Sua situazione
+pt: Imposto de transmissão: a taxa depende do tipo de imóvel e da sua situação
+el: Φόρος μεταβίβασης: ο συντελεστής εξαρτάται από τον τύπο του ακινήτου και την περίπτωσή σας
+cs: Daň z nabytí: sazba závisí na druhu nemovitosti a vaší situaci
+sl: Davek na promet: stopnja je odvisna od vrste nepremičnine in vaših okoliščin
+sv: Överlåtelseskatt: skattesatsen beror på typ av fastighet och din situation
+@1030
+it: Onorario dell’avvocato per la redazione e la controfirma dell’atto
+pt: Honorários do advogado pela redação e autenticação da escritura
+el: Αμοιβή δικηγόρου για τη σύνταξη και προσυπογραφή του συμβολαίου
+cs: Odměna advokáta za sepsání a autorizaci smlouvy
+sl: Odvetniški stroški za sestavo in sopodpis pogodbe
+sv: Advokatarvode för upprättande och kontrasignering av köpehandlingen
+@1031
+it: Traduzione del contratto bilingue: ${from('hu')}, a seconda della combinazione linguistica
+pt: Tradução do contrato bilingue: ${from('hu')}, consoante a combinação linguística
+el: Μετάφραση του δίγλωσσου συμβολαίου: ${from('hu')}, ανάλογα με τον γλωσσικό συνδυασμό
+cs: Překlad dvojjazyčné smlouvy: ${from('hu')} podle jazykové kombinace
+sl: Prevod dvojezične pogodbe: ${from('hu')}, odvisno od jezikovne kombinacije
+sv: Översättning av det tvåspråkiga avtalet: ${from('hu')}, beroende på språkkombination
+@1032
+it: Diritti catastali
+pt: Emolumentos do registo predial
+el: Τέλη κτηματολογίου
+cs: Poplatky katastru nemovitostí
+sl: Takse zemljiške knjige
+sv: Inskrivningsavgifter
+@1033
+it: Eventuale provvigione a FODEL: la paga il venditore, non Lei
+pt: Eventual comissão à FODEL: é paga pelo vendedor, não por si
+el: Τυχόν προμήθεια στη FODEL: την καταβάλλει ο πωλητής, όχι εσείς
+cs: Případnou provizi FODEL platí prodávající, ne vy
+sl: Morebitno provizijo družbi FODEL plača prodajalec, ne vi
+sv: Eventuell provision till FODEL: den betalar säljaren, inte du
+@1034
+it: Non è necessario essere presenti
+pt: Não precisa de estar presente
+el: Δεν χρειάζεται να είστε παρόντες
+cs: Nemusíte být osobně přítomni
+sl: Ni vam treba biti prisotni
+sv: Du behöver inte vara på plats

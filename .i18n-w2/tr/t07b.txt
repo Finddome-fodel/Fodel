@@ -1,0 +1,854 @@
+@474
+da: Ved ikke
+no: Vet ikke
+fi: En tiedä
+et: Ei tea
+lv: Nezinu
+lt: Nežinau
+@475
+da: Øger værdien
+no: Øker verdien
+fi: Nostaa arvoa
+et: Tõstab väärtust
+lv: Paaugstina vērtību
+lt: Didina vertę
+@476
+da: Sænker værdien
+no: Senker verdien
+fi: Laskee arvoa
+et: Langetab väärtust
+lv: Samazina vērtību
+lt: Mažina vertę
+@477
+da: Højst 15 filer.
+no: Maks. 15 filer.
+fi: Enintään 15 tiedostoa.
+et: Kõige rohkem 15 faili.
+lv: Ne vairāk kā 15 faili.
+lt: Ne daugiau kaip 15 failų.
+@478
+da: Filen er for stor (højst 50 MB).
+no: Filen er for stor (maks. 50 MB).
+fi: Tiedosto on liian suuri (enintään 50 Mt).
+et: Fail on liiga suur (kuni 50 MB).
+lv: Fails ir pārāk liels (ne vairāk kā 50 MB).
+lt: Failas per didelis (ne daugiau kaip 50 MB).
+@479
+da: Det lykkedes ikke. Kontrollér filtypen, eller prøv igen.
+no: Det gikk ikke. Kontroller filtypen eller prøv igjen.
+fi: Se ei onnistunut. Tarkista tiedostotyyppi tai yritä uudelleen.
+et: See ei õnnestunud. Kontrollige failitüüpi või proovige uuesti.
+lv: Neizdevās. Pārbaudiet faila tipu vai mēģiniet vēlreiz.
+lt: Nepavyko. Patikrinkite failo tipą arba bandykite dar kartą.
+@480
+da: Dokumenterne uploades stadig. Vent venligst.
+no: Dokumentene lastes fortsatt opp. Vent litt.
+fi: Asiakirjoja ladataan vielä. Odota hetki.
+et: Dokumente alles laaditakse üles. Palun oodake.
+lv: Dokumenti joprojām tiek augšupielādēti. Lūdzu, uzgaidiet.
+lt: Dokumentai dar įkeliami. Palaukite.
+@481
+da: Uploadet
+no: Lastet opp
+fi: Ladattu
+et: Üles laaditud
+lv: Augšupielādēts
+lt: Įkelta
+@482
+da: Det lykkedes ikke, prøv igen
+no: Det gikk ikke, prøv igjen
+fi: Se ei onnistunut, yritä uudelleen
+et: See ei õnnestunud, proovige uuesti
+lv: Neizdevās, mēģiniet vēlreiz
+lt: Nepavyko, bandykite dar kartą
+@483
+da: Tak, din betaling er modtaget. Du får en bekræftelse på e-mail.
+no: Takk, betalingen din er mottatt. Du får en bekreftelse på e-post.
+fi: Kiitos, maksusi on vastaanotettu. Saat vahvistuksen sähköpostitse.
+et: Aitäh, teie makse on laekunud. Saate kinnituse e-postiga.
+lv: Paldies, jūsu maksājums ir saņemts. Apstiprinājumu saņemsiet e-pastā.
+lt: Ačiū, jūsų mokėjimas gautas. Patvirtinimą gausite el. paštu.
+@484
+da: Vejledende vurdering
+no: Veiledende verdivurdering
+fi: Suuntaa-antava arvio
+et: Ligikaudne hinnang
+lv: Orientējošs novērtējums
+lt: Preliminarus įvertinimas
+@485
+da: Midterværdi
+no: Midtverdi
+fi: Keskiarvo
+et: Keskmine väärtus
+lv: Vidējā vērtība
+lt: Vidutinė vertė
+@486
+da: data for amtet
+no: data for fylket
+fi: läänin tiedot
+et: maakonna andmed
+lv: medes dati
+lt: apskrities duomenys
+@487
+da: data for byen
+no: data for stedet
+fi: paikkakunnan tiedot
+et: asula andmed
+lv: apdzīvotās vietas dati
+lt: gyvenvietės duomenys
+@488
+da: sammenlignelige FODEL-annoncer
+no: sammenlignbare FODEL-annonser
+fi: vertailukelpoiset FODEL-ilmoitukset
+et: võrreldavad FODELi kuulutused
+lv: salīdzināmi FODEL sludinājumi
+lt: palyginami FODEL skelbimai
+@489
+da: Kilde
+no: Kilde
+fi: Lähde
+et: Allikas
+lv: Avots
+lt: Šaltinis
+@490
+da: Valutakursens dato
+no: Dato for valutakurs
+fi: Valuuttakurssin päivä
+et: Vahetuskursi kuupäev
+lv: Valūtas kursa datums
+lt: Valiutos kurso data
+@491
+da: Der er ikke angivet en aktuel EUR/HUF-kurs; beløbene vises i HUF.
+no: Det er ikke angitt noen gjeldende EUR/HUF-kurs; beløpene vises i HUF.
+fi: Ajantasaista EUR/HUF-kurssia ei ole asetettu; summat näytetään forinteina (HUF).
+et: Kehtivat EUR/HUF kurssi pole määratud; summad on esitatud forintides (HUF).
+lv: Aktuālais EUR/HUF kurss nav iestatīts; summas ir norādītas HUF.
+lt: Dabartinis EUR/HUF kursas nenustatytas; sumos rodomos HUF.
+@492
+da: Faktorer
+no: Faktorer
+fi: Tekijät
+et: Tegurid
+lv: Faktori
+lt: Veiksniai
+@493
+da: Et besøg af Gábor
+no: Et besøk av Gábor
+fi: Gáborin käynti
+et: Gábori külastus
+lv: Gábora apmeklējums
+lt: Gáboro apsilankymas
+@494
+da: Bestil en officiel vurdering
+no: Bestill en offisiell verdivurdering
+fi: Tilaa virallinen arvio
+et: Tellige ametlik hindamine
+lv: Pieteikt oficiālu novērtējumu
+lt: Užsakyti oficialų vertinimą
+@495
+da: Forespørgsel modtaget
+no: Forespørsel mottatt
+fi: Pyyntö vastaanotettu
+et: Päring vastu võetud
+lv: Pieprasījums saņemts
+lt: Užklausa gauta
+@496
+da: Juridisk information
+no: Juridisk informasjon
+fi: Oikeudelliset tiedot
+et: Õiguslik teave
+lv: Juridiskā informācija
+lt: Teisinė informacija
+@497
+da: Privatliv
+no: Personvern
+fi: Tietosuoja
+et: Privaatsus
+lv: Privātums
+lt: Privatumas
+@498
+da: Vilkår
+no: Vilkår
+fi: Ehdot
+et: Tingimused
+lv: Noteikumi
+lt: Sąlygos
+@499
+da: Cookies
+no: Informasjonskapsler
+fi: Evästeet
+et: Küpsised
+lv: Sīkdatnes
+lt: Slapukai
+@500
+da: Tilgængelighed
+no: Tilgjengelighet
+fi: Saavutettavuus
+et: Ligipääsetavus
+lv: Piekļūstamība
+lt: Prieinamumas
+@501
+da: Momsnummer
+no: MVA-nummer
+fi: ALV-tunniste
+et: KMKR number
+lv: PVN numurs
+lt: PVM mokėtojo kodas
+@502
+da: Til toppen
+no: Til toppen
+fi: Takaisin ylös
+et: Tagasi üles
+lv: Uz augšu
+lt: Į viršų
+@503
+da: Senest opdateret
+no: Sist oppdatert
+fi: Päivitetty viimeksi
+et: Viimati uuendatud
+lv: Pēdējoreiz atjaunināts
+lt: Paskutinį kartą atnaujinta
+@504
+da: Grundlagt i ${year} i Haag, Nederlandene.
+no: Grunnlagt i ${year} i Haag, Nederland.
+fi: Perustettu vuonna ${year} Haagissa, Alankomaissa.
+et: Asutatud ${year}. aastal Haagis, Madalmaades.
+lv: Dibināts ${year}. gadā Hāgā, Nīderlandē.
+lt: Įkurta ${year} m. Hagoje, Nyderlanduose.
+@505
+da: Se nye annoncer først
+no: Se nye annonser først
+fi: Näe uudet ilmoitukset ensimmäisenä
+et: Nähke uusi kuulutusi esimesena
+lv: Uzziniet par jauniem sludinājumiem pirmie
+lt: Naujus skelbimus pamatykite pirmieji
+@506
+da: Et månedligt nyhedsbrev med nye annoncer og nyheder fra det ungarske marked.
+no: Et månedlig nyhetsbrev med nye annonser og nyheter fra det ungarske markedet.
+fi: Kuukausittainen uutiskirje, jossa on uusia ilmoituksia ja uutisia Unkarin markkinoilta.
+et: Igakuine uudiskiri uute kuulutuste ja Ungari turu uudistega.
+lv: Ikmēneša jaunumu vēstule ar jauniem sludinājumiem un ziņām no Ungārijas tirgus.
+lt: Mėnesinis naujienlaiškis su naujais skelbimais ir Vengrijos rinkos naujienomis.
+@507
+da: Dette websted bruger kun cookies, der er strengt nødvendige for, at det fungerer. Vi måler kun statistik med dit udtrykkelige samtykke.
+no: Dette nettstedet bruker bare informasjonskapsler som er strengt nødvendige for at det skal fungere. Vi måler statistikk bare med ditt uttrykkelige samtykke.
+fi: Tämä sivusto käyttää vain evästeitä, jotka ovat ehdottoman välttämättömiä sen toiminnalle. Keräämme tilastoja vain nimenomaisella suostumuksellasi.
+et: See veebisait kasutab ainult küpsiseid, mis on selle toimimiseks hädavajalikud. Statistikat kogume ainult teie selgesõnalisel nõusolekul.
+lv: Šī vietne izmanto tikai sīkdatnes, kas ir absolūti nepieciešamas tās darbībai. Statistiku apkopojam tikai ar jūsu skaidru piekrišanu.
+lt: Ši svetainė naudoja tik slapukus, kurie būtini jos veikimui. Statistiką renkame tik gavę jūsų aiškų sutikimą.
+@508
+da: Accepter
+no: Godta
+fi: Hyväksy
+et: Nõustun
+lv: Piekrītu
+lt: Sutinku
+@509
+da: Afvis
+no: Avvis
+fi: Hylkää
+et: Keeldun
+lv: Noraidīt
+lt: Atmesti
+@510
+da: Detaljer
+no: Detaljer
+fi: Lisätiedot
+et: Üksikasjad
+lv: Sīkāk
+lt: Išsamiau
+@511
+da: E-mailadresse
+no: E-postadresse
+fi: Sähköpostiosoite
+et: E-posti aadress
+lv: E-pasta adrese
+lt: El. pašto adresas
+@512
+da: Din e-mailadresse
+no: Din e-postadresse
+fi: Sähköpostiosoitteesi
+et: Teie e-posti aadress
+lv: Jūsu e-pasta adrese
+lt: Jūsų el. pašto adresas
+@513
+da: Tilmeld
+no: Abonner
+fi: Tilaa
+et: Telli
+lv: Pierakstīties
+lt: Prenumeruoti
+@514
+da: Højst en eller to e-mails om måneden. Vi sender først en bekræftelse, og du kan til enhver tid afmelde dig.
+no: Høyst én eller to e-poster i måneden. Vi sender først en bekreftelse, og du kan melde deg av når som helst.
+fi: Enintään yksi tai kaksi viestiä kuukaudessa. Lähetämme ensin vahvistuksen, ja voit perua tilauksen milloin tahansa.
+et: Kõige rohkem üks või kaks kirja kuus. Esmalt saadame kinnituse ja tellimusest saate loobuda igal ajal.
+lv: Ne vairāk kā viena vai divas vēstules mēnesī. Vispirms nosūtām apstiprinājumu, un no jaunumiem varat atteikties jebkurā laikā.
+lt: Ne daugiau kaip vienas ar du laiškai per mėnesį. Pirmiausia išsiunčiame patvirtinimą, o prenumeratos galite atsisakyti bet kada.
+@515
+da: Næsten færdig. Vi har sendt dig en bekræftelsesmail; klik på knappen i den.
+no: Nesten ferdig. Vi har sendt deg en bekreftelse på e-post; klikk på knappen i den.
+fi: Melkein valmista. Lähetimme sinulle vahvistusviestin; napsauta siinä olevaa painiketta.
+et: Peaaegu valmis. Saatsime teile kinnituskirja; klõpsake selles oleval nupul.
+lv: Gandrīz gatavs. Mēs jums nosūtījām apstiprinājuma e-pastu; noklikšķiniet uz tajā esošās pogas.
+lt: Beveik baigta. Išsiuntėme jums patvirtinimo laišką; spustelėkite jame esantį mygtuką.
+@516
+da: Det lykkedes ikke. Kontrollér adressen, og prøv igen.
+no: Det gikk ikke. Kontroller adressen og prøv igjen.
+fi: Se ei onnistunut. Tarkista osoite ja yritä uudelleen.
+et: See ei õnnestunud. Kontrollige aadressi ja proovige uuesti.
+lv: Neizdevās. Pārbaudiet adresi un mēģiniet vēlreiz.
+lt: Nepavyko. Patikrinkite adresą ir bandykite dar kartą.
+@517
+da: Angiv en gyldig e-mailadresse.
+no: Skriv inn en gyldig e-postadresse.
+fi: Anna kelvollinen sähköpostiosoite.
+et: Sisestage kehtiv e-posti aadress.
+lv: Ievadiet derīgu e-pasta adresi.
+lt: Įveskite galiojantį el. pašto adresą.
+@518
+da: Sender…
+no: Sender…
+fi: Lähetetään…
+et: Saatmine…
+lv: Sūta…
+lt: Siunčiama…
+@519
+da: By, amt eller referencenummer
+no: Sted, fylke eller referansenummer
+fi: Paikkakunta, lääni tai viitenumero
+et: Asula, maakond või viitenumber
+lv: Apdzīvotā vieta, mede vai atsauces numurs
+lt: Gyvenvietė, apskritis arba nuorodos numeris
+@520
+da: By eller reference
+no: Sted eller referanse
+fi: Paikkakunta tai viite
+et: Asula või viide
+lv: Vieta vai atsauce
+lt: Vieta arba nuoroda
+@521
+da: Skriv til os på WhatsApp
+no: Skriv til oss på WhatsApp
+fi: Lähetä meille viesti WhatsAppissa
+et: Kirjutage meile WhatsAppis
+lv: Rakstiet mums WhatsApp
+lt: Rašykite mums per WhatsApp
+@522
+da: Afspil video
+no: Spill av video
+fi: Toista video
+et: Esita video
+lv: Atskaņot video
+lt: Paleisti vaizdo įrašą
+@523
+da: sov.
+no: sov.
+fi: mh
+et: mtb
+lv: guļ.
+lt: mieg.
+@524
+da: Godt køb
+no: Godt kjøp
+fi: Löytö
+et: Soodne pakkumine
+lv: Izdevīgs piedāvājums
+lt: Geras pasiūlymas
+@525
+da: min. læsning
+no: min lesetid
+fi: min lukuaika
+et: min lugemist
+lv: min lasīšanai
+lt: min skaitymo
+@526
+da: Ejendommens placering på kortet
+no: Eiendommens beliggenhet på kartet
+fi: Kiinteistön sijainti kartalla
+et: Kinnisvara asukoht kaardil
+lv: Īpašuma atrašanās vieta kartē
+lt: Turto vieta žemėlapyje
+@527
+da: Kort over ejendomme
+no: Kart over eiendommer
+fi: Kiinteistöt kartalla
+et: Kinnisvara kaart
+lv: Īpašumu karte
+lt: Turto žemėlapis
+@528
+da: Brug Ctrl + scroll for at zoome på kortet
+no: Bruk Ctrl + rulling for å zoome kartet
+fi: Lähennä karttaa painamalla Ctrl ja vierittämällä
+et: Kaardi suumimiseks kasutage Ctrl + kerimist
+lv: Lai tuvinātu karti, izmantojiet Ctrl + ritināšanu
+lt: Norėdami keisti mastelį, naudokite Ctrl + slinkimą
+@529
+da: Brug ⌘ + scroll for at zoome på kortet
+no: Bruk ⌘ + rulling for å zoome kartet
+fi: Lähennä karttaa painamalla ⌘ ja vierittämällä
+et: Kaardi suumimiseks kasutage ⌘ + kerimist
+lv: Lai tuvinātu karti, izmantojiet ⌘ + ritināšanu
+lt: Norėdami keisti mastelį, naudokite ⌘ + slinkimą
+@530
+da: Brug to fingre til at flytte kortet
+no: Bruk to fingre for å flytte kartet
+fi: Siirrä karttaa kahdella sormella
+et: Kaardi liigutamiseks kasutage kahte sõrme
+lv: Lai pārvietotu karti, izmantojiet divus pirkstus
+lt: Žemėlapį perkelkite dviem pirštais
+@531
+da: Zoom ind
+no: Zoom inn
+fi: Lähennä
+et: Suurenda
+lv: Tuvināt
+lt: Priartinti
+@532
+da: Zoom ud
+no: Zoom ut
+fi: Loitonna
+et: Vähenda
+lv: Tālināt
+lt: Nutolinti
+@533
+da: Før du tager billeder
+no: Før du tar bilder
+fi: Ennen kuin kuvaat
+et: Enne pildistamist
+lv: Pirms fotografēšanas
+lt: Prieš fotografuodami
+@534
+da: Den komplette fotoguide
+no: Den komplette fotoguiden
+fi: Koko valokuvausopas
+et: Täielik fotojuhend
+lv: Pilnais fotografēšanas ceļvedis
+lt: Visas fotografavimo vadovas
+@535
+da: Hvorfor det er vigtigt
+no: Hvorfor det er viktig
+fi: Miksi tällä on väliä
+et: Miks see on oluline
+lv: Kāpēc tas ir svarīgi
+lt: Kodėl tai svarbu
+@536
+da: Jeg vil hellere overlade det til en professionel
+no: Jeg vil heller overlate det til en profesjonell
+fi: Annan mieluummin ammattilaisen hoitaa sen
+et: Eelistan selle professionaalile usaldada
+lv: Labprātāk uzticēšu to profesionālim
+lt: Mieliau patikėsiu tai profesionalui
+@537
+da: Valgfrit. Hvis du vælger dette, kontakter en fra vores team dig for at aftale en dato og forklare, hvordan du betaler. Du betaler ikke noget nu.
+no: Valgfritt. Hvis du velger dette, tar noen fra teamet vårt kontakt med deg for å avtale en dato og forklare hvordan du betaler. Du betaler ingenting nå.
+fi: Valinnainen. Jos valitset tämän, tiimimme jäsen ottaa sinuun yhteyttä sopiakseen ajankohdan ja kertoakseen, miten maksu tapahtuu. Et maksa nyt mitään.
+et: Valikuline. Kui selle valite, võtab meie meeskonna liige teiega ühendust, et leppida kokku aeg ja selgitada, kuidas maksta. Praegu te midagi ei maksa.
+lv: Pēc izvēles. Ja izvēlēsieties šo iespēju, mūsu komandas loceklis ar jums sazināsies, lai vienotos par datumu un paskaidrotu, kā samaksāt. Tagad jūs neko nemaksājat.
+lt: Neprivaloma. Jei tai pasirinksite, mūsų komandos narys susisieks su jumis, kad suderintų datą ir paaiškintų, kaip sumokėti. Dabar nieko nemokate.
+@538
+da: Nej tak
+no: Nei takk
+fi: Ei kiitos
+et: Ei, aitäh
+lv: Nē, paldies
+lt: Ne, ačiū
+@539
+da: Jeg tager selv billederne.
+no: Jeg tar bildene selv.
+fi: Otan kuvat itse.
+et: Pildistan ise.
+lv: Fotografēšu pats.
+lt: Fotografuosiu pats.
+@540
+da: engangsgebyr
+no: engangsgebyr
+fi: kertamaksu
+et: ühekordne tasu
+lv: vienreizēja maksa
+lt: vienkartinis mokestis
+@541
+da: da
+no: nb
+fi: fi
+et: et
+lv: lv
+lt: lt
+@542
+da: da_DK
+no: nb_NO
+fi: fi_FI
+et: et_EE
+lv: lv_LV
+lt: lt_LT
+@543
+da: da
+no: nb
+fi: fi
+et: et
+lv: lv
+lt: lt
+@544
+da: Dansk
+no: Norsk
+fi: Suomi
+et: Eesti
+lv: Latviešu
+lt: Lietuvių
+@545
+da: DA
+no: NO
+fi: FI
+et: ET
+lv: LV
+lt: LT
+@546
+da: dk
+no: no
+fi: fi
+et: ee
+lv: lv
+lt: lt
+@547
+da: FODEL EJENDOMME
+no: FODEL EIENDOM
+fi: FODEL KIINTEISTÖT
+et: FODEL KINNISVARA
+lv: FODEL NEKUSTAMAIS ĪPAŠUMS
+lt: FODEL NEKILNOJAMASIS TURTAS
+@548
+da: Køb ejendom i Ungarn direkte fra ejeren
+no: Kjøp eiendom i Ungarn direkte fra eieren
+fi: Osta kiinteistö Unkarista suoraan omistajalta
+et: Ostke kinnisvara Ungaris otse omanikult
+lv: Iegādājieties īpašumu Ungārijā tieši no īpašnieka
+lt: Įsigykite nekilnojamąjį turtą Vengrijoje tiesiai iš savininko
+@549
+da: FODEL – Ejendomsmægler i Ungarn
+no: FODEL – Eiendomsmegler i Ungarn
+fi: FODEL – Kiinteistönvälitys Unkarissa
+et: FODEL – Kinnisvarabüroo Ungaris
+lv: FODEL – Nekustamo īpašumu aģentūra Ungārijā
+lt: FODEL – Nekilnojamojo turto agentūra Vengrijoje
+@550
+da: Problemfri og diskret ejendomsformidling
+no: Problemfri og diskret eiendomsformidling
+fi: Huoleton ja hienovarainen kiinteistönvälitys
+et: Muretu ja diskreetne kinnisvara vahendamine
+lv: Diskrēta nekustamo īpašumu starpniecība bez raizēm
+lt: Diskretiškas ir sklandus nekilnojamojo turto tarpininkavimas
+@551
+da: Hus
+no: Hus
+fi: Talo
+et: Maja
+lv: Māja
+lt: Namas
+@552
+da: hus
+no: hus
+fi: talo
+et: maja
+lv: maja
+lt: namas
+@553
+da: Feriehus
+no: Fritidsbolig
+fi: Loma-asunto
+et: Puhkemaja
+lv: Brīvdienu māja
+lt: Poilsio namas
+@554
+da: feriehus
+no: fritidsbolig
+fi: loma-asunto
+et: puhkemaja
+lv: brivdienu-maja
+lt: poilsio-namas
+@555
+da: Landbrug
+no: Gårdsbruk
+fi: Maatila
+et: Talu
+lv: Lauku saimniecība
+lt: Ūkis
+@556
+da: landbrug
+no: gardsbruk
+fi: maatila
+et: talu
+lv: lauku-saimnieciba
+lt: ukis
+@557
+da: Grund
+no: Tomt
+fi: Tontti
+et: Maatükk
+lv: Zemesgabals
+lt: Sklypas
+@558
+da: grund
+no: tomt
+fi: tontti
+et: maatukk
+lv: zemesgabals
+lt: sklypas
+@559
+da: Erhvervsejendom
+no: Næringseiendom
+fi: Liikekiinteistö
+et: Ärikinnisvara
+lv: Komercīpašums
+lt: Komercinis turtas
+@560
+da: erhvervsejendom
+no: naeringseiendom
+fi: liikekiinteisto
+et: arikinnisvara
+lv: komercipasums
+lt: komercinis-turtas
+@561
+da: landbrugsejendom
+no: landbrukseiendom
+fi: maatalouskiinteisto
+et: pollumajanduslik-kinnisvara
+lv: lauksaimniecibas-ipasums
+lt: zemes-ukio-turtas
+@562
+da: Landsted, herregård
+no: Landsted, herregård
+fi: Maalaistalo, kartano
+et: Mõis, maamaja
+lv: Muiža, lauku māja
+lt: Dvaras, sodyba
+@563
+da: herregard
+no: herregard
+fi: kartano
+et: mois
+lv: muiza
+lt: dvaras
+@564
+da: Lejlighed
+no: Leilighet
+fi: Huoneisto
+et: Korter
+lv: Dzīvoklis
+lt: Butas
+@565
+da: lejlighed
+no: leilighet
+fi: huoneisto
+et: korter
+lv: dzivoklis
+lt: butas
+@566
+da: Industriejendom
+no: Industrieiendom
+fi: Teollisuuskiinteistö
+et: Tööstuskinnisvara
+lv: Rūpnieciskais īpašums
+lt: Pramoninis turtas
+@567
+da: industriejendom
+no: industrieiendom
+fi: teollisuuskiinteisto
+et: toostuskinnisvara
+lv: rupnieciskais-ipasums
+lt: pramoninis-turtas
+@568
+da: ejendomme
+no: eiendommer
+fi: kiinteistot
+et: kinnisvara
+lv: ipasumi
+lt: nekilnojamasis-turtas
+@569
+da: salg
+no: salg
+fi: myynti
+et: muuk
+lv: pardosana
+lt: pardavimas
+@570
+da: kob
+no: kjop
+fi: osto
+et: ost
+lv: pirksana
+lt: pirkimas
+@571
+da: om-os
+no: om-oss
+fi: meista
+et: meist
+lv: par-mums
+lt: apie-mus
+@572
+da: kontakt
+no: kontakt
+fi: yhteystiedot
+et: kontakt
+lv: kontakti
+lt: kontaktai
+@573
+da: priser
+no: priser
+fi: hinnasto
+et: hinnakiri
+lv: cenas
+lt: kainos
+@574
+da: opret-annonce
+no: legg-inn-annonse
+fi: jata-ilmoitus
+et: lisa-kuulutus
+lv: ievietot-sludinajumu
+lt: ideti-skelbima
+@575
+da: ejendomssogning
+no: eiendomssok
+fi: kiinteistohaku
+et: kinnisvaraotsing
+lv: ipasuma-meklesana
+lt: turto-paieska
+@576
+da: vurdering
+no: verdivurdering
+fi: arviointi
+et: hindamine
+lv: novertejums
+lt: vertinimas
+@577
+da: ydelser
+no: tjenester
+fi: palvelut
+et: teenused
+lv: pakalpojumi
+lt: paslaugos
+@578
+da: ofte-stillede-sporgsmal
+no: ofte-stilte-sporsmal
+fi: usein-kysyttya
+et: korduma-kippuvad-kusimused
+lv: biezak-uzdotie-jautajumi
+lt: duk
+@579
+da: fotoguide
+no: fotoguide
+fi: valokuvausopas
+et: fotojuhend
+lv: foto-celvedis
+lt: fotografavimo-vadovas
+@580
+da: kob-i-ungarn
+no: kjop-i-ungarn
+fi: osto-unkarista
+et: ostmine-ungaris
+lv: pirksana-ungarija
+lt: pirkimas-vengrijoje
+@581
+da: flytning-til-ungarn
+no: flytte-til-ungarn
+fi: muutto-unkariin
+et: kolimine-ungarisse
+lv: parcelsanas-uz-ungariju
+lt: persikelimas-i-vengrija
+@582
+da: solgt
+no: solgt
+fi: myydyt
+et: muudud
+lv: pardotie
+lt: parduota
+@583
+da: kort
+no: kart
+fi: kartta
+et: kaart
+lv: karte
+lt: zemelapis
+@584
+da: privatliv
+no: personvern
+fi: tietosuoja
+et: privaatsus
+lv: privatums
+lt: privatumas
+@585
+da: vilkar
+no: vilkar
+fi: ehdot
+et: tingimused
+lv: noteikumi
+lt: salygos
+@586
+da: juridisk-information
+no: juridisk-informasjon
+fi: oikeudelliset-tiedot
+et: oiguslik-teave
+lv: juridiska-informacija
+lt: teisine-informacija
+@587
+da: tilgaengelighed
+no: tilgjengelighet
+fi: saavutettavuus
+et: ligipaasetavus
+lv: piekluzamiba
+lt: prieinamumas
+@588
+da: tak
+no: takk
+fi: kiitos
+et: aitah
+lv: paldies
+lt: aciu
+@589
+da: ${categorySlug}-til-salg-${ref}
+no: ${categorySlug}-til-salgs-${ref}
+fi: ${categorySlug}-myytavana-${ref}
+et: ${categorySlug}-muua-${ref}
+lv: ${categorySlug}-pardosana-${ref}
+lt: ${categorySlug}-parduodama-${ref}
+@590
+da: FODEL Ejendomme: nyheder og artikler
+no: FODEL Eiendom: nyheter og artikler
+fi: FODEL Kiinteistöt: uutiset ja artikkelit
+et: FODEL Kinnisvara: uudised ja artiklid
+lv: FODEL Nekustamais īpašums: jaunumi un raksti
+lt: FODEL Nekilnojamasis turtas: naujienos ir straipsniai
+@591
+da: Analyser af det ungarske ejendomsmarked og vesteuropæiske købere.
+no: Analyser av det ungarske eiendomsmarkedet og vesteuropeiske kjøpere.
+fi: Analyysejä Unkarin kiinteistömarkkinoista ja länsieurooppalaisista ostajista.
+et: Analüüsid Ungari kinnisvaraturu ja Lääne-Euroopa ostjate kohta.
+lv: Ungārijas nekustamo īpašumu tirgus un Rietumeiropas pircēju analīze.
+lt: Vengrijos nekilnojamojo turto rinkos ir Vakarų Europos pirkėjų analizė.
+@592
+da: Du modtager denne e-mail, fordi du har en FODEL-konto eller har oprettet en annonce hos os.
+no: Du mottar denne e-posten fordi du har en FODEL-konto eller har lagt inn en annonse hos oss.
+fi: Saat tämän viestin, koska sinulla on FODEL-tili tai olet jättänyt meille ilmoituksen.
+et: Saate selle kirja, sest teil on FODELi konto või olete meie juures kuulutuse avaldanud.
+lv: Jūs saņemat šo e-pastu, jo jums ir FODEL konts vai esat pie mums ievietojis sludinājumu.
+lt: Šį laišką gaunate, nes turite FODEL paskyrą arba pas mus įdėjote skelbimą.
+@593
+da: Kontakt
+no: Kontakt
+fi: Yhteystiedot
+et: Kontakt
+lv: Kontakti
+lt: Kontaktai
+@594
+da: Med venlig hilsen\nFODEL Ejendomme
+no: Med vennlig hilsen\nFODEL Eiendom
+fi: Ystävällisin terveisin\nFODEL Kiinteistöt
+et: Lugupidamisega\nFODEL Kinnisvara
+lv: Ar cieņu\nFODEL Nekustamais īpašums
+lt: Pagarbiai\nFODEL Nekilnojamasis turtas
+@595
+da: Spørgsmål? Svar på denne e-mail, eller ring til os: ${COMPANY.phones[0].display}.
+no: Spørsmål? Svar på denne e-posten eller ring oss: ${COMPANY.phones[0].display}.
+fi: Kysyttävää? Vastaa tähän viestiin tai soita meille: ${COMPANY.phones[0].display}.
+et: Küsimusi? Vastake sellele kirjale või helistage meile: ${COMPANY.phones[0].display}.
+lv: Jautājumi? Atbildiet uz šo e-pastu vai zvaniet mums: ${COMPANY.phones[0].display}.
+lt: Turite klausimų? Atsakykite į šį laišką arba skambinkite mums: ${COMPANY.phones[0].display}.

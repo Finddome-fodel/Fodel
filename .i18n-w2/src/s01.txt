@@ -1,0 +1,253 @@
+@0 [FormShell.astro]
+EN: If the form does not work, call us on ${phoneDisplay} or email ${company.email.primary}.
+FR: Si le formulaire ne fonctionne pas, appelez-nous au ${phoneDisplay} ou écrivez à ${company.email.primary}.
+
+@1 [PhoneField.astro]
+EN: For example:
+
+@2 [PhoneField.astro]
+EN: Country dialling code
+
+@3 [PhoneField.astro]
+EN: Common
+
+@4 [PhoneField.astro]
+EN: All countries
+
+@5 [PhoneField.astro]
+EN: Search for a country
+
+@6 [PhoneField.astro]
+EN: No results
+
+@7 [RegisterForm.astro]
+EN: Register
+
+@8 [RegisterForm.astro]
+EN: Check your inbox
+
+@9 [RegisterForm.astro]
+EN: We have sent the link to set your password to:
+
+@10 [RegisterForm.astro]
+EN: From
+
+@11 [RegisterForm.astro]
+EN: Subject
+
+@12 [RegisterForm.astro]
+EN: The link is valid for ${REGISTRATION_DAYS} days.
+FR: Le lien est valable ${REGISTRATION_DAYS} jours.
+PL: Link jest ważny przez ${nOf('pl', REGISTRATION_DAYS, 'dzień', 'dni')}.
+
+@13 [RegisterForm.astro]
+EN: If nothing arrives within a few minutes, check your spam or promotions folder too.
+
+@14 [RegisterForm.astro]
+EN: Resend the email
+
+@15 [RegisterForm.astro]
+EN: Resend in ${s} s
+FR: Renvoi possible dans ${s} s
+
+@16 [RegisterForm.astro]
+EN: Sent again.
+
+@17 [RegisterForm.astro]
+EN: We could not resend it just now. Please try again in a minute.
+
+@18 [RegisterForm.astro]
+EN: Wrong address?
+
+@19 [RegisterForm.astro]
+EN: Change it
+
+@20 [AboutPage.astro]
+EN: A restored Hungarian manor house with an English-style park
+
+@21 [AboutPage.astro]
+EN: Address
+
+@22 [AboutPage.astro]
+EN: Languages
+
+@23 [ArticlePage.astro]
+EN: Method
+
+@24 [ArticlePage.astro]
+EN: Results
+
+@25 [ArticlePage.astro]
+EN: Sources
+
+@26 [ArticlePage.astro]
+EN: Case study
+
+@27 [ArticlePage.astro]
+EN: ${post.reading_minutes} min read
+FR: ${post.reading_minutes} min de lecture
+
+@28 [BlogPage.astro]
+EN: ${n} min read
+FR: ${n} min de lecture
+
+@29 [BlogPage.astro]
+EN: News and articles: market, moving, advice
+
+@30 [BlogPage.astro]
+EN: Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.
+
+@31 [BlogPage.astro]
+EN: News and articles
+
+@32 [BlogPage.astro]
+EN: Market,
+
+@33 [BlogPage.astro]
+EN: background, advice
+
+@34 [BlogPage.astro]
+EN: What you should know about the Hungarian property market and buyers from Western Europe.
+
+@35 [BlogPage.astro]
+EN: New articles are coming soon.
+
+@36 [BlogPage.astro]
+EN: Content type
+
+@37 [BlogPage.astro]
+EN: Articles
+
+@38 [BlogPage.astro]
+EN: Case studies
+
+@39 [BuyersPage.astro]
+EN: Rural properties at a realistic price
+
+@40 [BuyersPage.astro]
+EN: Hilltop properties with a view
+
+@41 [BuyersPage.astro]
+EN: Properties at the edge of a forest
+
+@42 [BuyersPage.astro]
+EN: Holiday homes to let, and waterside properties
+
+@43 [BuyersPage.astro]
+EN: Farms suitable for livestock and horses
+
+@44 [BuyersPage.astro]
+EN: Large plots and agricultural property
+
+@45 [BuyersPage.astro]
+EN: Good links to Budapest airport
+
+@46 [BuyersPage.astro]
+EN: Property in Transdanubia
+
+@47 [BuyersPage.astro]
+EN: Interior of a renovated Hungarian farmhouse
+
+@48 [BuyersPage.astro]
+EN: The FODEL model
+
+@49 [BuyersPage.astro]
+EN: The owner’s name and number are in the listing too.
+
+@50 [BuyersPage.astro]
+EN: This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.
+
+@51 [BuyersPage.astro]
+EN: commission on a direct purchase
+
+@52 [BuyersPage.astro]
+EN: Services and prices
+
+@53 [BuyersPage.astro]
+EN: hectares
+
+@54 [BuyersPage.astro]
+EN: Agricultural property
+
+@55 [BuyersPage.astro]
+EN: Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification
+FR: Jusqu’à ${AGRI_HECTARE_LIMIT} hectares avec une qualification agricole
+PL: Do ${nOf('pl', AGRI_HECTARE_LIMIT, 'hektara', 'hektarów')} z kwalifikacjami rolniczymi
+
+@56 [BuyersPage.astro]
+EN: An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.
+FR: Un citoyen de l’UE titulaire d’une qualification agricole peut acquérir au total ${AGRI_HECTARE_LIMIT} hectares de terres en Hongrie. Nous nous chargeons de toute la procédure.
+PL: Obywatel UE posiadający kwalifikacje rolnicze może nabyć na Węgrzech łącznie ${nOf('pl', AGRI_HECTARE_LIMIT, 'hektar', 'hektary', 'hektarów')} gruntów. Całą procedurę przeprowadzamy za Państwa.
+
+@57 [BuyersPage.astro]
+EN: More on this
+
+@58 [BuyersPage.astro]
+EN: Selection
+
+@59 [BuyersPage.astro]
+EN: Featured properties
+
+@60 [BuyersPage.astro]
+EN: Frequently asked questions
+
+@61 [BuyersPage.astro]
+EN: What buyers ask us
+
+@62 [BuyersPage.astro]
+EN: All questions and answers
+
+@63 [BuyersPage.astro]
+EN: Cannot find it?
+
+@64 [BuyersPage.astro]
+EN: Let us search
+
+@65 [BuyersPage.astro]
+EN: free of charge
+
+@66 [BuyersPage.astro]
+EN: Tell us what you are looking for. We also search beyond the properties we advertise.
+
+@67 [ContactPage.astro]
+EN: Write to us
+
+@68 [ContactPage.astro]
+EN: When can we call you?
+
+@69 [ContactPage.astro]
+EN: e.g. weekday afternoons
+
+@70 [ContentPage.astro]
+EN: On this page
+
+@71 [FaqPage.astro]
+EN: FAQ: buying in Hungary
+
+@72 [FaqPage.astro]
+EN: Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.
+
+@73 [FaqPage.astro]
+EN: FAQ
+
+@74 [FaqPage.astro]
+EN: Questions and
+
+@75 [FaqPage.astro]
+EN: answers
+
+@76 [FaqPage.astro]
+EN: Below are the questions we get most often. If yours is not here, call us or ask for a free callback.
+
+@77 [FaqPage.astro]
+EN: For buyers
+
+@78 [FaqPage.astro]
+EN: General
+
+@79 [FaqPage.astro]
+EN: Did not find your answer
+PL: Nie znaleźli Państwo odpowiedzi?
+
+@80 [FaqPage.astro]
+EN: {hours} Ask for a free callback, or write to us.

@@ -1,0 +1,357 @@
+@596
+it: Il Suo annuncio scade tra ${nOf('it', d, 'giorno', 'giorni')} | FODEL
+pt: O seu anúncio expira dentro de ${nOf('pt', d, 'dia', 'dias')} | FODEL
+el: Η αγγελία σας λήγει σε ${nOf('el', d, 'ημέρα', 'ημέρες')} | FODEL
+cs: Váš inzerát vyprší za ${nOf('cs', d, 'den', 'dny', 'dní')} | FODEL
+sl: Vaš oglas poteče čez ${nOf('sl', d, 'dan', 'dni', 'dni', 'dneva')} | FODEL
+sv: Din annons löper ut om ${nOf('sv', d, 'dag', 'dagar')} | FODEL
+@597
+it: Con un clic lo prolunga di 6 mesi.
+pt: Com um clique prolonga-o por 6 meses.
+el: Με ένα κλικ την παρατείνετε κατά 6 μήνες.
+cs: Jedním kliknutím ho prodloužíte o 6 měsíců.
+sl: Z enim klikom ga podaljšate za 6 mesecev.
+sv: Med ett klick förlänger du den med 6 månader.
+@598
+it: Il Suo annuncio sta per scadere
+pt: O seu anúncio está prestes a expirar
+el: Η αγγελία σας λήγει σύντομα
+cs: Váš inzerát brzy vyprší
+sl: Vaš oglas bo kmalu potekel
+sv: Din annons löper snart ut
+@599
+it: Il Suo annuncio “${t}” scade tra ${nOf('it', d, 'giorno', 'giorni')}, il ${on}. Dopo di che verrà rimosso dal sito.
+pt: O seu anúncio «${t}» expira dentro de ${nOf('pt', d, 'dia', 'dias')}, a ${on}. Depois disso, será retirado do site.
+el: Η αγγελία σας «${t}» λήγει σε ${nOf('el', d, 'ημέρα', 'ημέρες')}, στις ${on}. Στη συνέχεια θα αφαιρεθεί από τον ιστότοπο.
+cs: Váš inzerát „${t}“ vyprší za ${nOf('cs', d, 'den', 'dny', 'dní')}, ${on}. Poté bude z webu odstraněn.
+sl: Vaš oglas »${t}« poteče čez ${nOf('sl', d, 'dan', 'dni', 'dni', 'dneva')}, ${on}. Nato bo umaknjen s spletnega mesta.
+sv: Din annons ”${t}” löper ut om ${nOf('sv', d, 'dag', 'dagar')}, den ${on}. Därefter tas den bort från webbplatsen.
+@600
+it: Se l’immobile è ancora in vendita, prolunghi l’annuncio di 6 mesi (${price}). Può pagare con carta o bonifico; la proroga parte dalla data di scadenza, quindi non perde nemmeno un giorno.
+pt: Se o imóvel ainda estiver à venda, prolongue o anúncio por 6 meses (${price}). Pode pagar com cartão ou por transferência bancária; a prorrogação começa na data de expiração, por isso não perde um único dia.
+el: Αν το ακίνητο εξακολουθεί να πωλείται, παρατείνετε την αγγελία κατά 6 μήνες (${price}). Μπορείτε να πληρώσετε με κάρτα ή με τραπεζική μεταφορά· η παράταση ξεκινά από την ημερομηνία λήξης, οπότε δεν χάνετε ούτε μία ημέρα.
+cs: Pokud je nemovitost stále na prodej, prodlužte inzerát o 6 měsíců (${price}). Zaplatit můžete kartou nebo převodem; prodloužení začíná dnem vypršení, takže nepřijdete ani o den.
+sl: Če je nepremičnina še vedno naprodaj, podaljšajte oglas za 6 mesecev (${price}). Plačate lahko s kartico ali z nakazilom; podaljšanje začne veljati na dan poteka, zato ne izgubite niti enega dneva.
+sv: Om fastigheten fortfarande är till salu kan du förlänga annonsen med 6 månader (${price}). Du kan betala med kort eller banköverföring; förlängningen börjar på utgångsdatumet, så du förlorar inte en enda dag.
+@601
+it: Prolunga l’annuncio
+pt: Prolongar anúncio
+el: Παράταση αγγελίας
+cs: Prodloužit inzerát
+sl: Podaljšaj oglas
+sv: Förläng annonsen
+@602
+it: Vedi l’annuncio
+pt: Ver anúncio
+el: Προβολή αγγελίας
+cs: Zobrazit inzerát
+sl: Ogled oglasa
+sv: Visa annonsen
+@603
+it: Data di scadenza
+pt: Data de expiração
+el: Ημερομηνία λήξης
+cs: Datum vypršení
+sl: Datum poteka
+sv: Utgångsdatum
+@604
+it: Se nel frattempo è stato venduto, ce lo comunichi rispondendo a questa e-mail.
+pt: Se entretanto foi vendido, informe-nos respondendo a este e-mail.
+el: Αν πουλήθηκε στο μεταξύ, ενημερώστε μας απαντώντας σε αυτό το email.
+cs: Pokud se mezitím prodala, dejte nám vědět odpovědí na tento e-mail.
+sl: Če je bila medtem prodana, nam to sporočite z odgovorom na to sporočilo.
+sv: Om den har sålts under tiden kan du meddela oss genom att svara på det här mejlet.
+@605
+it: Il Suo annuncio è scaduto: con un clic torna online
+pt: O seu anúncio expirou: com um clique volta a estar online
+el: Η αγγελία σας έληξε: με ένα κλικ επανέρχεται online
+cs: Váš inzerát vypršel: jedním kliknutím je zpět online
+sl: Vaš oglas je potekel: z enim klikom je spet objavljen
+sv: Din annons har löpt ut: med ett klick är den tillbaka online
+@606
+it: Dopo il rinnovo torna subito online.
+pt: Após a renovação, volta imediatamente a estar online.
+el: Μετά την ανανέωση επανέρχεται αμέσως online.
+cs: Po obnovení je ihned opět online.
+sl: Po podaljšanju je takoj znova objavljen.
+sv: Efter förnyelsen är den genast online igen.
+@607
+it: Il Suo annuncio è scaduto
+pt: O seu anúncio expirou
+el: Η αγγελία σας έληξε
+cs: Váš inzerát vypršel
+sl: Vaš oglas je potekel
+sv: Din annons har löpt ut
+@608
+it: L’annuncio “${t}” è scaduto e non è più visibile sul sito. I Suoi dati e le foto sono stati conservati.
+pt: O anúncio «${t}» expirou e já não está no site. Os seus dados e fotografias foram guardados.
+el: Η αγγελία «${t}» έληξε και δεν εμφανίζεται πλέον στον ιστότοπο. Τα στοιχεία και οι φωτογραφίες σας έχουν διατηρηθεί.
+cs: Inzerát „${t}“ vypršel a na webu již není. Vaše údaje a fotografie jsme zachovali.
+sl: Oglas »${t}« je potekel in ni več objavljen. Vaši podatki in fotografije so shranjeni.
+sv: Annonsen ”${t}” har löpt ut och visas inte längre på webbplatsen. Dina uppgifter och bilder finns kvar.
+@609
+it: Se l’immobile è ancora in vendita, prolunghi l’annuncio di 6 mesi (${price}): dopo il pagamento torna subito online, allo stesso indirizzo.
+pt: Se o imóvel ainda estiver à venda, prolongue o anúncio por 6 meses (${price}): após o pagamento, volta imediatamente a estar online, no mesmo endereço.
+el: Αν το ακίνητο εξακολουθεί να πωλείται, παρατείνετε την αγγελία κατά 6 μήνες (${price}): μετά την πληρωμή επανέρχεται αμέσως online, στην ίδια διεύθυνση.
+cs: Pokud je nemovitost stále na prodej, prodlužte inzerát o 6 měsíců (${price}): po zaplacení je ihned zpět online na stejné adrese.
+sl: Če je nepremičnina še vedno naprodaj, podaljšajte oglas za 6 mesecev (${price}): po plačilu je takoj znova objavljen na istem naslovu.
+sv: Om fastigheten fortfarande är till salu kan du förlänga annonsen med 6 månader (${price}): efter betalningen är den genast online igen, på samma adress.
+@610
+it: Prolunga e rimetti online
+pt: Prolongar e voltar a publicar
+el: Παράταση και επαναδημοσίευση
+cs: Prodloužit a znovu zveřejnit
+sl: Podaljšaj in znova objavi
+sv: Förläng och publicera igen
+@611
+it: Il Suo annuncio è stato prolungato | FODEL
+pt: O seu anúncio foi prolongado | FODEL
+el: Η αγγελία σας παρατάθηκε | FODEL
+cs: Váš inzerát byl prodloužen | FODEL
+sl: Vaš oglas je podaljšan | FODEL
+sv: Din annons har förlängts | FODEL
+@612
+it: La nuova data di scadenza è indicata in questa e-mail.
+pt: A nova data de expiração consta deste e-mail.
+el: Η νέα ημερομηνία λήξης αναφέρεται σε αυτό το email.
+cs: Nové datum vypršení najdete v tomto e-mailu.
+sl: Nov datum poteka je naveden v tem sporočilu.
+sv: Det nya utgångsdatumet står i det här mejlet.
+@613
+it: Prolungato
+pt: Prolongado
+el: Παρατάθηκε
+cs: Prodlouženo
+sl: Podaljšano
+sv: Förlängd
+@614
+it: L’annuncio “${t}” resta online fino al ${on}. Grazie.
+pt: O anúncio «${t}» fica online até ${on}. Obrigado.
+el: Η αγγελία «${t}» παραμένει online έως τις ${on}. Σας ευχαριστούμε.
+cs: Inzerát „${t}“ je nyní zveřejněn do ${on}. Děkujeme.
+sl: Oglas »${t}« je zdaj objavljen do ${on}. Hvala.
+sv: Annonsen ”${t}” ligger nu ute till och med ${on}. Tack.
+@615
+it: Proroga tramite bonifico (#${r})
+pt: Prorrogação por transferência bancária (#${r})
+el: Παράταση με τραπεζική μεταφορά (#${r})
+cs: Prodloužení převodem (#${r})
+sl: Podaljšanje z nakazilom (#${r})
+sv: Förlängning via banköverföring (#${r})
+@616
+it: I dati per il pagamento; appena arriva, prolunghiamo l’annuncio.
+pt: Os dados de pagamento; assim que este chegar, prolongamos o anúncio.
+el: Τα στοιχεία πληρωμής· μόλις λάβουμε την πληρωμή, παρατείνουμε την αγγελία.
+cs: Platební údaje; jakmile platba dorazí, inzerát prodloužíme.
+sl: Podatki za plačilo; ko plačilo prispe, oglas podaljšamo.
+sv: Betalningsuppgifterna; när betalningen har kommit in förlänger vi annonsen.
+@617
+it: Proroga tramite bonifico
+pt: Prorrogação por transferência bancária
+el: Παράταση με τραπεζική μεταφορά
+cs: Prodloužení převodem
+sl: Podaljšanje z nakazilom
+sv: Förlängning via banköverföring
+@618
+it: Grazie. Prolunghiamo l’annuncio “${t}” non appena riceviamo il pagamento.
+pt: Obrigado. Prolongamos o anúncio «${t}» assim que o pagamento chegar.
+el: Σας ευχαριστούμε. Θα παρατείνουμε την αγγελία «${t}» μόλις λάβουμε την πληρωμή.
+cs: Děkujeme. Inzerát „${t}“ prodloužíme, jakmile platba dorazí.
+sl: Hvala. Oglas »${t}« podaljšamo takoj, ko plačilo prispe.
+sv: Tack. Vi förlänger annonsen ”${t}” så snart betalningen har kommit in.
+@619
+it: Importo
+pt: Montante
+el: Ποσό
+cs: Částka
+sl: Znesek
+sv: Belopp
+@620
+it: Conto
+pt: Conta
+el: Λογαριασμός
+cs: Účet
+sl: Račun
+sv: Konto
+@621
+it: Preferisce pagare con carta? Può farlo in qualsiasi momento con il pulsante qui sotto.
+pt: Prefere afinal pagar com cartão? Pode fazê-lo a qualquer momento com o botão abaixo.
+el: Προτιμάτε τελικά να πληρώσετε με κάρτα; Μπορείτε πάντα να το κάνετε με το παρακάτω κουμπί.
+cs: Chcete přece jen zaplatit kartou? Můžete to kdykoli udělat tlačítkem níže.
+sl: Bi vendarle raje plačali s kartico? To lahko kadar koli storite z gumbom spodaj.
+sv: Vill du hellre betala med kort ändå? Det kan du alltid göra med knappen nedan.
+@622
+it: Modalità di pagamento
+pt: Formas de pagamento
+el: Τρόποι πληρωμής
+cs: Způsoby platby
+sl: Načini plačila
+sv: Betalningssätt
+@623
+it: ${r ? 'Promemoria: ' : ''}Ancora in vendita? · ${t}
+pt: ${r ? 'Lembrete: ' : ''}Ainda à venda? · ${t}
+el: ${r ? 'Υπενθύμιση: ' : ''}Πωλείται ακόμη; · ${t}
+cs: ${r ? 'Připomínka: ' : ''}Stále na prodej? · ${t}
+sl: ${r ? 'Opomnik: ' : ''}Še naprodaj? · ${t}
+sv: ${r ? 'Påminnelse: ' : ''}Fortfarande till salu? · ${t}
+@624
+it: Un clic, senza accedere.
+pt: Um clique, sem iniciar sessão.
+el: Ένα κλικ, χωρίς σύνδεση.
+cs: Jedno kliknutí, bez přihlášení.
+sl: En klik, brez prijave.
+sv: Ett klick, utan inloggning.
+@625
+it: L’immobile è ancora in vendita?
+pt: O imóvel ainda está à venda?
+el: Πωλείται ακόμη το ακίνητο;
+cs: Je nemovitost stále na prodej?
+sl: Je nepremičnina še naprodaj?
+sv: Är fastigheten fortfarande till salu?
+@626
+it: Una volta al mese verifichiamo se l’annuncio “${t}” (${price}) è ancora attuale. Gli acquirenti si fidano degli annunci accurati.
+pt: Uma vez por mês perguntamos se o anúncio «${t}» (${price}) continua atual. Os compradores confiam em anúncios rigorosos.
+el: Μία φορά τον μήνα ρωτάμε αν η αγγελία «${t}» (${price}) είναι ακόμη επίκαιρη. Οι αγοραστές εμπιστεύονται τις ακριβείς αγγελίες.
+cs: Jednou měsíčně se ptáme, zda je inzerát „${t}“ (${price}) stále aktuální. Kupující důvěřují přesným inzerátům.
+sl: Enkrat na mesec preverimo, ali je oglas »${t}« (${price}) še aktualen. Kupci zaupajo točnim oglasom.
+sv: En gång i månaden frågar vi om annonsen ”${t}” (${price}) fortfarande är aktuell. Köpare litar på annonser som stämmer.
+@627
+it: Glielo abbiamo chiesto una settimana fa, ma non abbiamo ancora ricevuto risposta.
+pt: Perguntámos-lhe há uma semana, mas ainda não recebemos resposta.
+el: Σας ρωτήσαμε πριν από μία εβδομάδα, αλλά δεν έχουμε λάβει ακόμη απάντηση.
+cs: Ptali jsme se vás před týdnem, ale odpověď jsme zatím nedostali.
+sl: Vprašali smo vas pred tednom dni, a odgovora še nismo prejeli.
+sv: Vi frågade dig för en vecka sedan men har inte fått något svar än.
+@628
+it: Sì, è ancora in vendita
+pt: Sim, ainda está à venda
+el: Ναι, πωλείται ακόμη
+cs: Ano, stále na prodej
+sl: Da, še naprodaj
+sv: Ja, fortfarande till salu
+@629
+it: Il prezzo è cambiato
+pt: O preço mudou
+el: Η τιμή άλλαξε
+cs: Cena se změnila
+sl: Cena se je spremenila
+sv: Priset har ändrats
+@630
+it: Venduto
+pt: Vendido
+el: Πουλήθηκε
+cs: Prodáno
+sl: Prodano
+sv: Såld
+@631
+it: Basta un clic, senza accedere. Un nuovo prezzo lo aggiorniamo subito.
+pt: Basta um clique, sem iniciar sessão. Atualizamos um novo preço de imediato.
+el: Αρκεί ένα κλικ, χωρίς σύνδεση. Μια νέα τιμή την ενημερώνουμε αμέσως.
+cs: Stačí jedno kliknutí, bez přihlášení. Novou cenu ihned aktualizujeme.
+sl: Dovolj je en klik, brez prijave. Novo ceno takoj posodobimo.
+sv: Det räcker med ett klick, ingen inloggning behövs. Ett nytt pris uppdaterar vi direkt.
+@632
+it: I link sono validi fino al ${d}.
+pt: As ligações são válidas até ${d}.
+el: Οι σύνδεσμοι ισχύουν έως τις ${d}.
+cs: Odkazy platí do ${d}.
+sl: Povezave veljajo do ${d}.
+sv: Länkarna gäller till och med ${d}.
+@633
+it: Confermi l’iscrizione | Newsletter FODEL
+pt: Confirme a sua subscrição | Newsletter FODEL
+el: Επιβεβαιώστε την εγγραφή σας | Ενημερωτικό δελτίο FODEL
+cs: Potvrďte odběr | Newsletter FODEL
+sl: Potrdite naročnino | Novice FODEL
+sv: Bekräfta din prenumeration | FODEL:s nyhetsbrev
+@634
+it: Un clic e Le invieremo i nuovi annunci.
+pt: Um clique e enviamos-lhe os novos anúncios.
+el: Ένα κλικ και θα σας στέλνουμε τις νέες αγγελίες.
+cs: Jedno kliknutí a budeme vám posílat nové nabídky.
+sl: En klik in pošiljali vam bomo nove ponudbe.
+sv: Ett klick, så skickar vi nya annonser till dig.
+@635
+it: Ancora un clic
+pt: Só mais um clique
+el: Ένα κλικ ακόμη
+cs: Ještě jedno kliknutí
+sl: Še en klik
+sv: Ett klick till
+@636
+it: Grazie per essersi iscritto alla newsletter FODEL. Ci confermi che è stato Lei. Fino ad allora non inviamo nulla.
+pt: Obrigado por subscrever a newsletter FODEL. Confirme que foi o próprio. Até lá, não enviamos nada.
+el: Σας ευχαριστούμε για την εγγραφή σας στο ενημερωτικό δελτίο της FODEL. Επιβεβαιώστε ότι ήσασταν εσείς. Μέχρι τότε δεν στέλνουμε τίποτα.
+cs: Děkujeme za přihlášení k odběru newsletteru FODEL. Potvrďte prosím, že jste to byli vy. Do té doby vám nic nepošleme.
+sl: Hvala za prijavo na novice FODEL. Prosimo, potrdite, da ste to bili vi. Do takrat vam ne pošljemo ničesar.
+sv: Tack för att du prenumererar på FODEL:s nyhetsbrev. Bekräfta att det var du. Vi skickar ingenting förrän du har gjort det.
+@637
+it: Conferma l’iscrizione
+pt: Confirmar subscrição
+el: Επιβεβαίωση εγγραφής
+cs: Potvrdit odběr
+sl: Potrdi naročnino
+sv: Bekräfta prenumerationen
+@638
+it: Se non si è iscritto, ignori semplicemente questa e-mail: senza conferma non inviamo nulla.
+pt: Se não subscreveu, ignore simplesmente este e-mail: sem confirmação não enviamos nada.
+el: Αν δεν κάνατε εγγραφή, απλώς αγνοήστε αυτό το email: χωρίς επιβεβαίωση δεν στέλνουμε τίποτα.
+cs: Pokud jste se nepřihlásili, tento e-mail jednoduše ignorujte: bez potvrzení nic neposíláme.
+sl: Če se niste prijavili, to sporočilo preprosto prezrite: brez potrditve ne pošiljamo ničesar.
+sv: Om du inte har prenumererat kan du helt enkelt bortse från det här mejlet: utan bekräftelse skickar vi ingenting.
+@639
+it: Annulla l’iscrizione
+pt: Cancelar subscrição
+el: Διαγραφή
+cs: Odhlásit odběr
+sl: Odjava
+sv: Avsluta prenumerationen
+@640
+it: Riceve questa e-mail perché questo indirizzo è stato iscritto alla newsletter FODEL.
+pt: Recebe este e-mail porque este endereço foi inscrito na newsletter FODEL.
+el: Λαμβάνετε αυτό το email επειδή αυτή η διεύθυνση εγγράφηκε στο ενημερωτικό δελτίο της FODEL.
+cs: Tento e-mail dostáváte, protože tato adresa byla přihlášena k odběru newsletteru FODEL.
+sl: To sporočilo prejemate, ker je bil ta naslov prijavljen na novice FODEL.
+sv: Du får det här mejlet eftersom den här adressen har anmälts till FODEL:s nyhetsbrev.
+@641
+it: Grazie per il Suo messaggio | FODEL
+pt: Obrigado pela sua mensagem | FODEL
+el: Σας ευχαριστούμε για το μήνυμά σας | FODEL
+cs: Děkujeme za vaši zprávu | FODEL
+sl: Hvala za vaše sporočilo | FODEL
+sv: Tack för ditt meddelande | FODEL
+@642
+it: <p>${name ? `Gentile ${escapeHtml(name)},` : 'Buongiorno,'}</p>\n       <p>grazie per il Suo messaggio. Lo abbiamo ricevuto e un membro del nostro team La contatterà a breve. ${escapeHtml(hours)}</p>\n       <p>Ha fretta? Ci chiami al numero ${escapeHtml(phones)}.</p>\n       <p>Cordiali saluti,<br>FODEL Immobiliare</p>
+pt: <p>${name ? `Bom dia, ${escapeHtml(name)},` : 'Bom dia,'}</p>\n       <p>Obrigado pela sua mensagem. Recebemo-la e um membro da nossa equipa entrará em contacto consigo em breve. ${escapeHtml(hours)}</p>\n       <p>É urgente? Ligue-nos para ${escapeHtml(phones)}.</p>\n       <p>Com os melhores cumprimentos,<br>FODEL Imobiliária</p>
+el: <p>${name ? `Γεια σας, ${escapeHtml(name)},` : 'Γεια σας,'}</p>\n       <p>Σας ευχαριστούμε για το μήνυμά σας. Το λάβαμε και ένα μέλος της ομάδας μας θα επικοινωνήσει σύντομα μαζί σας. ${escapeHtml(hours)}</p>\n       <p>Βιάζεστε; Καλέστε μας στο ${escapeHtml(phones)}.</p>\n       <p>Με εκτίμηση,<br>FODEL Ακίνητα</p>
+cs: <p>${name ? `Dobrý den, ${escapeHtml(name)},` : 'Dobrý den,'}</p>\n       <p>děkujeme za vaši zprávu. Obdrželi jsme ji a náš kolega se vám brzy ozve. ${escapeHtml(hours)}</p>\n       <p>Spěcháte? Zavolejte nám na ${escapeHtml(phones)}.</p>\n       <p>S pozdravem<br>FODEL Nemovitosti</p>
+sl: <p>${name ? `Pozdravljeni, ${escapeHtml(name)},` : 'Pozdravljeni,'}</p>\n       <p>hvala za vaše sporočilo. Prejeli smo ga in naš sodelavec vam bo kmalu odgovoril. ${escapeHtml(hours)}</p>\n       <p>Se vam mudi? Pokličite nas na ${escapeHtml(phones)}.</p>\n       <p>Lep pozdrav<br>FODEL Nepremičnine</p>
+sv: <p>${name ? `Hej ${escapeHtml(name)},` : 'Hej,'}</p>\n       <p>Tack för ditt meddelande. Vi har tagit emot det och någon i vårt team hör av sig inom kort. ${escapeHtml(hours)}</p>\n       <p>Bråttom? Ring oss på ${escapeHtml(phones)}.</p>\n       <p>Vänliga hälsningar<br>FODEL Fastigheter</p>
+@643
+it: Lunedì–venerdì · ${range}
+pt: Segunda a sexta · ${range}
+el: Δευτέρα–Παρασκευή · ${range}
+cs: Pondělí–pátek · ${range}
+sl: Ponedeljek–petek · ${range}
+sv: Måndag–fredag · ${range}
+@644
+it: Richiamate fino alle ${to}, anche nel fine settimana.
+pt: Chamadas de retorno até às ${to}, incluindo fins de semana.
+el: Επανακλήσεις έως τις ${to}, και τα Σαββατοκύριακα.
+cs: Zpětné volání do ${to}, i o víkendu.
+sl: Povratni klici do ${to}, tudi ob koncih tedna.
+sv: Vi ringer upp till kl. ${to}, även på helger.
+@645
+it: Richiamate nei giorni feriali fino alle ${to}.
+pt: Chamadas de retorno nos dias úteis até às ${to}.
+el: Επανακλήσεις τις καθημερινές έως τις ${to}.
+cs: Zpětné volání v pracovní dny do ${to}.
+sl: Povratni klici ob delavnikih do ${to}.
+sv: Vi ringer upp vardagar till kl. ${to}.
+@646
+it: Ci chiami nei giorni feriali tra le ${from} e le ${to}; le richiamate sono possibili fino alle ${cb}${weekend ? ', anche nel fine settimana' : ''}.
+pt: Ligue-nos nos dias úteis entre as ${from} e as ${to}; as chamadas de retorno decorrem até às ${cb}${weekend ? ', incluindo fins de semana' : ''}.
+el: Καλέστε μας τις καθημερινές από τις ${from} έως τις ${to}· οι επανακλήσεις γίνονται έως τις ${cb}${weekend ? ', και τα Σαββατοκύριακα' : ''}.
+cs: Volejte nám v pracovní dny od ${from} do ${to}; zpětné volání je možné do ${cb}${weekend ? ', i o víkendu' : ''}.
+sl: Pokličite nas ob delavnikih med ${from} in ${to}; povratni klici so mogoči do ${cb}${weekend ? ', tudi ob koncih tedna' : ''}.
+sv: Ring oss vardagar mellan kl. ${from} och ${to}; vi ringer upp till kl. ${cb}${weekend ? ', även på helger' : ''}.

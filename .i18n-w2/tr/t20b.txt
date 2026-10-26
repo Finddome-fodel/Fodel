@@ -1,0 +1,567 @@
+@1441
+da: Nogen er interesseret i din ejendom.
+no: Noen er interessert i eiendommen din.
+fi: Joku on kiinnostunut kiinteistöstäsi.
+et: Keegi tunneb huvi teie kinnisvara vastu.
+lv: Kāds ir ieinteresēts jūsu īpašumā.
+lt: Kažkas susidomėjo jūsų turtu.
+@1442
+da: Ny henvendelse på din annonce
+no: Ny henvendelse på annonsen din
+fi: Uusi yhteydenotto ilmoitukseesi
+et: Uus vastus teie kuulutusele
+lv: Jauna atsaucība uz jūsu sludinājumu
+lt: Naujas atsiliepimas į jūsų skelbimą
+@1443
+da: Nogen har reageret på din annonce “${title}” (#${ref}):
+no: Noen har svart på annonsen din «${title}» (#${ref}):
+fi: Joku on vastannut ilmoitukseesi ”${title}” (#${ref}):
+et: Keegi vastas teie kuulutusele „${title}“ (#${ref}):
+lv: Kāds atsaucās uz jūsu sludinājumu „${title}“ (#${ref}):
+lt: Kažkas atsiliepė į jūsų skelbimą „${title}“ (#${ref}):
+@1444
+da: Navn
+no: Navn
+fi: Nimi
+et: Nimi
+lv: Vārds
+lt: Vardas
+@1445
+da: Besked
+no: Melding
+fi: Viesti
+et: Sõnum
+lv: Ziņojums
+lt: Žinutė
+@1446
+da: Tag gerne kontakt inden for to dage: et hurtigt svar er langt den vigtigste faktor for, om et salg bliver til noget.
+no: Ta gjerne kontakt innen to dager: et raskt svar er den desidert viktigste faktoren for om et salg blir noe av.
+fi: Ota mielellään yhteyttä kahden päivän kuluessa: nopea vastaus on ylivoimaisesti tärkein tekijä kaupan syntymisessä.
+et: Võimaluse korral võtke ühendust kahe päeva jooksul: kiire vastus on müügi õnnestumisel kaugelt kõige olulisem tegur.
+lv: Ja iespējams, sazinieties divu dienu laikā: ātra atbilde ir pats svarīgākais faktors, lai darījums notiktu.
+lt: Jei galite, susisiekite per dvi dienas: greitas atsakymas yra pats svarbiausias veiksnys, lemiantis, ar pardavimas įvyks.
+@1447
+da: Nulstil din adgangskode | FODEL-portalen
+no: Tilbakestill passordet | FODEL-portalen
+fi: Palauta salasanasi | FODEL-portaali
+et: Lähtestage parool | FODELi portaal
+lv: Atiestatiet paroli | FODEL portāls
+lt: Atkurkite slaptažodį | FODEL portalas
+@1448
+da: Linket er gyldigt i én time.
+no: Lenken er gyldig i én time.
+fi: Linkki on voimassa tunnin.
+et: Link kehtib ühe tunni.
+lv: Saite ir derīga vienu stundu.
+lt: Nuoroda galioja vieną valandą.
+@1449
+da: Nulstil din adgangskode
+no: Tilbakestill passordet
+fi: Palauta salasanasi
+et: Lähtestage parool
+lv: Atiestatiet paroli
+lt: Atkurkite slaptažodį
+@1450
+da: Vi har modtaget en anmodning om at nulstille adgangskoden til din konto på FODEL-portalen. Klik på knappen nedenfor for at vælge en ny.
+no: Vi har mottatt en forespørsel om å tilbakestille passordet til kontoen din på FODEL-portalen. Klikk på knappen nedenfor for å velge et nytt.
+fi: Saimme pyynnön palauttaa FODEL-portaalin tilisi salasana. Aseta uusi salasana alla olevalla painikkeella.
+et: Saime taotluse lähtestada teie FODELi portaali konto parool. Uue parooli määramiseks klõpsake allolevat nuppu.
+lv: Saņēmām pieprasījumu atiestatīt jūsu FODEL portāla konta paroli. Noklikšķiniet uz pogas zemāk, lai iestatītu jaunu.
+lt: Gavome prašymą atkurti jūsų FODEL portalo paskyros slaptažodį. Norėdami nustatyti naują, spustelėkite toliau esantį mygtuką.
+@1451
+da: Vælg ny adgangskode
+no: Velg nytt passord
+fi: Aseta uusi salasana
+et: Määra uus parool
+lv: Iestatīt jaunu paroli
+lt: Nustatyti naują slaptažodį
+@1452
+da: Linket er gyldigt i én time og kan bruges én gang.
+no: Lenken er gyldig i én time og kan brukes én gang.
+fi: Linkki on voimassa tunnin, ja sitä voi käyttää kerran.
+et: Link kehtib ühe tunni ja seda saab kasutada üks kord.
+lv: Saite ir derīga vienu stundu, un to var izmantot vienu reizi.
+lt: Nuoroda galioja vieną valandą ir gali būti panaudota vieną kartą.
+@1453
+da: Hvis du ikke har bedt om dette, kan du se bort fra denne e-mail. Din adgangskode forbliver uændret, og der sker intet.
+no: Hvis du ikke har bedt om dette, kan du se bort fra denne e-posten. Passordet ditt forblir uendret, og ingenting skjer.
+fi: Jos et pyytänyt tätä, voit jättää viestin huomiotta. Salasanasi pysyy ennallaan eikä mitään tapahdu.
+et: Kui te seda ei taotlenud, jätke see kiri tähelepanuta. Teie parool jääb muutmata ja midagi ei juhtu.
+lv: Ja to nepieprasījāt jūs, ignorējiet šo e-pastu. Jūsu parole paliek nemainīta, un nekas nenotiek.
+lt: Jei to neprašėte, šį laišką ignoruokite. Jūsų slaptažodis lieka nepakitęs ir nieko neatsitinka.
+@1454
+da: Vi har modtaget din anbefaling | FODEL
+no: Vi har mottatt anbefalingen din | FODEL
+fi: Olemme vastaanottaneet suosituksesi | FODEL
+et: Oleme teie soovituse kätte saanud | FODEL
+lv: Esam saņēmuši jūsu ieteikumu | FODEL
+lt: Gavome jūsų rekomendaciją | FODEL
+@1455
+da: En fra vores team kontakter snart den person, du har anbefalet.
+no: En i teamet vårt kontakter snart personen du anbefalte.
+fi: Tiimimme jäsen ottaa pian yhteyttä suosittelemaasi henkilöön.
+et: Keegi meie meeskonnast võtab peagi ühendust teie soovitatud inimesega.
+lv: Kāds no mūsu komandas drīz sazināsies ar jūsu ieteikto personu.
+lt: Kas nors iš mūsų komandos netrukus susisieks su jūsų rekomenduotu asmeniu.
+@1456
+da: Tak for anbefalingen
+no: Takk for anbefalingen
+fi: Kiitos suosituksesta
+et: Täname soovituse eest
+lv: Paldies par ieteikumu
+lt: Ačiū už rekomendaciją
+@1457
+da: Vi har modtaget oplysningerne om den anbefalede person (${referredName}). En fra vores team kontakter vedkommende, og når annoncen er indrykket, krediterer vi dig 10 % af prisen på din næste annonce.
+no: Vi har mottatt opplysningene om den anbefalte personen (${referredName}). En i teamet vårt kontakter vedkommende, og når annonsen er lagt inn, krediterer vi deg 10 % av prisen på din neste annonse.
+fi: Olemme vastaanottaneet suositellun henkilön (${referredName}) tiedot. Tiimimme jäsen ottaa häneen yhteyttä, ja kun ilmoitus on jätetty, hyvitämme sinulle 10 % seuraavan ilmoituksesi hinnasta.
+et: Oleme saanud soovitatud isiku (${referredName}) andmed. Keegi meie meeskonnast võtab temaga ühendust ja kui kuulutus on esitatud, arvestame teile 10% teie järgmise kuulutuse hinnast.
+lv: Esam saņēmuši ieteiktās personas (${referredName}) datus. Kāds no mūsu komandas ar viņu sazināsies, un, kad sludinājums būs ievietots, mēs jums ieskaitīsim 10% atlaidi nākamajam sludinājumam.
+lt: Gavome rekomenduoto asmens (${referredName}) duomenis. Kas nors iš mūsų komandos su juo susisieks, o kai skelbimas bus pateiktas, jūsų kito skelbimo kainą sumažinsime 10 %.
+@1458
+da: Krediteringen sker manuelt, efter at annoncøren har betalt. Vi giver dig besked, så snart det kan lade sig gøre.
+no: Krediteringen gjøres manuelt, etter at annonsøren har betalt. Vi gir deg beskjed så snart det er mulig.
+fi: Hyvitys tehdään käsin sen jälkeen, kun ilmoittaja on maksanut. Ilmoitamme sinulle heti, kun se on mahdollista.
+et: Tasaarvestus tehakse käsitsi pärast seda, kui kuulutaja on maksnud. Anname teada niipea, kui see on võimalik.
+lv: Ieskaitījums tiek veikts manuāli pēc tam, kad sludinātājs ir samaksājis. Mēs jums paziņosim, tiklīdz tas būs iespējams.
+lt: Nuolaida pritaikoma rankiniu būdu, kai skelbėjas sumoka. Pranešime, kai tik tai bus įmanoma.
+@1459
+da: Vi har modtaget din anmodning om vurdering
+no: Vi har mottatt forespørselen din om verdivurdering
+fi: Olemme vastaanottaneet arviopyyntösi
+et: Oleme teie hindamistaotluse kätte saanud
+lv: Esam saņēmuši jūsu novērtējuma pieprasījumu
+lt: Gavome jūsų vertinimo užklausą
+@1460
+da: En fra vores team kontrollerer ejendomsoplysningerne og datagrundlaget og sender dig derefter den vejledende, markedsbaserede vurdering pr. e-mail.
+no: En i teamet vårt kontrollerer eiendomsopplysningene og datagrunnlaget og sender deg deretter den veiledende, markedsbaserte verdivurderingen på e-post.
+fi: Tiimimme jäsen tarkistaa kiinteistön tiedot ja tietopohjan ja lähettää sinulle sitten sähköpostitse suuntaa-antavan, markkinoihin perustuvan arvion.
+et: Keegi meie meeskonnast kontrollib kinnisvara andmeid ja andmebaasi ning saadab teile seejärel e-postiga ligikaudse turupõhise hinnangu.
+lv: Kāds no mūsu komandas pārbauda īpašuma datus un datu bāzi un pēc tam nosūta jums pa e-pastu orientējošu, uz tirgu balstītu novērtējumu.
+lt: Kas nors iš mūsų komandos patikrina turto duomenis ir duomenų pagrindą, tada el. paštu atsiunčia jums orientacinį rinka pagrįstą vertinimą.
+@1461
+da: Din vurdering er klar | FODEL
+no: Verdivurderingen din er klar | FODEL
+fi: Arviosi on valmis | FODEL
+et: Teie hinnang on valmis | FODEL
+lv: Jūsu novērtējums ir gatavs | FODEL
+lt: Jūsų vertinimas parengtas | FODEL
+@1462
+da: Vi har lavet et vejledende skøn over din ejendom.
+no: Vi har laget et veiledende anslag for eiendommen din.
+fi: Olemme tehneet kiinteistöstäsi suuntaa-antavan arvion.
+et: Oleme teinud teie kinnisvarale ligikaudse hinnangu.
+lv: Esam sagatavojuši orientējošu jūsu īpašuma novērtējumu.
+lt: Parengėme orientacinį jūsų turto įvertinimą.
+@1463
+da: Din vurdering er klar
+no: Verdivurderingen din er klar
+fi: Arviosi on valmis
+et: Teie hinnang on valmis
+lv: Jūsu novērtējums ir gatavs
+lt: Jūsų vertinimas parengtas
+@1464
+da: På baggrund af de oplyste data og sammenlignelige ejendomme er vores vejledende skøn: ${range}.
+no: Basert på opplysningene som er gitt og sammenlignbare eiendommer er vårt veiledende anslag: ${range}.
+fi: Annettujen tietojen ja vertailukelpoisten kiinteistöjen perusteella suuntaa-antava arviomme on: ${range}.
+et: Esitatud andmete ja võrreldavate objektide põhjal on meie ligikaudne hinnang: ${range}.
+lv: Pamatojoties uz sniegtajiem datiem un salīdzināmiem īpašumiem, mūsu orientējošais novērtējums ir: ${range}.
+lt: Remiantis pateiktais duomenimis ir panašiais objektais, mūsų orientacinis įvertinimas yra: ${range}.
+@1465
+da: Skønnet er vejledende, ikke en vurderingsrapport, og erstatter ikke en officiel vurdering. Antal sammenlignelige ejendomme: ${n}.
+no: Anslaget er veiledende, ikke en takstrapport, og erstatter ikke en offisiell verdivurdering. Antall sammenlignbare eiendommer: ${n}.
+fi: Arvio on suuntaa-antava, ei arviokirja, eikä se korvaa virallista arviota. Vertailukohteita: ${n}.
+et: See hinnang on ligikaudne, see ei ole hindamisakt ega asenda ametlikku hindamist. Võrreldavaid objekte: ${n}.
+lv: Šis novērtējums ir orientējošs, tas nav vērtēšanas atskaite un neaizstāj oficiālu novērtējumu. Salīdzināmo īpašumu skaits: ${n}.
+lt: Šis įvertinimas yra orientacinis, tai nėra vertinimo ataskaita ir jis nepakeičia oficialaus vertinimo. Panašių objektų skaičius: ${n}.
+@1466
+da: Skønnet er vejledende, ikke en vurderingsrapport, og erstatter ikke en officiel vurdering.
+no: Anslaget er veiledende, ikke en takstrapport, og erstatter ikke en offisiell verdivurdering.
+fi: Arvio on suuntaa-antava, ei arviokirja, eikä se korvaa virallista arviota.
+et: See hinnang on ligikaudne, see ei ole hindamisakt ega asenda ametlikku hindamist.
+lv: Šis novērtējums ir orientējošs, tas nav vērtēšanas atskaite un neaizstāj oficiālu novērtējumu.
+lt: Šis įvertinimas yra orientacinis, tai nėra vertinimo ataskaita ir jis nepakeičia oficialaus vertinimo.
+@1467
+da: Annoncér nu
+no: Annonser nå
+fi: Ilmoita nyt
+et: Avalda kohe
+lv: Ievietot tagad
+lt: Skelbti dabar
+@1468
+da: =
+no: =
+fi: =
+et: =
+lv: =
+lt: =
+@1469
+da: På baggrund af de oplyste data er den vejledende markedsværdi: ${range}.
+no: Basert på opplysningene som er gitt, er den veiledende markedsverdien: ${range}.
+fi: Annettujen tietojen perusteella suuntaa-antava markkina-arvo on: ${range}.
+et: Esitatud andmete põhjal on ligikaudne turuväärtus: ${range}.
+lv: Pamatojoties uz sniegtajiem datiem, orientējošā tirgus vērtība ir: ${range}.
+lt: Remiantis pateiktais duomenimis, orientacinė rinkos vertė yra: ${range}.
+@1470
+da: Midtpunkt
+no: Midtpunkt
+fi: Keskiarvo
+et: Keskväärtus
+lv: Vidējā vērtība
+lt: Vidurinė vertė
+@1471
+da: Datagrundlag
+no: Datagrunnlag
+fi: Tietopohja
+et: Andmebaas
+lv: Datu bāze
+lt: Duomenų pagrindas
+@1472
+da: Valutakursdato
+no: Valutakursdato
+fi: Valuuttakurssin päivä
+et: Vahetuskursi kuupäev
+lv: Valūtas kursa datums
+lt: Valiutos kurso data
+@1473
+da: Kilde
+no: Kilde
+fi: Lähde
+et: Allikas
+lv: Avots
+lt: Šaltinis
+@1474
+da: Faktorer
+no: Faktorer
+fi: Tekijät
+et: Tegurid
+lv: Faktori
+lt: Veiksniai
+@1475
+da: Øger værdien
+no: Øker verdien
+fi: Nostaa arvoa
+et: Tõstab väärtust
+lv: Palielina vērtību
+lt: Didina vertę
+@1476
+da: Sænker værdien
+no: Senker verdien
+fi: Laskee arvoa
+et: Langetab väärtust
+lv: Samazina vērtību
+lt: Mažina vertę
+@1477
+da: Usikkert
+no: Usikkert
+fi: Epävarma
+et: Ebakindel
+lv: Nenoteikts
+lt: Neaišku
+@1478
+da: Bestil et besøg af Gábor
+no: Bestill et besøk av Gábor
+fi: Pyydä Gáborin käyntiä
+et: Tellige Gábori külastus
+lv: Pieprasiet Gābora vizīti
+lt: Užsakykite Gáboro apsilankymą
+@1479
+da: Bestil en officiel vurdering
+no: Bestill en offisiell verdivurdering
+fi: Pyydä virallinen arvio
+et: Tellige ametlik hindamine
+lv: Pieprasiet oficiālu novērtējumu
+lt: Užsakykite oficialų vertinimą
+@1480
+da: Din anmodning om vurdering | FODEL
+no: Forespørselen din om verdivurdering | FODEL
+fi: Arviopyyntösi | FODEL
+et: Teie hindamistaotlus | FODEL
+lv: Jūsu novērtējuma pieprasījums | FODEL
+lt: Jūsų vertinimo užklausa | FODEL
+@1481
+da: En fra vores team kontakter dig personligt.
+no: En i teamet vårt kontakter deg personlig.
+fi: Tiimimme jäsen ottaa sinuun henkilökohtaisesti yhteyttä.
+et: Keegi meie meeskonnast võtab teiega isiklikult ühendust.
+lv: Kāds no mūsu komandas sazināsies ar jums personīgi.
+lt: Kas nors iš mūsų komandos susisieks su jumis asmeniškai.
+@1482
+da: Tak for din henvendelse
+no: Takk for forespørselen din
+fi: Kiitos pyynnöstäsi
+et: Täname teie taotluse eest
+lv: Paldies par jūsu pieprasījumu
+lt: Ačiū už jūsų užklausą
+@1483
+da: På baggrund af de oplyste data har vi i øjeblikket for få sammenlignelige ejendomme til et pålideligt skøn. En fra vores team kontakter dig personligt.
+no: Basert på opplysningene som er gitt, har vi for øyeblikket for få sammenlignbare eiendommer til et pålitelig anslag. En i teamet vårt kontakter deg personlig.
+fi: Annettujen tietojen perusteella meillä on tällä hetkellä liian vähän vertailukohteita luotettavaan arvioon. Tiimimme jäsen ottaa sinuun henkilökohtaisesti yhteyttä.
+et: Esitatud andmete põhjal on meil praegu usaldusväärse hinnangu jaoks liiga vähe võrreldavaid objekte. Keegi meie meeskonnast võtab teiega isiklikult ühendust.
+lv: Pamatojoties uz sniegtajiem datiem, mums pašlaik ir pārāk maz salīdzināmu īpašumu uzticamam novērtējumam. Kāds no mūsu komandas sazināsies ar jums personīgi.
+lt: Remiantis pateiktais duomenimis, šiuo metu turime per mažai panašių objektų patikimam įvertinimui. Kas nors iš mūsų komandos susisieks su jumis asmeniškai.
+@1484
+da: Vurdering: vi har brug for nogle flere oplysninger
+no: Verdivurdering: vi trenger noen flere opplysninger
+fi: Arvio: tarvitsemme vielä muutamia tietoja
+et: Hindamine: vajame veel mõningaid andmeid
+lv: Novērtējums: mums vajag vēl dažus datus
+lt: Vertinimas: mums reikia dar kelių duomenų
+@1485
+da: Vi har brug for lidt flere oplysninger til skønnet.
+no: Vi trenger litt mer informasjon til anslaget.
+fi: Tarvitsemme arviota varten hieman lisätietoja.
+et: Hinnangu jaoks vajame veidi rohkem teavet.
+lv: Novērtējumam mums vajag nedaudz vairāk informācijas.
+lt: Įvertinimui mums reikia šiek tiek daugiau informacijos.
+@1486
+da: Vi har brug for nogle flere oplysninger
+no: Vi trenger noen flere opplysninger
+fi: Tarvitsemme vielä muutamia tietoja
+et: Vajame veel mõningaid andmeid
+lv: Mums vajag vēl dažus datus
+lt: Mums reikia dar kelių duomenų
+@1487
+da: Tak for din anmodning om vurdering. Til skønnet beder en fra vores team dig om følgende:
+no: Takk for forespørselen om verdivurdering. Til anslaget ber en i teamet vårt deg om følgende:
+fi: Kiitos arviopyynnöstäsi. Arviota varten tiimimme jäsen pyytää sinulta seuraavaa:
+et: Täname hindamistaotluse eest. Hinnangu jaoks palub keegi meie meeskonnast teilt järgmist:
+lv: Paldies par novērtējuma pieprasījumu. Novērtējumam kāds no mūsu komandas lūdz jums šo:
+lt: Ačiū už vertinimo užklausą. Įvertinimui kas nors iš mūsų komandos prašo jūsų štai ko:
+@1488
+da: Svar på denne e-mail med de manglende oplysninger. Så snart vi har dem, laver vi skønnet.
+no: Svar på denne e-posten med opplysningene som mangler. Så snart vi har dem, lager vi anslaget.
+fi: Vastaa tähän viestiin ja lähetä puuttuvat tiedot. Heti kun saamme ne, teemme arvion.
+et: Vastake sellele kirjale puuduvate andmetega. Niipea kui need käes on, teeme hinnangu.
+lv: Atbildiet uz šo e-pastu ar trūkstošajiem datiem. Tiklīdz tos saņemsim, sagatavosim novērtējumu.
+lt: Atsakykite į šį laišką ir atsiųskite trūkstamus duomenis. Kai tik juos gausime, atliksime įvertinimą.
+@1489
+da: Din annonce kan ikke indrykkes (#${ref})
+no: Annonsen din kan ikke publiseres (#${ref})
+fi: Ilmoitustasi ei voida julkaista (#${ref})
+et: Teie kuulutust ei saa avaldada (#${ref})
+lv: Jūsu sludinājumu nevar publicēt (#${ref})
+lt: Jūsų skelbimo negalima paskelbti (#${ref})
+@1490
+da: Resultatet af gennemgangen og begrundelsen.
+no: Resultatet av gjennomgangen og begrunnelsen.
+fi: Tarkastuksen tulos ja perustelu.
+et: Läbivaatamise tulemus ja selgitus.
+lv: Pārbaudes rezultāts un pamatojums.
+lt: Peržiūros rezultatas ir paaiškinimas.
+@1491
+da: Vi kan ikke indrykke annoncen
+no: Vi kan ikke publisere annonsen
+fi: Emme voi julkaista ilmoitusta
+et: Me ei saa kuulutust avaldada
+lv: Mēs nevaram publicēt sludinājumu
+lt: Negalime paskelbti skelbimo
+@1492
+da: Vi beklager: efter gennemgang har vores team ikke godkendt din annonce “${title}” (#${ref}). Begrundelsen:
+no: Vi beklager: etter gjennomgang har teamet vårt ikke godkjent annonsen din «${title}» (#${ref}). Begrunnelsen:
+fi: Pahoittelemme: tarkastuksen jälkeen tiimimme ei hyväksynyt ilmoitustasi ”${title}” (#${ref}). Perustelu:
+et: Meil on kahju: pärast läbivaatamist ei kinnitanud meie meeskond teie kuulutust „${title}“ (#${ref}). Selgitus:
+lv: Mums ļoti žēl: pēc pārbaudes mūsu komanda neapstiprināja jūsu sludinājumu „${title}“ (#${ref}). Pamatojums:
+lt: Apgailestaujame: po peržiūros mūsų komanda nepatvirtino jūsų skelbimo „${title}“ (#${ref}). Paaiškinimas:
+@1493
+da: Hvis du allerede har betalt for annoncen, kontakter vi dig separat om tilbagebetalingen.
+no: Hvis du allerede har betalt for annonsen, kontakter vi deg separat om tilbakebetalingen.
+fi: Jos olet jo maksanut ilmoituksen, otamme sinuun erikseen yhteyttä hyvityksestä.
+et: Kui olete kuulutuse eest juba maksnud, võtame raha tagastamise asjus teiega eraldi ühendust.
+lv: Ja jau esat samaksājis par sludinājumu, mēs ar jums sazināsimies atsevišķi par naudas atmaksu.
+lt: Jei už skelbimą jau sumokėjote, dėl pinigų grąžinimo susisieksime su jumis atskirai.
+@1494
+da: Hvis du har et spørgsmål eller mener, der er sket en misforståelse, kan du bare svare på denne e-mail.
+no: Hvis du har et spørsmål eller tror det har skjedd en misforståelse, kan du bare svare på denne e-posten.
+fi: Jos sinulla on kysyttävää tai uskot, että kyseessä on väärinkäsitys, vastaa vain tähän viestiin.
+et: Kui teil on küsimusi või arvate, et tegemist on arusaamatusega, vastake lihtsalt sellele kirjale.
+lv: Ja jums ir jautājums vai šķiet, ka radies pārpratums, vienkārši atbildiet uz šo e-pastu.
+lt: Jei turite klausimų arba manote, kad įvyko nesusipratimas, tiesiog atsakykite į šį laišką.
+@1495
+da: Faktura ${number}
+no: Faktura ${number}
+fi: Lasku ${number}
+et: Arve ${number}
+lv: Rēķins ${number}
+lt: Sąskaita faktūra ${number}
+@1496
+da: Fakturaen er klar; du kan se eller downloade den via linket.
+no: Fakturaen er klar; du kan se eller laste den ned via lenken.
+fi: Lasku on valmis; voit tarkastella tai ladata sen linkin kautta.
+et: Arve on valmis; saate seda lingi kaudu vaadata või alla laadida.
+lv: Rēķins ir gatavs; to var apskatīt vai lejupielādēt, izmantojot saiti.
+lt: Sąskaita faktūra parengta; ją galite peržiūrėti arba atsisiųsti per nuorodą.
+@1497
+da: Din faktura er klar
+no: Fakturaen din er klar
+fi: Laskusi on valmis
+et: Teie arve on valmis
+lv: Jūsu rēķins ir gatavs
+lt: Jūsų sąskaita faktūra parengta
+@1498
+da: Faktura ${number} for din annonce “${title}” (#${ref}) er klar.
+no: Faktura ${number} for annonsen din «${title}» (#${ref}) er klar.
+fi: Lasku ${number} ilmoituksestasi ”${title}” (#${ref}) on valmis.
+et: Arve ${number} teie kuulutuse „${title}“ (#${ref}) eest on valmis.
+lv: Rēķins ${number} par jūsu sludinājumu „${title}“ (#${ref}) ir gatavs.
+lt: Sąskaita faktūra ${number} už jūsų skelbimą „${title}“ (#${ref}) parengta.
+@1499
+da: Se faktura
+no: Se faktura
+fi: Näytä lasku
+et: Vaata arvet
+lv: Skatīt rēķinu
+lt: Peržiūrėti sąskaitą
+@1500
+da: Kreditnota ${number}
+no: Kreditnota ${number}
+fi: Hyvityslasku ${number}
+et: Kreeditarve ${number}
+lv: Kredītrēķins ${number}
+lt: Kreditinė sąskaita ${number}
+@1501
+da: Vi har udstedt en kreditnota for din tidligere faktura.
+no: Vi har utstedt en kreditnota for den tidligere fakturaen din.
+fi: Olemme laatineet hyvityslaskun aiemmasta laskustasi.
+et: Oleme teie varasema arve kohta väljastanud kreeditarve.
+lv: Esam izrakstījuši kredītrēķinu par jūsu iepriekšējo rēķinu.
+lt: Išrašėme kreditinę sąskaitą jūsų ankstesnei sąskaitai faktūrai.
+@1502
+da: Kreditnotaen er klar
+no: Kreditnotaen er klar
+fi: Hyvityslasku on valmis
+et: Kreeditarve on valmis
+lv: Kredītrēķins ir gatavs
+lt: Kreditinė sąskaita parengta
+@1503
+da: Vi har udstedt kreditnota ${number} til faktura ${correctsNumber} for din annonce “${title}” (#${ref}).
+no: Vi har utstedt kreditnota ${number} mot faktura ${correctsNumber} for annonsen din «${title}» (#${ref}).
+fi: Olemme laatineet hyvityslaskun ${number} laskulle ${correctsNumber} ilmoituksestasi ”${title}” (#${ref}).
+et: Oleme väljastanud kreeditarve ${number} arvele ${correctsNumber} teie kuulutuse „${title}“ (#${ref}) eest.
+lv: Esam izrakstījuši kredītrēķinu ${number} rēķinam ${correctsNumber} par jūsu sludinājumu „${title}“ (#${ref}).
+lt: Išrašėme kreditinę sąskaitą ${number} sąskaitai faktūrai ${correctsNumber} už jūsų skelbimą „${title}“ (#${ref}).
+@1504
+da: Se kreditnota
+no: Se kreditnota
+fi: Näytä hyvityslasku
+et: Vaata kreeditarvet
+lv: Skatīt kredītrēķinu
+lt: Peržiūrėti kreditinę sąskaitą
+@1505
+da: Vi har modtaget din henvendelse | FODEL
+no: Vi har mottatt forespørselen din | FODEL
+fi: Olemme vastaanottaneet pyyntösi | FODEL
+et: Oleme teie taotluse kätte saanud | FODEL
+lv: Esam saņēmuši jūsu pieprasījumu | FODEL
+lt: Gavome jūsų užklausą | FODEL
+@1506
+da: En fra vores team kontakter dig for at aftale en dato.
+no: En i teamet vårt kontakter deg for å avtale en dato.
+fi: Tiimimme jäsen ottaa sinuun yhteyttä ajankohdan sopimiseksi.
+et: Keegi meie meeskonnast võtab teiega aja kokkuleppimiseks ühendust.
+lv: Kāds no mūsu komandas sazināsies ar jums, lai vienotos par datumu.
+lt: Kas nors iš mūsų komandos susisieks su jumis dėl datos.
+@1507
+da: Vi har modtaget din henvendelse
+no: Vi har mottatt forespørselen din
+fi: Olemme vastaanottaneet pyyntösi
+et: Oleme teie taotluse kätte saanud
+lv: Esam saņēmuši jūsu pieprasījumu
+lt: Gavome jūsų užklausą
+@1508
+da: Tak, vi har noteret din henvendelse: ${service} (${price}).
+no: Takk, vi har notert forespørselen din: ${service} (${price}).
+fi: Kiitos, olemme kirjanneet pyyntösi: ${service} (${price}).
+et: Täname, oleme teie taotluse kirja pannud: ${service} (${price}).
+lv: Paldies, esam reģistrējuši jūsu pieprasījumu: ${service} (${price}).
+lt: Ačiū, užregistravome jūsų užklausą: ${service} (${price}).
+@1509
+da: Vi fortæller om betalingen, når vi aftaler datoen. Du betaler ikke noget nu.
+no: Vi informerer om betalingen når vi avtaler datoen. Du betaler ingenting nå.
+fi: Kerromme maksusta, kun sovimme ajankohdan. Et maksa nyt mitään.
+et: Maksest räägime, kui aja kokku lepime. Praegu te midagi ei maksa.
+lv: Par maksājumu pastāstīsim, kad vienosimies par datumu. Tagad jūs neko nemaksājat.
+lt: Apie mokėjimą pranešime, kai susitarsime dėl datos. Dabar nieko nemokate.
+@1510
+da: Har du fortrudt? Svar blot på denne e-mail.
+no: Har du ombestemt deg? Bare svar på denne e-posten.
+fi: Muutitko mielesi? Vastaa vain tähän viestiin.
+et: Kas mõtlesite ümber? Vastake lihtsalt sellele kirjale.
+lv: Pārdomājāt? Vienkārši atbildiet uz šo e-pastu.
+lt: Persigalvojote? Tiesiog atsakykite į šį laišką.
+@1511
+da: Betalingsbekræftelse | FODEL-vurdering
+no: Betalingsbekreftelse | FODEL-verdivurdering
+fi: Maksuvahvistus | FODEL-arvio
+et: Makse kinnitus | FODELi hindamine
+lv: Maksājuma apstiprinājums | FODEL novērtējums
+lt: Mokėjimo patvirtinimas | FODEL vertinimas
+@1512
+da: Tak, din betaling er modtaget.
+no: Takk, betalingen din er mottatt.
+fi: Kiitos, maksusi on saapunut.
+et: Täname, teie makse on laekunud.
+lv: Paldies, jūsu maksājums ir saņemts.
+lt: Ačiū, jūsų mokėjimas gautas.
+@1513
+da: Vi har modtaget betalingen for “${service}”.
+no: Vi har mottatt betalingen for «${service}».
+fi: Olemme vastaanottaneet maksun palvelusta ”${service}”.
+et: Oleme saanud makse teenuse „${service}“ eest.
+lv: Esam saņēmuši maksājumu par „${service}“.
+lt: Gavome mokėjimą už „${service}“.
+@1514
+da: Post
+no: Post
+fi: Tuote
+et: Teenus
+lv: Pozīcija
+lt: Prekė
+@1515
+da: Betalt den
+no: Betalt den
+fi: Maksettu
+et: Makstud
+lv: Samaksāts
+lt: Sumokėta
+@1516
+da: En fra vores team kontakter dig snart om de næste skridt.
+no: En i teamet vårt kontakter deg snart om de neste stegene.
+fi: Tiimimme jäsen ottaa sinuun pian yhteyttä seuraavista vaiheista.
+et: Keegi meie meeskonnast võtab peagi teiega edasiste sammude osas ühendust.
+lv: Kāds no mūsu komandas drīz sazināsies ar jums par nākamajiem soļiem.
+lt: Kas nors iš mūsų komandos netrukus susisieks su jumis dėl tolesnių veiksmų.
+@1517
+da: Har du brug for en faktura? Svar blot på denne e-mail.
+no: Trenger du faktura? Bare svar på denne e-posten.
+fi: Tarvitsetko laskun? Vastaa vain tähän viestiin.
+et: Vajate arvet? Vastake lihtsalt sellele kirjale.
+lv: Vajadzīgs rēķins? Vienkārši atbildiet uz šo e-pastu.
+lt: Reikia sąskaitos faktūros? Tiesiog atsakykite į šį laišką.
+@1518
+da: Anmodning om officiel vurdering | FODEL
+no: Forespørsel om offisiell verdivurdering | FODEL
+fi: Virallisen arvion pyyntö | FODEL
+et: Ametliku hindamise taotlus | FODEL
+lv: Oficiāla novērtējuma pieprasījums | FODEL
+lt: Oficialaus vertinimo užklausa | FODEL
+@1519
+da: En fra vores team kontakter dig om mulighederne.
+no: En i teamet vårt kontakter deg om mulighetene.
+fi: Tiimimme jäsen ottaa sinuun yhteyttä vaihtoehdoista.
+et: Keegi meie meeskonnast võtab teiega võimaluste osas ühendust.
+lv: Kāds no mūsu komandas sazināsies ar jums par iespējām.
+lt: Kas nors iš mūsų komandos susisieks su jumis dėl galimybių.
+@1520
+da: Tak, vi har noteret, at du ønsker en officiel (retslig) vurdering foretaget af en sagkyndig. Den er ikke det samme som den vejledende, markedsbaserede vurdering på vores websted: den udføres af en autoriseret sagkyndig på grundlag af et tilbud.
+no: Takk, vi har notert at du ønsker en offisiell (rettslig) verdivurdering utført av en sakkyndig. Den er ikke det samme som den veiledende, markedsbaserte verdivurderingen på nettstedet vårt: den utføres av en autorisert sakkyndig, på grunnlag av et tilbud.
+fi: Kiitos, olemme kirjanneet, että haluat asiantuntijan virallisen (tuomioistuimen hyväksymän) arvion. Se ei ole sama asia kuin sivustomme suuntaa-antava, markkinoihin perustuva arvio: sen tekee valtuutettu asiantuntija tarjouksen perusteella.
+et: Täname, oleme kirja pannud, et soovite eksperdi ametlikku (kohtu määratud) hindamist. See ei ole sama mis meie veebisaidi ligikaudne turupõhine hinnang: selle teeb volitatud ekspert hinnapakkumise alusel.
+lv: Paldies, esam reģistrējuši, ka vēlaties eksperta oficiālu (tiesas) novērtējumu. Tas nav tas pats, kas orientējošais, uz tirgu balstītais novērtējums mūsu vietnē: to veic sertificēts eksperts, pamatojoties uz piedāvājumu.
+lt: Ačiū, užregistravome, kad pageidaujate oficialaus (teismo) eksperto vertinimo. Tai ne tas pats, kas orientacinis rinka pagrįstas vertinimas mūsų svetainėje: jį atlieka įgaliotas ekspertas pagal komercinį pasiūlymą.
+@1521
+da: En fra vores team kontakter dig om mulighederne og tilbuddet.
+no: En i teamet vårt kontakter deg om mulighetene og tilbudet.
+fi: Tiimimme jäsen ottaa sinuun yhteyttä vaihtoehdoista ja tarjouksesta.
+et: Keegi meie meeskonnast võtab teiega võimaluste ja hinnapakkumise osas ühendust.
+lv: Kāds no mūsu komandas sazināsies ar jums par iespējām un piedāvājumu.
+lt: Kas nors iš mūsų komandos susisieks su jumis dėl galimybių ir pasiūlymo.

@@ -1,0 +1,140 @@
+@1287 [legal]
+EN: Your rights
+
+@1288 [legal]
+EN: Access to the data we process about you
+
+@1289 [legal]
+EN: Rectification and erasure
+
+@1290 [legal]
+EN: Restriction of, or objection to, the processing
+
+@1291 [legal]
+EN: Data portability
+
+@1292 [legal]
+EN: Withdrawing your consent at any time
+
+@1293 [legal]
+EN: Lodging a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens)
+
+@1294 [legal]
+EN: Contact about privacy
+
+@1295 [legal]
+EN: You can send questions or requests to ${COMPANY.email.primary}. We reply within 30 days at the latest.
+
+@1296 [legal]
+EN: Cookie notice
+
+@1297 [legal]
+EN: Which cookies ${SITE_HOST} uses and how to change your choice.
+
+@1298 [legal]
+EN: Cookies
+
+@1299 [legal]
+EN: Cookie
+
+@1300 [legal]
+EN: At the moment this website uses only technically necessary storage. We run no advertising or tracking scripts and share nothing with social platforms.
+
+@1301 [legal]
+EN: What we store
+
+@1302 [legal]
+EN: Your choice about cookies (accepted or rejected). Kept in your browser and does not reach us. Retention: 12 months.
+
+@1303 [legal]
+EN: Statistics
+
+@1304 [legal]
+EN: If we ever keep visitor statistics, we will switch them on only with your prior, explicit consent. Declining does not limit your use of the site in any way.
+
+@1305 [legal]
+EN: Changing your choice
+
+@1306 [legal]
+EN: You can change your choice at any time by clearing the stored browser data for this site; the cookie notice then appears again.
+
+@1307 [legal]
+EN: Terms and conditions
+
+@1308 [legal]
+EN: The terms of FODEL’s advertising and brokerage service: prices, commission, withdrawal and liability.
+
+@1309 [legal]
+EN: Terms
+
+@1310 [legal]
+EN: Terms and
+
+@1311 [legal]
+EN: Please note
+
+@1312 [legal]
+EN: This page is a summary. The full, binding terms are available as a PDF; if they differ, the PDF prevails.
+
+@1313 [legal]
+EN: 1. The service
+
+@1314 [legal]
+EN: FODEL advertises Hungarian property on its own multilingual websites and, under a separate agreement, assists with completing the sale.
+
+@1315 [legal]
+EN: The advertising service carries no exclusivity: the seller may also offer and sell the property through other channels.
+
+@1316 [legal]
+EN: 2. Placing a listing
+
+@1317 [legal]
+EN: The seller fills in the registration form.
+
+@1318 [legal]
+EN: FODEL sends a payment request for the chosen package.
+
+@1319 [legal]
+EN: The seller pays by bank transfer.
+
+@1320 [legal]
+EN: On receipt, the seller is given the right to upload photos.
+
+@1321 [legal]
+EN: FODEL handles the translation and publishes the listing.
+
+@1322 [legal]
+EN: 3. Prices
+
+@1323 [legal]
+EN: All prices include ${LISTING_VAT_PERCENT}% Dutch VAT. See the Prices page for the full overview.
+
+@1324 [legal]
+EN: Economy listing (${cheap.months} months)
+
+@1325 [legal]
+EN: Standard listing (${normal.months} months)
+
+@1326 [legal]
+EN: ${eur(normal.priceEur, L)} / ${eur(normal.priceEurAbove, L)}
+
+@1327 [legal]
+EN: Translation
+
+@1328 [legal]
+EN: ${eur(extra('translation').priceEur, L)} per language
+
+@1329 [legal]
+EN: Highlighting
+
+@1330 [legal]
+EN: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} per month (min. ${minMonths} months)
+
+@1331 [legal]
+EN: 4. Commission
+
+@1332 [legal]
+EN: Commission is due only when all of the following apply: a written sale and purchase agreement, a buyer introduced by FODEL, and a deposit that has been paid.
+
+@1333 [legal]
+EN: The commission is ${COMMISSION.percent}% net with a minimum of ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Dutch VAT.

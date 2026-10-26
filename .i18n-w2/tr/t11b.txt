@@ -1,0 +1,973 @@
+@786
+da: Boligejendomme
+no: Boligeiendommer
+fi: Asuinkiinteistöt
+et: Elukinnisvara
+lv: Dzīvojamie īpašumi
+lt: Gyvenamasis nekilnojamasis turtas
+@787
+da: Lejlighed, etværelses
+no: Leilighet, hybel
+fi: Kerrostaloasunto, yksiö
+et: Korter, stuudio
+lv: Dzīvoklis, studija
+lt: Butas, studija
+@788
+da: Parcelhus, villa
+no: Enebolig, villa
+fi: Omakotitalo, huvila
+et: Eramu, villa
+lv: Privātmāja, villa
+lt: Individualus namas, vila
+@789
+da: Dobbelthus, rækkehus
+no: Tomannsbolig, rekkehus
+fi: Paritalo, rivitalo
+et: Paarismaja, ridaelamu
+lv: Dvīņu māja, rindu māja
+lt: Sublokuotas namas, kotedžas
+@790
+da: Penthouselejlighed
+no: Toppleilighet
+fi: Kattohuoneisto
+et: Katusekorter
+lv: Penthauss
+lt: Penthauzas
+@791
+da: Etageejendom
+no: Bygård
+fi: Kerrostalo
+et: Kortermaja
+lv: Daudzdzīvokļu māja
+lt: Daugiabutis namas
+@792
+da: Anden boligejendom
+no: Annen boligeiendom
+fi: Muu asuinkiinteistö
+et: Muu elukinnisvara
+lv: Cits dzīvojamais īpašums
+lt: Kitas gyvenamasis turtas
+@793
+da: Fritidsejendomme
+no: Fritidseiendommer
+fi: Vapaa-ajan kiinteistöt
+et: Puhkekinnisvara
+lv: Brīvdienu īpašumi
+lt: Poilsio nekilnojamasis turtas
+@794
+da: Fritidshus, sommerhus
+no: Fritidsbolig, hytte
+fi: Vapaa-ajan asunto, mökki
+et: Puhkemaja, suvila
+lv: Brīvdienu māja, vasarnīca
+lt: Poilsio namas, sodyba savaitgaliams
+@795
+da: Ferielejlighed
+no: Ferieleilighet
+fi: Lomahuoneisto
+et: Puhkekorter
+lv: Brīvdienu dzīvoklis
+lt: Poilsio butas
+@796
+da: Ejendom ved vandet eller havet
+no: Eiendom ved vann eller sjø
+fi: Ranta- tai merenrantakiinteistö
+et: Kinnisvara vee ääres või mere ääres
+lv: Īpašums pie ūdens vai jūras
+lt: Turtas prie vandens ar jūros
+@797
+da: Bjerghytte, chalet
+no: Fjellhytte, chalet
+fi: Tunturimökki, chalet
+et: Mägimaja, šalee
+lv: Kalnu māja, šalē
+lt: Kalnų namelis, šalė
+@798
+da: Feriekompleks
+no: Ferieanlegg
+fi: Lomakeskus
+et: Puhkekompleks
+lv: Atpūtas komplekss
+lt: Poilsio kompleksas
+@799
+da: Anden fritidsejendom
+no: Annen fritidseiendom
+fi: Muu vapaa-ajan kiinteistö
+et: Muu puhkekinnisvara
+lv: Cits brīvdienu īpašums
+lt: Kitas poilsio turtas
+@800
+da: Landbrugsejendomme
+no: Landbrukseiendommer
+fi: Maatilakiinteistöt
+et: Põllumajanduskinnisvara
+lv: Lauksaimniecības īpašumi
+lt: Žemės ūkio nekilnojamasis turtas
+@801
+da: Agerjord, landbrugsjord
+no: Dyrket mark, jordbruksareal
+fi: Pelto, maatalousmaa
+et: Põllumaa, haritav maa
+lv: Aramzeme, lauksaimniecības zeme
+lt: Ariama žemė, žemės ūkio paskirties žemė
+@802
+da: Landbrug, gård
+no: Gård, småbruk
+fi: Maatila, tila
+et: Talu, talukoht
+lv: Lauku saimniecība, viensēta
+lt: Ūkis, sodyba
+@803
+da: Frugtplantage, vingård
+no: Frukthage, vingård
+fi: Hedelmätarha, viinitarha
+et: Viljapuuaed, viinamarjaistandus
+lv: Augļu dārzs, vīna dārzs
+lt: Sodas, vynuogynas
+@804
+da: Skov, græsningsareal
+no: Skog, beitemark
+fi: Metsä, laidun
+et: Mets, karjamaa
+lv: Mežs, ganības
+lt: Miškas, ganykla
+@805
+da: Husdyrbrug
+no: Husdyrbygning
+fi: Kotieläintuotantorakennus
+et: Loomakasvatushoone
+lv: Lopkopības ēka
+lt: Gyvulininkystės pastatas
+@806
+da: Landbrugsvirksomhed, gods
+no: Landbruksvirksomhet, gods
+fi: Maatalousyritys, kartano
+et: Põllumajandusettevõte, mõis
+lv: Lauksaimniecības uzņēmums, muiža
+lt: Žemės ūkio įmonė, dvaras
+@807
+da: Fiskedam, fiskeopdræt
+no: Fiskedam, fiskeoppdrett
+fi: Kalalammikko, kalankasvattamo
+et: Kalatiik, kalakasvatus
+lv: Zivju dīķis, zivjaudzētava
+lt: Žuvininkystės tvenkinys, žuvų ūkis
+@808
+da: Anden landbrugsejendom
+no: Annen landbrukseiendom
+fi: Muu maatilakiinteistö
+et: Muu põllumajanduskinnisvara
+lv: Cits lauksaimniecības īpašums
+lt: Kitas žemės ūkio turtas
+@809
+da: Erhvervsejendomme
+no: Næringseiendommer
+fi: Liikekiinteistöt
+et: Ärikinnisvara
+lv: Komercīpašumi
+lt: Komercinis nekilnojamasis turtas
+@810
+da: Butikslokale
+no: Butikklokale
+fi: Liiketila
+et: Kaubandusruum
+lv: Tirdzniecības telpa
+lt: Prekybos patalpa
+@811
+da: Kontor, kontorbygning
+no: Kontor, kontorbygg
+fi: Toimisto, toimistorakennus
+et: Kontor, büroohoone
+lv: Birojs, biroju ēka
+lt: Biuras, biurų pastatas
+@812
+da: Restaurant, café
+no: Restaurant, kafé
+fi: Ravintola, kahvila
+et: Restoran, kohvik
+lv: Restorāns, kafejnīca
+lt: Restoranas, kavinė
+@813
+da: Hotel, B&B, pensionat
+no: Hotell, B&B, pensjonat
+fi: Hotelli, B&B, majatalo
+et: Hotell, B&B, külalistemaja
+lv: Viesnīca, B&B, viesu nams
+lt: Viešbutis, B&B, svečių namai
+@814
+da: Indkøbscenter
+no: Kjøpesenter
+fi: Kauppakeskus
+et: Kaubanduskeskus
+lv: Tirdzniecības centrs
+lt: Prekybos centras
+@815
+da: Sundheds-, uddannelses- eller idrætsfacilitet
+no: Helse-, utdannings- eller idrettsanlegg
+fi: Terveys-, koulutus- tai urheilutila
+et: Tervishoiu-, haridus- või spordirajatis
+lv: Veselības, izglītības vai sporta objekts
+lt: Sveikatos, švietimo ar sporto objektas
+@816
+da: Anden erhvervsejendom
+no: Annen næringseiendom
+fi: Muu liikekiinteistö
+et: Muu ärikinnisvara
+lv: Cits komercīpašums
+lt: Kitas komercinis turtas
+@817
+da: Industri- og logistikejendomme
+no: Industri- og logistikkeiendommer
+fi: Teollisuus- ja logistiikkakiinteistöt
+et: Tööstus- ja logistikakinnisvara
+lv: Rūpniecības un loģistikas īpašumi
+lt: Pramonės ir logistikos nekilnojamasis turtas
+@818
+da: Fabrik, anlæg
+no: Fabrikk, anlegg
+fi: Tehdas, tuotantolaitos
+et: Tehas, tootmisüksus
+lv: Rūpnīca, ražotne
+lt: Gamykla, įmonė
+@819
+da: Lager, logistikcenter
+no: Lager, logistikksenter
+fi: Varasto, logistiikkakeskus
+et: Ladu, logistikakeskus
+lv: Noliktava, loģistikas centrs
+lt: Sandėlis, logistikos centras
+@820
+da: Industrihal
+no: Industrihall
+fi: Teollisuushalli
+et: Tööstushall
+lv: Rūpnieciskā halle
+lt: Pramoninis angaras
+@821
+da: Værksted, servicecenter
+no: Verksted, servicesenter
+fi: Korjaamo, huoltokeskus
+et: Töökoda, teeninduskeskus
+lv: Darbnīca, servisa centrs
+lt: Dirbtuvės, aptarnavimo centras
+@822
+da: Fødevarevirksomhed
+no: Næringsmiddelanlegg
+fi: Elintarviketehdas
+et: Toiduainetööstus
+lv: Pārtikas pārstrādes uzņēmums
+lt: Maisto perdirbimo įmonė
+@823
+da: Anden industriejendom
+no: Annen industrieiendom
+fi: Muu teollisuuskiinteistö
+et: Muu tööstuskinnisvara
+lv: Cits rūpniecības īpašums
+lt: Kitas pramoninis turtas
+@824
+da: Herregårde og historiske ejendomme
+no: Herregårder og historiske eiendommer
+fi: Kartanot ja historialliset kiinteistöt
+et: Mõisad ja ajaloolised kinnistud
+lv: Muižas un vēsturiski īpašumi
+lt: Dvarai ir istoriniai pastatai
+@825
+da: Slot, herregård
+no: Slott, herregård
+fi: Linna, kartano
+et: Loss, mõisahoone
+lv: Pils, muižas kungu māja
+lt: Pilis, dvaras
+@826
+da: Historisk villa, landsted
+no: Historisk villa, landsted
+fi: Historiallinen huvila, maaseutukartano
+et: Ajalooline villa, maamaja
+lv: Vēsturiska villa, lauku māja
+lt: Istorinė vila, kaimo rezidencija
+@827
+da: Fæstning, kloster eller historisk bygning
+no: Festning, kloster eller historisk bygning
+fi: Linnoitus, luostari tai historiallinen rakennus
+et: Kindlus, klooster või ajalooline hoone
+lv: Cietoksnis, klosteris vai vēsturiska ēka
+lt: Tvirtovė, vienuolynas ar istorinis pastatas
+@828
+da: Fredet ejendom
+no: Fredet eiendom
+fi: Suojeltu kiinteistö
+et: Mälestisena kaitstav kinnistu
+lv: Kultūras piemineklis
+lt: Saugomas kultūros paveldo objektas
+@829
+da: Anden historisk ejendom
+no: Annen historisk eiendom
+fi: Muu historiallinen kiinteistö
+et: Muu ajalooline kinnistu
+lv: Cits vēsturisks īpašums
+lt: Kitas istorinis turtas
+@830
+da: Grunde og udviklingsarealer
+no: Tomter og utviklingsområder
+fi: Tontit ja kehitysalueet
+et: Krundid ja arendusalad
+lv: Zemes gabali un attīstības teritorijas
+lt: Sklypai ir plėtros teritorijos
+@831
+da: Byggegrund til bolig
+no: Boligtomt
+fi: Asuinrakennustontti
+et: Elamumaa krunt
+lv: Apbūves gabals dzīvojamai mājai
+lt: Gyvenamosios statybos sklypas
+@832
+da: Erhvervs- eller industrigrund
+no: Nærings- eller industritomt
+fi: Liike- tai teollisuustontti
+et: Äri- või tootmismaa krunt
+lv: Komerciālas vai rūpnieciskas apbūves gabals
+lt: Komercinės ar pramoninės paskirties sklypas
+@833
+da: Areal til turismeudvikling
+no: Område for turismeutvikling
+fi: Matkailun kehitysalue
+et: Turismi arendusala
+lv: Tūrisma attīstības teritorija
+lt: Turizmo plėtros teritorija
+@834
+da: Større udviklingsareal
+no: Stort utviklingsområde
+fi: Laaja kehitysalue
+et: Suur arendusala
+lv: Liela attīstības teritorija
+lt: Didelė plėtros teritorija
+@835
+da: Landbrugsjord
+no: Landbruksjord
+fi: Maatalousmaa
+et: Põllumajandusmaa
+lv: Lauksaimniecības zeme
+lt: Žemės ūkio paskirties žemė
+@836
+da: Anden grund eller andet udviklingsareal
+no: Annen tomt eller annet utviklingsområde
+fi: Muu tontti tai kehitysalue
+et: Muu krunt või arendusala
+lv: Cits zemes gabals vai attīstības teritorija
+lt: Kitas sklypas ar plėtros teritorija
+@837
+da: Investeringsejendomme
+no: Investeringseiendommer
+fi: Sijoituskiinteistöt
+et: Investeerimiskinnisvara
+lv: Investīciju īpašumi
+lt: Investicinis nekilnojamasis turtas
+@838
+da: Udlejet boligejendom
+no: Utleid boligeiendom
+fi: Vuokrattu asuinkiinteistö
+et: Üüritud elukinnisvara
+lv: Izīrēts dzīvojamais īpašums
+lt: Išnuomotas gyvenamasis turtas
+@839
+da: Udlejet erhvervs- eller industriejendom
+no: Utleid nærings- eller industrieiendom
+fi: Vuokrattu liike- tai teollisuuskiinteistö
+et: Üüritud äri- või tööstuskinnisvara
+lv: Iznomāts komerciāls vai rūpniecisks īpašums
+lt: Išnuomotas komercinis ar pramoninis turtas
+@840
+da: Indtægtsgivende ejendom
+no: Inntektsbringende eiendom
+fi: Tuottava kiinteistö
+et: Tulu teeniv kinnisvara
+lv: Ienākumus nesošs īpašums
+lt: Pajamas duodantis turtas
+@841
+da: Ejendomsportefølje
+no: Eiendomsportefølje
+fi: Kiinteistösalkku
+et: Kinnisvaraportfell
+lv: Īpašumu portfelis
+lt: Nekilnojamojo turto portfelis
+@842
+da: Ejendomsudviklingsprojekt
+no: Eiendomsutviklingsprosjekt
+fi: Kiinteistökehityshanke
+et: Kinnisvaraarendusprojekt
+lv: Nekustamā īpašuma attīstības projekts
+lt: Nekilnojamojo turto plėtros projektas
+@843
+da: Anden investeringsejendom
+no: Annen investeringseiendom
+fi: Muu sijoituskiinteistö
+et: Muu investeerimiskinnisvara
+lv: Cits investīciju īpašums
+lt: Kitas investicinis turtas
+@844
+da: investeringsejendom
+no: investeringseiendom
+fi: sijoituskiinteisto
+et: investeerimiskinnisvara
+lv: investiciju-ipasums
+lt: investicinis-turtas
+@845
+da: Andre ejendomme
+no: Andre eiendommer
+fi: Muut kiinteistöt
+et: Muu kinnisvara
+lv: Citi īpašumi
+lt: Kitas nekilnojamasis turtas
+@846
+da: Garage, parkeringsplads
+no: Garasje, parkeringsplass
+fi: Autotalli, autopaikka
+et: Garaaž, parkimiskoht
+lv: Garāža, autostāvvieta
+lt: Garažas, automobilio stovėjimo vieta
+@847
+da: Depotrum, kælder
+no: Bod, kjeller
+fi: Varasto, kellari
+et: Panipaik, kelder
+lv: Noliktava, pagrabs
+lt: Sandėliukas, rūsys
+@848
+da: Vinpresse, vinkælder
+no: Vinpresse, vinkjeller
+fi: Viinipuristamo, viinikellari
+et: Veinipressikoda, veinikelder
+lv: Vīna spiestuve, vīna pagrabs
+lt: Vyno spaudykla, vyno rūsys
+@849
+da: Ejendom til særlige formål
+no: Spesialeiendom
+fi: Erikoiskiinteistö
+et: Eriotstarbeline kinnisvara
+lv: Īpašas nozīmes īpašums
+lt: Specialios paskirties turtas
+@850
+da: Anden ejendom
+no: Annen eiendom
+fi: Muu kiinteistö
+et: Muu kinnisvara
+lv: Cits īpašums
+lt: Kitas turtas
+@851
+da: anden-ejendom
+no: annen-eiendom
+fi: muu-kiinteisto
+et: muu-kinnisvara
+lv: cits-ipasums
+lt: kitas-turtas
+@852
+da: Nybyggeri
+no: Nybygg
+fi: Uudiskohde
+et: Uusehitis
+lv: Jaunbūve
+lt: Naujos statybos
+@853
+da: Som ny
+no: Som ny
+fi: Kuin uusi
+et: Nagu uus
+lv: Kā jauns
+lt: Kaip naujas
+@854
+da: Middel stand
+no: Middels stand
+fi: Keskinkertainen kunto
+et: Keskmine seisukord
+lv: Vidējs stāvoklis
+lt: Vidutinė būklė
+@855
+da: Dårlig stand / ruin
+no: Dårlig stand / ruin
+fi: Huono kunto / raunio
+et: Halb seisukord / vare
+lv: Slikts stāvoklis / drupas
+lt: Prasta būklė / griuvėsiai
+@856
+da: Ufærdigt byggeri
+no: Uferdig bygg
+fi: Keskeneräinen rakennus
+et: Pooleli ehitis
+lv: Nepabeigta būvniecība
+lt: Nebaigta statyba
+@857
+da: Træ og fast brændsel
+no: Ved og fast brensel
+fi: Puu ja kiinteä polttoaine
+et: Puit ja tahke kütus
+lv: Malka un cietais kurināmais
+lt: Malkos ir kietasis kuras
+@858
+da: Fjernvarme
+no: Fjernvarme
+fi: Kaukolämpö
+et: Kaugküte
+lv: Centralizētā siltumapgāde
+lt: Centralizuotas šildymas
+@859
+da: Oliefyr
+no: Oljefyring
+fi: Öljylämmitys
+et: Õliküte
+lv: Šķidrā kurināmā apkure
+lt: Skystojo kuro šildymas
+@860
+da: Solvarme
+no: Solvarme
+fi: Aurinkolämpö
+et: Päikeseküte
+lv: Saules apkure
+lt: Saulės šildymas
+@861
+da: Kombineret varmesystem
+no: Kombinert varmesystem
+fi: Yhdistelmälämmitys
+et: Kombineeritud küttesüsteem
+lv: Kombinēta apkures sistēma
+lt: Mišri šildymo sistema
+@862
+da: Ingen opvarmning
+no: Ingen oppvarming
+fi: Ei lämmitystä
+et: Küte puudub
+lv: Bez apkures
+lt: Be šildymo
+@863
+da: Lersten
+no: Leirstein (adobe)
+fi: Savitiili
+et: Savitellis
+lv: Mālu ķieģeļi
+lt: Molio plytos
+@864
+da: Blandet murværk
+no: Blandet murverk
+fi: Sekamuuraus
+et: Segamüüritis
+lv: Jaukts mūris
+lt: Mišrus mūras
+@865
+da: Træ / let konstruktion
+no: Tre / lett konstruksjon
+fi: Puu / kevytrakenne
+et: Puit / kergkonstruktsioon
+lv: Koks / vieglā konstrukcija
+lt: Mediena / lengva konstrukcija
+@866
+da: Stålkonstruktion
+no: Stålkonstruksjon
+fi: Teräsrunko
+et: Teraskarkass
+lv: Tērauda karkass
+lt: Plieninis karkasas
+@867
+da: Plan grund
+no: Flat tomt
+fi: Tasainen tontti
+et: Tasane maa
+lv: Līdzens zemes gabals
+lt: Lygus sklypas
+@868
+da: Skrånende grund
+no: Skrånende tomt
+fi: Rinnetontti
+et: Kaldu maa
+lv: Slīps zemes gabals
+lt: Nuožulnus sklypas
+@869
+da: Skovrige omgivelser
+no: Skogkledde omgivelser
+fi: Metsäinen ympäristö
+et: Metsane ümbrus
+lv: Mežaina apkārtne
+lt: Miškinga aplinka
+@870
+da: Panoramaudsigt
+no: Panoramautsikt
+fi: Panoraamanäkymät
+et: Panoraamvaade
+lv: Panorāmas skats
+lt: Panoraminis vaizdas
+@871
+da: Direkte ved vandet
+no: Rett ved vannet
+fi: Suoraan rannalla
+et: Otse vee ääres
+lv: Tieši pie ūdens
+lt: Tiesiai prie vandens
+@872
+da: Terrasse eller altan
+no: Terrasse eller balkong
+fi: Terassi tai parveke
+et: Terrass või rõdu
+lv: Terase vai balkons
+lt: Terasa ar balkonas
+@873
+da: Garage eller parkering
+no: Garasje eller parkering
+fi: Autotalli tai pysäköinti
+et: Garaaž või parkimine
+lv: Garāža vai autostāvvieta
+lt: Garažas ar automobilių stovėjimo vieta
+@874
+da: Swimmingpool
+no: Svømmebasseng
+fi: Uima-allas
+et: Bassein
+lv: Peldbaseins
+lt: Baseinas
+@875
+da: Sauna eller spabad
+no: Badstue eller boblebad
+fi: Sauna tai poreallas
+et: Saun või mullivann
+lv: Pirts vai burbuļvanna
+lt: Pirtis ar sūkurinė vonia
+@876
+da: Pejs
+no: Peis
+fi: Takka
+et: Kamin
+lv: Kamīns
+lt: Židinys
+@877
+da: Kælder eller depotrum
+no: Kjeller eller bod
+fi: Kellari tai varasto
+et: Kelder või panipaik
+lv: Pagrabs vai noliktava
+lt: Rūsys ar sandėliukas
+@878
+da: Anlagt have
+no: Opparbeidet hage
+fi: Hoidettu puutarha
+et: Hooldatud aed
+lv: Labiekārtots dārzs
+lt: Sutvarkytas sodas
+@879
+da: Hundehus eller hundegård
+no: Hundehus eller hundegård
+fi: Koirankoppi tai koiratarha
+et: Koerakuut või koeraaedik
+lv: Suņu būda vai voljērs
+lt: Šunų būda ar voljeras
+@880
+da: Privat strandlinje
+no: Privat strandlinje
+fi: Oma ranta
+et: Oma kallas
+lv: Privāts krasts
+lt: Privati pakrantė
+@881
+da: Privat badebro eller fortøjning
+no: Privat brygge eller fortøyning
+fi: Oma laituri tai kiinnityspaikka
+et: Oma kai või sildumiskoht
+lv: Privāta laivu piestātne vai piestāšanas vieta
+lt: Privati prieplauka ar švartavimo vieta
+@882
+da: Bådopbevaring
+no: Båtopplag
+fi: Venevaja
+et: Paadikuur
+lv: Laivu novietne
+lt: Valčių laikymo vieta
+@883
+da: Bjergterræn
+no: Fjellterreng
+fi: Vuoristomaasto
+et: Mägine maastik
+lv: Kalnains apvidus
+lt: Kalnuota vietovė
+@884
+da: Skov
+no: Skog
+fi: Metsämaa
+et: Metsamaa
+lv: Meža zeme
+lt: Miškas
+@885
+da: Delvist skovbevokset areal
+no: Delvis skogkledd areal
+fi: Osittain metsäinen maa
+et: Osaliselt metsane maa
+lv: Daļēji apmežota zeme
+lt: Iš dalies apaugusi mišku žemė
+@886
+da: Agerjord
+no: Dyrket mark
+fi: Peltomaa
+et: Põllumaa
+lv: Aramzeme
+lt: Ariama žemė
+@887
+da: Græsningsareal eller eng
+no: Beitemark eller eng
+fi: Laidun tai niitty
+et: Karjamaa või niit
+lv: Ganības vai pļava
+lt: Ganykla ar pieva
+@888
+da: Frugtplantage eller vingård
+no: Frukthage eller vingård
+fi: Hedelmätarha tai viinitarha
+et: Viljapuuaed või viinamarjaistandus
+lv: Augļu dārzs vai vīna dārzs
+lt: Sodas ar vynuogynas
+@889
+da: Fiskedam eller adgang til vand
+no: Fiskedam eller strandlinje
+fi: Kalalammikko tai ranta
+et: Kalatiik või veekogu kallas
+lv: Zivju dīķis vai krasts
+lt: Tvenkinys ar pakrantė
+@890
+da: Landbrugsbygninger
+no: Driftsbygninger
+fi: Maatalousrakennukset
+et: Põllumajandushooned
+lv: Saimniecības ēkas
+lt: Ūkiniai pastatai
+@891
+da: Stalde til dyr
+no: Dyrehus
+fi: Eläinsuojat
+et: Loomapidamishooned
+lv: Dzīvnieku novietnes
+lt: Gyvulių pastatai
+@892
+da: Hestestald eller fold
+no: Stall eller luftegård
+fi: Talli tai tarha
+et: Tall või koppel
+lv: Stallis vai aploks
+lt: Arklidė ar aptvaras
+@893
+da: Ridebane
+no: Ridebane
+fi: Maneesi
+et: Maneež
+lv: Jāšanas manēža
+lt: Jojimo maniežas
+@894
+da: Maskin- og redskabshus
+no: Maskin- og redskapslager
+fi: Kone- ja työkaluvarasto
+et: Masina- ja tööriistakuur
+lv: Tehnikas un darbarīku noliktava
+lt: Technikos ir įrankių sandėlis
+@895
+da: Foderlager
+no: Fôrlager
+fi: Rehuvarasto
+et: Söödahoidla
+lv: Lopbarības noliktava
+lt: Pašarų sandėlis
+@896
+da: Vandingsanlæg
+no: Vanningsanlegg
+fi: Kastelujärjestelmä
+et: Niisutussüsteem
+lv: Apūdeņošanas sistēma
+lt: Drėkinimo sistema
+@897
+da: Gæstehus
+no: Gjestehus
+fi: Vierasmaja
+et: Külalistemaja
+lv: Viesu māja
+lt: Svečių namelis
+@898
+da: Facade mod gaden
+no: Gatefasade
+fi: Katujulkisivu
+et: Tänavapoolne fassaad
+lv: Fasāde uz ielu
+lt: Fasadas į gatvę
+@899
+da: Butiksvinduer
+no: Utstillingsvinduer
+fi: Näyteikkunat
+et: Vaateaknad
+lv: Skatlogi
+lt: Vitrinos
+@900
+da: Adgang til af- og pålæsning
+no: Tilgang for lasting og lossing
+fi: Lastausmahdollisuus
+et: Laadimisjuurdepääs
+lv: Piekļuve iekraušanai
+lt: Privažiavimas pakrovimui
+@901
+da: Egnet til restauration
+no: Egnet for servering
+fi: Soveltuu ravintolakäyttöön
+et: Sobib toitlustuseks
+lv: Piemērots ēdināšanai
+lt: Tinka maitinimo verslui
+@902
+da: Udstyret køkken
+no: Utstyrt kjøkken
+fi: Varusteltu keittiö
+et: Sisustatud köök
+lv: Aprīkota virtuve
+lt: Įrengta virtuvė
+@903
+da: Handicapvenlig
+no: Tilgjengelig for alle
+fi: Esteetön
+et: Ligipääsetav
+lv: Piekļūstams
+lt: Pritaikyta neįgaliesiems
+@904
+da: Opbevaringsplads
+no: Lagringsplass
+fi: Säilytystilaa
+et: Hoiuruum
+lv: Uzglabāšanas telpa
+lt: Sandėliavimo patalpa
+@905
+da: Højt til loftet
+no: Høyt under taket
+fi: Korkeat huoneet
+et: Kõrged laed
+lv: Augsti griesti
+lt: Aukštos lubos
+@906
+da: Industriel strømforsyning
+no: Industriell strømforsyning
+fi: Teollisuussähköliittymä
+et: Tööstuslik elektriühendus
+lv: Rūpnieciska elektroapgāde
+lt: Pramoninis elektros tiekimas
+@907
+da: Læsserampe
+no: Lasterampe
+fi: Lastauslaituri
+et: Laadimisramp
+lv: Iekraušanas rampa
+lt: Pakrovimo rampa
+@908
+da: Lastbilsport
+no: Lasteport for lastebil
+fi: Kuorma-auton lastauspaikka
+et: Veoki laadimiskoht
+lv: Kravas auto iekraušanas vieta
+lt: Sunkvežimių pakrovimo vieta
+@909
+da: Lastbilparkering
+no: Lastebilparkering
+fi: Kuorma-autojen pysäköinti
+et: Veokite parkla
+lv: Kravas auto stāvvieta
+lt: Sunkvežimių stovėjimo aikštelė
+@910
+da: Kran eller kranbane
+no: Kran eller kranbane
+fi: Nosturi tai nosturirata
+et: Kraana või kraanatee
+lv: Celtnis vai celtņa sliedes
+lt: Kranas ar krano bėgiai
+@911
+da: Gulv til tung belastning
+no: Gulv for tung last
+fi: Raskaan kuormituksen lattia
+et: Suure kandevõimega põrand
+lv: Grīda lielām slodzēm
+lt: Didelės apkrovos grindys
+@912
+da: Værksted
+no: Verksted
+fi: Korjaamo
+et: Töökoda
+lv: Darbnīca
+lt: Dirbtuvės
+@913
+da: Kontorareal
+no: Kontorlokaler
+fi: Toimistotilaa
+et: Büroopind
+lv: Biroja telpas
+lt: Biuro patalpos
+@914
+da: Personalefaciliteter
+no: Personalrom
+fi: Henkilöstötilat
+et: Personaliruumid
+lv: Personāla telpas
+lt: Personalo patalpos
+@915
+da: Adgang for lastbiler
+no: Adkomst for lastebil
+fi: Kuorma-autoliikenne mahdollinen
+et: Juurdepääs veokitele
+lv: Piekļuve kravas auto
+lt: Privažiavimas sunkvežimiams
+@916
+da: Fredet eller bevaringsværdigt
+no: Fredet eller verneverdig
+fi: Suojeltu tai kulttuurihistoriallisesti arvokas
+et: Kaitstav või pärandiväärtusega
+lv: Aizsargājams vai ar vēsturisku vērtību
+lt: Saugomas ar paveldo vertės
+@917
+da: Historiske arkitektoniske detaljer
+no: Historiske arkitektoniske detaljer
+fi: Historialliset arkkitehtoniset yksityiskohdat
+et: Ajaloolised arhitektuurielemendid
+lv: Vēsturiski arhitektūras elementi
+lt: Istoriniai architektūros elementai
+@918
+da: Skovejendom
+no: Skogeiendom
+fi: Metsätila
+et: Metsamõis
+lv: Meža īpašums
+lt: Miškingas dvaras
+@919
+da: Privat kapel
+no: Privat kapell
+fi: Oma kappeli
+et: Erakabel
+lv: Privāta kapela
+lt: Privati koplyčia
+@920
+da: Stejlt terræn
+no: Bratt terreng
+fi: Jyrkkä maasto
+et: Järsk maa
+lv: Stāvs zemes gabals
+lt: Statūs šlaitai
+@921
+da: Græsareal
+no: Gressmark
+fi: Nurmimaa
+et: Rohumaa
+lv: Zālāji
+lt: Žolynai
+@922
+da: Adgang fra offentlig vej
+no: Adkomst fra offentlig vei
+fi: Kulku yleiseltä tieltä
+et: Juurdepääs avalikult teelt
+lv: Piekļuve no koplietošanas ceļa
+lt: Privažiavimas viešuoju keliu
+@923
+da: Asfalteret vej
+no: Asfaltert vei
+fi: Päällystetty tie
+et: Kõvakattega tee
+lv: Asfaltēts ceļš
+lt: Asfaltuotas kelias
+@924
+da: Grusvej
+no: Grusvei
+fi: Päällystämätön tie
+et: Kruusatee
+lv: Grants ceļš
+lt: Žvyrkelis

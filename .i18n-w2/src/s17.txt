@@ -1,0 +1,95 @@
+@1169 [copy]
+EN: Bilingual expertise
+
+@1170 [copy]
+EN: We know both markets from the inside. Our team speaks Dutch, German, English, French and Hungarian.
+
+@1171 [copy]
+EN: Our approach
+
+@1172 [copy]
+EN: We are not a big office.
+
+@1173 [copy]
+EN: That is our strength.
+
+@1174 [copy]
+EN: Every client gets personal contact: no call centre, no anonymous counter.
+
+@1175 [copy]
+EN: We know both cultures from the inside and judge property through Dutch and Hungarian eyes alike.
+
+@1176 [copy]
+EN: Bringing property and buyer together is our responsibility, not a matter of chance.
+
+@1177 [copy]
+EN: We work without exclusivity because we would rather convince with results.
+
+@1178 [copy]
+EN: The bridge we
+
+@1179 [copy]
+EN: have built
+
+@1180 [copy]
+EN: FODEL was founded by Hungarians living in the Netherlands. We started in Almere-Buiten in 2013, where we noticed how many Dutch and Belgian people wanted to buy an authentic Hungarian home but did not know where to begin.
+
+@1181 [copy]
+EN: Today we advertise in ${REACH_COUNTRIES} countries and ${REACH_LANGUAGES} languages, and guide every transaction from start to finish: a bilingual sale contract, representation under power of attorney and registration at the land registry. Our office is in The Hague.
+
+@1182 [copy]
+EN: Contact | We will gladly call you back
+
+@1183 [copy]
+EN: Call us on weekdays between ${COMPANY.hours.weekdays.from} and ${COMPANY.hours.weekdays.to}, or ask for a callback. The call costs you nothing.
+
+@1184 [copy]
+EN: Ask for a callback
+
+@1185 [copy]
+EN: Question about a property
+
+@1186 [copy]
+EN: Advertising a property
+
+@1187 [copy]
+EN: Request prices
+
+@1188 [copy]
+EN: Callback request
+
+@1189 [copy]
+EN: Other
+
+@1190 [copy]
+EN: A callback costs you nothing: we pay for the call. We call back until ${COMPANY.hours.callback.to}, weekends included.
+
+@1191 [faq]
+EN: What does “direct from the owner” mean?
+
+@1192 [faq]
+EN: For much of our stock we publish the owner’s name and phone number alongside our own details. You can contact the seller directly.
+
+@1193 [faq]
+EN: If you contact them directly and arrange the purchase yourselves, nobody pays commission: neither you nor the seller. We are then paid only for the listing.
+
+@1194 [faq]
+EN: What does your brokerage cost?
+
+@1195 [faq]
+EN: Our commission is ${COMMISSION.percent}% net with a minimum of ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Dutch VAT. It is paid by the Hungarian seller, not by you.
+
+@1196 [faq]
+EN: We invoice only when all three conditions are met: there is a written sale and purchase agreement, the buyer was introduced by FODEL, and the deposit has been paid.
+
+@1197 [faq]
+EN: Can I buy a property in Hungary as an EU citizen?
+
+@1198 [faq]
+EN: Yes. As an EU citizen you buy houses and plots in Hungary on practically the same terms as a Hungarian. Almost 100% of Hungarian property stands on freehold land. Leasehold arrangements such as the Dutch erfpacht are rare.
+
+@1199 [faq]
+EN: Separate rules apply to agricultural land. An EU citizen with an agricultural qualification may acquire up to ${AGRI_HECTARE_LIMIT} hectares in Hungary; we handle that procedure in full.
+
+@1200 [faq]
+EN: Do I have to travel to Hungary to sign?

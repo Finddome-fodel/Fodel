@@ -1,0 +1,167 @@
+@1375 [email]
+EN: Sign in
+
+@1376 [email]
+EN: Forgotten your password? Request a new one
+
+@1377 [email]
+EN: If this was not you, there is nothing to do: your account is unchanged.
+
+@1378 [email]
+EN: Invitation to the FODEL portal
+
+@1379 [email]
+EN: Set your password and sign in to the advertiser portal.
+
+@1380 [email]
+EN: You have been invited to the FODEL portal
+
+@1381 [email]
+EN: FODEL invites you to join the portal ${role}, where you manage property listings.
+
+@1382 [email]
+EN: as an administrator
+
+@1383 [email]
+EN: as an advertiser
+
+@1384 [email]
+EN: Accept invitation
+
+@1385 [email]
+EN: The link is valid for 7 days and can be used once.
+
+@1386 [email]
+EN: Welcome to the FODEL portal
+
+@1387 [email]
+EN: Your account is active. Here is how to place your first listing.
+
+@1388 [email]
+EN: Welcome, ${name}
+
+@1389 [email]
+EN: Your account is active. In the portal you put your listing together, upload photos and follow its review.
+
+@1390 [email]
+EN: What you will need
+
+@1391 [email]
+EN: Photos of the property: at least one, but the more the better
+
+@1392 [email]
+EN: The basic details: floor area, plot size, asking price
+
+@1393 [email]
+EN: A few sentences on what makes the property special
+
+@1394 [email]
+EN: Go to the portal
+
+@1395 [email]
+EN: We have received your listing (#${ref})
+
+@1396 [email]
+EN: We will review it and let you know by email.
+
+@1397 [email]
+EN: Your listing has been received
+
+@1398 [email]
+EN: We have received your listing “${title}” (#${ref}). One of our team will review it and, as soon as there is a decision, you will hear by email.
+
+@1399 [email]
+EN: The review usually takes no longer than two working days.
+
+@1400 [email]
+EN: You cannot edit the listing during the review. If we ask for a change, it reopens straight away.
+
+@1401 [email]
+EN: Change needed (#${ref})
+
+@1402 [email]
+EN: One small change and the listing can go live.
+
+@1403 [email]
+EN: We ask you to make a change
+
+@1404 [email]
+EN: Our team has the following comment on your listing “${title}” (#${ref}):
+
+@1405 [email]
+EN: The listing can be edited again. Make the change and submit it again; the process then simply continues.
+
+@1406 [email]
+EN: Edit listing
+
+@1407 [email]
+EN: Approved (#${ref}): only the payment is left
+
+@1408 [email]
+EN: Your listing is approved and goes live as soon as the payment arrives.
+
+@1409 [email]
+EN: Your listing has been approved
+
+@1410 [email]
+EN: Good news: we have reviewed and approved your listing “${title}” (#${ref}). Only the payment is still needed. As soon as it arrives, the listing goes online straight away.
+
+@1411 [email]
+EN: Cost of the listing
+
+@1412 [email]
+EN: Referral discount (10%)
+
+@1413 [email]
+EN: To pay
+
+@1414 [email]
+EN: Pay by card
+
+@1415 [email]
+EN: Payment is made through Stripe’s secure environment. FODEL does not see or store your card details.
+
+@1416 [email]
+EN: Or by bank transfer
+
+@1417 [email]
+EN: Please quote the reference number with your transfer: ${ref}. As soon as it arrives, one of our team puts the listing live.
+
+@1418 [email]
+EN: All amounts include 21% Dutch VAT.
+
+@1419 [email]
+EN: Approved and online (#${ref})
+
+@1420 [email]
+EN: Your listing is already online; please pay the listing fee within 14 days.
+
+@1421 [email]
+EN: Your listing is now online
+
+@1422 [email]
+EN: We have approved the listing “${title}” (#${ref}) and published it straight away.
+
+@1423 [email]
+EN: View listing
+
+@1424 [email]
+EN: Pay by
+
+@1425 [email]
+EN: Bank transfer
+
+@1426 [email]
+EN: Please quote the reference number with your transfer: ${ref}.
+
+@1427 [email]
+EN: Payment confirmation (#${ref})
+
+@1428 [email]
+EN: Thank you, we have received your payment.
+
+@1429 [email]
+EN: Thank you, your payment has arrived
+
+@1430 [email]
+EN: We have received the payment for the listing “${title}” (#${ref}). The listing is online and visible on ${SITE_HOST}.

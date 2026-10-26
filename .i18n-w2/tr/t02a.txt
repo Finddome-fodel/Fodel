@@ -1,0 +1,532 @@
+@81
+it: Domande
+pt: Perguntas
+el: Ερωτήσεις
+cs: Otázky
+sl: Vprašanja
+sv: Frågor
+@82
+it: I nostri ultimi articoli
+pt: Os nossos artigos mais recentes
+el: Τα πιο πρόσφατα άρθρα μας
+cs: Naše nejnovější články
+sl: Naši najnovejši članki
+sv: Våra senaste artiklar
+@83
+it: Valutazione gratuita
+pt: Avaliação gratuita
+el: Δωρεάν εκτίμηση
+cs: Odhad ceny zdarma
+sl: Brezplačna ocena vrednosti
+sv: Kostnadsfri värdering
+@84
+it: Quanto vale il mio immobile?
+pt: Quanto vale o meu imóvel?
+el: Πόσο αξίζει το ακίνητό μου;
+cs: Kolik má moje nemovitost hodnotu?
+sl: Koliko je vredna moja nepremičnina?
+sv: Vad är min fastighet värd?
+@85
+it: Una casa sul lago al tramonto
+pt: Uma casa à beira do lago ao pôr do sol
+el: Ένα σπίτι δίπλα στη λίμνη στο ηλιοβασίλεμα
+cs: Dům u jezera při západu slunce
+sl: Hiša ob jezeru ob sončnem zahodu
+sv: Ett hus vid sjön i solnedgången
+@86
+it: annunci attivi, direttamente dal proprietario
+pt: anúncios ativos, diretamente do proprietário
+el: ενεργές αγγελίες, απευθείας από τον ιδιοκτήτη
+cs: aktivních inzerátů přímo od vlastníků
+sl: aktivnih oglasov neposredno od lastnikov
+sv: aktiva annonser, direkt från ägaren
+@87
+it: Valutazione
+pt: Avaliação
+el: Εκτίμηση
+cs: Odhad ceny
+sl: Ocena vrednosti
+sv: Värdering
+@88
+it: Quanto vale il suo\nimmobile?
+pt: Quanto vale o seu\nimóvel?
+el: Πόσο αξίζει\nτο ακίνητό σας;
+cs: Kolik má vaše\nnemovitost hodnotu?
+sl: Koliko je vredna\nvaša nepremičnina?
+sv: Vad är din\nfastighet värd?
+@89
+it: Ci dica ciò che sa dell’immobile; può allegare foto, planimetrie e documenti. Un membro del nostro team controlla il risultato e lo invia per e-mail. Ha valore puramente indicativo e non è una perizia ufficiale.
+pt: Diga-nos o que sabe sobre o imóvel; pode anexar fotografias, plantas e documentos. Um membro da nossa equipa verifica o resultado e envia-o por e-mail. É apenas indicativo, não é um relatório de avaliação oficial.
+el: Πείτε μας ό,τι γνωρίζετε για το ακίνητο· μπορείτε να επισυνάψετε φωτογραφίες, κατόψεις και έγγραφα. Ένα μέλος της ομάδας μας ελέγχει το αποτέλεσμα και σας το στέλνει με email. Είναι μόνο ενδεικτικό και όχι επίσημη έκθεση εκτίμησης.
+cs: Řekněte nám, co o nemovitosti víte; můžete přiložit fotografie, půdorysy a dokumenty. Někdo z našeho týmu výsledek zkontroluje a pošle vám ho e-mailem. Jde pouze o orientační odhad, nikoli o úřední znalecký posudek.
+sl: Povejte nam, kar veste o nepremičnini; priložite lahko fotografije, tlorise in dokumente. Član naše ekipe preveri rezultat in vam ga pošlje po e-pošti. Ocena je le okvirna in ni uradno cenilno poročilo.
+sv: Berätta vad du vet om fastigheten; du kan bifoga foton, planritningar och dokument. Någon i vårt team kontrollerar resultatet och skickar det via mejl. Endast vägledande, inte en officiell värderingsrapport.
+@90
+it: Pacchetti di valutazione
+pt: Pacotes de avaliação
+el: Πακέτα εκτίμησης
+cs: Balíčky odhadu ceny
+sl: Paketi ocene vrednosti
+sv: Värderingspaket
+@91
+it: Tutti gli articoli
+pt: Todos os artigos
+el: Όλα τα άρθρα
+cs: Všechny články
+sl: Vsi članki
+sv: Alla artiklar
+@92
+it: Newsletter
+pt: Newsletter
+el: Newsletter
+cs: Newsletter
+sl: E-novice
+sv: Nyhetsbrev
+@93
+it: Nuovi annunci,\nprima di tutti.
+pt: Novos anúncios,\nantes de todos.
+el: Νέες αγγελίες,\nπριν από όλους.
+cs: Nové inzeráty\ndříve než ostatní.
+sl: Novi oglasi,\npred vsemi drugimi.
+sv: Nya annonser,\nföre alla andra.
+@94
+it: Una volta al mese: gli annunci più recenti e brevi notizie dal mercato, in italiano. Niente posta indesiderata, e può annullare l’iscrizione con un clic.
+pt: Uma vez por mês: os anúncios mais recentes e breves notícias do mercado, em português. Sem correio indesejado, e pode cancelar a subscrição com um clique.
+el: Μία φορά τον μήνα: οι νεότερες αγγελίες και σύντομα νέα της αγοράς, στα ελληνικά. Χωρίς ανεπιθύμητα μηνύματα, και μπορείτε να διαγραφείτε με ένα κλικ.
+cs: Jednou měsíčně nejnovější inzeráty a krátké zprávy z trhu, česky. Žádný spam a odhlásit se můžete jedním kliknutím.
+sl: Enkrat na mesec najnovejši oglasi in kratke novice s trga, v slovenščini. Brez neželene pošte, odjavite pa se lahko z enim klikom.
+sv: En gång i månaden: de senaste annonserna och korta marknadsnyheter, på svenska. Ingen skräppost, och du avregistrerar dig med ett klick.
+@95
+it: Immobili sulla mappa
+pt: Imóveis no mapa
+el: Ακίνητα στον χάρτη
+cs: Nemovitosti na mapě
+sl: Nepremičnine na zemljevidu
+sv: Fastigheter på kartan
+@96
+it: Sfogli gli immobili ungheresi di FODEL su una mappa, raggruppati per regione.
+pt: Explore os imóveis húngaros da FODEL num mapa, agrupados por região.
+el: Περιηγηθείτε στα ουγγρικά ακίνητα της FODEL σε χάρτη, ομαδοποιημένα ανά περιφέρεια.
+cs: Prohlédněte si maďarské nemovitosti FODEL na mapě, seskupené podle regionů.
+sl: Prebrskajte madžarske nepremičnine FODEL na zemljevidu, razvrščene po regijah.
+sv: Bläddra bland FODEL:s ungerska fastigheter på en karta, grupperade per region.
+@97
+it: Cerca in quest’area
+pt: Pesquisar nesta zona
+el: Αναζήτηση σε αυτή την περιοχή
+cs: Hledat v této oblasti
+sl: Išči na tem območju
+sv: Sök i det här området
+@98
+it: o
+pt: ou
+el: ή
+cs: nebo
+sl: ali
+sv: eller
+@99
+it: annuncio di ${p.months} mesi a ${price}
+pt: anúncio de ${p.months} meses por ${price}
+el: αγγελία ${p.months} μηνών στα ${price}
+cs: ${p.months}měsíční inzerát za ${price}
+sl: ${p.months}-mesečni oglas za ${price}
+sv: annons i ${p.months} månader för ${price}
+@100
+it: Prezzi: annunci da ${eurText(locale, from)}
+pt: Preços: anúncios a partir de ${eurText(locale, from)}
+el: Τιμές: αγγελίες από ${eurText(locale, from)}
+cs: Ceník: inzeráty od ${eurText(locale, from)}
+sl: Cenik: oglasi od ${eurText(locale, from)}
+sv: Priser: annonser från ${eurText(locale, from)}
+@101
+it: Prezzi degli annunci FODEL: ${pkgSummary}. Traduzione ${eurText(locale, translationPrice)} per lingua, messa in evidenza ${hlRange} € al mese. Tutti i prezzi includono l’IVA olandese del ${pct(vat)}.
+pt: Preços dos anúncios FODEL: ${pkgSummary}. Tradução ${eurText(locale, translationPrice)} por idioma, destaque ${hlRange} € por mês. Todos os preços incluem IVA neerlandês de ${pct(vat)}.
+el: Τιμές αγγελιών FODEL: ${pkgSummary}. Μετάφραση ${eurText(locale, translationPrice)} ανά γλώσσα, προβολή ${hlRange} € τον μήνα. Όλες οι τιμές περιλαμβάνουν ολλανδικό ΦΠΑ ${pct(vat)}.
+cs: Ceny inzerátů FODEL: ${pkgSummary}. Překlad ${eurText(locale, translationPrice)} za jazyk, zvýraznění ${hlRange} € měsíčně. Všechny ceny zahrnují ${pct(vat)} nizozemské DPH.
+sl: Cene oglasov FODEL: ${pkgSummary}. Prevod ${eurText(locale, translationPrice)} na jezik, izpostavitev ${hlRange} € na mesec. Vse cene vključujejo ${pct(vat)} nizozemskega DDV.
+sv: FODEL:s annonspriser: ${pkgSummary}. Översättning ${eurText(locale, translationPrice)} per språk, framhävning ${hlRange} € per månad. Alla priser inkluderar ${pct(vat)} nederländsk moms.
+@102
+it: Prezzi
+pt: Preços
+el: Τιμές
+cs: Ceník
+sl: Cenik
+sv: Priser
+@103
+it: Prezzi chiari,
+pt: Preços claros,
+el: Ξεκάθαρες τιμές,
+cs: Jasné ceny,
+sl: Jasne cene,
+sv: Tydliga priser,
+@104
+it: nessun costo nascosto
+pt: sem custos ocultos
+el: χωρίς κρυφές χρεώσεις
+cs: žádné skryté poplatky
+sl: brez skritih stroškov
+sv: inga dolda kostnader
+@105
+it: Tutti i prezzi includono l’IVA olandese del ${pct(vat)}. La tariffa dell’annuncio si paga una sola volta, dopo l’approvazione; un annuncio approvato va subito online. La provvigione la chiediamo solo se l’acquirente lo portiamo noi.
+pt: Todos os preços incluem IVA neerlandês de ${pct(vat)}. A taxa do anúncio paga-se uma única vez, após a aprovação; um anúncio aprovado fica logo online. Só cobramos comissão quando somos nós a trazer o comprador.
+el: Όλες οι τιμές περιλαμβάνουν ολλανδικό ΦΠΑ ${pct(vat)}. Το τέλος της αγγελίας το πληρώνετε μία φορά, μετά την έγκριση· μια εγκεκριμένη αγγελία δημοσιεύεται αμέσως. Χρεώνουμε προμήθεια μόνο όταν φέρουμε εμείς τον αγοραστή.
+cs: Všechny ceny zahrnují ${pct(vat)} nizozemské DPH. Poplatek za inzerát platíte jednou, po schválení; schválený inzerát je hned online. Provizi účtujeme jen tehdy, když kupujícího přivedeme my.
+sl: Vse cene vključujejo ${pct(vat)} nizozemskega DDV. Pristojbino za oglas plačate enkrat, po odobritvi; odobren oglas je takoj objavljen. Provizijo zaračunamo le, če kupca pripeljemo mi.
+sv: Alla priser inkluderar ${pct(vat)} nederländsk moms. Annonsavgiften betalar du en gång, efter godkännandet; en godkänd annons publiceras direkt. Provision tar vi bara ut när det är vi som har hittat köparen.
+@106
+it: Pacchetti di annunci
+pt: Pacotes de anúncios
+el: Πακέτα αγγελιών
+cs: Balíčky inzerátů
+sl: Paketi oglasov
+sv: Annonspaket
+@107
+it: Servizi aggiuntivi
+pt: Extras opcionais
+el: Προαιρετικές επιλογές
+cs: Doplňkové služby
+sl: Dodatne storitve
+sv: Tillval
+@108
+it: Contratto di compravendita bilingue
+pt: Contrato de compra e venda bilingue
+el: Δίγλωσσο συμβόλαιο αγοραπωλησίας
+cs: Dvojjazyčná kupní smlouva
+sl: Dvojezična kupoprodajna pogodba
+sv: Tvåspråkigt köpekontrakt
+@109
+it: Provvigione
+pt: Comissão
+el: Προμήθεια
+cs: Provize
+sl: Provizija
+sv: Provision
+@110
+it: Tutti i prezzi includono l’IVA olandese del ${pct(vat)}.
+pt: Todos os preços incluem IVA neerlandês de ${pct(vat)}.
+el: Όλες οι τιμές περιλαμβάνουν ολλανδικό ΦΠΑ ${pct(vat)}.
+cs: Všechny ceny zahrnují ${pct(vat)} nizozemské DPH.
+sl: Vse cene vključujejo ${pct(vat)} nizozemskega DDV.
+sv: Alla priser inkluderar ${pct(vat)} nederländsk moms.
+@111
+it: Pubblica un annuncio
+pt: Publicar um anúncio
+el: Δημοσίευση αγγελίας
+cs: Podat inzerát
+sl: Oddajte oglas
+sv: Lägg in en annons
+@112
+it: Dopo l’approvazione pubblichiamo subito l’annuncio e lei riceve la richiesta di pagamento per e-mail.
+pt: Após a aprovação, publicamos de imediato e recebe o pedido de pagamento por e-mail.
+el: Μόλις εγκριθεί, τη δημοσιεύουμε αμέσως και λαμβάνετε το αίτημα πληρωμής με email.
+cs: Po schválení inzerát ihned zveřejníme a výzvu k úhradě vám pošleme e-mailem.
+sl: Ob odobritvi oglas takoj objavimo, poziv k plačilu pa prejmete po e-pošti.
+sv: Vid godkännandet publicerar vi direkt, och du får betalningsbegäran via mejl.
+@113
+it: Traduzione (olandese, tedesco, inglese, francese)
+pt: Tradução (neerlandês, alemão, inglês, francês)
+el: Μετάφραση (ολλανδικά, γερμανικά, αγγλικά, γαλλικά)
+cs: Překlad (nizozemština, němčina, angličtina, francouzština)
+sl: Prevod (nizozemščina, nemščina, angleščina, francoščina)
+sv: Översättning (nederländska, tyska, engelska, franska)
+@114
+it: / lingua
+pt: / idioma
+el: / γλώσσα
+cs: / jazyk
+sl: / jezik
+sv: / språk
+@115
+it: Messa in evidenza nella categoria (min. 3 mesi)
+pt: Destaque na categoria (mín. 3 meses)
+el: Προβολή στην κατηγορία (ελάχ. 3 μήνες)
+cs: Zvýraznění v kategorii (min. 3 měsíce)
+sl: Izpostavitev v kategoriji (najmanj 3 meseci)
+sv: Framhävning i kategorin (minst 3 månader)
+@116
+it: / mese
+pt: / mês
+el: / μήνα
+cs: / měsíc
+sl: / mesec
+sv: / månad
+@117
+it: Messa in evidenza in homepage (min. 3 mesi)
+pt: Destaque na página inicial (mín. 3 meses)
+el: Προβολή στην αρχική σελίδα (ελάχ. 3 μήνες)
+cs: Zvýraznění na úvodní stránce (min. 3 měsíce)
+sl: Izpostavitev na domači strani (najmanj 3 meseci)
+sv: Framhävning på startsidan (minst 3 månader)
+@118
+it: Inserimento di un video (il suo video)
+pt: Inclusão de vídeo (o seu próprio vídeo)
+el: Ανάρτηση βίντεο (δικό σας βίντεο)
+cs: Umístění videa (vaše vlastní video)
+sl: Objava videa (vaš lasten video)
+sv: Placering av video (din egen video)
+@119
+it: una tantum
+pt: pagamento único
+el: εφάπαξ
+cs: jednorázově
+sl: enkratno
+sv: engångsavgift
+@120
+it: Aggiunta di foto in seguito
+pt: Adicionar fotografias mais tarde
+el: Προσθήκη φωτογραφιών αργότερα
+cs: Dodatečné přidání fotografií
+sl: Naknadno dodajanje fotografij
+sv: Lägga till foton i efterhand
+@121
+it: Rinnovo di un annuncio standard, 6 mesi
+pt: Renovação de um anúncio normal, 6 meses
+el: Ανανέωση τυπικής αγγελίας, 6 μήνες
+cs: Prodloužení standardního inzerátu, 6 měsíců
+sl: Podaljšanje standardnega oglasa, 6 mesecev
+sv: Förnyelse av en standardannons, 6 månader
+@122
+it: Richiesta dell’attestato di prestazione energetica
+pt: Pedido do certificado energético
+el: Αίτηση για πιστοποιητικό ενεργειακής απόδοσης
+cs: Vyřízení průkazu energetické náročnosti
+sl: Pridobitev energetske izkaznice
+sv: Beställning av energideklaration
+@123
+it: una tantum, in loco
+pt: pagamento único, no local
+el: εφάπαξ, επιτόπου
+cs: jednorázově, na místě
+sl: enkratno, na kraju samem
+sv: engångsavgift, på plats
+@124
+it: Altri servizi
+pt: Outros serviços
+el: Άλλες υπηρεσίες
+cs: Další služby
+sl: Druge storitve
+sv: Övriga tjänster
+@125
+it: Per questi servizi prepariamo un preventivo su misura. Ce lo chieda pure.
+pt: Para estes serviços preparamos um orçamento à medida. Não hesite em perguntar.
+el: Για αυτές τις υπηρεσίες ετοιμάζουμε εξατομικευμένη προσφορά. Μη διστάσετε να ρωτήσετε.
+cs: Na tyto služby připravíme nabídku na míru. Stačí se zeptat.
+sl: Za te storitve pripravimo ponudbo po meri. Kar vprašajte.
+sv: För dessa tar vi fram en skräddarsydd offert. Fråga gärna.
+@126
+it: Traduzione del contratto di compravendita per combinazione linguistica, prezzi a partire da.
+pt: Tradução do contrato de compra e venda por combinação de idiomas, preços a partir de.
+el: Μετάφραση του συμβολαίου αγοραπωλησίας ανά συνδυασμό γλωσσών, τιμές από.
+cs: Překlad kupní smlouvy podle jazykové kombinace, ceny od.
+sl: Prevod kupoprodajne pogodbe po jezikovni kombinaciji, cene od.
+sv: Översättning av köpekontraktet per språkkombination, från-priser.
+@127
+it: Chiediamo la provvigione solo se l’acquirente è stato presentato da FODEL, esiste un contratto di compravendita scritto ed è stata versata la caparra. Se l’acquirente la contatta direttamente e non le serve il nostro aiuto, oltre alla tariffa dell’annuncio non paga nulla.
+pt: Só cobramos comissão quando o comprador foi apresentado pela FODEL, existe um contrato de compra e venda escrito e o sinal foi pago. Se o comprador o contactar diretamente e não precisar da nossa ajuda, não paga nada além da taxa do anúncio.
+el: Χρεώνουμε προμήθεια μόνο όταν τον αγοραστή τον έχει φέρει η FODEL, υπάρχει γραπτό συμβόλαιο αγοραπωλησίας και έχει καταβληθεί η προκαταβολή. Αν ο αγοραστής επικοινωνήσει απευθείας μαζί σας και δεν χρειάζεστε τη βοήθειά μας, δεν πληρώνετε τίποτα πέρα από το τέλος της αγγελίας.
+cs: Provizi účtujeme jen tehdy, když kupujícího přivedl FODEL, existuje písemná kupní smlouva a byla zaplacena záloha. Pokud vás kupující kontaktuje přímo a naši pomoc nepotřebujete, nad rámec poplatku za inzerát nic neplatíte.
+sl: Provizijo zaračunamo le, če je kupca pripeljal FODEL, obstaja pisna kupoprodajna pogodba in je bila plačana ara. Če vas kupec kontaktira neposredno in naše pomoči ne potrebujete, poleg pristojbine za oglas ne plačate ničesar.
+sv: Provision tar vi bara ut när FODEL har förmedlat köparen, det finns ett skriftligt köpekontrakt och handpenningen är betald. Om köparen kontaktar dig direkt och du inte behöver vår hjälp betalar du inget utöver annonsavgiften.
+@128
+it: Politica di rimborso
+pt: Política de reembolso
+el: Πολιτική επιστροφής χρημάτων
+cs: Pravidla pro vrácení peněz
+sl: Pravila o vračilu kupnine
+sv: Återbetalningsvillkor
+@129
+it: ${pct(COMMISSION.percent)} netto, min. ${eurText(locale, COMMISSION.minimumEur)}
+pt: ${pct(COMMISSION.percent)} líquido, mín. ${eurText(locale, COMMISSION.minimumEur)}
+el: ${pct(COMMISSION.percent)} καθαρά, ελάχ. ${eurText(locale, COMMISSION.minimumEur)}
+cs: ${pct(COMMISSION.percent)} bez DPH, min. ${eurText(locale, COMMISSION.minimumEur)}
+sl: ${pct(COMMISSION.percent)} neto, najmanj ${eurText(locale, COMMISSION.minimumEur)}
+sv: ${pct(COMMISSION.percent)} exkl. moms, minst ${eurText(locale, COMMISSION.minimumEur)}
+@130
+it: da ${eurText(locale, n)}
+pt: a partir de ${eurText(locale, n)}
+el: από ${eurText(locale, n)}
+cs: od ${eurText(locale, n)}
+sl: od ${eurText(locale, n)}
+sv: från ${eurText(locale, n)}
+@131
+it: Ungherese
+pt: Húngaro
+el: Ουγγρικά
+cs: Maďarština
+sl: Madžarščina
+sv: Ungerska
+@132
+it: Tedesco–ungherese
+pt: Alemão–húngaro
+el: Γερμανικά–ουγγρικά
+cs: Němčina–maďarština
+sl: Nemščina–madžarščina
+sv: Tyska–ungerska
+@133
+it: Inglese–ungherese
+pt: Inglês–húngaro
+el: Αγγλικά–ουγγρικά
+cs: Angličtina–maďarština
+sl: Angleščina–madžarščina
+sv: Engelska–ungerska
+@134
+it: Olandese–ungherese
+pt: Neerlandês–húngaro
+el: Ολλανδικά–ουγγρικά
+cs: Nizozemština–maďarština
+sl: Nizozemščina–madžarščina
+sv: Nederländska–ungerska
+@135
+it: I nostri immobili
+pt: Os nossos imóveis
+el: Τα ακίνητά μας
+cs: Naše nemovitosti
+sl: Naše nepremičnine
+sv: Våra fastigheter
+@136
+it: ${total} immobili in Ungheria: case, fattorie, case padronali e case vacanza. Filtri per tipologia, regione e prezzo.
+pt: ${total} imóveis na Hungria: casas, quintas, solares e casas de férias. Filtre por tipo, região e preço.
+el: ${total} ακίνητα στην Ουγγαρία: σπίτια, αγροκτήματα, αρχοντικά και εξοχικά. Φιλτράρετε ανά τύπο, περιφέρεια και τιμή.
+cs: ${nOf('cs', total, 'nemovitost', 'nemovitosti', 'nemovitostí')} v Maďarsku: domy, statky, panská sídla a rekreační domy. Filtrujte podle typu, regionu a ceny.
+sl: ${nOf('sl', total, 'nepremičnina', 'nepremičnine', 'nepremičnin', 'nepremičnini')} na Madžarskem: hiše, kmetije, dvorci in počitniške hiše. Filtrirajte po vrsti, regiji in ceni.
+sv: ${total} fastigheter i Ungern: hus, gårdar, herrgårdar och fritidshus. Filtrera efter typ, region och pris.
+@137
+it: “${q}”
+pt: «${q}»
+el: «${q}»
+cs: „${q}“
+sl: „${q}“
+sv: ”${q}”
+@138
+it: ${beds}+ camere da letto
+pt: ${beds}+ quartos
+el: ${beds}+ υπνοδωμάτια
+cs: min. ${nOf('cs', Number(beds), 'ložnice', 'ložnice', 'ložnic')}
+sl: vsaj ${nOf('sl', Number(beds), 'spalnica', 'spalnice', 'spalnic', 'spalnici')}
+sv: ${beds}+ sovrum
+@139
+it: Area della mappa
+pt: Área do mapa
+el: Περιοχή χάρτη
+cs: Oblast na mapě
+sl: Območje na zemljevidu
+sv: Kartområde
+@140
+it: Filtri
+pt: Filtros
+el: Φίλτρα
+cs: Filtry
+sl: Filtri
+sv: Filter
+@141
+it: Posizione
+pt: Localização
+el: Τοποθεσία
+cs: Lokalita
+sl: Lokacija
+sv: Plats
+@142
+it: Ricerca libera
+pt: Pesquisa livre
+el: Ελεύθερη αναζήτηση
+cs: Fulltextové hledání
+sl: Prosto iskanje
+sv: Fritextsökning
+@143
+it: Pagina precedente
+pt: Página anterior
+el: Προηγούμενη σελίδα
+cs: Předchozí stránka
+sl: Prejšnja stran
+sv: Föregående sida
+@144
+it: Pagina successiva
+pt: Página seguinte
+el: Επόμενη σελίδα
+cs: Další stránka
+sl: Naslednja stran
+sv: Nästa sida
+@145
+it: Paginazione
+pt: Paginação
+el: Σελιδοποίηση
+cs: Stránkování
+sl: Številčenje strani
+sv: Sidnavigering
+@146
+it: Rimuovi filtro
+pt: Remover filtro
+el: Αφαίρεση φίλτρου
+cs: Odebrat filtr
+sl: Odstrani filter
+sv: Ta bort filter
+@147
+it: Località, caratteristica, riferimento…
+pt: Localidade, característica, referência…
+el: Τοποθεσία, χαρακτηριστικό, κωδικός…
+cs: Obec, vlastnost, číslo inzerátu…
+sl: Kraj, značilnost, referenca…
+sv: Ort, egenskap, referens…
+@148
+it: Sottotipo
+pt: Subtipo
+el: Υποκατηγορία
+cs: Podtyp
+sl: Podvrsta
+sv: Undertyp
+@149
+it: Cancella filtro
+pt: Limpar filtro
+el: Καθαρισμός φίλτρου
+cs: Zrušit filtr
+sl: Počisti filter
+sv: Rensa filter
+@150
+it: Filtri attivi
+pt: Filtros ativos
+el: Ενεργά φίλτρα
+cs: Aktivní filtry
+sl: Aktivni filtri
+sv: Aktiva filter
+@151
+it: Superficie edificata totale
+pt: Área total de construção
+el: Συνολική δομημένη επιφάνεια
+cs: Celková zastavěná plocha
+sl: Skupna površina stavbe
+sv: Total byggnadsyta
+@152
+it: Stato
+pt: Estado
+el: Κατάσταση
+cs: Stav
+sl: Stanje
+sv: Skick
+@153
+it: Riscaldamento
+pt: Aquecimento
+el: Θέρμανση
+cs: Vytápění
+sl: Ogrevanje
+sv: Uppvärmning
+@154
+it: Materiale delle pareti
+pt: Material das paredes
+el: Υλικό τοιχοποιίας
+cs: Materiál zdí
+sl: Material sten
+sv: Väggmaterial
+@155
+it: Riferimento
+pt: Referência
+el: Κωδικός
+cs: Číslo inzerátu
+sl: Referenca
+sv: Referens
+@156
+it: Buongiorno, vorrei informazioni su “${title}” (#${d.ref}): ${abs(pageUrl)}
+pt: Olá, tenho interesse em «${title}» (#${d.ref}): ${abs(pageUrl)}
+el: Γεια σας, ενδιαφέρομαι για το «${title}» (#${d.ref}): ${abs(pageUrl)}
+cs: Dobrý den, mám zájem o „${title}“ (#${d.ref}): ${abs(pageUrl)}
+sl: Pozdravljeni, zanima me „${title}“ (#${d.ref}): ${abs(pageUrl)}
+sv: Hej! Jag är intresserad av ”${title}” (#${d.ref}): ${abs(pageUrl)}

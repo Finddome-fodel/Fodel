@@ -1,0 +1,161 @@
+@1431 [email]
+EN: Breakdown
+
+@1432 [email]
+EN: Amount paid
+
+@1433 [email]
+EN: The amount includes 21% Dutch VAT. You will receive the invoice in a separate email.
+
+@1434 [email]
+EN: Date paid
+
+@1435 [email]
+EN: Your listing is online (#${ref})
+
+@1436 [email]
+EN: The listing is now visible on ${SITE_HOST}.
+
+@1437 [email]
+EN: Your listing is online
+
+@1438 [email]
+EN: Your listing “${title}” (#${ref}) is on ${SITE_HOST} and reaches buyers in eight countries.
+
+@1439 [email]
+EN: As soon as someone shows interest, we email you their details straight away. You can always see the status of your listing in the portal.
+
+@1440 [email]
+EN: New enquiry (#${ref})
+
+@1441 [email]
+EN: Someone is interested in your property.
+
+@1442 [email]
+EN: New response to your listing
+
+@1443 [email]
+EN: Someone has responded to your listing “${title}” (#${ref}):
+
+@1444 [email]
+EN: Name
+
+@1445 [email]
+EN: Their message
+
+@1446 [email]
+EN: Please get in touch within two days if you can: a quick reply is by far the most important factor in whether a sale happens.
+
+@1447 [email]
+EN: Reset your password | FODEL portal
+
+@1448 [email]
+EN: The link is valid for one hour.
+
+@1449 [email]
+EN: Reset your password
+
+@1450 [email]
+EN: We received a request to reset the password of your FODEL portal account. Click the button below to set a new one.
+
+@1451 [email]
+EN: Set a new password
+
+@1452 [email]
+EN: The link is valid for one hour and can be used once.
+
+@1453 [email]
+EN: If you did not ask for this, ignore this email. Your password stays unchanged and nothing happens.
+
+@1454 [email]
+EN: We have received your recommendation | FODEL
+
+@1455 [email]
+EN: One of our team will soon contact the person you recommended.
+
+@1456 [email]
+EN: Thank you for the recommendation
+
+@1457 [email]
+EN: We have received ${referredName}’s details. One of our team will contact them, and once the listing is placed we will credit 10% off the cost of your next listing.
+
+@1458 [email]
+EN: The credit is applied by hand, after the advertiser has paid. We will let you know as soon as it can be done.
+
+@1459 [email]
+EN: We have received your valuation request
+
+@1460 [email]
+EN: One of our team checks the property details and the data basis, then emails you the indicative, market-based valuation.
+
+@1461 [email]
+EN: Your valuation is ready | FODEL
+
+@1462 [email]
+EN: We have made an indicative estimate for your property.
+
+@1463 [email]
+EN: Your valuation is ready
+
+@1464 [email]
+EN: Based on the details given and comparable properties, our indicative estimate is: ${range}.
+
+@1465 [email]
+EN: This estimate is indicative, not a valuation report, and does not replace an official valuation. It is based on ${n} comparable properties.
+
+@1466 [email]
+EN: This estimate is indicative, not a valuation report, and does not replace an official valuation.
+
+@1467 [email]
+EN: List it now
+
+@1468 [email]
+EN: submitAd
+
+@1469 [email]
+EN: Based on the details given, the indicative, market-based value is: ${range}.
+
+@1470 [email]
+EN: Midpoint
+
+@1471 [email]
+EN: Data basis
+
+@1472 [email]
+EN: Exchange rate date
+
+@1473 [email]
+EN: Source
+
+@1474 [email]
+EN: Factors
+
+@1475 [email]
+EN: Raises the value
+
+@1476 [email]
+EN: Lowers the value
+
+@1477 [email]
+EN: Unsure
+
+@1478 [email]
+EN: Request a visit from Gábor
+
+@1479 [email]
+EN: Request an official valuation
+
+@1480 [email]
+EN: Your valuation request | FODEL
+
+@1481 [email]
+EN: One of our team will contact you personally.
+
+@1482 [email]
+EN: Thank you for your request
+
+@1483 [email]
+EN: On the basis of the details given we currently have too few comparable properties for a reliable estimate. One of our team will contact you personally.
+
+@1484 [email]
+EN: Valuation: we need a few more details

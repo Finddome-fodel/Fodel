@@ -1,0 +1,567 @@
+@0
+it: Se il modulo non funziona, ci chiami al ${phoneDisplay} o scriva a ${company.email.primary}.
+pt: Se o formulário não funcionar, ligue-nos para o ${phoneDisplay} ou escreva para ${company.email.primary}.
+el: Αν η φόρμα δεν λειτουργεί, καλέστε μας στο ${phoneDisplay} ή γράψτε μας στο ${company.email.primary}.
+cs: Pokud formulář nefunguje, zavolejte nám na ${phoneDisplay} nebo napište na ${company.email.primary}.
+sl: Če obrazec ne deluje, nas pokličite na ${phoneDisplay} ali pišite na ${company.email.primary}.
+sv: Om formuläret inte fungerar kan du ringa oss på ${phoneDisplay} eller mejla ${company.email.primary}.
+@1
+it: Ad esempio:
+pt: Por exemplo:
+el: Για παράδειγμα:
+cs: Například:
+sl: Na primer:
+sv: Till exempel:
+@2
+it: Prefisso internazionale
+pt: Indicativo do país
+el: Κωδικός χώρας
+cs: Mezinárodní předvolba
+sl: Klicna koda države
+sv: Landsnummer
+@3
+it: Più usati
+pt: Mais comuns
+el: Συνηθέστερες
+cs: Nejčastější
+sl: Najpogostejše
+sv: Vanligast
+@4
+it: Tutti i paesi
+pt: Todos os países
+el: Όλες οι χώρες
+cs: Všechny země
+sl: Vse države
+sv: Alla länder
+@5
+it: Cerca un paese
+pt: Pesquisar um país
+el: Αναζήτηση χώρας
+cs: Vyhledat zemi
+sl: Poiščite državo
+sv: Sök efter ett land
+@6
+it: Nessun risultato
+pt: Sem resultados
+el: Δεν βρέθηκαν αποτελέσματα
+cs: Žádné výsledky
+sl: Ni zadetkov
+sv: Inga träffar
+@7
+it: Registrazione
+pt: Registo
+el: Εγγραφή
+cs: Registrace
+sl: Registracija
+sv: Registrera dig
+@8
+it: Controlli la sua casella di posta
+pt: Consulte a sua caixa de correio
+el: Ελέγξτε τα εισερχόμενά σας
+cs: Zkontrolujte svou e-mailovou schránku
+sl: Preverite svoj e-poštni predal
+sv: Kolla din inkorg
+@9
+it: Abbiamo inviato il link per impostare la password a:
+pt: Enviámos a ligação para definir a palavra-passe para:
+el: Στείλαμε τον σύνδεσμο για τον ορισμό του κωδικού πρόσβασης στη διεύθυνση:
+cs: Odkaz pro nastavení hesla jsme odeslali na adresu:
+sl: Povezavo za nastavitev gesla smo poslali na naslov:
+sv: Vi har skickat länken för att välja lösenord till:
+@10
+it: Mittente
+pt: De
+el: Από
+cs: Od
+sl: Od
+sv: Från
+@11
+it: Oggetto
+pt: Assunto
+el: Θέμα
+cs: Předmět
+sl: Zadeva
+sv: Ämne
+@12
+it: Il link è valido ${REGISTRATION_DAYS} giorni.
+pt: A ligação é válida durante ${REGISTRATION_DAYS} dias.
+el: Ο σύνδεσμος ισχύει για ${REGISTRATION_DAYS} ημέρες.
+cs: Odkaz platí ${nOf('cs', REGISTRATION_DAYS, 'den', 'dny', 'dní')}.
+sl: Povezava velja ${nOf('sl', REGISTRATION_DAYS, 'dan', 'dni', 'dni', 'dneva')}.
+sv: Länken gäller i ${REGISTRATION_DAYS} dagar.
+@13
+it: Se entro pochi minuti non arriva nulla, controlli anche la cartella spam o promozioni.
+pt: Se nada chegar dentro de alguns minutos, verifique também a pasta de spam ou de promoções.
+el: Αν δεν λάβετε τίποτα μέσα σε λίγα λεπτά, ελέγξτε και τον φάκελο ανεπιθύμητης αλληλογραφίας ή προωθήσεων.
+cs: Pokud do několika minut nic nepřijde, podívejte se také do složky se spamem nebo s reklamami.
+sl: Če v nekaj minutah ne prejmete ničesar, preverite tudi mapo z neželeno pošto ali promocijami.
+sv: Om inget kommer inom några minuter, kolla även skräppostmappen eller mappen för kampanjer.
+@14
+it: Invia di nuovo l’e-mail
+pt: Reenviar o e-mail
+el: Επανάληψη αποστολής
+cs: Poslat e-mail znovu
+sl: Znova pošlji e-pošto
+sv: Skicka mejlet igen
+@15
+it: Nuovo invio tra ${s} s
+pt: Reenviar dentro de ${s} s
+el: Νέα αποστολή σε ${s} δευτ.
+cs: Znovu odeslat za ${s} s
+sl: Ponovno pošiljanje čez ${s} s
+sv: Skicka igen om ${s} s
+@16
+it: Inviata di nuovo.
+pt: Enviado novamente.
+el: Στάλθηκε ξανά.
+cs: Odesláno znovu.
+sl: Ponovno poslano.
+sv: Skickat igen.
+@17
+it: Al momento non siamo riusciti a inviarla di nuovo. Riprovi tra un minuto.
+pt: Neste momento não foi possível reenviar. Tente novamente dentro de um minuto.
+el: Δεν ήταν δυνατή η επανάληψη της αποστολής αυτή τη στιγμή. Δοκιμάστε ξανά σε ένα λεπτό.
+cs: Teď se to nepodařilo odeslat znovu. Zkuste to prosím za minutu.
+sl: Trenutno ga ni bilo mogoče znova poslati. Poskusite znova čez minuto.
+sv: Det gick inte att skicka igen just nu. Försök igen om en minut.
+@18
+it: Indirizzo sbagliato?
+pt: Endereço errado?
+el: Λάθος διεύθυνση;
+cs: Chybná adresa?
+sl: Napačen naslov?
+sv: Fel adress?
+@19
+it: Lo modifichi
+pt: Alterar
+el: Αλλάξτε τη
+cs: Změnit
+sl: Spremenite ga
+sv: Ändra den
+@20
+it: Un maniero ungherese restaurato con parco all’inglese
+pt: Um solar húngaro restaurado com um parque à inglesa
+el: Ένα αναπαλαιωμένο ουγγρικό αρχοντικό με πάρκο αγγλικού τύπου
+cs: Zrekonstruované maďarské panské sídlo s anglickým parkem
+sl: Obnovljen madžarski dvorec z angleškim parkom
+sv: En restaurerad ungersk herrgård med engelsk park
+@21
+it: Indirizzo
+pt: Morada
+el: Διεύθυνση
+cs: Adresa
+sl: Naslov
+sv: Adress
+@22
+it: Lingue
+pt: Idiomas
+el: Γλώσσες
+cs: Jazyky
+sl: Jeziki
+sv: Språk
+@23
+it: Metodo
+pt: Método
+el: Μέθοδος
+cs: Metoda
+sl: Metoda
+sv: Metod
+@24
+it: Risultati
+pt: Resultados
+el: Αποτελέσματα
+cs: Výsledky
+sl: Rezultati
+sv: Resultat
+@25
+it: Fonti
+pt: Fontes
+el: Πηγές
+cs: Zdroje
+sl: Viri
+sv: Källor
+@26
+it: Caso di studio
+pt: Estudo de caso
+el: Μελέτη περίπτωσης
+cs: Případová studie
+sl: Študija primera
+sv: Fallstudie
+@27
+it: ${post.reading_minutes} min di lettura
+pt: ${post.reading_minutes} min de leitura
+el: ${post.reading_minutes} λεπτά ανάγνωσης
+cs: ${post.reading_minutes} min čtení
+sl: ${post.reading_minutes} min branja
+sv: ${post.reading_minutes} min läsning
+@28
+it: ${n} min di lettura
+pt: ${n} min de leitura
+el: ${n} λεπτά ανάγνωσης
+cs: ${n} min čtení
+sl: ${n} min branja
+sv: ${n} min läsning
+@29
+it: Notizie e articoli: mercato, trasferimento, consigli
+pt: Notícias e artigos: mercado, mudança, conselhos
+el: Νέα και άρθρα: αγορά, μετεγκατάσταση, συμβουλές
+cs: Novinky a články: trh, stěhování, rady
+sl: Novice in članki: trg, selitev, nasveti
+sv: Nyheter och artiklar: marknad, flytt, råd
+@30
+it: Analisi del mercato immobiliare ungherese e degli acquirenti dell’Europa occidentale: perché chi vive nei Paesi Bassi si trasferisce in Ungheria e che cosa significa.
+pt: Análise do mercado imobiliário húngaro e dos compradores da Europa Ocidental: porque é que quem vive nos Países Baixos se muda para a Hungria e o que isso significa.
+el: Ανάλυση της ουγγρικής αγοράς ακινήτων και των αγοραστών από τη Δυτική Ευρώπη: γιατί άνθρωποι από την Ολλανδία μετακομίζουν στην Ουγγαρία και τι σημαίνει αυτό.
+cs: Analýza maďarského realitního trhu a kupujících ze západní Evropy: proč se lidé z Nizozemska stěhují do Maďarska a co to znamená.
+sl: Analiza madžarskega nepremičninskega trga in kupcev iz zahodne Evrope: zakaj se ljudje z Nizozemske selijo na Madžarsko in kaj to pomeni.
+sv: Analyser av den ungerska fastighetsmarknaden och köpare från Västeuropa: varför människor från Nederländerna flyttar till Ungern och vad det innebär.
+@31
+it: Notizie e articoli
+pt: Notícias e artigos
+el: Νέα και άρθρα
+cs: Novinky a články
+sl: Novice in članki
+sv: Nyheter och artiklar
+@32
+it: Mercato,
+pt: Mercado,
+el: Αγορά,
+cs: Trh,
+sl: Trg,
+sv: Marknad,
+@33
+it: contesto, consigli
+pt: contexto, conselhos
+el: πλαίσιο, συμβουλές
+cs: souvislosti, rady
+sl: ozadje, nasveti
+sv: bakgrund, råd
+@34
+it: Che cosa sapere sul mercato immobiliare ungherese e sugli acquirenti dell’Europa occidentale.
+pt: O que convém saber sobre o mercado imobiliário húngaro e os compradores da Europa Ocidental.
+el: Όσα αξίζει να γνωρίζετε για την ουγγρική αγορά ακινήτων και τους αγοραστές από τη Δυτική Ευρώπη.
+cs: Co byste měli vědět o maďarském realitním trhu a kupujících ze západní Evropy.
+sl: Kaj je dobro vedeti o madžarskem nepremičninskem trgu in kupcih iz zahodne Evrope.
+sv: Det här är bra att veta om den ungerska fastighetsmarknaden och köpare från Västeuropa.
+@35
+it: Presto nuovi articoli.
+pt: Em breve, novos artigos.
+el: Νέα άρθρα έρχονται σύντομα.
+cs: Nové články brzy přibudou.
+sl: Novi članki bodo kmalu na voljo.
+sv: Nya artiklar kommer snart.
+@36
+it: Tipo di contenuto
+pt: Tipo de conteúdo
+el: Είδος περιεχομένου
+cs: Typ obsahu
+sl: Vrsta vsebine
+sv: Innehållstyp
+@37
+it: Articoli
+pt: Artigos
+el: Άρθρα
+cs: Články
+sl: Članki
+sv: Artiklar
+@38
+it: Casi di studio
+pt: Estudos de caso
+el: Μελέτες περίπτωσης
+cs: Případové studie
+sl: Študije primerov
+sv: Fallstudier
+@39
+it: Immobili rurali a un prezzo realistico
+pt: Imóveis rurais a um preço realista
+el: Αγροτικά ακίνητα σε ρεαλιστική τιμή
+cs: Venkovské nemovitosti za reálnou cenu
+sl: Podeželske nepremičnine po realni ceni
+sv: Fastigheter på landsbygden till ett realistiskt pris
+@40
+it: Immobili in collina con vista
+pt: Imóveis em colinas com vista
+el: Ακίνητα σε λόφους με θέα
+cs: Nemovitosti na kopci s výhledem
+sl: Nepremičnine na vzpetinah z razgledom
+sv: Fastigheter på höjder med utsikt
+@41
+it: Immobili ai margini del bosco
+pt: Imóveis à beira da floresta
+el: Ακίνητα στις παρυφές του δάσους
+cs: Nemovitosti na okraji lesa
+sl: Nepremičnine ob robu gozda
+sv: Fastigheter i skogsbrynet
+@42
+it: Case vacanza da affittare e immobili vicino all’acqua
+pt: Casas de férias para arrendar e imóveis junto à água
+el: Εξοχικά προς ενοικίαση και ακίνητα δίπλα στο νερό
+cs: Rekreační domy k pronájmu a nemovitosti u vody
+sl: Počitniške hiše za oddajo in nepremičnine ob vodi
+sv: Fritidshus att hyra ut och fastigheter vid vatten
+@43
+it: Fattorie adatte ad animali e cavalli
+pt: Quintas adequadas para gado e cavalos
+el: Αγροκτήματα κατάλληλα για ζώα και άλογα
+cs: Statky vhodné pro chov zvířat a koní
+sl: Kmetije, primerne za živino in konje
+sv: Gårdar som passar för djur och hästar
+@44
+it: Grandi terreni e immobili agricoli
+pt: Grandes terrenos e imóveis agrícolas
+el: Μεγάλα οικόπεδα και αγροτικά ακίνητα
+cs: Velké pozemky a zemědělské nemovitosti
+sl: Velika zemljišča in kmetijske nepremičnine
+sv: Stora tomter och jordbruksfastigheter
+@45
+it: Buoni collegamenti con l’aeroporto di Budapest
+pt: Boas ligações ao aeroporto de Budapeste
+el: Καλή σύνδεση με το αεροδρόμιο της Βουδαπέστης
+cs: Dobré spojení s letištěm v Budapešti
+sl: Dobre povezave z letališčem v Budimpešti
+sv: Goda förbindelser till Budapests flygplats
+@46
+it: Immobili in Transdanubia
+pt: Imóveis na Transdanúbia
+el: Ακίνητα στην Υπερδανουβία
+cs: Nemovitosti v Zadunajsku
+sl: Nepremičnine v Prekdonavju
+sv: Fastigheter i Transdanubien
+@47
+it: Interno di una casa colonica ungherese ristrutturata
+pt: Interior de uma casa de quinta húngara renovada
+el: Εσωτερικό ανακαινισμένης ουγγρικής αγροικίας
+cs: Interiér zrekonstruovaného maďarského statku
+sl: Notranjost prenovljene madžarske kmečke hiše
+sv: Interiör i ett renoverat ungerskt bondhus
+@48
+it: Il modello FODEL
+pt: O modelo FODEL
+el: Το μοντέλο της FODEL
+cs: Model FODEL
+sl: Model FODEL
+sv: FODEL-modellen
+@49
+it: Nell’annuncio trova anche il nome e il numero del proprietario.
+pt: O nome e o número do proprietário também constam do anúncio.
+el: Στην αγγελία θα βρείτε επίσης το όνομα και το τηλέφωνο του ιδιοκτήτη.
+cs: V inzerátu najdete i jméno a telefonní číslo vlastníka.
+sl: V oglasu sta navedena tudi ime in telefonska številka lastnika.
+sv: Ägarens namn och nummer står också i annonsen.
+@50
+it: Non è uno slogan, ma il cuore del nostro modello. Se il proprietario è d’accordo, può contattarlo direttamente. Se concludete l’acquisto in questo modo, nessuno paga la provvigione: siamo già stati pagati per l’annuncio.
+pt: Não é um slogan, é o centro do nosso modelo. Se o proprietário tiver concordado, pode contactá-lo diretamente. Se combinarem a compra dessa forma, ninguém paga comissão: já fomos pagos pelo anúncio.
+el: Δεν είναι σύνθημα, αλλά η καρδιά του μοντέλου μας. Όπου ο ιδιοκτήτης έχει συμφωνήσει, μπορείτε να επικοινωνήσετε απευθείας μαζί του. Αν κλείσετε την αγορά με αυτόν τον τρόπο, κανείς δεν πληρώνει προμήθεια. Έχουμε ήδη πληρωθεί για την αγγελία.
+cs: Není to slogan, ale jádro našeho modelu. Pokud s tím vlastník souhlasí, můžete ho kontaktovat přímo. Když se na koupi dohodnete takto, nikdo neplatí provizi. Za inzerát jsme už zaplaceni.
+sl: To ni slogan, temveč bistvo našega modela. Če se lastnik s tem strinja, ga lahko kontaktirate neposredno. Če se o nakupu dogovorite tako, nihče ne plača provizije. Za oglas smo že bili plačani.
+sv: Det är ingen slogan utan kärnan i vår modell. Om ägaren har gått med på det kan du kontakta hen direkt. Gör ni affären på det sättet betalar ingen provision. Vi har redan fått betalt för annonsen.
+@51
+it: di provvigione sull’acquisto diretto
+pt: de comissão numa compra direta
+el: προμήθεια σε απευθείας αγορά
+cs: provize při přímé koupi
+sl: provizije pri neposrednem nakupu
+sv: provision vid direktköp
+@52
+it: Servizi e prezzi
+pt: Serviços e preços
+el: Υπηρεσίες και τιμές
+cs: Služby a ceny
+sl: Storitve in cene
+sv: Tjänster och priser
+@53
+it: ettari
+pt: hectares
+el: εκτάρια
+cs: hektarů
+sl: hektarjev
+sv: hektar
+@54
+it: Immobili agricoli
+pt: Imóveis agrícolas
+el: Αγροτικά ακίνητα
+cs: Zemědělské nemovitosti
+sl: Kmetijske nepremičnine
+sv: Jordbruksfastigheter
+@55
+it: Fino a ${AGRI_HECTARE_LIMIT} ettari con una qualifica agricola
+pt: Até ${AGRI_HECTARE_LIMIT} hectares com uma qualificação agrícola
+el: Έως ${AGRI_HECTARE_LIMIT} εκτάρια με γεωργικά προσόντα
+cs: Až ${nOf('cs', AGRI_HECTARE_LIMIT, 'hektar', 'hektary', 'hektarů')} se zemědělskou kvalifikací
+sl: Do ${nOf('sl', AGRI_HECTARE_LIMIT, 'hektarja', 'hektarjev', 'hektarjev', 'hektarjev')} s kmetijsko izobrazbo
+sv: Upp till ${AGRI_HECTARE_LIMIT} hektar med jordbruksutbildning
+@56
+it: Un cittadino dell’UE con una qualifica agricola può acquistare in Ungheria fino a ${AGRI_HECTARE_LIMIT} ettari di terreno in totale. Ci occupiamo noi dell’intera procedura.
+pt: Um cidadão da UE com qualificação agrícola pode adquirir na Hungria até ${AGRI_HECTARE_LIMIT} hectares de terreno no total. Tratamos de todo o procedimento por si.
+el: Ένας πολίτης της ΕΕ με γεωργικά προσόντα μπορεί να αποκτήσει στην Ουγγαρία συνολικά έως ${AGRI_HECTARE_LIMIT} εκτάρια γης. Αναλαμβάνουμε εμείς όλη τη διαδικασία.
+cs: Občan EU se zemědělskou kvalifikací může v Maďarsku nabýt celkem ${nOf('cs', AGRI_HECTARE_LIMIT, 'hektar', 'hektary', 'hektarů')} půdy. Celé řízení vyřídíme za vás.
+sl: Državljan EU s kmetijsko izobrazbo lahko na Madžarskem pridobi skupaj ${nOf('sl', AGRI_HECTARE_LIMIT, 'hektar', 'hektarje', 'hektarjev', 'hektarja')} zemljišč. Celoten postopek uredimo namesto vas.
+sv: En EU-medborgare med jordbruksutbildning får förvärva sammanlagt ${AGRI_HECTARE_LIMIT} hektar mark i Ungern. Vi sköter hela det förfarandet åt dig.
+@57
+it: Maggiori informazioni
+pt: Saber mais
+el: Περισσότερα
+cs: Více informací
+sl: Več o tem
+sv: Läs mer
+@58
+it: Selezione
+pt: Seleção
+el: Επιλογή
+cs: Výběr
+sl: Izbor
+sv: Urval
+@59
+it: Immobili in evidenza
+pt: Imóveis em destaque
+el: Προτεινόμενα ακίνητα
+cs: Vybrané nemovitosti
+sl: Izpostavljene nepremičnine
+sv: Utvalda fastigheter
+@60
+it: Domande frequenti
+pt: Perguntas frequentes
+el: Συχνές ερωτήσεις
+cs: Časté dotazy
+sl: Pogosta vprašanja
+sv: Vanliga frågor
+@61
+it: Che cosa ci chiedono gli acquirenti
+pt: O que os compradores nos perguntam
+el: Τι μας ρωτούν οι αγοραστές
+cs: Na co se nás kupující ptají
+sl: Kaj nas sprašujejo kupci
+sv: Det här frågar köpare oss
+@62
+it: Tutte le domande e risposte
+pt: Todas as perguntas e respostas
+el: Όλες οι ερωτήσεις και απαντήσεις
+cs: Všechny otázky a odpovědi
+sl: Vsa vprašanja in odgovori
+sv: Alla frågor och svar
+@63
+it: Non trova quello che cerca?
+pt: Não encontra o que procura?
+el: Δεν βρίσκετε αυτό που ψάχνετε;
+cs: Nenašli jste, co hledáte?
+sl: Ne najdete, kar iščete?
+sv: Hittar du inte det du söker?
+@64
+it: Lo cerchiamo noi
+pt: Deixe-nos procurar
+el: Αφήστε μας να ψάξουμε
+cs: Vyhledáme to za vás
+sl: Poiščemo namesto vas
+sv: Låt oss leta
+@65
+it: gratuitamente
+pt: gratuitamente
+el: δωρεάν
+cs: zdarma
+sl: brezplačno
+sv: kostnadsfritt
+@66
+it: Ci dica che cosa cerca. Cerchiamo anche al di là degli immobili che pubblichiamo.
+pt: Diga-nos o que procura. Procuramos também para além dos imóveis que anunciamos.
+el: Πείτε μας τι ψάχνετε. Ψάχνουμε και πέρα από τα ακίνητα που διαφημίζουμε.
+cs: Řekněte nám, co hledáte. Hledáme i mimo nemovitosti, které inzerujeme.
+sl: Povejte nam, kaj iščete. Iščemo tudi zunaj nepremičnin, ki jih oglašujemo.
+sv: Berätta vad du letar efter. Vi söker även bland fastigheter som vi inte annonserar.
+@67
+it: Ci scriva
+pt: Escreva-nos
+el: Γράψτε μας
+cs: Napište nám
+sl: Pišite nam
+sv: Skriv till oss
+@68
+it: Quando possiamo chiamarla?
+pt: Quando lhe podemos ligar?
+el: Πότε μπορούμε να σας καλέσουμε;
+cs: Kdy vám můžeme zavolat?
+sl: Kdaj vas lahko pokličemo?
+sv: När kan vi ringa dig?
+@69
+it: ad es. nei pomeriggi feriali
+pt: p. ex., à tarde, em dias úteis
+el: π.χ. καθημερινές το απόγευμα
+cs: např. ve všední dny odpoledne
+sl: npr. med tednom popoldne
+sv: t.ex. vardagar på eftermiddagen
+@70
+it: In questa pagina
+pt: Nesta página
+el: Σε αυτή τη σελίδα
+cs: Na této stránce
+sl: Na tej strani
+sv: På den här sidan
+@71
+it: Domande frequenti: acquistare in Ungheria
+pt: Perguntas frequentes: comprar na Hungria
+el: Συχνές ερωτήσεις: αγορά ακινήτου στην Ουγγαρία
+cs: Časté dotazy: koupě v Maďarsku
+sl: Pogosta vprašanja: nakup na Madžarskem
+sv: Vanliga frågor: att köpa i Ungern
+@72
+it: Posso acquistare in Ungheria come cittadino dell’UE? Quanto costa la vostra intermediazione? Devo essere presente per firmare? Le domande che gli acquirenti ci fanno più spesso.
+pt: Posso comprar na Hungria como cidadão da UE? Quanto custa a vossa mediação? Tenho de estar presente para assinar? As perguntas que os compradores mais nos fazem.
+el: Μπορώ να αγοράσω στην Ουγγαρία ως πολίτης της ΕΕ; Πόσο κοστίζει η μεσιτεία σας; Πρέπει να είμαι παρών στην υπογραφή; Οι ερωτήσεις που μας κάνουν συχνότερα οι αγοραστές.
+cs: Mohu jako občan EU koupit nemovitost v Maďarsku? Kolik stojí vaše zprostředkování? Musím být u podpisu osobně? Otázky, které nám kupující kladou nejčastěji.
+sl: Ali lahko kot državljan EU kupim nepremičnino na Madžarskem? Koliko stane vaše posredovanje? Ali moram biti pri podpisu navzoč? Vprašanja, ki nam jih kupci zastavljajo najpogosteje.
+sv: Kan jag köpa i Ungern som EU-medborgare? Vad kostar er förmedling? Måste jag vara på plats för att skriva under? Frågorna som köpare oftast ställer till oss.
+@73
+it: Domande frequenti
+pt: Perguntas frequentes
+el: Συχνές ερωτήσεις
+cs: Časté dotazy
+sl: Pogosta vprašanja
+sv: Vanliga frågor
+@74
+it: Domande e
+pt: Perguntas e
+el: Ερωτήσεις και
+cs: Otázky a
+sl: Vprašanja in
+sv: Frågor och
+@75
+it: risposte
+pt: respostas
+el: απαντήσεις
+cs: odpovědi
+sl: odgovori
+sv: svar
+@76
+it: Qui sotto trova le domande che riceviamo più spesso. Se la sua non c’è, ci chiami o chieda di essere richiamato gratuitamente.
+pt: Abaixo encontra as perguntas que recebemos com mais frequência. Se a sua não estiver aqui, ligue-nos ou peça que lhe liguemos gratuitamente.
+el: Παρακάτω θα βρείτε τις ερωτήσεις που δεχόμαστε συχνότερα. Αν η δική σας δεν είναι εδώ, καλέστε μας ή ζητήστε δωρεάν επανάκληση.
+cs: Níže najdete otázky, které dostáváme nejčastěji. Pokud tu ta vaše není, zavolejte nám nebo si vyžádejte bezplatné zpětné volání.
+sl: Spodaj so vprašanja, ki jih dobimo najpogosteje. Če vašega ni med njimi, nas pokličite ali zaprosite za brezplačen povratni klic.
+sv: Nedan hittar du de frågor vi oftast får. Om din inte finns med kan du ringa oss eller be om en kostnadsfri återuppringning.
+@77
+it: Per gli acquirenti
+pt: Para compradores
+el: Για αγοραστές
+cs: Pro kupující
+sl: Za kupce
+sv: För köpare
+@78
+it: Generale
+pt: Geral
+el: Γενικά
+cs: Obecné
+sl: Splošno
+sv: Allmänt
+@79
+it: Non ha trovato la risposta?
+pt: Não encontrou a resposta?
+el: Δεν βρήκατε την απάντηση;
+cs: Nenašli jste odpověď?
+sl: Niste našli odgovora?
+sv: Hittade du inget svar?
+@80
+it: {hours} Chieda di essere richiamato gratuitamente o ci scriva.
+pt: {hours} Peça que lhe liguemos gratuitamente ou escreva-nos.
+el: {hours} Ζητήστε δωρεάν επανάκληση ή γράψτε μας.
+cs: {hours} Vyžádejte si bezplatné zpětné volání nebo nám napište.
+sl: {hours} Zaprosite za brezplačen povratni klic ali nam pišite.
+sv: {hours} Be om en kostnadsfri återuppringning eller skriv till oss.

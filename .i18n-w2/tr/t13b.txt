@@ -1,0 +1,371 @@
+@982
+da: landejendomme
+no: landeiendommer
+fi: maatilat
+et: maamõisad
+lv: lauku īpašumi
+lt: kaimo valdos
+@983
+da: Det ungarske jordmarked har sine egne regler. Kender du betingelserne, får du adgang til vinmarker, agerjord, gårde og skov.
+no: Det ungarske jordmarkedet har egne regler. Kjenner du vilkårene, får du tilgang til vinmarker, dyrket mark, gårder og skog.
+fi: Unkarin maamarkkinoilla on omat sääntönsä. Kun tunnet ehdot, pääset käsiksi viinitarhoihin, peltoihin, maatiloihin ja metsiin.
+et: Ungari maaturul on oma reeglid. Kes tingimusi tunneb, pääseb ligi viinamägedele, põllumaale, taludele ja metsale.
+lv: Ungārijas zemes tirgum ir savi noteikumi. Kas zina nosacījumus, tas var iegūt vīnogulājus, aramzemi, saimniecības un mežus.
+lt: Vengrijos žemės rinka turi savo taisykles. Kas žino sąlygas, gali įsigyti vynuogynų, ariamosios žemės, ūkių ir miškų.
+@984
+da: Grænsen på ${AGRI_HECTARE_LIMIT} hektar
+no: Grensen på ${AGRI_HECTARE_LIMIT} hektar
+fi: ${AGRI_HECTARE_LIMIT} hehtaarin raja
+et: ${AGRI_HECTARE_LIMIT} hektari piirang
+lv: ${AGRI_HECTARE_LIMIT} hektāru ierobežojums
+lt: ${AGRI_HECTARE_LIMIT} hektarų riba
+@985
+da: En EU-borger med en landbrugsuddannelse må i alt erhverve ${AGRI_HECTARE_LIMIT} hektar jord i Ungarn. Vi håndterer hele den procedure.
+no: En EU-borger med landbruksutdanning kan til sammen erverve ${AGRI_HECTARE_LIMIT} hektar jord i Ungarn. Vi håndterer hele prosessen.
+fi: EU-kansalainen, jolla on maatalousalan pätevyys, voi hankkia Unkarista yhteensä ${AGRI_HECTARE_LIMIT} hehtaaria maata. Hoidamme koko menettelyn.
+et: Põllumajandusliku kvalifikatsiooniga ELi kodanik võib Ungaris omandada kokku kuni ${AGRI_HECTARE_LIMIT} hektarit maad. Korraldame selle menetluse täielikult.
+lv: ES pilsonis ar lauksaimniecības kvalifikāciju Ungārijā var iegūt kopumā līdz ${AGRI_HECTARE_LIMIT} hektāriem zemes. Šo procedūru mēs nokārtojam pilnībā.
+lt: ES pilietis, turintis žemės ūkio kvalifikaciją, Vengrijoje iš viso gali įsigyti iki ${AGRI_HECTARE_LIMIT} hektarų žemės. Visą šią procedūrą atliekame už jus.
+@986
+da: Processen har flere trin hos myndighederne og begynder med anerkendelse af din uddannelse. Vores team guider dig gennem hele forløbet og udarbejder dokumenterne på begge sprog.
+no: Prosessen har flere trinn hos myndighetene og begynner med godkjenning av utdanningen din. Teamet vårt guider deg gjennom hele prosessen og utarbeider dokumentene på begge språk.
+fi: Prosessissa on viranomaisten kanssa useita vaiheita, ja se alkaa pätevyytesi tunnustamisesta. Tiimimme opastaa sinut koko prosessin läpi ja laatii asiakirjat molemmilla kielillä.
+et: Menetlus koosneb ametiasutustes mitmest etapist ja algab teie kvalifikatsiooni tunnustamisega. Meie meeskond juhendab teid kogu protsessi vältel ja koostab dokumendid mõlemas keeles.
+lv: Procesam iestādēs ir vairāki posmi, un tas sākas ar jūsu kvalifikācijas atzīšanu. Mūsu komanda jūs pavada visā procesā un sagatavo dokumentus abās valodās.
+lt: Procedūra institucijose turi kelis etapus ir prasideda nuo jūsų kvalifikacijos pripažinimo. Mūsų komanda lydi jus viso proceso metu ir parengia dokumentus abiem kalbomis.
+@987
+da: Hvad vores kunder køber
+no: Hva kundene våre kjøper
+fi: Mitä asiakkaamme hankkivat
+et: Mida meie kliendid omandavad
+lv: Ko iegādājas mūsu klienti
+lt: Ką įsigyja mūsų klientai
+@988
+da: Vinmarker med eller uden fungerende vinkælder
+no: Vinmarker med eller uten vinkjeller i drift
+fi: Viinitarhoja toimivalla viinikellarilla tai ilman
+et: Viinamäed töötava veinikeldriga või ilma
+lv: Vīnogulāji ar strādājošu vīna pagrabu vai bez tā
+lt: Vynuogynai su veikiančiu vyno rūsiu arba be jo
+@989
+da: Agerjord, der er berettiget til EU-støtte
+no: Dyrket mark som gir rett til EU-støtte
+fi: Peltoa, joka on oikeutettu EU-tukiin
+et: ELi toetusteks kõlblik põllumaa
+lv: Aramzeme, kas atbilst ES atbalsta saņemšanai
+lt: Ariamoji žemė, tinkama ES paramai
+@990
+da: Gårde med udbygninger, egnet til husdyr
+no: Gårder med uthus, egnet for husdyr
+fi: Maatiloja ulkorakennuksineen, sopivia karjanpitoon
+et: Kõrvalhoonetega talud, mis sobivad loomapidamiseks
+lv: Saimniecības ar palīgēkām, piemērotas lopkopībai
+lt: Ūkiai su ūkiniais pastatais, tinkami gyvulininkystei
+@991
+da: Skov og ejendomme med blandet anvendelse
+no: Skog og eiendommer med blandet bruk
+fi: Metsiä ja sekakäyttöisiä tiloja
+et: Metsad ja segakasutusega valdused
+lv: Meži un jauktas izmantošanas īpašumi
+lt: Miškai ir mišrios paskirties valdos
+@992
+da: Større sammenhængende arealer som investering
+no: Større sammenhengende arealer som investering
+fi: Suurempia yhtenäisiä alueita sijoituksena
+et: Suuremad terviklikud maatükid investeeringuna
+lv: Lielāki vienlaidu zemes gabali kā ieguldījums
+lt: Didesni vientisi sklypai kaip investicija
+@993
+da: Forløbet
+no: Prosessen
+fi: Prosessi
+et: Protsess
+lv: Process
+lt: Procesas
+@994
+da: Rådgivning
+no: Rådgivning
+fi: Neuvottelu
+et: Konsultatsioon
+lv: Konsultācija
+lt: Konsultacija
+@995
+da: Vi gennemgår dine planer og dit budget.
+no: Vi går gjennom planene dine og budsjettet ditt.
+fi: Käymme läpi suunnitelmasi ja käytettävissä olevan budjetin.
+et: Arutame teie plaane ja olemasolevat eelarvet.
+lv: Pārrunājam jūsu ieceres un pieejamo budžetu.
+lt: Aptariame jūsų planus ir turimą biudžetą.
+@996
+da: Anerkendelse af uddannelse
+no: Godkjenning av utdanning
+fi: Pätevyyden tunnustaminen
+et: Kvalifikatsiooni tunnustamine
+lv: Kvalifikācijas atzīšana
+lt: Kvalifikacijos pripažinimas
+@997
+da: Vi sørger for, at din landbrugsuddannelse bliver anerkendt i Ungarn.
+no: Vi sørger for at landbruksutdanningen din blir godkjent i Ungarn.
+fi: Hoidamme maatalousalan pätevyytesi tunnustamisen Unkarissa.
+et: Korraldame teie põllumajandusliku kvalifikatsiooni tunnustamise Ungaris.
+lv: Mēs nokārtojam jūsu lauksaimniecības kvalifikācijas atzīšanu Ungārijā.
+lt: Pasirūpiname, kad jūsų žemės ūkio kvalifikacija būtų pripažinta Vengrijoje.
+@998
+da: Søgning
+no: Søk
+fi: Haku
+et: Otsing
+lv: Meklēšana
+lt: Paieška
+@999
+da: Sammen med vores partnere finder vi jord, der opfylder betingelserne.
+no: Sammen med partnerne våre leter vi etter jord som oppfyller vilkårene.
+fi: Etsimme kumppaneidemme kanssa ehdot täyttävää maata.
+et: Koos partneritega otsime tingimustele vastavat maad.
+lv: Kopā ar partneriem meklējam zemi, kas atbilst nosacījumiem.
+lt: Kartu su partneriais ieškome sąlygas atitinkančios žemės.
+@1000
+da: Tilladelser
+no: Tillatelser
+fi: Luvat
+et: Load
+lv: Atļaujas
+lt: Leidimai
+@1001
+da: Ansøgning om de tilladelser, der kræves for at erhverve jorden.
+no: Søknad om tillatelsene som kreves for å erverve jorden.
+fi: Maan hankintaan tarvittavien lupien hakeminen.
+et: Maa omandamiseks vajalike lubade taotlemine.
+lv: Zemes iegūšanai nepieciešamo atļauju pieprasīšana.
+lt: Žemei įsigyti reikalingų leidimų gavimas.
+@1002
+da: Køb
+no: Kjøp
+fi: Kauppa
+et: Ost
+lv: Pirkums
+lt: Pirkimas
+@1003
+da: Tosproget kontrakt, tinglysning, overdragelse af støtterettigheder.
+no: Tospråklig kontrakt, tinglysing, overføring av tilskuddsrettigheter.
+fi: Kaksikielinen sopimus, kiinteistörekisteriin kirjaaminen, tukioikeuksien siirto.
+et: Kakskeelne leping, kinnistusraamatusse kandmine, toetusõiguste üleandmine.
+lv: Divvalodu līgums, ierakstīšana zemesgrāmatā, atbalsta tiesību nodošana.
+lt: Dvikalbė sutartis, įregistravimas nekilnojamojo turto registre, paramos teisių perleidimas.
+@1004
+da: Vigtigt
+no: Viktig
+fi: Tärkeää
+et: Oluline
+lv: Svarīgi
+lt: Svarbu
+@1005
+da: Reglerne for erhvervelse af landbrugsjord ændres fra tid til anden og afhænger af din situation. Det, der står her, er kun til orientering. Ved et konkret projekt bør du altid rådføre dig med os og en specialiseret advokat.
+no: Reglene for erverv av landbruksjord endres fra tid til annen og avhenger av din situasjon. Det som står her, er kun til informasjon. Ved et konkret prosjekt bør du alltid rådføre deg med oss og en spesialisert advokat.
+fi: Maatalousmaan hankintaa koskevat säännöt muuttuvat ajoittain ja riippuvat tilanteestasi. Tässä kerrottu on vain tiedoksi. Käänny konkreettisessa hankkeessa aina meidän ja alaan erikoistuneen asianajajan puoleen.
+et: Põllumajandusmaa omandamise reeglid muutuvad aeg-ajalt ja sõltuvad teie olukorrast. Siin kirjutatu on üksnes informatiivne. Konkreetse plaani korral pidage alati nõu meie ja vastava valdkonna advokaadiga.
+lv: Lauksaimniecības zemes iegūšanas noteikumi laiku pa laikam mainās un ir atkarīgi no jūsu konkrētās situācijas. Šeit rakstītais ir tikai informatīvs. Konkrēta plāna gadījumā vienmēr konsultējieties ar mums un specializētu juristu.
+lt: Žemės ūkio paskirties žemės įsigijimo taisyklės retkarčiais keičiasi ir priklauso nuo jūsų konkrečios situacijos. Čia pateikta informacija yra tik informacinio pobūdžio. Turėdami konkretų planą, visada pasitarkite su mumis ir specializuotu teisininku.
+@1006
+da: Leder du efter en landbrugsejendom?
+no: Ser du etter en landbrukseiendom?
+fi: Etsitkö maatilaa tai maata?
+et: Otsite põllumajanduslikku kinnisvara?
+lv: Meklējat lauksaimniecības īpašumu?
+lt: Ieškote žemės ūkio paskirties nekilnojamojo turto?
+@1007
+da: Fortæl os, hvad du søger – vi leder også ud over de ejendomme, vi annoncerer.
+no: Fortell oss hva du ønsker – vi leter også utover eiendommene vi annonserer.
+fi: Kerro, mitä etsit – etsimme myös ilmoittamiemme kohteiden ulkopuolelta.
+et: Öelge, mida soovite – otsime ka väljaspool meie kuulutatud kinnisvara.
+lv: Pastāstiet, ko vēlaties, – meklējam arī ārpus mūsu piedāvātajiem īpašumiem.
+lt: Pasakykite, ko norite, – ieškome ir už mūsų skelbiamų objektų ribų.
+@1008
+da: Gratis ejendomssøgning
+no: Gratis eiendomssøk
+fi: Maksuton kohdehaku
+et: Tasuta kinnisvaraotsing
+lv: Bezmaksas īpašuma meklēšana
+lt: Nemokama objekto paieška
+@1009
+da: =
+no: =
+fi: =
+et: =
+lv: =
+lt: =
+@1010
+da: Vores ejendomme
+no: Våre eiendommer
+fi: Kohteemme
+et: Meie kinnisvara
+lv: Mūsu īpašumi
+lt: Mūsų objektai
+@1011
+da: Køb i Ungarn: processen trin for trin
+no: Kjøpe i Ungarn: prosessen steg for steg
+fi: Ostaminen Unkarista: prosessi vaihe vaiheelta
+et: Ostmine Ungaris: protsess samm-sammult
+lv: Pirkšana Ungārijā: process soli pa solim
+lt: Pirkimas Vengrijoje: procesas žingsnis po žingsnio
+@1012
+da: Sådan foregår et køb i Ungarn for en udenlandsk køber: kontrakt, depositum, tinglysning, forsyninger og de omkostninger, du skal regne med.
+no: Slik foregår et kjøp i Ungarn for en utenlandsk kjøper: kontrakt, depositum, tinglysing, strøm og vann og kostnadene du må regne med.
+fi: Näin ulkomainen ostaja ostaa Unkarista: sopimus, käsiraha, kiinteistörekisteri, liittymät ja odotettavat kulut.
+et: Kuidas toimub ost Ungaris välismaisele ostjale: leping, käsiraha, kinnistusraamat, kommunaalteenused ja oodatavad kulud.
+lv: Kā ārvalstu pircējam notiek pirkums Ungārijā: līgums, rokasnauda, zemesgrāmata, komunālie pakalpojumi un sagaidāmās izmaksas.
+lt: Kaip užsienio pirkėjui vyksta pirkimas Vengrijoje: sutartis, rankpinigiai, nekilnojamojo turto registras, komunalinės paslaugos ir numatomos išlaidos.
+@1013
+da: For købere
+no: For kjøpere
+fi: Ostajille
+et: Ostjatele
+lv: Pircējiem
+lt: Pirkėjams
+@1014
+da: Køb i
+no: Kjøpe i
+fi: Ostaminen
+et: Ostmine
+lv: Pirkšana
+lt: Pirkimas
+@1015
+da: Ungarn
+no: Ungarn
+fi: Unkarista
+et: Ungaris
+lv: Ungārijā
+lt: Vengrijoje
+@1016
+da: Den ungarske købsproces er ret forudsigelig, når du kender trinnene. Denne guide fører dig igennem dem.
+no: Den ungarske kjøpsprosessen er ganske forutsigbar når du kjenner trinnene. Denne guiden tar deg gjennom dem.
+fi: Unkarilainen ostoprosessi on varsin ennustettava, kun tunnet vaiheet. Tämä opas käy ne läpi kanssasi.
+et: Ungari ostuprotsess on üsna etteaimatav, kui sammud on teada. See juhend viib teid neist läbi.
+lv: Ungārijas pirkuma process ir diezgan paredzams, ja zināt soļus. Šis ceļvedis jūs caur tiem izvedīs.
+lt: Vengriškas pirkimo procesas gana nuspėjamas, kai žinote žingsnius. Šis vadovas jus per juos praves.
+@1017
+da: Udvælgelse
+no: Utvalg
+fi: Valinta
+et: Valik
+lv: Izvēle
+lt: Pasirinkimas
+@1018
+da: Du vælger blandt vores ejendomme eller sender en gratis søgeanmodning.
+no: Du velger blant eiendommene våre eller sender en gratis søkeforespørsel.
+fi: Valitset kohteistamme tai jätät maksuttoman hakupyynnön.
+et: Valite meie kinnisvara hulgast või esitate tasuta otsingusoovi.
+lv: Jūs izvēlaties no mūsu īpašumiem vai iesniedzat bezmaksas meklēšanas pieprasījumu.
+lt: Renkatės iš mūsų objektų arba pateikiate nemokamą paieškos užklausą.
+@1019
+da: Vi arrangerer rejsen og fremvisningen med tolk.
+no: Vi organiserer reisen og visningen, med tolk.
+fi: Järjestämme matkan ja näytön tulkin kanssa.
+et: Korraldame reisi ja ülevaatuse koos tõlgiga.
+lv: Mēs noorganizējam braucienu un apskati ar tulku.
+lt: Suorganizuojame kelionę ir apžiūrą su vertėju.
+@1020
+da: Bud
+no: Bud
+fi: Tarjous
+et: Pakkumine
+lv: Piedāvājums
+lt: Pasiūlymas
+@1021
+da: Vi hjælper dig med at give et realistisk bud og forhandle.
+no: Vi hjelper deg å legge inn et realistisk bud og forhandle.
+fi: Autamme sinua tekemään realistisen tarjouksen ja neuvottelemaan.
+et: Aitame teil teha realistliku pakkumise ja läbirääkimisi pidada.
+lv: Palīdzam jums izteikt reālistisku piedāvājumu un vest sarunas.
+lt: Padedame pateikti realų pasiūlymą ir derėtis.
+@1022
+da: Kontrakt og depositum
+no: Kontrakt og depositum
+fi: Sopimus ja käsiraha
+et: Leping ja käsiraha
+lv: Līgums un rokasnauda
+lt: Sutartis ir rankpinigiai
+@1023
+da: En tosproget købsaftale, normalt med et depositum på 10 %.
+no: En tospråklig kjøpekontrakt, vanligvis med 10 % depositum.
+fi: Kaksikielinen kauppakirja, yleensä 10 %:n käsirahalla.
+et: Kakskeelne ostu-müügileping, tavaliselt 10% käsirahaga.
+lv: Divvalodu pirkuma līgums, parasti ar 10% rokasnaudu.
+lt: Dvikalbė pirkimo–pardavimo sutartis, paprastai su 10 % rankpinigiais.
+@1024
+da: Købesum
+no: Kjøpesum
+fi: Kauppahinta
+et: Ostuhind
+lv: Pirkuma cena
+lt: Pirkimo kaina
+@1025
+da: Resten af købesummen via bankoverførsel som aftalt i kontrakten.
+no: Resten av kjøpesummen via bankoverføring, slik kontrakten fastsetter.
+fi: Loppu kauppahinnasta pankkisiirtona sopimuksen mukaisesti.
+et: Ülejäänud ostuhind pangaülekandega vastavalt lepingule.
+lv: Atlikusī pirkuma cena ar bankas pārskaitījumu, kā noteikts līgumā.
+lt: Likusi pirkimo kainos dalis banko pavedimu, kaip numatyta sutartyje.
+@1026
+da: Overtagelse
+no: Overtakelse
+fi: Luovutus
+et: Üleandmine
+lv: Nodošana
+lt: Perdavimas
+@1027
+da: Tinglysning, forsyninger, overdragelse af nøgler.
+no: Tinglysing, strøm og vann, overlevering av nøkler.
+fi: Kirjaaminen, liittymät, avainten luovutus.
+et: Kinnistusraamatusse kandmine, kommunaalteenused, võtmete üleandmine.
+lv: Ierakstīšana zemesgrāmatā, komunālie pakalpojumi, atslēgu nodošana.
+lt: Įregistravimas, komunalinės paslaugos, raktų perdavimas.
+@1028
+da: Omkostninger ud over købesummen
+no: Kostnader i tillegg til kjøpesummen
+fi: Kulut kauppahinnan lisäksi
+et: Kulud lisaks ostuhinnale
+lv: Izmaksas papildus pirkuma cenai
+lt: Išlaidos be pirkimo kainos
+@1029
+da: Overdragelsesafgift: satsen afhænger af ejendomstypen og din situation
+no: Overdragelsesavgift: satsen avhenger av eiendomstype og situasjonen din
+fi: Varainsiirtovero: verokanta riippuu kohteen tyypistä ja tilanteestasi
+et: Võõrandamismaks: määr sõltub kinnisvara liigist ja teie olukorrast
+lv: Īpašuma nodošanas nodoklis: likme ir atkarīga no īpašuma veida un jūsu situācijas
+lt: Perleidimo mokestis: tarifas priklauso nuo turto rūšies ir jūsų situacijos
+@1030
+da: Advokatsalær for udarbejdelse og kontrasignering af skødet
+no: Advokatsalær for utarbeidelse og kontrasignering av skjøtet
+fi: Asianajajan palkkio kauppakirjan laatimisesta ja varmentamisesta
+et: Advokaaditasu lepingu koostamise ja kaasallkirjastamise eest
+lv: Jurista honorārs par līguma sagatavošanu un kontrasignēšanu
+lt: Advokato atlyginimas už sutarties parengimą ir kontrasignavimą
+@1031
+da: Oversættelse af den tosprogede kontrakt: ${from('hu')}, afhængigt af sprogkombinationen
+no: Oversettelse av den tospråklige kontrakten: ${from('hu')}, avhengig av språkkombinasjonen
+fi: Kaksikielisen sopimuksen käännös: ${from('hu')}, kieliparista riippuen
+et: Kakskeelse lepingu tõlge: ${from('hu')}, olenevalt keelepaarist
+lv: Divvalodu līguma tulkojums: ${from('hu')}, atkarībā no valodu kombinācijas
+lt: Dvikalbės sutarties vertimas: ${from('hu')}, priklausomai nuo kalbų poros
+@1032
+da: Tinglysningsafgift
+no: Tinglysingsgebyr
+fi: Kirjaamismaksut
+et: Kinnistamistasud
+lv: Zemesgrāmatas nodevas
+lt: Registro mokesčiai
+@1033
+da: Eventuel provision til FODEL: den betaler sælger, ikke dig
+no: Eventuell provisjon til FODEL: den betaler selgeren, ikke du
+fi: Mahdollinen välityspalkkio FODELille: sen maksaa myyjä, et sinä
+et: Võimalik vahendustasu FODELile: selle maksab müüja, mitte teie
+lv: Iespējamā komisijas maksa FODEL: to maksā pārdevējs, nevis jūs
+lt: Galimas komisinis atlyginimas FODEL: jį moka pardavėjas, o ne jūs
+@1034
+da: Du behøver ikke at være til stede
+no: Du trenger ikke være til stede
+fi: Sinun ei tarvitse olla paikalla
+et: Te ei pea kohal olema
+lv: Jums nav jābūt klāt
+lt: Jums nebūtina dalyvauti

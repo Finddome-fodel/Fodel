@@ -1,0 +1,854 @@
+@474
+it: Non so
+pt: Não sei
+el: Δεν ξέρω
+cs: Nevím
+sl: Ne vem
+sv: Osäker
+@475
+it: Aumenta il valore
+pt: Aumenta o valor
+el: Αυξάνει την αξία
+cs: Zvyšuje hodnotu
+sl: Zvišuje vrednost
+sv: Höjer värdet
+@476
+it: Riduce il valore
+pt: Reduz o valor
+el: Μειώνει την αξία
+cs: Snižuje hodnotu
+sl: Znižuje vrednost
+sv: Sänker värdet
+@477
+it: Al massimo 15 file.
+pt: No máximo 15 ficheiros.
+el: Έως 15 αρχεία.
+cs: Nejvýše 15 souborů.
+sl: Največ 15 datotek.
+sv: Högst 15 filer.
+@478
+it: File troppo grande (massimo 50 MB).
+pt: Ficheiro demasiado grande (máximo 50 MB).
+el: Πολύ μεγάλο αρχείο (έως 50 MB).
+cs: Soubor je příliš velký (nejvýše 50 MB).
+sl: Datoteka je prevelika (največ 50 MB).
+sv: Filen är för stor (högst 50 MB).
+@479
+it: Non è stato possibile. Controlli il tipo di file o riprovi.
+pt: Não foi possível. Verifique o tipo de ficheiro ou tente novamente.
+el: Δεν ήταν δυνατό. Ελέγξτε τον τύπο του αρχείου ή δοκιμάστε ξανά.
+cs: Nepodařilo se. Zkontrolujte typ souboru nebo to zkuste znovu.
+sl: Ni uspelo. Preverite vrsto datoteke ali poskusite znova.
+sv: Det gick inte. Kontrollera filtypen eller försök igen.
+@480
+it: I documenti sono ancora in caricamento. La preghiamo di attendere.
+pt: Os documentos ainda estão a ser carregados. Aguarde, por favor.
+el: Τα έγγραφα ανεβαίνουν ακόμη. Παρακαλούμε περιμένετε.
+cs: Dokumenty se stále nahrávají. Vyčkejte prosím.
+sl: Dokumenti se še nalagajo. Prosimo, počakajte.
+sv: Dokumenten laddas fortfarande upp. Vänta en stund.
+@481
+it: Caricato
+pt: Carregado
+el: Ανέβηκε
+cs: Nahráno
+sl: Naloženo
+sv: Uppladdad
+@482
+it: Non è stato possibile, riprovi
+pt: Não foi possível, tente novamente
+el: Δεν ήταν δυνατό, δοκιμάστε ξανά
+cs: Nepodařilo se, zkuste to znovu
+sl: Ni uspelo, poskusite znova
+sv: Det gick inte, försök igen
+@483
+it: Grazie, il pagamento è stato ricevuto. Riceverà una conferma via e-mail.
+pt: Obrigado, o pagamento foi recebido. Irá receber uma confirmação por e-mail.
+el: Σας ευχαριστούμε, η πληρωμή σας ελήφθη. Θα λάβετε επιβεβαίωση με email.
+cs: Děkujeme, platba dorazila. Potvrzení obdržíte e-mailem.
+sl: Hvala, plačilo je prispelo. Potrditev boste prejeli po e-pošti.
+sv: Tack, din betalning har kommit in. Du får en bekräftelse via e-post.
+@484
+it: Valutazione indicativa
+pt: Avaliação indicativa
+el: Ενδεικτική εκτίμηση
+cs: Orientační odhad
+sl: Okvirna ocena
+sv: Preliminär värdering
+@485
+it: Valore centrale
+pt: Valor médio
+el: Μέση τιμή
+cs: Střední hodnota
+sl: Srednja vrednost
+sv: Mittvärde
+@486
+it: dati della contea
+pt: dados do condado
+el: στοιχεία νομού
+cs: údaje za župu
+sl: podatki za županijo
+sv: länsdata
+@487
+it: dati del comune
+pt: dados da localidade
+el: στοιχεία οικισμού
+cs: údaje za obec
+sl: podatki za kraj
+sv: ortsdata
+@488
+it: annunci FODEL comparabili
+pt: anúncios FODEL comparáveis
+el: συγκρίσιμες αγγελίες FODEL
+cs: srovnatelné inzeráty FODEL
+sl: primerljivi oglasi FODEL
+sv: jämförbara FODEL-annonser
+@489
+it: Fonte
+pt: Fonte
+el: Πηγή
+cs: Zdroj
+sl: Vir
+sv: Källa
+@490
+it: Data del tasso di cambio
+pt: Data da taxa de câmbio
+el: Ημερομηνία συναλλαγματικής ισοτιμίας
+cs: Datum směnného kurzu
+sl: Datum menjalnega tečaja
+sv: Växelkursens datum
+@491
+it: Non è impostato un tasso EUR/HUF aggiornato; gli importi sono indicati in HUF.
+pt: Não está definida uma taxa EUR/HUF atual; os valores são apresentados em HUF.
+el: Δεν έχει οριστεί τρέχουσα ισοτιμία EUR/HUF· τα ποσά εμφανίζονται σε HUF.
+cs: Není nastaven aktuální kurz EUR/HUF; částky jsou uvedeny v HUF.
+sl: Trenutni tečaj EUR/HUF ni nastavljen; zneski so prikazani v HUF.
+sv: Ingen aktuell EUR/HUF-kurs är angiven; beloppen visas i HUF.
+@492
+it: Fattori
+pt: Fatores
+el: Παράγοντες
+cs: Faktory
+sl: Dejavniki
+sv: Faktorer
+@493
+it: Un sopralluogo di Gábor
+pt: Uma visita do Gábor
+el: Επίσκεψη από τον Gábor
+cs: Návštěva Gábora
+sl: Obisk Gábora
+sv: Ett besök av Gábor
+@494
+it: Richieda una perizia ufficiale
+pt: Pedir uma avaliação oficial
+el: Ζητήστε επίσημη εκτίμηση
+cs: Objednat oficiální ocenění
+sl: Naročite uradno cenitev
+sv: Beställ en officiell värdering
+@495
+it: Richiesta ricevuta
+pt: Pedido recebido
+el: Το αίτημα ελήφθη
+cs: Žádost přijata
+sl: Zahteva prejeta
+sv: Förfrågan mottagen
+@496
+it: Note legali
+pt: Informação legal
+el: Νομικές πληροφορίες
+cs: Právní informace
+sl: Pravno obvestilo
+sv: Juridisk information
+@497
+it: Privacy
+pt: Privacidade
+el: Απόρρητο
+cs: Ochrana osobních údajů
+sl: Zasebnost
+sv: Integritet
+@498
+it: Condizioni
+pt: Termos
+el: Όροι
+cs: Podmínky
+sl: Pogoji
+sv: Villkor
+@499
+it: Cookie
+pt: Cookies
+el: Cookies
+cs: Cookies
+sl: Piškotki
+sv: Kakor
+@500
+it: Accessibilità
+pt: Acessibilidade
+el: Προσβασιμότητα
+cs: Přístupnost
+sl: Dostopnost
+sv: Tillgänglighet
+@501
+it: Partita IVA
+pt: Número de IVA
+el: ΑΦΜ
+cs: DIČ
+sl: ID za DDV
+sv: Momsregistreringsnummer
+@502
+it: Torna su
+pt: Voltar ao topo
+el: Επιστροφή στην αρχή
+cs: Zpět nahoru
+sl: Na vrh
+sv: Till toppen
+@503
+it: Ultimo aggiornamento
+pt: Última atualização
+el: Τελευταία ενημέρωση
+cs: Naposledy aktualizováno
+sl: Zadnja posodobitev
+sv: Senast uppdaterad
+@504
+it: Fondata nel ${year} all’Aia, nei Paesi Bassi.
+pt: Fundada em ${year} na Haia, nos Países Baixos.
+el: Ιδρύθηκε το ${year} στη Χάγη της Ολλανδίας.
+cs: Založeno v roce ${year} v Haagu v Nizozemsku.
+sl: Ustanovljeno leta ${year} v Haagu na Nizozemskem.
+sv: Grundat ${year} i Haag, Nederländerna.
+@505
+it: Veda per primo i nuovi annunci
+pt: Seja o primeiro a ver os novos anúncios
+el: Δείτε πρώτοι τις νέες αγγελίες
+cs: Nové nabídky uvidíte jako první
+sl: Nove ponudbe si oglejte prvi
+sv: Se nya annonser först
+@506
+it: Una newsletter mensile con i nuovi annunci e le novità dal mercato ungherese.
+pt: Uma newsletter mensal com novos anúncios e notícias do mercado húngaro.
+el: Μηνιαίο ενημερωτικό δελτίο με νέες αγγελίες και νέα από την ουγγρική αγορά.
+cs: Měsíční newsletter s novými nabídkami a zprávami z maďarského trhu.
+sl: Mesečne novice z novimi ponudbami in novicami z madžarskega trga.
+sv: Ett månatligt nyhetsbrev med nya annonser och nyheter från den ungerska marknaden.
+@507
+it: Questo sito utilizza solo i cookie strettamente necessari al suo funzionamento. Le statistiche vengono rilevate solo con il Suo consenso esplicito.
+pt: Este site utiliza apenas os cookies estritamente necessários ao seu funcionamento. Só recolhemos estatísticas com o seu consentimento expresso.
+el: Ο ιστότοπος χρησιμοποιεί μόνο τα cookies που είναι απολύτως απαραίτητα για τη λειτουργία του. Στατιστικά στοιχεία συλλέγουμε μόνο με τη ρητή συγκατάθεσή σας.
+cs: Tento web používá pouze cookies nezbytně nutné pro jeho fungování. Statistiky měříme jen s vaším výslovným souhlasem.
+sl: To spletno mesto uporablja le piškotke, ki so nujno potrebni za njegovo delovanje. Statistiko merimo le z vašo izrecno privolitvijo.
+sv: Den här webbplatsen använder bara kakor som är absolut nödvändiga för att den ska fungera. Vi mäter statistik endast med ditt uttryckliga samtycke.
+@508
+it: Accetta
+pt: Aceitar
+el: Αποδοχή
+cs: Přijmout
+sl: Sprejmi
+sv: Godkänn
+@509
+it: Rifiuta
+pt: Rejeitar
+el: Απόρριψη
+cs: Odmítnout
+sl: Zavrni
+sv: Avvisa
+@510
+it: Dettagli
+pt: Detalhes
+el: Λεπτομέρειες
+cs: Podrobnosti
+sl: Podrobnosti
+sv: Detaljer
+@511
+it: Indirizzo e-mail
+pt: Endereço de e-mail
+el: Διεύθυνση email
+cs: E-mailová adresa
+sl: E-poštni naslov
+sv: E-postadress
+@512
+it: Il Suo indirizzo e-mail
+pt: O seu endereço de e-mail
+el: Η διεύθυνση email σας
+cs: Vaše e-mailová adresa
+sl: Vaš e-poštni naslov
+sv: Din e-postadress
+@513
+it: Iscriviti
+pt: Subscrever
+el: Εγγραφή
+cs: Přihlásit k odběru
+sl: Naroči se
+sv: Prenumerera
+@514
+it: Al massimo una o due e-mail al mese. Prima Le inviamo una conferma, e può annullare l’iscrizione in qualsiasi momento.
+pt: No máximo um ou dois e-mails por mês. Primeiro enviamos uma confirmação, e pode cancelar a subscrição a qualquer momento.
+el: Το πολύ ένα ή δύο email τον μήνα. Πρώτα σας στέλνουμε επιβεβαίωση και μπορείτε να διαγραφείτε οποιαδήποτε στιγμή.
+cs: Nejvýše jeden nebo dva e-maily měsíčně. Nejprve vám pošleme potvrzení a odběr můžete kdykoli zrušit.
+sl: Največ eno ali dve sporočili na mesec. Najprej vam pošljemo potrditev, naročnino pa lahko kadar koli prekličete.
+sv: Högst ett eller två mejl i månaden. Vi skickar först en bekräftelse, och du kan avsluta prenumerationen när som helst.
+@515
+it: Quasi fatto. Le abbiamo inviato un’e-mail di conferma: clicchi sul pulsante al suo interno.
+pt: Quase concluído. Enviámos-lhe um e-mail de confirmação; clique no botão que contém.
+el: Σχεδόν τελειώσατε. Σας στείλαμε email επιβεβαίωσης· πατήστε το κουμπί που περιέχει.
+cs: Skoro hotovo. Poslali jsme vám potvrzovací e-mail; klikněte na tlačítko v něm.
+sl: Skoraj končano. Poslali smo vam potrditveno sporočilo; kliknite gumb v njem.
+sv: Nästan klart. Vi har skickat ett bekräftelsemejl till dig; klicka på knappen i det.
+@516
+it: Non è stato possibile. Controlli l’indirizzo e riprovi.
+pt: Não foi possível. Verifique o endereço e tente novamente.
+el: Δεν ήταν δυνατό. Ελέγξτε τη διεύθυνση και δοκιμάστε ξανά.
+cs: Nepodařilo se. Zkontrolujte adresu a zkuste to znovu.
+sl: Ni uspelo. Preverite naslov in poskusite znova.
+sv: Det gick inte. Kontrollera adressen och försök igen.
+@517
+it: Inserisca un indirizzo e-mail valido.
+pt: Introduza um endereço de e-mail válido.
+el: Εισαγάγετε μια έγκυρη διεύθυνση email.
+cs: Zadejte platnou e-mailovou adresu.
+sl: Vnesite veljaven e-poštni naslov.
+sv: Ange en giltig e-postadress.
+@518
+it: Invio in corso…
+pt: A enviar…
+el: Αποστολή…
+cs: Odesílání…
+sl: Pošiljanje …
+sv: Skickar…
+@519
+it: Comune, contea o numero di riferimento
+pt: Localidade, condado ou número de referência
+el: Οικισμός, νομός ή κωδικός αναφοράς
+cs: Obec, župa nebo referenční číslo
+sl: Kraj, županija ali referenčna številka
+sv: Ort, län eller referensnummer
+@520
+it: Comune o riferimento
+pt: Localidade ou referência
+el: Οικισμός ή κωδικός
+cs: Obec nebo reference
+sl: Kraj ali referenca
+sv: Ort eller referens
+@521
+it: Ci scriva su WhatsApp
+pt: Escreva-nos no WhatsApp
+el: Γράψτε μας στο WhatsApp
+cs: Napište nám na WhatsApp
+sl: Pišite nam na WhatsApp
+sv: Skriv till oss på WhatsApp
+@522
+it: Riproduci video
+pt: Reproduzir vídeo
+el: Αναπαραγωγή βίντεο
+cs: Přehrát video
+sl: Predvajaj video
+sv: Spela upp video
+@523
+it: cam.
+pt: quartos
+el: υπν.
+cs: lož.
+sl: spal.
+sv: sovr.
+@524
+it: Occasione
+pt: Oportunidade
+el: Ευκαιρία
+cs: Výhodná nabídka
+sl: Ugodna ponudba
+sv: Fynd
+@525
+it: min di lettura
+pt: min de leitura
+el: λεπτά ανάγνωσης
+cs: min čtení
+sl: min branja
+sv: min läsning
+@526
+it: Posizione dell’immobile sulla mappa
+pt: Localização do imóvel no mapa
+el: Θέση του ακινήτου στον χάρτη
+cs: Poloha nemovitosti na mapě
+sl: Lokacija nepremičnine na zemljevidu
+sv: Fastighetens läge på kartan
+@527
+it: Mappa degli immobili
+pt: Mapa dos imóveis
+el: Χάρτης ακινήτων
+cs: Mapa nemovitostí
+sl: Zemljevid nepremičnin
+sv: Karta över fastigheter
+@528
+it: Usi Ctrl + rotellina per ingrandire la mappa
+pt: Use Ctrl + roda do rato para ampliar o mapa
+el: Χρησιμοποιήστε Ctrl + κύλιση για μεγέθυνση του χάρτη
+cs: Mapu přiblížíte pomocí Ctrl + kolečka myši
+sl: Za povečavo zemljevida uporabite Ctrl + kolešček
+sv: Använd Ctrl + scroll för att zooma kartan
+@529
+it: Usi ⌘ + scorrimento per ingrandire la mappa
+pt: Use ⌘ + deslizar para ampliar o mapa
+el: Χρησιμοποιήστε ⌘ + κύλιση για μεγέθυνση του χάρτη
+cs: Mapu přiblížíte pomocí ⌘ + posouvání
+sl: Za povečavo zemljevida uporabite ⌘ + drsenje
+sv: Använd ⌘ + scroll för att zooma kartan
+@530
+it: Usi due dita per spostare la mappa
+pt: Use dois dedos para mover o mapa
+el: Χρησιμοποιήστε δύο δάχτυλα για να μετακινήσετε τον χάρτη
+cs: Mapu posunete dvěma prsty
+sl: Zemljevid premikajte z dvema prstoma
+sv: Använd två fingrar för att flytta kartan
+@531
+it: Ingrandisci
+pt: Ampliar
+el: Μεγέθυνση
+cs: Přiblížit
+sl: Povečaj
+sv: Zooma in
+@532
+it: Riduci
+pt: Reduzir
+el: Σμίκρυνση
+cs: Oddálit
+sl: Pomanjšaj
+sv: Zooma ut
+@533
+it: Prima di scattare le foto
+pt: Antes de tirar as fotografias
+el: Πριν τραβήξετε φωτογραφίες
+cs: Než začnete fotit
+sl: Preden začnete fotografirati
+sv: Innan du fotograferar
+@534
+it: La guida fotografica completa
+pt: O guia de fotografia completo
+el: Ο πλήρης οδηγός φωτογράφισης
+cs: Kompletní návod k fotografování
+sl: Celotna navodila za fotografiranje
+sv: Den fullständiga fotoguiden
+@535
+it: Perché è importante
+pt: Porque é importante
+el: Γιατί έχει σημασία
+cs: Proč na tom záleží
+sl: Zakaj je to pomembno
+sv: Varför det spelar roll
+@536
+it: Preferisco affidarlo a un professionista
+pt: Prefiro confiar a um profissional
+el: Προτιμώ να το αναθέσω σε επαγγελματία
+cs: Raději to svěřím profesionálovi
+sl: Raje bi to prepustil strokovnjaku
+sv: Jag vill hellre överlåta det åt en proffsfotograf
+@537
+it: Facoltativo. Se sceglie questa opzione, un membro del nostro team La contatterà per fissare una data e spiegarLe come pagare. Ora non paga nulla.
+pt: Opcional. Se escolher esta opção, um membro da nossa equipa entrará em contacto consigo para marcar uma data e explicar como pagar. Não paga nada agora.
+el: Προαιρετικό. Αν το επιλέξετε, ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας για να κανονίσετε ημερομηνία και να σας εξηγήσει τον τρόπο πληρωμής. Τώρα δεν πληρώνετε τίποτα.
+cs: Nepovinné. Pokud tuto možnost zvolíte, ozve se vám člen našeho týmu, domluví s vámi termín a vysvětlí, jak zaplatit. Nyní nic neplatíte.
+sl: Neobvezno. Če izberete to možnost, vas bo kontaktiral član naše ekipe, se z vami dogovoril za termin in pojasnil, kako plačati. Zdaj ne plačate ničesar.
+sv: Valfritt. Om du väljer detta kontaktar någon i vårt team dig för att boka en tid och förklara hur du betalar. Du betalar ingenting nu.
+@538
+it: No, grazie
+pt: Não, obrigado
+el: Όχι, ευχαριστώ
+cs: Ne, děkuji
+sl: Ne, hvala
+sv: Nej tack
+@539
+it: Le foto le scatto io.
+pt: Eu tiro as fotografias.
+el: Τις φωτογραφίες θα τις τραβήξω εγώ.
+cs: Fotografie si pořídím sám.
+sl: Fotografije bom posnel sam.
+sv: Jag tar bilderna själv.
+@540
+it: tariffa una tantum
+pt: taxa única
+el: εφάπαξ χρέωση
+cs: jednorázový poplatek
+sl: enkratno plačilo
+sv: engångsavgift
+@541
+it: it
+pt: pt-PT
+el: el
+cs: cs
+sl: sl
+sv: sv
+@542
+it: it_IT
+pt: pt_PT
+el: el_GR
+cs: cs_CZ
+sl: sl_SI
+sv: sv_SE
+@543
+it: it
+pt: pt-PT
+el: el
+cs: cs
+sl: sl
+sv: sv
+@544
+it: Italiano
+pt: Português
+el: Ελληνικά
+cs: Čeština
+sl: Slovenščina
+sv: Svenska
+@545
+it: IT
+pt: PT
+el: EL
+cs: CS
+sl: SL
+sv: SV
+@546
+it: it
+pt: pt
+el: gr
+cs: cz
+sl: si
+sv: se
+@547
+it: FODEL IMMOBILIARE
+pt: FODEL IMOBILIÁRIA
+el: FODEL ΑΚΙΝΗΤΑ
+cs: FODEL NEMOVITOSTI
+sl: FODEL NEPREMIČNINE
+sv: FODEL FASTIGHETER
+@548
+it: Acquistare un immobile in Ungheria direttamente dal proprietario
+pt: Comprar um imóvel na Hungria diretamente ao proprietário
+el: Αγοράστε ακίνητο στην Ουγγαρία απευθείας από τον ιδιοκτήτη
+cs: Kupte si nemovitost v Maďarsku přímo od majitele
+sl: Kupite nepremičnino na Madžarskem neposredno od lastnika
+sv: Köp en fastighet i Ungern direkt av ägaren
+@549
+it: FODEL – Agenzia immobiliare in Ungheria
+pt: FODEL – Agência imobiliária na Hungria
+el: FODEL – Μεσιτικό γραφείο στην Ουγγαρία
+cs: FODEL – Realitní kancelář v Maďarsku
+sl: FODEL – Nepremičninska agencija na Madžarskem
+sv: FODEL – Fastighetsmäklare i Ungern
+@550
+it: Intermediazione immobiliare discreta e senza pensieri
+pt: Mediação imobiliária discreta e sem complicações
+el: Διακριτική μεσιτεία ακινήτων χωρίς έγνοιες
+cs: Diskrétní zprostředkování nemovitostí bez starostí
+sl: Diskretno posredovanje nepremičnin brez skrbi
+sv: Smidig och diskret fastighetsförmedling
+@551
+it: Casa
+pt: Moradia
+el: Μονοκατοικία
+cs: Dům
+sl: Hiša
+sv: Hus
+@552
+it: casa
+pt: moradia
+el: monokatoikia
+cs: dum
+sl: hisa
+sv: hus
+@553
+it: Casa vacanze
+pt: Casa de férias
+el: Εξοχική κατοικία
+cs: Rekreační dům
+sl: Počitniška hiša
+sv: Fritidshus
+@554
+it: casa-vacanze
+pt: casa-de-ferias
+el: exochiki-katoikia
+cs: rekreacni-dum
+sl: pocitniska-hisa
+sv: fritidshus
+@555
+it: Fattoria
+pt: Quinta
+el: Αγρόκτημα
+cs: Statek
+sl: Kmetija
+sv: Gård
+@556
+it: fattoria
+pt: quinta
+el: agroktima
+cs: statek
+sl: kmetija
+sv: gard
+@557
+it: Terreno
+pt: Terreno
+el: Οικόπεδο
+cs: Pozemek
+sl: Zemljišče
+sv: Tomt
+@558
+it: terreno
+pt: terreno
+el: oikopedo
+cs: pozemek
+sl: zemljisce
+sv: tomt
+@559
+it: Immobile commerciale
+pt: Imóvel comercial
+el: Επαγγελματικό ακίνητο
+cs: Komerční nemovitost
+sl: Poslovna nepremičnina
+sv: Kommersiell fastighet
+@560
+it: immobile-commerciale
+pt: imovel-comercial
+el: epangelmatiko-akinito
+cs: komercni-nemovitost
+sl: poslovna-nepremicnina
+sv: kommersiell-fastighet
+@561
+it: immobile-agricolo
+pt: imovel-agricola
+el: agrotiko-akinito
+cs: zemedelska-nemovitost
+sl: kmetijska-nepremicnina
+sv: jordbruksfastighet
+@562
+it: Casale, villa padronale
+pt: Solar, casa senhorial
+el: Αρχοντικό, έπαυλη
+cs: Zámeček, panské sídlo
+sl: Dvorec, graščina
+sv: Herrgård, gods
+@563
+it: villa-padronale
+pt: solar
+el: archontiko
+cs: panske-sidlo
+sl: dvorec
+sv: herrgard
+@564
+it: Appartamento
+pt: Apartamento
+el: Διαμέρισμα
+cs: Byt
+sl: Stanovanje
+sv: Lägenhet
+@565
+it: appartamento
+pt: apartamento
+el: diamerisma
+cs: byt
+sl: stanovanje
+sv: lagenhet
+@566
+it: Immobile industriale
+pt: Imóvel industrial
+el: Βιομηχανικό ακίνητο
+cs: Průmyslová nemovitost
+sl: Industrijska nepremičnina
+sv: Industrifastighet
+@567
+it: immobile-industriale
+pt: imovel-industrial
+el: viomichaniko-akinito
+cs: prumyslova-nemovitost
+sl: industrijska-nepremicnina
+sv: industrifastighet
+@568
+it: immobili
+pt: imoveis
+el: akinita
+cs: nemovitosti
+sl: nepremicnine
+sv: fastigheter
+@569
+it: vendere
+pt: vender
+el: polisi
+cs: prodej
+sl: prodaja
+sv: salja
+@570
+it: acquistare
+pt: comprar
+el: agora
+cs: koupe
+sl: nakup
+sv: kopa
+@571
+it: chi-siamo
+pt: sobre-nos
+el: schetika-me-emas
+cs: o-nas
+sl: o-nas
+sv: om-oss
+@572
+it: contatti
+pt: contacto
+el: epikoinonia
+cs: kontakt
+sl: kontakt
+sv: kontakt
+@573
+it: prezzi
+pt: precos
+el: times
+cs: cenik
+sl: cenik
+sv: priser
+@574
+it: pubblica-annuncio
+pt: publicar-anuncio
+el: kataxorisi-angelias
+cs: podat-inzerat
+sl: oddaja-oglasa
+sv: lagg-in-annons
+@575
+it: ricerca-immobili
+pt: procura-de-imoveis
+el: anazitisi-akinitou
+cs: hledani-nemovitosti
+sl: iskanje-nepremicnine
+sv: fastighetssokning
+@576
+it: valutazione
+pt: avaliacao
+el: ektimisi
+cs: odhad-ceny
+sl: ocena-vrednosti
+sv: vardering
+@577
+it: servizi
+pt: servicos
+el: ypiresies
+cs: sluzby
+sl: storitve
+sv: tjanster
+@578
+it: domande-frequenti
+pt: perguntas-frequentes
+el: syches-erotiseis
+cs: caste-dotazy
+sl: pogosta-vprasanja
+sv: vanliga-fragor
+@579
+it: guida-foto
+pt: guia-de-fotografia
+el: odigos-fotografisis
+cs: navod-k-fotografovani
+sl: navodila-za-fotografiranje
+sv: fotoguide
+@580
+it: acquistare-in-ungheria
+pt: comprar-na-hungria
+el: agora-stin-oungaria
+cs: koupe-v-madarsku
+sl: nakup-na-madzarskem
+sv: kopa-i-ungern
+@581
+it: trasferirsi-in-ungheria
+pt: mudar-se-para-a-hungria
+el: metakomisi-stin-oungaria
+cs: stehovani-do-madarska
+sl: selitev-na-madzarsko
+sv: flytta-till-ungern
+@582
+it: venduti
+pt: vendidos
+el: polithikan
+cs: prodano
+sl: prodano
+sv: salda
+@583
+it: mappa
+pt: mapa
+el: chartis
+cs: mapa
+sl: zemljevid
+sv: karta
+@584
+it: privacy
+pt: privacidade
+el: aporrito
+cs: ochrana-osobnich-udaju
+sl: zasebnost
+sv: integritet
+@585
+it: condizioni
+pt: termos
+el: oroi
+cs: podminky
+sl: pogoji
+sv: villkor
+@586
+it: note-legali
+pt: informacao-legal
+el: nomikes-plirofories
+cs: pravni-informace
+sl: pravno-obvestilo
+sv: juridisk-information
+@587
+it: accessibilita
+pt: acessibilidade
+el: prosvasimotita
+cs: pristupnost
+sl: dostopnost
+sv: tillganglighet
+@588
+it: grazie
+pt: obrigado
+el: efcharistoume
+cs: dekujeme
+sl: hvala
+sv: tack
+@589
+it: ${categorySlug}-in-vendita-${ref}
+pt: ${categorySlug}-a-venda-${ref}
+el: ${categorySlug}-pros-polisi-${ref}
+cs: ${categorySlug}-na-prodej-${ref}
+sl: ${categorySlug}-naprodaj-${ref}
+sv: ${categorySlug}-till-salu-${ref}
+@590
+it: FODEL Immobiliare: notizie e articoli
+pt: FODEL Imobiliária: notícias e artigos
+el: FODEL Ακίνητα: νέα και άρθρα
+cs: FODEL Nemovitosti: novinky a články
+sl: FODEL Nepremičnine: novice in članki
+sv: FODEL Fastigheter: nyheter och artiklar
+@591
+it: Analisi del mercato immobiliare ungherese e degli acquirenti dell’Europa occidentale.
+pt: Análise do mercado imobiliário húngaro e dos compradores da Europa Ocidental.
+el: Ανάλυση της ουγγρικής αγοράς ακινήτων και των αγοραστών από τη Δυτική Ευρώπη.
+cs: Analýzy maďarského realitního trhu a kupujících ze západní Evropy.
+sl: Analize madžarskega nepremičninskega trga in kupcev iz zahodne Evrope.
+sv: Analyser av den ungerska fastighetsmarknaden och köpare från Västeuropa.
+@592
+it: Riceve questa e-mail perché ha un account FODEL o ha pubblicato un annuncio con noi.
+pt: Recebe este e-mail porque tem uma conta FODEL ou publicou um anúncio connosco.
+el: Λαμβάνετε αυτό το email επειδή έχετε λογαριασμό FODEL ή καταχωρίσατε αγγελία σε εμάς.
+cs: Tento e-mail dostáváte, protože máte účet FODEL nebo jste u nás zadali inzerát.
+sl: To sporočilo prejemate, ker imate račun FODEL ali ste pri nas oddali oglas.
+sv: Du får det här mejlet eftersom du har ett FODEL-konto eller har lagt in en annons hos oss.
+@593
+it: Contatti
+pt: Contacto
+el: Επικοινωνία
+cs: Kontakt
+sl: Kontakt
+sv: Kontakt
+@594
+it: Cordiali saluti\nFODEL Immobiliare
+pt: Com os melhores cumprimentos,\nFODEL Imobiliária
+el: Με εκτίμηση,\nFODEL Ακίνητα
+cs: S pozdravem\nFODEL Nemovitosti
+sl: Lep pozdrav\nFODEL Nepremičnine
+sv: Vänliga hälsningar\nFODEL Fastigheter
+@595
+it: Domande? Risponda a questa e-mail o ci chiami: ${COMPANY.phones[0].display}.
+pt: Dúvidas? Responda a este e-mail ou ligue-nos: ${COMPANY.phones[0].display}.
+el: Ερωτήσεις; Απαντήστε σε αυτό το email ή καλέστε μας: ${COMPANY.phones[0].display}.
+cs: Máte otázky? Odpovězte na tento e-mail nebo nám zavolejte: ${COMPANY.phones[0].display}.
+sl: Imate vprašanja? Odgovorite na to sporočilo ali nas pokličite: ${COMPANY.phones[0].display}.
+sv: Frågor? Svara på det här mejlet eller ring oss: ${COMPANY.phones[0].display}.

@@ -1,0 +1,679 @@
+@1522
+da: Spring til indhold
+no: Hopp til innhold
+fi: Siirry sisältöön
+et: Liigu sisu juurde
+lv: Pāriet uz saturu
+lt: Pereiti prie turinio
+@1523
+da: Menu
+no: Meny
+fi: Valikko
+et: Menüü
+lv: Izvēlne
+lt: Meniu
+@1524
+da: Luk
+no: Lukk
+fi: Sulje
+et: Sulge
+lv: Aizvērt
+lt: Uždaryti
+@1525
+da: Sprog
+no: Språk
+fi: Kieli
+et: Keel
+lv: Valoda
+lt: Kalba
+@1526
+da: Kommer snart
+no: Kommer snart
+fi: Tulossa pian
+et: Varsti tulekul
+lv: Drīzumā
+lt: Netrukus
+@1527
+da: Forside
+no: Forside
+fi: Etusivu
+et: Avaleht
+lv: Sākums
+lt: Pradžia
+@1528
+da: Ejendomme
+no: Eiendommer
+fi: Kohteet
+et: Kinnisvara
+lv: Īpašumi
+lt: Objektai
+@1529
+da: Blog
+no: Blogg
+fi: Blogi
+et: Blogi
+lv: Blogs
+lt: Tinklaraštis
+@1530
+da: Tilmeld dig
+no: Registrer deg
+fi: Rekisteröidy
+et: Registreeru
+lv: Reģistrēties
+lt: Registruotis
+@1531
+da: Gratis opringning
+no: Gratis oppringing
+fi: Maksuton takaisinsoitto
+et: Tasuta tagasihelistamine
+lv: Bezmaksas atzvans
+lt: Nemokamas perskambinimas
+@1532
+da: Alle ejendomme
+no: Alle eiendommer
+fi: Kaikki kohteet
+et: Kõik objektid
+lv: Visi īpašumi
+lt: Visi objektai
+@1533
+da: Se
+no: Se
+fi: Näytä
+et: Vaata
+lv: Skatīt
+lt: Peržiūrėti
+@1534
+da: Annoncér hos os
+no: Annonser hos oss
+fi: Ilmoita meillä
+et: Kuulutage meie juures
+lv: Sludiniet pie mums
+lt: Skelbkitės pas mus
+@1535
+da: Gratis rådgivning
+no: Gratis rådgivning
+fi: Maksuton neuvonta
+et: Tasuta nõustamine
+lv: Bezmaksas konsultācija
+lt: Nemokama konsultacija
+@1536
+da: Send besked
+no: Send melding
+fi: Lähetä viesti
+et: Saada sõnum
+lv: Sūtīt ziņu
+lt: Siųsti žinutę
+@1537
+da: Læs videre
+no: Les videre
+fi: Lue lisää
+et: Loe edasi
+lv: Lasīt tālāk
+lt: Skaityti toliau
+@1538
+da: Reference
+no: Referanse
+fi: Viite
+et: Viide
+lv: Atsauce
+lt: Nuoroda
+@1539
+da: Udbudspris
+no: Prisantydning
+fi: Pyyntihinta
+et: Küsitav hind
+lv: Prasītā cena
+lt: Prašoma kaina
+@1540
+da: Soveværelser
+no: Soverom
+fi: Makuuhuoneet
+et: Magamistoad
+lv: Guļamistabas
+lt: Miegamieji
+@1541
+da: Badeværelser
+no: Bad
+fi: Kylpyhuoneet
+et: Vannitoad
+lv: Vannas istabas
+lt: Vonios kambariai
+@1542
+da: Boligareal
+no: Boareal
+fi: Pinta-ala
+et: Pind
+lv: Platība
+lt: Plotas
+@1543
+da: Grund
+no: Tomt
+fi: Tontti
+et: Krunt
+lv: Zemes gabals
+lt: Sklypas
+@1544
+da: Energimærke
+no: Energikarakter
+fi: Energialuokka
+et: Energiaklass
+lv: Energoefektivitātes klase
+lt: Energinė klasė
+@1545
+da: Undervejs
+no: Under arbeid
+fi: Tekeillä
+et: Koostamisel
+lv: Tiek gatavots
+lt: Rengiamas
+@1546
+da: Opførelsesår
+no: Byggeår
+fi: Rakennusvuosi
+et: Ehitusaasta
+lv: Būvniecības gads
+lt: Statybos metai
+@1547
+da: Stand
+no: Tilstand
+fi: Kunto
+et: Seisukord
+lv: Stāvoklis
+lt: Būklė
+@1548
+da: Opvarmning
+no: Oppvarming
+fi: Lämmitys
+et: Küte
+lv: Apkure
+lt: Šildymas
+@1549
+da: Egenskaber
+no: Egenskaper
+fi: Ominaisuudet
+et: Omadused
+lv: Īpašības
+lt: Savybės
+@1550
+da: Beskrivelse
+no: Beskrivelse
+fi: Kuvaus
+et: Kirjeldus
+lv: Apraksts
+lt: Aprašymas
+@1551
+da: Lignende ejendomme
+no: Lignende eiendommer
+fi: Samankaltaiset kohteet
+et: Sarnased objektid
+lv: Līdzīgi īpašumi
+lt: Panašūs objektai
+@1552
+da: I regionen
+no: I regionen
+fi: Alueella
+et: Piirkonnas
+lv: Reģionā
+lt: Regione
+@1553
+da: Galleri
+no: Galleri
+fi: Galleria
+et: Galerii
+lv: Galerija
+lt: Galerija
+@1554
+da: Video
+no: Video
+fi: Video
+et: Video
+lv: Video
+lt: Vaizdo įrašas
+@1555
+da: Forrige foto
+no: Forrige bilde
+fi: Edellinen kuva
+et: Eelmine foto
+lv: Iepriekšējais foto
+lt: Ankstesnė nuotrauka
+@1556
+da: Næste foto
+no: Neste bilde
+fi: Seuraava kuva
+et: Järgmine foto
+lv: Nākamais foto
+lt: Kita nuotrauka
+@1557
+da: Solgt
+no: Solgt
+fi: Myyty
+et: Müüdud
+lv: Pārdots
+lt: Parduota
+@1558
+da: Under forhandling
+no: Under forhandling
+fi: Varattu
+et: Broneeritud
+lv: Rezervēts
+lt: Rezervuota
+@1559
+da: Kontakt ejeren
+no: Kontakt eieren
+fi: Ota yhteyttä omistajaan
+et: Võtke ühendust omanikuga
+lv: Sazinieties ar īpašnieku
+lt: Susisiekite su savininku
+@1560
+da: For denne ejendom viser vi også ejerens navn og telefonnummer. Du kan kontakte ejeren direkte uden at betale salær.
+no: For denne eiendommen viser vi også eierens navn og telefonnummer. Du kan kontakte eieren direkte, uten provisjon.
+fi: Tämän kohteen kohdalla näytämme myös omistajan nimen ja puhelinnumeron. Voit ottaa häneen suoraan yhteyttä ilman palkkiota.
+et: Selle objekti puhul näitame ka omaniku nime ja telefoninumbrit. Võite temaga otse ühendust võtta, vahendustasu maksmata.
+lv: Šim īpašumam norādām arī īpašnieka vārdu un tālruņa numuru. Ar viņu varat sazināties tieši, nemaksājot komisiju.
+lt: Šiam objektui nurodome ir savininko vardą bei telefono numerį. Su juo galite susisiekti tiesiogiai, be komisinio.
+@1561
+da: Opringning
+no: Oppringing
+fi: Takaisinsoitto
+et: Tagasihelistamine
+lv: Atzvans
+lt: Perskambinimas
+@1562
+da: Vi ringer dig op inden for 24 timer
+no: Vi ringer deg opp innen 24 timer
+fi: Soitamme sinulle 24 tunnin kuluessa
+et: Helistame teile 24 tunni jooksul tagasi
+lv: Atzvanīsim 24 stundu laikā
+lt: Perskambinsime per 24 valandas
+@1563
+da: Pris efter aftale
+no: Pris på forespørsel
+fi: Hinta pyynnöstä
+et: Hind kokkuleppel
+lv: Cena pēc pieprasījuma
+lt: Kaina pagal užklausą
+@1564
+da: Filtrér ejendomme
+no: Filtrer eiendommer
+fi: Suodata kohteita
+et: Filtreeri objekte
+lv: Filtrēt īpašumus
+lt: Filtruoti objektus
+@1565
+da: Find den ejendom, der passer til dig
+no: Finn eiendommen som passer for deg
+fi: Löydä sinulle sopiva kohde
+et: Leidke teile sobiv objekt
+lv: Atrodiet sev piemērotu īpašumu
+lt: Raskite jums tinkamą objektą
+@1566
+da: Type
+no: Type
+fi: Tyyppi
+et: Tüüp
+lv: Veids
+lt: Tipas
+@1567
+da: Region
+no: Region
+fi: Alue
+et: Piirkond
+lv: Reģions
+lt: Regionas
+@1568
+da: Pris
+no: Pris
+fi: Hinta
+et: Hind
+lv: Cena
+lt: Kaina
+@1569
+da: Alle
+no: Alle
+fi: Kaikki
+et: Kõik
+lv: Visi
+lt: Visi
+@1570
+da: Alle
+no: Alle
+fi: Mikä tahansa
+et: Kõik
+lv: Jebkurš
+lt: Bet kuris
+@1571
+da: Sortér efter
+no: Sorter etter
+fi: Lajittele
+et: Sorteeri
+lv: Kārtot pēc
+lt: Rikiuoti pagal
+@1572
+da: Fremhævede først
+no: Fremhevede først
+fi: Nostetut ensin
+et: Esiletõstetud ees
+lv: Vispirms izceltie
+lt: Pirmiausia išskirti
+@1573
+da: Pris, lavest først
+no: Pris, lavest først
+fi: Hinta, edullisin ensin
+et: Hind, odavamad ees
+lv: Cena augošā secībā
+lt: Kaina didėjančiai
+@1574
+da: Pris, højest først
+no: Pris, høyest først
+fi: Hinta, kallein ensin
+et: Hind, kallimad ees
+lv: Cena dilstošā secībā
+lt: Kaina mažėjančiai
+@1575
+da: Ryd filtre
+no: Fjern filtre
+fi: Tyhjennä suodattimet
+et: Tühjenda filtrid
+lv: Notīrīt filtrus
+lt: Išvalyti filtrus
+@1576
+da: 1 ejendom
+no: 1 eiendom
+fi: 1 kohde
+et: 1 objekt
+lv: 1 īpašums
+lt: 1 objektas
+@1577
+da: ${n} ejendomme
+no: ${n} eiendommer
+fi: ${n} kohdetta
+et: ${n} objekti
+lv: ${n} īpašumi
+lt: ${n} objektų
+@1578
+da: Ingen ejendomme matcher disse filtre.
+no: Ingen eiendommer passer med disse filtrene.
+fi: Mikään kohde ei vastaa näitä suodattimia.
+et: Ükski objekt ei vasta nendele filtritele.
+lv: Neviens īpašums neatbilst šiem filtriem.
+lt: Nė vienas objektas neatitinka šių filtrų.
+@1579
+da: Prøv bredere kriterier, eller send en gratis søgeanmodning.
+no: Prøv bredere kriterier, eller send en gratis søkeforespørsel.
+fi: Kokeile väljempiä hakuehtoja tai jätä maksuton hakupyyntö.
+et: Proovige laiemaid kriteeriume või esitage tasuta otsingupäring.
+lv: Izmēģiniet plašākus kritērijus vai iesniedziet bezmaksas meklēšanas pieprasījumu.
+lt: Pabandykite platesnius kriterijus arba pateikite nemokamą paieškos užklausą.
+@1580
+da: Amt
+no: Fylke
+fi: Lääni
+et: Maakond
+lv: Medes
+lt: Medė
+@1581
+da: Land
+no: Land
+fi: Maa
+et: Riik
+lv: Valsts
+lt: Šalis
+@1582
+da: By eller landsby
+no: By eller tettsted
+fi: Kaupunki tai kylä
+et: Linn või küla
+lv: Pilsēta vai ciems
+lt: Miestas ar kaimas
+@1583
+da: Boligareal fra
+no: Boareal fra
+fi: Pinta-ala alkaen
+et: Pind alates
+lv: Platība no
+lt: Plotas nuo
+@1584
+da: Boligareal op til
+no: Boareal opptil
+fi: Pinta-ala enintään
+et: Pind kuni
+lv: Platība līdz
+lt: Plotas iki
+@1585
+da: Grund fra
+no: Tomt fra
+fi: Tontti alkaen
+et: Krunt alates
+lv: Zemes gabals no
+lt: Sklypas nuo
+@1586
+da: Grund op til
+no: Tomt opptil
+fi: Tontti enintään
+et: Krunt kuni
+lv: Zemes gabals līdz
+lt: Sklypas iki
+@1587
+da: Hele Ungarn
+no: Hele Ungarn
+fi: Koko Unkari
+et: Kogu Ungari
+lv: Visa Ungārija
+lt: Visa Vengrija
+@1588
+da: Gode tilbud
+no: Gode kjøp
+fi: Edulliset löydöt
+et: Soodsad pakkumised
+lv: Izdevīgi piedāvājumi
+lt: Geri pasiūlymai
+@1589
+da: Ingen lerhuse
+no: Ingen leirhus
+fi: Ei savitaloja
+et: Ilma savimajadeta
+lv: Bez māla mājām
+lt: Be molinių namų
+@1590
+da: Se på kortet
+no: Se på kartet
+fi: Näytä kartalla
+et: Vaata kaardil
+lv: Skatīt kartē
+lt: Rodyti žemėlapyje
+@1591
+da: Tilbage til listen
+no: Tilbake til listen
+fi: Takaisin luetteloon
+et: Tagasi loendisse
+lv: Atpakaļ uz sarakstu
+lt: Atgal į sąrašą
+@1592
+da: Filtreret til det valgte kortområde
+no: Filtrert på valgt kartområde
+fi: Rajattu valitulle kartta-alueelle
+et: Filtreeritud valitud kaardialale
+lv: Filtrēts pēc atlasītā kartes apgabala
+lt: Filtruota pagal pasirinktą žemėlapio sritį
+@1593
+da: E-mailadresse
+no: E-postadresse
+fi: Sähköpostiosoite
+et: E-posti aadress
+lv: E-pasta adrese
+lt: El. pašto adresas
+@1594
+da: Emne
+no: Emne
+fi: Aihe
+et: Teema
+lv: Temats
+lt: Tema
+@1595
+da: Besked
+no: Melding
+fi: Viesti
+et: Sõnum
+lv: Ziņojums
+lt: Žinutė
+@1596
+da: Fortæl os, hvad du gerne vil vide …
+no: Fortell oss hva du vil vite …
+fi: Kerro, mitä haluaisit tietää…
+et: Kirjutage, mida soovite teada…
+lv: Pastāstiet, ko vēlaties uzzināt…
+lt: Parašykite, ką norėtumėte sužinoti…
+@1597
+da: påkrævet
+no: påkrevd
+fi: pakollinen
+et: kohustuslik
+lv: obligāts
+lt: privaloma
+@1598
+da: valgfrit
+no: valgfritt
+fi: valinnainen
+et: vabatahtlik
+lv: neobligāts
+lt: neprivaloma
+@1599
+da: Jeg accepterer, at FODEL bruger mine oplysninger til at besvare min henvendelse.
+no: Jeg godtar at FODEL bruker opplysningene mine til å svare på henvendelsen min.
+fi: Hyväksyn, että FODEL käyttää tietojani vastatakseen yhteydenottooni.
+et: Nõustun, et FODEL kasutab minu andmeid minu päringule vastamiseks.
+lv: Piekrītu, ka FODEL izmanto manus datus, lai atbildētu uz manu pieprasījumu.
+lt: Sutinku, kad FODEL naudotų mano duomenis atsakydama į mano užklausą.
+@1600
+da: Sender …
+no: Sender …
+fi: Lähetetään…
+et: Saatmine…
+lv: Sūta…
+lt: Siunčiama…
+@1601
+da: Afsendelsen mislykkedes. Prøv igen, eller ring til os.
+no: Sendingen mislyktes. Prøv igjen, eller ring oss.
+fi: Lähetys epäonnistui. Yritä uudelleen tai soita meille.
+et: Saatmine ebaõnnestus. Proovige uuesti või helistage meile.
+lv: Nosūtīšana neizdevās. Mēģiniet vēlreiz vai zvaniet mums.
+lt: Išsiųsti nepavyko. Bandykite dar kartą arba paskambinkite mums.
+@1602
+da: Tak
+no: Takk
+fi: Kiitos
+et: Täname
+lv: Paldies
+lt: Ačiū
+@1603
+da: Vi har modtaget din besked og vender snart tilbage. {hours}
+no: Vi har mottatt meldingen din og tar snart kontakt. {hours}
+fi: Olemme vastaanottaneet viestisi ja otamme pian yhteyttä. {hours}
+et: Oleme teie sõnumi kätte saanud ja võtame peagi ühendust. {hours}
+lv: Esam saņēmuši jūsu ziņu un drīz sazināsimies. {hours}
+lt: Gavome jūsų žinutę ir netrukus susisieksime. {hours}
+@1604
+da: Kunne ikke sende
+no: Kunne ikke sende
+fi: Lähetys ei onnistunut
+et: Saatmine ei õnnestunud
+lv: Neizdevās nosūtīt
+lt: Nepavyko išsiųsti
+@1605
+da: Prøv igen, eller ring til os på +31 6 4400 5550.
+no: Prøv igjen, eller ring oss på +31 6 4400 5550.
+fi: Yritä uudelleen tai soita meille numeroon +31 6 4400 5550.
+et: Proovige uuesti või helistage meile numbril +31 6 4400 5550.
+lv: Mēģiniet vēlreiz vai zvaniet mums pa tālruni +31 6 4400 5550.
+lt: Bandykite dar kartą arba skambinkite mums +31 6 4400 5550.
+@1606
+da: Udfyld dette felt.
+no: Fyll ut dette feltet.
+fi: Täytä tämä kenttä.
+et: Täitke see väli.
+lv: Aizpildiet šo lauku.
+lt: Užpildykite šį lauką.
+@1607
+da: Angiv en gyldig e-mailadresse.
+no: Oppgi en gyldig e-postadresse.
+fi: Anna kelvollinen sähköpostiosoite.
+et: Sisestage kehtiv e-posti aadress.
+lv: Ievadiet derīgu e-pasta adresi.
+lt: Įveskite galiojantį el. pašto adresą.
+@1608
+da: Acceptér privatlivsoplysningerne for at fortsætte.
+no: Godta personverninformasjonen for å fortsette.
+fi: Hyväksy tietosuojaseloste jatkaaksesi.
+et: Jätkamiseks nõustuge privaatsusteabega.
+lv: Lai turpinātu, pieņemiet privātuma politiku.
+lt: Norėdami tęsti, sutikite su privatumo politika.
+@1609
+da: Navigation
+no: Navigasjon
+fi: Navigointi
+et: Navigeerimine
+lv: Navigācija
+lt: Navigacija
+@1610
+da: Kategorier
+no: Kategorier
+fi: Kategoriat
+et: Kategooriad
+lv: Kategorijas
+lt: Kategorijos
+@1611
+da: Juridisk
+no: Juridisk
+fi: Oikeudelliset tiedot
+et: Õigusteave
+lv: Juridiskā informācija
+lt: Teisinė informacija
+@1612
+da: Åbningstider
+no: Åpningstider
+fi: Aukioloajat
+et: Lahtiolekuajad
+lv: Darba laiks
+lt: Darbo laikas
+@1613
+da: Vi ringer dig op, og opkaldet koster dig ingenting.
+no: Vi ringer deg opp, og samtalen koster deg ingenting.
+fi: Soitamme sinulle, eikä puhelu maksa sinulle mitään.
+et: Helistame teile tagasi ja kõne ei maksa teile midagi.
+lv: Mēs jums atzvanām, un zvans jums neko nemaksā.
+lt: Mes jums perskambiname, ir skambutis jums nieko nekainuoja.
+@1614
+da: Log ind for annoncører
+no: Innlogging for annonsører
+fi: Ilmoittajien kirjautuminen
+et: Kuulutajate sisselogimine
+lv: Sludinātāju pieteikšanās
+lt: Skelbėjų prisijungimas
+@1615
+da: Brødkrummesti
+no: Brødsmulesti
+fi: Murupolku
+et: Leivapururada
+lv: Navigācijas ceļš
+lt: Naršymo kelias
+@1616
+da: Hovednavigation
+no: Hovednavigasjon
+fi: Päänavigointi
+et: Peamenüü
+lv: Galvenā navigācija
+lt: Pagrindinė navigacija
+@1617
+da: Skift sprog
+no: Bytt språk
+fi: Vaihda kieltä
+et: Muuda keelt
+lv: Mainīt valodu
+lt: Keisti kalbą
+@1618
+da: Foto ${n} af ${total}
+no: Bilde ${n} av ${total}
+fi: Kuva ${n}/${total}
+et: Foto ${n}/${total}
+lv: Foto ${n} no ${total}
+lt: Nuotrauka ${n} iš ${total}

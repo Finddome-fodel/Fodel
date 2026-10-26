@@ -1,0 +1,357 @@
+@1068
+it: FODEL Real Estates | Acquisti un immobile in Ungheria direttamente dal proprietario
+pt: FODEL Real Estates | Compre um imóvel na Hungria diretamente ao proprietário
+el: FODEL Real Estates | Αγοράστε ακίνητο στην Ουγγαρία απευθείας από τον ιδιοκτήτη
+cs: FODEL Real Estates | Kupte nemovitost v Maďarsku přímo od majitele
+sl: FODEL Real Estates | Kupite nepremičnino na Madžarskem neposredno od lastnika
+sv: FODEL Real Estates | Köp bostad i Ungern direkt av ägaren
+@1069
+it: Case, aziende agricole e tenute in Ungheria, spesso direttamente dal proprietario. Assistenza nella Sua lingua e contratti di compravendita bilingui.
+pt: Casas, quintas e propriedades rurais na Hungria, muitas vezes diretamente ao proprietário. Acompanhamento na sua língua e contratos de compra e venda bilingues.
+el: Σπίτια, αγροκτήματα και εξοχικά κτήματα στην Ουγγαρία, συχνά απευθείας από τον ιδιοκτήτη. Καθοδήγηση στη γλώσσα σας και δίγλωσσα συμβόλαια αγοραπωλησίας.
+cs: Domy, statky a venkovská sídla v Maďarsku, často přímo od majitele. Poradenství ve vašem jazyce a dvojjazyčné kupní smlouvy.
+sl: Hiše, kmetije in podeželska posestva na Madžarskem, pogosto neposredno od lastnika. Svetovanje v vašem jeziku in dvojezične prodajne pogodbe.
+sv: Hus, gårdar och lantegendomar i Ungern, ofta direkt av ägaren. Vägledning på ditt eget språk och tvåspråkiga köpeavtal.
+@1070
+it: Dal 2013 · ${foundedInLabel(L)}
+pt: Desde 2013 · ${foundedInLabel(L)}
+el: Από το 2013 · ${foundedInLabel(L)}
+cs: Od roku 2013 · ${foundedInLabel(L)}
+sl: Od leta 2013 · ${foundedInLabel(L)}
+sv: Sedan 2013 · ${foundedInLabel(L)}
+@1071
+it: Immobili
+pt: Imóveis
+el: Ακίνητα
+cs: Nemovitosti
+sl: Nepremičnine
+sv: Bostäder
+@1072
+it: in Ungheria
+pt: na Hungria
+el: στην Ουγγαρία
+cs: v Maďarsku
+sl: na Madžarskem
+sv: i Ungern
+@1073
+it: direttamente dal proprietario
+pt: diretamente ao proprietário
+el: απευθείας από τον ιδιοκτήτη
+cs: přímo od majitele
+sl: neposredno od lastnika
+sv: direkt av ägaren
+@1074
+it: In molti dei nostri annunci è indicato il proprietario. Può trattare direttamente con lui o affidare a noi l’intero processo.
+pt: Muitos dos nossos anúncios indicam o proprietário. Pode negociar diretamente com ele ou deixar todo o processo connosco.
+el: Πολλές από τις αγγελίες μας αναφέρουν τον ιδιοκτήτη. Μπορείτε να διαπραγματευτείτε απευθείας μαζί του ή να μας αναθέσετε ολόκληρη τη διαδικασία.
+cs: Mnoho našich inzerátů uvádí majitele. Můžete s ním jednat přímo, nebo celý proces přenechat nám.
+sl: Pri številnih naših oglasih je naveden lastnik. Z njim se lahko dogovarjate neposredno ali pa celoten postopek prepustite nam.
+sv: Många av våra annonser anger ägaren. Du kan förhandla direkt med hen eller överlåta hela processen åt oss.
+@1075
+it: Sfoglia gli immobili
+pt: Ver imóveis
+el: Δείτε τα ακίνητα
+cs: Prohlédnout nemovitosti
+sl: Prebrskaj nepremičnine
+sv: Bläddra bland objekt
+@1076
+it: In evidenza
+pt: Em destaque
+el: Προβεβλημένα
+cs: Doporučujeme
+sl: Izpostavljeno
+sv: Utvalda
+@1077
+it: Immobili direttamente\ndal proprietario
+pt: Imóveis diretamente\nao proprietário
+el: Ακίνητα απευθείας\nαπό τον ιδιοκτήτη
+cs: Nemovitosti přímo\nod majitele
+sl: Nepremičnine neposredno\nod lastnika
+sv: Bostäder direkt\nav ägaren
+@1078
+it: Autentiche case ungheresi, aziende agricole, tenute e vigneti. Contatti direttamente il proprietario o lasci che FODEL gestisca l’intero processo.
+pt: Casas húngaras autênticas, quintas, propriedades rurais e vinhas. Contacte diretamente o proprietário ou deixe a FODEL tratar de todo o processo.
+el: Αυθεντικά ουγγρικά σπίτια, αγροκτήματα, εξοχικά κτήματα και αμπελώνες. Επικοινωνήστε απευθείας με τον ιδιοκτήτη ή αφήστε τη FODEL να αναλάβει όλη τη διαδικασία.
+cs: Autentické maďarské domy, statky, venkovská sídla a vinice. Kontaktujte přímo majitele, nebo nechte celý proces na FODEL.
+sl: Pristne madžarske hiše, kmetije, podeželska posestva in vinogradi. Obrnite se neposredno na lastnika ali pa celoten postopek prepustite družbi FODEL.
+sv: Äkta ungerska hus, gårdar, lantegendomar och vingårdar. Kontakta ägaren direkt eller låt FODEL sköta hela processen.
+@1079
+it: Il Suo immobile ungherese\nin Europa occidentale
+pt: O seu imóvel húngaro\nna Europa Ocidental
+el: Το ουγγρικό σας ακίνητο\nστη Δυτική Ευρώπη
+cs: Vaše maďarská nemovitost\nv západní Evropě
+sl: Vaša madžarska nepremičnina\nv Zahodni Evropi
+sv: Din ungerska bostad\ni Västeuropa
+@1080
+it: Pubblichi annunci in ${REACH_LANGUAGES} lingue in ${REACH_COUNTRIES} Paesi, senza contratto di esclusiva. Provvigione solo se troviamo noi l’acquirente.
+pt: Anuncie em ${REACH_LANGUAGES} línguas em ${REACH_COUNTRIES} países, sem contrato de exclusividade. Comissão apenas se formos nós a encontrar o comprador.
+el: Προβάλλετε την αγγελία σας σε ${REACH_LANGUAGES} γλώσσες σε ${REACH_COUNTRIES} χώρες, χωρίς σύμβαση αποκλειστικότητας. Προμήθεια μόνο αν φέρουμε εμείς τον αγοραστή.
+cs: Inzerujte v ${REACH_LANGUAGES} jazycích v ${REACH_COUNTRIES} zemích bez smlouvy o exkluzivitě. Provize jen tehdy, když kupce přivedeme my.
+sl: Oglašujte v ${REACH_LANGUAGES} jezikih v ${REACH_COUNTRIES} državah, brez pogodbe o izključnosti. Provizija le, če kupca pripeljemo mi.
+sv: Annonsera på ${REACH_LANGUAGES} språk i ${REACH_COUNTRIES} länder, utan exklusivavtal. Provision bara om vi hittar köparen.
+@1081
+it: Scopra di più
+pt: Saiba mais
+el: Μάθετε περισσότερα
+cs: Více informací
+sl: Več o tem
+sv: Läs mer
+@1082
+it: Immobili in evidenza
+pt: Imóveis em destaque
+el: Προβεβλημένα ακίνητα
+cs: Doporučené nemovitosti
+sl: Izpostavljene nepremičnine
+sv: Utvalda objekt
+@1083
+it: “Gli olandesi spesso non credono ai propri occhi quando vedono cosa si può comprare in Ungheria, e a quale prezzo.”
+pt: “Os neerlandeses muitas vezes nem acreditam no que veem quando descobrem o que se pode comprar na Hungria, e por quanto.”
+el: «Οι Ολλανδοί συχνά δεν πιστεύουν στα μάτια τους όταν βλέπουν τι μπορεί να αγοράσει κανείς στην Ουγγαρία, και με πόσα χρήματα.»
+cs: „Nizozemci často nevěří vlastním očím, když vidí, co se dá v Maďarsku koupit a za kolik.“
+sl: »Nizozemci pogosto ne verjamejo lastnim očem, ko vidijo, kaj vse je mogoče kupiti na Madžarskem in za koliko.«
+sv: ”Nederländare tror ofta inte sina ögon när de ser vad man kan köpa i Ungern, och för hur lite.”
+@1084
+it: =
+pt: =
+el: =
+cs: =
+sl: =
+sv: =
+@1085
+it: Come funziona
+pt: Como funciona
+el: Πώς λειτουργεί
+cs: Jak to funguje
+sl: Kako deluje
+sv: Så fungerar det
+@1086
+it: Come funziona FODEL
+pt: Como funciona a FODEL
+el: Πώς λειτουργεί η FODEL
+cs: Jak FODEL funguje
+sl: Kako deluje FODEL
+sv: Så fungerar FODEL
+@1087
+it: Saremo lieti
+pt: Teremos todo o gosto
+el: Θα χαρούμε
+cs: Rádi vám
+sl: Z veseljem
+sv: Vi ringer gärna
+@1088
+it: di richiamarLa
+pt: em ligar-lhe
+el: να σας καλέσουμε
+cs: zavoláme zpět
+sl: vas pokličemo
+sv: upp dig
+@1089
+it: ${formatHours(L)} · La richiamata non Le costa nulla.
+pt: ${formatHours(L)} · A chamada não lhe custa nada.
+el: ${formatHours(L)} · Η επανάκληση δεν σας κοστίζει τίποτα.
+cs: ${formatHours(L)} · Zpětné zavolání vás nic nestojí.
+sl: ${formatHours(L)} · Povratni klic vas nič ne stane.
+sv: ${formatHours(L)} · Att bli uppringd kostar dig ingenting.
+@1090
+it: Programma di segnalazione
+pt: Programa de recomendação
+el: Πρόγραμμα συστάσεων
+cs: Doporučující program
+sl: Program priporočil
+sv: Värvningsprogram
+@1091
+it: Segnali un inserzionista,
+pt: Recomende um anunciante,
+el: Προτείνετε έναν αγγελιοδότη,
+cs: Doporučte inzerenta,
+sl: Priporočite oglaševalca,
+sv: Tipsa om en annonsör,
+@1092
+it: riceva il 10%
+pt: receba 10%
+el: λάβετε 10%
+cs: získejte 10 %
+sl: prejmite 10 %
+sv: få 10 %
+@1093
+it: Se qualcuno pubblica un annuncio su FODEL su Sua segnalazione, ottiene il 10% di sconto sul pacchetto e noi Le accreditiamo il 10% sul prossimo annuncio. Pubblica già da noi? Trova il Suo codice di segnalazione personale nel portale, alla voce Impostazioni.
+pt: Se alguém publicar um anúncio na FODEL por recomendação sua, recebe 10% de desconto no pacote e nós creditamos-lhe 10% no seu próximo anúncio. Já anuncia connosco? Encontra o seu código de recomendação em Definições, no portal.
+el: Αν κάποιος καταχωρίσει αγγελία στη FODEL με δική σας σύσταση, λαμβάνει έκπτωση 10% στο πακέτο του και εμείς σας πιστώνουμε 10% για την επόμενη αγγελία σας. Διαφημίζεστε ήδη μαζί μας; Θα βρείτε τον προσωπικό σας κωδικό σύστασης στις Ρυθμίσεις του portal.
+cs: Pokud někdo na vaše doporučení zadá inzerát u FODEL, získá slevu 10 % na svůj balíček a vám připíšeme 10 % na váš příští inzerát. Už u nás inzerujete? Svůj doporučující kód najdete v portálu v Nastavení.
+sl: Če nekdo na vaše priporočilo odda oglas pri FODEL, prejme 10 % popusta na svoj paket, vam pa 10 % dobropišemo za naslednji oglas. Že oglašujete pri nas? Svojo priporočilno kodo najdete na portalu pod Nastavitve.
+sv: Om någon lägger in en annons hos FODEL efter ditt tips får hen 10 % rabatt på sitt paket, och vi tillgodoräknar dig 10 % på din nästa annons. Annonserar du redan hos oss? Din egen värvningskod hittar du under Inställningar i portalen.
+@1094
+it: Segnali un conoscente con il modulo qui sotto o condivida il Suo link personale dal portale
+pt: Recomende um conhecido através do formulário abaixo ou partilhe a sua ligação pessoal a partir do portal
+el: Προτείνετε έναν γνωστό σας με την παρακάτω φόρμα ή κοινοποιήστε τον προσωπικό σας σύνδεσμο από το portal
+cs: Doporučte známého pomocí formuláře níže, nebo sdílejte svůj odkaz z portálu
+sl: Priporočite znanca z obrazcem spodaj ali delite svojo povezavo s portala
+sv: Tipsa en bekant via formuläret nedan, eller dela din egen länk från portalen
+@1095
+it: Un membro del nostro team lo contatta
+pt: Um membro da nossa equipa entra em contacto com essa pessoa
+el: Ένα μέλος της ομάδας μας επικοινωνεί μαζί του
+cs: Někdo z našeho týmu ho kontaktuje
+sl: Nekdo iz naše ekipe stopi v stik z njim
+sv: Någon i vårt team kontaktar hen
+@1096
+it: Se pubblica un annuncio, risparmia il 10% e noi Le accreditiamo il 10%
+pt: Se publicar um anúncio, poupa 10% e nós creditamos-lhe 10%
+el: Αν καταχωρίσει αγγελία, εξοικονομεί 10% και εμείς σας πιστώνουμε 10%
+cs: Pokud zadá inzerát, ušetří 10 % a vám připíšeme 10 %
+sl: Če odda oglas, prihrani 10 %, vam pa dobropišemo 10 %
+sv: Om hen lägger in en annons sparar hen 10 % och du får 10 % tillgodo
+@1097
+it: Segnali un conoscente
+pt: Recomende um conhecido
+el: Προτείνετε έναν γνωστό σας
+cs: Doporučte známého
+sl: Priporočite znanca
+sv: Tipsa en bekant
+@1098
+it: Il Suo nome
+pt: O seu nome
+el: Το όνομά σας
+cs: Vaše jméno
+sl: Vaše ime
+sv: Ditt namn
+@1099
+it: Il Suo indirizzo e-mail
+pt: O seu endereço de e-mail
+el: Η διεύθυνση email σας
+cs: Váš e-mail
+sl: Vaš e-poštni naslov
+sv: Din e-postadress
+@1100
+it: Nome della persona segnalata
+pt: Nome da pessoa recomendada
+el: Όνομα του προσώπου που προτείνετε
+cs: Jméno doporučené osoby
+sl: Ime priporočene osebe
+sv: Namn på den du tipsar om
+@1101
+it: Indirizzo e-mail della persona segnalata
+pt: Endereço de e-mail da pessoa recomendada
+el: Email του προσώπου που προτείνετε
+cs: E-mail doporučené osoby
+sl: E-poštni naslov priporočene osebe
+sv: E-postadress till den du tipsar om
+@1102
+it: Invia la segnalazione
+pt: Enviar recomendação
+el: Αποστολή σύστασης
+cs: Odeslat doporučení
+sl: Pošlji priporočilo
+sv: Skicka tips
+@1103
+it: Pubblicato in ${REACH_COUNTRIES} Paesi
+pt: Anunciado em ${REACH_COUNTRIES} países
+el: Προβολή σε ${REACH_COUNTRIES} χώρες
+cs: Inzerce v ${REACH_COUNTRIES} zemích
+sl: Objava v ${REACH_COUNTRIES} državah
+sv: Annonseras i ${REACH_COUNTRIES} länder
+@1104
+it: Pubblichiamo annunci in ${REACH_LANGUAGES} lingue nei Paesi Bassi, in Belgio, Germania, Inghilterra e altri Paesi UE, senza contratto di esclusiva con il venditore.
+pt: Anunciamos em ${REACH_LANGUAGES} línguas nos Países Baixos, Bélgica, Alemanha, Inglaterra e outros países da UE, sem contrato de exclusividade com o vendedor.
+el: Προβάλλουμε αγγελίες σε ${REACH_LANGUAGES} γλώσσες στην Ολλανδία, το Βέλγιο, τη Γερμανία, την Αγγλία και άλλες χώρες της ΕΕ, χωρίς σύμβαση αποκλειστικότητας με τον πωλητή.
+cs: Inzerujeme v ${REACH_LANGUAGES} jazycích v Nizozemsku, Belgii, Německu, Anglii a dalších zemích EU, bez smlouvy o exkluzivitě s prodávajícím.
+sl: Oglašujemo v ${REACH_LANGUAGES} jezikih na Nizozemskem, v Belgiji, Nemčiji, Angliji in drugih državah EU, brez pogodbe o izključnosti s prodajalcem.
+sv: Vi annonserar på ${REACH_LANGUAGES} språk i Nederländerna, Belgien, Tyskland, England och andra EU-länder, utan exklusivavtal med säljaren.
+@1105
+it: Contatto diretto
+pt: Contacto direto
+el: Άμεση επικοινωνία
+cs: Přímý kontakt
+sl: Neposreden stik
+sv: Direktkontakt
+@1106
+it: Molti annunci riportano il nome e il numero del proprietario accanto ai nostri recapiti. Se vi accordate tra voi, nessuno paga provvigioni.
+pt: Muitos anúncios mostram o nome e o número do proprietário a par dos nossos contactos. Se combinarem entre si, ninguém paga comissão.
+el: Πολλές αγγελίες δείχνουν το όνομα και τον αριθμό του ιδιοκτήτη δίπλα στα δικά μας στοιχεία. Αν τα κανονίσετε μεταξύ σας, κανείς δεν πληρώνει προμήθεια.
+cs: Mnoho inzerátů uvádí vedle našich údajů i jméno a číslo majitele. Pokud se domluvíte mezi sebou, nikdo neplatí provizi.
+sl: Pri številnih oglasih sta poleg naših podatkov navedena ime in številka lastnika. Če se dogovorite med seboj, nihče ne plača provizije.
+sv: Många annonser visar ägarens namn och nummer vid sidan av våra uppgifter. Om ni gör upp sinsemellan betalar ingen provision.
+@1107
+it: L’intero processo gestito per Lei
+pt: Todo o processo tratado por si
+el: Ολόκληρη η διαδικασία για λογαριασμό σας
+cs: Celý proces vyřídíme za vás
+sl: Celoten postopek uredimo za vas
+sv: Hela processen skött åt dig
+@1108
+it: Contratto di compravendita bilingue, rappresentanza tramite procura, iscrizione al catasto e trasferimento delle utenze.
+pt: Contrato de compra e venda bilingue, representação por procuração, registo predial e transferência dos serviços.
+el: Δίγλωσσο συμβόλαιο αγοραπωλησίας, εκπροσώπηση με πληρεξούσιο, εγγραφή στο κτηματολόγιο και μεταφορά των παροχών.
+cs: Dvojjazyčná kupní smlouva, zastoupení na základě plné moci, zápis do katastru nemovitostí a převod energií.
+sl: Dvojezična prodajna pogodba, zastopanje s pooblastilom, vpis v zemljiško knjigo in prenos komunalnih priključkov.
+sv: Tvåspråkigt köpeavtal, ombud med fullmakt, inskrivning i fastighetsregistret och överföring av el och vatten.
+@1109
+it: Fondata
+pt: Fundada
+el: Ίδρυση
+cs: Založeno
+sl: Ustanovljeno
+sv: Grundat
+@1110
+it: Paesi
+pt: Países
+el: Χώρες
+cs: Země
+sl: Države
+sv: Länder
+@1111
+it: Lingue
+pt: Línguas
+el: Γλώσσες
+cs: Jazyky
+sl: Jeziki
+sv: Språk
+@1112
+it: =
+pt: =
+el: =
+cs: =
+sl: =
+sv: =
+@1113
+it: Provvigione
+pt: Comissão
+el: Προμήθεια
+cs: Provize
+sl: Provizija
+sv: Provision
+@1114
+it: Per i venditori | Il Suo immobile ungherese in Europa occidentale
+pt: Para vendedores | O seu imóvel húngaro na Europa Ocidental
+el: Για πωλητές | Το ουγγρικό σας ακίνητο στη Δυτική Ευρώπη
+cs: Pro prodávající | Vaše maďarská nemovitost v západní Evropě
+sl: Za prodajalce | Vaša madžarska nepremičnina v Zahodni Evropi
+sv: För säljare | Din ungerska bostad i Västeuropa
+@1115
+it: Pubblichi il Suo immobile ungherese in ${REACH_LANGUAGES} lingue in ${REACH_COUNTRIES} Paesi, da ${eur(69, L)} e senza esclusiva. Provvigione solo se FODEL trova l’acquirente: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% di IVA.
+pt: Anuncie o seu imóvel húngaro em ${REACH_LANGUAGES} línguas em ${REACH_COUNTRIES} países, a partir de ${eur(69, L)} e sem exclusividade. Comissão apenas se a FODEL encontrar o comprador: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% de IVA.
+el: Προβάλετε το ουγγρικό σας ακίνητο σε ${REACH_LANGUAGES} γλώσσες σε ${REACH_COUNTRIES} χώρες, από ${eur(69, L)} και χωρίς αποκλειστικότητα. Προμήθεια μόνο αν η FODEL φέρει τον αγοραστή: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% ΦΠΑ.
+cs: Inzerujte svou maďarskou nemovitost v ${REACH_LANGUAGES} jazycích v ${REACH_COUNTRIES} zemích, od ${eur(69, L)} a bez exkluzivity. Provize jen tehdy, když kupce přivede FODEL: ${COMMISSION.percent} % + ${COMMISSION.vatPercent} % DPH.
+sl: Oglašujte svojo madžarsko nepremičnino v ${REACH_LANGUAGES} jezikih v ${REACH_COUNTRIES} državah, od ${eur(69, L)} in brez izključnosti. Provizija le, če kupca pripelje FODEL: ${COMMISSION.percent} % + ${COMMISSION.vatPercent} % DDV.
+sv: Annonsera din ungerska bostad på ${REACH_LANGUAGES} språk i ${REACH_COUNTRIES} länder, från ${eur(69, L)} och utan exklusivitet. Provision bara om FODEL hittar köparen: ${COMMISSION.percent} % + ${COMMISSION.vatPercent} % moms.
+@1116
+it: Il Suo immobile
+pt: O seu imóvel
+el: Το ακίνητό σας
+cs: Vaše nemovitost
+sl: Vaša nepremičnina
+sv: Din bostad
+@1117
+it: in Europa occidentale
+pt: na Europa Ocidental
+el: στη Δυτική Ευρώπη
+cs: v západní Evropě
+sl: v Zahodni Evropi
+sv: i Västeuropa
+@1118
+it: Con il modello FODEL il Suo immobile compare in ${REACH_LANGUAGES} lingue in ${REACH_COUNTRIES} Paesi, senza contratto di esclusiva. Lavoriamo solo con acquirenti seri.
+pt: Com o modelo FODEL, o seu imóvel aparece em ${REACH_LANGUAGES} línguas em ${REACH_COUNTRIES} países, sem contrato de exclusividade. Trabalhamos apenas com compradores sérios.
+el: Με το μοντέλο της FODEL το ακίνητό σας εμφανίζεται σε ${REACH_LANGUAGES} γλώσσες σε ${REACH_COUNTRIES} χώρες, χωρίς σύμβαση αποκλειστικότητας. Συνεργαζόμαστε μόνο με σοβαρούς αγοραστές.
+cs: S modelem FODEL se vaše nemovitost objeví v ${REACH_LANGUAGES} jazycích v ${REACH_COUNTRIES} zemích, bez smlouvy o exkluzivitě. Spolupracujeme jen s vážnými kupci.
+sl: Z modelom FODEL se vaša nepremičnina pojavi v ${REACH_LANGUAGES} jezikih v ${REACH_COUNTRIES} državah, brez pogodbe o izključnosti. Sodelujemo le z resnimi kupci.
+sv: Med FODEL-modellen visas din bostad på ${REACH_LANGUAGES} språk i ${REACH_COUNTRIES} länder, utan exklusivavtal. Vi arbetar bara med seriösa köpare.

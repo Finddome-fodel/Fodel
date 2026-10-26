@@ -1,0 +1,861 @@
+@1236
+da: 27. juli 2026
+no: 27. juli 2026
+fi: 27. heinäkuuta 2026
+et: 27. juuli 2026
+lv: 2026. gada 27. jūlijs
+lt: 2026 m. liepos 27 d.
+@1237
+da: Dette er en oversættelse af praktiske hensyn. Ved uoverensstemmelser har den hollandske (i spørgsmål efter hollandsk ret) eller den ungarske original forrang.
+no: Dette er en oversettelse for enkelhets skyld. Ved avvik gjelder den nederlandske (i spørsmål etter nederlandsk rett) eller den ungarske originalen.
+fi: Tämä on käännös lukemisen helpottamiseksi. Ristiriitatilanteessa sovelletaan hollanninkielistä (Alankomaiden lakia koskevissa asioissa) tai unkarinkielistä alkuperäistekstiä.
+et: See on tõlge teie mugavuseks. Erinevuste korral kehtib hollandikeelne (Hollandi õiguse küsimustes) või ungarikeelne originaal.
+lv: Šis ir tulkojums jūsu ērtībai. Atšķirību gadījumā noteicošais ir oriģināls nīderlandiešu valodā (Nīderlandes tiesību jautājumos) vai ungāru valodā.
+lt: Tai vertimas jūsų patogumui. Esant neatitikimų, viršenybę turi originalas nyderlandų (Nyderlandų teisės klausimais) arba vengrų kalba.
+@1238
+da: Kolofon: virksomhedsoplysninger
+no: Om oss: firmaopplysninger
+fi: Yritystiedot: yhteys- ja yritystiedot
+et: Ettevõtte andmed: rekvisiidid
+lv: Rekvizīti: uzņēmuma dati
+lt: Rekvizitai: įmonės duomenys
+@1239
+da: Oplysninger om ${COMPANY.names.legal}: hjemstedsadresse, momsnummer, KvK-nummer og kontaktoplysninger.
+no: Opplysninger om ${COMPANY.names.legal}: forretningsadresse, mva-nummer, KvK-nummer og kontaktopplysninger.
+fi: Yrityksen ${COMPANY.names.legal} tiedot: kotipaikan osoite, ALV-tunniste, KvK-numero ja yhteystiedot.
+et: Ettevõtte ${COMPANY.names.legal} andmed: registrijärgne aadress, käibemaksukohustuslase number, KvK number ja kontaktandmed.
+lv: ${COMPANY.names.legal} rekvizīti: juridiskā adrese, PVN numurs, KvK numurs un kontaktinformācija.
+lt: ${COMPANY.names.legal} rekvizitai: registruotas adresas, PVM mokėtojo kodas, KvK numeris ir kontaktai.
+@1240
+da: Kolofon
+no: Om oss
+fi: Yritystiedot
+et: Ettevõtte andmed
+lv: Rekvizīti
+lt: Rekvizitai
+@1241
+da: Virksomhedsoplysninger
+no: Firmaopplysninger
+fi: Yrityksen tiedot
+et: Ettevõtte rekvisiidid
+lv: Uzņēmuma dati
+lt: Įmonės duomenys
+@1242
+da: Oplysninger om tjenesteyderen
+no: Opplysninger om tjenesteleverandøren
+fi: Palveluntarjoajan tiedot
+et: Teenuseosutaja andmed
+lv: Pakalpojuma sniedzēja dati
+lt: Paslaugos teikėjo duomenys
+@1243
+da: Virksomhedsnavn
+no: Foretaksnavn
+fi: Toiminimi
+et: Ärinimi
+lv: Uzņēmuma nosaukums
+lt: Įmonės pavadinimas
+@1244
+da: Hjemstedsadresse
+no: Forretningsadresse
+fi: Kotipaikan osoite
+et: Registrijärgne aadress
+lv: Juridiskā adrese
+lt: Registruotas adresas
+@1245
+da: Momsnummer
+no: Mva-nummer
+fi: ALV-tunniste
+et: Käibemaksukohustuslase number
+lv: PVN numurs
+lt: PVM mokėtojo kodas
+@1246
+da: KvK-nummer (det hollandske handelskammer)
+no: KvK-nummer (det nederlandske handelskammeret)
+fi: KvK-numero (Alankomaiden kauppakamari)
+et: KvK number (Hollandi kaubanduskoda)
+lv: KvK numurs (Nīderlandes Tirdzniecības kamera)
+lt: KvK numeris (Nyderlandų prekybos rūmai)
+@1247
+da: Repræsentant
+no: Representant
+fi: Edustaja
+et: Esindaja
+lv: Pārstāvis
+lt: Atstovas
+@1248
+da: E-mail
+no: E-post
+fi: Sähköposti
+et: E-post
+lv: E-pasts
+lt: El. paštas
+@1249
+da: Telefon
+no: Telefon
+fi: Puhelin
+et: Telefon
+lv: Tālrunis
+lt: Telefonas
+@1250
+da: Bankkonti
+no: Bankkontoer
+fi: Pankkitilit
+et: Pangakontod
+lv: Bankas konti
+lt: Banko sąskaitos
+@1251
+da: Nederlandene
+no: Nederland
+fi: Alankomaat
+et: Holland
+lv: Nīderlande
+lt: Nyderlandai
+@1252
+da: =
+no: =
+fi: =
+et: =
+lv: =
+lt: =
+@1253
+da: Tvister
+no: Tvister
+fi: Riidat
+et: Vaidlused
+lv: Strīdi
+lt: Ginčai
+@1254
+da: Ved en forbrugertvist kan du også bruge EU’s platform for onlinetvistbilæggelse: ec.europa.eu/consumers/odr
+no: Ved en forbrukertvist kan du også bruke EUs plattform for nettbasert tvisteløsning: ec.europa.eu/consumers/odr
+fi: Kuluttajariidassa voit käyttää myös EU:n verkkovälitteistä riidanratkaisufoorumia: ec.europa.eu/consumers/odr
+et: Tarbijavaidluse korral võite kasutada ka Euroopa vaidluste veebipõhise lahendamise platvormi: ec.europa.eu/consumers/odr
+lv: Patērētāju strīda gadījumā varat izmantot arī Eiropas strīdu izšķiršanas tiešsaistē platformu: ec.europa.eu/consumers/odr
+lt: Kilus vartotojų ginčui, taip pat galite naudotis Europos elektroninio ginčų sprendimo platforma: ec.europa.eu/consumers/odr
+@1255
+da: Information om persondata
+no: Informasjon om personvern
+fi: Tietoa tietosuojasta
+et: Isikuandmete kaitse
+lv: Privātuma politika
+lt: Privatumo politika
+@1256
+da: Sådan behandler FODEL dine personoplysninger: hvilke oplysninger vi behandler, hvor længe vi opbevarer dem, og hvilke rettigheder du har efter GDPR.
+no: Slik behandler FODEL personopplysningene dine: hvilke opplysninger vi behandler, hvor lenge vi lagrer dem, og hvilke rettigheter du har etter GDPR.
+fi: Miten FODEL käsittelee henkilötietojasi: mitä tietoja käsittelemme, kuinka kauan säilytämme niitä ja mitkä oikeudet sinulla on GDPR:n mukaan.
+et: Kuidas FODEL teie isikuandmeid töötleb: milliseid andmeid töötleme, kui kaua neid säilitame ja millised õigused teil on isikuandmete kaitse üldmääruse alusel.
+lv: Kā FODEL apstrādā jūsu personas datus: kādus datus apstrādājam, cik ilgi tos glabājam un kādas tiesības jums ir saskaņā ar VDAR.
+lt: Kaip FODEL tvarko jūsų asmens duomenis: kokius duomenis tvarkome, kiek laiko juos saugome ir kokias teises turite pagal BDAR.
+@1257
+da: Privatliv
+no: Personvern
+fi: Tietosuoja
+et: Privaatsus
+lv: Privātums
+lt: Privatumas
+@1258
+da: Denne information beskriver, hvordan vi behandler de personoplysninger, du giver os via dette websted, i overensstemmelse med GDPR.
+no: Denne informasjonen beskriver hvordan vi behandler personopplysningene du gir oss via dette nettstedet, i samsvar med GDPR.
+fi: Tässä selosteessa kerrotaan, miten käsittelemme tämän sivuston kautta antamiasi henkilötietoja GDPR:n mukaisesti.
+et: Selles teates kirjeldame, kuidas töötleme kooskõlas isikuandmete kaitse üldmäärusega isikuandmeid, mida te meile selle veebisaidi kaudu esitate.
+lv: Šajā paziņojumā aprakstīts, kā mēs saskaņā ar VDAR apstrādājam personas datus, ko jūs mums sniedzat šajā vietnē.
+lt: Šiame pranešime aprašoma, kaip pagal BDAR tvarkome asmens duomenis, kuriuos mums pateikiate per šią svetainę.
+@1259
+da: Dataansvarlig
+no: Behandlingsansvarlig
+fi: Rekisterinpitäjä
+et: Vastutav töötleja
+lv: Pārzinis
+lt: Duomenų valdytojas
+@1260
+da: Dataansvarlig
+no: Behandlingsansvarlig
+fi: Rekisterinpitäjä
+et: Vastutav töötleja
+lv: Pārzinis
+lt: Valdytojas
+@1261
+da: Adresse
+no: Adresse
+fi: Osoite
+et: Aadress
+lv: Adrese
+lt: Adresas
+@1262
+da: Hvilke oplysninger vi behandler
+no: Hvilke opplysninger vi behandler
+fi: Mitä tietoja käsittelemme
+et: Milliseid andmeid me töötleme
+lv: Kādus datus mēs apstrādājam
+lt: Kokius duomenis tvarkome
+@1263
+da: Kun de oplysninger, du selv indtaster i vores formularer:
+no: Bare opplysningene du selv fyller inn i skjemaene våre:
+fi: Vain tiedot, jotka itse syötät lomakkeisiimme:
+et: Ainult andmed, mille te ise meie vormidesse sisestate:
+lv: Tikai datus, ko paši ievadāt mūsu veidlapās:
+lt: Tik duomenis, kuriuos patys įvedate mūsų formose:
+@1264
+da: Navn, e-mailadresse og telefonnummer: så vi kan besvare din henvendelse
+no: Navn, e-postadresse og telefonnummer: slik at vi kan svare på henvendelsen din
+fi: Nimi, sähköpostiosoite ja puhelinnumero: jotta voimme vastata yhteydenottoosi
+et: Nimi, e-posti aadress ja telefoninumber: et saaksime teie päringule vastata
+lv: Vārds, e-pasta adrese un tālruņa numurs: lai varētu atbildēt uz jūsu pieprasījumu
+lt: Vardas, el. pašto adresas ir telefono numeris: kad galėtume atsakyti į jūsų užklausą
+@1265
+da: Emnet og indholdet af din besked
+no: Emnet og innholdet i meldingen din
+fi: Viestisi aihe ja sisältö
+et: Teie sõnumi teema ja sisu
+lv: Jūsu ziņojuma temats un saturs
+lt: Jūsų žinutės tema ir turinys
+@1266
+da: Ved en annonce: oplysninger om ejendommen og dine faktureringsoplysninger
+no: For en annonse: opplysninger om eiendommen og faktureringsopplysningene dine
+fi: Ilmoituksen osalta: kiinteistön tiedot ja laskutustietosi
+et: Kuulutuse puhul: kinnisvara andmed ja teie arveldusandmed
+lv: Sludinājumam: īpašuma dati un jūsu norēķinu dati
+lt: Skelbimui: turto duomenys ir jūsų sąskaitų duomenys
+@1267
+da: Ved en søgeanmodning: dine søgekriterier
+no: For en søkeforespørsel: søkekriteriene dine
+fi: Hakupyynnön osalta: hakuehtosi
+et: Otsingupäringu puhul: teie otsingukriteeriumid
+lv: Meklēšanas pieprasījumam: jūsu meklēšanas kritēriji
+lt: Paieškos užklausai: jūsų paieškos kriterijai
+@1268
+da: Til intern administration: hvornår og hvilken formular du udfyldte, og hvornår du loggede ind på portalen, uden at IP-adressen gemmes
+no: For intern administrasjon: når og hvilket skjema du fylte ut, og når du logget inn på portalen, uten at IP-adressen lagres
+fi: Sisäistä hallintoa varten: milloin ja minkä lomakkeen täytit ja milloin kirjauduit portaaliin, ilman IP-osoitteen tallentamista
+et: Sisemiseks halduseks: millal ja millise vormi täitsite ning millal portaali sisse logisite, ilma IP-aadressi salvestamata
+lv: Iekšējai administrēšanai: kad un kuru veidlapu aizpildījāt un kad pieteicāties portālā, nesaglabājot IP adresi
+lt: Vidiniam administravimui: kada ir kokią formą užpildėte bei kada prisijungėte prie portalo, nesaugant IP adreso
+@1269
+da: Retsgrundlag og opbevaringsperiode
+no: Rettslig grunnlag og lagringstid
+fi: Oikeusperuste ja säilytysaika
+et: Õiguslik alus ja säilitamise aeg
+lv: Juridiskais pamats un glabāšanas laiks
+lt: Teisinis pagrindas ir saugojimo laikotarpis
+@1270
+da: Kontakt og anmodning om opringning
+no: Kontakt og forespørsel om oppringing
+fi: Yhteydenotto ja takaisinsoittopyyntö
+et: Kontakt ja tagasihelistamise taotlus
+lv: Saziņa un atzvana pieprasījums
+lt: Kontaktas ir perskambinimo užklausa
+@1271
+da: Samtykke (art. 6, stk. 1, litra a, i GDPR): 12 måneder
+no: Samtykke (GDPR art. 6 nr. 1 bokstav a): 12 måneder
+fi: Suostumus (GDPR 6 artiklan 1 kohdan a alakohta): 12 kuukautta
+et: Nõusolek (isikuandmete kaitse üldmääruse art 6 lg 1 p a): 12 kuud
+lv: Piekrišana (VDAR 6. panta 1. punkta a) apakšpunkts): 12 mēneši
+lt: Sutikimas (BDAR 6 straipsnio 1 dalies a punktas): 12 mėnesių
+@1272
+da: Annoncebestilling
+no: Annonsebestilling
+fi: Ilmoitustilaus
+et: Kuulutuse tellimus
+lv: Sludinājuma pasūtījums
+lt: Skelbimo užsakymas
+@1273
+da: Opfyldelse af en kontrakt (art. 6, stk. 1, litra b): 7 år, lovpligtig opbevaring efter skattereglerne
+no: Oppfyllelse av avtale (art. 6 nr. 1 bokstav b): 7 år, lovpålagt oppbevaring etter skatteregler
+fi: Sopimuksen täytäntöönpano (6 artiklan 1 kohdan b alakohta): 7 vuotta, lakisääteinen verotuksellinen säilytys
+et: Lepingu täitmine (art 6 lg 1 p b): 7 aastat, seadusjärgne maksualane säilitamine
+lv: Līguma izpilde (6. panta 1. punkta b) apakšpunkts): 7 gadi, likumā noteiktā nodokļu dokumentu glabāšana
+lt: Sutarties vykdymas (6 straipsnio 1 dalies b punktas): 7 metai, privalomas saugojimas mokesčių tikslais
+@1274
+da: Søgeanmodning
+no: Søkeforespørsel
+fi: Hakupyyntö
+et: Otsingupäring
+lv: Meklēšanas pieprasījums
+lt: Paieškos užklausa
+@1275
+da: Samtykke: indtil sagen er afsluttet, højst 24 måneder
+no: Samtykke: til saken er avsluttet, høyst 24 måneder
+fi: Suostumus: kunnes asia on hoidettu, enintään 24 kuukautta
+et: Nõusolek: kuni lõpetamiseni, kõige kauem 24 kuud
+lv: Piekrišana: līdz izpildei, ne ilgāk kā 24 mēnešus
+lt: Sutikimas: iki įvykdymo, ne ilgiau kaip 24 mėnesius
+@1276
+da: Intern aktivitetslog
+no: Intern aktivitetslogg
+fi: Sisäinen toimintaloki
+et: Sisemine tegevuslogi
+lv: Iekšējais darbību žurnāls
+lt: Vidinis veiklos žurnalas
+@1277
+da: Legitim interesse (art. 6, stk. 1, litra f): ordentlig administration og opdagelse af misbrug: højst 24 måneder
+no: Berettiget interesse (art. 6 nr. 1 bokstav f): ryddig administrasjon og avdekking av misbruk: høyst 24 måneder
+fi: Oikeutettu etu (6 artiklan 1 kohdan f alakohta): asianmukainen hallinto ja väärinkäytösten havaitseminen: enintään 24 kuukautta
+et: Õigustatud huvi (art 6 lg 1 p f): korrektne haldus ja kuritarvituste avastamine: kõige kauem 24 kuud
+lv: Leģitīmās intereses (6. panta 1. punkta f) apakšpunkts): kārtīga administrēšana un ļaunprātīgas izmantošanas atklāšana: ne ilgāk kā 24 mēnešus
+lt: Teisėtas interesas (6 straipsnio 1 dalies f punktas): tinkamas administravimas ir piktnaudžiavimo nustatymas: ne ilgiau kaip 24 mėnesius
+@1278
+da: Hvem vi deler oplysninger med
+no: Hvem vi deler opplysninger med
+fi: Kenen kanssa jaamme tietoja
+et: Kellega me andmeid jagame
+lv: Ar ko mēs kopīgojam datus
+lt: Su kuo dalijamės duomenimis
+@1279
+da: Vi sælger ikke dine oplysninger og deler dem ikke til markedsføringsformål. Vores databehandlere er:
+no: Vi selger ikke opplysningene dine og deler dem ikke for markedsføringsformål. Databehandlerne våre er:
+fi: Emme myy tietojasi emmekä jaa niitä markkinointitarkoituksiin. Henkilötietojen käsittelijämme ovat:
+et: Me ei müü teie andmeid ega jaga neid turunduslikel eesmärkidel. Meie volitatud töötlejad on:
+lv: Mēs nepārdodam jūsu datus un nekopīgojam tos mārketinga nolūkos. Mūsu apstrādātāji ir:
+lt: Jūsų duomenų neparduodame ir nesidaliname jais rinkodaros tikslais. Mūsų duomenų tvarkytojai yra:
+@1280
+da: Vores e-mailudbyder med behandling inden for EU
+no: E-postleverandøren vår, med behandling innenfor EU
+fi: Sähköpostipalvelumme tarjoaja, joka käsittelee tiedot EU:n alueella
+et: Meie e-posti teenuse pakkuja, kes töötleb andmeid ELis
+lv: Mūsu e-pasta pakalpojuma sniedzējs, kas datus apstrādā ES
+lt: Mūsų el. pašto paslaugų teikėjas, duomenis tvarkantis ES viduje
+@1281
+da: Hostingudbyderen af dette websted
+no: Vertsleverandøren for dette nettstedet
+fi: Tämän sivuston palveluntarjoaja (hosting)
+et: Selle veebisaidi majutusteenuse pakkuja
+lv: Šīs vietnes mitināšanas pakalpojuma sniedzējs
+lt: Šios svetainės prieglobos paslaugų teikėjas
+@1282
+da: Ved køb, og kun efter din anmodning: modparten og den involverede advokat
+no: Ved kjøp, og bare etter ditt ønske: motparten og advokaten som er involvert
+fi: Kaupan yhteydessä ja vain pyynnöstäsi: toinen osapuoli ja asiaan osallistuva asianajaja
+et: Ostu korral ja ainult teie soovil: teine pool ja kaasatud advokaat
+lv: Pirkuma gadījumā un tikai pēc jūsu lūguma: otra puse un iesaistītais advokāts
+lt: Perkant ir tik jūsų prašymu: kita šalis ir dalyvaujantis advokatas
+@1283
+da: Om annoncer
+no: Om annonser
+fi: Ilmoituksista
+et: Kuulutustest
+lv: Par sludinājumiem
+lt: Apie skelbimus
+@1284
+da: Som annoncør kan du give os tilladelse til at vise dit navn og telefonnummer i annoncen, så interesserede kan kontakte dig direkte. Du kan til enhver tid trække tilladelsen tilbage; så fjerner vi oplysningerne fra annoncen.
+no: Som annonsør kan du gi oss tillatelse til å vise navnet og telefonnummeret ditt i annonsen, slik at interesserte kan kontakte deg direkte. Du kan når som helst trekke tillatelsen tilbake; da fjerner vi opplysningene fra annonsen.
+fi: Ilmoittajana voit antaa meille luvan näyttää nimesi ja puhelinnumerosi ilmoituksessa, jotta kiinnostuneet voivat ottaa sinuun suoraan yhteyttä. Voit perua luvan milloin tahansa; poistamme silloin tiedot ilmoituksesta.
+et: Kuulutuse esitajana võite anda meile loa näidata kuulutuses teie nime ja telefoninumbrit, et huvilised saaksid teiega otse ühendust võtta. Loa saate igal ajal tagasi võtta; siis eemaldame andmed kuulutusest.
+lv: Kā sludinātājs jūs varat atļaut mums sludinājumā rādīt jūsu vārdu un tālruņa numuru, lai interesenti varētu ar jums sazināties tieši. Atļauju varat jebkurā laikā atsaukt; tad mēs dzēšam datus no sludinājuma.
+lt: Kaip skelbėjas galite leisti mums prie skelbimo rodyti jūsų vardą ir telefono numerį, kad suinteresuoti asmenys galėtų su jumis susisiekti tiesiogiai. Leidimą galite bet kada atšaukti; tada duomenis iš skelbimo pašaliname.
+@1285
+da: Nyhedsbrev
+no: Nyhetsbrev
+fi: Uutiskirje
+et: Uudiskiri
+lv: Jaunumu vēstule
+lt: Naujienlaiškis
+@1286
+da: Hvis du tilmelder dig vores nyhedsbrev, behandler vi din e-mailadresse, det valgte sprog og tidspunktet for tilmelding og bekræftelse, udelukkende for at sende dig nyhedsbrevet, på grundlag af dit samtykke. Tilmeldingen sker i to trin: vi sender intet, før du har klikket på knappen i bekræftelsesmailen. I hver mail kan du afmelde dig med ét klik, og vi stopper med det samme. Vi bruger tjenesten Resend til udsendelsen.
+no: Hvis du abonnerer på nyhetsbrevet vårt, behandler vi e-postadressen din, valgt språk og tidspunktet for påmelding og bekreftelse, utelukkende for å sende deg nyhetsbrevet, på grunnlag av samtykket ditt. Påmeldingen skjer i to trinn: vi sender ingenting før du har klikket på knappen i bekreftelsesmeldingen. I hver e-post kan du melde deg av med ett klikk, og vi stopper umiddelbart. Vi bruker tjenesten Resend til utsendelsen.
+fi: Jos tilaat uutiskirjeemme, käsittelemme sähköpostiosoitettasi, valitsemaasi kieltä sekä tilaus- ja vahvistusajankohtaa ainoastaan uutiskirjeen lähettämiseksi suostumuksesi perusteella. Tilaus tehdään kahdessa vaiheessa: emme lähetä mitään ennen kuin olet napsauttanut vahvistusviestin painiketta. Jokaisessa viestissä voit perua tilauksen yhdellä napsautuksella, ja lopetamme heti. Lähetykseen käytämme Resend-palvelua.
+et: Kui tellite meie uudiskirja, töötleme teie e-posti aadressi, valitud keelt ning tellimise ja kinnitamise aega üksnes uudiskirja saatmiseks teie nõusoleku alusel. Tellimine toimub kahes etapis: me ei saada midagi enne, kui olete kinnituskirjas nuppu klõpsanud. Igas kirjas saate tellimusest ühe klõpsuga loobuda ja me lõpetame kohe. Saatmiseks kasutame teenust Resend.
+lv: Ja abonējat mūsu jaunumu vēstuli, mēs apstrādājam jūsu e-pasta adresi, izvēlēto valodu un pieteikšanās un apstiprināšanas laiku tikai tam, lai sūtītu jums jaunumu vēstuli, pamatojoties uz jūsu piekrišanu. Pieteikšanās notiek divos soļos: mēs neko nesūtām, kamēr neesat noklikšķinājis uz pogas apstiprinājuma e-pastā. Katrā e-pastā varat atteikties ar vienu klikšķi, un mēs uzreiz pārtraucam. Sūtīšanai izmantojam pakalpojumu Resend.
+lt: Užsiprenumeravę mūsų naujienlaiškį, mes tvarkome jūsų el. pašto adresą, pasirinktą kalbą ir užsiprenumeravimo bei patvirtinimo laiką tik tam, kad siųstume naujienlaiškį, remdamiesi jūsų sutikimu. Prenumerata vyksta dviem etapais: nieko nesiunčiame, kol nepaspaudžiate mygtuko patvirtinimo laiške. Kiekviename laiške galite atsisakyti prenumeratos vienu paspaudimu, ir mes iškart sustojame. Siuntimui naudojame paslaugą Resend.
+@1287
+da: Dine rettigheder
+no: Dine rettigheter
+fi: Oikeutesi
+et: Teie õigused
+lv: Jūsu tiesības
+lt: Jūsų teisės
+@1288
+da: Indsigt i de oplysninger, vi behandler om dig
+no: Innsyn i opplysningene vi behandler om deg
+fi: Pääsy sinua koskeviin käsittelemiimme tietoihin
+et: Juurdepääs andmetele, mida me teie kohta töötleme
+lv: Piekļuve datiem, ko par jums apstrādājam
+lt: Susipažinimas su duomenimis, kuriuos apie jus tvarkome
+@1289
+da: Berigtigelse og sletning
+no: Retting og sletting
+fi: Oikaisu ja poistaminen
+et: Parandamine ja kustutamine
+lv: Labošana un dzēšana
+lt: Ištaisymas ir ištrynimas
+@1290
+da: Begrænsning af eller indsigelse mod behandlingen
+no: Begrensning av eller innsigelse mot behandlingen
+fi: Käsittelyn rajoittaminen tai sen vastustaminen
+et: Töötlemise piiramine või sellele vastuväite esitamine
+lv: Apstrādes ierobežošana vai iebildumi pret to
+lt: Tvarkymo apribojimas arba nesutikimas su juo
+@1291
+da: Dataportabilitet
+no: Dataportabilitet
+fi: Siirto-oikeus
+et: Andmete ülekandmine
+lv: Datu pārnesamība
+lt: Duomenų perkeliamumas
+@1292
+da: At trække dit samtykke tilbage når som helst
+no: Å trekke tilbake samtykket ditt når som helst
+fi: Suostumuksen peruuttaminen milloin tahansa
+et: Nõusoleku tagasivõtmine igal ajal
+lv: Piekrišanas atsaukšana jebkurā laikā
+lt: Sutikimo atšaukimas bet kuriuo metu
+@1293
+da: At klage til den hollandske databeskyttelsesmyndighed (Autoriteit Persoonsgegevens)
+no: Å klage til det nederlandske datatilsynet (Autoriteit Persoonsgegevens)
+fi: Valituksen tekeminen Alankomaiden tietosuojaviranomaiselle (Autoriteit Persoonsgegevens)
+et: Kaebuse esitamine Hollandi andmekaitseasutusele (Autoriteit Persoonsgegevens)
+lv: Sūdzības iesniegšana Nīderlandes datu aizsardzības iestādē (Autoriteit Persoonsgegevens)
+lt: Skundo pateikimas Nyderlandų duomenų apsaugos institucijai (Autoriteit Persoonsgegevens)
+@1294
+da: Kontakt om databeskyttelse
+no: Kontakt om personvern
+fi: Tietosuojaa koskevat yhteydenotot
+et: Kontakt privaatsusküsimustes
+lv: Saziņa par privātumu
+lt: Kontaktai privatumo klausimais
+@1295
+da: Spørgsmål eller anmodninger kan du sende til ${COMPANY.email.primary}. Vi svarer senest inden for 30 dage.
+no: Spørsmål eller forespørsler kan du sende til ${COMPANY.email.primary}. Vi svarer senest innen 30 dager.
+fi: Voit lähettää kysymyksiä tai pyyntöjä osoitteeseen ${COMPANY.email.primary}. Vastaamme viimeistään 30 päivän kuluessa.
+et: Küsimused või taotlused võite saata aadressile ${COMPANY.email.primary}. Vastame hiljemalt 30 päeva jooksul.
+lv: Jautājumus vai pieprasījumus varat sūtīt uz ${COMPANY.email.primary}. Mēs atbildam ne vēlāk kā 30 dienu laikā.
+lt: Klausimus ar prašymus galite siųsti adresu ${COMPANY.email.primary}. Atsakome ne vėliau kaip per 30 dienų.
+@1296
+da: Information om cookies
+no: Informasjon om informasjonskapsler
+fi: Tietoa evästeistä
+et: Teave küpsiste kohta
+lv: Sīkdatņu politika
+lt: Slapukų politika
+@1297
+da: Hvilke cookies ${SITE_HOST} bruger, og hvordan du ændrer dit valg.
+no: Hvilke informasjonskapsler ${SITE_HOST} bruker, og hvordan du endrer valget ditt.
+fi: Mitä evästeitä ${SITE_HOST} käyttää ja miten voit muuttaa valintaasi.
+et: Milliseid küpsiseid ${SITE_HOST} kasutab ja kuidas oma valikut muuta.
+lv: Kādas sīkdatnes izmanto ${SITE_HOST} un kā mainīt savu izvēli.
+lt: Kokius slapukus naudoja ${SITE_HOST} ir kaip pakeisti savo pasirinkimą.
+@1298
+da: Cookies
+no: Informasjonskapsler
+fi: Evästeet
+et: Küpsised
+lv: Sīkdatnes
+lt: Slapukai
+@1299
+da: Information om
+no: Informasjon om
+fi: Tietoa
+et: Teave
+lv: Sīkdatņu
+lt: Slapukų
+@1300
+da: I øjeblikket bruger webstedet kun teknisk nødvendig lagring. Vi kører ingen reklame- eller sporingsscripts og deler intet med sociale medier.
+no: For øyeblikket bruker nettstedet bare teknisk nødvendig lagring. Vi kjører ingen reklame- eller sporingsskript og deler ingenting med sosiale medier.
+fi: Tällä hetkellä sivusto käyttää vain teknisesti välttämätöntä tallennusta. Emme käytä mainos- tai seurantaskriptejä emmekä jaa mitään sosiaalisen median palveluille.
+et: Praegu kasutab see veebisait ainult tehniliselt vajalikku salvestust. Me ei kasuta reklaami- ega jälgimisskripte ega jaga midagi sotsiaalmeediaga.
+lv: Pašlaik šī vietne izmanto tikai tehniski nepieciešamu datu glabāšanu. Mēs neizmantojam reklāmas vai izsekošanas skriptus un neko nekopīgojam ar sociālajiem tīkliem.
+lt: Šiuo metu ši svetainė naudoja tik techniškai būtiną saugyklą. Nenaudojame reklamos ar sekimo scenarijų ir nieko nesidaliname su socialiniais tinklais.
+@1301
+da: Hvad vi gemmer
+no: Hva vi lagrer
+fi: Mitä tallennamme
+et: Mida me salvestame
+lv: Ko mēs saglabājam
+lt: Ką saugome
+@1302
+da: Dit valg om cookies (accepteret eller afvist). Gemmes i din browser og når ikke frem til os. Opbevaring: 12 måneder.
+no: Valget ditt om informasjonskapsler (godtatt eller avvist). Lagres i nettleseren din og når ikke fram til oss. Lagringstid: 12 måneder.
+fi: Evästevalintasi (hyväksytty tai hylätty). Se tallennetaan selaimeesi eikä tule meille. Säilytysaika: 12 kuukautta.
+et: Teie valik küpsiste kohta (nõustutud või keeldutud). Säilitatakse teie brauseris ega jõua meieni. Säilitamise aeg: 12 kuud.
+lv: Jūsu izvēle par sīkdatnēm (pieņemtas vai noraidītas). Tiek glabāta jūsu pārlūkā un nenonāk pie mums. Glabāšanas laiks: 12 mēneši.
+lt: Jūsų pasirinkimas dėl slapukų (priimta ar atmesta). Saugomas jūsų naršyklėje ir mūsų nepasiekia. Saugojimo laikas: 12 mėnesių.
+@1303
+da: Statistik
+no: Statistikk
+fi: Tilastot
+et: Statistika
+lv: Statistika
+lt: Statistika
+@1304
+da: Hvis vi nogensinde fører besøgsstatistik, slår vi den kun til med dit forudgående, udtrykkelige samtykke. Et afslag begrænser ikke din brug af webstedet på nogen måde.
+no: Hvis vi noen gang fører besøksstatistikk, slår vi den bare på med ditt forutgående, uttrykkelige samtykke. Å avslå begrenser ikke bruken av nettstedet på noen måte.
+fi: Jos joskus keräämme kävijätilastoja, otamme ne käyttöön vain etukäteen antamallasi nimenomaisella suostumuksella. Kieltäytyminen ei rajoita sivuston käyttöä mitenkään.
+et: Kui me kunagi peame külastajate statistikat, lülitame selle sisse ainult teie eelneval selgesõnalisel nõusolekul. Keeldumine ei piira kuidagi saidi kasutamist.
+lv: Ja kādreiz vāksim apmeklētāju statistiku, to ieslēgsim tikai ar jūsu iepriekšēju, skaidri izteiktu piekrišanu. Atteikums nekādi neierobežo vietnes lietošanu.
+lt: Jei kada nors rinksime lankytojų statistiką, ją įjungsime tik gavę jūsų išankstinį aiškų sutikimą. Atsisakymas jokiu būdu neriboja naudojimosi svetaine.
+@1305
+da: Ændre dit valg
+no: Endre valget ditt
+fi: Valinnan muuttaminen
+et: Valiku muutmine
+lv: Izvēles maiņa
+lt: Pasirinkimo keitimas
+@1306
+da: Du kan til enhver tid ændre dit valg ved at slette de gemte browserdata for dette websted; så vises cookiemeddelelsen igen.
+no: Du kan når som helst endre valget ditt ved å slette lagrede nettleserdata for dette nettstedet; da vises varselet om informasjonskapsler igjen.
+fi: Voit muuttaa valintaasi milloin tahansa tyhjentämällä tämän sivuston tallennetut selaintiedot; evästeilmoitus näkyy silloin uudelleen.
+et: Valikut saate igal ajal muuta, kustutades selle saidi salvestatud brauseriandmed; seejärel ilmub küpsiste teade uuesti.
+lv: Izvēli varat jebkurā laikā mainīt, izdzēšot šai vietnei saglabātos pārlūka datus; tad sīkdatņu paziņojums parādās atkal.
+lt: Pasirinkimą galite bet kada pakeisti ištrynę šiai svetainei išsaugotus naršyklės duomenis; tada slapukų pranešimas vėl pasirodys.
+@1307
+da: Generelle betingelser
+no: Generelle vilkår
+fi: Palvelun käyttöehdot
+et: Teenuse tingimused
+lv: Lietošanas noteikumi
+lt: Naudojimosi sąlygos
+@1308
+da: Betingelserne for FODEL’s annonce- og formidlingsservice: priser, salær, tilbagetrækning og ansvar.
+no: Vilkårene for FODELs annonse- og formidlingstjeneste: priser, provisjon, tilbaketrekking og ansvar.
+fi: FODELin ilmoitus- ja välityspalvelun ehdot: hinnat, palkkio, peruminen ja vastuu.
+et: FODELi kuulutus- ja vahendusteenuse tingimused: hinnad, vahendustasu, tagasivõtmine ja vastutus.
+lv: FODEL sludinājumu un starpniecības pakalpojuma noteikumi: cenas, komisija, atsaukšana un atbildība.
+lt: FODEL skelbimų ir tarpininkavimo paslaugos sąlygos: kainos, komisinis, atšaukimas ir atsakomybė.
+@1309
+da: Betingelser
+no: Vilkår
+fi: Ehdot
+et: Tingimused
+lv: Noteikumi
+lt: Sąlygos
+@1310
+da: Generelle
+no: Generelle
+fi: Palvelun
+et: Teenuse
+lv: Lietošanas
+lt: Naudojimosi
+@1311
+da: Bemærk
+no: Merk
+fi: Huomaa
+et: Pange tähele
+lv: Ievērībai
+lt: Atkreipkite dėmesį
+@1312
+da: Denne side er et resumé. De fulde, bindende betingelser findes som PDF; ved uoverensstemmelser har PDF’en forrang.
+no: Denne siden er et sammendrag. De fullstendige, bindende vilkårene finnes som PDF; ved avvik gjelder PDF-en.
+fi: Tämä sivu on tiivistelmä. Täydelliset, sitovat ehdot ovat saatavilla PDF-tiedostona; ristiriitatilanteessa PDF on ensisijainen.
+et: See leht on kokkuvõte. Täielikud siduvad tingimused on saadaval PDF-ina; erinevuste korral kehtib PDF.
+lv: Šī lapa ir kopsavilkums. Pilnie, saistošie noteikumi pieejami PDF formātā; atšķirību gadījumā noteicošais ir PDF.
+lt: Šis puslapis yra santrauka. Visos privalomos sąlygos pateikiamos PDF formatu; esant neatitikimų, viršenybę turi PDF.
+@1313
+da: 1. Tjenesten
+no: 1. Tjenesten
+fi: 1. Palvelu
+et: 1. Teenus
+lv: 1. Pakalpojums
+lt: 1. Paslauga
+@1314
+da: FODEL annoncerer ungarske ejendomme på sine egne flersprogede websteder og bistår efter særskilt aftale med at gennemføre salget.
+no: FODEL annonserer ungarske eiendommer på egne flerspråklige nettsteder og bistår, etter egen avtale, med å gjennomføre salget.
+fi: FODEL ilmoittaa unkarilaisia kiinteistöjä omilla monikielisillä sivustoillaan ja avustaa erillisen sopimuksen perusteella kaupan toteuttamisessa.
+et: FODEL reklaamib Ungari kinnisvara oma mitmekeelsetel veebisaitidel ning aitab eraldi kokkuleppe alusel müüki lõpule viia.
+lv: FODEL reklamē Ungārijas īpašumus savās daudzvalodu vietnēs un, pamatojoties uz atsevišķu līgumu, palīdz noslēgt darījumu.
+lt: FODEL reklamuoja Vengrijos nekilnojamąjį turtą savo daugiakalbėse svetainėse ir pagal atskirą susitarimą padeda užbaigti pardavimą.
+@1315
+da: Annonceservicen indebærer ingen eneret: sælger kan også udbyde og sælge ejendommen via andre kanaler.
+no: Annonsetjenesten innebærer ingen enerett: selgeren kan også tilby og selge eiendommen gjennom andre kanaler.
+fi: Ilmoituspalveluun ei liity yksinoikeutta: myyjä voi tarjota ja myydä kiinteistön myös muita kanavia pitkin.
+et: Kuulutusteenus ei ole ainuõiguslik: müüja võib kinnisvara pakkuda ja müüa ka teiste kanalite kaudu.
+lv: Sludinājumu pakalpojums nav ekskluzīvs: pārdevējs īpašumu var piedāvāt un pārdot arī citos kanālos.
+lt: Skelbimų paslauga nėra išimtinė: pardavėjas gali siūlyti ir parduoti turtą ir kitais kanalais.
+@1316
+da: 2. Indrykning af en annonce
+no: 2. Innrykk av annonse
+fi: 2. Ilmoituksen jättäminen
+et: 2. Kuulutuse esitamine
+lv: 2. Sludinājuma ievietošana
+lt: 2. Skelbimo pateikimas
+@1317
+da: Sælger udfylder tilmeldingsformularen.
+no: Selgeren fyller ut registreringsskjemaet.
+fi: Myyjä täyttää rekisteröintilomakkeen.
+et: Müüja täidab registreerimisvormi.
+lv: Pārdevējs aizpilda reģistrācijas veidlapu.
+lt: Pardavėjas užpildo registracijos formą.
+@1318
+da: FODEL sender en betalingsanmodning for den valgte pakke.
+no: FODEL sender en betalingsforespørsel for den valgte pakken.
+fi: FODEL lähettää maksupyynnön valitusta paketista.
+et: FODEL saadab valitud paketi kohta maksenõude.
+lv: FODEL nosūta maksājuma pieprasījumu par izvēlēto paketi.
+lt: FODEL atsiunčia mokėjimo prašymą už pasirinktą paketą.
+@1319
+da: Sælger betaler via bankoverførsel.
+no: Selgeren betaler med bankoverføring.
+fi: Myyjä maksaa tilisiirrolla.
+et: Müüja maksab pangaülekandega.
+lv: Pārdevējs maksā ar bankas pārskaitījumu.
+lt: Pardavėjas sumoka banko pavedimu.
+@1320
+da: Når betalingen er modtaget, får sælger ret til at uploade fotos.
+no: Når betalingen er mottatt, får selgeren rett til å laste opp bilder.
+fi: Kun maksu on saapunut, myyjä saa oikeuden ladata kuvia.
+et: Pärast makse laekumist saab müüja õiguse fotosid üles laadida.
+lv: Pēc maksājuma saņemšanas pārdevējs iegūst tiesības augšupielādēt fotoattēlus.
+lt: Gavus mokėjimą, pardavėjui suteikiama teisė įkelti nuotraukas.
+@1321
+da: FODEL står for oversættelsen og offentliggør annoncen.
+no: FODEL tar seg av oversettelsen og publiserer annonsen.
+fi: FODEL hoitaa käännöksen ja julkaisee ilmoituksen.
+et: FODEL korraldab tõlke ja avaldab kuulutuse.
+lv: FODEL nodrošina tulkojumu un publicē sludinājumu.
+lt: FODEL pasirūpina vertimu ir paskelbia skelbimą.
+@1322
+da: 3. Priser
+no: 3. Priser
+fi: 3. Hinnat
+et: 3. Hinnad
+lv: 3. Cenas
+lt: 3. Kainos
+@1323
+da: Alle priser er inklusive ${LISTING_VAT_PERCENT} % hollandsk moms. Se siden Priser for det fulde overblik.
+no: Alle priser inkluderer ${LISTING_VAT_PERCENT} % nederlandsk mva. Se siden Priser for full oversikt.
+fi: Kaikki hinnat sisältävät ${LISTING_VAT_PERCENT} %:n Alankomaiden ALV:n. Täydellinen yleiskatsaus on Hinnat-sivulla.
+et: Kõik hinnad sisaldavad ${LISTING_VAT_PERCENT}% Hollandi käibemaksu. Täieliku ülevaate leiate lehelt Hinnad.
+lv: Visās cenās iekļauts ${LISTING_VAT_PERCENT}% Nīderlandes PVN. Pilns pārskats ir lapā „Cenas“.
+lt: Visos kainos nurodytos su ${LISTING_VAT_PERCENT} % Nyderlandų PVM. Visą apžvalgą rasite puslapyje „Kainos“.
+@1324
+da: Basisannonce (${cheap.months} måneder)
+no: Basisannonse (${cheap.months} måneder)
+fi: Edullinen ilmoitus (${cheap.months} kk)
+et: Soodne kuulutus (${cheap.months} kuud)
+lv: Ekonomiskais sludinājums (${cheap.months} mēneši)
+lt: Ekonominis skelbimas (${cheap.months} mėn.)
+@1325
+da: Standardannonce (${normal.months} måneder)
+no: Standardannonse (${normal.months} måneder)
+fi: Vakioilmoitus (${normal.months} kk)
+et: Tavakuulutus (${normal.months} kuud)
+lv: Standarta sludinājums (${normal.months} mēneši)
+lt: Standartinis skelbimas (${normal.months} mėn.)
+@1326
+da: =
+no: =
+fi: =
+et: =
+lv: =
+lt: =
+@1327
+da: Oversættelse
+no: Oversettelse
+fi: Käännös
+et: Tõlge
+lv: Tulkojums
+lt: Vertimas
+@1328
+da: ${eur(extra('translation').priceEur, L)} pr. sprog
+no: ${eur(extra('translation').priceEur, L)} per språk
+fi: ${eur(extra('translation').priceEur, L)} / kieli
+et: ${eur(extra('translation').priceEur, L)} keele kohta
+lv: ${eur(extra('translation').priceEur, L)} par valodu
+lt: ${eur(extra('translation').priceEur, L)} už kalbą
+@1329
+da: Fremhævning
+no: Fremheving
+fi: Korostus
+et: Esiletõstmine
+lv: Izcelšana
+lt: Išskyrimas
+@1330
+da: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} pr. måned (min. ${minMonths} måneder)
+no: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} per måned (min. ${minMonths} måneder)
+fi: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} kuukaudessa (väh. ${minMonths} kk)
+et: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} kuus (vähemalt ${minMonths} kuud)
+lv: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} mēnesī (vismaz ${minMonths} mēneši)
+lt: ${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} per mėnesį (min. ${minMonths} mėn.)
+@1331
+da: 4. Salær
+no: 4. Provisjon
+fi: 4. Palkkio
+et: 4. Vahendustasu
+lv: 4. Komisija
+lt: 4. Komisinis
+@1332
+da: Salær forfalder kun, når alt følgende er opfyldt: en skriftlig købsaftale, en køber formidlet af FODEL og et betalt depositum.
+no: Provisjon skal bare betales når alt det følgende er oppfylt: en skriftlig kjøpekontrakt, en kjøper formidlet av FODEL og et innbetalt depositum.
+fi: Palkkio erääntyy vain, kun kaikki seuraavat täyttyvät: kirjallinen kauppakirja, FODELin tuoma ostaja ja maksettu käsiraha.
+et: Vahendustasu tuleb tasuda ainult siis, kui kõik järgmised tingimused on täidetud: kirjalik müügileping, FODELi leitud ostja ja tasutud käsiraha.
+lv: Komisija jāmaksā tikai tad, ja izpildās visi šie nosacījumi: rakstisks pirkuma līgums, FODEL atrasts pircējs un samaksāta rokasnauda.
+lt: Komisinis mokamas tik tada, kai įvykdomos visos šios sąlygos: rašytinė pirkimo–pardavimo sutartis, FODEL surastas pirkėjas ir sumokėtas avansas.
+@1333
+da: Salæret er ${COMMISSION.percent} % netto, dog mindst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent} % hollandsk moms.
+no: Provisjonen er ${COMMISSION.percent} % netto, minst ${eur(COMMISSION.minimumEur, L)}, pluss ${COMMISSION.vatPercent} % nederlandsk mva.
+fi: Palkkio on ${COMMISSION.percent} % netto, vähintään ${eur(COMMISSION.minimumEur, L)}, lisäksi ${COMMISSION.vatPercent} % Alankomaiden ALV.
+et: Vahendustasu on ${COMMISSION.percent}% netosummast, vähemalt ${eur(COMMISSION.minimumEur, L)}, millele lisandub ${COMMISSION.vatPercent}% Hollandi käibemaks.
+lv: Komisija ir ${COMMISSION.percent}% neto, vismaz ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Nīderlandes PVN.
+lt: Komisinis yra ${COMMISSION.percent} % be mokesčių, ne mažiau kaip ${eur(COMMISSION.minimumEur, L)}, plius ${COMMISSION.vatPercent} % Nyderlandų PVM.
+@1334
+da: Hvis den interesserede kontakter sælger direkte, og vores hjælp til gennemførelsen ikke er nødvendig, skal der ikke betales andet end annoncegebyret.
+no: Hvis interessenten kontakter selgeren direkte og hjelpen vår med gjennomføringen ikke trengs, skal ingenting betales utover annonseprisen.
+fi: Jos kiinnostunut ottaa suoraan yhteyttä myyjään eikä apuamme kaupan toteuttamisessa tarvita, mitään ei makseta ilmoitusmaksun lisäksi.
+et: Kui huviline võtab müüjaga otse ühendust ja meie abi tehingu lõpetamisel pole vaja, ei tule peale kuulutuse tasu midagi maksta.
+lv: Ja interesents sazinās tieši ar pārdevēju un mūsu palīdzība darījuma noslēgšanā nav vajadzīga, papildus sludinājuma maksai nekas nav jāmaksā.
+lt: Jei susidomėjęs asmuo susisiekia su pardavėju tiesiogiai ir mūsų pagalbos užbaigiant sandorį nereikia, be skelbimo mokesčio nieko daugiau mokėti nereikia.
+@1335
+da: 5. Tilbagetrækning af annoncen
+no: 5. Tilbaketrekking av annonsen
+fi: 5. Ilmoituksen poistaminen
+et: 5. Kuulutuse tagasivõtmine
+lv: 5. Sludinājuma atsaukšana
+lt: 5. Skelbimo atšaukimas
+@1336
+da: Sælger kan trække annoncen tilbage før udløbsdatoen. Allerede betalte annoncegebyrer refunderes i så fald ikke.
+no: Selgeren kan trekke annonsen tilbake før utløpsdatoen. Allerede betalte annonsegebyrer refunderes i så fall ikke.
+fi: Myyjä voi poistaa ilmoituksen ennen sen päättymispäivää. Jo maksettuja ilmoitusmaksuja ei tällöin palauteta.
+et: Müüja võib kuulutuse enne aegumiskuupäeva tagasi võtta. Juba tasutud kuulutustasusid sel juhul ei tagastata.
+lv: Pārdevējs var atsaukt sludinājumu pirms termiņa beigām. Šādā gadījumā jau samaksātā sludinājuma maksa netiek atmaksāta.
+lt: Pardavėjas gali atšaukti skelbimą nepasibaigus jo galiojimui. Tokiu atveju jau sumokėti skelbimo mokesčiai negrąžinami.
+@1337
+da: 6. Ansvar
+no: 6. Ansvar
+fi: 6. Vastuu
+et: 6. Vastutus
+lv: 6. Atbildība
+lt: 6. Atsakomybė
+@1338
+da: Sælger er ansvarlig for, at oplysningerne om ejendommen er korrekte. FODEL gengiver de leverede oplysninger og påtager sig intet ansvar for deres rigtighed.
+no: Selgeren er ansvarlig for at opplysningene om eiendommen er korrekte. FODEL gjengir opplysningene som er gitt, og tar intet ansvar for at de er riktige.
+fi: Myyjä vastaa kiinteistöä koskevien tietojen oikeellisuudesta. FODEL julkaisee toimitetut tiedot eikä vastaa niiden paikkansapitävyydestä.
+et: Müüja vastutab kinnisvara andmete õigsuse eest. FODEL edastab esitatud andmed ega vastuta nende õigsuse eest.
+lv: Pārdevējs atbild par datu par īpašumu precizitāti. FODEL atspoguļo sniegtos datus un neuzņemas atbildību par to precizitāti.
+lt: Už duomenų apie turtą tikslumą atsako pardavėjas. FODEL skelbia pateiktus duomenis ir už jų tikslumą neatsako.
+@1339
+da: Oversættelserne på webstedet er vejledende; ved tvist har den ungarske version forrang.
+no: Oversettelsene på nettstedet er veiledende; ved tvist gjelder den ungarske versjonen.
+fi: Sivuston käännökset ovat tiedoksi; riitatilanteessa unkarinkielinen versio on ensisijainen.
+et: Selle veebisaidi tõlked on informatiivsed; vaidluse korral kehtib ungarikeelne versioon.
+lv: Tulkojumi šajā vietnē ir informatīvi; strīda gadījumā noteicošā ir ungāru valodas versija.
+lt: Šios svetainės vertimai yra informacinio pobūdžio; kilus ginčui, viršenybę turi vengriška versija.
+@1340
+da: 7. Fortrydelsesret
+no: 7. Angrerett
+fi: 7. Peruuttamisoikeus
+et: 7. Taganemisõigus
+lv: 7. Atteikuma tiesības
+lt: 7. Teisė atsisakyti sutarties
+@1341
+da: En sælger, der er forbruger, har lovbestemt fortrydelsesret ved fjernsalgsaftaler. Hvis sælger udtrykkeligt anmoder om øjeblikkelig levering, reduceres fortrydelsesretten forholdsmæssigt i forhold til den allerede leverede ydelse.
+no: En selger som er forbruker, har lovfestet angrerett ved fjernsalgsavtaler. Hvis selgeren uttrykkelig ber om umiddelbar oppfyllelse, reduseres angreretten forholdsmessig etter tjenesten som allerede er levert.
+fi: Kuluttajana toimivalla myyjällä on etäsopimuksia koskeva lakisääteinen peruuttamisoikeus. Jos myyjä nimenomaisesti pyytää palvelun aloittamista heti, peruuttamisoikeus kapenee jo suoritetun palvelun suhteessa.
+et: Tarbijast müüjal on sidevahendi abil sõlmitud lepingute puhul seadusjärgne taganemisõigus. Kui müüja palub sõnaselgelt kohest täitmist, väheneb taganemisõigus proportsionaalselt juba osutatud teenusega.
+lv: Pārdevējam, kas ir patērētājs, ir likumā noteiktās atteikuma tiesības distances līgumiem. Ja pārdevējs skaidri lūdz tūlītēju izpildi, atteikuma tiesības samazinās proporcionāli jau sniegtajam pakalpojumam.
+lt: Pardavėjas, kuris yra vartotojas, turi įstatymu nustatytą teisę atsisakyti nuotolinės sutarties. Jei pardavėjas aiškiai paprašo nedelsiant pradėti teikti paslaugą, teisė atsisakyti sutarties sumažėja proporcingai jau suteiktai paslaugai.
+@1342
+da: Erklæring om tilgængelighed
+no: Erklæring om tilgjengelighet
+fi: Tietoa saavutettavuudesta
+et: Ligipääsetavuse teatis
+lv: Piekļūstamības paziņojums
+lt: Prieinamumo pareiškimas
+@1343
+da: Tilgængelighedsniveauet for ${SITE_HOST}, den standard vi følger, og hvordan du giver os feedback.
+no: Tilgjengelighetsnivået for ${SITE_HOST}, standarden vi følger, og hvordan du gir oss tilbakemelding.
+fi: ${SITE_HOST}-sivuston saavutettavuuden taso, noudattamamme standardi ja miten voit antaa palautetta.
+et: ${SITE_HOST} ligipääsetavuse tase, standard, mida järgime, ja kuidas meile tagasisidet anda.
+lv: ${SITE_HOST} piekļūstamības līmenis, standarts, ko ievērojam, un kā sniegt mums atsauksmes.
+lt: ${SITE_HOST} prieinamumo lygis, standartas, kurio laikomės, ir kaip pateikti mums atsiliepimą.
+@1344
+da: Tilgængelighed
+no: Tilgjengelighet
+fi: Saavutettavuus
+et: Ligipääsetavus
+lv: Piekļūstamība
+lt: Prieinamumas
+@1345
+da: Vi ønsker, at webstedet kan bruges af alle, også besøgende, der bruger skærmlæser, tastatur eller forstørrelse.
+no: Vi ønsker at nettstedet skal kunne brukes av alle, også besøkende som bruker skjermleser, tastatur eller forstørrelse.
+fi: Haluamme, että kaikki voivat käyttää sivustoa, myös ruudunlukijaa, näppäimistöä tai suurennusta käyttävät kävijät.
+et: Soovime, et seda veebisaiti saaksid kasutada kõik, sealhulgas ekraanilugeja, klaviatuuri või suurenduse kasutajad.
+lv: Mēs vēlamies, lai šo vietni varētu lietot ikviens, arī apmeklētāji, kas izmanto ekrāna lasītāju, tastatūru vai palielinājumu.
+lt: Norime, kad šia svetaine galėtų naudotis visi, įskaitant lankytojus, kurie naudoja ekrano skaitytuvą, klaviatūrą ar didinimą.
+@1346
+da: Vi bygger webstedet efter WCAG 2.2 niveau AA. En betydelig del af vores besøgende er pensionister, så tekststørrelse, kontrast og tastaturbetjening har høj prioritet.
+no: Vi bygger nettstedet etter WCAG 2.2 nivå AA. En betydelig del av de besøkende er pensjonister, så tekststørrelse, kontrast og tastaturbetjening prioriteres.
+fi: Rakennamme sivuston WCAG 2.2 -ohjeiston AA-tason mukaisesti. Huomattava osa kävijöistämme on eläkeläisiä, joten tekstin koko, kontrasti ja näppäimistökäyttö ovat etusijalla.
+et: Ehitame saidi WCAG 2.2 AA-taseme järgi. Märkimisväärne osa meie külastajatest on pensionärid, seega on esikohal teksti suurus, kontrastsus ja klaviatuuriga kasutamine.
+lv: Mēs veidojam vietni atbilstoši WCAG 2.2 AA līmenim. Ievērojama daļa mūsu apmeklētāju ir pensionāri, tāpēc prioritāte ir teksta lielums, kontrasts un vadība ar tastatūru.
+lt: Svetainę kuriame pagal WCAG 2.2 AA lygį. Nemaža dalis mūsų lankytojų yra pensininkai, todėl pirmenybė teikiama teksto dydžiui, kontrastui ir valdymui klaviatūra.
+@1347
+da: Hvad der er på plads
+no: Hva som er på plass
+fi: Mitä on jo toteutettu
+et: Mis on juba olemas
+lv: Kas jau ir ieviests
+lt: Kas jau įgyvendinta
+@1348
+da: Al tekst har et kontrastforhold på mindst 4,5:1
+no: All tekst har et kontrastforhold på minst 4,5:1
+fi: Kaiken tekstin kontrastisuhde on vähintään 4,5:1
+et: Kogu teksti kontrastsuhe on vähemalt 4,5 : 1
+lv: Visam tekstam kontrasta attiecība ir vismaz 4,5:1
+lt: Viso teksto kontrasto santykis yra ne mažesnis kaip 4,5:1
+@1349
+da: Fuld tastaturbetjening med synlig fokusmarkering
+no: Full tastaturbetjening med synlig fokusmarkering
+fi: Täysi näppäimistökäyttö ja näkyvä kohdistuksen ilmaisin
+et: Täielik klaviatuuriga kasutamine nähtava fookusetähisega
+lv: Pilnīga vadība ar tastatūru un redzamu fokusa norādi
+lt: Visiškas valdymas klaviatūra su matomu fokuso žymėjimu
+@1350
+da: Et link “spring til indhold” øverst på hver side
+no: En lenke «hopp til innhold» øverst på hver side
+fi: ”Siirry sisältöön” -linkki jokaisen sivun yläosassa
+et: Link „liigu sisu juurde“ iga lehe ülaosas
+lv: Saite „pāriet uz saturu“ katras lapas augšā
+lt: Nuoroda „pereiti prie turinio“ kiekvieno puslapio viršuje
+@1351
+da: Meningsfulde alternative tekster til alle billeder
+no: Meningsfulle alternative tekster for alle bilder
+fi: Kuvaavat vaihtoehtoiset tekstit kaikissa kuvissa
+et: Sisukad asendustekstid kõigil piltidel
+lv: Jēgpilni alternatīvie teksti visiem attēliem
+lt: Prasmingi alternatyvieji tekstai visiems paveikslėliams
+@1352
+da: Formularfelter med tilknyttede etiketter og fejlmeddelelser i tekst
+no: Skjemafelt med tilknyttede etiketter og feilmeldinger i tekst
+fi: Lomakekentät, joihin on liitetty nimiöt ja tekstimuotoiset virheilmoitukset
+et: Vormiväljad seotud siltide ja tekstiliste veateadetega
+lv: Veidlapu lauki ar saistītām etiķetēm un teksta kļūdu ziņojumiem
+lt: Formos laukai su susietomis etiketėmis ir tekstiniais klaidų pranešimais
+@1353
+da: Respekt for systemindstillingen “reducer bevægelse”
+no: Respekt for systeminnstillingen «reduser bevegelse»
+fi: Järjestelmäasetuksen ”vähennä liikettä” noudattaminen
+et: Süsteemiseade „vähenda liikumist“ arvestamine
+lv: Sistēmas iestatījuma „samazināt kustību“ ievērošana
+lt: Atsižvelgiama į sistemos nustatymą „mažinti judesį“
+@1354
+da: Webstedet kan læses og bruges uden JavaScript
+no: Nettstedet kan leses og brukes uten JavaScript
+fi: Sivusto on luettavissa ja käytettävissä ilman JavaScriptiä
+et: Saiti saab lugeda ja kasutada ka ilma JavaScriptita
+lv: Vietne ir lasāma un lietojama bez JavaScript
+lt: Svetainę galima skaityti ir naudoti be JavaScript
+@1355
+da: Kendte begrænsninger
+no: Kjente begrensninger
+fi: Tunnetut rajoitukset
+et: Teadaolevad piirangud
+lv: Zināmie ierobežojumi
+lt: Žinomi apribojimai
+@1356
+da: Vi har ingen indflydelse på tilgængeligheden af indhold fra tredjeparter, f.eks. en korttjeneste.
+no: Vi har ingen innflytelse på tilgjengeligheten til innhold fra tredjeparter, for eksempel en karttjeneste.
+fi: Emme voi vaikuttaa kolmansien osapuolten sisällön, kuten karttapalvelun, saavutettavuuteen.
+et: Me ei saa mõjutada kolmandate osapoolte sisu, näiteks kaarditeenuse, ligipääsetavust.
+lv: Mēs nevaram ietekmēt trešo pušu satura, piemēram, karšu pakalpojuma, piekļūstamību.
+lt: Negalime daryti įtakos trečiųjų šalių turinio, pavyzdžiui, žemėlapių paslaugos, prieinamumui.
+@1357
+da: Feedback
+no: Tilbakemelding
+fi: Palaute
+et: Tagasiside
+lv: Atsauksmes
+lt: Atsiliepimai
+@1358
+da: Hvis du støder på en barriere, så giv os besked på ${COMPANY.email.primary} eller pr. telefon. Vi løser henvendelser så hurtigt som muligt.
+no: Hvis du støter på en barriere, gi oss beskjed på ${COMPANY.email.primary} eller på telefon. Vi løser henvendelser så raskt vi kan.
+fi: Jos kohtaat esteen, ilmoita siitä osoitteeseen ${COMPANY.email.primary} tai puhelimitse. Käsittelemme ilmoitukset niin nopeasti kuin mahdollista.
+et: Kui puutute kokku takistusega, andke meile teada aadressil ${COMPANY.email.primary} või telefoni teel. Lahendame teated nii kiiresti kui võimalik.
+lv: Ja saskaraties ar šķērsli, paziņojiet mums uz ${COMPANY.email.primary} vai pa tālruni. Ziņojumus risinām pēc iespējas ātrāk.
+lt: Jei susiduriate su kliūtimi, praneškite mums adresu ${COMPANY.email.primary} arba telefonu. Pranešimus sprendžiame kuo greičiau.

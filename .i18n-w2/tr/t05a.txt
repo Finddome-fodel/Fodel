@@ -1,0 +1,735 @@
+@288
+it: Disattivi la data sulla fotocamera.
+pt: Desative a data na câmara.
+el: Απενεργοποιήστε την ημερομηνία στην κάμερα.
+cs: Vypněte ve fotoaparátu vkládání data.
+sl: Na fotoaparatu izklopite prikaz datuma.
+sv: Stäng av datumstämpeln i kameran.
+@289
+it: Pulisca l’obiettivo del telefono. Un obiettivo unto è la causa più comune di foto velate.
+pt: Limpe a lente do telemóvel. Uma lente engordurada é a causa mais comum de fotografias desfocadas.
+el: Καθαρίστε τον φακό του κινητού σας. Ένας λερωμένος φακός είναι η πιο συχνή αιτία θολών φωτογραφιών.
+cs: Otřete objektiv telefonu. Umaštěný objektiv je nejčastější příčinou zamlžených fotografií.
+sl: Obrišite objektiv telefona. Masten objektiv je najpogostejši vzrok za motne fotografije.
+sv: Torka av telefonens lins. En fet lins är den vanligaste orsaken till disiga bilder.
+@290
+it: Luce
+pt: Luz
+el: Φως
+cs: Světlo
+sl: Svetloba
+sv: Ljus
+@291
+it: Scatti con il sole, all’interno e all’esterno.
+pt: Fotografe com sol, no interior e no exterior.
+el: Φωτογραφίζετε με ηλιοφάνεια, μέσα και έξω.
+cs: Fotografujte za slunečného počasí, uvnitř i venku.
+sl: Fotografirajte v sončnem vremenu, znotraj in zunaj.
+sv: Fotografera i soligt väder, både inne och ute.
+@292
+it: Eviti cielo coperto, crepuscolo e sera.
+pt: Evite céu nublado, o crepúsculo e a noite.
+el: Αποφύγετε τη συννεφιά, το σούρουπο και το βράδυ.
+cs: Vyhněte se zatažené obloze, soumraku a večeru.
+sl: Izogibajte se oblačnemu nebu, mraku in večeru.
+sv: Undvik mulet väder, skymning och kväll.
+@293
+it: Accenda le luci in ogni stanza.
+pt: Acenda as luzes em todas as divisões.
+el: Ανάψτε τα φώτα σε κάθε δωμάτιο.
+cs: Rozsviťte ve všech místnostech.
+sl: Prižgite luči v vseh prostorih.
+sv: Tänd lamporna i alla rum.
+@294
+it: Apra le tende e alzi tapparelle e persiane.
+pt: Abra as cortinas e levante os estores e as persianas.
+el: Τραβήξτε τις κουρτίνες και ανεβάστε τα στόρια και τα ρολά.
+cs: Roztáhněte závěsy a vytáhněte žaluzie i rolety.
+sl: Odgrnite zavese ter dvignite žaluzije in polkna.
+sv: Dra ifrån gardinerna och dra upp persienner och rullgardiner.
+@295
+it: Non usi mai il flash.
+pt: Nunca use o flash.
+el: Μη χρησιμοποιείτε ποτέ φλας.
+cs: Nikdy nepoužívejte blesk.
+sl: Nikoli ne uporabljajte bliskavice.
+sv: Använd aldrig blixt.
+@296
+it: Inquadratura e composizione
+pt: Enquadramento e composição
+el: Κάδρο και σύνθεση
+cs: Záběr a kompozice
+sl: Kader in kompozicija
+sv: Utsnitt och komposition
+@297
+it: Tenga sempre il telefono in orizzontale. Non scatti foto in verticale.
+pt: Segure sempre o telemóvel na horizontal. Não tire fotografias na vertical.
+el: Κρατάτε πάντα το κινητό οριζόντια. Μην τραβάτε κάθετες φωτογραφίες.
+cs: Telefon držte vždy na šířku. Nefoťte na výšku.
+sl: Telefon vedno držite ležeče. Ne fotografirajte pokončno.
+sv: Håll alltid telefonen horisontellt (liggande). Ta inga stående bilder.
+@298
+it: Si posizioni in un angolo della stanza e scatti all’altezza del petto, così da inquadrare l’intera stanza.
+pt: Coloque-se num canto da divisão e fotografe à altura do peito, para que a divisão inteira fique no enquadramento.
+el: Σταθείτε σε μια γωνία του δωματίου και φωτογραφίστε στο ύψος του στήθους, ώστε να χωρά όλο το δωμάτιο στο κάδρο.
+cs: Postavte se do rohu místnosti a fotografujte ve výšce hrudníku, aby byla v záběru celá místnost.
+sl: Postavite se v kot prostora in fotografirajte v višini prsi, da bo v kadru ves prostor.
+sv: Ställ dig i ett hörn av rummet och fotografera i brösthöjd, så att hela rummet kommer med i bild.
+@299
+it: Allinei le superfici orizzontali al bordo superiore dello schermo.
+pt: Alinhe as superfícies horizontais com a margem superior do ecrã.
+el: Ευθυγραμμίστε τις οριζόντιες επιφάνειες με το πάνω άκρο της οθόνης.
+cs: Vodorovné plochy srovnejte s horním okrajem displeje.
+sl: Vodoravne površine poravnajte z zgornjim robom zaslona.
+sv: Rikta in horisontella ytor mot skärmens överkant.
+@300
+it: Se la stanza non entra nell’inquadratura, faccia un passo indietro.
+pt: Se a divisão não couber, dê um passo atrás.
+el: Αν το δωμάτιο δεν χωρά, κάντε ένα βήμα πίσω.
+cs: Pokud se místnost nevejde, ustupte o krok dozadu.
+sl: Če prostor ne gre v kader, stopite korak nazaj.
+sv: Om rummet inte får plats, ta ett steg bakåt.
+@301
+it: Per una casa indipendente, scatti anche una foto dall’alto.
+pt: Numa moradia isolada, tire também uma fotografia de cima.
+el: Για μονοκατοικία, τραβήξτε και μια φωτογραφία από ψηλά.
+cs: U samostatně stojícího domu pořiďte i snímek shora.
+sl: Pri samostojni hiši posnemite tudi fotografijo od zgoraj.
+sv: För en friliggande villa, ta även en bild ovanifrån.
+@302
+it: Per la facciata, mostri l’intero edificio.
+pt: Na fachada, mostre o edifício inteiro.
+el: Για την πρόσοψη, δείξτε ολόκληρο το κτίριο.
+cs: U fasády zachyťte celou budovu.
+sl: Pri fasadi pokažite vso stavbo.
+sv: För fasaden, visa hela byggnaden.
+@303
+it: Eviti inquadrature dominate da asfalto, soffitto o recinzione.
+pt: Evite imagens dominadas por asfalto, teto ou vedação.
+el: Αποφύγετε λήψεις όπου κυριαρχεί άσφαλτος, ταβάνι ή φράχτης.
+cs: Vyhněte se záběrům, kde převládá asfalt, strop nebo plot.
+sl: Izogibajte se posnetkom, kjer prevladujejo asfalt, strop ali ograja.
+sv: Undvik bilder som domineras av asfalt, tak eller staket.
+@304
+it: Si assicuri che nessuno compaia nelle foto, nemmeno riflesso in uno specchio o in una finestra.
+pt: Certifique-se de que ninguém aparece nas fotografias, nem sequer num espelho ou numa janela.
+el: Βεβαιωθείτε ότι δεν υπάρχει κανείς στις φωτογραφίες, ούτε καν σε καθρέφτη ή παράθυρο.
+cs: Dbejte, aby na fotografiích nikdo nebyl, a to ani v zrcadle či v okně.
+sl: Poskrbite, da na fotografijah ni nikogar, niti v ogledalu ali oknu.
+sv: Se till att ingen syns på bilderna, inte ens i en spegel eller ett fönster.
+@305
+it: Qualità dell’immagine
+pt: Qualidade de imagem
+el: Ποιότητα εικόνας
+cs: Kvalita snímků
+sl: Kakovost slike
+sv: Bildkvalitet
+@306
+it: Usi foto recenti, non vecchie.
+pt: Use fotografias atuais, não antigas.
+el: Χρησιμοποιήστε πρόσφατες φωτογραφίες, όχι παλιές.
+cs: Použijte aktuální fotografie, ne staré.
+sl: Uporabite aktualne fotografije, ne starih.
+sv: Använd aktuella bilder, inte gamla.
+@307
+it: Carichi i file originali: almeno 3 megapixel e 1.500 pixel di larghezza.
+pt: Carregue os ficheiros originais: pelo menos 3 megapíxeis e 1500 píxeis de largura.
+el: Ανεβάστε τα πρωτότυπα αρχεία: τουλάχιστον 3 megapixel και πλάτος 1.500 pixel.
+cs: Nahrajte původní soubory: alespoň 3 megapixely a šířka 1 500 pixelů.
+sl: Naložite izvirne datoteke: vsaj 3 milijone slikovnih pik in širina 1500 slikovnih pik.
+sv: Ladda upp originalfilerna: minst 3 megapixel och 1 500 pixlar breda.
+@308
+it: Non carichi versioni compresse dall’e-mail.
+pt: Não carregue versões comprimidas pelo e-mail.
+el: Μην ανεβάζετε εκδόσεις συμπιεσμένες από το email.
+cs: Nenahrávejte verze zmenšené e-mailem.
+sl: Ne nalagajte različic, ki jih je stisnila e-pošta.
+sv: Ladda inte upp versioner som komprimerats av e-posten.
+@309
+it: Inspiri e trattenga il respiro per un secondo mentre preme il pulsante: evita il mosso.
+pt: Inspire e sustenha a respiração durante um segundo ao carregar no botão; evita o efeito de arrastamento.
+el: Πάρτε ανάσα και κρατήστε την για ένα δευτερόλεπτο καθώς πατάτε το κουμπί· έτσι αποφεύγετε το κούνημα.
+cs: Při stisknutí spouště se nadechněte a na vteřinu zadržte dech; zabráníte tak rozmazání pohybem.
+sl: Ko pritisnete gumb, vdihnite in za sekundo zadržite dih; tako preprečite zameglitev zaradi gibanja.
+sv: Andas in och håll andan en sekund när du trycker på knappen; det förhindrar rörelseoskärpa.
+@310
+it: Controlli poi la nitidezza di ogni foto.
+pt: Verifique depois a nitidez de cada fotografia.
+el: Ελέγξτε μετά κάθε φωτογραφία για ευκρίνεια.
+cs: Potom zkontrolujte ostrost každé fotografie.
+sl: Nato preverite ostrino vsake fotografije.
+sv: Kontrollera efteråt att varje bild är skarp.
+@311
+it: Gli errori più comuni
+pt: Os erros mais comuns
+el: Τα πιο συνηθισμένα λάθη
+cs: Nejčastější chyby
+sl: Najpogostejše napake
+sv: De vanligaste misstagen
+@312
+it: Foto cupe scattate con il cielo coperto
+pt: Fotografias sombrias tiradas com tempo nublado
+el: Σκοτεινές φωτογραφίες τραβηγμένες με συννεφιά
+cs: Ponuré fotografie pořízené za zataženého počasí
+sl: Mračne fotografije, posnete v oblačnem vremenu
+sv: Dystra bilder tagna i mulet väder
+@313
+it: Foto degli interni troppo scure
+pt: Fotografias de interiores demasiado escuras
+el: Πολύ σκοτεινές λήψεις εσωτερικού
+cs: Příliš tmavé snímky interiéru
+sl: Pretemni posnetki notranjosti
+sv: För mörka interiörbilder
+@314
+it: Inquadrature storte
+pt: Enquadramento torto
+el: Στραβό κάδρο
+cs: Křivý záběr
+sl: Poševen kader
+sv: Snett utsnitt
+@315
+it: Foto sfocate, mosse o velate
+pt: Fotografias desfocadas, tremidas ou baças
+el: Θολές, κουνημένες ή θαμπές φωτογραφίες
+cs: Rozmazané, roztřesené nebo zamlžené fotografie
+sl: Zamegljene, tresoče se ali motne fotografije
+sv: Suddiga, skakiga eller disiga bilder
+@316
+it: Foto a bassa risoluzione o in verticale
+pt: Fotografias de baixa resolução ou na vertical
+el: Φωτογραφίες χαμηλής ανάλυσης ή σε κάθετη μορφή
+cs: Fotografie s nízkým rozlišením nebo na výšku
+sl: Fotografije nizke ločljivosti ali v pokončni obliki
+sv: Bilder med låg upplösning eller i stående format
+@317
+it: Persone nell’inquadratura
+pt: Pessoas na imagem
+el: Άνθρωποι στη φωτογραφία
+cs: Lidé na snímku
+sl: Ljudje na sliki
+sv: Personer i bild
+@318
+it: Scatti ripetitivi e superflui
+pt: Imagens repetitivas e desnecessárias
+el: Επαναλαμβανόμενες, περιττές λήψεις
+cs: Opakující se, zbytečné záběry
+sl: Ponavljajoči se, nepotrebni posnetki
+sv: Upprepade, onödiga bilder
+@319
+it: Pulisca l’obiettivo, tenga fermo il telefono e verifichi che la foto sia nitida.
+pt: Limpe a lente, segure o telemóvel com firmeza e verifique se a fotografia está nítida.
+el: Καθαρίστε τον φακό, κρατήστε σταθερό το κινητό και ελέγξτε ότι η φωτογραφία είναι ευκρινής.
+cs: Otřete objektiv, držte telefon pevně a zkontrolujte, zda je snímek ostrý.
+sl: Obrišite objektiv, telefon držite pri miru in preverite, ali je fotografija ostra.
+sv: Torka av linsen, håll telefonen stilla och kontrollera att bilden är skarp.
+@320
+it: Giardino e annessi
+pt: Jardim e anexos
+el: Κήπος και βοηθητικά κτίσματα
+cs: Zahrada a hospodářské budovy
+sl: Vrt in pomožni objekti
+sv: Trädgård och uthus
+@321
+it: Mostri le parti importanti della proprietà, compresi giardino e annessi.
+pt: Mostre as partes importantes da propriedade, incluindo o jardim e os anexos.
+el: Δείξτε τα σημαντικά σημεία του ακινήτου, μαζί με τον κήπο και τα βοηθητικά κτίσματα.
+cs: Ukažte důležité části nemovitosti včetně zahrady a hospodářských budov.
+sl: Pokažite pomembne dele nepremičnine, vključno z vrtom in pomožnimi objekti.
+sv: Visa fastighetens viktiga delar, även trädgården och uthusen.
+@322
+it: Vista panoramica
+pt: Vista panorâmica
+el: Πανοραμική θέα
+cs: Panoramatický výhled
+sl: Panoramski razgled
+sv: Panoramautsikt
+@323
+it: Sull’acqua
+pt: À beira da água
+el: Δίπλα στο νερό
+cs: U vody
+sl: Ob vodi
+sv: Vid vattnet
+@324
+it: Pontile privato
+pt: Cais privativo
+el: Ιδιωτική προβλήτα
+cs: Vlastní molo
+sl: Zasebni pomol
+sv: Egen brygga
+@325
+it: Rimessa per barche
+pt: Casa de barcos
+el: Υπόστεγο σκαφών
+cs: Loděnice
+sl: Čolnarna
+sv: Båthus
+@326
+it: In collina
+pt: No topo de uma colina
+el: Σε λόφο
+cs: Na kopci
+sl: Na vrhu hriba
+sv: På en höjd
+@327
+it: Vicino al bosco
+pt: Perto da floresta
+el: Κοντά στο δάσος
+cs: U lesa
+sl: Blizu gozda
+sv: Nära skogen
+@328
+it: Vigneto
+pt: Vinha
+el: Αμπελώνας
+cs: Vinice
+sl: Vinograd
+sv: Vingård
+@329
+it: Cantina in attività
+pt: Adega em funcionamento
+el: Οινοποιείο σε λειτουργία
+cs: Fungující vinařství
+sl: Delujoča vinska klet
+sv: Vingård i drift
+@330
+it: Cantina
+pt: Adega
+el: Κελάρι κρασιού
+cs: Vinný sklep
+sl: Vinska klet
+sv: Vinkällare
+@331
+it: Frutteto
+pt: Pomar
+el: Οπωρώνας
+cs: Ovocný sad
+sl: Sadovnjak
+sv: Fruktträdgård
+@332
+it: Pozzo privato
+pt: Poço próprio
+el: Ιδιωτικό πηγάδι
+cs: Vlastní studna
+sl: Lasten vodnjak
+sv: Egen brunn
+@333
+it: Annessi
+pt: Anexos
+el: Βοηθητικά κτίσματα
+cs: Hospodářské budovy
+sl: Pomožni objekti
+sv: Uthus
+@334
+it: Scuderie
+pt: Cavalariças
+el: Στάβλοι αλόγων
+cs: Stáje
+sl: Konjski hlevi
+sv: Stall
+@335
+it: Dépendance per ospiti
+pt: Casa de hóspedes
+el: Ξενώνας
+cs: Dům pro hosty
+sl: Hiša za goste
+sv: Gästhus
+@336
+it: Parco
+pt: Parque
+el: Πάρκο
+cs: Park
+sl: Park
+sv: Park
+@337
+it: Terrazza
+pt: Terraço
+el: Βεράντα
+cs: Terasa
+sl: Terasa
+sv: Terrass
+@338
+it: Travi originali
+pt: Vigas originais
+el: Αυθεντικά δοκάρια
+cs: Původní trámy
+sl: Izvirni tramovi
+sv: Originalbjälkar
+@339
+it: Ristrutturato
+pt: Renovado
+el: Ανακαινισμένο
+cs: Po rekonstrukci
+sl: Prenovljeno
+sv: Renoverad
+@340
+it: Parcheggio nel lotto
+pt: Estacionamento no terreno
+el: Στάθμευση εντός οικοπέδου
+cs: Parkování na pozemku
+sl: Parkiranje na parceli
+sv: Parkering på tomten
+@341
+it: Garage
+pt: Garagem
+el: Γκαράζ
+cs: Garáž
+sl: Garaža
+sv: Garage
+@342
+it: Piscina
+pt: Piscina
+el: Πισίνα
+cs: Bazén
+sl: Bazen
+sv: Pool
+@343
+it: Balcone
+pt: Varanda
+el: Μπαλκόνι
+cs: Balkon
+sl: Balkon
+sv: Balkong
+@344
+it: Posto auto coperto
+pt: Telheiro para carro
+el: Στέγαστρο αυτοκινήτου
+cs: Přístřešek pro auto
+sl: Nadstrešek za avto
+sv: Carport
+@345
+it: Deposito
+pt: Armazém
+el: Αποθήκη
+cs: Skladovací budova
+sl: Skladiščni objekt
+sv: Förrådsbyggnad
+@346
+it: Fienile o capannone
+pt: Celeiro ou pavilhão
+el: Αχυρώνας ή υπόστεγο
+cs: Stodola nebo hala
+sl: Skedenj ali hala
+sv: Lada eller hall
+@347
+it: Ricovero per animali
+pt: Abrigo para animais
+el: Χώρος σταβλισμού ζώων
+cs: Ustájení pro zvířata
+sl: Prostor za živali
+sv: Djurstall
+@348
+it: Gazebo
+pt: Caramanchão
+el: Κιόσκι
+cs: Altán
+sl: Senčnica
+sv: Lusthus
+@349
+it: Forno all’aperto
+pt: Forno exterior
+el: Υπαίθριος φούρνος
+cs: Venkovní pec
+sl: Zunanja krušna peč
+sv: Utomhusugn
+@350
+it: Come nuovo
+pt: Como novo
+el: Σαν καινούργιο
+cs: Jako nový
+sl: Kot novo
+sv: Som ny
+@351
+it: In buono stato
+pt: Em bom estado
+el: Σε καλή κατάσταση
+cs: V dobrém stavu
+sl: V dobrem stanju
+sv: Gott skick
+@352
+it: Da ristrutturare
+pt: Para renovar
+el: Χρειάζεται ανακαίνιση
+cs: K rekonstrukci
+sl: Potrebno prenove
+sv: Renoveringsbehov
+@353
+it: Riscaldamento a gas
+pt: Aquecimento a gás
+el: Θέρμανση με αέριο
+cs: Plynové vytápění
+sl: Plinsko ogrevanje
+sv: Gasuppvärmning
+@354
+it: Riscaldamento elettrico
+pt: Aquecimento elétrico
+el: Ηλεκτρική θέρμανση
+cs: Elektrické vytápění
+sl: Električno ogrevanje
+sv: Elvärme
+@355
+it: Riscaldamento a legna
+pt: Aquecimento a lenha
+el: Θέρμανση με ξύλα
+cs: Vytápění dřevem
+sl: Ogrevanje na drva
+sv: Vedeldning
+@356
+it: Pompa di calore
+pt: Bomba de calor
+el: Αντλία θερμότητας
+cs: Tepelné čerpadlo
+sl: Toplotna črpalka
+sv: Värmepump
+@357
+it: Analisi di mercato
+pt: Análise de mercado
+el: Ανάλυση αγοράς
+cs: Analýza trhu
+sl: Analiza trga
+sv: Marknadsanalys
+@358
+it: Guida per l’acquirente
+pt: Guia do comprador
+el: Οδηγός αγοραστή
+cs: Průvodce pro kupující
+sl: Vodnik za kupce
+sv: Köparguide
+@359
+it: Notizie
+pt: Notícias
+el: Νέα
+cs: Novinky
+sl: Novice
+sv: Nyheter
+@360
+it: Mattoni
+pt: Tijolo
+el: Τούβλο
+cs: Cihla
+sl: Opeka
+sv: Tegel
+@361
+it: Adobe (mattoni crudi)
+pt: Adobe (tijolo de barro)
+el: Πλίνθοι (ωμόπλινθοι)
+cs: Nepálené cihly
+sl: Nežgana opeka (blato)
+sv: Lersten (soltorkat tegel)
+@362
+it: Misto
+pt: Misto
+el: Μικτό
+cs: Smíšené
+sl: Mešano
+sv: Blandat
+@363
+it: Calcestruzzo / pannelli
+pt: Betão / painéis
+el: Σκυρόδεμα / πάνελ
+cs: Beton / panel
+sl: Beton / montažni paneli
+sv: Betong / element
+@364
+it: Legno / struttura leggera
+pt: Madeira / estrutura ligeira
+el: Ξύλο / ελαφριά κατασκευή
+cs: Dřevo / lehká konstrukce
+sl: Les / lahka konstrukcija
+sv: Trä / lätt stomme
+@365
+it: Pietra
+pt: Pedra
+el: Πέτρα
+cs: Kámen
+sl: Kamen
+sv: Sten
+@366
+it: Altro
+pt: Outro
+el: Άλλο
+cs: Jiné
+sl: Drugo
+sv: Annat
+@367
+it: Sconosciuto
+pt: Desconhecido
+el: Άγνωστο
+cs: Neznámé
+sl: Neznano
+sv: Okänt
+@368
+it: Non lo so
+pt: Não sei
+el: Δεν ξέρω
+cs: Nevím
+sl: Ne vem
+sv: Vet inte
+@369
+it: Sì
+pt: Sim
+el: Ναι
+cs: Ano
+sl: Da
+sv: Ja
+@370
+it: No
+pt: Não
+el: Όχι
+cs: Ne
+sl: Ne
+sv: Nej
+@371
+it: Confina con il lotto
+pt: Confina com o terreno
+el: Συνορεύει με το οικόπεδο
+cs: Sousedí s pozemkem
+sl: Meji na parcelo
+sv: Gränsar till tomten
+@372
+it: Raggiungibile a piedi
+pt: A uma distância a pé
+el: Σε απόσταση με τα πόδια
+cs: V docházkové vzdálenosti
+sl: Dosegljivo peš
+sv: På gångavstånd
+@373
+it: Non nelle vicinanze
+pt: Não fica perto
+el: Όχι κοντά
+cs: Není v blízkosti
+sl: Ni v bližini
+sv: Inte i närheten
+@374
+it: Che tipo di strada porta all’immobile?
+pt: Que tipo de estrada dá acesso ao imóvel?
+el: Τι είδους δρόμος οδηγεί στο ακίνητο;
+cs: Jaká cesta vede k nemovitosti?
+sl: Kakšna cesta vodi do nepremičnine?
+sv: Vilken typ av väg leder till fastigheten?
+@375
+it: Strada asfaltata
+pt: Estrada asfaltada
+el: Ασφαλτοστρωμένος δρόμος
+cs: Asfaltová silnice
+sl: Asfaltirana cesta
+sv: Asfaltväg
+@376
+it: Strada sterrata in ghiaia o pietrisco
+pt: Estrada de gravilha ou brita
+el: Χαλικόδρομος ή δρόμος με θραυστό λίθο
+cs: Štěrková nebo šotolinová cesta
+sl: Gramozna ali makadamska cesta
+sv: Grus- eller makadamväg
+@377
+it: Strada di terra battuta
+pt: Caminho de terra
+el: Χωματόδρομος
+cs: Polní cesta
+sl: Kolovoz
+sv: Jordväg
+@378
+it: C’è una fonte di rumore evidente nelle vicinanze (strada trafficata, ferrovia, fabbrica)?
+pt: Existe alguma fonte de ruído notória nas proximidades (estrada movimentada, linha férrea, fábrica)?
+el: Υπάρχει αισθητή πηγή θορύβου κοντά (πολυσύχναστος δρόμος, σιδηρόδρομος, εργοστάσιο);
+cs: Je v okolí výrazný zdroj hluku (frekventovaná silnice, železnice, továrna)?
+sl: Ali je v bližini opazen vir hrupa (prometna cesta, železnica, tovarna)?
+sv: Finns det en märkbar bullerkälla i närheten (trafikerad väg, järnväg, fabrik)?
+@379
+it: Che tipo di connessione internet c’è?
+pt: Que ligação à internet existe?
+el: Τι σύνδεση στο διαδίκτυο υπάρχει;
+cs: Jaké je zde připojení k internetu?
+sl: Kakšna internetna povezava je na voljo?
+sv: Vilken internetanslutning finns det?
+@380
+it: Linea fissa o fibra
+pt: Linha fixa ou fibra
+el: Σταθερή γραμμή ή οπτική ίνα
+cs: Pevná linka nebo optika
+sl: Fiksna linija ali optika
+sv: Fast linje eller fiber
+@381
+it: Solo internet mobile
+pt: Só internet móvel
+el: Μόνο κινητό ίντερνετ
+cs: Pouze mobilní internet
+sl: Samo mobilni internet
+sv: Endast mobilt internet
+@382
+it: Nessuna
+pt: Nenhuma
+el: Καμία
+cs: Žádné
+sl: Brez
+sv: Ingen
+@383
+it: L’immobile ha una vista / un panorama?
+pt: O imóvel tem vista / panorama?
+el: Έχει το ακίνητο θέα / πανόραμα;
+cs: Má nemovitost výhled / panorama?
+sl: Ali ima nepremičnina razgled / panoramo?
+sv: Har fastigheten utsikt / panorama?
+@384
+it: C’è un lago, un ruscello o una riva nelle vicinanze?
+pt: Existe um lago, ribeiro ou margem de água nas proximidades?
+el: Υπάρχει λίμνη, ρυάκι ή όχθη κοντά;
+cs: Je v blízkosti jezero, potok nebo jiná vodní plocha?
+sl: Ali je v bližini jezero, potok ali obrežje?
+sv: Finns det en sjö, bäck eller strand i närheten?
+@385
+it: Ci sono boschi nelle vicinanze?
+pt: Existe floresta nas proximidades?
+el: Υπάρχει δάσος κοντά;
+cs: Je v blízkosti les?
+sl: Ali je v bližini gozd?
+sv: Finns det skog i närheten?
+@386
+it: C’è un’azienda agricola o un allevamento nelle vicinanze?
+pt: Existe uma exploração agrícola ou pecuária nas proximidades?
+el: Υπάρχει αγρόκτημα ή κτηνοτροφική μονάδα κοντά;
+cs: Je v blízkosti farma nebo chov hospodářských zvířat?
+sl: Ali je v bližini kmetija ali živinorejski obrat?
+sv: Finns det en gård eller djurhållning i närheten?
+@387
+it: Linee elettriche ad alta tensione passano sopra o vicino all’immobile?
+pt: Há linhas de alta tensão a passar por cima ou perto do imóvel?
+el: Περνούν γραμμές υψηλής τάσης πάνω ή κοντά από το ακίνητο;
+cs: Vede nad nemovitostí nebo v její blízkosti vedení vysokého napětí?
+sl: Ali nad nepremičnino ali v njeni bližini poteka daljnovod?
+sv: Går det högspänningsledningar över eller nära fastigheten?
+@388
+it: Sì, sopra il lotto
+pt: Sim, sobre o terreno
+el: Ναι, πάνω από το οικόπεδο
+cs: Ano, nad pozemkem
+sl: Da, nad parcelo
+sv: Ja, över tomten
+@389
+it: Sì, nelle vicinanze
+pt: Sim, nas proximidades
+el: Ναι, κοντά
+cs: Ano, v blízkosti
+sl: Da, v bližini
+sv: Ja, i närheten
+@390
+it: Struttura dei solai
+pt: Estrutura dos pavimentos
+el: Κατασκευή δαπέδων
+cs: Konstrukce stropů
+sl: Konstrukcija stropov
+sv: Bjälklagskonstruktion
+@391
+it: Struttura del tetto
+pt: Estrutura do telhado
+el: Δομή στέγης
+cs: Konstrukce střechy
+sl: Strešna konstrukcija
+sv: Takkonstruktion
+@392
+it: Copertura del tetto
+pt: Revestimento do telhado
+el: Επικάλυψη στέγης
+cs: Střešní krytina
+sl: Strešna kritina
+sv: Taktäckning

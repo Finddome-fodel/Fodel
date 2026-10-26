@@ -1,0 +1,118 @@
+{
+ "content": {
+  "9698": {
+   "it": "Ungheria",
+   "pt": "Hungria",
+   "el": "Ουγγαρία",
+   "cs": "Maďarska",
+   "sl": "Madžarsko",
+   "sv": "Ungern",
+   "da": "Ungarn",
+   "no": "Ungarn",
+   "fi": "Unkariin",
+   "et": "Ungarisse",
+   "lv": "Ungāriju",
+   "lt": "Vengriją"
+  },
+  "11944": {
+   "it": "fotografica",
+   "pt": "fotografia",
+   "el": "φωτογράφισης",
+   "cs": "fotografováním",
+   "sl": "za fotografiranje",
+   "sv": "fotografering",
+   "da": "fotografering",
+   "no": "fotografering",
+   "fi": "valokuvaukseen",
+   "et": "juhend",
+   "lv": "ceļvedis",
+   "lt": "vadovas"
+  }
+ },
+ "legal": {
+  "2829": {
+   "it": "Informativa",
+   "pt": "Política de",
+   "el": "Πολιτική",
+   "cs": "Zásady ochrany",
+   "sl": "Obvestilo o",
+   "sv": "Så hanterar vi",
+   "da": "Information om",
+   "no": "Informasjon om",
+   "fi": "Tietoa",
+   "et": "Isikuandmete",
+   "lv": "Privātuma",
+   "lt": "Privatumo"
+  },
+  "2853": {
+   "it": "sulla privacy",
+   "pt": "privacidade",
+   "el": "απορρήτου",
+   "cs": "osobních údajů",
+   "sl": "zasebnosti",
+   "sv": "personuppgifter",
+   "da": "persondata",
+   "no": "personvern",
+   "fi": "tietosuojasta",
+   "et": "kaitse",
+   "lv": "politika",
+   "lt": "politika"
+  },
+  "6573": {
+   "it": "sui cookie",
+   "pt": "cookies",
+   "el": "cookies",
+   "cs": "cookies",
+   "sl": "piškotkih",
+   "sv": "cookies",
+   "da": "cookies",
+   "no": "informasjonskapsler",
+   "fi": "evästeistä",
+   "et": "küpsiste kohta",
+   "lv": "politika",
+   "lt": "politika"
+  },
+  "7924": {
+   "it": "condizioni",
+   "pt": "condições",
+   "el": "προϋποθέσεις",
+   "cs": "podmínky",
+   "sl": "pogoji",
+   "sv": "villkor",
+   "da": "betingelser",
+   "no": "vilkår",
+   "fi": "käyttöehdot",
+   "et": "tingimused",
+   "lv": "noteikumi",
+   "lt": "sąlygos"
+  },
+  "11493": {
+   "it": "Dichiarazione di",
+   "pt": "Declaração de",
+   "el": "Δήλωση",
+   "cs": "Prohlášení o",
+   "sl": "Izjava o",
+   "sv": "Redogörelse för",
+   "da": "Erklæring om",
+   "no": "Erklæring om",
+   "fi": "Tietoa",
+   "et": "Ligipääsetavuse",
+   "lv": "Piekļūstamības",
+   "lt": "Prieinamumo"
+  },
+  "11523": {
+   "it": "accessibilità",
+   "pt": "acessibilidade",
+   "el": "προσβασιμότητας",
+   "cs": "přístupnosti",
+   "sl": "dostopnosti",
+   "sv": "tillgänglighet",
+   "da": "tilgængelighed",
+   "no": "tilgjengelighet",
+   "fi": "saavutettavuudesta",
+   "et": "teatis",
+   "lv": "paziņojums",
+   "lt": "pareiškimas"
+  }
+ }
+}

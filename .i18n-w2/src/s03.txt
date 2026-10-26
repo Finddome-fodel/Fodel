@@ -1,0 +1,184 @@
+@157 [PropertyDetailPage.astro]
+EN: On OpenStreetMap
+
+@158 [PropertyDetailPage.astro]
+EN: Exchange rate
+
+@159 [PropertyDetailPage.astro]
+EN: Print
+
+@160 [PropertyDetailPage.astro]
+EN: Details
+
+@161 [PropertyDetailPage.astro]
+EN: Speaks
+
+@162 [PropertyDetailPage.astro]
+EN: The FODEL guarantee
+
+@163 [PropertyDetailPage.astro]
+EN: Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.
+
+@164 [PropertyDetailPage.astro]
+EN: Request a callback
+
+@165 [PropertyDetailPage.astro]
+EN: Thank you, we will call you back
+
+@166 [PropertyDetailPage.astro]
+EN: A member of our team will contact you within 24 hours.
+
+@167 [PropertyDetailPage.astro]
+EN: How we should contact you
+
+@168 [PropertyDetailPage.astro]
+EN: Within 24 hours
+
+@169 [PropertyDetailPage.astro]
+EN: By email
+
+@170 [PropertyDetailPage.astro]
+EN: We reply in writing
+
+@171 [PropertyDetailPage.astro]
+EN: Or call us
+
+@172 [SearchRequestPage.astro]
+EN: Property search: a free search request for Hungary
+
+@173 [SearchRequestPage.astro]
+EN: Not found what you are looking for? Tell us what you want and we will search for you, beyond our own listings too. The search service is free.
+
+@174 [SearchRequestPage.astro]
+EN: Property search
+
+@175 [SearchRequestPage.astro]
+EN: Tell us what you are looking for,
+
+@176 [SearchRequestPage.astro]
+EN: we will search
+
+@177 [SearchRequestPage.astro]
+EN: If the right property is not among our listings, tell us what you want. Through our Hungarian partner network we also reach properties that are not online yet. The service is free.
+
+@178 [SearchRequestPage.astro]
+EN: How it works
+
+@179 [SearchRequestPage.astro]
+EN: You fill in the form
+
+@180 [SearchRequestPage.astro]
+EN: Type, area, budget and your particular wishes.
+
+@181 [SearchRequestPage.astro]
+EN: We search
+
+@182 [SearchRequestPage.astro]
+EN: Together with our partners, beyond the properties we advertise.
+
+@183 [SearchRequestPage.astro]
+EN: You hear from us
+
+@184 [SearchRequestPage.astro]
+EN: You receive by email whatever meets your criteria.
+
+@185 [SearchRequestPage.astro]
+EN: We guide you
+
+@186 [SearchRequestPage.astro]
+EN: Viewing, negotiation and a bilingual contract: we stay with you throughout.
+
+@187 [SearchRequestPage.astro]
+EN: Free search request
+
+@188 [SearchRequestPage.astro]
+EN: Free
+
+@189 [SearchRequestPage.astro]
+EN: Send search request
+
+@190 [SearchRequestPage.astro]
+EN: Thank you
+
+@191 [SearchRequestPage.astro]
+EN: We have received your search request. As soon as we find something that meets your criteria, we will email you.
+
+@192 [SearchRequestPage.astro]
+EN: Type of property wanted
+
+@193 [SearchRequestPage.astro]
+EN: Region, county or town
+
+@194 [SearchRequestPage.astro]
+EN: e.g. Lake Balaton, Zala County
+
+@195 [SearchRequestPage.astro]
+EN: Budget from (€)
+
+@196 [SearchRequestPage.astro]
+EN: Budget up to (€)
+
+@197 [SearchRequestPage.astro]
+EN: Wishes and requirements
+
+@198 [SearchRequestPage.astro]
+EN: For example: close to water, at the edge of a forest, a view, room for animals, rentability, good internet, distance to an airport.
+
+@199 [SellersPage.astro]
+EN: Vineyard in Transdanubia
+
+@200 [SellersPage.astro]
+EN: min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}% VAT
+FR: min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% de TVA
+
+@201 [SellersPage.astro]
+EN: Listings from ${eur(cheapest, locale)}
+FR: Annonces dès ${eur(cheapest, locale)}
+
+@202 [SellersPage.astro]
+EN: The listing fee covers editing the text, processing the photos and putting the listing together. A translation costs ${eur(translationFee, locale)} per language.
+FR: Les frais d’annonce comprennent la relecture du texte, le traitement des photos et la mise en forme de l’annonce. Une traduction coûte ${eur(translationFee, locale)} par langue.
+
+@203 [SellersPage.astro]
+EN: What sellers ask us
+
+@204 [SoldPage.astro]
+EN: Sold: completed transactions
+
+@205 [SoldPage.astro]
+EN: Properties sold through FODEL to buyers from Western Europe.
+
+@206 [SoldPage.astro]
+EN: Sold
+
+@207 [SoldPage.astro]
+EN: Completed
+
+@208 [SoldPage.astro]
+EN: transactions
+
+@209 [SoldPage.astro]
+EN: These properties found a new owner through FODEL.
+
+@210 [SoldPage.astro]
+EN: This page will soon be filled with completed transactions.
+
+@211 [SoldPage.astro]
+EN: In the meantime, see the current properties.
+
+@212 [SubmitAdPage.astro]
+EN: Place a listing: advertise your property in Western Europe
+
+@213 [SubmitAdPage.astro]
+EN: Place your property listing from ${eur(fromEur, locale)}. Once approved it appears at once in ${R.languages} languages in ${R.countries} countries, with no upfront payment and no exclusivity.
+FR: Déposez votre annonce dès ${eur(fromEur, locale)}. Une fois validée, elle paraît aussitôt en ${R.languages} langues dans ${R.countries} pays, sans paiement d’avance ni exclusivité.
+PL: Ogłoszenie można dodać już od ${eur(fromEur, locale)}. Po zatwierdzeniu od razu ukazuje się w ${nOf('pl', R.languages, 'języku', 'językach')} w ${nOf('pl', R.countries, 'kraju', 'krajach')}, bez przedpłaty i bez wyłączności.
+
+@214 [SubmitAdPage.astro]
+EN: Advertise your property
+
+@215 [SubmitAdPage.astro]
+EN: in Western Europe
+
+@216 [SubmitAdPage.astro]
+EN: Register with a few details. You receive an email with a link to set your password, and then put your listing together step by step in your own area, photos included. You pay nothing upfront: we review the listing and publish it as soon as it is approved.

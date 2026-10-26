@@ -1,0 +1,973 @@
+@786
+it: Immobili residenziali
+pt: Imóveis residenciais
+el: Κατοικίες
+cs: Rezidenční nemovitosti
+sl: Stanovanjske nepremičnine
+sv: Bostäder
+@787
+it: Appartamento, monolocale
+pt: Apartamento, estúdio
+el: Διαμέρισμα, στούντιο
+cs: Byt, garsonka
+sl: Stanovanje, garsonjera
+sv: Lägenhet, etta
+@788
+it: Casa indipendente, villa
+pt: Moradia isolada, vivenda
+el: Μονοκατοικία, βίλα
+cs: Rodinný dům, vila
+sl: Samostojna hiša, vila
+sv: Villa, friliggande hus
+@789
+it: Casa bifamiliare, a schiera
+pt: Moradia geminada, em banda
+el: Διπλοκατοικία, σειρά κατοικιών
+cs: Dvojdům, řadový dům
+sl: Dvojček, vrstna hiša
+sv: Parhus, radhus
+@790
+it: Attico
+pt: Penthouse
+el: Ρετιρέ
+cs: Penthouse
+sl: Penthouse
+sv: Takvåning
+@791
+it: Edificio residenziale plurifamiliare
+pt: Prédio de habitação
+el: Πολυκατοικία
+cs: Bytový dům
+sl: Večstanovanjska stavba
+sv: Flerbostadshus
+@792
+it: Altro immobile residenziale
+pt: Outro imóvel residencial
+el: Άλλη κατοικία
+cs: Jiná rezidenční nemovitost
+sl: Druga stanovanjska nepremičnina
+sv: Annan bostad
+@793
+it: Immobili per vacanze
+pt: Imóveis de férias
+el: Εξοχικά ακίνητα
+cs: Rekreační nemovitosti
+sl: Počitniške nepremičnine
+sv: Fritidsfastigheter
+@794
+it: Casa vacanze, casa per il fine settimana
+pt: Casa de férias, casa de fim de semana
+el: Εξοχική κατοικία, σπίτι Σαββατοκύριακου
+cs: Rekreační dům, chata
+sl: Počitniška hiša, vikend
+sv: Fritidshus, sommarstuga
+@795
+it: Appartamento per vacanze
+pt: Apartamento de férias
+el: Εξοχικό διαμέρισμα
+cs: Rekreační apartmán
+sl: Počitniško stanovanje
+sv: Semesterlägenhet
+@796
+it: Immobile fronte lago o fronte mare
+pt: Imóvel junto à água ou à beira-mar
+el: Ακίνητο δίπλα σε νερό ή στη θάλασσα
+cs: Nemovitost u vody nebo u moře
+sl: Nepremičnina ob vodi ali morju
+sv: Fastighet vid vatten eller hav
+@797
+it: Baita, chalet di montagna
+pt: Refúgio de montanha, chalé
+el: Ορεινό καταφύγιο, σαλέ
+cs: Horská chata, chalupa
+sl: Planinska koča, chalet
+sv: Fjällstuga, chalet
+@798
+it: Complesso turistico
+pt: Complexo de férias
+el: Τουριστικό συγκρότημα
+cs: Rekreační komplex
+sl: Počitniški kompleks
+sv: Semesteranläggning
+@799
+it: Altro immobile per vacanze
+pt: Outro imóvel de férias
+el: Άλλο εξοχικό ακίνητο
+cs: Jiná rekreační nemovitost
+sl: Druga počitniška nepremičnina
+sv: Annan fritidsfastighet
+@800
+it: Immobili agricoli
+pt: Imóveis agrícolas
+el: Αγροτικά ακίνητα
+cs: Zemědělské nemovitosti
+sl: Kmetijske nepremičnine
+sv: Jordbruksfastigheter
+@801
+it: Seminativo, terreno agricolo
+pt: Terra arável, terreno agrícola
+el: Καλλιεργήσιμη γη, αγροτεμάχιο
+cs: Orná půda, zemědělská půda
+sl: Njiva, kmetijsko zemljišče
+sv: Åkermark, jordbruksmark
+@802
+it: Fattoria, cascina
+pt: Quinta, herdade
+el: Αγρόκτημα, αγροικία
+cs: Statek, usedlost
+sl: Kmetija, domačija
+sv: Gård, hemman
+@803
+it: Frutteto, vigneto
+pt: Pomar, vinha
+el: Οπωρώνας, αμπελώνας
+cs: Sad, vinice
+sl: Sadovnjak, vinograd
+sv: Fruktodling, vingård
+@804
+it: Bosco, pascolo
+pt: Floresta, pastagem
+el: Δάσος, βοσκότοπος
+cs: Les, pastvina
+sl: Gozd, pašnik
+sv: Skog, betesmark
+@805
+it: Struttura per allevamento
+pt: Instalação pecuária
+el: Κτηνοτροφική μονάδα
+cs: Objekt pro chov zvířat
+sl: Živinorejski objekt
+sv: Djurstallar
+@806
+it: Azienda agricola, tenuta
+pt: Exploração agrícola, propriedade rural
+el: Γεωργική επιχείρηση, κτήμα
+cs: Zemědělský podnik, statek
+sl: Kmetijsko podjetje, posestvo
+sv: Jordbruksföretag, egendom
+@807
+it: Laghetto da pesca, allevamento ittico
+pt: Viveiro, piscicultura
+el: Ιχθυολίμνη, ιχθυοτροφείο
+cs: Rybník, rybí farma
+sl: Ribnik, ribogojnica
+sv: Fiskdamm, fiskodling
+@808
+it: Altro immobile agricolo
+pt: Outro imóvel agrícola
+el: Άλλο αγροτικό ακίνητο
+cs: Jiná zemědělská nemovitost
+sl: Druga kmetijska nepremičnina
+sv: Annan jordbruksfastighet
+@809
+it: Immobili commerciali
+pt: Imóveis comerciais
+el: Επαγγελματικά ακίνητα
+cs: Komerční nemovitosti
+sl: Poslovne nepremičnine
+sv: Kommersiella fastigheter
+@810
+it: Negozio
+pt: Loja
+el: Κατάστημα
+cs: Obchodní prostor
+sl: Trgovski prostor
+sv: Butikslokal
+@811
+it: Ufficio, edificio per uffici
+pt: Escritório, edifício de escritórios
+el: Γραφείο, κτίριο γραφείων
+cs: Kancelář, administrativní budova
+sl: Pisarna, poslovna stavba
+sv: Kontor, kontorsbyggnad
+@812
+it: Ristorante, caffè
+pt: Restaurante, café
+el: Εστιατόριο, καφέ
+cs: Restaurace, kavárna
+sl: Restavracija, kavarna
+sv: Restaurang, kafé
+@813
+it: Hotel, B&B, pensione
+pt: Hotel, B&B, pensão
+el: Ξενοδοχείο, B&B, ξενώνας
+cs: Hotel, B&B, penzion
+sl: Hotel, B&B, penzion
+sv: Hotell, B&B, pensionat
+@814
+it: Centro commerciale
+pt: Centro comercial
+el: Εμπορικό κέντρο
+cs: Nákupní centrum
+sl: Nakupovalno središče
+sv: Köpcentrum
+@815
+it: Struttura sanitaria, scolastica o sportiva
+pt: Instalação de saúde, ensino ou desporto
+el: Εγκατάσταση υγείας, εκπαίδευσης ή αθλητισμού
+cs: Zdravotnické, vzdělávací nebo sportovní zařízení
+sl: Zdravstveni, izobraževalni ali športni objekt
+sv: Lokal för vård, utbildning eller idrott
+@816
+it: Altro immobile commerciale
+pt: Outro imóvel comercial
+el: Άλλο επαγγελματικό ακίνητο
+cs: Jiná komerční nemovitost
+sl: Druga poslovna nepremičnina
+sv: Annan kommersiell fastighet
+@817
+it: Immobili industriali e logistici
+pt: Imóveis industriais e logísticos
+el: Βιομηχανικά και logistics ακίνητα
+cs: Průmyslové a logistické nemovitosti
+sl: Industrijske in logistične nepremičnine
+sv: Industri- och logistikfastigheter
+@818
+it: Fabbrica, stabilimento
+pt: Fábrica, unidade industrial
+el: Εργοστάσιο, μονάδα παραγωγής
+cs: Továrna, závod
+sl: Tovarna, obrat
+sv: Fabrik, anläggning
+@819
+it: Magazzino, centro logistico
+pt: Armazém, centro logístico
+el: Αποθήκη, κέντρο διανομής
+cs: Sklad, logistické centrum
+sl: Skladišče, logistični center
+sv: Lager, logistikcenter
+@820
+it: Capannone industriale
+pt: Pavilhão industrial
+el: Βιομηχανικό κτίριο
+cs: Průmyslová hala
+sl: Industrijska hala
+sv: Industrihall
+@821
+it: Officina, centro assistenza
+pt: Oficina, centro de assistência
+el: Συνεργείο, κέντρο εξυπηρέτησης
+cs: Dílna, servisní centrum
+sl: Delavnica, servisni center
+sv: Verkstad, servicecenter
+@822
+it: Stabilimento alimentare
+pt: Unidade agroalimentar
+el: Μονάδα επεξεργασίας τροφίμων
+cs: Potravinářský závod
+sl: Živilski obrat
+sv: Livsmedelsanläggning
+@823
+it: Altro immobile industriale
+pt: Outro imóvel industrial
+el: Άλλο βιομηχανικό ακίνητο
+cs: Jiná průmyslová nemovitost
+sl: Druga industrijska nepremičnina
+sv: Annan industrifastighet
+@824
+it: Dimore padronali e immobili storici
+pt: Solares e imóveis históricos
+el: Αρχοντικά και ιστορικά ακίνητα
+cs: Panská sídla a historické nemovitosti
+sl: Dvorci in zgodovinske nepremičnine
+sv: Herrgårdar och historiska fastigheter
+@825
+it: Castello, villa padronale
+pt: Castelo, solar
+el: Κάστρο, αρχοντικό
+cs: Zámek, kaštel
+sl: Grad, dvorec
+sv: Slott, herrgård
+@826
+it: Villa storica, casa di campagna
+pt: Vivenda histórica, casa de campo
+el: Ιστορική βίλα, εξοχική κατοικία
+cs: Historická vila, venkovské sídlo
+sl: Zgodovinska vila, podeželska hiša
+sv: Historisk villa, lantställe
+@827
+it: Fortezza, monastero o edificio storico
+pt: Fortaleza, mosteiro ou edifício histórico
+el: Φρούριο, μονή ή ιστορικό κτίριο
+cs: Pevnost, klášter nebo historická budova
+sl: Trdnjava, samostan ali zgodovinska stavba
+sv: Fästning, kloster eller historisk byggnad
+@828
+it: Immobile vincolato
+pt: Imóvel classificado
+el: Διατηρητέο ακίνητο
+cs: Kulturní památka
+sl: Zaščitena kulturna dediščina
+sv: Kulturminnesmärkt fastighet
+@829
+it: Altro immobile storico
+pt: Outro imóvel histórico
+el: Άλλο ιστορικό ακίνητο
+cs: Jiná historická nemovitost
+sl: Druga zgodovinska nepremičnina
+sv: Annan historisk fastighet
+@830
+it: Terreni e aree edificabili
+pt: Terrenos e lotes para construção
+el: Οικόπεδα και αναπτυξιακές εκτάσεις
+cs: Pozemky a rozvojové plochy
+sl: Zemljišča in razvojna območja
+sv: Mark och exploateringsområden
+@831
+it: Lotto edificabile residenziale
+pt: Lote para habitação
+el: Οικόπεδο για κατοικία
+cs: Stavební pozemek pro bydlení
+sl: Stavbno zemljišče za stanovanjsko gradnjo
+sv: Bostadstomt
+@832
+it: Lotto commerciale o industriale
+pt: Lote comercial ou industrial
+el: Επαγγελματικό ή βιομηχανικό οικόπεδο
+cs: Komerční nebo průmyslový pozemek
+sl: Poslovno ali industrijsko zemljišče
+sv: Tomt för handel eller industri
+@833
+it: Area di sviluppo turistico
+pt: Terreno para desenvolvimento turístico
+el: Έκταση τουριστικής ανάπτυξης
+cs: Pozemek pro turistický rozvoj
+sl: Zemljišče za turistični razvoj
+sv: Mark för turismexploatering
+@834
+it: Grande area di sviluppo
+pt: Grande terreno para desenvolvimento
+el: Μεγάλη αναπτυξιακή έκταση
+cs: Velká rozvojová plocha
+sl: Večje razvojno zemljišče
+sv: Stort exploateringsområde
+@835
+it: Terreno agricolo
+pt: Terreno agrícola
+el: Αγροτική γη
+cs: Zemědělská půda
+sl: Kmetijsko zemljišče
+sv: Jordbruksmark
+@836
+it: Altro terreno o area edificabile
+pt: Outro terreno ou lote
+el: Άλλο οικόπεδο ή αναπτυξιακή έκταση
+cs: Jiný pozemek nebo rozvojová plocha
+sl: Drugo zemljišče ali razvojno območje
+sv: Annan mark eller annat exploateringsområde
+@837
+it: Immobili da investimento
+pt: Imóveis de investimento
+el: Επενδυτικά ακίνητα
+cs: Investiční nemovitosti
+sl: Naložbene nepremičnine
+sv: Investeringsfastigheter
+@838
+it: Immobile residenziale locato
+pt: Imóvel residencial arrendado
+el: Μισθωμένη κατοικία
+cs: Pronajatá rezidenční nemovitost
+sl: Oddana stanovanjska nepremičnina
+sv: Uthyrd bostadsfastighet
+@839
+it: Immobile commerciale o industriale locato
+pt: Imóvel comercial ou industrial arrendado
+el: Μισθωμένο επαγγελματικό ή βιομηχανικό ακίνητο
+cs: Pronajatá komerční nebo průmyslová nemovitost
+sl: Oddana poslovna ali industrijska nepremičnina
+sv: Uthyrd kommersiell fastighet eller industrifastighet
+@840
+it: Immobile a reddito
+pt: Imóvel com rendimento
+el: Ακίνητο που αποφέρει εισόδημα
+cs: Výnosová nemovitost
+sl: Nepremičnina, ki prinaša dohodek
+sv: Avkastningsfastighet
+@841
+it: Portafoglio immobiliare
+pt: Carteira imobiliária
+el: Χαρτοφυλάκιο ακινήτων
+cs: Realitní portfolio
+sl: Nepremičninski portfelj
+sv: Fastighetsportfölj
+@842
+it: Progetto di sviluppo immobiliare
+pt: Projeto de promoção imobiliária
+el: Έργο ανάπτυξης ακινήτων
+cs: Developerský projekt
+sl: Nepremičninski razvojni projekt
+sv: Fastighetsutvecklingsprojekt
+@843
+it: Altro immobile da investimento
+pt: Outro imóvel de investimento
+el: Άλλο επενδυτικό ακίνητο
+cs: Jiná investiční nemovitost
+sl: Druga naložbena nepremičnina
+sv: Annan investeringsfastighet
+@844
+it: immobile-da-investimento
+pt: imovel-de-investimento
+el: ependytiko-akinito
+cs: investicni-nemovitost
+sl: nalozbena-nepremicnina
+sv: investeringsfastighet
+@845
+it: Altri immobili
+pt: Outros imóveis
+el: Άλλα ακίνητα
+cs: Ostatní nemovitosti
+sl: Druge nepremičnine
+sv: Övriga fastigheter
+@846
+it: Garage, posto auto
+pt: Garagem, lugar de estacionamento
+el: Γκαράζ, θέση στάθμευσης
+cs: Garáž, parkovací stání
+sl: Garaža, parkirno mesto
+sv: Garage, parkeringsplats
+@847
+it: Ripostiglio, cantina
+pt: Arrecadação, cave
+el: Αποθήκη, κελάρι
+cs: Sklad, sklep
+sl: Shramba, klet
+sv: Förråd, källare
+@848
+it: Casa del torchio, cantina vinicola
+pt: Lagar, adega
+el: Πατητήρι, οινοκελάρι
+cs: Lisovna, vinný sklep
+sl: Stiskalnica, vinska klet
+sv: Presshus, vinkällare
+@849
+it: Immobile a uso speciale
+pt: Imóvel para fins especiais
+el: Ακίνητο ειδικής χρήσης
+cs: Nemovitost pro zvláštní účely
+sl: Nepremičnina za posebne namene
+sv: Specialfastighet
+@850
+it: Altro immobile
+pt: Outro imóvel
+el: Άλλο ακίνητο
+cs: Jiná nemovitost
+sl: Druga nepremičnina
+sv: Annan fastighet
+@851
+it: altro-immobile
+pt: outro-imovel
+el: allo-akinito
+cs: jina-nemovitost
+sl: druga-nepremicnina
+sv: ovrig-fastighet
+@852
+it: Di nuova costruzione
+pt: Construção nova
+el: Νεόδμητο
+cs: Novostavba
+sl: Novogradnja
+sv: Nybyggt
+@853
+it: Come nuovo
+pt: Como novo
+el: Σαν καινούργιο
+cs: Jako nový
+sl: Kot novo
+sv: Som nytt
+@854
+it: In condizioni medie
+pt: Estado razoável
+el: Μέτρια κατάσταση
+cs: Průměrný stav
+sl: Povprečno stanje
+sv: Normalskick
+@855
+it: In cattive condizioni / rudere
+pt: Mau estado / ruína
+el: Κακή κατάσταση / ερείπιο
+cs: Špatný stav / ruina
+sl: Slabo stanje / ruševina
+sv: Dåligt skick / ruin
+@856
+it: Costruzione incompiuta
+pt: Construção inacabada
+el: Ημιτελής κατασκευή
+cs: Nedokončená stavba
+sl: Nedokončana gradnja
+sv: Ofullbordat bygge
+@857
+it: Legna e combustibile solido
+pt: Lenha e combustível sólido
+el: Ξύλα και στερεά καύσιμα
+cs: Dřevo a tuhá paliva
+sl: Drva in trdna goriva
+sv: Ved och fasta bränslen
+@858
+it: Teleriscaldamento
+pt: Aquecimento urbano
+el: Τηλεθέρμανση
+cs: Dálkové vytápění
+sl: Daljinsko ogrevanje
+sv: Fjärrvärme
+@859
+it: Riscaldamento a gasolio
+pt: Aquecimento a gasóleo
+el: Θέρμανση πετρελαίου
+cs: Vytápění topným olejem
+sl: Ogrevanje na kurilno olje
+sv: Oljeuppvärmning
+@860
+it: Riscaldamento solare
+pt: Aquecimento solar
+el: Ηλιακή θέρμανση
+cs: Solární vytápění
+sl: Solarno ogrevanje
+sv: Solvärme
+@861
+it: Sistema di riscaldamento misto
+pt: Sistema de aquecimento misto
+el: Μικτό σύστημα θέρμανσης
+cs: Kombinované vytápění
+sl: Kombinirano ogrevanje
+sv: Kombinerat värmesystem
+@862
+it: Senza riscaldamento
+pt: Sem aquecimento
+el: Χωρίς θέρμανση
+cs: Bez vytápění
+sl: Brez ogrevanja
+sv: Ingen uppvärmning
+@863
+it: Mattoni crudi (adobe)
+pt: Adobe
+el: Πλίνθοι (ωμόπλινθοι)
+cs: Nepálené cihly
+sl: Nežgana opeka
+sv: Lersten (adobe)
+@864
+it: Muratura mista
+pt: Alvenaria mista
+el: Μικτή τοιχοποιία
+cs: Smíšené zdivo
+sl: Mešana zidava
+sv: Blandat murverk
+@865
+it: Legno / costruzione leggera
+pt: Madeira / construção ligeira
+el: Ξύλο / ελαφριά κατασκευή
+cs: Dřevostavba / lehká konstrukce
+sl: Les / lahka gradnja
+sv: Trä / lätt konstruktion
+@866
+it: Struttura in acciaio
+pt: Estrutura metálica
+el: Μεταλλικός σκελετός
+cs: Ocelová konstrukce
+sl: Jeklena konstrukcija
+sv: Stålstomme
+@867
+it: Terreno pianeggiante
+pt: Terreno plano
+el: Επίπεδο οικόπεδο
+cs: Rovinatý pozemek
+sl: Ravno zemljišče
+sv: Plan tomt
+@868
+it: Terreno in pendenza
+pt: Terreno inclinado
+el: Επικλινές οικόπεδο
+cs: Svažitý pozemek
+sl: Nagnjeno zemljišče
+sv: Sluttande tomt
+@869
+it: Contesto boschivo
+pt: Envolvente arborizada
+el: Δασώδες περιβάλλον
+cs: Zalesněné okolí
+sl: Gozdnata okolica
+sv: Skogsnära läge
+@870
+it: Vista panoramica
+pt: Vista panorâmica
+el: Πανοραμική θέα
+cs: Panoramatický výhled
+sl: Panoramski razgled
+sv: Panoramautsikt
+@871
+it: Direttamente sull’acqua
+pt: Diretamente junto à água
+el: Απευθείας στο νερό
+cs: Přímo u vody
+sl: Neposredno ob vodi
+sv: Direkt vid vattnet
+@872
+it: Terrazza o balcone
+pt: Terraço ou varanda
+el: Βεράντα ή μπαλκόνι
+cs: Terasa nebo balkon
+sl: Terasa ali balkon
+sv: Terrass eller balkong
+@873
+it: Garage o parcheggio
+pt: Garagem ou estacionamento
+el: Γκαράζ ή στάθμευση
+cs: Garáž nebo parkování
+sl: Garaža ali parkirišče
+sv: Garage eller parkering
+@874
+it: Piscina
+pt: Piscina
+el: Πισίνα
+cs: Bazén
+sl: Bazen
+sv: Pool
+@875
+it: Sauna o idromassaggio
+pt: Sauna ou jacuzzi
+el: Σάουνα ή υδρομασάζ
+cs: Sauna nebo vířivka
+sl: Savna ali masažna kad
+sv: Bastu eller badtunna
+@876
+it: Camino
+pt: Lareira
+el: Τζάκι
+cs: Krb
+sl: Kamin
+sv: Öppen spis
+@877
+it: Cantina o ripostiglio
+pt: Cave ou arrecadação
+el: Υπόγειο ή αποθήκη
+cs: Sklep nebo sklad
+sl: Klet ali shramba
+sv: Källare eller förråd
+@878
+it: Giardino curato
+pt: Jardim arranjado
+el: Διαμορφωμένος κήπος
+cs: Upravená zahrada
+sl: Urejen vrt
+sv: Anlagd trädgård
+@879
+it: Cuccia o canile
+pt: Casota ou canil
+el: Σπιτάκι σκύλου ή κυνοτροφείο
+cs: Psí bouda nebo kotec
+sl: Pasja uta ali pesjak
+sv: Hundkoja eller hundgård
+@880
+it: Riva privata
+pt: Margem privada
+el: Ιδιωτική ακτή
+cs: Soukromý břeh
+sl: Zasebna obala
+sv: Egen strand
+@881
+it: Pontile o ormeggio privato
+pt: Pontão ou amarração privada
+el: Ιδιωτική προβλήτα ή αγκυροβόλιο
+cs: Soukromé molo nebo kotviště
+sl: Zasebni pomol ali privez
+sv: Egen brygga eller förtöjning
+@882
+it: Rimessaggio barche
+pt: Abrigo para barcos
+el: Χώρος φύλαξης σκαφών
+cs: Úschovna lodí
+sl: Prostor za čolne
+sv: Båtförvaring
+@883
+it: Terreno montano
+pt: Terreno de montanha
+el: Ορεινό έδαφος
+cs: Horský terén
+sl: Gorski teren
+sv: Bergig terräng
+@884
+it: Bosco
+pt: Mata
+el: Δασική έκταση
+cs: Les
+sl: Gozd
+sv: Skogsmark
+@885
+it: Terreno parzialmente boscato
+pt: Terreno parcialmente arborizado
+el: Εν μέρει δασώδης έκταση
+cs: Částečně zalesněný pozemek
+sl: Delno gozdnato zemljišče
+sv: Delvis skogbevuxen mark
+@886
+it: Seminativo
+pt: Terra arável
+el: Καλλιεργήσιμη γη
+cs: Orná půda
+sl: Njive
+sv: Åkermark
+@887
+it: Pascolo o prato
+pt: Pastagem ou prado
+el: Βοσκότοπος ή λιβάδι
+cs: Pastvina nebo louka
+sl: Pašnik ali travnik
+sv: Betesmark eller äng
+@888
+it: Frutteto o vigneto
+pt: Pomar ou vinha
+el: Οπωρώνας ή αμπελώνας
+cs: Sad nebo vinice
+sl: Sadovnjak ali vinograd
+sv: Fruktodling eller vingård
+@889
+it: Laghetto da pesca o accesso all’acqua
+pt: Viveiro ou acesso à água
+el: Ιχθυολίμνη ή πρόσβαση σε νερό
+cs: Rybník nebo přístup k vodě
+sl: Ribnik ali dostop do vode
+sv: Fiskdamm eller strandtomt
+@890
+it: Fabbricati agricoli
+pt: Edifícios agrícolas
+el: Αγροτικά κτίσματα
+cs: Hospodářské budovy
+sl: Gospodarska poslopja
+sv: Ekonomibyggnader
+@891
+it: Ricoveri per animali
+pt: Instalações para animais
+el: Στέγαστρα ζώων
+cs: Stáje pro zvířata
+sl: Hlevi za živali
+sv: Djurstall
+@892
+it: Scuderia o paddock
+pt: Cavalariça ou paddock
+el: Στάβλος ή μάντρα
+cs: Stáj nebo výběh
+sl: Konjski hlev ali ograda
+sv: Stall eller hage
+@893
+it: Maneggio
+pt: Picadeiro
+el: Στίβος ιππασίας
+cs: Jízdárna
+sl: Jahališče
+sv: Ridbana
+@894
+it: Deposito per macchinari e attrezzi
+pt: Armazém para máquinas e ferramentas
+el: Αποθήκη μηχανημάτων και εργαλείων
+cs: Sklad strojů a nářadí
+sl: Shramba za stroje in orodje
+sv: Maskin- och redskapsförråd
+@895
+it: Deposito per foraggi
+pt: Armazém de forragens
+el: Αποθήκη ζωοτροφών
+cs: Sklad krmiva
+sl: Skladišče krme
+sv: Foderförråd
+@896
+it: Impianto di irrigazione
+pt: Sistema de rega
+el: Σύστημα άρδευσης
+cs: Zavlažovací systém
+sl: Namakalni sistem
+sv: Bevattningssystem
+@897
+it: Foresteria
+pt: Casa de hóspedes
+el: Ξενώνας
+cs: Domek pro hosty
+sl: Hiša za goste
+sv: Gästhus
+@898
+it: Fronte strada
+pt: Frente para a rua
+el: Πρόσοψη σε δρόμο
+cs: Průčelí do ulice
+sl: Ob ulici
+sv: Gatufasad
+@899
+it: Vetrine
+pt: Montras
+el: Βιτρίνες
+cs: Výlohy
+sl: Izložbe
+sv: Skyltfönster
+@900
+it: Accesso per carico e scarico
+pt: Acesso para cargas e descargas
+el: Πρόσβαση φορτοεκφόρτωσης
+cs: Přístup pro nakládku
+sl: Dostop za nakladanje
+sv: Lastningsmöjlighet
+@901
+it: Adatto alla ristorazione
+pt: Adequado para restauração
+el: Κατάλληλο για εστίαση
+cs: Vhodné pro gastronomii
+sl: Primerno za gostinstvo
+sv: Lämplig för restaurang
+@902
+it: Cucina attrezzata
+pt: Cozinha equipada
+el: Εξοπλισμένη κουζίνα
+cs: Vybavená kuchyně
+sl: Opremljena kuhinja
+sv: Utrustat kök
+@903
+it: Accessibile
+pt: Acessível
+el: Προσβάσιμο
+cs: Bezbariérové
+sl: Brez ovir
+sv: Tillgänglighetsanpassad
+@904
+it: Spazio di deposito
+pt: Espaço de arrumação
+el: Αποθηκευτικός χώρος
+cs: Skladovací prostor
+sl: Skladiščni prostor
+sv: Förvaringsutrymme
+@905
+it: Soffitti alti
+pt: Pés-direitos altos
+el: Υψηλές οροφές
+cs: Vysoké stropy
+sl: Visoki stropi
+sv: Högt i tak
+@906
+it: Alimentazione elettrica industriale
+pt: Alimentação elétrica industrial
+el: Βιομηχανική παροχή ρεύματος
+cs: Průmyslová přípojka elektřiny
+sl: Industrijski električni priključek
+sv: Industriell elförsörjning
+@907
+it: Banchina di carico
+pt: Cais de carga
+el: Ράμπα φόρτωσης
+cs: Nakládací rampa
+sl: Nakladalna rampa
+sv: Lastkaj
+@908
+it: Baia per camion
+pt: Baía para camiões
+el: Θέση φορτηγού
+cs: Stání pro nákladní vůz
+sl: Nakladalno mesto za tovornjake
+sv: Lastplats för lastbil
+@909
+it: Parcheggio per camion
+pt: Estacionamento para camiões
+el: Στάθμευση φορτηγών
+cs: Parkování pro nákladní vozy
+sl: Parkirišče za tovornjake
+sv: Lastbilsparkering
+@910
+it: Gru o vie di corsa per gru
+pt: Grua ou caminho de rolamento
+el: Γερανός ή γερανογέφυρα
+cs: Jeřáb nebo jeřábová dráha
+sl: Žerjav ali žerjavna proga
+sv: Kran eller kranbana
+@911
+it: Pavimento per carichi pesanti
+pt: Pavimento para cargas pesadas
+el: Δάπεδο βαρέος τύπου
+cs: Podlaha pro těžké zatížení
+sl: Tla za velike obremenitve
+sv: Golv för tung belastning
+@912
+it: Officina
+pt: Oficina
+el: Εργαστήριο
+cs: Dílna
+sl: Delavnica
+sv: Verkstad
+@913
+it: Spazi per uffici
+pt: Espaço de escritório
+el: Χώροι γραφείων
+cs: Kancelářské prostory
+sl: Pisarniški prostori
+sv: Kontorsyta
+@914
+it: Servizi per il personale
+pt: Instalações para pessoal
+el: Χώροι προσωπικού
+cs: Sociální zázemí pro zaměstnance
+sl: Prostori za zaposlene
+sv: Personalutrymmen
+@915
+it: Accesso per camion
+pt: Acesso para camiões
+el: Πρόσβαση φορτηγών
+cs: Příjezd pro nákladní vozy
+sl: Dostop za tovornjake
+sv: Tillfart för lastbil
+@916
+it: Vincolato o di carattere storico
+pt: Classificado ou de caráter patrimonial
+el: Διατηρητέο ή ιστορικού χαρακτήρα
+cs: Památkově chráněné nebo historického rázu
+sl: Zaščiteno ali dediščinskega značaja
+sv: Kulturminnesmärkt eller med kulturhistoriskt värde
+@917
+it: Elementi architettonici storici
+pt: Elementos arquitetónicos históricos
+el: Ιστορικά αρχιτεκτονικά στοιχεία
+cs: Historické architektonické prvky
+sl: Zgodovinski arhitekturni elementi
+sv: Historiska arkitektoniska detaljer
+@918
+it: Tenuta boscata
+pt: Propriedade arborizada
+el: Δασώδες κτήμα
+cs: Zalesněný statek
+sl: Gozdnato posestvo
+sv: Skogsegendom
+@919
+it: Cappella privata
+pt: Capela privada
+el: Ιδιωτικό παρεκκλήσι
+cs: Soukromá kaple
+sl: Zasebna kapela
+sv: Privat kapell
+@920
+it: Terreno ripido
+pt: Terreno íngreme
+el: Απότομο έδαφος
+cs: Strmý pozemek
+sl: Strmo zemljišče
+sv: Brant mark
+@921
+it: Prato
+pt: Pastagem
+el: Χορτολιβαδική έκταση
+cs: Travní porost
+sl: Travinje
+sv: Gräsmark
+@922
+it: Accesso da strada pubblica
+pt: Acesso por via pública
+el: Πρόσβαση από δημόσιο δρόμο
+cs: Přístup z veřejné komunikace
+sl: Dostop z javne ceste
+sv: Tillfart från allmän väg
+@923
+it: Strada asfaltata
+pt: Estrada pavimentada
+el: Ασφαλτοστρωμένος δρόμος
+cs: Zpevněná cesta
+sl: Asfaltirana cesta
+sv: Asfalterad väg
+@924
+it: Strada sterrata
+pt: Estrada de terra
+el: Χωματόδρομος
+cs: Nezpevněná cesta
+sl: Makadamska cesta
+sv: Grusväg

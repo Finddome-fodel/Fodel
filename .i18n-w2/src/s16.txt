@@ -1,0 +1,149 @@
+@1119 [copy]
+EN: View prices
+
+@1120 [copy]
+EN: The benefits
+
+@1121 [copy]
+EN: What a foreign buyer brings
+
+@1122 [copy]
+EN: Buyers with their own funds: no waiting for a mortgage or a subsidy.
+
+@1123 [copy]
+EN: Payment in one go by bank transfer, quick and safe.
+
+@1124 [copy]
+EN: Serious intent: a single viewing costs them two days and €200–300.
+
+@1125 [copy]
+EN: Realistic pricing: no unreasonable haggling.
+
+@1126 [copy]
+EN: FODEL assesses each buyer personally before any appointment is made.
+
+@1127 [copy]
+EN: The buyers
+
+@1128 [copy]
+EN: Who our buyers are
+
+@1129 [copy]
+EN: Retirees
+
+@1130 [copy]
+EN: Looking for lower living costs, tax advantages and affordable healthcare in Hungary.
+
+@1131 [copy]
+EN: Families
+
+@1132 [copy]
+EN: Looking for space, nature and country living. Often a farm, farmstead or holiday home.
+
+@1133 [copy]
+EN: Investors
+
+@1134 [copy]
+EN: Looking for commercial property, vineyards and agricultural land.
+
+@1135 [copy]
+EN: Lifestyle emigrants
+
+@1136 [copy]
+EN: Leaving high living costs and crowds behind, in search of an authentic European way of life.
+
+@1137 [copy]
+EN: Step by step
+
+@1138 [copy]
+EN: The FODEL model
+
+@1139 [copy]
+EN: Commission only on\na successful sale
+
+@1140 [copy]
+EN: If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee. If FODEL does broker the sale: ${COMMISSION.percent}% net (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Dutch VAT.
+
+@1141 [copy]
+EN: For buyers | Buying a property in Hungary
+
+@1142 [copy]
+EN: How to buy a property in Hungary safely: a bilingual contract, representation under power of attorney and registration at the land registry. Plus a free search service.
+
+@1143 [copy]
+EN: Buying in Hungary,
+
+@1144 [copy]
+EN: without surprises
+
+@1145 [copy]
+EN: Many of our listings name the owner. You can negotiate directly, or leave the whole process to us.
+
+@1146 [copy]
+EN: What we handle
+
+@1147 [copy]
+EN: Full support
+
+@1148 [copy]
+EN: Communication between you and the seller, including interpreters.
+
+@1149 [copy]
+EN: Viewings, with a colleague who speaks your language.
+
+@1150 [copy]
+EN: Support with the price negotiation and with drawing up the bilingual contract.
+
+@1151 [copy]
+EN: Representation under power of attorney: you do not need to travel to Hungary to sign.
+
+@1152 [copy]
+EN: Registration at the land registry and the transfer of utilities.
+
+@1153 [copy]
+EN: Why Hungary
+
+@1154 [copy]
+EN: What Western European buyers look for
+
+@1155 [copy]
+EN: About us | A bridge between two worlds
+
+@1156 [copy]
+EN: Since 2013 we have brought Hungarian sellers and Western European buyers together. Discreet, transparent and with no exclusivity contract.
+
+@1157 [copy]
+EN: About us
+
+@1158 [copy]
+EN: A bridge between
+
+@1159 [copy]
+EN: two worlds
+
+@1160 [copy]
+EN: Since 2013 we have helped Hungarian sellers find the right foreign buyer: discreetly, effectively and without an exclusivity contract.
+
+@1161 [copy]
+EN: The beginning · Almere-Buiten, 2013
+
+@1162 [copy]
+EN: “Living in Almere-Buiten, we saw how much Dutch people long for an authentic European way of life, while in Hungary the finest properties wait unnoticed for an owner.”
+
+@1163 [copy]
+EN: What we stand for
+
+@1164 [copy]
+EN: What we build on
+
+@1165 [copy]
+EN: Discretion
+
+@1166 [copy]
+EN: We handle sellers’ and buyers’ details with the greatest possible care. Personal details appear only with consent.
+
+@1167 [copy]
+EN: Transparency
+
+@1168 [copy]
+EN: No hidden costs. Our prices and commission are published on this site, and we keep you informed at every step.

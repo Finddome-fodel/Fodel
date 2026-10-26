@@ -1,0 +1,248 @@
+@1485 [email]
+EN: We need a little more information for the estimate.
+
+@1486 [email]
+EN: We need a few more details
+
+@1487 [email]
+EN: Thank you for your valuation request. For the estimate, one of our team asks you for the following:
+
+@1488 [email]
+EN: Reply to this email with the missing details. As soon as we have them, we will make the estimate.
+
+@1489 [email]
+EN: Your listing cannot be placed (#${ref})
+
+@1490 [email]
+EN: The outcome of the review and the explanation.
+
+@1491 [email]
+EN: We cannot place the listing
+
+@1492 [email]
+EN: We are sorry: after review, our team has not approved your listing “${title}” (#${ref}). The explanation:
+
+@1493 [email]
+EN: If you have already paid for the listing, we will contact you separately about the refund.
+
+@1494 [email]
+EN: If you have a question, or think there has been a misunderstanding, simply reply to this email.
+
+@1495 [email]
+EN: Invoice ${number}
+
+@1496 [email]
+EN: The invoice is ready; you can view or download it through the link.
+
+@1497 [email]
+EN: Your invoice is ready
+
+@1498 [email]
+EN: Invoice ${number} for your listing “${title}” (#${ref}) is ready.
+
+@1499 [email]
+EN: View invoice
+
+@1500 [email]
+EN: Credit note ${number}
+
+@1501 [email]
+EN: We have issued a credit note for your earlier invoice.
+
+@1502 [email]
+EN: Credit note ready
+
+@1503 [email]
+EN: We have issued credit note ${number} against invoice ${correctsNumber} for your listing “${title}” (#${ref}).
+
+@1504 [email]
+EN: View credit note
+
+@1505 [email]
+EN: We have received your request | FODEL
+
+@1506 [email]
+EN: One of our team will contact you to arrange a date.
+
+@1507 [email]
+EN: We have received your request
+
+@1508 [email]
+EN: Thank you, we have noted your request: ${service} (${price}).
+
+@1509 [email]
+EN: We will tell you about payment when we arrange the date. You pay nothing now.
+
+@1510 [email]
+EN: Changed your mind? Simply reply to this email.
+
+@1511 [email]
+EN: Payment confirmation | FODEL valuation
+
+@1512 [email]
+EN: Thank you, your payment has arrived.
+
+@1513 [email]
+EN: We have received the payment for “${service}”.
+
+@1514 [email]
+EN: Item
+
+@1515 [email]
+EN: Paid on
+
+@1516 [email]
+EN: One of our team will contact you soon about the next steps.
+
+@1517 [email]
+EN: Need an invoice? Simply reply to this email.
+
+@1518 [email]
+EN: Official valuation request | FODEL
+
+@1519 [email]
+EN: One of our team will contact you about the options.
+
+@1520 [email]
+EN: Thank you, we have noted that you would like an official (court-appointed) valuation by an expert. This is not the same as the indicative, market-based valuation on our website: an authorised expert carries it out, on the basis of a quote.
+
+@1521 [email]
+EN: One of our team will contact you about the options and the quote.
+
+@1522 [ui]
+EN: Skip to content
+
+@1523 [ui]
+EN: Menu
+
+@1524 [ui]
+EN: Close
+
+@1525 [ui]
+EN: Language
+
+@1526 [ui]
+EN: Coming soon
+
+@1527 [ui]
+EN: Home
+
+@1528 [ui]
+EN: Properties
+
+@1529 [ui]
+EN: Blog
+
+@1530 [ui]
+EN: Register
+
+@1531 [ui]
+EN: Free callback
+
+@1532 [ui]
+EN: All properties
+
+@1533 [ui]
+EN: View
+
+@1534 [ui]
+EN: Advertise with us
+
+@1535 [ui]
+EN: Free advice
+
+@1536 [ui]
+EN: Send message
+
+@1537 [ui]
+EN: Read on
+
+@1538 [ui]
+EN: Reference
+
+@1539 [ui]
+EN: Asking price
+
+@1540 [ui]
+EN: Bedrooms
+
+@1541 [ui]
+EN: Bathrooms
+
+@1542 [ui]
+EN: Floor area
+
+@1543 [ui]
+EN: Plot
+
+@1544 [ui]
+EN: Energy rating
+
+@1545 [ui]
+EN: Pending
+
+@1546 [ui]
+EN: Year built
+
+@1547 [ui]
+EN: Condition
+
+@1548 [ui]
+EN: Heating
+
+@1549 [ui]
+EN: Features
+
+@1550 [ui]
+EN: Description
+
+@1551 [ui]
+EN: Similar properties
+
+@1552 [ui]
+EN: In the region
+
+@1553 [ui]
+EN: Gallery
+
+@1554 [ui]
+EN: Video
+
+@1555 [ui]
+EN: Previous photo
+
+@1556 [ui]
+EN: Next photo
+
+@1557 [ui]
+EN: Sold
+
+@1558 [ui]
+EN: Under offer
+
+@1559 [ui]
+EN: Contact the owner
+
+@1560 [ui]
+EN: For this property we also show the owner’s name and phone number. You can contact them directly, with no commission to pay.
+
+@1561 [ui]
+EN: Callback
+
+@1562 [ui]
+EN: We will call you back within 24 hours
+
+@1563 [ui]
+EN: Price on request
+
+@1564 [ui]
+EN: Filter properties
+
+@1565 [ui]
+EN: Find the property that suits you
+
+@1566 [ui]
+EN: Type
+
+@1567 [ui]
+EN: Region

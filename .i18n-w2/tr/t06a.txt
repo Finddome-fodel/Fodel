@@ -1,0 +1,567 @@
+@393
+it: Stato del tetto
+pt: Estado do telhado
+el: Κατάσταση στέγης
+cs: Stav střechy
+sl: Stanje strehe
+sv: Takets skick
+@394
+it: Età di finestre e porte
+pt: Idade das janelas e portas
+el: Παλαιότητα παραθύρων και θυρών
+cs: Stáří oken a dveří
+sl: Starost oken in vrat
+sv: Fönstrens och dörrarnas ålder
+@395
+it: Materiale di finestre e porte
+pt: Material das janelas e portas
+el: Υλικό παραθύρων και θυρών
+cs: Materiál oken a dveří
+sl: Material oken in vrat
+sv: Material i fönster och dörrar
+@396
+it: Isolamento
+pt: Isolamento
+el: Μόνωση
+cs: Zateplení
+sl: Izolacija
+sv: Isolering
+@397
+it: Raffrescamento
+pt: Climatização
+el: Ψύξη
+cs: Chlazení
+sl: Hlajenje
+sv: Kyla
+@398
+it: Utenze
+pt: Ligações às redes
+el: Παροχές δικτύων
+cs: Inženýrské sítě
+sl: Komunalni priključki
+sv: Anslutningar
+@399
+it: Pannelli solari
+pt: Painéis solares
+el: Ηλιακά πάνελ
+cs: Solární panely
+sl: Sončni paneli
+sv: Solpaneler
+@400
+it: Esposizione e soleggiamento
+pt: Orientação e exposição solar
+el: Προσανατολισμός και ηλιοφάνεια
+cs: Orientace a oslunění
+sl: Orientacija in osončenost
+sv: Väderstreck och solljus
+@401
+it: Centro e servizi
+pt: Centro e serviços
+el: Κέντρο και παροχές
+cs: Centrum a občanská vybavenost
+sl: Središče in storitve
+sv: Centrum och service
+@402
+it: Uso del territorio circostante
+pt: Uso dos terrenos envolventes
+el: Χρήσεις γης στην περιοχή
+cs: Využití okolních pozemků
+sl: Raba okoliških zemljišč
+sv: Omgivande markanvändning
+@403
+it: Stato degli edifici vicini
+pt: Estado dos edifícios vizinhos
+el: Κατάσταση γειτονικών κτιρίων
+cs: Stav sousedních budov
+sl: Stanje sosednjih stavb
+sv: Grannbyggnadernas skick
+@404
+it: Impianto molesto nelle vicinanze
+pt: Instalação incómoda nas proximidades
+el: Ενοχλητική εγκατάσταση κοντά
+cs: Rušivé zařízení v okolí
+sl: Moteč objekt v bližini
+sv: Störande anläggning i närheten
+@405
+it: Stato di giardino e recinzione
+pt: Estado do jardim e da vedação
+el: Κατάσταση κήπου και περίφραξης
+cs: Stav zahrady a oplocení
+sl: Stanje vrta in ograje
+sv: Trädgårdens och staketets skick
+@406
+it: Possibilità di ampliamento
+pt: Possibilidade de ampliação
+el: Δυνατότητα επέκτασης
+cs: Možnost rozšíření
+sl: Možnost razširitve
+sv: Utrymme för tillbyggnad
+@407
+it: Vincoli giuridici noti
+pt: Restrições legais conhecidas
+el: Γνωστοί νομικοί περιορισμοί
+cs: Známá právní omezení
+sl: Znane pravne omejitve
+sv: Kända rättsliga begränsningar
+@408
+it: Usufrutto
+pt: Usufruto
+el: Επικαρπία
+cs: Požívací právo
+sl: Užitek
+sv: Nyttjanderätt
+@409
+it: Un’altra persona ha il diritto di usare l’immobile e di goderne i frutti.
+pt: Outra pessoa tem o direito de usar o imóvel e de usufruir dos seus frutos.
+el: Κάποιος άλλος έχει δικαίωμα να χρησιμοποιεί το ακίνητο και να καρπώνεται τα οφέλη του.
+cs: Jiná osoba má právo nemovitost užívat a brát z ní užitky.
+sl: Nekdo drug ima pravico nepremičnino uporabljati in uživati njene plodove.
+sv: Någon annan har rätt att använda fastigheten och tillgodogöra sig avkastningen.
+@410
+it: Ipoteca / gravame
+pt: Hipoteca / ónus
+el: Υποθήκη / βάρος
+cs: Zástavní právo / břemeno
+sl: Hipoteka / breme
+sv: Pantbrev / inteckning
+@411
+it: L’immobile garantisce un prestito o un altro credito.
+pt: O imóvel garante um empréstimo ou outro crédito.
+el: Το ακίνητο εξασφαλίζει δάνειο ή άλλη απαίτηση.
+cs: Nemovitost zajišťuje úvěr nebo jinou pohledávku.
+sl: Nepremičnina zavaruje posojilo ali drugo terjatev.
+sv: Fastigheten utgör säkerhet för ett lån eller annan fordran.
+@412
+it: Diritto di prelazione
+pt: Direito de preferência
+el: Δικαίωμα προτίμησης
+cs: Předkupní právo
+sl: Predkupna pravica
+sv: Förköpsrätt
+@413
+it: Una determinata persona può acquistare prima degli altri acquirenti.
+pt: Uma determinada pessoa pode comprar antes dos outros compradores.
+el: Ένα συγκεκριμένο πρόσωπο μπορεί να αγοράσει πριν από τους άλλους αγοραστές.
+cs: Určitá osoba může koupit přednostně před ostatními kupujícími.
+sl: Določena oseba lahko kupi pred drugimi kupci.
+sv: En viss person får köpa före andra köpare.
+@414
+it: Servitù
+pt: Servidão
+el: Δουλεία
+cs: Věcné břemeno
+sl: Služnost
+sv: Servitut
+@415
+it: Un’altra persona può attraversare il lotto o utilizzarlo in altro modo.
+pt: Outra pessoa pode atravessar ou utilizar de outra forma o terreno.
+el: Κάποιος άλλος μπορεί να διέρχεται από το οικόπεδο ή να το χρησιμοποιεί με άλλο τρόπο.
+cs: Jiná osoba smí přes pozemek přecházet nebo ho jinak užívat.
+sl: Nekdo drug lahko prečka parcelo ali jo kako drugače uporablja.
+sv: Någon annan får passera eller på annat sätt använda tomten.
+@416
+it: Comproprietà indivisa
+pt: Compropriedade indivisa
+el: Αδιαίρετη συνιδιοκτησία
+cs: Nerozdělené spoluvlastnictví
+sl: Nerazdeljeno solastništvo
+sv: Samägande utan avstyckning
+@417
+it: Più proprietari condividono l’immobile, senza numeri catastali separati.
+pt: Vários proprietários partilham o imóvel, sem números de registo predial separados.
+el: Περισσότεροι ιδιοκτήτες μοιράζονται το ακίνητο, χωρίς χωριστούς αριθμούς κτηματολογίου.
+cs: Nemovitost sdílí více vlastníků bez samostatných katastrálních čísel.
+sl: Nepremičnino si deli več lastnikov, brez ločenih zemljiškoknjižnih številk.
+sv: Flera ägare delar på fastigheten, utan separata fastighetsbeteckningar.
+@418
+it: Tutela dei beni culturali / naturalistica
+pt: Proteção patrimonial / natural
+el: Προστασία πολιτιστικής κληρονομιάς / φύσης
+cs: Památková / přírodní ochrana
+sl: Varstvo kulturne dediščine / narave
+sv: Kulturminnes- / naturskydd
+@419
+it: L’edificio o l’area è tutelato; le modifiche richiedono un’autorizzazione.
+pt: O edifício ou a zona está protegido; as alterações precisam de autorização.
+el: Το κτίριο ή η περιοχή προστατεύεται· οι αλλαγές χρειάζονται άδεια.
+cs: Budova nebo oblast je chráněná; změny vyžadují povolení.
+sl: Stavba ali območje je zavarovano; za spremembe je potrebno dovoljenje.
+sv: Byggnaden eller området är skyddat; ändringar kräver tillstånd.
+@420
+it: Limitazioni alla compravendita di terreni agricoli
+pt: Restrição à transação de terrenos agrícolas
+el: Περιορισμός στη μεταβίβαση γεωργικής γης
+cs: Omezení převodu zemědělské půdy
+sl: Omejitev prometa s kmetijskimi zemljišči
+sv: Begränsning av handel med jordbruksmark
+@421
+it: Le norme sui terreni agricoli possono limitare chi può acquistare.
+pt: As regras sobre terrenos agrícolas podem limitar quem pode comprar.
+el: Οι κανόνες για τη γεωργική γη μπορεί να περιορίζουν ποιος μπορεί να αγοράσει.
+cs: Pravidla pro zemědělskou půdu mohou omezit, kdo smí kupovat.
+sl: Pravila za kmetijska zemljišča lahko omejijo, kdo sme kupiti.
+sv: Regler för jordbruksmark kan begränsa vem som får köpa.
+@422
+it: Valutazione | FODEL
+pt: Avaliação | FODEL
+el: Εκτίμηση | FODEL
+cs: Odhad ceny | FODEL
+sl: Ocena vrednosti | FODEL
+sv: Värdering | FODEL
+@423
+it: Una valutazione di mercato dettagliata e indicativa.
+pt: Uma avaliação de mercado detalhada e indicativa.
+el: Μια λεπτομερής, ενδεικτική εκτίμηση αγοράς.
+cs: Podrobný orientační tržní odhad.
+sl: Podrobna, okvirna tržna ocena vrednosti.
+sv: En utförlig, vägledande marknadsvärdering.
+@424
+it: Quanto vale il suo
+pt: Quanto vale o seu
+el: Πόσο αξίζει
+cs: Kolik má vaše
+sl: Koliko je vredna
+sv: Vad är din
+@425
+it: immobile?
+pt: imóvel?
+el: το ακίνητό σας;
+cs: nemovitost hodnotu?
+sl: vaša nepremičnina?
+sv: fastighet värd?
+@426
+it: Ci dica ciò che sa. Un membro del nostro team controlla il risultato e lo invia per e-mail.
+pt: Diga-nos o que sabe. Um membro da nossa equipa verifica o resultado e envia-o por e-mail.
+el: Πείτε μας ό,τι γνωρίζετε. Ένα μέλος της ομάδας μας ελέγχει το αποτέλεσμα και σας το στέλνει με email.
+cs: Řekněte nám, co víte. Někdo z našeho týmu výsledek zkontroluje a pošle vám ho e-mailem.
+sl: Povejte nam, kar veste. Član naše ekipe preveri rezultat in vam ga pošlje po e-pošti.
+sv: Berätta vad du vet. Någon i vårt team kontrollerar resultatet och skickar det via mejl.
+@427
+it: Una valutazione indicativa basata sul mercato. Il risultato non è una perizia ufficiale.
+pt: Uma avaliação indicativa, baseada no mercado. O resultado não é um relatório de avaliação oficial.
+el: Μια ενδεικτική εκτίμηση με βάση την αγορά. Το αποτέλεσμα δεν αποτελεί επίσημη έκθεση εκτίμησης.
+cs: Orientační odhad podle trhu. Výsledek není úředním znaleckým posudkem.
+sl: Okvirna tržna ocena vrednosti. Rezultat ni uradno cenilno poročilo.
+sv: En vägledande, marknadsbaserad värdering. Resultatet är ingen officiell värderingsrapport.
+@428
+it: Immobile
+pt: Imóvel
+el: Ακίνητο
+cs: Nemovitost
+sl: Nepremičnina
+sv: Fastighet
+@429
+it: Edificio e stato tecnico
+pt: Edifício e estado técnico
+el: Κτίριο και τεχνική κατάσταση
+cs: Budova a technický stav
+sl: Stavba in tehnično stanje
+sv: Byggnad och tekniskt skick
+@430
+it: Dintorni
+pt: Envolvente
+el: Περιβάλλων χώρος
+cs: Okolí
+sl: Okolica
+sv: Omgivning
+@431
+it: Extra e vincoli
+pt: Extras e restrições
+el: Πρόσθετα και περιορισμοί
+cs: Vybavení a omezení
+sl: Dodatki in omejitve
+sv: Extra och begränsningar
+@432
+it: Foto e contatto
+pt: Fotografias e contacto
+el: Φωτογραφίες και επικοινωνία
+cs: Fotografie a kontakt
+sl: Fotografije in kontakt
+sv: Foton och kontakt
+@433
+it: Passaggi del modulo
+pt: Passos do formulário
+el: Βήματα φόρμας
+cs: Kroky formuláře
+sl: Koraki obrazca
+sv: Formulärets steg
+@434
+it: Avanti
+pt: Seguinte
+el: Επόμενο
+cs: Další
+sl: Naprej
+sv: Nästa
+@435
+it: Indietro
+pt: Voltar
+el: Πίσω
+cs: Zpět
+sl: Nazaj
+sv: Tillbaka
+@436
+it: Invia richiesta
+pt: Enviar pedido
+el: Αποστολή αιτήματος
+cs: Odeslat žádost
+sl: Pošlji zahtevo
+sv: Skicka förfrågan
+@437
+it: Un membro del nostro team controllerà i dati e le invierà per e-mail il risultato indicativo.
+pt: Um membro da nossa equipa verificará os dados e enviar-lhe-á por e-mail o resultado indicativo.
+el: Ένα μέλος της ομάδας μας θα ελέγξει τα στοιχεία και θα σας στείλει με email το ενδεικτικό αποτέλεσμα.
+cs: Někdo z našeho týmu údaje zkontroluje a orientační výsledek vám pošle e-mailem.
+sl: Član naše ekipe bo preveril podatke in vam po e-pošti poslal okvirni rezultat.
+sv: Någon i vårt team kontrollerar uppgifterna och mejlar dig det vägledande resultatet.
+@438
+it: Sono obbligatori solo la tipologia di immobile, la località e la superficie.
+pt: Só são obrigatórios o tipo de imóvel, a localidade e a área.
+el: Υποχρεωτικά είναι μόνο ο τύπος ακινήτου, η τοποθεσία και το εμβαδόν.
+cs: Povinné jsou pouze typ nemovitosti, obec a podlahová plocha.
+sl: Obvezni so le vrsta nepremičnine, kraj in površina.
+sv: Endast fastighetstyp, ort och boyta är obligatoriska.
+@439
+it: Tipologia di immobile
+pt: Tipo de imóvel
+el: Τύπος ακινήτου
+cs: Typ nemovitosti
+sl: Vrsta nepremičnine
+sv: Typ av fastighet
+@440
+it: Comune o paese
+pt: Cidade ou aldeia
+el: Πόλη ή χωριό
+cs: Město nebo obec
+sl: Mesto ali vas
+sv: Stad eller by
+@441
+it: Inizi a digitare. Se non è nell’elenco, lo inserisca lei.
+pt: Comece a escrever. Se não estiver na lista, introduza-o manualmente.
+el: Αρχίστε να πληκτρολογείτε. Αν δεν υπάρχει στη λίστα, καταχωρίστε το μόνοι σας.
+cs: Začněte psát. Pokud obec v seznamu není, zadejte ji sami.
+sl: Začnite tipkati. Če kraja ni na seznamu, ga vpišite sami.
+sv: Börja skriva. Om orten inte finns i listan, skriv in den själv.
+@442
+it: Indirizzo esatto (solo per il nostro team)
+pt: Morada exata (apenas para a nossa equipa)
+el: Ακριβής διεύθυνση (μόνο για την ομάδα μας)
+cs: Přesná adresa (jen pro náš tým)
+sl: Točen naslov (samo za našo ekipo)
+sv: Exakt adress (endast för vårt team)
+@443
+it: Superficie
+pt: Área útil
+el: Εμβαδόν
+cs: Podlahová plocha
+sl: Površina
+sv: Boyta
+@444
+it: Superficie del lotto
+pt: Área do terreno
+el: Εμβαδόν οικοπέδου
+cs: Plocha pozemku
+sl: Površina parcele
+sv: Tomtarea
+@445
+it: Camere da letto
+pt: Quartos
+el: Υπνοδωμάτια
+cs: Ložnice
+sl: Spalnice
+sv: Sovrum
+@446
+it: Bagni
+pt: Casas de banho
+el: Μπάνια
+cs: Koupelny
+sl: Kopalnice
+sv: Badrum
+@447
+it: Particelle catastali
+pt: Artigos matriciais
+el: Αγροτεμάχια κτηματολογίου
+cs: Katastrální parcely
+sl: Zemljiškoknjižne parcele
+sv: Fastighetsbeteckningar
+@448
+it: Tutte le domande sono facoltative. “Non lo so” viene salvato come risposta a sé.
+pt: Todas as perguntas são facultativas. «Não sei» é guardado como resposta própria.
+el: Όλες οι ερωτήσεις είναι προαιρετικές. Το «Δεν ξέρω» αποθηκεύεται ως ξεχωριστή απάντηση.
+cs: Všechny otázky jsou nepovinné. „Nevím“ se uloží jako samostatná odpověď.
+sl: Vsa vprašanja so neobvezna. „Ne vem“ se shrani kot samostojen odgovor.
+sv: Alla frågor är frivilliga. ”Vet inte” sparas som ett eget svar.
+@449
+it: Anno di costruzione
+pt: Ano de construção
+el: Έτος κατασκευής
+cs: Rok výstavby
+sl: Leto izgradnje
+sv: Byggår
+@450
+it: Anno di ristrutturazione
+pt: Ano de renovação
+el: Έτος ανακαίνισης
+cs: Rok rekonstrukce
+sl: Leto prenove
+sv: Renoveringsår
+@451
+it: Entità della ristrutturazione
+pt: Extensão da renovação
+el: Έκταση ανακαίνισης
+cs: Rozsah rekonstrukce
+sl: Obseg prenove
+sv: Renoveringens omfattning
+@452
+it: Completa
+pt: Total
+el: Πλήρης
+cs: Úplná
+sl: Celovita
+sv: Fullständig
+@453
+it: Parziale
+pt: Parcial
+el: Μερική
+cs: Částečná
+sl: Delna
+sv: Delvis
+@454
+it: Classe energetica
+pt: Classe energética
+el: Ενεργειακή κατηγορία
+cs: Energetická třída
+sl: Energijski razred
+sv: Energiklass
+@455
+it: Queste domande riguardano l’uso del territorio e gli edifici intorno all’immobile.
+pt: Estas perguntas dizem respeito ao uso dos terrenos e aos edifícios à volta do imóvel.
+el: Αυτές οι ερωτήσεις αφορούν τις χρήσεις γης και τα κτίρια γύρω από το ακίνητο.
+cs: Tyto otázky se týkají využití pozemků a budov v okolí nemovitosti.
+sl: Ta vprašanja se nanašajo na rabo zemljišč in stavbe okoli nepremičnine.
+sv: Dessa frågor gäller markanvändningen och byggnaderna runt fastigheten.
+@456
+it: Extra e vincoli hanno valore informativo; non modificano automaticamente il prezzo.
+pt: Os extras e as restrições são informativos; não alteram automaticamente o preço.
+el: Τα πρόσθετα και οι περιορισμοί είναι ενημερωτικά· δεν αλλάζουν αυτόματα την τιμή.
+cs: Vybavení a omezení slouží pro informaci; cenu automaticky nemění.
+sl: Dodatki in omejitve so informativni; cene ne spreminjajo samodejno.
+sv: Extra och begränsningar är informativa; de ändrar inte priset automatiskt.
+@457
+it: Annessi ed extra
+pt: Anexos e extras
+el: Βοηθητικά κτίσματα και πρόσθετα
+cs: Hospodářské budovy a vybavení
+sl: Pomožni objekti in dodatki
+sv: Uthus och extra
+@458
+it: Spunti solo ciò che sa. Questa non è una consulenza legale.
+pt: Assinale apenas o que sabe. Isto não constitui aconselhamento jurídico.
+el: Επιλέξτε μόνο ό,τι γνωρίζετε. Δεν αποτελεί νομική συμβουλή.
+cs: Zaškrtněte jen to, co víte. Nejde o právní poradenství.
+sl: Označite le, kar veste. To ni pravni nasvet.
+sv: Kryssa bara i det du vet. Detta är ingen juridisk rådgivning.
+@459
+it: Altro vincolo o commento
+pt: Outra restrição ou comentário
+el: Άλλος περιορισμός ή σχόλιο
+cs: Jiné omezení nebo poznámka
+sl: Druga omejitev ali komentar
+sv: Annan begränsning eller kommentar
+@460
+it: Altri fattori che incidono sul valore
+pt: Outros fatores que afetam o valor
+el: Άλλοι παράγοντες που επηρεάζουν την αξία
+cs: Další faktory ovlivňující hodnotu
+sl: Drugi dejavniki, ki vplivajo na vrednost
+sv: Andra faktorer som påverkar värdet
+@461
+it: Aggiunga righe separate. La direzione è indicativa, non un calcolo.
+pt: Acrescente linhas separadas. A direção é informativa, não um cálculo.
+el: Προσθέστε ξεχωριστές γραμμές. Η κατεύθυνση είναι ενδεικτική, όχι υπολογισμός.
+cs: Přidejte samostatné řádky. Směr je informativní, nejde o výpočet.
+sl: Dodajte ločene vrstice. Smer je informativna, ni izračun.
+sv: Lägg till separata rader. Riktningen är informativ, ingen beräkning.
+@462
+it: + Aggiungi un fattore
+pt: + Adicionar um fator
+el: + Προσθήκη παράγοντα
+cs: + Přidat faktor
+sl: + Dodaj dejavnik
+sv: + Lägg till en faktor
+@463
+it: Foto (fino a 6)
+pt: Fotografias (até 6)
+el: Φωτογραφίες (έως 6)
+cs: Fotografie (až 6)
+sl: Fotografije (do 6)
+sv: Foton (upp till 6)
+@464
+it: JPG, PNG o WebP. Le foto vengono ridotte prima dell’invio e sono visibili solo al nostro team.
+pt: JPG, PNG ou WebP. As fotografias são reduzidas antes do envio e só são visíveis para a nossa equipa.
+el: JPG, PNG ή WebP. Οι φωτογραφίες σμικρύνονται πριν από την αποστολή και είναι ορατές μόνο στην ομάδα μας.
+cs: JPG, PNG nebo WebP. Fotografie se před odesláním zmenší a vidí je jen náš tým.
+sl: JPG, PNG ali WebP. Fotografije se pred pošiljanjem pomanjšajo in so vidne le naši ekipi.
+sv: JPG, PNG eller WebP. Bilderna förminskas före sändning och är bara synliga för vårt team.
+@465
+it: Documenti (planimetria, permesso di costruire, atto di proprietà, attestato energetico…)
+pt: Documentos (planta, licença de construção, título de propriedade, certificado energético…)
+el: Έγγραφα (κάτοψη, οικοδομική άδεια, τίτλος ιδιοκτησίας, ενεργειακό πιστοποιητικό…)
+cs: Dokumenty (půdorys, stavební povolení, list vlastnictví, průkaz energetické náročnosti…)
+sl: Dokumenti (tloris, gradbeno dovoljenje, lastninska listina, energetska izkaznica …)
+sv: Dokument (planritning, bygglov, lagfart, energideklaration…)
+@466
+it: Fino a 15 file da 50 MB ciascuno. Vengono caricati direttamente, senza compressione, e sono visibili solo al nostro team.
+pt: Até 15 ficheiros de 50 MB cada. São carregados diretamente, sem compressão, e só são visíveis para a nossa equipa.
+el: Έως 15 αρχεία των 50 MB το καθένα. Ανεβαίνουν απευθείας, χωρίς συμπίεση, και είναι ορατά μόνο στην ομάδα μας.
+cs: Až 15 souborů po 50 MB. Nahrávají se přímo, bez komprese, a vidí je jen náš tým.
+sl: Do 15 datotek po 50 MB. Naložijo se neposredno, brez stiskanja, in so vidne le naši ekipi.
+sv: Upp till 15 filer på 50 MB vardera. De laddas upp direkt och okomprimerade och är bara synliga för vårt team.
+@467
+it: Quale valutazione desidera
+pt: Que avaliação pretende
+el: Ποια εκτίμηση θέλετε
+cs: Jaký odhad si přejete
+sl: Katero oceno želite
+sv: Vilken värdering vill du ha
+@468
+it: Per un sopralluogo la contatteremo per fissare una data.
+pt: Para uma visita, entraremos em contacto consigo para marcar uma data.
+el: Για επίσκεψη, θα επικοινωνήσουμε μαζί σας για να ορίσουμε ημερομηνία.
+cs: Kvůli návštěvě vás budeme kontaktovat a domluvíme termín.
+sl: Za ogled vas bomo kontaktirali in se dogovorili za termin.
+sv: Vid ett besök kontaktar vi dig för att boka en tid.
+@469
+it:  Per un pacchetto a prezzo fisso può anche pagare con carta subito dopo l’invio.
+pt:  Num pacote de preço fixo, também pode pagar com cartão logo após o envio.
+el:  Για πακέτο σταθερής τιμής μπορείτε επίσης να πληρώσετε με κάρτα αμέσως μετά την αποστολή.
+cs:  U balíčku s pevnou cenou můžete zaplatit kartou hned po odeslání.
+sl:  Pri paketu s fiksno ceno lahko s kartico plačate takoj po pošiljanju.
+sv:  För ett fastprispaket kan du också betala med kort direkt efter att du skickat.
+@470
+it:  Per una perizia ufficiale non indichiamo prezzo né tempi finché non abbiamo preparato un preventivo.
+pt:  Para uma avaliação oficial não indicamos preço nem prazo até termos feito um orçamento.
+el:  Για επίσημη εκτίμηση δεν δίνουμε τιμή ή προθεσμία μέχρι να ετοιμάσουμε προσφορά.
+cs:  U úředního posudku neuvádíme cenu ani termín, dokud nepřipravíme nabídku.
+sl:  Za uradno cenitev ne navedemo cene ali roka, dokler ne pripravimo ponudbe.
+sv:  För en officiell värdering anger vi varken pris eller tidsram förrän vi har lämnat en offert.
+@471
+it: Fattore
+pt: Fator
+el: Παράγοντας
+cs: Faktor
+sl: Dejavnik
+sv: Faktor
+@472
+it: Direzione
+pt: Direção
+el: Κατεύθυνση
+cs: Směr
+sl: Smer
+sv: Riktning
+@473
+it: Rimuovi riga
+pt: Remover linha
+el: Αφαίρεση γραμμής
+cs: Odebrat řádek
+sl: Odstrani vrstico
+sv: Ta bort rad

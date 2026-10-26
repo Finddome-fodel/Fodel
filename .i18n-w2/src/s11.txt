@@ -1,0 +1,416 @@
+@786 [groups.json]
+EN: Residential property
+
+@787 [groups.json]
+EN: Flat, studio
+
+@788 [groups.json]
+EN: Detached house, villa
+
+@789 [groups.json]
+EN: Semi-detached, terraced house
+
+@790 [groups.json]
+EN: Penthouse
+
+@791 [groups.json]
+EN: Multi-unit residential building
+
+@792 [groups.json]
+EN: Other residential property
+
+@793 [groups.json]
+EN: Holiday property
+
+@794 [groups.json]
+EN: Holiday home, weekend house
+
+@795 [groups.json]
+EN: Holiday apartment
+
+@796 [groups.json]
+EN: Waterfront or seaside property
+
+@797 [groups.json]
+EN: Mountain retreat, chalet
+
+@798 [groups.json]
+EN: Holiday complex
+
+@799 [groups.json]
+EN: Other holiday property
+
+@800 [groups.json]
+EN: Agricultural property
+
+@801 [groups.json]
+EN: Arable land, farmland
+
+@802 [groups.json]
+EN: Farm, homestead
+
+@803 [groups.json]
+EN: Orchard, vineyard
+
+@804 [groups.json]
+EN: Forest, pasture
+
+@805 [groups.json]
+EN: Livestock facility
+
+@806 [groups.json]
+EN: Agricultural business, estate
+
+@807 [groups.json]
+EN: Fishpond, fish farm
+
+@808 [groups.json]
+EN: Other agricultural property
+
+@809 [groups.json]
+EN: Commercial property
+
+@810 [groups.json]
+EN: Retail unit
+
+@811 [groups.json]
+EN: Office, office building
+
+@812 [groups.json]
+EN: Restaurant, café
+
+@813 [groups.json]
+EN: Hotel, B&B, guesthouse
+
+@814 [groups.json]
+EN: Shopping centre
+
+@815 [groups.json]
+EN: Healthcare, education or sports facility
+
+@816 [groups.json]
+EN: Other commercial property
+
+@817 [groups.json]
+EN: Industrial and logistics property
+
+@818 [groups.json]
+EN: Factory, plant
+
+@819 [groups.json]
+EN: Warehouse, logistics centre
+
+@820 [groups.json]
+EN: Industrial hall
+
+@821 [groups.json]
+EN: Workshop, service centre
+
+@822 [groups.json]
+EN: Food-processing plant
+
+@823 [groups.json]
+EN: Other industrial property
+
+@824 [groups.json]
+EN: Manor houses and historic property
+
+@825 [groups.json]
+EN: Castle, manor house
+
+@826 [groups.json]
+EN: Historic villa, country house
+
+@827 [groups.json]
+EN: Fortress, monastery or historic building
+
+@828 [groups.json]
+EN: Listed property
+
+@829 [groups.json]
+EN: Other historic property
+
+@830 [groups.json]
+EN: Land and development sites
+
+@831 [groups.json]
+EN: Residential building plot
+
+@832 [groups.json]
+EN: Commercial or industrial plot
+
+@833 [groups.json]
+EN: Tourism development site
+
+@834 [groups.json]
+EN: Large development site
+
+@835 [groups.json]
+EN: Agricultural land
+
+@836 [groups.json]
+EN: Other land or development site
+
+@837 [groups.json]
+EN: Investment property
+
+@838 [groups.json]
+EN: Tenanted residential property
+
+@839 [groups.json]
+EN: Tenanted commercial or industrial property
+
+@840 [groups.json]
+EN: Income-producing property
+
+@841 [groups.json]
+EN: Property portfolio
+
+@842 [groups.json]
+EN: Property development project
+
+@843 [groups.json]
+EN: Other investment property
+
+@844 [groups.json]
+EN: investment-property
+
+@845 [groups.json]
+EN: Other property
+
+@846 [groups.json]
+EN: Garage, parking space
+
+@847 [groups.json]
+EN: Storage unit, cellar
+
+@848 [groups.json]
+EN: Wine press house, wine cellar
+
+@849 [groups.json]
+EN: Special-purpose property
+
+@850 [groups.json]
+EN: Other property
+
+@851 [groups.json]
+EN: other-property
+
+@852 [options.json]
+EN: Newly built
+
+@853 [options.json]
+EN: As new
+
+@854 [options.json]
+EN: Average condition
+
+@855 [options.json]
+EN: Poor condition / ruin
+
+@856 [options.json]
+EN: Unfinished construction
+
+@857 [options.json]
+EN: Wood and solid fuel
+
+@858 [options.json]
+EN: District heating
+
+@859 [options.json]
+EN: Oil heating
+
+@860 [options.json]
+EN: Solar heating
+
+@861 [options.json]
+EN: Mixed heating system
+
+@862 [options.json]
+EN: No heating
+
+@863 [options.json]
+EN: Adobe
+
+@864 [options.json]
+EN: Mixed masonry
+
+@865 [options.json]
+EN: Timber / lightweight
+
+@866 [options.json]
+EN: Steel frame
+
+@867 [features.json]
+EN: Level land
+
+@868 [features.json]
+EN: Sloping land
+
+@869 [features.json]
+EN: Wooded surroundings
+
+@870 [features.json]
+EN: Panoramic views
+
+@871 [features.json]
+EN: Direct waterfront
+
+@872 [features.json]
+EN: Terrace or balcony
+
+@873 [features.json]
+EN: Garage or parking
+
+@874 [features.json]
+EN: Swimming pool
+
+@875 [features.json]
+EN: Sauna or hot tub
+
+@876 [features.json]
+EN: Fireplace
+
+@877 [features.json]
+EN: Cellar or storage
+
+@878 [features.json]
+EN: Landscaped garden
+
+@879 [features.json]
+EN: Dog house or kennel
+
+@880 [features.json]
+EN: Private shoreline
+
+@881 [features.json]
+EN: Private jetty or mooring
+
+@882 [features.json]
+EN: Boat storage
+
+@883 [features.json]
+EN: Mountain terrain
+
+@884 [features.json]
+EN: Woodland
+
+@885 [features.json]
+EN: Partly wooded land
+
+@886 [features.json]
+EN: Arable land
+
+@887 [features.json]
+EN: Pasture or meadow
+
+@888 [features.json]
+EN: Orchard or vineyard
+
+@889 [features.json]
+EN: Fishpond or waterfront
+
+@890 [features.json]
+EN: Agricultural buildings
+
+@891 [features.json]
+EN: Animal housing
+
+@892 [features.json]
+EN: Stable or paddock
+
+@893 [features.json]
+EN: Riding arena
+
+@894 [features.json]
+EN: Machinery and tool storage
+
+@895 [features.json]
+EN: Feed storage
+
+@896 [features.json]
+EN: Irrigation system
+
+@897 [features.json]
+EN: Guesthouse
+
+@898 [features.json]
+EN: Street frontage
+
+@899 [features.json]
+EN: Display windows
+
+@900 [features.json]
+EN: Loading access
+
+@901 [features.json]
+EN: Suitable for hospitality
+
+@902 [features.json]
+EN: Equipped kitchen
+
+@903 [features.json]
+EN: Accessible
+
+@904 [features.json]
+EN: Storage space
+
+@905 [features.json]
+EN: High ceilings
+
+@906 [features.json]
+EN: Industrial power supply
+
+@907 [features.json]
+EN: Loading dock
+
+@908 [features.json]
+EN: Truck bay
+
+@909 [features.json]
+EN: Lorry parking
+
+@910 [features.json]
+EN: Crane or crane runway
+
+@911 [features.json]
+EN: Heavy-duty floor
+
+@912 [features.json]
+EN: Workshop
+
+@913 [features.json]
+EN: Office space
+
+@914 [features.json]
+EN: Staff facilities
+
+@915 [features.json]
+EN: Lorry access
+
+@916 [features.json]
+EN: Listed or heritage character
+
+@917 [features.json]
+EN: Historic architectural features
+
+@918 [features.json]
+EN: Wooded estate
+
+@919 [features.json]
+EN: Private chapel
+
+@920 [features.json]
+EN: Steep land
+
+@921 [features.json]
+EN: Grassland
+
+@922 [features.json]
+EN: Public-road access
+
+@923 [features.json]
+EN: Paved road
+
+@924 [features.json]
+EN: Unpaved road

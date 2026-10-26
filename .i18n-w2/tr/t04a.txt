@@ -1,0 +1,497 @@
+@217
+it: La procedura
+pt: O processo
+el: Η διαδικασία
+cs: Postup
+sl: Postopek
+sv: Så går det till
+@218
+it: Registrazione
+pt: Registo
+el: Εγγραφή
+cs: Registrace
+sl: Registracija
+sv: Registrering
+@219
+it: Indichi nome, indirizzo e-mail e numero di telefono. È tutto ciò che serve per iniziare.
+pt: Indica o nome, o endereço de e-mail e o número de telefone. É tudo o que precisa para começar.
+el: Δίνετε όνομα, διεύθυνση email και αριθμό τηλεφώνου. Αυτά αρκούν για να ξεκινήσετε.
+cs: Uvedete jméno, e-mailovou adresu a telefonní číslo. Víc k začátku nepotřebujete.
+sl: Navedete ime, e-poštni naslov in telefonsko številko. To je vse, kar potrebujete za začetek.
+sv: Du anger namn, e-postadress och telefonnummer. Mer behövs inte för att komma i gång.
+@220
+it: E-mail e password
+pt: E-mail e palavra-passe
+el: Email και κωδικός πρόσβασης
+cs: E-mail a heslo
+sl: E-pošta in geslo
+sv: E-post och lösenord
+@221
+it: Le inviamo un link per e-mail. Ci clicchi sopra per impostare la password.
+pt: Enviamos-lhe uma ligação por e-mail. Clique nela para definir a palavra-passe.
+el: Σας στέλνουμε έναν σύνδεσμο με email. Πατήστε τον για να ορίσετε τον κωδικό σας.
+cs: Pošleme vám e-mailem odkaz. Klikněte na něj a nastavte si heslo.
+sl: Po e-pošti vam pošljemo povezavo. Kliknite nanjo in nastavite geslo.
+sv: Vi mejlar dig en länk. Klicka på den för att välja lösenord.
+@222
+it: Componga l’annuncio
+pt: Monte o anúncio
+el: Δημιουργήστε την αγγελία
+cs: Sestavte inzerát
+sl: Pripravite oglas
+sv: Sätt ihop annonsen
+@223
+it: Passo dopo passo: pacchetto, dati dell’immobile, descrizione, foto. Può interrompere in qualsiasi momento e riprendere più tardi.
+pt: Passo a passo: pacote, dados do imóvel, descrição, fotografias. Pode parar a qualquer momento e continuar mais tarde.
+el: Βήμα προς βήμα: πακέτο, στοιχεία ακινήτου, περιγραφή, φωτογραφίες. Μπορείτε να σταματήσετε οποιαδήποτε στιγμή και να συνεχίσετε αργότερα.
+cs: Krok za krokem: balíček, údaje o nemovitosti, popis, fotografie. Kdykoli můžete přestat a pokračovat později.
+sl: Korak za korakom: paket, podatki o nepremičnini, opis, fotografije. Kadar koli lahko prekinete in nadaljujete pozneje.
+sv: Steg för steg: paket, fastighetsuppgifter, beskrivning, foton. Du kan avbryta när som helst och fortsätta senare.
+@224
+it: Verifica
+pt: Revisão
+el: Έλεγχος
+cs: Kontrola
+sl: Pregled
+sv: Granskning
+@225
+it: Un membro del nostro team verifica l’annuncio e, se necessario, chiede una correzione.
+pt: Um membro da nossa equipa revê o anúncio e, se necessário, pede uma correção.
+el: Ένα μέλος της ομάδας μας ελέγχει την αγγελία και, αν χρειαστεί, ζητά διόρθωση.
+cs: Někdo z našeho týmu inzerát zkontroluje a v případě potřeby požádá o opravu.
+sl: Član naše ekipe pregleda oglas in po potrebi zaprosi za popravek.
+sv: Någon i vårt team granskar annonsen och ber vid behov om en korrigering.
+@226
+it: Pubblicazione
+pt: Publicação
+el: Δημοσίευση
+cs: Zveřejnění
+sl: Objava
+sv: Publicering
+@227
+it: Un annuncio approvato va subito online, in ${R.languages} lingue in ${R.countries} paesi. Non paga mai per un annuncio respinto.
+pt: Um anúncio aprovado fica logo online, em ${R.languages} idiomas em ${R.countries} países. Nunca paga por um anúncio recusado.
+el: Μια εγκεκριμένη αγγελία δημοσιεύεται αμέσως, σε ${R.languages} γλώσσες σε ${R.countries} χώρες. Δεν πληρώνετε ποτέ για αγγελία που απορρίπτεται.
+cs: Schválený inzerát je hned online, v ${nOf('cs', R.languages, 'jazyce', 'jazycích')} v ${nOf('cs', R.countries, 'zemi', 'zemích')}. Za zamítnutý inzerát nikdy neplatíte.
+sl: Odobren oglas je takoj objavljen, v ${nOf('sl', R.languages, 'jeziku', 'jezikih', 'jezikih', 'jezikih')} v ${nOf('sl', R.countries, 'državi', 'državah', 'državah', 'državah')}. Za zavrnjen oglas nikoli ne plačate.
+sv: En godkänd annons publiceras direkt, på ${R.languages} språk i ${R.countries} länder. Du betalar aldrig för en annons som avslås.
+@228
+it: Pagamento
+pt: Pagamento
+el: Πληρωμή
+cs: Platba
+sl: Plačilo
+sv: Betalning
+@229
+it: Poi paga con carta o bonifico; il pagamento non ritarda la pubblicazione.
+pt: Depois paga com cartão ou transferência bancária; o pagamento não atrasa a publicação.
+el: Στη συνέχεια πληρώνετε με κάρτα ή τραπεζική μεταφορά· η πληρωμή δεν καθυστερεί τη δημοσίευση.
+cs: Poté zaplatíte kartou nebo bankovním převodem; platba zveřejnění nezdržuje.
+sl: Nato plačate s kartico ali z bančnim nakazilom; plačilo objave ne zadržuje.
+sv: Därefter betalar du med kort eller banköverföring; betalningen fördröjer inte publiceringen.
+@230
+it: Pacchetti e prezzi
+pt: Pacotes e preços
+el: Πακέτα και τιμές
+cs: Balíčky a ceny
+sl: Paketi in cene
+sv: Paket och priser
+@231
+it: Sceglie pacchetto e servizi aggiuntivi dopo la registrazione, quando compone l’annuncio.
+pt: Escolhe o pacote e os extras depois de se registar, quando monta o anúncio.
+el: Επιλέγετε πακέτο και πρόσθετα μετά την εγγραφή, όταν δημιουργείτε την αγγελία σας.
+cs: Balíček a doplňkové služby si vyberete po registraci, při sestavování inzerátu.
+sl: Paket in dodatne storitve izberete po registraciji, ko pripravljate oglas.
+sv: Du väljer paket och tillval efter registreringen, när du sätter ihop annonsen.
+@232
+it: Consigliato
+pt: Recomendado
+el: Προτείνεται
+cs: Doporučujeme
+sl: Priporočeno
+sv: Rekommenderas
+@233
+it: Servizi aggiuntivi
+pt: Extras
+el: Πρόσθετα
+cs: Doplňkové služby
+sl: Dodatne storitve
+sv: Tillval
+@234
+it: Traduzione
+pt: Tradução
+el: Μετάφραση
+cs: Překlad
+sl: Prevod
+sv: Översättning
+@235
+it: per lingua
+pt: por idioma
+el: ανά γλώσσα
+cs: za jazyk
+sl: na jezik
+sv: per språk
+@236
+it: Messa in evidenza nella categoria
+pt: Destaque na categoria
+el: Προβολή στην κατηγορία
+cs: Zvýraznění v kategorii
+sl: Izpostavitev v kategoriji
+sv: Framhävning i kategorin
+@237
+it: Messa in evidenza in homepage
+pt: Destaque na página inicial
+el: Προβολή στην αρχική σελίδα
+cs: Zvýraznění na úvodní stránce
+sl: Izpostavitev na domači strani
+sv: Framhävning på startsidan
+@238
+it: Inserimento di un video
+pt: Inclusão de vídeo
+el: Ανάρτηση βίντεο
+cs: Umístění videa
+sl: Objava videa
+sv: Placering av video
+@239
+it: min. ${n} mesi
+pt: mín. ${n} meses
+el: ελάχ. ${n} μήνες
+cs: min. ${nOf('cs', n, 'měsíc', 'měsíce', 'měsíců')}
+sl: najmanj ${nOf('sl', n, 'mesec', 'meseci', 'mesecev', 'meseca')}
+sv: minst ${n} månader
+@240
+it: Bastano tre dati per iniziare. Se ha difficoltà, ci chiami: la aiutiamo volentieri.
+pt: Bastam três dados para começar. Se tiver dificuldades, ligue-nos: teremos todo o gosto em ajudar.
+el: Τρία στοιχεία αρκούν για να ξεκινήσετε. Αν δυσκολευτείτε, καλέστε μας· θα σας βοηθήσουμε με χαρά.
+cs: Stačí tři údaje a můžete začít. Pokud si nebudete vědět rady, zavolejte nám; rádi pomůžeme.
+sl: Dovolj so trije podatki in lahko začnete. Če se zatakne, nas pokličite; z veseljem pomagamo.
+sv: Tre uppgifter och du kan börja. Om du kör fast, ring oss; vi hjälper gärna till.
+@241
+it: Pubblica già annunci con noi?
+pt: Já anuncia connosco?
+el: Διαφημίζεστε ήδη μαζί μας;
+cs: Už u nás inzerujete?
+sl: Pri nas že oglašujete?
+sv: Annonserar du redan hos oss?
+@242
+it: Acceda al portale inserzionisti
+pt: Inicie sessão no portal do anunciante
+el: Συνδεθείτε στην πύλη διαφημιζόμενων
+cs: Přihlaste se do portálu pro inzerenty
+sl: Prijavite se v portal za oglaševalce
+sv: Logga in på annonsörsportalen
+@243
+it: , dove può anche iniziare un nuovo annuncio.
+pt: , onde também pode começar um novo anúncio.
+el: , όπου μπορείτε επίσης να ξεκινήσετε νέα αγγελία.
+cs: , kde můžete založit i nový inzerát.
+sl: , kjer lahko začnete tudi nov oglas.
+sv: , där du också kan påbörja en ny annons.
+@244
+it: I nostri conti bancari
+pt: As nossas contas bancárias
+el: Οι τραπεζικοί μας λογαριασμοί
+cs: Naše bankovní účty
+sl: Naši bančni računi
+sv: Våra bankkonton
+@245
+it: Una volta approvato, l’annuncio va subito online; poi versa l’importo su uno di questi conti o paga con carta nella sua area personale.
+pt: Depois de aprovado, o anúncio fica logo online; em seguida transfere o valor para uma destas contas ou paga com cartão na sua área pessoal.
+el: Μόλις εγκριθεί, η αγγελία σας δημοσιεύεται αμέσως· στη συνέχεια μεταφέρετε το ποσό σε έναν από αυτούς τους λογαριασμούς ή πληρώνετε με κάρτα στον προσωπικό σας χώρο.
+cs: Po schválení je inzerát hned online; částku pak převedete na jeden z těchto účtů nebo zaplatíte kartou ve svém účtu.
+sl: Po odobritvi je oglas takoj objavljen; znesek nato nakažete na enega od teh računov ali plačate s kartico v svojem računu.
+sv: När annonsen har godkänts publiceras den direkt; därefter för du över beloppet till något av dessa konton eller betalar med kort på ditt konto.
+@246
+it: Serve aiuto?
+pt: Precisa de ajuda?
+el: Χρειάζεστε βοήθεια;
+cs: Potřebujete pomoc?
+sl: Potrebujete pomoč?
+sv: Behöver du hjälp?
+@247
+it: Paesi Bassi
+pt: Países Baixos
+el: Ολλανδία
+cs: Nizozemsko
+sl: Nizozemska
+sv: Nederländerna
+@248
+it: Ungheria
+pt: Hungria
+el: Ουγγαρία
+cs: Maďarsko
+sl: Madžarska
+sv: Ungern
+@249
+it: Grazie per il suo messaggio
+pt: Obrigado pela sua mensagem
+el: Ευχαριστούμε για το μήνυμά σας
+cs: Děkujeme za vaši zprávu
+sl: Hvala za vaše sporočilo
+sv: Tack för ditt meddelande
+@250
+it: Abbiamo ricevuto il suo messaggio.
+pt: Recebemos a sua mensagem.
+el: Λάβαμε το μήνυμά σας.
+cs: Vaši zprávu jsme přijali.
+sl: Vaše sporočilo smo prejeli.
+sv: Vi har tagit emot ditt meddelande.
+@251
+it: Inviato
+pt: Enviado
+el: Εστάλη
+cs: Odesláno
+sl: Poslano
+sv: Skickat
+@252
+it: Torna alla homepage
+pt: Voltar à página inicial
+el: Επιστροφή στην αρχική σελίδα
+cs: Zpět na úvodní stránku
+sl: Nazaj na domačo stran
+sv: Tillbaka till startsidan
+@253
+it: FODEL
+pt: FODEL
+el: FODEL
+cs: FODEL
+sl: FODEL
+sv: FODEL
+@254
+it: Numero olandese
+pt: Número neerlandês
+el: Ολλανδικός αριθμός
+cs: Nizozemské číslo
+sl: Nizozemska številka
+sv: Nederländskt nummer
+@255
+it: Risponde anche in ungherese
+pt: Também atende em húngaro
+el: Εξυπηρετεί και στα ουγγρικά
+cs: Lze volat i maďarsky
+sl: Možni so tudi klici v madžarščini
+sv: Även för ungerskspråkiga
+@256
+it: Numero ungherese
+pt: Número húngaro
+el: Ουγγρικός αριθμός
+cs: Maďarské číslo
+sl: Madžarska številka
+sv: Ungerskt nummer
+@257
+it: Agente immobiliare
+pt: Consultor imobiliário
+el: Μεσίτης ακινήτων
+cs: Realitní makléř
+sl: Nepremičninski posrednik
+sv: Fastighetsmäklare
+@258
+it: Linea informativa ungherese
+pt: Linha de informação húngara
+el: Ουγγρική γραμμή πληροφοριών
+cs: Maďarská informační linka
+sl: Madžarska informacijska linija
+sv: Ungersk informationslinje
+@259
+it: Informazioni generali
+pt: Informações gerais
+el: Γενικές πληροφορίες
+cs: Obecné informace
+sl: Splošne informacije
+sv: Allmän information
+@260
+it: Annuncio standard
+pt: Anúncio normal
+el: Τυπική αγγελία
+cs: Standardní inzerát
+sl: Standardni oglas
+sv: Standardannons
+@261
+it: Annuncio in evidenza
+pt: Anúncio em destaque
+el: Προβεβλημένη αγγελία
+cs: Zvýrazněný inzerát
+sl: Izpostavljeni oglas
+sv: Framhävd annons
+@262
+it: Foto professionali, video e riprese con drone sul posto
+pt: Fotografias profissionais, vídeo e imagens de drone no local
+el: Επαγγελματικές φωτογραφίες, βίντεο και λήψεις με drone επιτόπου
+cs: Profesionální fotografie, video a záběry z dronu na místě
+sl: Profesionalne fotografije, video in posnetki z dronom na kraju samem
+sv: Professionella foton, video och drönarbilder på plats
+@263
+it: Foto professionali dell’immobile
+pt: Fotografias profissionais do imóvel
+el: Επαγγελματικές φωτογραφίες του ακινήτου
+cs: Profesionální fotografie nemovitosti
+sl: Profesionalne fotografije nepremičnine
+sv: Professionella foton av fastigheten
+@264
+it: Presentazione video
+pt: Apresentação em vídeo
+el: Παρουσίαση με βίντεο
+cs: Videoprezentace
+sl: Video predstavitev
+sv: Videopresentation
+@265
+it: Riprese con drone
+pt: Imagens de drone
+el: Λήψεις με drone
+cs: Záběry z dronu
+sl: Posnetki z dronom
+sv: Drönarbilder
+@266
+it: Una visita di Gábor sul posto: foto e video professionali e una valutazione personale dettagliata
+pt: Uma visita do Gábor ao local: fotografias e vídeo profissionais e uma avaliação pessoal detalhada
+el: Επίσκεψη του Gábor επιτόπου: επαγγελματικές φωτογραφίες και βίντεο, και λεπτομερής προσωπική εκτίμηση
+cs: Návštěva Gábora na místě: profesionální fotografie a video a podrobný osobní odhad ceny
+sl: Obisk Gábora na kraju samem: profesionalne fotografije in video ter podrobna osebna ocena vrednosti
+sv: Ett besök av Gábor på plats: professionella foton och video samt en utförlig personlig värdering
+@267
+it: Valutazione personale dettagliata
+pt: Avaliação pessoal detalhada
+el: Λεπτομερής προσωπική εκτίμηση
+cs: Podrobný osobní odhad ceny
+sl: Podrobna osebna ocena vrednosti
+sv: Utförlig personlig värdering
+@268
+it: Lunedì–venerdì
+pt: Segunda a sexta-feira
+el: Δευτέρα–Παρασκευή
+cs: Pondělí–pátek
+sl: Ponedeljek–petek
+sv: Måndag–fredag
+@269
+it: L’Aia
+pt: Haia
+el: Χάγη
+cs: Haag
+sl: Haag
+sv: Haag
+@270
+it: Paesi Bassi
+pt: Países Baixos
+el: Ολλανδία
+cs: Nizozemsko
+sl: Nizozemska
+sv: Nederländerna
+@271
+it: Alla luce del giorno, col sole
+pt: Com luz do dia, ao sol
+el: Στο φως της ημέρας, με ήλιο
+cs: Za denního světla, ve slunci
+sl: Ob dnevni svetlobi, ob soncu
+sv: I dagsljus, i solsken
+@272
+it: Scatti con buona luce diurna, idealmente con il sole, e accenda tutte le luci.
+pt: Fotografe com boa luz natural, de preferência num dia de sol, e acenda todas as luzes.
+el: Φωτογραφίζετε με καλό φως ημέρας, ιδανικά με ηλιοφάνεια, και ανάψτε όλα τα φώτα.
+cs: Fotografujte za dobrého denního světla, ideálně za slunečného počasí, a rozsviťte všechna světla.
+sl: Fotografirajte ob dobri dnevni svetlobi, najbolje v sončnem vremenu, in prižgite vse luči.
+sv: Fotografera i bra dagsljus, helst i soligt väder, och tänd alla lampor.
+@273
+it: Prima metta in ordine
+pt: Primeiro, arrume
+el: Πρώτα τακτοποιήστε
+cs: Nejdřív uklidit
+sl: Najprej pospravite
+sv: Städa först
+@274
+it: Metta in ordine e riponga gli oggetti personali. Gli acquirenti devono vedere la casa, non le sue cose.
+pt: Arrume e guarde os objetos pessoais. Os compradores devem ver a casa, não as suas coisas.
+el: Τακτοποιήστε και μαζέψτε τα προσωπικά αντικείμενα. Οι αγοραστές πρέπει να βλέπουν το σπίτι, όχι τα πράγματά σας.
+cs: Ukliďte a schovejte osobní věci. Kupující mají vidět dům, ne vaše věci.
+sl: Pospravite in umaknite osebne predmete. Kupci naj vidijo hišo, ne vaših stvari.
+sv: Städa och plocka undan personliga saker. Köparna ska se huset, inte dina tillhörigheter.
+@275
+it: Tende aperte
+pt: Cortinas abertas
+el: Κουρτίνες ανοιχτές
+cs: Otevřené závěsy
+sl: Odgrnjene zavese
+sv: Gardinerna fråndragna
+@276
+it: Apra le tende e alzi le tapparelle. Ogni raggio di luce conta.
+pt: Abra as cortinas e levante os estores. Toda a luz conta.
+el: Τραβήξτε τις κουρτίνες και ανεβάστε τα ρολά. Κάθε αχτίδα φωτός μετράει.
+cs: Roztáhněte závěsy a vytáhněte rolety. Počítá se každý paprsek světla.
+sl: Odgrnite zavese in dvignite polkna. Šteje vsak žarek svetlobe.
+sv: Dra ifrån gardinerna och dra upp rullgardinerna. Varje ljusstråle räknas.
+@277
+it: L’intera stanza
+pt: A divisão inteira
+el: Ολόκληρο το δωμάτιο
+cs: Celá místnost
+sl: Ves prostor
+sv: Hela rummet
+@278
+it: Si posizioni in un angolo della stanza e scatti all’altezza del petto, così da inquadrare l’intera stanza.
+pt: Coloque-se num canto da divisão e fotografe à altura do peito, para que a divisão inteira fique no enquadramento.
+el: Σταθείτε σε μια γωνία του δωματίου και φωτογραφίστε στο ύψος του στήθους, ώστε να χωρά όλο το δωμάτιο στο κάδρο.
+cs: Postavte se do rohu místnosti a fotografujte ve výšce hrudníku, aby byla v záběru celá místnost.
+sl: Postavite se v kot prostora in fotografirajte v višini prsi, da bo v kadru ves prostor.
+sv: Ställ dig i ett hörn av rummet och fotografera i brösthöjd, så att hela rummet kommer med i bild.
+@279
+it: Telefono in orizzontale, obiettivo pulito
+pt: Telemóvel na horizontal, lente limpa
+el: Κινητό οριζόντια, καθαρός φακός
+cs: Telefon na šířku, čistý objektiv
+sl: Telefon ležeče, čist objektiv
+sv: Telefonen på bredden, ren lins
+@280
+it: Tenga il telefono in orizzontale e pulisca prima l’obiettivo.
+pt: Segure o telemóvel na horizontal e limpe primeiro a lente.
+el: Κρατήστε το κινητό οριζόντια και καθαρίστε πρώτα τον φακό.
+cs: Držte telefon na šířku a nejdřív otřete objektiv.
+sl: Telefon držite ležeče in najprej obrišite objektiv.
+sv: Håll telefonen horisontellt (liggande) och torka av linsen först.
+@281
+it: Nessuna persona
+pt: Sem pessoas
+el: Χωρίς ανθρώπους
+cs: Žádné osoby
+sl: Brez ljudi
+sv: Inga personer
+@282
+it: Si assicuri che nessuno sia nella foto: nemmeno lei, neanche riflesso in uno specchio.
+pt: Certifique-se de que ninguém aparece na fotografia: nem o próprio, nem sequer num espelho.
+el: Βεβαιωθείτε ότι δεν υπάρχει κανείς στη φωτογραφία: ούτε εσείς, ούτε καν σε καθρέφτη.
+cs: Dbejte, aby na fotografii nikdo nebyl: ani vy, a to ani v zrcadle.
+sl: Poskrbite, da na fotografiji ni nikogar: tudi vas ne, niti v ogledalu.
+sv: Se till att ingen syns på bilden: inte du heller, inte ens i en spegel.
+@283
+it: La maggior parte degli acquirenti vive all’estero e decide in base alle foto se contattarla e se affrontare il viaggio per una visita. Buone foto suscitano subito più interesse.
+pt: A maioria dos compradores vive no estrangeiro e decide pelas fotografias se entra em contacto e se faz a viagem para uma visita. Boas fotografias geram logo mais interesse.
+el: Οι περισσότεροι αγοραστές ζουν στο εξωτερικό και αποφασίζουν από τις φωτογραφίες αν θα επικοινωνήσουν και αν θα ταξιδέψουν για να δουν το ακίνητο. Οι καλές φωτογραφίες φέρνουν αμέσως μεγαλύτερο ενδιαφέρον.
+cs: Většina kupujících žije v zahraničí a podle fotografií se rozhoduje, zda se ozve a zda kvůli prohlídce podnikne cestu. Dobré fotografie hned přinesou větší zájem.
+sl: Večina kupcev živi v tujini in se na podlagi fotografij odloči, ali bo stopila v stik in ali se bo odpravila na ogled. Dobre fotografije takoj pritegnejo več zanimanja.
+sv: De flesta köpare bor utomlands och avgör utifrån bilderna om de ska höra av sig och om de ska resa dit på visning. Bra bilder ger mer intresse direkt.
+@284
+it: Preparazione
+pt: Preparação
+el: Προετοιμασία
+cs: Příprava
+sl: Priprava
+sv: Förberedelser
+@285
+it: Metta in ordine e accenda tutte le luci prima di iniziare.
+pt: Arrume e acenda todas as luzes antes de começar.
+el: Τακτοποιήστε και ανάψτε όλα τα φώτα πριν ξεκινήσετε.
+cs: Než začnete, ukliďte a rozsviťte všechna světla.
+sl: Preden začnete, pospravite in prižgite vse luči.
+sv: Städa och tänd alla lampor innan du börjar.
+@286
+it: Tolga gli oggetti personali dalla vista.
+pt: Retire os objetos pessoais do campo de visão.
+el: Απομακρύνετε τα προσωπικά αντικείμενα από το κάδρο.
+cs: Odstraňte z dohledu osobní věci.
+sl: Osebne predmete umaknite iz kadra.
+sv: Plocka bort personliga saker ur synfältet.
+@287
+it: Tagli il prato prima di fotografare il giardino.
+pt: Corte a relva antes de fotografar o jardim.
+el: Κουρέψτε το γκαζόν πριν φωτογραφίσετε τον κήπο.
+cs: Před focením zahrady posekejte trávník.
+sl: Preden fotografirate vrt, pokosite travo.
+sv: Klipp gräsmattan innan du fotograferar trädgården.

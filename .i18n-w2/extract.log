@@ -1,0 +1,31 @@
+{
+  call: 268,
+  obj: 111,
+  'obj-nolit-diff': 7,
+  'obj-diff': 4,
+  'obj-nolit': 1
+}
+unique strings 800 chars 30982
+src/data/taxonomy-i18n.ts:27 non-assignment fr/sk (ShorthandPropertyAssignment)
+src/data/valuation-questions.ts:55 non-assignment fr/sk (ShorthandPropertyAssignment)
+src/data/valuation-questions.ts:215 call with non-literal args
+src/lib/validation-server.ts:19 non-assignment fr/sk (ShorthandPropertyAssignment)
+DIFF src/data/copy.ts 568 | fr: FR | sk: SK
+DIFF src/data/faq.ts 422 | fr: FAQ_FR | sk: FAQ_SK
+DIFF src/data/pages-content.ts 524 | fr: CONTENT_FR | sk: CONTENT_SK
+DIFF src/data/pages-legal.ts 623 | fr: LEGAL_FR | sk: LEGAL_SK
+DIFF src/i18n/ui.ts 1847 | fr: FR | sk: SK
+DIFF src/lib/email/templates.ts 54 | fr: FR | sk: SK
+DIFF src/lib/email/templates.ts 222 | fr: { linkFallback: FR.common.linkFallback, expiry: FR.invite.expiry } | sk: { linkFallback: SK.common.linkFallback, expiry: SK.invite.expiry }
+DIFF src/lib/format.ts 49 | fr: { group: NARROW_NBSP, decimal: ',', euro: 'suffix' } | sk: { group: NBSP, decimal: ',', euro: 'suffix' }
+DIFF src/lib/orders.ts 108 | fr: { one: 'langue', many: 'langues' } | sk: { one: 'jazyk', few: 'jazyky', many: 'jazykov' }
+DIFF src/lib/orders.ts 119 | fr: { one: 'mois', many: 'mois' } | sk: { one: 'mesiac', few: 'mesiace', many: 'mesiacov' }
+DIFF src/lib/orders.ts 130 | fr: { one: 'mois', many: 'mois' } | sk: { one: 'mesiac', few: 'mesiace', many: 'mesiacov' }
+NOLIT src/data/copy.ts 568 FR | SK
+NOLIT src/data/faq.ts 422 FAQ_FR | FAQ_SK
+NOLIT src/data/pages-content.ts 524 CONTENT_FR | CONTENT_SK
+NOLIT src/data/pages-legal.ts 623 LEGAL_FR | LEGAL_SK
+NOLIT src/i18n/ui.ts 1847 FR | SK
+NOLIT src/lib/email/templates.ts 54 FR | SK
+NOLIT src/lib/email/templates.ts 222 { linkFallback: FR.common.linkFallback, expiry: FR.invite.ex | { linkFallback: SK.common.linkFallback, expiry: SK.invite.ex
+NOLIT src/lib/runtime-config.ts 290 g.key | g.key
