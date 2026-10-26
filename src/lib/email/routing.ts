@@ -9,17 +9,19 @@
  * open business decision (brief §9) — whichever it is, it changes here and in
  * the environment, nowhere else.
  *
- *   FODEL_FROM      sender, e.g. "FODEL <website@finddome.com>" (verified domain)
+ *   FODEL_FROM      sender, e.g. "FODEL <info@finddome.com>" (a domain verified in Resend)
  *   FODEL_INBOX     where form submissions and admin fallbacks are delivered
  *   FODEL_REPLY_TO  where a customer's reply lands; defaults to FODEL_INBOX
  */
 import { COMPANY } from '~/config/company';
 
 /** `portal` is lifecycle mail (accounts, listings); `website` is a form's own notification. */
+// The sender must be on a domain verified in Resend (finddome.com today). Replies and form mail go to
+// the company inbox, info@fodel.com, whatever the sender is: see replyToAddress() and officeInbox().
 export function senderAddress(kind: 'portal' | 'website' = 'portal'): string {
   const configured = import.meta.env.FODEL_FROM;
   if (configured) return configured;
-  return kind === 'portal' ? 'FODEL Portál <portal@finddome.com>' : 'FODEL Website <website@finddome.com>';
+  return kind === 'portal' ? 'FODEL Portál <info@finddome.com>' : 'FODEL Website <info@finddome.com>';
 }
 
 export function officeInbox(): string {

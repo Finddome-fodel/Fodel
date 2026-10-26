@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({url,locals}) => {
   if(reverse){target.searchParams.set('lat',String(lat));target.searchParams.set('lon',String(lng));}
   else {target.searchParams.set('q',query);target.searchParams.set('countrycode',country.toLowerCase());}
   try {
-    const response=await fetch(target,{signal:AbortSignal.timeout(8000),headers:{'User-Agent':'FODEL/2.0 (+https://finddome.com; info@finddome.com)'}});
+    const response=await fetch(target,{signal:AbortSignal.timeout(8000),headers:{'User-Agent':'FODEL/2.0 (+https://finddome.com; info@fodel.com)'}});
     if(!response.ok)throw new Error('unavailable');
     const json=await response.json();
     const results=(json.features||[]).filter((f:any)=>f.geometry?.type==='Point'&&Array.isArray(f.geometry.coordinates)&&Number.isFinite(f.geometry.coordinates[0])&&Number.isFinite(f.geometry.coordinates[1])&&Math.abs(f.geometry.coordinates[0])<=180&&Math.abs(f.geometry.coordinates[1])<=90).map((f:any)=>{

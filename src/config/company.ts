@@ -124,9 +124,9 @@ export const COMPANY = {
    * forwarded or retired — the live values come from site_settings.emails.
    */
   email: {
-    primary: 'info@finddome.com',
-    hu: 'info@finddome.com',
-    all: ['info@finddome.com', 'info@fodel.nl', 'info@fodel.hu', 'info@ingatlan.nl'],
+    primary: 'info@fodel.com',
+    hu: 'info@fodel.com',
+    all: ['info@fodel.com', 'info@fodel.nl', 'info@fodel.hu', 'info@ingatlan.nl'],
   },
 
   /**
