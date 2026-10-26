@@ -337,7 +337,7 @@ const strings = {
 </Portal>
 
 <script>
-  import { hasLivingArea } from '~/lib/listing-catalogue';
+  import { hasLivingArea, isLandOnly } from '~/lib/listing-catalogue';
 
   type Pricing = {
     packages: Record<string, { name: string; cents: number; aboveCents: number | null; threshold: number | null; video: string; phone: boolean }>;
@@ -606,10 +606,12 @@ const strings = {
     if (!priceHuf()) list.push(['property', s.missing.price, 'original_price']);
     // The old upload form made these compulsory for a home; the editor marks them as required.
     const field = (name: string) => (form('property')?.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null)?.value.trim() ?? '';
-    if (hasLivingArea(field('property_group'), field('property_subtype'))) {
-      const gaps = (['street', 'setting', 'floor_m2', 'floors', 'rooms', 'kitchens', 'toilets', 'bedrooms', 'bathrooms'] as const).filter((name) => !field(name));
-      if (gaps.length) list.push(['property', `${s.missing.details}: ${gaps.map((name) => s.missing.fields[name]).join(', ')}`, gaps[0]]);
-    }
+    const gaps = [
+      ...(hasLivingArea(field('property_group'), field('property_subtype')) ? (['street', 'setting', 'floor_m2', 'floors', 'rooms', 'kitchens', 'toilets', 'bedrooms', 'bathrooms'] as const).filter((name) => !field(name)) : []),
+      // Every property with a building says how it is heated ("no heating" is an answer).
+      ...(!isLandOnly(field('property_group'), field('property_subtype')) && !field('heating_key') ? (['heating'] as const) : []),
+    ];
+    if (gaps.length) list.push(['property', `${s.missing.details}: ${gaps.map((name) => s.missing.fields[name]).join(', ')}`, gaps[0] === 'heating' ? 'heating_key' : gaps[0]]);
     if (!value('description', 'description')) list.push(['description', s.missing.description, 'description']);
     if (photoCount() < 1) list.push(['photos', s.missing.photos]);
     if (!billingName()) list.push(['billing', s.missing.billing]);

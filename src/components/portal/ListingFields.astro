@@ -13,7 +13,7 @@ const x=(hu:string,nl:string,en:string)=>locale==='hu'?hu:locale==='nl'?nl:en;
 const group=p.property_group||groupOf(p.category), subtype=subtypeOf(p.category,p.property_subtype);
 const on=(s:string)=>section==='all'||section===s;
 const number=(v:number|null|undefined)=>v!=null&&v>0?String(v):'';
-const options=(g:'condition'|'heating'|'wall')=>[{value:'',label:x('Nem adom meg','Niet opgeven','Not specified')},...taxonomy[g].filter(t=>t.enabled || t.key===p[`${g}_key`]).map(t=>({value:t.key,label:labelIn(DETAIL_OPTIONS[g].find(v=>v.key===t.key)?.labels||t.labels,locale)}))];
+const options=(g:'condition'|'heating'|'wall',blank=x('Nem adom meg','Niet opgeven','Not specified'))=>[{value:'',label:blank},...taxonomy[g].filter(t=>t.enabled || t.key===p[`${g}_key`]).map(t=>({value:t.key,label:labelIn(DETAIL_OPTIONS[g].find(v=>v.key===t.key)?.labels||t.labels,locale)}))];
 const d=readDetails(p.details),home=hasLayout(group,subtype);
 const count=(v:number|null|undefined)=>v!=null?String(v):'';
 const selected=new Set(p.features.map(canonicalFeature));
@@ -82,7 +82,7 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
     <div data-relevance="living"><Field span="half" locale={locale} name="kitchens" softRequired label={x('Konyhák száma','Aantal keukens','Kitchens')} type="number" value={count(d.kitchens)} min={0}/></div>
     <div data-relevance="living"><Field span="half" locale={locale} name="toilets" softRequired label={x('Különálló WC-k száma','Aantal aparte toiletten','Separate toilets')} type="number" value={count(d.toilets)} min={0}/></div>
     <div data-relevance="building"><Field span="half" locale={locale} name="cellar_m2" label={x('Pince alapterülete (m²), ha van','Kelder (m²), indien aanwezig','Cellar area (m²), if any')} type="number" value={d.cellar_m2?String(d.cellar_m2):''} min={0}/></div>
-    <div data-relevance="building"><Field span="half" locale={locale} name="heating_key" label={x('Fűtés','Verwarming','Heating')} type="select" value={p.heating_key||''} options={options('heating')}/></div>
+    <div data-relevance="building"><Field span="half" locale={locale} name="heating_key" softRequired label={x('Fűtés','Verwarming','Heating')} type="select" value={p.heating_key||''} options={options('heating',x('Válasszon','Kies','Choose'))}/></div>
     <div data-relevance="building"><Field span="half" locale={locale} name="wall_key" label={x('Falazat','Bouwmateriaal','Wall construction')} type="select" value={p.wall_key||''} options={options('wall')}/></div>
     <Field span="half" locale={locale} name="video_url" label={x('Videó URL (YouTube)','Video-URL (YouTube)','Video URL (YouTube)')} type="url" value={p.video_url||''}/>
   </div>

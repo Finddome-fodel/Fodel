@@ -108,7 +108,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // An admin may submit on an owner's behalf with less; before migration 0025 there is nothing to check.
     if (!isAdmin) {
       const [{ data: facts, error: factsError }, { data: priv }] = await Promise.all([
-        supabase.from('properties').select('floor_m2, bedrooms, bathrooms, details').eq('id', id).maybeSingle(),
+        supabase.from('properties').select('floor_m2, bedrooms, bathrooms, heating_key, details').eq('id', id).maybeSingle(),
         supabase.from('property_private').select('street').eq('property_id', id).maybeSingle(),
       ]);
       if (!factsError && facts) {
