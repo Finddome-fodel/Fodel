@@ -1,0 +1,14 @@
+---
+export const prerender = false;
+import PropertiesPage from '~/components/pages/PropertiesPage.astro';
+import { categoryBySlug, getTaxonomy, termLabel } from '~/lib/runtime-config';
+import { LOCALES, path } from '~/i18n/ui';
+const term = categoryBySlug(await getTaxonomy(), 'sv', Astro.params.type ?? '');
+if (!term) return new Response('Hittades inte.', { status: 404 });
+Astro.response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
+// Every language has the category page, under its own slug for the term.
+const alternates = Object.fromEntries(
+  LOCALES.filter((l) => term.slugs[l]).map((l) => [l, `${path(l, 'properties')}${term.slugs[l]}/`])
+);
+---
+<PropertiesPage locale="sv" heading={termLabel(term, 'sv')} fixedCategory={term.key} alternates={alternates} />
