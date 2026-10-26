@@ -25,6 +25,7 @@ import { catalogue, suggestSelection, isAboveThreshold, REFERRAL_DISCOUNT_PERCEN
 import { getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf, isAboveThreshold as tierApplies } from '~/lib/listing-packages';
 import { eur, huf } from '~/lib/format';
+import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM } from '~/lib/listing-details';
 import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/requested-extras';
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
@@ -179,6 +180,22 @@ const { data: creditableReferral } = property.owner_id
       <div><dt>Település</dt><dd>{property.settlement}, {property.county}</dd></div>
       <div><dt>Ár</dt><dd>{eur(property.price_eur)} / {huf(property.price_huf, 'hu')}</dd></div>
       <div><dt>Alapterület</dt><dd>{property.floor_m2 ?? '—'} m² / {property.plot_m2} m² telek</dd></div>
+      {(() => {
+        const d = readDetails(property.details);
+        const counts = [['szoba', d.rooms], ['félszoba', d.half_rooms], ['szint', d.floors], ['konyha', d.kitchens], ['WC', d.toilets]].filter(([, n]) => n !== undefined).map(([k, n]) => `${n} ${k}`);
+        const heard = HEARD_FROM.find((o) => o.key === property.heard_from)?.labels.hu;
+        const rows: [string, string][] = [
+          ...(property.street || property.postal_code ? [['Cím', [property.street, [property.postal_code, property.settlement].filter(Boolean).join(' ')].filter(Boolean).join(', ') + (property.public_address ? ' · megjelenik a hirdetésben' : ' · nem nyilvános')] as [string, string]] : []),
+          ...(d.setting ? [['Környezet', settingLabel(d.setting, 'hu')] as [string, string]] : []),
+          ...(counts.length ? [['Szobák, szintek', `${counts.join(' · ')}${property.bedrooms != null ? ` · ${property.bedrooms} hálószoba` : ''}${property.bathrooms != null ? ` · ${property.bathrooms} fürdőszoba` : ''}`] as [string, string]] : []),
+          ...(d.cellar_m2 ? [['Pince', `${d.cellar_m2} m²`] as [string, string]] : []),
+          ...(d.utilities.length ? [['Közművek', d.utilities.map((k) => utilityLabel(k, 'hu')).join(', ')] as [string, string]] : []),
+          ...(d.parking.length ? [['Parkolás', d.parking.map((k) => parkingLabel(k, 'hu')).join(', ')] as [string, string]] : []),
+          ...(d.extra_buildings ? [['Kiegészítő építmények', d.extra_buildings] as [string, string]] : []),
+          ...(heard ? [['Honnan értesült', heard] as [string, string]] : []),
+        ];
+        return rows.map(([dt, dd]) => <div><dt>{dt}</dt><dd>{dd}</dd></div>);
+      })()}
       <div><dt>Fotók</dt><dd>
         {property.media.length} db{packageOf(listing, property.package).maxImages !== null && ` / max. ${packageOf(listing, property.package).maxImages}`}
         {packageOf(listing, property.package).maxImages !== null && property.media.length > packageOf(listing, property.package).maxImages! && <span class="flag"> · több, mint amit a csomag enged</span>}

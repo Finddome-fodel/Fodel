@@ -19,6 +19,7 @@ import { portalLang } from '~/lib/portal/auth-copy';
 import { LOCALE_OPTIONS } from '~/lib/portal/properties';
 import { getProperty } from '~/lib/portal/properties';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
+import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { logEvent } from '~/lib/activity';
 import { normalizePhone, isPhoneCountry } from '~/lib/validation';
 import { friendlyError } from '~/lib/portal/labels';
@@ -109,7 +110,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     if(title||description)translations.push({locale,title:title.slice(0,160)||description.slice(0,60),description:description.slice(0,6000),body:str(form,`body_${locale}`).slice(0,30000)});
   }
   const {error:updateError}=await supabase.rpc('save_listing_editor',{
-    p_id:id,p_patch:patch,p_private:{...values.privateData,internal_note:str(form,'internal_note').slice(0,10000)},p_translations:translations,
+    p_id:id,p_patch:patch,p_private:{...values.privateData,internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations,
   });
   if(updateError)return back('error='+encodeURIComponent(friendlyError(updateError.message)));
 

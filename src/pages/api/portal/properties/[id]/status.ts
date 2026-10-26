@@ -27,7 +27,8 @@
  * half that matters most for security (who owns what) stays in the database.
  */
 import type { Locale } from '~/i18n/ui';
-import {validSubtype} from '~/lib/listing-catalogue';
+import {validSubtype, groupOf, subtypeOf} from '~/lib/listing-catalogue';
+import { detailGaps } from '~/lib/listing-details';
 import type { APIRoute } from 'astro';
 import { approvedWording } from '~/lib/approved-text';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
@@ -102,6 +103,20 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       .eq('property_id', id);
     if (!mediaCount) return json(422, { ok: false, error: 'no-photos' });
     if(!property.country || !property.location_confirmed || !validSubtype(property.property_group,property.property_subtype) || !(property.original_price>0) || !property.property_translations.some((t:{title:string;description:string})=>t.title?.trim()&&t.description?.trim())) return json(422,{ok:false,error:'incomplete-listing'});
+
+    // The facts the old upload form made compulsory for a home (rooms, floors, kitchens, address ...).
+    // An admin may submit on an owner's behalf with less; before migration 0025 there is nothing to check.
+    if (!isAdmin) {
+      const [{ data: facts, error: factsError }, { data: priv }] = await Promise.all([
+        supabase.from('properties').select('floor_m2, bedrooms, bathrooms, details').eq('id', id).maybeSingle(),
+        supabase.from('property_private').select('street').eq('property_id', id).maybeSingle(),
+      ]);
+      if (!factsError && facts) {
+        const group = property.property_group || groupOf(property.category);
+        const gaps = detailGaps(facts, group, subtypeOf(property.category, property.property_subtype), priv?.street);
+        if (gaps.length) return json(422, { ok: false, error: 'incomplete-details', fields: gaps });
+      }
+    }
 
     const { error } = await supabase
       .from('properties')

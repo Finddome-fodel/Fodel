@@ -14,6 +14,7 @@ export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
 import ListingFields from '~/components/portal/ListingFields.astro';
+import { HEARD_FROM } from '~/lib/listing-details';
 import PromotionChoices from '~/components/portal/PromotionChoices.astro';
 import ContactLanguages from '~/components/portal/ContactLanguages.astro';
 import Field from '~/components/forms/Field.astro';
@@ -302,6 +303,7 @@ const photoLimit = 20;
             </div>
           );
         })}
+        <Field locale="hu" name="heard_from" label="Honnan értesült a FODEL-ről?" type="select" value={property.heard_from||''} options={[{value:'',label:'Nincs megadva'},...HEARD_FROM.map(o=>({value:o.key,label:o.labels.hu}))]} hint="Csak a FODEL munkatársai látják."/>
         <Field locale="hu" name="internal_note" label="Megjegyzés (belső használatra)" type="textarea" rows={3} value={property.internal_note||''} hint="Csak Ön és a FODEL munkatársai láthatják. A nyilvános hirdetésben soha nem jelenik meg." maxlength={10000}/>
       </section>
 

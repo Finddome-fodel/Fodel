@@ -1,4 +1,5 @@
 import { PROPERTY_GROUPS, labelIn, isLandOnly, hasLivingArea, hasPlot, energyOptions } from '~/lib/listing-catalogue';
+import { hasUtilities } from '~/lib/listing-details';
 import { regionsFor, regionLabel } from '~/config/countries';
 import { parseLocaleNumber } from '~/lib/validation';
 import type { RateSnapshot } from '~/lib/exchange-rates';
@@ -20,7 +21,7 @@ for(const form of forms){
   const refresh=()=>{
     for(const wrapper of form.querySelectorAll<HTMLElement>('[data-relevance]')){
       const kind=wrapper.dataset.relevance;
-      wrapper.hidden=kind==='living'?!hasLivingArea(group(),subtype()):kind==='plot'?!hasPlot(group(),subtype()):isLandOnly(group(),subtype());
+      wrapper.hidden=kind==='living'?!hasLivingArea(group(),subtype()):kind==='plot'?!hasPlot(group(),subtype()):kind==='utilities'?!hasUtilities(group()):isLandOnly(group(),subtype());
     }
     for(const wrapper of form.querySelectorAll<HTMLElement>('[data-feature-groups]')){
       const selected=wrapper.querySelector<HTMLInputElement>('input')?.checked;
@@ -57,6 +58,13 @@ for(const form of forms){
     // Hectares are the natural starting unit for agricultural land.
     if(group()==='agricultural'&&name==='plot_m2') {unit.value='ha';unit.dispatchEvent(new Event('change'));}
   }
+  // A public address must be pinned exactly, so ticking it chooses the exact location (the server enforces the same).
+  const showAddress=control('address_public') as HTMLInputElement|null;
+  const syncAddress=()=>{
+    const precision=control('precision') as HTMLSelectElement|null;
+    if(showAddress?.checked&&precision)precision.value='exact';
+  };
+  showAddress?.addEventListener('change',syncAddress);
   const unknown=control('year_built_unknown') as HTMLInputElement|null;
   const syncYear=()=>{const year=control('year_built');if(year)year.disabled=Boolean(unknown?.checked);};
   unknown?.addEventListener('change',syncYear);syncYear();

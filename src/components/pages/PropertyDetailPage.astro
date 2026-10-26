@@ -29,6 +29,7 @@ import { getTaxonomy, termLabel, getCompany } from '~/lib/runtime-config';
 import { abs } from '~/lib/seo';
 import { listingRules, showSellerPhone } from '~/lib/listing-rules';
 import { normalizePhone } from '~/lib/validation';
+import { detailLabel, settingLabel, utilityLabel, parkingLabel } from '~/lib/listing-details';
 
 interface Props {
   locale: Locale;
@@ -86,8 +87,14 @@ const epc = epcLabel(d.building.epcClass, { epcMissing: ui.property.epcMissing }
 const specs = [
   d.rooms && { label: ui.property.beds, value: String(d.rooms.bedrooms) },
   d.rooms && { label: ui.property.baths, value: String(d.rooms.bathrooms) },
+  d.details.rooms !== undefined && { label: detailLabel('rooms', locale), value: String(d.details.rooms) },
+  d.details.half_rooms && { label: detailLabel('half_rooms', locale), value: String(d.details.half_rooms) },
+  d.details.floors !== undefined && { label: detailLabel('floors', locale), value: String(d.details.floors) },
+  d.details.kitchens !== undefined && { label: detailLabel('kitchens', locale), value: String(d.details.kitchens) },
+  d.details.toilets !== undefined && { label: detailLabel('toilets', locale), value: String(d.details.toilets) },
   d.areas.floorM2 && { label: ui.property.area, value: floorArea(d.areas.floorM2, locale) },
   d.areas.plotM2 && { label: ui.property.land, value: area(d.areas.plotM2, locale) },
+  d.details.cellar_m2 && { label: detailLabel('cellar_m2', locale), value: floorArea(d.details.cellar_m2, locale) },
   d.areas.buildingM2 && {label:x('Teljes épületterület','Totale gebouwoppervlakte','Total building area','Gesamte Gebäudefläche','Surface totale du bâtiment', 'Superficie total construida', 'Całkowita powierzchnia budynku', 'Suprafața totală a clădirii', 'Celková plocha budovy'),value:floorArea(d.areas.buildingM2,locale)},
   d.propertySubtype && {label:x('Altípus','Subtype','Subtype','Untertyp','Sous-type', 'Subtipo', 'Podtyp', 'Subtip', 'Podtyp'),value:subtypeLabel(d.propertyGroup||d.category,d.propertySubtype,locale)},
   { label: ui.property.epc, value: epc.value },
@@ -96,6 +103,14 @@ const specs = [
   d.building.yearBuilt && { label: ui.property.yearBuilt, value: String(d.building.yearBuilt) },
   d.building.wall && d.building.wall.key !== 'nem-tudom' && { label: x('Falazat', 'Muurwerk', 'Wall material', 'Wandmaterial', 'Matériau des murs', 'Material de los muros', 'Materiał ścian', 'Materialul pereților', 'Materiál múrov'), value: d.building.wall.labels[locale] ?? d.building.wall.labels.nl ?? d.building.wall.labels.hu },
 ].filter(Boolean) as { label: string; value: string }[];
+
+// Text facts, utilities and parking: below the description, beside the features.
+const factRows = [
+  d.details.setting && { label: detailLabel('setting', locale), value: settingLabel(d.details.setting, locale) },
+  d.address && { label: detailLabel('address', locale), value: [d.address.street, [d.address.postalCode, d.location.settlement].filter(Boolean).join(' ')].filter(Boolean).join(', ') },
+  d.details.extra_buildings && { label: detailLabel('extra_buildings', locale), value: d.details.extra_buildings },
+].filter(Boolean) as { label: string; value: string }[];
+const hasFacts = factRows.length > 0 || d.details.utilities.length > 0 || d.details.parking.length > 0;
 
 const all = await activeProperties();
 const similar = similarTo(property, all, 3);
@@ -299,6 +314,36 @@ const whatsappMessage = x(
             <ul>
               {d.features.map((f) => <li>{featureName(f)}</li>)}
             </ul>
+          </section>
+        )
+      }
+
+      {
+        hasFacts && (
+          <section class="features facts">
+            <Eyebrow space="14px">{x('Részletek', 'Details', 'Details', 'Details', 'Détails', 'Detalles', 'Szczegóły', 'Detalii', 'Podrobnosti')}</Eyebrow>
+            {factRows.length > 0 && (
+              <dl class="fact-list">
+                {factRows.map((row) => (
+                  <div>
+                    <dt>{row.label}</dt>
+                    <dd>{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {d.details.utilities.length > 0 && (
+              <>
+                <h3 class="fact-head">{detailLabel('utilities', locale)}</h3>
+                <ul>{d.details.utilities.map((k) => <li>{utilityLabel(k, locale)}</li>)}</ul>
+              </>
+            )}
+            {d.details.parking.length > 0 && (
+              <>
+                <h3 class="fact-head">{detailLabel('parking', locale)}</h3>
+                <ul>{d.details.parking.map((k) => <li>{parkingLabel(k, locale)}</li>)}</ul>
+              </>
+            )}
           </section>
         )
       }
@@ -950,6 +995,42 @@ const whatsappMessage = x(
     font-size: var(--fs-small);
     line-height: 1.3;
     color: var(--ink);
+  }
+  .fact-list {
+    display: grid;
+    gap: 0;
+    margin: 0 0 8px;
+    border-top: 1px solid rgba(16, 42, 67, 0.1);
+  }
+  .fact-list > div {
+    display: grid;
+    grid-template-columns: minmax(130px, 220px) 1fr;
+    gap: 6px 24px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(16, 42, 67, 0.1);
+  }
+  .fact-list dt {
+    font-size: var(--fs-small);
+    font-weight: var(--fw-medium);
+    color: var(--taupe);
+  }
+  .fact-list dd {
+    font-size: var(--fs-body, 16px);
+    line-height: 1.55;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .fact-head {
+    margin: 26px 0 12px;
+    font-family: var(--sans);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-medium);
+    color: var(--taupe);
+  }
+  @media (max-width: 560px) {
+    .fact-list > div {
+      grid-template-columns: 1fr;
+    }
   }
   .video {
     margin-bottom: 40px;
