@@ -19,6 +19,10 @@ await db.exec(`insert into auth.users values('${owner}'),('${other}');insert int
 const sql=fs.readFileSync(root+'/supabase/migrations/0022_european_listing_intake.sql','utf8');
 try{await db.exec(sql);}catch(e){console.error('MIGRATION FAILED',e.message,e.detail);process.exit(1);}
 await db.exec(sql);console.log('✓ migration executes and is repeatable');
+// 0025 re-creates save_listing_editor with the old-form facts; everything below then runs against it.
+const sql25=fs.readFileSync(root+'/supabase/migrations/0025_listing_details.sql','utf8');
+try{await db.exec(sql25);}catch(e){console.error('MIGRATION 0025 FAILED',e.message,e.detail);process.exit(1);}
+await db.exec(sql25);console.log('✓ 0025 executes and is repeatable');
 const get=async q=>(await db.query(q)).rows;
 let row=(await get(`select * from properties where id='${id}'`))[0];
 assert.equal(row.property_group,'house');assert.equal(row.property_subtype,'apartment');assert.notEqual(row.lat,47.123456);
@@ -49,6 +53,25 @@ await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{price_negotiable:t
 assert.equal((await get(`select internal_note from property_private where property_id='${id}'`))[0].internal_note,'PRIVATE TEST NOTE');
 assert.equal((await get(`select count(*)::int as n from property_price_history`))[0].n,1);
 console.log('✓ partial edits preserve private notes and historic conversion snapshots');
+// 0025: the street address is private until the owner chooses to show it; details are one jsonb object.
+await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{details:{rooms:3,setting:'village',utilities:['water']},public_address:null,public_postal_code:null},{street:'Kossuth u. 12.',postal_code:'8254',heard_from:'search'},null]);
+let sec=(await get(`select street,postal_code,heard_from from property_private where property_id='${id}'`))[0];
+assert.deepEqual(sec,{street:'Kossuth u. 12.',postal_code:'8254',heard_from:'search'});
+row=(await get(`select details,public_address,public_postal_code from properties where id='${id}'`))[0];
+assert.equal(row.details.rooms,3);assert.equal(row.public_address,null);assert.equal(row.public_postal_code,null);
+await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{price_negotiable:false},{lat:48.123456,lng:20.234567},null]);
+sec=(await get(`select street,heard_from from property_private where property_id='${id}'`))[0];assert.equal(sec.street,'Kossuth u. 12.');assert.equal(sec.heard_from,'search');
+console.log('✓ street, postcode and "heard from" stay private; a save that omits them leaves them alone');
+await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{public_address:'Kossuth u. 12.',public_postal_code:'8254',precision:'exact'},null,null]);
+row=(await get(`select lat,public_address,public_postal_code from properties where id='${id}'`))[0];
+assert.equal(row.public_address,'Kossuth u. 12.');assert.equal(row.lat,48.123456);
+console.log('✓ showing the address publishes it, with the exact point');
+await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{public_address:null,public_postal_code:null,precision:'approximate'},null,null]);
+assert.notEqual((await get(`select lat from properties where id='${id}'`))[0].lat,48.123456);
+await assert.rejects(()=>db.query('select save_listing_editor($1,$2,$3,$4)',[id,{details:[1,2]},null,null]));
+await assert.rejects(()=>db.query('select save_listing_editor($1,$2,$3,$4)',[id,{public_address:'x'.repeat(201)},null,null]));
+await assert.rejects(()=>db.query('select save_listing_editor($1,$2,$3,$4)',[id,{},{heard_from:'x'.repeat(41)},null]));
+console.log('✓ malformed details and oversized address fields are refused');
 await db.exec(`set test.uid='${other}';`);
 assert.equal((await get(`select * from property_private`)).length,0);
 await assert.rejects(()=>db.query('select save_listing_editor($1,$2,$3,$4)',[id,{},privateData,null]));

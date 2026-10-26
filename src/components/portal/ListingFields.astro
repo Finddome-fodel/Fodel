@@ -3,6 +3,7 @@ import Field from '~/components/forms/Field.astro';
 import { PROPERTY_GROUPS, groupOf, subtypeOf, labelIn, canonicalFeature, FEATURE_ALIASES, DETAIL_OPTIONS, FEATURE_DEFINITIONS, energyOptions } from '~/lib/listing-catalogue';
 import { COUNTRIES, regionsFor, regionLabel } from '~/config/countries';
 import { PRICE_CURRENCIES } from '~/lib/exchange-rates';
+import { readDetails, SETTINGS, UTILITIES, PARKING, detailLabel, hasUtilities, hasLayout } from '~/lib/listing-details';
 import { termLabel, type Taxonomy } from '~/lib/runtime-config';
 import type { PortalProperty } from '~/lib/portal/properties';
 import type { PortalLang } from '~/lib/portal/auth-copy';
@@ -13,6 +14,8 @@ const group=p.property_group||groupOf(p.category), subtype=subtypeOf(p.category,
 const on=(s:string)=>section==='all'||section===s;
 const number=(v:number|null|undefined)=>v!=null&&v>0?String(v):'';
 const options=(g:'condition'|'heating'|'wall')=>[{value:'',label:x('Nem adom meg','Niet opgeven','Not specified')},...taxonomy[g].filter(t=>t.enabled || t.key===p[`${g}_key`]).map(t=>({value:t.key,label:labelIn(DETAIL_OPTIONS[g].find(v=>v.key===t.key)?.labels||t.labels,locale)}))];
+const d=readDetails(p.details),home=hasLayout(group,subtype);
+const count=(v:number|null|undefined)=>v!=null?String(v):'';
 const selected=new Set(p.features.map(canonicalFeature));
 const featureTerms=taxonomy.feature.filter(t=>(t.enabled||selected.has(t.key))&&!FEATURE_ALIASES[t.key]&&(selected.has(t.key)||Boolean(t.propertyGroups?.length)||FEATURE_DEFINITIONS.some(f=>f.key===t.key)));
 const featureSections=[...new Set(featureTerms.map(t=>t.sectionKey||'other'))];
@@ -34,6 +37,14 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
     <div class="field fld"><label for="f-settlement">{x('Település / hely megnevezése','Plaats / locatie','Town / locality')}</label><input id="f-settlement" name="settlement" list="listing-settlements" value={p.settlement} autocomplete="address-level2" maxlength="120"/><datalist id="listing-settlements"/><p class="hint">{x('Külterületnél a birtok vagy a közeli település neve is megadható.','Buiten de bebouwde kom kunt u de naam van het landgoed of een nabijgelegen plaats gebruiken.','For rural land, use the estate name or a nearby settlement.')}</p></div>
     <Field span="half" locale={locale} name="region" label={x('További területi egység','Aanvullende regio','Additional administrative area')} value={p.region} hint={x('Csak ha a helyszínhez értelmezhető.','Alleen indien van toepassing.','Only where applicable.')}/>
   </div>
+  <div class="lf-address">
+    <div class="lf-grid">
+      <Field span="half" locale={locale} name="street" label={x('Az ingatlan címe','Adres van het vastgoed','Street address')} value={p.street||''} softRequired={home} maxlength={200} autocomplete="address-line1" placeholder={x('Pl. Kossuth u. 12.','Bijv. Kerkstraat 12','e.g. 12 High Street')}/>
+      <Field span="half" locale={locale} type="postcode" countryField="country" name="postal_code" label={x('Irányítószám','Postcode','Postal code')} value={p.postal_code||''} maxlength={20}/>
+    </div>
+    <label class="lf-check"><input type="checkbox" name="address_public" value="yes" checked={Boolean(p.public_address)}/>{x('Szeretném, hogy az ingatlan címe megjelenjen a hirdetésben','Het adres van het vastgoed mag in de advertentie worden getoond','Show the property address in the listing')}</label>
+    <p class="lf-note" data-address-note>{x('Alapértelmezés szerint a cím nem nyilvános: csak Ön és a FODEL munkatársai látják. Ha bejelöli, a hirdetés a címet és a pontos helyet mutatja a térképen.','Standaard is het adres niet openbaar: alleen u en FODEL zien het. Vinkt u dit aan, dan toont de advertentie het adres en de exacte plek op de kaart.','By default the address is private: only you and FODEL see it. If you tick this, the listing shows the address and the exact spot on the map.')}</p>
+  </div>
   <input type="hidden" name="location_confirmed" value={p.location_confirmed || (Boolean(p.settlement) && !(p.lat===47.1625&&p.lng===19.5033)) ? 'yes' : ''}/><div class="lf-search"><label class="sr-only" for="listing-place-query">{x('Hely keresése','Plaats zoeken','Find a place')}</label><input id="listing-place-query" type="search" placeholder={x('Település, cím vagy ismert hely…','Plaats, adres of herkenningspunt…','Town, address or landmark…')} data-place-query/><button type="button" data-place-search>{x('Keresés a térképen','Zoeken op de kaart','Find on map')} <span aria-hidden="true">↗</span></button></div>
   <div data-place-results class="lf-results"></div>
   <div class="lf-map" data-location-map role="region" aria-label={x('Az ingatlan helyének megjelölése','Locatie van het vastgoed kiezen','Choose the property location')}><span data-map-loading>{x('Térkép betöltése…','Kaart laden…','Loading map…')}</span></div>
@@ -53,7 +64,7 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
     <p class="hint" data-rate-note>{p.exchange_source && p.exchange_rate ? `${p.exchange_source} · ${p.price_asof} · 1 EUR = ${p.exchange_rate} ${p.original_currency}` : x('Az árfolyam forrását és dátumát automatikusan rögzítjük.','Bron en datum van de wisselkoers worden automatisch vastgelegd.','The exchange-rate source and date are recorded automatically.')}</p>
   </div>
   <div class="lf-grid">
-    {[['floor_m2',x('Lakóterület','Woonoppervlakte','Living area'),p.floor_m2,'living'],['building_m2',x('Teljes épületterület','Totale gebouwoppervlakte','Total building area'),p.building_m2,'building'],['plot_m2',x('Telekterület','Perceeloppervlakte','Land area'),p.plot_m2,'plot']].map(([name,label,value,relevance])=><div class="lf-area" data-relevance={relevance}><Field span="half" locale={locale} name={String(name)} label={String(label)} type="number" value={number(value as number)} min={0.000001}/><label class="lf-unit"><span class="sr-only">{x('Mértékegység','Eenheid','Unit')}</span><select name={`${name}_unit`} aria-label={`${label} ${x('mértékegysége','eenheid','unit')}`} data-area-unit={name}><option value="m2">m²</option><option value="ha">ha</option></select></label><small data-area-equivalent></small></div>)}
+    {[['floor_m2',x('Lakóterület','Woonoppervlakte','Living area'),p.floor_m2,'living'],['building_m2',x('Teljes épületterület','Totale gebouwoppervlakte','Total building area'),p.building_m2,'building'],['plot_m2',x('Telekterület','Perceeloppervlakte','Land area'),p.plot_m2,'plot']].map(([name,label,value,relevance])=><div class="lf-area" data-relevance={relevance}><Field span="half" locale={locale} name={String(name)} softRequired={name==='floor_m2'} label={String(label)} type="number" value={number(value as number)} min={0.000001}/><label class="lf-unit"><span class="sr-only">{x('Mértékegység','Eenheid','Unit')}</span><select name={`${name}_unit`} aria-label={`${label} ${x('mértékegysége','eenheid','unit')}`} data-area-unit={name}><option value="m2">m²</option><option value="ha">ha</option></select></label><small data-area-equivalent></small></div>)}
     <div data-relevance="building"><Field span="half" locale={locale} name="year_built" label={x('Építés éve','Bouwjaar','Year built')} type="number" value={number(p.year_built)} min={1} max={new Date().getFullYear()+5}/><label class="lf-check"><input type="checkbox" name="year_built_unknown" value="yes" checked={p.year_built_unknown}/>{x('Az építés éve nem ismert','Bouwjaar onbekend','Year built is unknown')}</label></div>
     <div data-relevance="building"><Field span="half" locale={locale} name="renovated_in" label={x('Felújítás éve','Renovatiejaar','Year renovated')} type="number" value={number(p.renovated_in)} min={1} max={new Date().getFullYear()+5}/></div>
     <div data-relevance="building"><Field span="half" locale={locale} name="condition_key" label={x('Állapot','Staat','Condition')} type="select" value={p.condition_key||''} options={options('condition')}/></div>
@@ -61,12 +72,29 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
       <Field span="half" locale={locale} name="epc_status" label={x('Energetikai besorolás','Energielabel','Energy rating')} type="select" value={['pending','unknown'].includes(p.epc_class)?'unknown':['exempt','not-applicable'].includes(p.epc_class)?'not-applicable':'rated'} options={[{value:'unknown',label:x('Nem ismert','Onbekend','Unknown')},{value:'not-applicable',label:x('Nem alkalmazható','Niet van toepassing','Not applicable')},{value:'rated',label:x('Van energetikai tanúsítvány','Energiecertificaat beschikbaar','Energy certificate available')}]}/>
       <div class="field fld" data-energy-value><label for="f-epc_class">{x('Tanúsítvány szerinti érték','Waarde op het certificaat','Rating on the certificate')}</label><input id="f-epc_class" name="epc_class" list="listing-energy" value={['pending','unknown','exempt','not-applicable'].includes(p.epc_class)?'':p.epc_class} maxlength="40"/><datalist id="listing-energy">{energyOptions(p.country).filter(v=>!['unknown','not-applicable'].includes(v)).map(v=><option value={v}/>)}</datalist><p class="hint">{x('Az ingatlan országának tanúsítványáról másolja át a besorolást.','Neem het label over van het certificaat uit het land van de woning.','Copy the rating from the certificate issued in the property’s country.')}</p></div>
     </div>
-    <div data-relevance="living"><Field span="half" locale={locale} name="bedrooms" label={x('Hálószobák','Slaapkamers','Bedrooms')} type="number" value={p.bedrooms!=null?String(p.bedrooms):''} min={0}/></div>
-    <div data-relevance="living"><Field span="half" locale={locale} name="bathrooms" label={x('Fürdőszobák','Badkamers','Bathrooms')} type="number" value={p.bathrooms!=null?String(p.bathrooms):''} min={0}/></div>
+    <input type="hidden" name="details_present" value="yes"/>
+    <Field span="half" locale={locale} name="setting" label={detailLabel('setting',locale)} type="select" value={d.setting||''} softRequired={home} options={[{value:'',label:x('Válasszon','Kies','Choose')},...SETTINGS.map(o=>({value:o.key,label:o.labels[locale]}))]}/>
+    <div data-relevance="living"><Field span="half" locale={locale} name="rooms" softRequired label={x('Szobák száma (félszobák nélkül)','Aantal kamers (zonder halve kamers)','Rooms (not counting half rooms)')} type="number" value={count(d.rooms)} min={0}/></div>
+    <div data-relevance="living"><Field span="half" locale={locale} name="half_rooms" label={x('Félszobák száma','Aantal halve kamers','Half rooms')} type="number" value={count(d.half_rooms)} min={0}/></div>
+    <div data-relevance="living"><Field span="half" locale={locale} name="floors" softRequired label={x('Az ingatlan szintjeinek száma','Aantal verdiepingen','Number of floors')} type="number" value={count(d.floors)} min={0}/></div>
+    <div data-relevance="living"><Field span="half" locale={locale} name="bedrooms" softRequired label={x('Hálószobák','Slaapkamers','Bedrooms')} type="number" value={p.bedrooms!=null?String(p.bedrooms):''} min={0}/></div>
+    <div data-relevance="living"><Field span="half" locale={locale} name="bathrooms" softRequired label={x('Fürdőszobák','Badkamers','Bathrooms')} type="number" value={p.bathrooms!=null?String(p.bathrooms):''} min={0}/></div>
+    <div data-relevance="living"><Field span="half" locale={locale} name="kitchens" softRequired label={x('Konyhák száma','Aantal keukens','Kitchens')} type="number" value={count(d.kitchens)} min={0}/></div>
+    <div data-relevance="living"><Field span="half" locale={locale} name="toilets" softRequired label={x('Különálló WC-k száma','Aantal aparte toiletten','Separate toilets')} type="number" value={count(d.toilets)} min={0}/></div>
+    <div data-relevance="building"><Field span="half" locale={locale} name="cellar_m2" label={x('Pince alapterülete (m²), ha van','Kelder (m²), indien aanwezig','Cellar area (m²), if any')} type="number" value={d.cellar_m2?String(d.cellar_m2):''} min={0}/></div>
     <div data-relevance="building"><Field span="half" locale={locale} name="heating_key" label={x('Fűtés','Verwarming','Heating')} type="select" value={p.heating_key||''} options={options('heating')}/></div>
     <div data-relevance="building"><Field span="half" locale={locale} name="wall_key" label={x('Falazat','Bouwmateriaal','Wall construction')} type="select" value={p.wall_key||''} options={options('wall')}/></div>
     <Field span="half" locale={locale} name="video_url" label={x('Videó URL (YouTube)','Video-URL (YouTube)','Video URL (YouTube)')} type="url" value={p.video_url||''}/>
   </div>
+  <fieldset class="lf-feature-section lf-set" data-relevance="utilities" hidden={!hasUtilities(group)}>
+    <legend>{detailLabel('utilities',locale)}</legend>
+    <div class="lf-feature-grid">{UTILITIES.map(o=><label class="lf-feature"><input type="checkbox" name="utilities" value={o.key} checked={d.utilities.includes(o.key)}/><span>{o.labels[locale]}</span></label>)}</div>
+  </fieldset>
+  <fieldset class="lf-feature-section lf-set" data-relevance="building">
+    <legend>{detailLabel('parking',locale)}</legend>
+    <div class="lf-feature-grid">{PARKING.map(o=><label class="lf-feature"><input type="checkbox" name="parking" value={o.key} checked={d.parking.includes(o.key)}/><span>{o.labels[locale]}</span></label>)}</div>
+  </fieldset>
+  <div class="lf-set" data-relevance="plot"><Field locale={locale} name="extra_buildings" type="textarea" rows={3} maxlength={500} label={x('Kiegészítő építmények a telek területén','Aanvullende gebouwen op het perceel','Additional buildings on the plot')} value={d.extra_buildings||''} hint={x('Pl. nyárikonyha, műhely, melléképület. Méretekkel, ha tudja.','Bijv. zomerkeuken, werkplaats, bijgebouw, zo mogelijk met afmetingen.','For example a summer kitchen, workshop or outbuilding, with sizes if you know them.')}/></div>
   <label class="lf-check"><input type="checkbox" name="price_negotiable" value="yes" checked={p.price_negotiable}/>{x('Az ár alkuképes','Prijs is bespreekbaar','Price negotiable')}</label>
   {p.status==='published' && <label class="lf-check"><input type="checkbox" name="reserved" value="yes" checked={p.reserved}/>{x('Foglalt','Gereserveerd','Reserved')}</label>}
 </section>}
@@ -113,6 +141,10 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   .lf-feature { display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--pt-hair,var(--border));border-radius:12px;font-size:14px;line-height:1.45;cursor:pointer;min-height:48px; }
   .lf-feature:has(:checked) { background:var(--paper);border-color:var(--ink); }
   .lf-feature:has(:focus-visible) { outline:2px solid var(--ink);outline-offset:2px; }
+  .lf-address { margin-top:22px; }
+  .lf-note { margin:8px 0 0;font-size:13px;line-height:1.6;color:var(--ink-quiet);max-width:66ch; }
+  .lf-set { margin-top:26px; }
+  .lf-set + .lf-check { margin-top:22px; }
   [hidden] { display:none!important; }
   .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
   @media(max-width:600px){.lf-grid,.lf-feature-grid{grid-template-columns:1fr}.lf-search{flex-direction:column}.lf-search button{justify-content:space-between}.lf-section{padding:24px 0}.lf-heading{gap:10px}.lf-heading h2{font-size:22px}.lf-map{height:260px}.lf-price{padding:16px}.lf-grid :global(input),.lf-grid :global(select),.lf-search input{font-size:16px}}

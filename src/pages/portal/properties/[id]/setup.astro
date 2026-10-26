@@ -30,6 +30,7 @@ import PackageCard from '~/components/PackageCard.astro';
 import OnsiteServiceChoice from '~/components/OnsiteServiceChoice.astro';
 import ListingFields from '~/components/portal/ListingFields.astro';
 import {languageName} from '~/lib/listing-catalogue';
+import { HEARD_FROM } from '~/lib/listing-details';
 import ContactLanguages from '~/components/portal/ContactLanguages.astro';
 import Field from '~/components/forms/Field.astro';
 import PhotoUploader from '~/components/portal/PhotoUploader.astro';
@@ -239,6 +240,7 @@ const strings = {
 
         <Field locale={lang} name="body" label={x('Részletes leírás','Uitgebreide beschrijving','Detailed description')} type="textarea" rows={8} value={tr?.body||''} maxlength={30000}/>
         <Field locale={lang} name="internal_note" label={x('Megjegyzés (belső használatra)','Opmerking (intern)','Note (private)')} type="textarea" rows={3} value={property.internal_note||''} maxlength={10000} hint={x('Csak Ön és a FODEL munkatársai láthatják. Soha nem jelenik meg a hirdetésben.','Alleen zichtbaar voor u en FODEL. Wordt nooit openbaar getoond.','Visible only to you and FODEL. Never displayed in the public listing.')}/>
+        <Field locale={lang} name="heard_from" label={x('Honnan értesült a FODEL-ről?','Hoe hoorde u van FODEL?','Where did you hear about FODEL?')} type="select" value={property.heard_from||''} options={[{value:'',label:x('Válasszon, ha szeretne','Kies, als u wilt','Choose if you like')},...HEARD_FROM.map(o=>({value:o.key,label:o.labels[lang]}))]} hint={x('Csak a FODEL munkatársai látják.','Alleen zichtbaar voor FODEL.','Only FODEL staff see this.')}/>
         <fieldset class="su-fieldset">
           <legend>{t.speaks}</legend>
           <p class="su-note">{t.speaksHint}</p>
@@ -335,6 +337,8 @@ const strings = {
 </Portal>
 
 <script>
+  import { hasLivingArea } from '~/lib/listing-catalogue';
+
   type Pricing = {
     packages: Record<string, { name: string; cents: number; aboveCents: number | null; threshold: number | null; video: string; phone: boolean }>;
     translationCents: number;
@@ -594,15 +598,36 @@ const strings = {
   const photoCount = () => Number(root.querySelector<HTMLElement>('[data-photo-count]')?.dataset.photoCount ?? 0);
   const billingName = () => (root.querySelector<HTMLFormElement>('form[data-billing]')?.elements.namedItem('name') as HTMLInputElement | null)?.value.trim() ?? '';
 
-  function missing(): [string, string][] {
-    const list: [string, string][] = [];
+  /** [step, wording, the field to land on]. */
+  function missing(): [string, string, string?][] {
+    const list: [string, string, string?][] = [];
     if (!value('property','property_subtype') || !value('property','country') || !value('property','lat') || !value('property','lng') || !value('property','location_confirmed')) list.push(['property',s.missing.settlement]);
-    if (!value('description','title')) list.push(['description',s.missing.description]);
-    if (!priceHuf()) list.push(['property', s.missing.price]);
-    if (!value('description', 'description')) list.push(['description', s.missing.description]);
+    if (!value('description','title')) list.push(['description',s.missing.description,'title']);
+    if (!priceHuf()) list.push(['property', s.missing.price, 'original_price']);
+    // The old upload form made these compulsory for a home; the editor marks them as required.
+    const field = (name: string) => (form('property')?.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null)?.value.trim() ?? '';
+    if (hasLivingArea(field('property_group'), field('property_subtype'))) {
+      const gaps = (['street', 'setting', 'floor_m2', 'floors', 'rooms', 'kitchens', 'toilets', 'bedrooms', 'bathrooms'] as const).filter((name) => !field(name));
+      if (gaps.length) list.push(['property', `${s.missing.details}: ${gaps.map((name) => s.missing.fields[name]).join(', ')}`, gaps[0]]);
+    }
+    if (!value('description', 'description')) list.push(['description', s.missing.description, 'description']);
     if (photoCount() < 1) list.push(['photos', s.missing.photos]);
     if (!billingName()) list.push(['billing', s.missing.billing]);
     return list;
+  }
+
+  /** Open a step and land on one field, with a quiet ring so the eye finds it. */
+  function goTo(step: string, name: string) {
+    if (location.hash.slice(1) === step) show(step, false);
+    else location.hash = step;
+    window.setTimeout(() => {
+      const control = form(step)?.elements.namedItem(name) as HTMLElement | null;
+      if (!control || (control as HTMLInputElement).type === 'hidden') return;
+      control.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      control.focus({ preventScroll: true });
+      control.classList.add('su-flash');
+      window.setTimeout(() => control.classList.remove('su-flash'), 2400);
+    }, 60);
   }
 
   function renderReview() {
@@ -639,11 +664,12 @@ const strings = {
       const head = document.createElement('p');
       head.textContent = s.missingHead;
       const ul = document.createElement('ul');
-      gaps.forEach(([step, label]) => {
+      gaps.forEach(([step, label, name]) => {
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.href = `#${step}`;
         a.textContent = label;
+        if (name) a.addEventListener('click', (e) => { e.preventDefault(); goTo(step, name); });
         li.append(a);
         ul.append(li);
       });
@@ -663,7 +689,7 @@ const strings = {
         body: JSON.stringify({ action: 'submit' }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw new Error(json.error ?? 'failed');
+      if (!res.ok || !json.ok) throw Object.assign(new Error(json.error ?? 'failed'), { fields: json.fields });
       status.textContent = '';
       root.querySelector<HTMLElement>('[data-review]')!.hidden = true;
       root.querySelector<HTMLElement>('.su-nav')!.hidden = true;
@@ -672,7 +698,10 @@ const strings = {
       done.hidden = false;
       done.focus();
     } catch (error) {
-      status.textContent = (error as Error).message === 'no-photos' ? s.noPhotos : s.submitFailed;
+      const failure = error as Error & { fields?: (keyof typeof s.missing.fields)[] };
+      status.textContent = failure.message === 'no-photos' ? s.noPhotos
+        : failure.message === 'incomplete-details' && failure.fields?.length ? `${s.missing.details}: ${failure.fields.map((name) => s.missing.fields[name]).join(', ')}`
+        : s.submitFailed;
       submitBtn.disabled = false;
     }
   });
@@ -715,6 +744,7 @@ const strings = {
   .su-step:focus { outline: none; }
   .su-step h1 { font-family: var(--serif); font-weight: var(--fw-display); font-size: clamp(28px, 4vw, 40px); letter-spacing: var(--ls-heading); line-height: 1.12; color: var(--ink); margin-bottom: 10px; }
   .su-intro { max-width: 60ch; font-size: var(--fs-body); line-height: 1.6; color: var(--ink-quiet); margin-bottom: 28px; }
+  .su :global(.su-flash) { outline: var(--focus-ring); outline-offset: 3px; border-radius: 10px; }
   .su-note { font-size: 14px; line-height: 1.6; color: var(--ink-quiet); margin-bottom: 14px; max-width: 64ch; }
   .su-note[hidden] { display: none; }
   .su-card { padding: clamp(20px, 3vw, 32px); border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }

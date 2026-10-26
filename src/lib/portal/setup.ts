@@ -27,6 +27,7 @@ import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { type FieldError } from '~/lib/validation';
 import { getProperty } from '~/lib/portal/properties';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
+import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 
 export const SETUP_STEPS = ['package', 'property', 'description'] as const;
 export type SetupStep = (typeof SETUP_STEPS)[number];
@@ -160,6 +161,6 @@ async function saveDescription(supabase:SupabaseClient,existing:Existing,form:Fo
   const pkg=packageOf(listingCatalog((await getCompany()).services),existing.package);
   const translations=[{locale,title,description,body}];
   // The office still prepares paid translations. A non-Hungarian original can be submitted without pretending it is a Hungarian translation.
-  const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:pkg.phone&&form.get('contact')==='yes'},p_private:{internal_note:str(form,'internal_note').slice(0,10000)},p_translations:translations});
+  const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:pkg.phone&&form.get('contact')==='yes'},p_private:{internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations});
   return error?{ok:false,error:'save-failed'}:{ok:true};
 }

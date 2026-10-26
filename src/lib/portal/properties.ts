@@ -54,6 +54,14 @@ export type PortalProperty = {
   topic_featured?: boolean;
   topic_highlight_requested?: boolean;
   internal_note?: string;
+  /** Migration 0025. `details` is the rooms/utilities/parking object (src/lib/listing-details.ts). */
+  details?: unknown;
+  public_address?: string | null;
+  public_postal_code?: string | null;
+  /** Private street address and postcode (property_private, migration 0025). */
+  street?: string;
+  postal_code?: string;
+  heard_from?: string;
   country: string;
   condition_key: string | null;
   heating_key: string | null;
@@ -117,7 +125,9 @@ export async function getProperty(
   const { data, error } = await supabase.from('properties').select(SELECT).eq('id', id).maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) return null;
-  const { data: privateData } = await supabase.from('property_private').select('lat,lng,internal_note').eq('property_id',id).maybeSingle();
+  let { data: privateData, error: privateError } = await supabase.from('property_private').select('lat,lng,internal_note,street,postal_code,heard_from').eq('property_id',id).maybeSingle();
+  // Before migration 0025 has run the address columns do not exist; the editor still has to open.
+  if (privateError) ({ data: privateData } = await supabase.from('property_private').select('lat,lng,internal_note').eq('property_id',id).maybeSingle());
   return {
     ...(data as any),
     ...(privateData ?? {}),

@@ -28,6 +28,8 @@ interface Props {
   label: string;
   type?: 'text' | 'email' | 'tel' | 'number' | 'url' | 'textarea' | 'select' | 'postcode' | 'coordinate';
   required?: boolean;
+  /** Marked as required in the label without the HTML attribute: the editor saves drafts part-filled and enforces these on submit. */
+  softRequired?: boolean;
   placeholder?: string;
   autocomplete?: string;
   rows?: number;
@@ -52,6 +54,7 @@ const {
   label,
   type = 'text',
   required = false,
+  softRequired = false,
   placeholder,
   autocomplete,
   rows = 4,
@@ -89,7 +92,7 @@ const autoComplete =
 <div class:list={['field', 'fld', `span-${span}`, { 'on-dark': onDark }]}>
   <label for={id}>
     {label}
-    <span class="req">{required ? `(${ui.form.required})` : `(${ui.form.optional})`}</span>
+    <span class="req">{required || softRequired ? `(${ui.form.required})` : `(${ui.form.optional})`}</span>
   </label>
 
   {hint && <p class="hint" id={hintId}>{hint}</p>}

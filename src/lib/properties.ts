@@ -26,6 +26,7 @@ import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-con
 import type { ImageMetadata } from 'astro';
 import { PROPERTY_GROUPS, canonicalFeature, groupOf, subtypeOf, hasLivingArea, isLandOnly, hasPlot } from '~/lib/listing-catalogue';
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
+import { readDetails, COUNT_FIELDS, hasUtilities, hasParking, hasExtraBuildings, type ListingDetails } from '~/lib/listing-details';
 
 type LocalisedText = { hu: string } & Partial<Record<Exclude<Locale, 'hu'>, string>>;
 
@@ -56,6 +57,10 @@ export type Property = {
     };
     areas: { floorM2?: number; buildingM2?: number; plotM2: number };
     rooms?: { bedrooms: number; bathrooms: number };
+    /** Rooms, floors, cellar, utilities, parking, setting, extra buildings (migration 0025); only what applies to this kind of property. */
+    details: ListingDetails;
+    /** Present only when the owner chose to show the address in the listing. */
+    address?: { street: string; postalCode?: string };
     building: {
       yearBuilt?: number;
       renovatedIn?: number;
@@ -144,6 +149,9 @@ type PropertyRow = {
   renovated_in: number | null;
   epc_class: string;
   wall_key?: string | null;
+  details?: unknown;
+  public_address?: string | null;
+  public_postal_code?: string | null;
   features: string[];
   video_url: string | null;
   seller_contact_visible: boolean;
@@ -202,6 +210,15 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
   const point = row.precision === 'exact' || row.public_location_safe ? { lat: row.lat, lng: row.lng } : approximateCentre(row.id, row.lat, row.lng);
   const group=row.property_group||groupOf(row.category),subtype=subtypeOf(row.category,row.property_subtype);
   const living=hasLivingArea(group,subtype),building=!isLandOnly(group,subtype);
+  const stored = readDetails(row.details);
+  const details: ListingDetails = {
+    ...(living ? Object.fromEntries(COUNT_FIELDS.filter((k) => stored[k] !== undefined).map((k) => [k, stored[k]])) : {}),
+    ...(building && stored.cellar_m2 ? { cellar_m2: stored.cellar_m2 } : {}),
+    ...(stored.setting ? { setting: stored.setting } : {}),
+    utilities: hasUtilities(group) ? stored.utilities : [],
+    parking: hasParking(group, subtype) ? stored.parking : [],
+    ...(hasExtraBuildings(group, subtype) && stored.extra_buildings ? { extra_buildings: stored.extra_buildings } : {}),
+  };
   const fallbackLabels = { hu: row.category, nl: row.category };
   return {
     id: row.id,
@@ -238,6 +255,8 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         living && row.bedrooms != null && row.bathrooms != null
           ? { bedrooms: row.bedrooms, bathrooms: row.bathrooms }
           : undefined,
+      details,
+      address: row.public_address ? { street: row.public_address, postalCode: row.public_postal_code ?? undefined } : undefined,
       building: {
         yearBuilt: building?(row.year_built ?? undefined):undefined,
         renovatedIn: building?(row.renovated_in ?? undefined):undefined,

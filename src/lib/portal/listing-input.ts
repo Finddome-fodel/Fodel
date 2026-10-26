@@ -2,6 +2,7 @@ import { parseLocaleNumber, type FieldError } from '~/lib/validation';
 import { COUNTRIES } from '~/config/countries';
 import { validSubtype, canonicalFeature, CONTACT_LANGUAGES, hasLivingArea, isLandOnly, hasPlot, groupOf, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
 import { convertPrice, exchangeRates, PRICE_CURRENCIES } from '~/lib/exchange-rates';
+import { readDetails, SETTING_KEYS, UTILITY_KEYS, PARKING_KEYS, COUNT_FIELDS, hasLayout, hasUtilities, hasParking, hasCellar, hasExtraBuildings, type ListingDetails } from '~/lib/listing-details';
 import { extractYouTubeId } from '~/lib/video';
 import type { Taxonomy } from '~/lib/runtime-config';
 import type { PortalProperty } from '~/lib/portal/properties';
@@ -55,6 +56,28 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   const year=building?(yearUnknown?null:integer('year_built',1,new Date().getFullYear()+5)):current.year_built;
   const renovated=building?integer('renovated_in',1,new Date().getFullYear()+5):current.renovated_in;
   const bedrooms=living?integer('bedrooms',0,10000):current.bedrooms,bathrooms=living?integer('bathrooms',0,10000):current.bathrooms;
+  // The facts the old upload form asked for. Each kind of property only touches what applies to it;
+  // anything that does not apply keeps what is already saved, so switching type never wipes data.
+  // A form without the marker (an older client, a partial form) leaves every one of them as saved.
+  const details:ListingDetails=readDetails(current.details);
+  if(form.get('details_present')==='yes'){
+    if(hasLayout(group,subtype))for(const key of COUNT_FIELDS){const n=integer(key,0,1000);if(n===null)delete details[key];else details[key]=n;}
+    if(hasCellar(group,subtype)){
+      try{const m2=parseArea(get('cellar_m2'),'m2');if(m2===null)delete details.cellar_m2;else details.cellar_m2=m2;}catch{errors.cellar_m2={code:'number'};}
+    }
+    const setting=get('setting');
+    if(setting&&!SETTING_KEYS.includes(setting))errors.setting={code:'required'};else if(setting)details.setting=setting;else delete details.setting;
+    const choose=(name:string,allowed:string[])=>[...new Set(form.getAll(name).map(String).filter(k=>allowed.includes(k)))];
+    if(hasUtilities(group))details.utilities=choose('utilities',UTILITY_KEYS);
+    if(hasParking(group,subtype))details.parking=choose('parking',PARKING_KEYS);
+    if(hasExtraBuildings(group,subtype)){const note=get('extra_buildings').slice(0,500);if(note)details.extra_buildings=note;else delete details.extra_buildings;}
+  }
+  // The street address is private. Ticking "show the address" copies it to the public row, and a public
+  // address must be pinned exactly, or the page would print one place and map another.
+  // A form that carries no address fields at all leaves the saved address exactly as it is.
+  const addressInForm=form.has('street');
+  const street=addressInForm?get('street').slice(0,200):current.street??'',postalCode=addressInForm?get('postal_code').slice(0,20):current.postal_code??'';
+  const showAddress=addressInForm?form.get('address_public')==='yes'&&Boolean(street):Boolean(current.public_address);
   const pick=(group:'condition'|'heating'|'wall',key:string)=>{
     const v=get(key);if(!v)return null;
     if(!taxonomy[group].some(t=>t.key===v&&(t.enabled||current[key as 'condition_key']===v)))errors[key]={code:'required'};
@@ -79,9 +102,9 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   // Preserve the category/URL of a listing while it stays in the same main group.
   const category=groupOf(current.category)===group?current.category:(subtype==='apartment'?'apartment':subtype==='farm'?'farm':group);
   return {
-    patch:{location_confirmed:form.get('location_confirmed')==='yes'&&lat!==null&&lng!==null,category,property_group:group,property_subtype:subtype||null,country,settlement,county:get('county').slice(0,120),region:get('region').slice(0,120),precision:get('precision')==='exact'?'exact':'approximate',...price,...areas,
+    patch:{location_confirmed:form.get('location_confirmed')==='yes'&&lat!==null&&lng!==null,category,property_group:group,property_subtype:subtype||null,country,settlement,county:get('county').slice(0,120),region:get('region').slice(0,120),precision:showAddress||get('precision')==='exact'?'exact':'approximate',details,public_address:showAddress?street:null,public_postal_code:showAddress&&postalCode?postalCode:null,...price,...areas,
       year_built:year,year_built_unknown:yearUnknown,renovated_in:renovated,condition_key:condition,heating_key:heating,wall_key:wall,epc_class:['unknown','not-applicable'].includes(get('epc_status'))?get('epc_status'):get('epc_class').slice(0,40)||'unknown',bedrooms,bathrooms,features,video_url:video||null,price_negotiable:form.get('price_negotiable')==='yes'},
-    privateData:{lat:lat!==null&&lng!==null?lat:current.lat,lng:lat!==null&&lng!==null?lng:current.lng},
+    privateData:{lat:lat!==null&&lng!==null?lat:current.lat,lng:lat!==null&&lng!==null?lng:current.lng,street,postal_code:postalCode},
   };
 }
 export function contactLanguages(form:FormData):string[]{return [...new Set(form.getAll('seller_speaks').map(String).filter(c=>CONTACT_LANGUAGES.includes(c)))];}

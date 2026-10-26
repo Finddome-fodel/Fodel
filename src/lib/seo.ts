@@ -123,6 +123,7 @@ export function propertySchema(p: Property, locale: Locale, pageUrl: string, ima
       ...(d.building.yearBuilt ? { yearBuilt: d.building.yearBuilt } : {}),
       address: {
         '@type': 'PostalAddress',
+        ...(d.address ? { streetAddress: d.address.street, ...(d.address.postalCode ? { postalCode: d.address.postalCode } : {}) } : {}),
         addressLocality: d.location.settlement,
         addressRegion: d.location.county,
         addressCountry: d.location.country,
