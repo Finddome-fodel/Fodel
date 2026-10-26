@@ -37,9 +37,9 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
   if (baseline.kind === 'ksh') {
     const county = baseline.level === 'county';
     const level = county
-      ? x('vármegye', 'provincie', 'county', 'Komitat', 'comitat', 'condado', 'komitat', 'județ', 'župa')
-      : x('település', 'plaats', 'settlement', 'Ort', 'localité', 'localidad', 'miejscowość', 'localitate', 'obec');
-    const records = x(`${n} adat`, `${n} gegevens`, `${n} records`, `${n} Datensätze`, `${n} données`, `${nOf('es', n, 'dato', 'datos')}`, `${nOf('pl', n, 'rekord', 'rekordy', 'rekordów')}`, `${nOf('ro', n, 'înregistrare', 'înregistrări', 'de înregistrări')}`, `${nOf('sk', n, 'záznam', 'záznamy', 'záznamov')}`);
+      ? x('vármegye', 'provincie', 'county', 'Komitat', 'comitat', 'condado', 'komitat', 'județ', 'župa', 'contea', 'condado', 'νομός', 'župa', 'županija', 'län', 'amt', 'fylke', 'lääni', 'maakond', 'mede', 'apskritis')
+      : x('település', 'plaats', 'settlement', 'Ort', 'localité', 'localidad', 'miejscowość', 'localitate', 'obec', 'comune', 'localidade', 'οικισμός', 'obec', 'kraj', 'ort', 'by', 'sted', 'paikkakunta', 'asula', 'apdzīvotā vieta', 'gyvenvietė');
+    const records = x(`${n} adat`, `${n} gegevens`, `${n} records`, `${n} Datensätze`, `${n} données`, `${nOf('es', n, 'dato', 'datos')}`, `${nOf('pl', n, 'rekord', 'rekordy', 'rekordów')}`, `${nOf('ro', n, 'înregistrare', 'înregistrări', 'de înregistrări')}`, `${nOf('sk', n, 'záznam', 'záznamy', 'záznamov')}`, `${n} ${n === 1 ? 'dato' : 'dati'}`, `${n} ${n === 1 ? 'registo' : 'registos'}`, `${n} ${n === 1 ? 'εγγραφή' : 'εγγραφές'}`, `${nOf('cs', n, 'záznam', 'záznamy', 'záznamů')}`, `${nOf('sl', n, 'zapis', 'zapisi', 'zapisov', 'zapisa')}`, `${n} ${n === 1 ? 'post' : 'poster'}`, `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, `${n} ${n === 1 ? 'tietue' : 'tietuetta'}`, `${n} ${n === 1 ? 'kirje' : 'kirjet'}`, `${nOf('lv', n, 'ieraksts', 'ieraksti', 'ierakstu')}`, `${nOf('lt', n, 'įrašas', 'įrašai', 'įrašų')}`);
     return `KSH Ingatlanadattár, ${baseline.year} (${level}, ${records})`;
   }
   if (baseline.kind === 'comps') {
@@ -52,7 +52,19 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
       `${nOf('es', n, 'anuncio FODEL comparable', 'anuncios FODEL comparables')}`,
       `${nOf('pl', n, 'porównywalne ogłoszenie FODEL', 'porównywalne ogłoszenia FODEL', 'porównywalnych ogłoszeń FODEL')}`,
       `${nOf('ro', n, 'anunț FODEL comparabil', 'anunțuri FODEL comparabile', 'de anunțuri FODEL comparabile')}`,
-      `${nOf('sk', n, 'porovnateľný inzerát FODEL', 'porovnateľné inzeráty FODEL', 'porovnateľných inzerátov FODEL')}`
+      `${nOf('sk', n, 'porovnateľný inzerát FODEL', 'porovnateľné inzeráty FODEL', 'porovnateľných inzerátov FODEL')}`,
+      `${n} ${n === 1 ? 'annuncio FODEL comparabile' : 'annunci FODEL comparabili'}`,
+      `${n} ${n === 1 ? 'anúncio FODEL comparável' : 'anúncios FODEL comparáveis'}`,
+      `${n} ${n === 1 ? 'συγκρίσιμη αγγελία FODEL' : 'συγκρίσιμες αγγελίες FODEL'}`,
+      `${nOf('cs', n, 'srovnatelný inzerát FODEL', 'srovnatelné inzeráty FODEL', 'srovnatelných inzerátů FODEL')}`,
+      `${nOf('sl', n, 'primerljiv oglas FODEL', 'primerljivi oglasi FODEL', 'primerljivih oglasov FODEL', 'primerljiva oglasa FODEL')}`,
+      `${n} ${n === 1 ? 'jämförbar FODEL-annons' : 'jämförbara FODEL-annonser'}`,
+      `${n} ${n === 1 ? 'sammenlignelig FODEL-annonce' : 'sammenlignelige FODEL-annoncer'}`,
+      `${n} ${n === 1 ? 'sammenlignbar FODEL-annonse' : 'sammenlignbare FODEL-annonser'}`,
+      `${n} ${n === 1 ? 'vertailukelpoinen FODEL-ilmoitus' : 'vertailukelpoista FODEL-ilmoitusta'}`,
+      `${n} ${n === 1 ? 'võrreldav FODELi kuulutus' : 'võrreldavat FODELi kuulutust'}`,
+      `${nOf('lv', n, 'salīdzināms FODEL sludinājums', 'salīdzināmi FODEL sludinājumi', 'salīdzināmu FODEL sludinājumu')}`,
+      `${nOf('lt', n, 'palyginamas FODEL skelbimas', 'palyginami FODEL skelbimai', 'palyginamų FODEL skelbimų')}`
     );
   }
   return undefined;
@@ -60,7 +72,7 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
 
 /** "2024, retrieved 12 March 2026" */
 export function valuationSourceDate(locale: Locale, baseline: ValuationBaseline): string {
-  const word = localizer(locale)('letöltve', 'opgehaald', 'retrieved', 'abgerufen', 'consulté le', 'consultado el', 'stan na', 'consultat la', 'stav k');
+  const word = localizer(locale)('letöltve', 'opgehaald', 'retrieved', 'abgerufen', 'consulté le', 'consultado el', 'stan na', 'consultat la', 'stav k', 'consultato', 'consultado', 'ανάκτηση', 'staženo', 'pridobljeno', 'hämtad', 'hentet', 'hentet', 'haettu', 'allalaaditud', 'iegūts', 'gauta');
   return `${baseline.year}, ${word} ${baseline.retrievedAt ?? '—'}`;
 }
 
@@ -76,7 +88,19 @@ export function payNowLabel(locale: Locale, pkg: ValuationPackage): string {
     `Pagar ahora — ${price} (tarjeta)`,
     `Zapłać teraz — ${price} (karta)`,
     `Plătiți acum — ${price} (card)`,
-    `Zaplatiť teraz — ${price} (karta)`
+    `Zaplatiť teraz — ${price} (karta)`,
+    `Paghi ora — ${price} (carta)`,
+    `Pagar agora — ${price} (cartão)`,
+    `Πληρωμή τώρα — ${price} (κάρτα)`,
+    `Zaplatit nyní — ${price} (kartou)`,
+    `Plačajte zdaj — ${price} (s kartico)`,
+    `Betala nu — ${price} (kort)`,
+    `Betal nu — ${price} (kort)`,
+    `Betal nå — ${price} (kort)`,
+    `Maksa nyt — ${price} (kortti)`,
+    `Maksa kohe — ${price} (kaart)`,
+    `Maksāt tagad — ${price} (karte)`,
+    `Mokėti dabar — ${price} (kortele)`
   );
 }
 

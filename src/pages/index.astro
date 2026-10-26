@@ -8,7 +8,7 @@
  *
  * Order of preference: the language the visitor last picked in the switcher
  * (the `fodel_lang` cookie, set by LanguageSwitcher.astro), then the
- * browser's own languages (en-GB, de-AT, fr-BE, es-MX and the like all count), then Dutch.
+ * browser's own languages (en-GB, de-AT, fr-BE, es-MX and the like all count; nb and nn count as Norwegian), then Dutch.
  * Without JavaScript the meta refresh sends everyone to Dutch, and the links
  * below the fold stay usable.
  */
@@ -27,7 +27,7 @@ const fallback = FALLBACK_LOCALE;
     <title>FODEL — Kies uw taal / Válasszon nyelvet / Choose your language</title>
     <meta
       name="description"
-      content="Kies uw taal om verder te gaan. Válasszon nyelvet a folytatáshoz. Choose your language to continue. Wählen Sie Ihre Sprache. Choisissez votre langue. Elija su idioma. Prosimy wybrać język. Alegeți limba. Vyberte si jazyk."
+      content="Kies uw taal om verder te gaan. Válasszon nyelvet a folytatáshoz. Choose your language to continue. Wählen Sie Ihre Sprache. Choisissez votre langue. Elija su idioma. Prosimy wybrać język. Alegeți limba. Vyberte si jazyk. Scelga la sua lingua. Escolha o seu idioma. Επιλέξτε γλώσσα. Zvolte jazyk. Izberite jezik. Välj språk. Vælg sprog. Velg språk. Valitse kieli. Valige keel. Izvēlieties valodu. Pasirinkite kalbą."
     />
     <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href={`${SITE_URL}/${fallback}/`} />
@@ -47,6 +47,8 @@ const fallback = FALLBACK_LOCALE;
         for (var i = 0; i < languages.length; i++) {
           // "en-GB", "de-AT", "fr-BE": the primary subtag decides.
           var code = String(languages[i]).slice(0, 2).toLowerCase();
+          // Norwegian browsers say nb (Bokmål), nn (Nynorsk) or no: all read Bokmål here.
+          if (code === 'nb' || code === 'nn') code = 'no';
           if (supported.indexOf(code) !== -1) {
             match = code;
             break;

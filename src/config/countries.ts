@@ -5,7 +5,7 @@ export type Country = { labels: Record<Locale, string>; bounds: [number, number,
 /** Europe, including non-EU and transcontinental countries. Administrative data: GeoNames, CC BY 4.0. */
 export const EUROPEAN_COUNTRY_CODES = Object.keys(geography.countries);
 export const COUNTRIES: Record<string, Country> = Object.fromEntries(EUROPEAN_COUNTRY_CODES.map(code => [code, {
-  labels: Object.fromEntries(['hu','nl','en','de','fr','es','pl','ro','sk'].map(locale => [locale, new Intl.DisplayNames([locale], {type:'region'}).of(code) || code])) as Record<Locale,string>,
+  labels: Object.fromEntries(['hu','nl','en','de','fr','es','pl','ro','sk','it','pt','el','cs','sl','sv','da','no','fi','et','lv','lt'].map(locale => [locale, new Intl.DisplayNames([locale], {type:'region'}).of(code) || code])) as Record<Locale,string>,
   // Geographic bounding rectangles are not national borders (islands and overseas territories are valid).
   bounds: [-180,-90,180,90] as [number,number,number,number],
 }]));

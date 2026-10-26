@@ -2,7 +2,7 @@
 
 One term per concept per language. If you add copy, use these words; if a word is missing, add a row here first.
 
-Registers: Hungarian **Ön**, Dutch **u**, English plain British **you**, German **Sie**, French **vous**, Spanish **usted**, Polish **Pan/Pani, Państwo**, Romanian **dumneavoastră**, Slovak **vy** (vykanie).
+Registers (hu–sk): Hungarian **Ön**, Dutch **u**, English plain British **you**, German **Sie**, French **vous**, Spanish **usted**, Polish **Pan/Pani, Państwo**, Romanian **dumneavoastră**, Slovak **vy** (vykanie).
 
 Typography: see `src/lib/format.ts` (numbers, prices, areas, dates) and `src/lib/typography.ts` (quotation marks, no-break spaces).
 
@@ -53,6 +53,23 @@ Typography: see `src/lib/format.ts` (numbers, prices, areas, dates) and `src/lib
 | Hungary | Magyarország | Hongarije | Hungary | Ungarn | Hongrie | Hungría | Węgry | Ungaria | Maďarsko |
 | the Netherlands | Hollandia | Nederland | the Netherlands | die Niederlande | les Pays-Bas | los Países Bajos | Holandia (Niderlandy) | Țările de Jos | Holandsko |
 | The Hague (office) | Hága | Den Haag | The Hague | Den Haag | La Haye | La Haya | Haga | Haga | Haag |
+
+## The twelve newer languages (it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt)
+
+Registers: Italian **Lei**, European Portuguese third person (“o seu”, “pode”; never “você”), Greek **εσείς**, Czech **vykání**, Slovenian **vikanje**, Estonian **teie**, Latvian **jūs**, Lithuanian **jūs**; Swedish, Danish, Norwegian (Bokmål) **du** and Finnish **sinä** in the natural standard register of those languages.
+
+Typography: percent signs are written `10 %` with a no-break space in cs, sl, sv, da, no, fi and lt, and `10%` in it, pt, el, et and lv. Prices: `178.000 €` (it, el, sl, da) or `178 000 €` with a no-break space (pt, cs, sv, no, fi, et, lv, lt). Norwegian pages use `lang="nb"`.
+
+| Concept | it | pt | el | cs | sl | sv | da | no | fi | et | lv | lt |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| property | immobile | imóvel | ακίνητο | nemovitost | nepremičnina | fastighet (bostad) | ejendom | eiendom | kiinteistö (kohde) | kinnisvara | īpašums | nekilnojamasis turtas |
+| listing | annuncio | anúncio | αγγελία | inzerát | oglas | annons | annonce | annonse | ilmoitus | kuulutus | sludinājums | skelbimas |
+| commission | provvigione | comissão | προμήθεια | provize | provizija | provision | provision | provisjon | välityspalkkio | vahendustasu | komisijas maksa | komisinis atlyginimas |
+| county | contea | condado | νομός | župa | županija | provins | provins | fylke | maakunta | maakond | apriņķis | apskritis |
+| energy certificate | APE | certificado energético | πιστοποιητικό ενεργειακής απόδοσης | PENB | energetska izkaznica | energideklaration | energimærke | energiattest | energiatodistus | energiamärgis | energosertifikāts | energinio naudingumo sertifikatas |
+| land registry | catasto / registro fondiario | registo predial | κτηματολόγιο | katastr nemovitostí | zemljiška knjiga | fastighetsregister | tingbog | grunnbok | kiinteistörekisteri | kinnistusraamat | zemesgrāmata | nekilnojamojo turto registras |
+
+Brand lines (`BRAND` in `src/i18n/ui.ts`): FODEL IMMOBILIARE, FODEL IMOBILIÁRIA, FODEL ΑΚΙΝΗΤΑ, FODEL NEMOVITOSTI, FODEL NEPREMIČNINE, FODEL FASTIGHETER, FODEL EJENDOMME, FODEL EIENDOM, FODEL KIINTEISTÖT, FODEL KINNISVARA, FODEL NEKUSTAMAIS ĪPAŠUMS, FODEL NEKILNOJAMASIS TURTAS. Greek URL slugs are Latin transliterations; Danish and Norwegian slugs write ø as o, å as a and æ as ae.
 
 ## Notes
 

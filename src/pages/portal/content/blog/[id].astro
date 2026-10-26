@@ -54,7 +54,7 @@ const linkable = (candidates ?? []).filter((c: any) => !versionLocales.has(c.loc
 const isLive = post.published && post.published_at && new Date(post.published_at).getTime() <= Date.now();
 const publicUrl = isLive ? `${SITE_URL}${BLOG_PATH[locale]}${post.slug}/` : null;
 const placeholder = String(post.title).startsWith(PLACEHOLDER_PREFIX);
-const LANG = { hu: 'Magyar', nl: 'Holland', en: 'Angol', de: 'Német', fr: 'Francia', es: 'Spanyol', pl: 'Lengyel', ro: 'Román', sk: 'Szlovák' } as const;
+const LANG = { hu: 'Magyar', nl: 'Holland', en: 'Angol', de: 'Német', fr: 'Francia', es: 'Spanyol', pl: 'Lengyel', ro: 'Román', sk: 'Szlovák', it: 'Olasz', pt: 'Portugál', el: 'Görög', cs: 'Cseh', sl: 'Szlovén', sv: 'Svéd', da: 'Dán', no: 'Norvég', fi: 'Finn', et: 'Észt', lv: 'Lett', lt: 'Litván' } as const;
 ---
 
 <Portal title={post.title || 'Új cikk'}>

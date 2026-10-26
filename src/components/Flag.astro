@@ -3,7 +3,9 @@
  * Inline SVG flags for the language switcher — not emoji, which don't
  * render at all on Windows. Hand-drawn, one shared 4:3 viewBox.
  */
-type Code = 'hu' | 'nl' | 'gb' | 'de' | 'fr' | 'it' | 'es' | 'pl' | 'ro' | 'sk';
+type Code =
+  | 'hu' | 'nl' | 'gb' | 'de' | 'fr' | 'it' | 'es' | 'pl' | 'ro' | 'sk'
+  | 'pt' | 'gr' | 'cz' | 'si' | 'se' | 'dk' | 'no' | 'fi' | 'ee' | 'lv' | 'lt';
 
 interface Props {
   code: Code;
@@ -107,6 +109,117 @@ const clipId = `flag-clip-${code}-${Math.random().toString(36).slice(2, 8)}`;
           <path d="M5,4 H12 V9.5 C12,12.5 8.5,14 8.5,14 C8.5,14 5,12.5 5,9.5 Z" fill="#EE1C25" stroke="#fff" stroke-width="0.7" />
           <path d="M8.5,5.2 V11.4 M6.9,7 H10.1 M6.3,8.8 H10.7" stroke="#fff" stroke-width="0.8" />
           <path d="M5.4,11.2 C6.4,10.4 7.4,10.6 8.5,11.2 C9.6,10.6 10.6,10.4 11.6,11.2 C10.8,12.6 8.5,13.6 8.5,13.6 C8.5,13.6 6.2,12.6 5.4,11.2 Z" fill="#0B4EA2" />
+        </>
+      )
+    }
+    {
+      code === 'pt' && (
+        <>
+          <rect width="24" height="18" fill="#FF0000" />
+          <rect width="9.6" height="18" fill="#006600" />
+          <circle cx="9.6" cy="9" r="3.4" fill="#FFE000" />
+          <path d="M7.9,7.1 H11.3 V9.4 C11.3,10.6 9.6,11.4 9.6,11.4 C9.6,11.4 7.9,10.6 7.9,9.4 Z" fill="#FF0000" stroke="#fff" stroke-width="0.5" />
+        </>
+      )
+    }
+    {
+      code === 'gr' && (
+        <>
+          <rect width="24" height="18" fill="#0D5EAF" />
+          <rect width="24" height="2" y="2" fill="#fff" />
+          <rect width="24" height="2" y="6" fill="#fff" />
+          <rect width="24" height="2" y="10" fill="#fff" />
+          <rect width="24" height="2" y="14" fill="#fff" />
+          <rect width="10" height="10" fill="#0D5EAF" />
+          <rect width="2" height="10" x="4" fill="#fff" />
+          <rect width="10" height="2" y="4" fill="#fff" />
+        </>
+      )
+    }
+    {
+      code === 'cz' && (
+        <>
+          <rect width="24" height="18" fill="#fff" />
+          <rect width="24" height="9" y="9" fill="#D7141A" />
+          <path d="M0,0 L12,9 L0,18 Z" fill="#11457E" />
+        </>
+      )
+    }
+    {
+      code === 'si' && (
+        <>
+          <rect width="24" height="18" fill="#fff" />
+          <rect width="24" height="6" y="6" fill="#005DA4" />
+          <rect width="24" height="6" y="12" fill="#ED1C24" />
+          <path d="M4,3.4 H10 V8.4 C10,11.2 7,12.8 7,12.8 C7,12.8 4,11.2 4,8.4 Z" fill="#005DA4" stroke="#fff" stroke-width="0.6" />
+          <path d="M4.9,9.6 L6.3,7.3 L7,8.4 L7.7,7.3 L9.1,9.6 Z" fill="#fff" />
+          <circle cx="5.9" cy="5.2" r="0.55" fill="#FFDD00" />
+          <circle cx="8.1" cy="5.2" r="0.55" fill="#FFDD00" />
+          <circle cx="7" cy="6.2" r="0.55" fill="#FFDD00" />
+        </>
+      )
+    }
+    {
+      code === 'se' && (
+        <>
+          <rect width="24" height="18" fill="#006AA7" />
+          <rect width="3" height="18" x="7" fill="#FECC00" />
+          <rect width="24" height="3" y="7.5" fill="#FECC00" />
+        </>
+      )
+    }
+    {
+      code === 'dk' && (
+        <>
+          <rect width="24" height="18" fill="#C8102E" />
+          <rect width="3" height="18" x="7" fill="#fff" />
+          <rect width="24" height="3" y="7.5" fill="#fff" />
+        </>
+      )
+    }
+    {
+      code === 'no' && (
+        <>
+          <rect width="24" height="18" fill="#BA0C2F" />
+          <rect width="4" height="18" x="6" fill="#fff" />
+          <rect width="24" height="4" y="7" fill="#fff" />
+          <rect width="2" height="18" x="7" fill="#00205B" />
+          <rect width="24" height="2" y="8" fill="#00205B" />
+        </>
+      )
+    }
+    {
+      code === 'fi' && (
+        <>
+          <rect width="24" height="18" fill="#fff" />
+          <rect width="3.6" height="18" x="6.2" fill="#003580" />
+          <rect width="24" height="3.6" y="7.2" fill="#003580" />
+        </>
+      )
+    }
+    {
+      code === 'ee' && (
+        <>
+          <rect width="24" height="18" fill="#fff" />
+          <rect width="24" height="6" fill="#0072CE" />
+          <rect width="24" height="6" y="6" fill="#000" />
+        </>
+      )
+    }
+    {
+      code === 'lv' && (
+        <>
+          <rect width="24" height="18" fill="#9E3039" />
+          <rect width="24" height="3.6" y="7.2" fill="#fff" />
+        </>
+      )
+    }
+    {
+      code === 'lt' && (
+        <>
+          <rect width="24" height="18" fill="#006A44" />
+          <rect width="24" height="6" fill="#FDB913" />
+          <rect width="24" height="6" y="12" fill="#C1272D" />
         </>
       )
     }

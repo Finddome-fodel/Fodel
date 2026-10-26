@@ -14,8 +14,8 @@ if (!isBlogLocale(requested)) return Astro.redirect('/portal/content/blog');
 const locale = requested;
 const caseStudy = Astro.url.searchParams.get('kind') === 'case_study';
 
-const NEW_TITLE = { hu: 'Új cikk', nl: 'Nieuw artikel', en: 'New article', de: 'Neuer Artikel', fr: 'Nouvel article', es: 'Nuevo artículo', pl: 'Nowy artykuł', ro: 'Articol nou', sk: 'Nový článok' } as const;
-const NEW_SLUG = { hu: 'uj-cikk', nl: 'nieuw-artikel', en: 'new-article', de: 'neuer-artikel', fr: 'nouvel-article', es: 'nuevo-articulo', pl: 'nowy-artykul', ro: 'articol-nou', sk: 'novy-clanok' } as const;
+const NEW_TITLE = { hu: 'Új cikk', nl: 'Nieuw artikel', en: 'New article', de: 'Neuer Artikel', fr: 'Nouvel article', es: 'Nuevo artículo', pl: 'Nowy artykuł', ro: 'Articol nou', sk: 'Nový článok', it: 'Nuovo articolo', pt: 'Novo artigo', el: 'Νέο άρθρο', cs: 'Nový článek', sl: 'Nov članek', sv: 'Ny artikel', da: 'Ny artikel', no: 'Ny artikkel', fi: 'Uusi artikkeli', et: 'Uus artikkel', lv: 'Jauns raksts', lt: 'Naujas straipsnis' } as const;
+const NEW_SLUG = { hu: 'uj-cikk', nl: 'nieuw-artikel', en: 'new-article', de: 'neuer-artikel', fr: 'nouvel-article', es: 'nuevo-articulo', pl: 'nowy-artykul', ro: 'articol-nou', sk: 'novy-clanok', it: 'nuovo-articolo', pt: 'novo-artigo', el: 'neo-arthro', cs: 'novy-clanek', sl: 'nov-clanek', sv: 'ny-artikel', da: 'ny-artikel', no: 'ny-artikkel', fi: 'uusi-artikkeli', et: 'uus-artikkel', lv: 'jauns-raksts', lt: 'naujas-straipsnis' } as const;
 
 const draft: Record<string, unknown> = {
   locale,

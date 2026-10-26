@@ -23,6 +23,18 @@ import { ES } from '~/data/copy-es';
 import { PL } from '~/data/copy-pl';
 import { RO } from '~/data/copy-ro';
 import { SK } from '~/data/copy-sk';
+import { IT } from '~/data/copy-it';
+import { PT } from '~/data/copy-pt';
+import { EL } from '~/data/copy-el';
+import { CS } from '~/data/copy-cs';
+import { SL } from '~/data/copy-sl';
+import { SV } from '~/data/copy-sv';
+import { DA } from '~/data/copy-da';
+import { NO } from '~/data/copy-no';
+import { FI } from '~/data/copy-fi';
+import { ET } from '~/data/copy-et';
+import { LV } from '~/data/copy-lv';
+import { LT } from '~/data/copy-lt';
 
 const REACH_COUNTRIES = COMPANY.reach.countries;
 const REACH_LANGUAGES = COMPANY.reach.languages;
@@ -565,7 +577,7 @@ export type CopyShape = (typeof BASE)['hu'];
 /** Dutch is held to the same shape, so a key missing in either fails the build. */
 const NL: CopyShape = BASE.nl;
 
-export const COPY: Record<Locale, CopyShape> = { hu: BASE.hu, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK };
+export const COPY: Record<Locale, CopyShape> = { hu: BASE.hu, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK, it: IT, pt: PT, el: EL, cs: CS, sl: SL, sv: SV, da: DA, no: NO, fi: FI, et: ET, lv: LV, lt: LT };
 
 export function copy(locale: Locale): CopyShape {
   return COPY[locale];

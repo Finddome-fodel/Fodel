@@ -68,9 +68,9 @@ if (shareSource) {
 const isCase = post.kind === 'case_study';
 const caseSections = isCase
   ? [
-      { title: x('Módszertan', 'Methode', 'Method', 'Methode', 'Méthode', 'Método', 'Metoda', 'Metodă', 'Metóda'), md: post.case_method },
-      { title: x('Eredmények', 'Resultaten', 'Results', 'Ergebnisse', 'Résultats', 'Resultados', 'Wyniki', 'Rezultate', 'Výsledky'), md: post.case_results },
-      { title: x('Források', 'Bronnen', 'Sources', 'Quellen', 'Sources', 'Fuentes', 'Źródła', 'Surse', 'Zdroje'), md: post.case_sources },
+      { title: x('Módszertan', 'Methode', 'Method', 'Methode', 'Méthode', 'Método', 'Metoda', 'Metodă', 'Metóda', 'Metodo', 'Método', 'Μέθοδος', 'Metoda', 'Metoda', 'Metod', 'Metode', 'Metode', 'Menetelmä', 'Meetod', 'Metode', 'Metodas'), md: post.case_method },
+      { title: x('Eredmények', 'Resultaten', 'Results', 'Ergebnisse', 'Résultats', 'Resultados', 'Wyniki', 'Rezultate', 'Výsledky', 'Risultati', 'Resultados', 'Αποτελέσματα', 'Výsledky', 'Rezultati', 'Resultat', 'Resultater', 'Resultater', 'Tulokset', 'Tulemused', 'Rezultāti', 'Rezultatai'), md: post.case_results },
+      { title: x('Források', 'Bronnen', 'Sources', 'Quellen', 'Sources', 'Fuentes', 'Źródła', 'Surse', 'Zdroje', 'Fonti', 'Fontes', 'Πηγές', 'Zdroje', 'Viri', 'Källor', 'Kilder', 'Kilder', 'Lähteet', 'Allikad', 'Avoti', 'Šaltiniai'), md: post.case_sources },
     ].filter((section) => section.md?.trim())
   : [];
 
@@ -113,14 +113,14 @@ const trail = crumbs(locale, [
 
   <article class="article">
     <header>
-      <span class="pill">{isCase ? x('Esettanulmány', 'Casestudy', 'Case study', 'Fallstudie', 'Étude de cas', 'Caso práctico', 'Studium przypadku', 'Studiu de caz', 'Prípadová štúdia') : post.category}</span>
+      <span class="pill">{isCase ? x('Esettanulmány', 'Casestudy', 'Case study', 'Fallstudie', 'Étude de cas', 'Caso práctico', 'Studium przypadku', 'Studiu de caz', 'Prípadová štúdia', 'Caso di studio', 'Estudo de caso', 'Μελέτη περίπτωσης', 'Případová studie', 'Študija primera', 'Fallstudie', 'Casestudie', 'Casestudie', 'Tapaustutkimus', 'Juhtumiuuring', 'Gadījuma izpēte', 'Atvejo analizė') : post.category}</span>
       <h1>{post.title}</h1>
       <p class="meta">
         {post.published_at && (
           <time datetime={post.published_at.toISOString()}>{formatDate(post.published_at, locale)}</time>
         )}
         <span aria-hidden="true">·</span>
-        <span>{x(`${post.reading_minutes} perc olvasás`, `${post.reading_minutes} min. lezen`, `${post.reading_minutes} min read`, `${post.reading_minutes} Min. Lesezeit`, `${post.reading_minutes} min de lecture`, `${post.reading_minutes} min de lectura`, `${post.reading_minutes} min czytania`, `${post.reading_minutes} min de lectură`, `${post.reading_minutes} min čítania`)}</span>
+        <span>{x(`${post.reading_minutes} perc olvasás`, `${post.reading_minutes} min. lezen`, `${post.reading_minutes} min read`, `${post.reading_minutes} Min. Lesezeit`, `${post.reading_minutes} min de lecture`, `${post.reading_minutes} min de lectura`, `${post.reading_minutes} min czytania`, `${post.reading_minutes} min de lectură`, `${post.reading_minutes} min čítania`, `${post.reading_minutes} min di lettura`, `${post.reading_minutes} min de leitura`, `${post.reading_minutes} λεπτά ανάγνωσης`, `${post.reading_minutes} min čtení`, `${post.reading_minutes} min branja`, `${post.reading_minutes} min läsning`, `${post.reading_minutes} min. læsning`, `${post.reading_minutes} min lesing`, `Lukuaika ${post.reading_minutes} min`, `Lugemisaeg ${post.reading_minutes} min`, `Lasīšanas laiks ${post.reading_minutes} min`, `Skaitymo laikas ${post.reading_minutes} min.`)}</span>
         <span aria-hidden="true">·</span>
         <span>{post.author}</span>
       </p>

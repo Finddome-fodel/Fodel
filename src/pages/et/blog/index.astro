@@ -1,0 +1,8 @@
+---
+// Supabase-backed since FODEL 1.2 — see src/lib/blog.ts.
+export const prerender = false;
+Astro.response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
+import BlogPage from "~/components/pages/BlogPage.astro";
+---
+
+<BlogPage locale="et" />

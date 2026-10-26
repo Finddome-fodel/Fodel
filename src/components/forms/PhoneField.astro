@@ -82,13 +82,13 @@ const all = getCountries()
   .sort((a, b) => collator.compare(a.name, b.name));
 const current = entry(selected);
 
-const exampleLabel = x('Például:', 'Bijvoorbeeld:', 'For example:', 'Zum Beispiel:', 'Par exemple\u00a0:', 'Por ejemplo:', 'Na przykład:', 'De exemplu:', 'Napríklad:');
+const exampleLabel = x('Például:', 'Bijvoorbeeld:', 'For example:', 'Zum Beispiel:', 'Par exemple\u00a0:', 'Por ejemplo:', 'Na przykład:', 'De exemplu:', 'Napríklad:', 'Ad esempio:', 'Por exemplo:', 'Για παράδειγμα:', 'Například:', 'Na primer:', 'Till exempel:', 'For eksempel:', 'For eksempel:', 'Esimerkiksi:', 'Näiteks:', 'Piemēram:', 'Pavyzdžiui:');
 const t = {
-  country: x('Ország hívószáma', 'Landcode', 'Country dialling code', 'Ländervorwahl', 'Indicatif du pays', 'Prefijo telefónico del país', 'Numer kierunkowy kraju', 'Prefixul țării', 'Predvoľba krajiny'),
-  common: x('Gyakori', 'Veelgekozen', 'Common', 'Häufig', 'Courants', 'Habituales', 'Najczęstsze', 'Frecvente', 'Najčastejšie'),
-  all: x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays', 'Todos los países', 'Wszystkie kraje', 'Toate țările', 'Všetky krajiny'),
-  search: x('Ország keresése', 'Land zoeken', 'Search for a country', 'Land suchen', 'Rechercher un pays', 'Buscar un país', 'Wyszukaj kraj', 'Căutați o țară', 'Vyhľadať krajinu'),
-  none: x('Nincs találat', 'Geen resultaten', 'No results', 'Keine Treffer', 'Aucun résultat', 'Sin resultados', 'Brak wyników', 'Niciun rezultat', 'Žiadne výsledky'),
+  country: x('Ország hívószáma', 'Landcode', 'Country dialling code', 'Ländervorwahl', 'Indicatif du pays', 'Prefijo telefónico del país', 'Numer kierunkowy kraju', 'Prefixul țării', 'Predvoľba krajiny', 'Prefisso internazionale', 'Indicativo do país', 'Κωδικός χώρας', 'Mezinárodní předvolba', 'Klicna koda države', 'Landsnummer', 'Landekode', 'Landskode', 'Maatunnus', 'Riigi suunakood', 'Valsts kods', 'Šalies kodas'),
+  common: x('Gyakori', 'Veelgekozen', 'Common', 'Häufig', 'Courants', 'Habituales', 'Najczęstsze', 'Frecvente', 'Najčastejšie', 'Più usati', 'Mais comuns', 'Συνηθέστερες', 'Nejčastější', 'Najpogostejše', 'Vanligast', 'Mest brugte', 'Mest brukte', 'Yleisimmät', 'Levinumad', 'Biežāk izmantotās', 'Dažniausios'),
+  all: x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays', 'Todos los países', 'Wszystkie kraje', 'Toate țările', 'Všetky krajiny', 'Tutti i paesi', 'Todos os países', 'Όλες οι χώρες', 'Všechny země', 'Vse države', 'Alla länder', 'Alle lande', 'Alle land', 'Kaikki maat', 'Kõik riigid', 'Visas valstis', 'Visos šalys'),
+  search: x('Ország keresése', 'Land zoeken', 'Search for a country', 'Land suchen', 'Rechercher un pays', 'Buscar un país', 'Wyszukaj kraj', 'Căutați o țară', 'Vyhľadať krajinu', 'Cerca un paese', 'Pesquisar um país', 'Αναζήτηση χώρας', 'Vyhledat zemi', 'Poiščite državo', 'Sök efter ett land', 'Søg efter et land', 'Søk etter et land', 'Hae maata', 'Otsige riiki', 'Meklēt valsti', 'Ieškoti šalies'),
+  none: x('Nincs találat', 'Geen resultaten', 'No results', 'Keine Treffer', 'Aucun résultat', 'Sin resultados', 'Brak wyników', 'Niciun rezultat', 'Žiadne výsledky', 'Nessun risultato', 'Sem resultados', 'Δεν βρέθηκαν αποτελέσματα', 'Žádné výsledky', 'Ni zadetkov', 'Inga träffar', 'Ingen resultater', 'Ingen treff', 'Ei tuloksia', 'Tulemusi ei leitud', 'Nekas netika atrasts', 'Rezultatų nėra'),
   example: (ex: string) => `${exampleLabel} ${ex}`,
 };
 ---

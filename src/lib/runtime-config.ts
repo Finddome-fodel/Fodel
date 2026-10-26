@@ -287,7 +287,7 @@ function completeListingTaxonomy(taxonomy: Taxonomy): Taxonomy {
       } else taxonomy[group].push({groupKey:group,key:term.key,labels:term.labels as TaxonomyTerm['labels'],slugs:{},enabled:true,sortOrder:100,propertyGroups:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.propertyGroups:undefined,subtypeKeys:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.subtypeKeys:undefined,sectionKey:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.section:undefined});
     }
   }
-  for (const g of PROPERTY_GROUPS) if(!taxonomy.category.some(t=>t.key===g.key)) taxonomy.category.push({groupKey:'category',key:g.key,labels:g.labels as TaxonomyTerm['labels'],slugs:Object.keys(g.slugs).length?g.slugs:{hu:g.key,nl:g.key,en:g.key,de:g.key,fr:g.key,es:g.key,pl:g.key,ro:g.key,sk:g.key},schemaType:'Place',enabled:true,sortOrder:100});
+  for (const g of PROPERTY_GROUPS) if(!taxonomy.category.some(t=>t.key===g.key)) taxonomy.category.push({groupKey:'category',key:g.key,labels:g.labels as TaxonomyTerm['labels'],slugs:Object.keys(g.slugs).length?g.slugs:{hu:g.key,nl:g.key,en:g.key,de:g.key,fr:g.key,es:g.key,pl:g.key,ro:g.key,sk:g.key,it:g.key,pt:g.key,el:g.key,cs:g.key,sl:g.key,sv:g.key,da:g.key,no:g.key,fi:g.key,et:g.key,lv:g.key,lt:g.key},schemaType:'Place',enabled:true,sortOrder:100});
   return taxonomy;
 }
 

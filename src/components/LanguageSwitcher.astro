@@ -1,6 +1,6 @@
 ---
 /**
- * The language menu: a flag + code toggle that lists all nine languages, each
+ * The language menu: a flag + code toggle that lists all twenty-one languages, each
  * as a complete site. Every row links to the equivalent page when the template
  * passes `alternates`, and to that language's home page otherwise.
  *
@@ -197,6 +197,11 @@ const switchLabel = UI[locale].a11y.langSwitch;
     list-style: none;
     padding: 6px;
     z-index: 1100;
+    /* Twenty-one rows are taller than a phone: the list scrolls inside the card. */
+    max-height: min(70vh, 480px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
     opacity: 0;
     transform: translateY(-6px) scale(0.97);
     transform-origin: top right;
@@ -208,6 +213,19 @@ const switchLabel = UI[locale].a11y.langSwitch;
       opacity 0.3s var(--ease-out),
       transform 0.45s var(--ease-out),
       visibility 0s linear 0.45s;
+  }
+  /* Wide screens: three columns of seven, filled column by column, so the whole
+     list is visible at once. */
+  @media (min-width: 900px) {
+    .switcher-menu {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: repeat(7, auto);
+      grid-template-columns: repeat(3, minmax(190px, 1fr));
+      min-width: 600px;
+      max-height: none;
+      overflow: visible;
+    }
   }
   .switcher[data-align='right'] .switcher-menu {
     right: 0;

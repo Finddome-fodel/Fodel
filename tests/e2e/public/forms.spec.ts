@@ -16,6 +16,10 @@ const PHONE: Record<Locale, { country: string; prefix: string }> = {
   hu: { country: 'HU', prefix: '+36' }, nl: { country: 'NL', prefix: '+31' }, en: { country: 'GB', prefix: '+44' },
   de: { country: 'DE', prefix: '+49' }, fr: { country: 'FR', prefix: '+33' }, es: { country: 'ES', prefix: '+34' },
   pl: { country: 'PL', prefix: '+48' }, ro: { country: 'RO', prefix: '+40' }, sk: { country: 'SK', prefix: '+421' },
+  it: { country: 'IT', prefix: '+39' }, pt: { country: 'PT', prefix: '+351' }, el: { country: 'GR', prefix: '+30' },
+  cs: { country: 'CZ', prefix: '+420' }, sl: { country: 'SI', prefix: '+386' }, sv: { country: 'SE', prefix: '+46' },
+  da: { country: 'DK', prefix: '+45' }, no: { country: 'NO', prefix: '+47' }, fi: { country: 'FI', prefix: '+358' },
+  et: { country: 'EE', prefix: '+372' }, lv: { country: 'LV', prefix: '+371' }, lt: { country: 'LT', prefix: '+370' },
 };
 
 const form = (page: Page) => page.locator('#listing-order');

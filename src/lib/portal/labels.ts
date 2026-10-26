@@ -93,6 +93,18 @@ export const LOCALE_LABEL: Record<string, string> = {
   pl: 'Lengyel',
   ro: 'Román',
   sk: 'Szlovák',
+  it: 'Olasz',
+  pt: 'Portugál',
+  el: 'Görög',
+  cs: 'Cseh',
+  sl: 'Szlovén',
+  sv: 'Svéd',
+  da: 'Dán',
+  no: 'Norvég',
+  fi: 'Finn',
+  et: 'Észt',
+  lv: 'Lett',
+  lt: 'Litván',
 };
 
 /**

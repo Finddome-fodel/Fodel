@@ -70,7 +70,7 @@ const company = await getCompany();
 // Brief 2 (§1/A): the three newest articles in this language — never another
 // language's, never a case study, and no section at all when there are none.
 const latest = await latestArticles(locale, 3);
-const latestTitle = x('Legfrissebb cikkeink', 'Onze nieuwste artikelen', 'Our latest articles', 'Unsere neuesten Artikel', 'Nos derniers articles', 'Nuestros últimos artículos', 'Nasze najnowsze artykuły', 'Cele mai recente articole', 'Naše najnovšie články');
+const latestTitle = x('Legfrissebb cikkeink', 'Onze nieuwste artikelen', 'Our latest articles', 'Unsere neuesten Artikel', 'Nos derniers articles', 'Nuestros últimos artículos', 'Nasze najnowsze artykuły', 'Cele mai recente articole', 'Naše najnovšie články', 'I nostri ultimi articoli', 'Os nossos artigos mais recentes', 'Τα πιο πρόσφατα άρθρα μας', 'Naše nejnovější články', 'Naši najnovejši članki', 'Våra senaste artiklar', 'Vores seneste artikler', 'Våre nyeste artikler', 'Uusimmat artikkelimme', 'Meie uusimad artiklid', 'Mūsu jaunākie raksti', 'Mūsų naujausi straipsniai');
 // The valuation entry point appears only while an admin has confirmed the
 // service is staffed (Beállítások → Szolgáltatások), and says "free" only once
 // that is confirmed too.
@@ -78,8 +78,8 @@ const valuation = company.services.valuationEntry
   ? {
       href: path(locale, 'valuation'),
       label: company.services.valuationFreeConfirmed
-        ? x('Ingyenes értékbecslés', 'Gratis waardebepaling', 'Free valuation', 'Kostenlose Bewertung', 'Estimation gratuite', 'Valoración gratuita', 'Bezpłatna wycena', 'Evaluare gratuită', 'Bezplatný odhad ceny')
-        : x('Mennyit ér az ingatlanom?', 'Wat is mijn woning waard?', 'What is my property worth?', 'Was ist meine Immobilie wert?', 'Que vaut mon bien\u202f?', '¿Cuánto vale mi inmueble?', 'Ile jest warta moja nieruchomość?', 'Cât valorează proprietatea mea?', 'Koľko má moja nehnuteľnosť hodnotu?'),
+        ? x('Ingyenes értékbecslés', 'Gratis waardebepaling', 'Free valuation', 'Kostenlose Bewertung', 'Estimation gratuite', 'Valoración gratuita', 'Bezpłatna wycena', 'Evaluare gratuită', 'Bezplatný odhad ceny', 'Valutazione gratuita', 'Avaliação gratuita', 'Δωρεάν εκτίμηση', 'Odhad ceny zdarma', 'Brezplačna ocena vrednosti', 'Kostnadsfri värdering', 'Gratis vurdering', 'Gratis verdivurdering', 'Maksuton arvio', 'Tasuta hindamine', 'Bezmaksas novērtējums', 'Nemokamas vertinimas')
+        : x('Mennyit ér az ingatlanom?', 'Wat is mijn woning waard?', 'What is my property worth?', 'Was ist meine Immobilie wert?', 'Que vaut mon bien\u202f?', '¿Cuánto vale mi inmueble?', 'Ile jest warta moja nieruchomość?', 'Cât valorează proprietatea mea?', 'Koľko má moja nehnuteľnosť hodnotu?', 'Quanto vale il mio immobile?', 'Quanto vale o meu imóvel?', 'Πόσο αξίζει το ακίνητό μου;', 'Kolik má moje nemovitost hodnotu?', 'Koliko je vredna moja nepremičnina?', 'Vad är min fastighet värd?', 'Hvad er min ejendom værd?', 'Hva er eiendommen min verdt?', 'Paljonko kiinteistöni on arvoltaan?', 'Kui palju on minu kinnisvara väärt?', 'Cik vērts ir mans īpašums?', 'Kiek vertas mano turtas?'),
     }
   : null;
 // The three packages, named and priced in Beállítások → Szolgáltatások. The free
@@ -163,7 +163,7 @@ const quote = splitOpeningQuote(c.quote);
             <div class="hero-slide" data-active data-hero-fallback>
               <Image
                 src={heroImage}
-                alt={x('Tóparti otthon naplementében', 'Een huis aan het water bij zonsondergang', 'A lakeside home at sunset', 'Ein Haus am See bei Sonnenuntergang', 'Une maison au bord du lac au coucher du soleil', 'Una casa junto al lago al atardecer', 'Dom nad jeziorem o zachodzie słońca', 'O casă pe malul lacului la apus', 'Dom pri jazere pri západe slnka')}
+                alt={x('Tóparti otthon naplementében', 'Een huis aan het water bij zonsondergang', 'A lakeside home at sunset', 'Ein Haus am See bei Sonnenuntergang', 'Une maison au bord du lac au coucher du soleil', 'Una casa junto al lago al atardecer', 'Dom nad jeziorem o zachodzie słońca', 'O casă pe malul lacului la apus', 'Dom pri jazere pri západe slnka', 'Una casa sul lago al tramonto', 'Uma casa à beira do lago ao pôr do sol', 'Ένα σπίτι δίπλα στη λίμνη στο ηλιοβασίλεμα', 'Dům u jezera při západu slunce', 'Hiša ob jezeru ob sončnem zahodu', 'Ett hus vid sjön i solnedgången', 'Et hus ved søen i solnedgang', 'Et hus ved vannet i solnedgang', 'Järvenrantatalo auringonlaskussa', 'Järveäärne maja päikeseloojangul', 'Māja pie ezera saulrietā', 'Namas prie ežero saulei leidžiantis')}
                 widths={HERO_WIDTHS}
                 sizes={HERO_SIZES}
                 loading="eager"
@@ -244,7 +244,7 @@ const quote = splitOpeningQuote(c.quote);
     <HomeSearch locale={locale} regions={regionsOf(all)} categories={listingCategories(taxonomy)}>
       <p class="search-count">
         <span class="search-count-n num" data-count={String(all.length)}>{all.length}</span>
-        <span class="search-count-text">{x('aktív hirdetés, közvetlenül a tulajdonostól', 'actieve advertenties, direct van de eigenaar', 'active listings, direct from the owner', 'aktive Inserate, direkt vom Eigentümer', 'annonces actives, en direct du propriétaire', 'anuncios activos, directamente del propietario', 'aktywnych ogłoszeń bezpośrednio od właścicieli', 'anunțuri active, direct de la proprietar', 'aktívnych inzerátov priamo od majiteľov')}</span>
+        <span class="search-count-text">{x('aktív hirdetés, közvetlenül a tulajdonostól', 'actieve advertenties, direct van de eigenaar', 'active listings, direct from the owner', 'aktive Inserate, direkt vom Eigentümer', 'annonces actives, en direct du propriétaire', 'anuncios activos, directamente del propietario', 'aktywnych ogłoszeń bezpośrednio od właścicieli', 'anunțuri active, direct de la proprietar', 'aktívnych inzerátov priamo od majiteľov', 'annunci attivi, direttamente dal proprietario', 'anúncios ativos, diretamente do proprietário', 'ενεργές αγγελίες, απευθείας από τον ιδιοκτήτη', 'aktivních inzerátů přímo od vlastníků', 'aktivnih oglasov neposredno od lastnikov', 'aktiva annonser, direkt från ägaren', 'aktive annoncer direkte fra ejeren', 'aktive annonser, direkte fra eieren', 'aktiivista ilmoitusta suoraan omistajalta', 'aktiivset kuulutust otse omanikult', 'aktīvi sludinājumi tieši no īpašnieka', 'aktyvūs skelbimai tiesiogiai iš savininko')}</span>
       </p>
     </HomeSearch>
   </section>
@@ -253,7 +253,7 @@ const quote = splitOpeningQuote(c.quote);
   {valuation && (
     <section class="valuation-slab slab reveal" aria-labelledby="valuation-slab-title">
       <div class="vs-copy">
-        <SectionHead eyebrow={x('Értékmeghatározás', 'Waardebepaling', 'Valuation', 'Bewertung', 'Estimation', 'Valoración', 'Wycena', 'Evaluare', 'Odhad ceny')} title={x('Mennyit ér\naz ingatlana?', 'Wat is uw woning\nwaard?', 'What is your\nproperty worth?', 'Was ist Ihre\nImmobilie wert?', 'Que vaut\nvotre bien\u202f?', '¿Cuánto vale\nsu inmueble?', 'Ile jest warta\nPaństwa nieruchomość?', 'Cât valorează\nproprietatea dumneavoastră?', 'Akú hodnotu má\nvaša nehnuteľnosť?')} size="large" />
+        <SectionHead eyebrow={x('Értékmeghatározás', 'Waardebepaling', 'Valuation', 'Bewertung', 'Estimation', 'Valoración', 'Wycena', 'Evaluare', 'Odhad ceny', 'Valutazione', 'Avaliação', 'Εκτίμηση', 'Odhad ceny', 'Ocena vrednosti', 'Värdering', 'Vurdering', 'Verdivurdering', 'Arvio', 'Hindamine', 'Novērtējums', 'Vertinimas')} title={x('Mennyit ér\naz ingatlana?', 'Wat is uw woning\nwaard?', 'What is your\nproperty worth?', 'Was ist Ihre\nImmobilie wert?', 'Que vaut\nvotre bien\u202f?', '¿Cuánto vale\nsu inmueble?', 'Ile jest warta\nPaństwa nieruchomość?', 'Cât valorează\nproprietatea dumneavoastră?', 'Akú hodnotu má\nvaša nehnuteľnosť?', 'Quanto vale il suo\nimmobile?', 'Quanto vale o seu\nimóvel?', 'Πόσο αξίζει\nτο ακίνητό σας;', 'Kolik má vaše\nnemovitost hodnotu?', 'Koliko je vredna\nvaša nepremičnina?', 'Vad är din\nfastighet värd?', 'Hvad er din\nejendom værd?', 'Hva er eiendommen\ndin verdt?', 'Paljonko kiinteistösi\non arvoltaan?', 'Kui palju on teie\nkinnisvara väärt?', 'Cik vērts ir\njūsu īpašums?', 'Kiek vertas\njūsų turtas?')} size="large" />
         <p class="vs-body">
           {x(
             'Adja meg, amit tud az ingatlanról: fotókat, alaprajzot, dokumentumokat is csatolhat. Munkatársunk ellenőrzi az eredményt, és e-mailben küldi. Tájékoztató becslés, nem hivatalos szakvélemény.',
@@ -264,12 +264,24 @@ const quote = splitOpeningQuote(c.quote);
             'Indíquenos lo que sabe del inmueble; puede adjuntar fotos, planos y documentos. Un miembro de nuestro equipo revisa el resultado y se lo envía por correo electrónico. Valoración orientativa, no una tasación oficial.',
             'Prosimy podać, co Państwo wiedzą o nieruchomości; można dołączyć zdjęcia, rzuty i dokumenty. Nasz pracownik sprawdzi wynik i prześle go e-mailem. Wycena ma charakter orientacyjny i nie jest operatem szacunkowym.',
             'Spuneți-ne ce știți despre proprietate; puteți atașa fotografii, planuri și documente. Un coleg verifică rezultatul și vi-l trimite prin e-mail. Evaluare orientativă, nu o evaluare oficială.',
-            'Napíšte nám, čo o nehnuteľnosti viete; môžete priložiť fotografie, pôdorysy a dokumenty. Náš kolega výsledok skontroluje a pošle vám ho e-mailom. Ide o orientačný odhad, nie o znalecký posudok.'
+            'Napíšte nám, čo o nehnuteľnosti viete; môžete priložiť fotografie, pôdorysy a dokumenty. Náš kolega výsledok skontroluje a pošle vám ho e-mailom. Ide o orientačný odhad, nie o znalecký posudok.',
+            'Ci dica ciò che sa dell’immobile; può allegare foto, planimetrie e documenti. Un membro del nostro team controlla il risultato e lo invia per e-mail. Ha valore puramente indicativo e non è una perizia ufficiale.',
+            'Diga-nos o que sabe sobre o imóvel; pode anexar fotografias, plantas e documentos. Um membro da nossa equipa verifica o resultado e envia-o por e-mail. É apenas indicativo, não é um relatório de avaliação oficial.',
+            'Πείτε μας ό,τι γνωρίζετε για το ακίνητο· μπορείτε να επισυνάψετε φωτογραφίες, κατόψεις και έγγραφα. Ένα μέλος της ομάδας μας ελέγχει το αποτέλεσμα και σας το στέλνει με email. Είναι μόνο ενδεικτικό και όχι επίσημη έκθεση εκτίμησης.',
+            'Řekněte nám, co o nemovitosti víte; můžete přiložit fotografie, půdorysy a dokumenty. Někdo z našeho týmu výsledek zkontroluje a pošle vám ho e-mailem. Jde pouze o orientační odhad, nikoli o úřední znalecký posudek.',
+            'Povejte nam, kar veste o nepremičnini; priložite lahko fotografije, tlorise in dokumente. Član naše ekipe preveri rezultat in vam ga pošlje po e-pošti. Ocena je le okvirna in ni uradno cenilno poročilo.',
+            'Berätta vad du vet om fastigheten; du kan bifoga foton, planritningar och dokument. Någon i vårt team kontrollerar resultatet och skickar det via mejl. Endast vägledande, inte en officiell värderingsrapport.',
+            'Fortæl os, hvad du ved om ejendommen; du kan vedhæfte fotos, plantegninger og dokumenter. En fra vores team kontrollerer resultatet og sender det på e-mail. Kun vejledende – ikke en officiel vurderingsrapport.',
+            'Fortell oss det du vet om eiendommen; du kan legge ved bilder, plantegninger og dokumenter. En i teamet vårt kontrollerer resultatet og sender det på e-post. Kun veiledende, ikke en offisiell takstrapport.',
+            'Kerro meille, mitä tiedät kiinteistöstä; voit liittää mukaan valokuvia, pohjapiirroksia ja asiakirjoja. Tiimimme jäsen tarkistaa tuloksen ja lähettää sen sähköpostitse. Arvio on suuntaa antava eikä virallinen arviolausunto.',
+            'Rääkige meile, mida te kinnisvara kohta teate; võite lisada fotosid, korruseplaane ja dokumente. Meie meeskonna liige kontrollib tulemuse ja saadab selle e-postiga. Hinnang on üksnes soovituslik, mitte ametlik hindamisaruanne.',
+            'Pastāstiet mums, ko zināt par īpašumu; varat pievienot fotoattēlus, plānus un dokumentus. Kāds no mūsu komandas pārbauda rezultātu un nosūta to e-pastā. Tas ir tikai orientējošs, nevis oficiāls vērtēšanas ziņojums.',
+            'Papasakokite, ką žinote apie turtą; galite pridėti nuotraukų, planų ir dokumentų. Mūsų komandos narys patikrina rezultatą ir atsiunčia jį el. paštu. Vertinimas yra tik orientacinis, tai nėra oficiali vertinimo ataskaita.'
           )}
         </p>
         <Button variant="dark" href={valuation.href} arrow>{valuation.label}</Button>
       </div>
-      <ul class="vs-tiers" aria-label={x('Értékmeghatározási csomagok', 'Waardebepalingspakketten', 'Valuation packages', 'Bewertungspakete', 'Forfaits d’estimation', 'Paquetes de valoración', 'Pakiety wyceny', 'Pachete de evaluare', 'Balíky odhadu ceny')}>
+      <ul class="vs-tiers" aria-label={x('Értékmeghatározási csomagok', 'Waardebepalingspakketten', 'Valuation packages', 'Bewertungspakete', 'Forfaits d’estimation', 'Paquetes de valoración', 'Pakiety wyceny', 'Pachete de evaluare', 'Balíky odhadu ceny', 'Pacchetti di valutazione', 'Pacotes de avaliação', 'Πακέτα εκτίμησης', 'Balíčky odhadu ceny', 'Paketi ocene vrednosti', 'Värderingspaket', 'Vurderingspakker', 'Verdivurderingspakker', 'Arviopaketit', 'Hindamispaketid', 'Novērtējuma paketes', 'Vertinimo paketai')}>
         {valuationTiers.map((tier) => (
           <li>
             <span class="vs-name">{tier.name}</span>
@@ -443,7 +455,7 @@ const quote = splitOpeningQuote(c.quote);
             class="reveal"
           />
           <Button variant="outline" href={path(locale, 'blog')} class="latest-all" arrow>
-            {x('Összes cikk', 'Alle artikelen', 'All articles', 'Alle Artikel', 'Tous les articles', 'Todos los artículos', 'Wszystkie artykuły', 'Toate articolele', 'Všetky články')}
+            {x('Összes cikk', 'Alle artikelen', 'All articles', 'Alle Artikel', 'Tous les articles', 'Todos los artículos', 'Wszystkie artykuły', 'Toate articolele', 'Všetky články', 'Tutti gli articoli', 'Todos os artigos', 'Όλα τα άρθρα', 'Všechny články', 'Vsi članki', 'Alla artiklar', 'Alle artikler', 'Alle artikler', 'Kaikki artikkelit', 'Kõik artiklid', 'Visi raksti', 'Visi straipsniai')}
           </Button>
         </div>
         <div class:list={['latest-grid', `count-${latest.length}`]}>
@@ -456,11 +468,11 @@ const quote = splitOpeningQuote(c.quote);
   }
 
   {/* ── NEWSLETTER ── a quiet linen slab, same family as the valuation slab */}
-  <section class="news-slab slab reveal" aria-label={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information', 'Boletín', 'Newsletter', 'Newsletter', 'Newsletter')}>
+  <section class="news-slab slab reveal" aria-label={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information', 'Boletín', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'E-novice', 'Nyhetsbrev', 'Nyhedsbrev', 'Nyhetsbrev', 'Uutiskirje', 'Uudiskiri', 'Jaunumu vēstule', 'Naujienlaiškis')}>
     <div class="ns-copy">
       <SectionHead
-        eyebrow={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information', 'Boletín', 'Newsletter', 'Newsletter', 'Newsletter')}
-        title={x('Új ingatlanok,\nelsőként.', 'Nieuw aanbod,\nals eerste.', 'New listings,\nbefore anyone else.', 'Neue Immobilien,\nals Erste.', 'Les nouveaux biens,\nen premier.', 'Los nuevos inmuebles,\nantes que nadie.', 'Nowe nieruchomości\nprzed wszystkimi.', 'Proprietățile noi,\nînaintea tuturor.', 'Nové nehnuteľnosti\nskôr ako ostatní.')}
+        eyebrow={x('Hírlevél', 'Nieuwsbrief', 'Newsletter', 'Newsletter', 'Lettre d’information', 'Boletín', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'Newsletter', 'E-novice', 'Nyhetsbrev', 'Nyhedsbrev', 'Nyhetsbrev', 'Uutiskirje', 'Uudiskiri', 'Jaunumu vēstule', 'Naujienlaiškis')}
+        title={x('Új ingatlanok,\nelsőként.', 'Nieuw aanbod,\nals eerste.', 'New listings,\nbefore anyone else.', 'Neue Immobilien,\nals Erste.', 'Les nouveaux biens,\nen premier.', 'Los nuevos inmuebles,\nantes que nadie.', 'Nowe nieruchomości\nprzed wszystkimi.', 'Proprietățile noi,\nînaintea tuturor.', 'Nové nehnuteľnosti\nskôr ako ostatní.', 'Nuovi annunci,\nprima di tutti.', 'Novos anúncios,\nantes de todos.', 'Νέες αγγελίες,\nπριν από όλους.', 'Nové inzeráty\ndříve než ostatní.', 'Novi oglasi,\npred vsemi drugimi.', 'Nya annonser,\nföre alla andra.', 'Nye annoncer,\nfør alle andre.', 'Nye annonser,\nfør alle andre.', 'Uudet ilmoitukset\nensimmäisten joukossa.', 'Uued kuulutused\nenne kõiki teisi.', 'Jauni sludinājumi\npirms visiem citiem.', 'Nauji skelbimai\nanksčiau už kitus.')}
         size="large"
       />
       <p class="ns-body">
@@ -473,7 +485,19 @@ const quote = splitOpeningQuote(c.quote);
           'Una vez al mes, los nuevos inmuebles y breves noticias del mercado, en español. Sin correo basura, y puede darse de baja con un clic.',
           'Raz w miesiącu nowe nieruchomości i krótkie wiadomości z rynku, po polsku. Bez spamu, a z subskrypcji można zrezygnować jednym kliknięciem.',
           'O dată pe lună, proprietățile noi și scurte știri de pe piață, în limba română. Fără mesaje nedorite, iar dezabonarea se face cu un singur clic.',
-          'Raz mesačne nové nehnuteľnosti a krátke správy z trhu, po slovensky. Žiadny spam a odhlásiť sa môžete jedným kliknutím.'
+          'Raz mesačne nové nehnuteľnosti a krátke správy z trhu, po slovensky. Žiadny spam a odhlásiť sa môžete jedným kliknutím.',
+          'Una volta al mese: gli annunci più recenti e brevi notizie dal mercato, in italiano. Niente posta indesiderata, e può annullare l’iscrizione con un clic.',
+          'Uma vez por mês: os anúncios mais recentes e breves notícias do mercado, em português. Sem correio indesejado, e pode cancelar a subscrição com um clique.',
+          'Μία φορά τον μήνα: οι νεότερες αγγελίες και σύντομα νέα της αγοράς, στα ελληνικά. Χωρίς ανεπιθύμητα μηνύματα, και μπορείτε να διαγραφείτε με ένα κλικ.',
+          'Jednou měsíčně nejnovější inzeráty a krátké zprávy z trhu, česky. Žádný spam a odhlásit se můžete jedním kliknutím.',
+          'Enkrat na mesec najnovejši oglasi in kratke novice s trga, v slovenščini. Brez neželene pošte, odjavite pa se lahko z enim klikom.',
+          'En gång i månaden: de senaste annonserna och korta marknadsnyheter, på svenska. Ingen skräppost, och du avregistrerar dig med ett klick.',
+          'Én gang om måneden: de nyeste annoncer og korte markedsnyheder, på dansk. Ingen spam, og du kan afmelde dig med ét klik.',
+          'Én gang i måneden: de nyeste annonsene og korte markedsnyheter, på norsk. Ingen søppelpost, og du kan melde deg av med ett klikk.',
+          'Kerran kuukaudessa uusimmat ilmoitukset ja lyhyet markkinauutiset suomeksi. Ei roskapostia, ja tilauksen voi perua yhdellä napsautuksella.',
+          'Kord kuus uusimad kuulutused ja lühikesed turuuudised eesti keeles. Rämpsposti ei saada ning tellimusest saate loobuda ühe klõpsuga.',
+          'Reizi mēnesī – jaunākie sludinājumi un īsas tirgus ziņas latviešu valodā. Bez nevēlama pasta, un abonementu varat atcelt ar vienu klikšķi.',
+          'Kartą per mėnesį – naujausi skelbimai ir trumpos rinkos naujienos lietuvių kalba. Jokio brukalo, o prenumeratos galite atsisakyti vienu paspaudimu.'
         )}
       </p>
     </div>

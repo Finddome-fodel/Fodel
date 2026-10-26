@@ -11,7 +11,19 @@
         "es": "Obra nueva",
         "pl": "Nowe budownictwo",
         "ro": "Construcție nouă",
-        "sk": "Novostavba"
+        "sk": "Novostavba",
+        "it": "Di nuova costruzione",
+        "pt": "Construção nova",
+        "el": "Νεόδμητο",
+        "cs": "Novostavba",
+        "sl": "Novogradnja",
+        "sv": "Nybyggt",
+        "da": "Nybyggeri",
+        "no": "Nybygg",
+        "fi": "Uudiskohde",
+        "et": "Uusehitis",
+        "lv": "Jaunbūve",
+        "lt": "Naujos statybos"
       }
     },
     {
@@ -25,7 +37,19 @@
         "es": "Como nuevo",
         "pl": "Jak nowy",
         "ro": "Ca nou",
-        "sk": "Ako nový"
+        "sk": "Ako nový",
+        "it": "Come nuovo",
+        "pt": "Como novo",
+        "el": "Σαν καινούργιο",
+        "cs": "Jako nový",
+        "sl": "Kot novo",
+        "sv": "Som nytt",
+        "da": "Som ny",
+        "no": "Som ny",
+        "fi": "Kuin uusi",
+        "et": "Nagu uus",
+        "lv": "Kā jauns",
+        "lt": "Kaip naujas"
       }
     },
     {
@@ -39,7 +63,19 @@
         "es": "Reformado",
         "pl": "Po remoncie",
         "ro": "Renovat",
-        "sk": "Zrekonštruovaný"
+        "sk": "Zrekonštruovaný",
+        "it": "Ristrutturato",
+        "pt": "Renovado",
+        "el": "Ανακαινισμένο",
+        "cs": "Po rekonstrukci",
+        "sl": "Prenovljeno",
+        "sv": "Renoverad",
+        "da": "Renoveret",
+        "no": "Renovert",
+        "fi": "Remontoitu",
+        "et": "Renoveeritud",
+        "lv": "Renovēts",
+        "lt": "Renovuotas"
       }
     },
     {
@@ -53,7 +89,19 @@
         "es": "Buen estado",
         "pl": "Dobry stan",
         "ro": "Stare bună",
-        "sk": "Dobrý stav"
+        "sk": "Dobrý stav",
+        "it": "In buono stato",
+        "pt": "Em bom estado",
+        "el": "Σε καλή κατάσταση",
+        "cs": "V dobrém stavu",
+        "sl": "V dobrem stanju",
+        "sv": "Gott skick",
+        "da": "God stand",
+        "no": "God stand",
+        "fi": "Hyvä kunto",
+        "et": "Heas seisukorras",
+        "lv": "Labā stāvoklī",
+        "lt": "Geros būklės"
       }
     },
     {
@@ -67,7 +115,19 @@
         "es": "Estado aceptable",
         "pl": "Przeciętny stan",
         "ro": "Stare medie",
-        "sk": "Priemerný stav"
+        "sk": "Priemerný stav",
+        "it": "In condizioni medie",
+        "pt": "Estado razoável",
+        "el": "Μέτρια κατάσταση",
+        "cs": "Průměrný stav",
+        "sl": "Povprečno stanje",
+        "sv": "Normalskick",
+        "da": "Middel stand",
+        "no": "Middels stand",
+        "fi": "Keskinkertainen kunto",
+        "et": "Keskmine seisukord",
+        "lv": "Vidējs stāvoklis",
+        "lt": "Vidutinė būklė"
       }
     },
     {
@@ -81,7 +141,19 @@
         "es": "Para reformar",
         "pl": "Do remontu",
         "ro": "Necesită renovare",
-        "sk": "Na rekonštrukciu"
+        "sk": "Na rekonštrukciu",
+        "it": "Da ristrutturare",
+        "pt": "Para renovar",
+        "el": "Χρειάζεται ανακαίνιση",
+        "cs": "K rekonstrukci",
+        "sl": "Potrebno prenove",
+        "sv": "Renoveringsbehov",
+        "da": "Trænger til renovering",
+        "no": "Oppussingsbehov",
+        "fi": "Remontin tarpeessa",
+        "et": "Vajab renoveerimist",
+        "lv": "Nepieciešama renovācija",
+        "lt": "Reikia renovuoti"
       }
     },
     {
@@ -95,7 +167,19 @@
         "es": "Mal estado / ruina",
         "pl": "Zły stan / ruina",
         "ro": "Stare proastă / ruină",
-        "sk": "Zlý stav / ruina"
+        "sk": "Zlý stav / ruina",
+        "it": "In cattive condizioni / rudere",
+        "pt": "Mau estado / ruína",
+        "el": "Κακή κατάσταση / ερείπιο",
+        "cs": "Špatný stav / ruina",
+        "sl": "Slabo stanje / ruševina",
+        "sv": "Dåligt skick / ruin",
+        "da": "Dårlig stand / ruin",
+        "no": "Dårlig stand / ruin",
+        "fi": "Huono kunto / raunio",
+        "et": "Halb seisukord / vare",
+        "lv": "Slikts stāvoklis / drupas",
+        "lt": "Prasta būklė / griuvėsiai"
       }
     },
     {
@@ -109,7 +193,19 @@
         "es": "Obra sin terminar",
         "pl": "Budowa niedokończona",
         "ro": "Construcție nefinalizată",
-        "sk": "Nedokončená stavba"
+        "sk": "Nedokončená stavba",
+        "it": "Costruzione incompiuta",
+        "pt": "Construção inacabada",
+        "el": "Ημιτελής κατασκευή",
+        "cs": "Nedokončená stavba",
+        "sl": "Nedokončana gradnja",
+        "sv": "Ofullbordat bygge",
+        "da": "Ufærdigt byggeri",
+        "no": "Uferdig bygg",
+        "fi": "Keskeneräinen rakennus",
+        "et": "Pooleli ehitis",
+        "lv": "Nepabeigta būvniecība",
+        "lt": "Nebaigta statyba"
       }
     },
     {
@@ -123,7 +219,19 @@
         "es": "Desconocido",
         "pl": "Nieznany",
         "ro": "Necunoscut",
-        "sk": "Neznámy"
+        "sk": "Neznámy",
+        "it": "Sconosciuto",
+        "pt": "Desconhecido",
+        "el": "Άγνωστο",
+        "cs": "Neznámé",
+        "sl": "Neznano",
+        "sv": "Okänt",
+        "da": "Ukendt",
+        "no": "Ukjent",
+        "fi": "Tuntematon",
+        "et": "Teadmata",
+        "lv": "Nezināms",
+        "lt": "Nežinoma"
       }
     }
   ],
@@ -139,7 +247,19 @@
         "es": "Calefacción de gas",
         "pl": "Ogrzewanie gazowe",
         "ro": "Încălzire pe gaz",
-        "sk": "Plynové kúrenie"
+        "sk": "Plynové kúrenie",
+        "it": "Riscaldamento a gas",
+        "pt": "Aquecimento a gás",
+        "el": "Θέρμανση με αέριο",
+        "cs": "Plynové vytápění",
+        "sl": "Plinsko ogrevanje",
+        "sv": "Gasuppvärmning",
+        "da": "Gasvarme",
+        "no": "Gassoppvarming",
+        "fi": "Kaasulämmitys",
+        "et": "Gaasiküte",
+        "lv": "Gāzes apkure",
+        "lt": "Dujinis šildymas"
       }
     },
     {
@@ -153,7 +273,19 @@
         "es": "Calefacción eléctrica",
         "pl": "Ogrzewanie elektryczne",
         "ro": "Încălzire electrică",
-        "sk": "Elektrické kúrenie"
+        "sk": "Elektrické kúrenie",
+        "it": "Riscaldamento elettrico",
+        "pt": "Aquecimento elétrico",
+        "el": "Ηλεκτρική θέρμανση",
+        "cs": "Elektrické vytápění",
+        "sl": "Električno ogrevanje",
+        "sv": "Elvärme",
+        "da": "Elvarme",
+        "no": "Elektrisk oppvarming",
+        "fi": "Sähkölämmitys",
+        "et": "Elektriküte",
+        "lv": "Elektriskā apkure",
+        "lt": "Elektrinis šildymas"
       }
     },
     {
@@ -167,7 +299,19 @@
         "es": "Leña y combustibles sólidos",
         "pl": "Drewno i paliwa stałe",
         "ro": "Lemne și combustibil solid",
-        "sk": "Drevo a tuhé palivo"
+        "sk": "Drevo a tuhé palivo",
+        "it": "Legna e combustibile solido",
+        "pt": "Lenha e combustível sólido",
+        "el": "Ξύλα και στερεά καύσιμα",
+        "cs": "Dřevo a tuhá paliva",
+        "sl": "Drva in trdna goriva",
+        "sv": "Ved och fasta bränslen",
+        "da": "Træ og fast brændsel",
+        "no": "Ved og fast brensel",
+        "fi": "Puu ja kiinteä polttoaine",
+        "et": "Puit ja tahke kütus",
+        "lv": "Malka un cietais kurināmais",
+        "lt": "Malkos ir kietasis kuras"
       }
     },
     {
@@ -181,7 +325,19 @@
         "es": "Bomba de calor",
         "pl": "Pompa ciepła",
         "ro": "Pompă de căldură",
-        "sk": "Tepelné čerpadlo"
+        "sk": "Tepelné čerpadlo",
+        "it": "Pompa di calore",
+        "pt": "Bomba de calor",
+        "el": "Αντλία θερμότητας",
+        "cs": "Tepelné čerpadlo",
+        "sl": "Toplotna črpalka",
+        "sv": "Värmepump",
+        "da": "Varmepumpe",
+        "no": "Varmepumpe",
+        "fi": "Lämpöpumppu",
+        "et": "Soojuspump",
+        "lv": "Siltumsūknis",
+        "lt": "Šilumos siurblys"
       }
     },
     {
@@ -195,7 +351,19 @@
         "es": "Calefacción urbana",
         "pl": "Ogrzewanie miejskie",
         "ro": "Termoficare",
-        "sk": "Diaľkové vykurovanie"
+        "sk": "Diaľkové vykurovanie",
+        "it": "Teleriscaldamento",
+        "pt": "Aquecimento urbano",
+        "el": "Τηλεθέρμανση",
+        "cs": "Dálkové vytápění",
+        "sl": "Daljinsko ogrevanje",
+        "sv": "Fjärrvärme",
+        "da": "Fjernvarme",
+        "no": "Fjernvarme",
+        "fi": "Kaukolämpö",
+        "et": "Kaugküte",
+        "lv": "Centralizētā siltumapgāde",
+        "lt": "Centralizuotas šildymas"
       }
     },
     {
@@ -209,7 +377,19 @@
         "es": "Calefacción de gasóleo",
         "pl": "Ogrzewanie olejowe",
         "ro": "Încălzire cu motorină",
-        "sk": "Vykurovanie vykurovacím olejom"
+        "sk": "Vykurovanie vykurovacím olejom",
+        "it": "Riscaldamento a gasolio",
+        "pt": "Aquecimento a gasóleo",
+        "el": "Θέρμανση πετρελαίου",
+        "cs": "Vytápění topným olejem",
+        "sl": "Ogrevanje na kurilno olje",
+        "sv": "Oljeuppvärmning",
+        "da": "Oliefyr",
+        "no": "Oljefyring",
+        "fi": "Öljylämmitys",
+        "et": "Õliküte",
+        "lv": "Šķidrā kurināmā apkure",
+        "lt": "Skystojo kuro šildymas"
       }
     },
     {
@@ -223,7 +403,19 @@
         "es": "Calefacción solar",
         "pl": "Ogrzewanie solarne",
         "ro": "Încălzire solară",
-        "sk": "Solárne vykurovanie"
+        "sk": "Solárne vykurovanie",
+        "it": "Riscaldamento solare",
+        "pt": "Aquecimento solar",
+        "el": "Ηλιακή θέρμανση",
+        "cs": "Solární vytápění",
+        "sl": "Solarno ogrevanje",
+        "sv": "Solvärme",
+        "da": "Solvarme",
+        "no": "Solvarme",
+        "fi": "Aurinkolämpö",
+        "et": "Päikeseküte",
+        "lv": "Saules apkure",
+        "lt": "Saulės šildymas"
       }
     },
     {
@@ -237,7 +429,19 @@
         "es": "Sistema de calefacción mixto",
         "pl": "Mieszany system ogrzewania",
         "ro": "Sistem de încălzire mixt",
-        "sk": "Kombinovaný systém vykurovania"
+        "sk": "Kombinovaný systém vykurovania",
+        "it": "Sistema di riscaldamento misto",
+        "pt": "Sistema de aquecimento misto",
+        "el": "Μικτό σύστημα θέρμανσης",
+        "cs": "Kombinované vytápění",
+        "sl": "Kombinirano ogrevanje",
+        "sv": "Kombinerat värmesystem",
+        "da": "Kombineret varmesystem",
+        "no": "Kombinert varmesystem",
+        "fi": "Yhdistelmälämmitys",
+        "et": "Kombineeritud küttesüsteem",
+        "lv": "Kombinēta apkures sistēma",
+        "lt": "Mišri šildymo sistema"
       }
     },
     {
@@ -251,7 +455,19 @@
         "es": "Otro",
         "pl": "Inne",
         "ro": "Altele",
-        "sk": "Iné"
+        "sk": "Iné",
+        "it": "Altro",
+        "pt": "Outro",
+        "el": "Άλλο",
+        "cs": "Jiné",
+        "sl": "Drugo",
+        "sv": "Annat",
+        "da": "Andet",
+        "no": "Annet",
+        "fi": "Muu",
+        "et": "Muu",
+        "lv": "Cits",
+        "lt": "Kita"
       }
     },
     {
@@ -265,7 +481,19 @@
         "es": "Sin calefacción",
         "pl": "Brak ogrzewania",
         "ro": "Fără încălzire",
-        "sk": "Bez vykurovania"
+        "sk": "Bez vykurovania",
+        "it": "Senza riscaldamento",
+        "pt": "Sem aquecimento",
+        "el": "Χωρίς θέρμανση",
+        "cs": "Bez vytápění",
+        "sl": "Brez ogrevanja",
+        "sv": "Ingen uppvärmning",
+        "da": "Ingen opvarmning",
+        "no": "Ingen oppvarming",
+        "fi": "Ei lämmitystä",
+        "et": "Küte puudub",
+        "lv": "Bez apkures",
+        "lt": "Be šildymo"
       }
     },
     {
@@ -279,7 +507,19 @@
         "es": "Desconocido",
         "pl": "Nieznany",
         "ro": "Necunoscut",
-        "sk": "Neznámy"
+        "sk": "Neznámy",
+        "it": "Sconosciuto",
+        "pt": "Desconhecido",
+        "el": "Άγνωστο",
+        "cs": "Neznámé",
+        "sl": "Neznano",
+        "sv": "Okänt",
+        "da": "Ukendt",
+        "no": "Ukjent",
+        "fi": "Tuntematon",
+        "et": "Teadmata",
+        "lv": "Nezināms",
+        "lt": "Nežinoma"
       }
     }
   ],
@@ -295,7 +535,19 @@
         "es": "Ladrillo",
         "pl": "Cegła",
         "ro": "Cărămidă",
-        "sk": "Tehla"
+        "sk": "Tehla",
+        "it": "Mattoni",
+        "pt": "Tijolo",
+        "el": "Τούβλο",
+        "cs": "Cihla",
+        "sl": "Opeka",
+        "sv": "Tegel",
+        "da": "Mursten",
+        "no": "Tegl",
+        "fi": "Tiili",
+        "et": "Telliskivi",
+        "lv": "Ķieģelis",
+        "lt": "Plytos"
       }
     },
     {
@@ -309,7 +561,19 @@
         "es": "Adobe",
         "pl": "Glina (adobe)",
         "ro": "Chirpici",
-        "sk": "Nepálená tehla"
+        "sk": "Nepálená tehla",
+        "it": "Mattoni crudi (adobe)",
+        "pt": "Adobe",
+        "el": "Πλίνθοι (ωμόπλινθοι)",
+        "cs": "Nepálené cihly",
+        "sl": "Nežgana opeka",
+        "sv": "Lersten (adobe)",
+        "da": "Lersten",
+        "no": "Leirstein (adobe)",
+        "fi": "Savitiili",
+        "et": "Savitellis",
+        "lv": "Mālu ķieģeļi",
+        "lt": "Molio plytos"
       }
     },
     {
@@ -323,7 +587,19 @@
         "es": "Mampostería mixta",
         "pl": "Mur mieszany",
         "ro": "Zidărie mixtă",
-        "sk": "Zmiešané murivo"
+        "sk": "Zmiešané murivo",
+        "it": "Muratura mista",
+        "pt": "Alvenaria mista",
+        "el": "Μικτή τοιχοποιία",
+        "cs": "Smíšené zdivo",
+        "sl": "Mešana zidava",
+        "sv": "Blandat murverk",
+        "da": "Blandet murværk",
+        "no": "Blandet murverk",
+        "fi": "Sekamuuraus",
+        "et": "Segamüüritis",
+        "lv": "Jaukts mūris",
+        "lt": "Mišrus mūras"
       }
     },
     {
@@ -337,7 +613,19 @@
         "es": "Hormigón / paneles",
         "pl": "Beton / wielka płyta",
         "ro": "Beton / panouri",
-        "sk": "Betón / panel"
+        "sk": "Betón / panel",
+        "it": "Calcestruzzo / pannelli",
+        "pt": "Betão / painéis",
+        "el": "Σκυρόδεμα / πάνελ",
+        "cs": "Beton / panel",
+        "sl": "Beton / montažni paneli",
+        "sv": "Betong / element",
+        "da": "Beton / elementer",
+        "no": "Betong / element",
+        "fi": "Betoni / elementti",
+        "et": "Betoon / paneel",
+        "lv": "Betons / paneļi",
+        "lt": "Betonas / plokštės"
       }
     },
     {
@@ -351,7 +639,19 @@
         "es": "Madera / construcción ligera",
         "pl": "Drewno / konstrukcja lekka",
         "ro": "Lemn / structură ușoară",
-        "sk": "Drevo / ľahká konštrukcia"
+        "sk": "Drevo / ľahká konštrukcia",
+        "it": "Legno / costruzione leggera",
+        "pt": "Madeira / construção ligeira",
+        "el": "Ξύλο / ελαφριά κατασκευή",
+        "cs": "Dřevostavba / lehká konstrukce",
+        "sl": "Les / lahka gradnja",
+        "sv": "Trä / lätt konstruktion",
+        "da": "Træ / let konstruktion",
+        "no": "Tre / lett konstruksjon",
+        "fi": "Puu / kevytrakenne",
+        "et": "Puit / kergkonstruktsioon",
+        "lv": "Koks / vieglā konstrukcija",
+        "lt": "Mediena / lengva konstrukcija"
       }
     },
     {
@@ -365,7 +665,19 @@
         "es": "Piedra",
         "pl": "Kamień",
         "ro": "Piatră",
-        "sk": "Kameň"
+        "sk": "Kameň",
+        "it": "Pietra",
+        "pt": "Pedra",
+        "el": "Πέτρα",
+        "cs": "Kámen",
+        "sl": "Kamen",
+        "sv": "Sten",
+        "da": "Sten",
+        "no": "Stein",
+        "fi": "Kivi",
+        "et": "Kivi",
+        "lv": "Akmens",
+        "lt": "Akmuo"
       }
     },
     {
@@ -379,7 +691,19 @@
         "es": "Estructura de acero",
         "pl": "Konstrukcja stalowa",
         "ro": "Structură metalică",
-        "sk": "Oceľová konštrukcia"
+        "sk": "Oceľová konštrukcia",
+        "it": "Struttura in acciaio",
+        "pt": "Estrutura metálica",
+        "el": "Μεταλλικός σκελετός",
+        "cs": "Ocelová konstrukce",
+        "sl": "Jeklena konstrukcija",
+        "sv": "Stålstomme",
+        "da": "Stålkonstruktion",
+        "no": "Stålkonstruksjon",
+        "fi": "Teräsrunko",
+        "et": "Teraskarkass",
+        "lv": "Tērauda karkass",
+        "lt": "Plieninis karkasas"
       }
     },
     {
@@ -393,7 +717,19 @@
         "es": "Otro",
         "pl": "Inne",
         "ro": "Altele",
-        "sk": "Iné"
+        "sk": "Iné",
+        "it": "Altro",
+        "pt": "Outro",
+        "el": "Άλλο",
+        "cs": "Jiné",
+        "sl": "Drugo",
+        "sv": "Annat",
+        "da": "Andet",
+        "no": "Annet",
+        "fi": "Muu",
+        "et": "Muu",
+        "lv": "Cits",
+        "lt": "Kita"
       }
     },
     {
@@ -407,7 +743,19 @@
         "es": "Desconocido",
         "pl": "Nieznany",
         "ro": "Necunoscut",
-        "sk": "Neznámy"
+        "sk": "Neznámy",
+        "it": "Sconosciuto",
+        "pt": "Desconhecido",
+        "el": "Άγνωστο",
+        "cs": "Neznámé",
+        "sl": "Neznano",
+        "sv": "Okänt",
+        "da": "Ukendt",
+        "no": "Ukjent",
+        "fi": "Tuntematon",
+        "et": "Teadmata",
+        "lv": "Nezināms",
+        "lt": "Nežinoma"
       }
     }
   ]

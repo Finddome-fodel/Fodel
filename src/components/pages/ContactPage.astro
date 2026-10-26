@@ -98,7 +98,7 @@ const weekdayHours = officeHours(COMPANY.hours, locale);
                 </svg>
               </span>
               <span class="tile-label">WhatsApp</span>
-              <span class="tile-value">{x('Írjon nekünk', 'Stuur ons een bericht', 'Write to us', 'Schreiben Sie uns', 'Écrivez-nous', 'Escríbanos', 'Napisz do nas', 'Scrieți-ne', 'Napíšte nám')}</span>
+              <span class="tile-value">{x('Írjon nekünk', 'Stuur ons een bericht', 'Write to us', 'Schreiben Sie uns', 'Écrivez-nous', 'Escríbanos', 'Napisz do nas', 'Scrieți-ne', 'Napíšte nám', 'Ci scriva', 'Escreva-nos', 'Γράψτε μας', 'Napište nám', 'Pišite nam', 'Skriv till oss', 'Skriv til os', 'Skriv til oss', 'Kirjoita meille', 'Kirjutage meile', 'Rakstiet mums', 'Parašykite mums')}</span>
               <span class="tile-note num">{COMPANY.whatsapp}</span>
             </a>
           </li>
@@ -126,7 +126,7 @@ const weekdayHours = officeHours(COMPANY.hours, locale);
                 <circle cx="10" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4" />
               </svg>
             </span>
-            <span class="tile-label">{x('Cím', 'Adres', 'Address', 'Adresse', 'Adresse', 'Dirección', 'Adres', 'Adresă', 'Adresa')}</span>
+            <span class="tile-label">{x('Cím', 'Adres', 'Address', 'Adresse', 'Adresse', 'Dirección', 'Adres', 'Adresă', 'Adresa', 'Indirizzo', 'Morada', 'Διεύθυνση', 'Adresa', 'Naslov', 'Adress', 'Adresse', 'Adresse', 'Osoite', 'Aadress', 'Adrese', 'Adresas')}</span>
             <span class="tile-value tile-address">
               {COMPANY.names.legal} · {COMPANY.address.street}, {COMPANY.address.postalCode} {COMPANY.address.city}, {countryName(COMPANY.address.countryCode, locale)}
             </span>
@@ -155,8 +155,8 @@ const weekdayHours = officeHours(COMPANY.hours, locale);
           <Field
             locale={locale}
             name="callTime"
-            label={x('Mikor hívhatjuk?', 'Wanneer kunnen wij u bellen?', 'When can we call you?', 'Wann können wir Sie anrufen?', 'Quand pouvons-nous vous appeler\u202f?', '¿Cuándo podemos llamarle?', 'Kiedy możemy do Państwa zadzwonić?', 'Când vă putem suna?', 'Kedy vám môžeme zavolať?')}
-            placeholder={x('pl. hétköznap délután', 'bijv. doordeweeks in de middag', 'e.g. weekday afternoons', 'z. B. werktags nachmittags', 'p. ex. en semaine l’après-midi', 'p. ej., por las tardes entre semana', 'np. w dni powszednie po południu', 'de ex. în zilele lucrătoare, după-amiaza', 'napr. cez pracovné dni popoludní')}
+            label={x('Mikor hívhatjuk?', 'Wanneer kunnen wij u bellen?', 'When can we call you?', 'Wann können wir Sie anrufen?', 'Quand pouvons-nous vous appeler\u202f?', '¿Cuándo podemos llamarle?', 'Kiedy możemy do Państwa zadzwonić?', 'Când vă putem suna?', 'Kedy vám môžeme zavolať?', 'Quando possiamo chiamarla?', 'Quando lhe podemos ligar?', 'Πότε μπορούμε να σας καλέσουμε;', 'Kdy vám můžeme zavolat?', 'Kdaj vas lahko pokličemo?', 'När kan vi ringa dig?', 'Hvornår må vi ringe til dig?', 'Når kan vi ringe deg?', 'Milloin voimme soittaa sinulle?', 'Millal võime teile helistada?', 'Kad varam jums piezvanīt?', 'Kada galime jums paskambinti?')}
+            placeholder={x('pl. hétköznap délután', 'bijv. doordeweeks in de middag', 'e.g. weekday afternoons', 'z. B. werktags nachmittags', 'p. ex. en semaine l’après-midi', 'p. ej., por las tardes entre semana', 'np. w dni powszednie po południu', 'de ex. în zilele lucrătoare, după-amiaza', 'napr. cez pracovné dni popoludní', 'ad es. nei pomeriggi feriali', 'p. ex., à tarde, em dias úteis', 'π.χ. καθημερινές το απόγευμα', 'např. ve všední dny odpoledne', 'npr. med tednom popoldne', 't.ex. vardagar på eftermiddagen', 'f.eks. hverdage om eftermiddagen', 'f.eks. hverdager på ettermiddagen', 'esim. arkisin iltapäivällä', 'nt tööpäeviti pärastlõunal', 'piem., darbdienās pēcpusdienā', 'pvz., darbo dienomis po pietų')}
             span="full"
           />
           <Field

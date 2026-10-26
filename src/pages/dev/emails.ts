@@ -38,7 +38,15 @@ const SAMPLE_TOKEN = 'a'.repeat(64);
 const sampleUrl = (l: Locale) => `${SITE_URL}/${l}/${l === 'hu' ? 'haz-elado' : 'house-for-sale'}-${SAMPLE_REF}/`;
 
 /** One sample sentence per language: `say(l)(hu, nl, en, de, fr)`. */
-const say = (locale: Locale) => localizer(locale);
+/**
+ * Sample values (dates, amounts, remarks) written for the first nine languages;
+ * the newer languages show the English sample text, which is enough for a
+ * preview of the layout.
+ */
+const say = (locale: Locale) => {
+  const pick = localizer(locale);
+  return (...nine: string[]) => (pick as (...all: string[]) => string)(...nine, ...Array<string>(12).fill(nine[2]));
+};
 const TITLES: Record<Locale, string> = {
   hu: SAMPLE_TITLE,
   nl: 'Gerenoveerde boerderij in het Balatonhoogland',
@@ -49,6 +57,18 @@ const TITLES: Record<Locale, string> = {
   pl: 'Odnowione gospodarstwo na Wyżynie Balatońskiej',
   ro: 'Fermă renovată în zona deluroasă a Balatonului',
   sk: 'Zrekonštruovaná farma na Balatonskej vrchovine',
+  it: 'Casale ristrutturato sull’altopiano del Balaton',
+  pt: 'Casa de campo renovada nas terras altas do Balaton',
+  el: 'Ανακαινισμένη αγροικία στα υψίπεδα του Μπάλατον',
+  cs: 'Zrekonstruovaný statek na Balatonské vrchovině',
+  sl: 'Prenovljena kmečka hiša v Blatenskem višavju',
+  sv: 'Renoverad bondgård i Balatonhöglandet',
+  da: 'Renoveret stuehus i Balaton-højlandet',
+  no: 'Renovert våningshus i Balaton-høylandet',
+  fi: 'Remontoitu maalaistalo Balatonin ylängöllä',
+  et: 'Renoveeritud talumaja Balatoni kõrgustikul',
+  lv: 'Renovēta lauku māja Balatona augstienē',
+  lt: 'Renovuota sodyba Balatono aukštumose',
 };
 
 /**
@@ -102,6 +122,66 @@ const SAMPLE_ORDER: Record<Locale, { label: string; amount: string }[]> = {
     { label: 'Inzerát — 12 mesiacov', amount: '129 €' },
     { label: 'Preklad — 2 jazyky', amount: '50 €' },
     { label: 'Videoprezentácia', amount: '36 €' },
+  ],
+  it: [
+    { label: 'Annuncio — 12 mesi', amount: '129 €' },
+    { label: 'Traduzione — 2 lingue', amount: '50 €' },
+    { label: 'Presentazione video', amount: '36 €' },
+  ],
+  pt: [
+    { label: 'Anúncio — 12 meses', amount: '129 €' },
+    { label: 'Tradução — 2 línguas', amount: '50 €' },
+    { label: 'Apresentação em vídeo', amount: '36 €' },
+  ],
+  el: [
+    { label: 'Αγγελία — 12 μήνες', amount: '129 €' },
+    { label: 'Μετάφραση — 2 γλώσσες', amount: '50 €' },
+    { label: 'Παρουσίαση με βίντεο', amount: '36 €' },
+  ],
+  cs: [
+    { label: 'Inzerát — 12 měsíců', amount: '129 €' },
+    { label: 'Překlad — 2 jazyky', amount: '50 €' },
+    { label: 'Videoprezentace', amount: '36 €' },
+  ],
+  sl: [
+    { label: 'Oglas — 12 mesecev', amount: '129 €' },
+    { label: 'Prevod — 2 jezika', amount: '50 €' },
+    { label: 'Video predstavitev', amount: '36 €' },
+  ],
+  sv: [
+    { label: 'Annons — 12 månader', amount: '129 €' },
+    { label: 'Översättning — 2 språk', amount: '50 €' },
+    { label: 'Videopresentation', amount: '36 €' },
+  ],
+  da: [
+    { label: 'Annonce — 12 måneder', amount: '129 €' },
+    { label: 'Oversættelse — 2 sprog', amount: '50 €' },
+    { label: 'Videopræsentation', amount: '36 €' },
+  ],
+  no: [
+    { label: 'Annonse — 12 måneder', amount: '129 €' },
+    { label: 'Oversettelse — 2 språk', amount: '50 €' },
+    { label: 'Videopresentasjon', amount: '36 €' },
+  ],
+  fi: [
+    { label: 'Ilmoitus — 12 kuukautta', amount: '129 €' },
+    { label: 'Käännös — 2 kieltä', amount: '50 €' },
+    { label: 'Videoesittely', amount: '36 €' },
+  ],
+  et: [
+    { label: 'Kuulutus — 12 kuud', amount: '129 €' },
+    { label: 'Tõlge — 2 keelt', amount: '50 €' },
+    { label: 'Videotutvustus', amount: '36 €' },
+  ],
+  lv: [
+    { label: 'Sludinājums — 12 mēneši', amount: '129 €' },
+    { label: 'Tulkojums — 2 valodas', amount: '50 €' },
+    { label: 'Video prezentācija', amount: '36 €' },
+  ],
+  lt: [
+    { label: 'Skelbimas — 12 mėnesių', amount: '129 €' },
+    { label: 'Vertimas — 2 kalbos', amount: '50 €' },
+    { label: 'Vaizdo pristatymas', amount: '36 €' },
   ],
 };
 

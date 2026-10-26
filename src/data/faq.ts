@@ -25,6 +25,18 @@ import { FAQ_ES } from '~/data/faq-es';
 import { FAQ_PL } from '~/data/faq-pl';
 import { FAQ_RO } from '~/data/faq-ro';
 import { FAQ_SK } from '~/data/faq-sk';
+import { FAQ_IT } from '~/data/faq-it';
+import { FAQ_PT } from '~/data/faq-pt';
+import { FAQ_EL } from '~/data/faq-el';
+import { FAQ_CS } from '~/data/faq-cs';
+import { FAQ_SL } from '~/data/faq-sl';
+import { FAQ_SV } from '~/data/faq-sv';
+import { FAQ_DA } from '~/data/faq-da';
+import { FAQ_NO } from '~/data/faq-no';
+import { FAQ_FI } from '~/data/faq-fi';
+import { FAQ_ET } from '~/data/faq-et';
+import { FAQ_LV } from '~/data/faq-lv';
+import { FAQ_LT } from '~/data/faq-lt';
 
 export type FaqAudience = 'seller' | 'buyer' | 'both';
 
@@ -424,6 +436,18 @@ export const FAQ: Record<Locale, FaqEntry[]> = { ...HU_NL, en: FAQ_EN, de: FAQ_D
   pl: FAQ_PL,
   ro: FAQ_RO,
   sk: FAQ_SK,
+  it: FAQ_IT,
+  pt: FAQ_PT,
+  el: FAQ_EL,
+  cs: FAQ_CS,
+  sl: FAQ_SL,
+  sv: FAQ_SV,
+  da: FAQ_DA,
+  no: FAQ_NO,
+  fi: FAQ_FI,
+  et: FAQ_ET,
+  lv: FAQ_LV,
+  lt: FAQ_LT,
 };
 
 /** FAQPage structured data expects plain text, not markup. */

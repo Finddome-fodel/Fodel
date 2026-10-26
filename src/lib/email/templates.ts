@@ -21,6 +21,18 @@ import { ES } from './copy/es';
 import { PL } from './copy/pl';
 import { RO } from './copy/ro';
 import { SK } from './copy/sk';
+import { IT } from './copy/it';
+import { PT } from './copy/pt';
+import { EL } from './copy/el';
+import { CS } from './copy/cs';
+import { SL } from './copy/sl';
+import { SV } from './copy/sv';
+import { DA } from './copy/da';
+import { NO } from './copy/no';
+import { FI } from './copy/fi';
+import { ET } from './copy/et';
+import { LV } from './copy/lv';
+import { LT } from './copy/lt';
 import {
   shell,
   textShell,
@@ -51,7 +63,7 @@ export type OrderLine = { label: string; amount: string };
  * written for the office, which reads Hungarian: they always use HU, whatever
  * language the seller writes in.
  */
-const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK };
+const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK, it: IT, pt: PT, el: EL, cs: CS, sl: SL, sv: SV, da: DA, no: NO, fi: FI, et: ET, lv: LV, lt: LT };
 
 function copyFor(locale: EmailLocale) {
   return COPY[locale];
@@ -224,6 +236,18 @@ export const INVITE_SYSTEM_TEXT: Record<ShellLocale, { linkFallback: string; exp
   pl: { linkFallback: PL.common.linkFallback, expiry: PL.invite.expiry },
   ro: { linkFallback: RO.common.linkFallback, expiry: RO.invite.expiry },
   sk: { linkFallback: SK.common.linkFallback, expiry: SK.invite.expiry },
+  it: { linkFallback: IT.common.linkFallback, expiry: IT.invite.expiry },
+  pt: { linkFallback: PT.common.linkFallback, expiry: PT.invite.expiry },
+  el: { linkFallback: EL.common.linkFallback, expiry: EL.invite.expiry },
+  cs: { linkFallback: CS.common.linkFallback, expiry: CS.invite.expiry },
+  sl: { linkFallback: SL.common.linkFallback, expiry: SL.invite.expiry },
+  sv: { linkFallback: SV.common.linkFallback, expiry: SV.invite.expiry },
+  da: { linkFallback: DA.common.linkFallback, expiry: DA.invite.expiry },
+  no: { linkFallback: NO.common.linkFallback, expiry: NO.invite.expiry },
+  fi: { linkFallback: FI.common.linkFallback, expiry: FI.invite.expiry },
+  et: { linkFallback: ET.common.linkFallback, expiry: ET.invite.expiry },
+  lv: { linkFallback: LV.common.linkFallback, expiry: LV.invite.expiry },
+  lt: { linkFallback: LT.common.linkFallback, expiry: LT.invite.expiry },
 };
 
 export function inviteFromTemplate(

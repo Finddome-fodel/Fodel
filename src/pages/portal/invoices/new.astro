@@ -270,6 +270,18 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
               <button type="button" data-locale="pl">Polski</button>
               <button type="button" data-locale="ro">Română</button>
               <button type="button" data-locale="sk">Slovenčina</button>
+              <button type="button" data-locale="it">Italiano</button>
+              <button type="button" data-locale="pt">Português</button>
+              <button type="button" data-locale="el">Ελληνικά</button>
+              <button type="button" data-locale="cs">Čeština</button>
+              <button type="button" data-locale="sl">Slovenščina</button>
+              <button type="button" data-locale="sv">Svenska</button>
+              <button type="button" data-locale="da">Dansk</button>
+              <button type="button" data-locale="no">Norsk</button>
+              <button type="button" data-locale="fi">Suomi</button>
+              <button type="button" data-locale="et">Eesti</button>
+              <button type="button" data-locale="lv">Latviešu</button>
+              <button type="button" data-locale="lt">Lietuvių</button>
             </div>
           </div>
         </div>
@@ -653,7 +665,7 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
     }
     $$('#type-seg button').forEach((b) => b.addEventListener('click', () => { doc.buyer.type = b.dataset.type as 'person' | 'company'; afterBuyerChange(); markDirty(); render(); }));
     $$('#method-seg button').forEach((b) => b.addEventListener('click', () => { doc.paymentMethod = b.dataset.method as any; markDirty(); render(); }));
-    $$('#locale-seg button').forEach((b) => b.addEventListener('click', () => { doc.locale = b.dataset.locale as 'hu' | 'nl' | 'en' | 'de' | 'fr' | 'es' | 'pl' | 'ro' | 'sk'; markDirty(); render(); }));
+    $$('#locale-seg button').forEach((b) => b.addEventListener('click', () => { doc.locale = b.dataset.locale as 'hu' | 'nl' | 'en' | 'de' | 'fr' | 'es' | 'pl' | 'ro' | 'sk' | 'it' | 'pt' | 'el' | 'cs' | 'sl' | 'sv' | 'da' | 'no' | 'fi' | 'et' | 'lv' | 'lt'; markDirty(); render(); }));
     $$('#kind-seg button').forEach((b) => b.addEventListener('click', () => {
       doc.kind = b.dataset.kind as 'invoice' | 'proforma';
       if (doc.kind === 'proforma') doc.settled = false;

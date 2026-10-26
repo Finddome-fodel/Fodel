@@ -21,6 +21,18 @@ const FEED: Record<Locale, { title: string; description: string }> = {
   pl: { title: 'FODEL Nieruchomości: aktualności i artykuły', description: 'Analizy węgierskiego rynku nieruchomości i kupujących z Europy Zachodniej.' },
   ro: { title: 'FODEL Imobiliare: noutăți și articole', description: 'Analize ale pieței imobiliare din Ungaria și ale cumpărătorilor din Europa de Vest.' },
   sk: { title: 'FODEL Nehnuteľnosti: novinky a články', description: 'Analýzy maďarského realitného trhu a kupujúcich zo západnej Európy.' },
+  it: { title: 'FODEL Immobiliare: notizie e articoli', description: 'Analisi del mercato immobiliare ungherese e degli acquirenti dell’Europa occidentale.' },
+  pt: { title: 'FODEL Imobiliária: notícias e artigos', description: 'Análise do mercado imobiliário húngaro e dos compradores da Europa Ocidental.' },
+  el: { title: 'FODEL Ακίνητα: νέα και άρθρα', description: 'Ανάλυση της ουγγρικής αγοράς ακινήτων και των αγοραστών από τη Δυτική Ευρώπη.' },
+  cs: { title: 'FODEL Nemovitosti: novinky a články', description: 'Analýzy maďarského realitního trhu a kupujících ze západní Evropy.' },
+  sl: { title: 'FODEL Nepremičnine: novice in članki', description: 'Analize madžarskega nepremičninskega trga in kupcev iz zahodne Evrope.' },
+  sv: { title: 'FODEL Fastigheter: nyheter och artiklar', description: 'Analyser av den ungerska fastighetsmarknaden och köpare från Västeuropa.' },
+  da: { title: 'FODEL Ejendomme: nyheder og artikler', description: 'Analyser af det ungarske ejendomsmarked og vesteuropæiske købere.' },
+  no: { title: 'FODEL Eiendom: nyheter og artikler', description: 'Analyser av det ungarske eiendomsmarkedet og vesteuropeiske kjøpere.' },
+  fi: { title: 'FODEL Kiinteistöt: uutiset ja artikkelit', description: 'Analyysejä Unkarin kiinteistömarkkinoista ja länsieurooppalaisista ostajista.' },
+  et: { title: 'FODEL Kinnisvara: uudised ja artiklid', description: 'Analüüsid Ungari kinnisvaraturu ja Lääne-Euroopa ostjate kohta.' },
+  lv: { title: 'FODEL Nekustamais īpašums: jaunumi un raksti', description: 'Ungārijas nekustamo īpašumu tirgus un Rietumeiropas pircēju analīze.' },
+  lt: { title: 'FODEL Nekilnojamasis turtas: naujienos ir straipsniai', description: 'Vengrijos nekilnojamojo turto rinkos ir Vakarų Europos pirkėjų analizė.' },
 };
 
 export async function blogFeed(locale: Locale, context: APIContext) {
