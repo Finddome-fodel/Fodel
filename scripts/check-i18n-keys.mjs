@@ -9,7 +9,7 @@
  * of the modules below, finds each object that is keyed by language (it has
  * both `fr` and `hu` or `en` keys, as UI, COPY, CONTENT, LEGAL, FAQ and the
  * small L10n records do), and checks that every path under `fr` also exists
- * under es, pl, ro and sk: strings and arrays non-empty, functions present and
+ * under es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv and lt: strings and arrays non-empty, functions present and
  * callable with the same arity. The per-language email and validation copies,
  * which are separate modules, are compared module to module.
  */
@@ -24,7 +24,7 @@ const { CONTENT } = await import('../src/data/pages-content.ts');
 const { LEGAL } = await import('../src/data/pages-legal.ts');
 const { FAQ } = await import('../src/data/faq.ts');
 
-const TARGETS = ['es', 'pl', 'ro', 'sk'];
+const TARGETS = ['es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'];
 const problems = [];
 let checked = 0;
 

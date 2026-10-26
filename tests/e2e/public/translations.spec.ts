@@ -58,7 +58,7 @@ test('the sitemap lists every language (static build only)', async ({ request })
 const DUTCH = /(?<![\p{L}])(het|een|voor|niet|ook|uw|wij|naar|geen|worden|deze|bent|kunt|onze|woning)(?![\p{L}])/iu;
 const HUNGARIAN = /[őűŐŰ]|(?<![\p{L}])(és|hogy|vagy|nincs|egy|ingatlan|hirdetés|kérjük)(?![\p{L}])/iu;
 
-for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const) {
+for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const) {
   test(`${locale}: no Dutch or Hungarian wording is left on the static pages`, async ({ page }) => {
     test.setTimeout(240_000);
     const leftovers: string[] = [];
@@ -82,11 +82,13 @@ for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const) {
   });
 }
 
-for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const) {
+for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const) {
   test(`${locale}: the legal pages say they are a courtesy translation`, async ({ page }) => {
     const needle = {
       en: /translation for convenience/i, de: /Übersetzung/, fr: /traduction/i,
       es: /traducción/i, pl: /tłumaczeni/i, ro: /traducere/i, sk: /preklad/i,
+      it: /traduzione/i, pt: /tradução/i, el: /μετάφραση/i, cs: /překlad/i, sl: /prevod/i, sv: /översättning/i,
+      da: /oversættelse/i, no: /oversettelse/i, fi: /käännös/i, et: /tõlge/i, lv: /tulkojums/i, lt: /vertimas/i,
     }[locale];
     for (const key of ['privacy', 'terms', 'cookies', 'imprint'] as const) {
       await page.goto(routePath(locale, key));
@@ -99,6 +101,9 @@ test('an unknown page answers 404 in the language of its URL', async ({ request 
   const heading: Record<Locale, RegExp> = {
     hu: /nem található|404/i, nl: /niet gevonden|404/i, en: /not found|404/i, de: /nicht gefunden|404/i, fr: /introuvable|404/i,
     es: /no encontrada|404/i, pl: /nie znaleziono|404/i, ro: /nu a fost găsită|404/i, sk: /sa nenašla|404/i,
+    it: /non trovata|404/i, pt: /não encontrada|404/i, el: /δεν βρέθηκε|404/i, cs: /nenalezena|404/i, sl: /ni bila najdena|404/i,
+    sv: /hittades inte|404/i, da: /blev ikke fundet|404/i, no: /fant ikke|404/i, fi: /ei löytynyt|404/i, et: /ei leitud|404/i,
+    lv: /nav atrasta|404/i, lt: /nerastas|404/i,
   };
   for (const locale of LOCALES) {
     const response = await request.get(`/${locale}/this-page-does-not-exist/`);

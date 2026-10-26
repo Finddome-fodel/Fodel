@@ -90,8 +90,8 @@ const LIVE_ROUTES = [
   ['hu/eladoknak/index.html', '/hu/eladoknak/'],
   ['nl/adverteren/index.html', '/nl/adverteren/'],
 ];
-// The seven newer languages: the Supabase-backed pages in their own slugs.
-for (const l of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk']) {
+// The twenty newer languages: the Supabase-backed pages in their own slugs.
+for (const l of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt']) {
   for (const key of ['home', 'properties', 'sold', 'submitAd', 'blog', 'priceList', 'sellers']) {
     const p = routePath(l, key);
     LIVE_ROUTES.push([`${p.slice(1)}index.html`, p]);
@@ -210,6 +210,30 @@ console.log('Server-rendered content');
     ['pl/cennik/index.html', ['69', '129', '179']],
     ['ro/tarife/index.html', ['69', '129', '179']],
     ['sk/cennik/index.html', ['69', '129', '179']],
+    [`${routePath('it', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('it', 'faq').slice(1)}index.html`, ['provvigion']],
+    [`${routePath('pt', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('pt', 'faq').slice(1)}index.html`, ['comiss']],
+    [`${routePath('el', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('el', 'faq').slice(1)}index.html`, ['προμήθει']],
+    [`${routePath('cs', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('cs', 'faq').slice(1)}index.html`, ['provize']],
+    [`${routePath('sl', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('sl', 'faq').slice(1)}index.html`, ['provizij']],
+    [`${routePath('sv', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('sv', 'faq').slice(1)}index.html`, ['provision']],
+    [`${routePath('da', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('da', 'faq').slice(1)}index.html`, ['Ungarn']],
+    [`${routePath('no', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('no', 'faq').slice(1)}index.html`, ['provisjon']],
+    [`${routePath('fi', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('fi', 'faq').slice(1)}index.html`, ['välitys']],
+    [`${routePath('et', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('et', 'faq').slice(1)}index.html`, ['vahendustas']],
+    [`${routePath('lv', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('lv', 'faq').slice(1)}index.html`, ['komisij']],
+    [`${routePath('lt', 'priceList').slice(1)}index.html`, ['69', '129', '179']],
+    [`${routePath('lt', 'faq').slice(1)}index.html`, ['komisin']],
   ];
   for (const [name, needles] of checks) {
     const html = getHtml(name);
@@ -268,7 +292,7 @@ console.log('\nhreflang');
     // need no alternates.
     if (/name="robots" content="noindex/.test(html)) continue;
     const canonical = html.match(/<link rel="canonical" href="(.*?)"/)?.[1];
-    const alts = [...html.matchAll(/<link rel="alternate" hreflang="(hu|nl|en|de|fr|es|pl|ro|sk)" href="(.*?)"/g)].map(
+    const alts = [...html.matchAll(/<link rel="alternate" hreflang="(hu|nl|en|de|fr|es|pl|ro|sk|it|pt-PT|el|cs|sl|sv|da|nb|fi|et|lv|lt)" href="(.*?)"/g)].map(
       (m) => m[2]
     );
     if (!canonical) continue;
@@ -328,7 +352,7 @@ console.log('\nLanguages');
       if (missing.length) fail(`${relPath} lacks hreflang ${missing.join(', ')}`);
     }
     const ogLocale = html.match(/property="og:locale" content="([^"]+)"/)?.[1];
-    if (ogLocale && ogLocale.replace('_', '-').slice(0, 2) !== locale) fail(`${relPath} og:locale is ${ogLocale}`);
+    if (ogLocale && ogLocale !== LOCALE_META[locale].ogLocale) fail(`${relPath} og:locale is ${ogLocale}`);
   }
   pass(`${checked} pages: right lang, canonical and the full hreflang set (${LOCALES.map((l) => `${l} ${perLocale[l]}`).join(', ')})`);
   for (const l of LOCALES) {
@@ -341,11 +365,13 @@ console.log('\nLanguages');
   for (const [l, needle] of [
     ['en', 'translation for convenience'], ['de', 'Übersetzung'], ['fr', 'traduction'],
     ['es', 'traducción'], ['pl', 'tłumaczeniem'], ['ro', 'traducere'], ['sk', 'preklad'],
+    ['it', 'traduzione'], ['pt', 'tradução'], ['el', 'μετάφραση'], ['cs', 'překlad'], ['sl', 'prevod'], ['sv', 'översättning'],
+    ['da', 'oversættelse'], ['no', 'oversettelse'], ['fi', 'käännös'], ['et', 'tõlge'], ['lv', 'tulkojums'], ['lt', 'vertimas'],
   ]) {
     const page = getHtml(`${routePath(l, 'terms').slice(1)}index.html`);
     if (page && !page.includes(needle)) fail(`${routePath(l, 'terms')} lacks the courtesy-translation note`);
   }
-  pass('legal pages in en/de/fr/es/pl/ro/sk carry the courtesy-translation note');
+  pass('legal pages in every translated language carry the courtesy-translation note');
 }
 
 /* ── 4. Structured data ──────────────────────────────────────────────── */

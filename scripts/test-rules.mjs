@@ -187,6 +187,18 @@ test('default country follows the language', () => {
   assert.equal(defaultPhoneCountry('pl'), 'PL');
   assert.equal(defaultPhoneCountry('ro'), 'RO');
   assert.equal(defaultPhoneCountry('sk'), 'SK');
+  assert.equal(defaultPhoneCountry('it'), 'IT');
+  assert.equal(defaultPhoneCountry('pt'), 'PT');
+  assert.equal(defaultPhoneCountry('el'), 'GR');
+  assert.equal(defaultPhoneCountry('cs'), 'CZ');
+  assert.equal(defaultPhoneCountry('sl'), 'SI');
+  assert.equal(defaultPhoneCountry('sv'), 'SE');
+  assert.equal(defaultPhoneCountry('da'), 'DK');
+  assert.equal(defaultPhoneCountry('no'), 'NO');
+  assert.equal(defaultPhoneCountry('fi'), 'FI');
+  assert.equal(defaultPhoneCountry('et'), 'EE');
+  assert.equal(defaultPhoneCountry('lv'), 'LV');
+  assert.equal(defaultPhoneCountry('lt'), 'LT');
   assert.equal(countryOfNumber('+4915112345678'), 'DE');
 });
 test('as-you-type formatting', () => assert.equal(formatPhoneAsYouType('+31612345678', 'NL'), '+31 6 12345678'));
@@ -221,7 +233,7 @@ test('email and url', () => {
   assert.equal(validateField({ rule: 'url' }, 'fodel')?.code, 'url');
 });
 
-console.log('Nine languages');
+console.log('All languages');
 const ERROR_CASES = [
   { code: 'required' }, { code: 'email' }, { code: 'phone', country: 'NL', example: '+31 6 12345678' },
   { code: 'postcode', country: 'NL', example: '1234 AB' }, { code: 'number' }, { code: 'min', limit: 5 },
@@ -236,7 +248,9 @@ test('every validation message exists in every language and says something diffe
       assert.ok(!/undefined|\[object|NaN/.test(text), `${e.code} in ${l}: ${text}`);
       seen.add(text);
     }
-    assert.equal(seen.size, LOCALES.length, `${e.code} is identical in two languages`);
+    // Swedish and Norwegian both write “Minst 5.”; that is correct in both.
+    const shared = e.code === 'min' ? 1 : 0;
+    assert.equal(seen.size, LOCALES.length - shared, `${e.code} is identical in two languages`);
   }
 });
 test('routes: same pages, own slugs, unique inside a language', () => {
@@ -250,16 +264,19 @@ test('routes: same pages, own slugs, unique inside a language', () => {
 });
 test('locale helpers', () => {
   assert.equal(isLocale('fr'), true);
-  for (const l of ['es', 'pl', 'ro', 'sk']) assert.equal(isLocale(l), true);
+  for (const l of ['es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt']) assert.equal(isLocale(l), true);
   assert.equal(isLocale('xx'), false);
   assert.equal(localeFrom('de-AT', 'nl'), 'nl');
   assert.equal(localeFrom('de', 'nl'), 'de');
-  const nine = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+  const nine = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u'];
   assert.equal(localizer('fr')(...nine), 'e');
   assert.equal(localizer('es')(...nine), 'f');
   assert.equal(localizer('pl')(...nine), 'g');
   assert.equal(localizer('ro')(...nine), 'h');
   assert.equal(localizer('sk')(...nine), 'i');
+  assert.equal(localizer('it')(...nine), 'j');
+  assert.equal(localizer('no')(...nine), 'q');
+  assert.equal(localizer('lt')(...nine), 'u');
 });
 test('money and area in the house style of each language', () => {
   assert.equal(eur(178000, 'hu'), '€\u00a0178\u00a0000');
@@ -276,7 +293,9 @@ test('money and area in the house style of each language', () => {
   assert.equal(eur(178000, 'pl'), '178\u00a0000\u00a0€');
   assert.equal(eur(178000, 'ro'), '178.000\u00a0€');
   assert.equal(eur(178000, 'sk'), '178\u00a0000\u00a0€');
-  for (const l of ['es', 'pl', 'ro', 'sk']) assert.match(area(15000, l), /^1,50\u00a0ha$/);
+  for (const l of ['it', 'el', 'sl', 'da']) assert.equal(eur(178000, l), '178.000\u00a0€');
+  for (const l of ['pt', 'cs', 'sv', 'no', 'fi', 'et', 'lv', 'lt']) assert.equal(eur(178000, l), '178\u00a0000\u00a0€');
+  for (const l of ['es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt']) assert.match(area(15000, l), /^1,50\u00a0ha$/);
 });
 test('result counts use each language’s plural forms', () => {
   const counts = (l) => [1, 2, 5, 21, 22, 101].map((n) => UI[l].filters.results(n));
@@ -284,6 +303,14 @@ test('result counts use each language’s plural forms', () => {
   assert.deepEqual(counts('pl'), ['1 nieruchomość', '2 nieruchomości', '5 nieruchomości', '21 nieruchomości', '22 nieruchomości', '101 nieruchomości']);
   assert.deepEqual(counts('ro'), ['1 proprietate', '2 proprietăți', '5 proprietăți', '21 de proprietăți', '22 de proprietăți', '101 proprietăți']);
   assert.deepEqual(counts('sk'), ['1 nehnuteľnosť', '2 nehnuteľnosti', '5 nehnuteľností', '21 nehnuteľností', '22 nehnuteľností', '101 nehnuteľností']);
+  assert.deepEqual(counts('cs'), ['1 nemovitost', '2 nemovitosti', '5 nemovitostí', '21 nemovitostí', '22 nemovitostí', '101 nemovitostí']);
+  // Slovenian has a dual: 2, 102 … (and 1, 101 take the singular).
+  assert.deepEqual(counts('sl'), ['1 nepremičnina', '2 nepremičnini', '5 nepremičnin', '21 nepremičnin', '22 nepremičnin', '101 nepremičnina']);
+  assert.deepEqual(counts('lt'), ['1 objektas', '2 objektai', '5 objektai', '21 objektas', '22 objektai', '101 objektas']);
+  // Latvian: genitive plural after 0 and 10–20 (“10 īpašumu”), singular after 21.
+  assert.deepEqual([1, 2, 10, 11, 21, 22].map((n) => UI.lv.filters.results(n)), ['1 īpašums', '2 īpašumi', '10 īpašumu', '11 īpašumu', '21 īpašums', '22 īpašumi']);
+  assert.deepEqual(counts('it'), ['1 immobile', '2 immobili', '5 immobili', '21 immobili', '22 immobili', '101 immobili']);
+  assert.deepEqual(counts('fi'), ['1 kohde', '2 kohdetta', '5 kohdetta', '21 kohdetta', '22 kohdetta', '101 kohdetta']);
 });
 
 console.log('Email retries');
