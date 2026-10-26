@@ -220,6 +220,54 @@ const FOOTER_COPY = {
     why: 'Tento e-mail dostávate, pretože máte účet vo FODEL alebo ste u nás podali inzerát.',
     contact: 'Kontakt',
   },
+  it: {
+    why: 'Riceve questa e-mail perché ha un account FODEL o ha pubblicato un annuncio con noi.',
+    contact: 'Contatti',
+  },
+  pt: {
+    why: 'Recebe este e-mail porque tem uma conta FODEL ou publicou um anúncio connosco.',
+    contact: 'Contacto',
+  },
+  el: {
+    why: 'Λαμβάνετε αυτό το email επειδή έχετε λογαριασμό FODEL ή καταχωρίσατε αγγελία σε εμάς.',
+    contact: 'Επικοινωνία',
+  },
+  cs: {
+    why: 'Tento e-mail dostáváte, protože máte účet FODEL nebo jste u nás zadali inzerát.',
+    contact: 'Kontakt',
+  },
+  sl: {
+    why: 'To sporočilo prejemate, ker imate račun FODEL ali ste pri nas oddali oglas.',
+    contact: 'Kontakt',
+  },
+  sv: {
+    why: 'Du får det här mejlet eftersom du har ett FODEL-konto eller har lagt in en annons hos oss.',
+    contact: 'Kontakt',
+  },
+  da: {
+    why: 'Du modtager denne e-mail, fordi du har en FODEL-konto eller har oprettet en annonce hos os.',
+    contact: 'Kontakt',
+  },
+  no: {
+    why: 'Du mottar denne e-posten fordi du har en FODEL-konto eller har lagt inn en annonse hos oss.',
+    contact: 'Kontakt',
+  },
+  fi: {
+    why: 'Saat tämän viestin, koska sinulla on FODEL-tili tai olet jättänyt meille ilmoituksen.',
+    contact: 'Yhteystiedot',
+  },
+  et: {
+    why: 'Saate selle kirja, sest teil on FODELi konto või olete meie juures kuulutuse avaldanud.',
+    contact: 'Kontakt',
+  },
+  lv: {
+    why: 'Jūs saņemat šo e-pastu, jo jums ir FODEL konts vai esat pie mums ievietojis sludinājumu.',
+    contact: 'Kontakti',
+  },
+  lt: {
+    why: 'Šį laišką gaunate, nes turite FODEL paskyrą arba pas mus įdėjote skelbimą.',
+    contact: 'Kontaktai',
+  },
 } as const;
 
 function wordmark(locale: ShellLocale): string {

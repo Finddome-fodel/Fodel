@@ -413,6 +413,10 @@ svg {
 .line {
   display: block;
   overflow: hidden;
+  /* A word longer than the column (Norwegian "eiendommen", Danish
+     "landbrugsuddannelse" at phone width) breaks instead of pushing the page
+     sideways. Ordinary words are untouched. */
+  overflow-wrap: anywhere;
   padding: 0.14em 0.12em 0.12em;
   margin: -0.14em -0.12em -0.12em;
 }

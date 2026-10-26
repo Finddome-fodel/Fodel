@@ -48,7 +48,7 @@ export function featureLabel(key: string, locale: Locale): string {
   if(definition)return labelIn(definition.labels,locale);
   const base = FEATURES[key];
   if (!base) return key;
-  return locale === 'hu' || locale === 'nl' ? base[locale] : FEATURE_LABELS[key]?.[locale] ?? base.nl;
+  return locale === 'hu' || locale === 'nl' ? base[locale] : (FEATURE_LABELS[key] as Record<string, string> | undefined)?.[locale] ?? base.nl;
 }
 
 /** Hungarian counties FODEL actively market, for region landing pages. */

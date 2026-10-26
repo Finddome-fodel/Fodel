@@ -18,6 +18,18 @@ import { CONTENT_ES } from '~/data/content-es';
 import { CONTENT_PL } from '~/data/content-pl';
 import { CONTENT_RO } from '~/data/content-ro';
 import { CONTENT_SK } from '~/data/content-sk';
+import { CONTENT_IT } from '~/data/content-it';
+import { CONTENT_PT } from '~/data/content-pt';
+import { CONTENT_EL } from '~/data/content-el';
+import { CONTENT_CS } from '~/data/content-cs';
+import { CONTENT_SL } from '~/data/content-sl';
+import { CONTENT_SV } from '~/data/content-sv';
+import { CONTENT_DA } from '~/data/content-da';
+import { CONTENT_NO } from '~/data/content-no';
+import { CONTENT_FI } from '~/data/content-fi';
+import { CONTENT_ET } from '~/data/content-et';
+import { CONTENT_LV } from '~/data/content-lv';
+import { CONTENT_LT } from '~/data/content-lt';
 
 
 /** The long-form pages, by key. Every language must have all of them. */
@@ -526,4 +538,16 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
   pl: CONTENT_PL,
   ro: CONTENT_RO,
   sk: CONTENT_SK,
+  it: CONTENT_IT,
+  pt: CONTENT_PT,
+  el: CONTENT_EL,
+  cs: CONTENT_CS,
+  sl: CONTENT_SL,
+  sv: CONTENT_SV,
+  da: CONTENT_DA,
+  no: CONTENT_NO,
+  fi: CONTENT_FI,
+  et: CONTENT_ET,
+  lv: CONTENT_LV,
+  lt: CONTENT_LT,
 };

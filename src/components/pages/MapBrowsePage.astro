@@ -30,7 +30,7 @@ const { locale } = Astro.props;
 const ui = UI[locale];
 
 const x = localizer(locale);
-const title = x('Ingatlanok térképen', 'Woningen op de kaart', 'Properties on the map', 'Immobilien auf der Karte', 'Les biens sur la carte', 'Los inmuebles en el mapa', 'Nieruchomości na mapie', 'Proprietățile pe hartă', 'Nehnuteľnosti na mape');
+const title = x('Ingatlanok térképen', 'Woningen op de kaart', 'Properties on the map', 'Immobilien auf der Karte', 'Les biens sur la carte', 'Los inmuebles en el mapa', 'Nieruchomości na mapie', 'Proprietățile pe hartă', 'Nehnuteľnosti na mape', 'Immobili sulla mappa', 'Imóveis no mapa', 'Ακίνητα στον χάρτη', 'Nemovitosti na mapě', 'Nepremičnine na zemljevidu', 'Fastigheter på kartan', 'Ejendomme på kortet', 'Eiendommer på kartet', 'Kohteet kartalla', 'Kinnisvara kaardil', 'Īpašumi kartē', 'Turtas žemėlapyje');
 const description = x(
   'Böngéssze a FODEL magyarországi ingatlanait térképen, régió szerint csoportosítva.',
   'Blader door het Hongaarse vastgoed van FODEL op de kaart, gegroepeerd per regio.',
@@ -40,7 +40,19 @@ const description = x(
   'Explore en el mapa los inmuebles húngaros de FODEL, agrupados por región.',
   'Przeglądaj na mapie węgierskie nieruchomości FODEL pogrupowane według regionów.',
   'Explorați pe hartă proprietățile FODEL din Ungaria, grupate pe regiuni.',
-  'Prezrite si na mape maďarské nehnuteľnosti FODEL zoskupené podľa regiónov.'
+  'Prezrite si na mape maďarské nehnuteľnosti FODEL zoskupené podľa regiónov.',
+  'Sfogli gli immobili ungheresi di FODEL su una mappa, raggruppati per regione.',
+  'Explore os imóveis húngaros da FODEL num mapa, agrupados por região.',
+  'Περιηγηθείτε στα ουγγρικά ακίνητα της FODEL σε χάρτη, ομαδοποιημένα ανά περιφέρεια.',
+  'Prohlédněte si maďarské nemovitosti FODEL na mapě, seskupené podle regionů.',
+  'Prebrskajte madžarske nepremičnine FODEL na zemljevidu, razvrščene po regijah.',
+  'Bläddra bland FODEL:s ungerska fastigheter på en karta, grupperade per region.',
+  'Se FODEL’s ungarske ejendomme på et kort, grupperet efter region.',
+  'Se FODELs ungarske eiendommer på et kart, gruppert etter region.',
+  'Selaa FODELin unkarilaisia kohteita kartalla alueittain ryhmiteltyinä.',
+  'Sirvige FODELi Ungari kinnisvara kaardil, piirkondade kaupa rühmitatuna.',
+  'Pārlūkojiet FODEL īpašumus Ungārijā kartē, sagrupētus pa reģioniem.',
+  'Peržiūrėkite FODEL nekilnojamąjį turtą Vengrijoje žemėlapyje, sugrupuotą pagal regionus.'
 );
 
 const trail = crumbs(locale, [
@@ -75,7 +87,7 @@ const listHref = carriedQuery
       <h1>{title}</h1>
       <a href={listHref} class="list-link">{ui.filters.viewList}</a>
       <button type="button" id="search-this-area" class="area-btn">
-        {x('Keresés ezen a területen', 'Zoek in dit gebied', 'Search this area', 'In diesem Bereich suchen', 'Rechercher dans cette zone', 'Buscar en esta zona', 'Szukaj w tym obszarze', 'Căutați în această zonă', 'Hľadať v tejto oblasti')}
+        {x('Keresés ezen a területen', 'Zoek in dit gebied', 'Search this area', 'In diesem Bereich suchen', 'Rechercher dans cette zone', 'Buscar en esta zona', 'Szukaj w tym obszarze', 'Căutați în această zonă', 'Hľadať v tejto oblasti', 'Cerca in quest’area', 'Pesquisar nesta zona', 'Αναζήτηση σε αυτή την περιοχή', 'Hledat v této oblasti', 'Išči na tem območju', 'Sök i det här området', 'Søg i dette område', 'Søk i dette området', 'Hae tältä alueelta', 'Otsi sellelt alalt', 'Meklēt šajā apgabalā', 'Ieškoti šioje vietovėje')}
       </button>
     </div>
     <div class="map-wrap">

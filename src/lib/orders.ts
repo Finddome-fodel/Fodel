@@ -18,6 +18,7 @@
  *    changed twice. Re-deriving a 2026 total from the 2029 price list would
  *    quietly rewrite history.
  */
+import { pluralForm } from '~/i18n/plural';
 import { ONSITE_SERVICES } from '~/config/company';
 import type { Locale } from '~/i18n/ui';
 import { eurCents, intlTag } from '~/lib/format';
@@ -69,12 +70,12 @@ export type OrderSelection = {
 
 
 const EXTRA_LABEL: Record<string, Record<OrderLocale, string>> = {
-  translation: { hu: 'Fordítás', nl: 'Vertaling', en: 'Translation', de: 'Übersetzung', fr: 'Traduction', es: 'Traducción', pl: 'Tłumaczenie', ro: 'Traducere', sk: 'Preklad' },
-  'category-highlight': { hu: 'Kiemelés a kategóriában', nl: 'Uitgelicht in de categorie', en: 'Highlighting in the category', de: 'Hervorhebung in der Kategorie', fr: 'Mise en avant dans la catégorie', es: 'Destacado en la categoría', pl: 'Wyróżnienie w kategorii', ro: 'Evidențiere în categorie', sk: 'Zvýraznenie v kategórii' },
-  'homepage-highlight': { hu: 'Kiemelés a főoldalon', nl: 'Uitgelicht op de homepage', en: 'Highlighting on the homepage', de: 'Hervorhebung auf der Startseite', fr: 'Mise en avant sur la page d’accueil', es: 'Destacado en la página de inicio', pl: 'Wyróżnienie na stronie głównej', ro: 'Evidențiere pe prima pagină', sk: 'Zvýraznenie na úvodnej stránke' },
-  video: { hu: 'Videós bemutató', nl: 'Videopresentatie', en: 'Video presentation', de: 'Videopräsentation', fr: 'Présentation vidéo', es: 'Presentación en vídeo', pl: 'Prezentacja wideo', ro: 'Prezentare video', sk: 'Videoprezentácia' },
-  'retro-images': { hu: 'Fotóretusálás', nl: 'Fotobewerking', en: 'Photo editing', de: 'Bildbearbeitung', fr: 'Retouche photo', es: 'Retoque fotográfico', pl: 'Retusz zdjęć', ro: 'Retușare foto', sk: 'Úprava fotografií' },
-  'renewal-6m': { hu: 'Hosszabbítás — 6 hónap', nl: 'Verlenging — 6 maanden', en: 'Renewal, 6 months', de: 'Verlängerung, 6 Monate', fr: 'Prolongation, 6 mois', es: 'Prórroga, 6 meses', pl: 'Przedłużenie, 6 miesięcy', ro: 'Prelungire, 6 luni', sk: 'Predĺženie, 6 mesiacov' },
+  translation: { hu: 'Fordítás', nl: 'Vertaling', en: 'Translation', de: 'Übersetzung', fr: 'Traduction', es: 'Traducción', pl: 'Tłumaczenie', ro: 'Traducere', sk: 'Preklad', it: 'Traduzione', pt: 'Tradução', el: 'Μετάφραση', cs: 'Překlad', sl: 'Prevod', sv: 'Översättning', da: 'Oversættelse', no: 'Oversettelse', fi: 'Käännös', et: 'Tõlge', lv: 'Tulkojums', lt: 'Vertimas' },
+  'category-highlight': { hu: 'Kiemelés a kategóriában', nl: 'Uitgelicht in de categorie', en: 'Highlighting in the category', de: 'Hervorhebung in der Kategorie', fr: 'Mise en avant dans la catégorie', es: 'Destacado en la categoría', pl: 'Wyróżnienie w kategorii', ro: 'Evidențiere în categorie', sk: 'Zvýraznenie v kategórii', it: 'Messa in evidenza nella categoria', pt: 'Destaque na categoria', el: 'Προβολή στην κατηγορία', cs: 'Zvýraznění v kategorii', sl: 'Izpostavitev v kategoriji', sv: 'Framhävning i kategorin', da: 'Fremhævning i kategorien', no: 'Fremheving i kategorien', fi: 'Korostus kategoriassa', et: 'Esiletõstmine kategoorias', lv: 'Izcelšana kategorijā', lt: 'Išskyrimas kategorijoje' },
+  'homepage-highlight': { hu: 'Kiemelés a főoldalon', nl: 'Uitgelicht op de homepage', en: 'Highlighting on the homepage', de: 'Hervorhebung auf der Startseite', fr: 'Mise en avant sur la page d’accueil', es: 'Destacado en la página de inicio', pl: 'Wyróżnienie na stronie głównej', ro: 'Evidențiere pe prima pagină', sk: 'Zvýraznenie na úvodnej stránke', it: 'Messa in evidenza in homepage', pt: 'Destaque na página inicial', el: 'Προβολή στην αρχική σελίδα', cs: 'Zvýraznění na úvodní stránce', sl: 'Izpostavitev na domači strani', sv: 'Framhävning på startsidan', da: 'Fremhævning på forsiden', no: 'Fremheving på forsiden', fi: 'Korostus etusivulla', et: 'Esiletõstmine avalehel', lv: 'Izcelšana sākumlapā', lt: 'Išskyrimas pagrindiniame puslapyje' },
+  video: { hu: 'Videós bemutató', nl: 'Videopresentatie', en: 'Video presentation', de: 'Videopräsentation', fr: 'Présentation vidéo', es: 'Presentación en vídeo', pl: 'Prezentacja wideo', ro: 'Prezentare video', sk: 'Videoprezentácia', it: 'Presentazione video', pt: 'Apresentação em vídeo', el: 'Παρουσίαση με βίντεο', cs: 'Videoprezentace', sl: 'Video predstavitev', sv: 'Videopresentation', da: 'Videopræsentation', no: 'Videopresentasjon', fi: 'Videoesittely', et: 'Videotutvustus', lv: 'Video prezentācija', lt: 'Vaizdo pristatymas' },
+  'retro-images': { hu: 'Fotóretusálás', nl: 'Fotobewerking', en: 'Photo editing', de: 'Bildbearbeitung', fr: 'Retouche photo', es: 'Retoque fotográfico', pl: 'Retusz zdjęć', ro: 'Retușare foto', sk: 'Úprava fotografií', it: 'Elaborazione delle foto', pt: 'Edição de fotografias', el: 'Επεξεργασία φωτογραφιών', cs: 'Úprava fotografií', sl: 'Obdelava fotografij', sv: 'Bildredigering', da: 'Billedredigering', no: 'Bilderedigering', fi: 'Kuvankäsittely', et: 'Fotode töötlemine', lv: 'Fotoattēlu apstrāde', lt: 'Nuotraukų apdorojimas' },
+  'renewal-6m': { hu: 'Hosszabbítás — 6 hónap', nl: 'Verlenging — 6 maanden', en: 'Renewal, 6 months', de: 'Verlängerung, 6 Monate', fr: 'Prolongation, 6 mois', es: 'Prórroga, 6 meses', pl: 'Przedłużenie, 6 miesięcy', ro: 'Prelungire, 6 luni', sk: 'Predĺženie, 6 mesiacov', it: 'Rinnovo, 6 mesi', pt: 'Renovação, 6 meses', el: 'Ανανέωση, 6 μήνες', cs: 'Obnovení, 6 měsíců', sl: 'Podaljšanje, 6 mesecev', sv: 'Förnyelse, 6 månader', da: 'Fornyelse, 6 måneder', no: 'Fornyelse, 6 måneder', fi: 'Uusiminen, 6 kuukautta', et: 'Uuendamine, 6 kuud', lv: 'Atjaunošana, 6 mēneši', lt: 'Atnaujinimas, 6 mėnesiai' },
   ...Object.fromEntries(ONSITE_SERVICES.map((service) => [service.id, service.names])),
 };
 
@@ -97,9 +98,21 @@ const NO_UNIT: Record<OrderLocale, { one: string; many: string }> = {
   pl: { one: '', many: '' },
   ro: { one: '', many: '' },
   sk: { one: '', many: '' },
+  it: { one: '', many: '' },
+  pt: { one: '', many: '' },
+  el: { one: '', many: '' },
+  cs: { one: '', many: '' },
+  sl: { one: '', many: '' },
+  sv: { one: '', many: '' },
+  da: { one: '', many: '' },
+  no: { one: '', many: '' },
+  fi: { one: '', many: '' },
+  et: { one: '', many: '' },
+  lv: { one: '', many: '' },
+  lt: { one: '', many: '' },
 };
 /** `few` is the Slavic/Romanian 2–4 (or 2–19) form; `Intl.PluralRules` picks it. */
-const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; few?: string; many: string }>> = {
+const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; two?: string; few?: string; many: string }>> = {
   translation: {
     hu: { one: 'nyelv', many: 'nyelv' },
     nl: { one: 'taal', many: 'talen' },
@@ -110,6 +123,18 @@ const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; few?: string
     pl: { one: 'język', few: 'języki', many: 'języków' },
     ro: { one: 'limbă', few: 'limbi', many: 'de limbi' },
     sk: { one: 'jazyk', few: 'jazyky', many: 'jazykov' },
+    it: { one: 'lingua', many: 'lingue' },
+    pt: { one: 'língua', many: 'línguas' },
+    el: { one: 'γλώσσα', many: 'γλώσσες' },
+    cs: { one: 'jazyk', few: 'jazyky', many: 'jazyků' },
+    sl: { one: 'jezik', two: 'jezika', few: 'jeziki', many: 'jezikov' },
+    sv: { one: 'språk', many: 'språk' },
+    da: { one: 'sprog', many: 'sprog' },
+    no: { one: 'språk', many: 'språk' },
+    fi: { one: 'kieli', many: 'kieltä' },
+    et: { one: 'keel', many: 'keelt' },
+    lv: { one: 'valoda', few: 'valodas', many: 'valodu' },
+    lt: { one: 'kalba', few: 'kalbos', many: 'kalbų' },
   },
   'category-highlight': {
     hu: { one: 'hónap', many: 'hónap' },
@@ -121,6 +146,18 @@ const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; few?: string
     pl: { one: 'miesiąc', few: 'miesiące', many: 'miesięcy' },
     ro: { one: 'lună', few: 'luni', many: 'de luni' },
     sk: { one: 'mesiac', few: 'mesiace', many: 'mesiacov' },
+    it: { one: 'mese', many: 'mesi' },
+    pt: { one: 'mês', many: 'meses' },
+    el: { one: 'μήνας', many: 'μήνες' },
+    cs: { one: 'měsíc', few: 'měsíce', many: 'měsíců' },
+    sl: { one: 'mesec', two: 'meseca', few: 'meseci', many: 'mesecev' },
+    sv: { one: 'månad', many: 'månader' },
+    da: { one: 'måned', many: 'måneder' },
+    no: { one: 'måned', many: 'måneder' },
+    fi: { one: 'kuukausi', many: 'kuukautta' },
+    et: { one: 'kuu', many: 'kuud' },
+    lv: { one: 'mēnesis', few: 'mēneši', many: 'mēnešu' },
+    lt: { one: 'mėnuo', few: 'mėnesiai', many: 'mėnesių' },
   },
   'homepage-highlight': {
     hu: { one: 'hónap', many: 'hónap' },
@@ -132,6 +169,18 @@ const EXTRA_UNIT: Record<string, Record<OrderLocale, { one: string; few?: string
     pl: { one: 'miesiąc', few: 'miesiące', many: 'miesięcy' },
     ro: { one: 'lună', few: 'luni', many: 'de luni' },
     sk: { one: 'mesiac', few: 'mesiace', many: 'mesiacov' },
+    it: { one: 'mese', many: 'mesi' },
+    pt: { one: 'mês', many: 'meses' },
+    el: { one: 'μήνας', many: 'μήνες' },
+    cs: { one: 'měsíc', few: 'měsíce', many: 'měsíců' },
+    sl: { one: 'mesec', two: 'meseca', few: 'meseci', many: 'mesecev' },
+    sv: { one: 'månad', many: 'månader' },
+    da: { one: 'måned', many: 'måneder' },
+    no: { one: 'måned', many: 'måneder' },
+    fi: { one: 'kuukausi', many: 'kuukautta' },
+    et: { one: 'kuu', many: 'kuud' },
+    lv: { one: 'mēnesis', few: 'mēneši', many: 'mēnešu' },
+    lt: { one: 'mėnuo', few: 'mėnesiai', many: 'mėnesių' },
   },
   video: NO_UNIT,
   'retro-images': NO_UNIT,
@@ -230,8 +279,9 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
 
     const units = EXTRA_UNIT[extra.id]?.[locale];
     const base = EXTRA_LABEL[extra.id]?.[locale] ?? extra.id;
-    const form = new Intl.PluralRules(intlTag(locale)).select(quantity);
-    const unit = form === 'one' ? units?.one : form === 'few' ? (units?.few ?? units?.many) : units?.many;
+    const form = pluralForm(intlTag(locale), quantity);
+    const unit =
+      form === 'one' ? units?.one : form === 'two' ? (units?.two ?? units?.few ?? units?.many) : form === 'few' ? (units?.few ?? units?.many) : units?.many;
 
     lines.push({
       kind: 'extra',

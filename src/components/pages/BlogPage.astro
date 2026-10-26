@@ -49,7 +49,7 @@ const noteOf = (index: number) => {
   const entry = index < 0 ? leadEntry : restEntries[index];
   return entry ? sourceNote(locale, entry.from, 'article') : null;
 };
-const minutes = (n: number) => x(`${n} perc olvasás`, `${n} min. lezen`, `${n} min read`, `${n} Min. Lesezeit`, `${n} min de lecture`, `${n} min de lectura`, `${n} min czytania`, `${n} min de lectură`, `${n} min čítania`);
+const minutes = (n: number) => x(`${n} perc olvasás`, `${n} min. lezen`, `${n} min read`, `${n} Min. Lesezeit`, `${n} min de lecture`, `${n} min de lectura`, `${n} min czytania`, `${n} min de lectură`, `${n} min čítania`, `${n} min di lettura`, `${n} min de leitura`, `${n} λεπτά ανάγνωσης`, `${n} min čtení`, `${n} min branja`, `${n} min läsning`, `${n} min. læsning`, `${n} min lesing`, `Lukuaika ${n} min`, `Lugemisaeg ${n} min`, `Lasīšanas laiks ${n} min`, `Skaitymo laikas ${n} min.`);
 
 const t = {
   metaTitle: x(
@@ -61,7 +61,19 @@ const t = {
     'Noticias y artículos: mercado, mudanza, consejos',
     'Aktualności i artykuły: rynek, przeprowadzka, porady',
     'Noutăți și articole: piață, mutare, sfaturi',
-    'Novinky a články: trh, sťahovanie, rady'
+    'Novinky a články: trh, sťahovanie, rady',
+    'Notizie e articoli: mercato, trasferimento, consigli',
+    'Notícias e artigos: mercado, mudança, conselhos',
+    'Νέα και άρθρα: αγορά, μετεγκατάσταση, συμβουλές',
+    'Novinky a články: trh, stěhování, rady',
+    'Novice in članki: trg, selitev, nasveti',
+    'Nyheter och artiklar: marknad, flytt, råd',
+    'Nyheder og artikler: marked, flytning, råd',
+    'Nyheter og artikler: marked, flytting, råd',
+    'Uutiset ja artikkelit: markkinat, muutto, neuvot',
+    'Uudised ja artiklid: turg, kolimine, nõuanded',
+    'Jaunumi un raksti: tirgus, pārcelšanās, padomi',
+    'Naujienos ir straipsniai: rinka, persikėlimas, patarimai'
   ),
   metaDescription: x(
     'Elemzések a magyar ingatlanpiacról és a nyugat-európai vevőkről: miért költöznek a hollandok Magyarországra, és mit jelent ez az eladóknak.',
@@ -72,11 +84,23 @@ const t = {
     'Análisis del mercado inmobiliario húngaro y de los compradores de Europa occidental: por qué los neerlandeses se mudan a Hungría y qué significa.',
     'Analizy węgierskiego rynku nieruchomości i kupujących z Europy Zachodniej: dlaczego Holendrzy przeprowadzają się na Węgry i co to oznacza.',
     'Analize ale pieței imobiliare din Ungaria și ale cumpărătorilor din Europa de Vest: de ce se mută olandezii în Ungaria și ce înseamnă acest lucru.',
-    'Analýzy maďarského realitného trhu a kupujúcich zo západnej Európy: prečo sa Holanďania sťahujú do Maďarska a čo to znamená.'
+    'Analýzy maďarského realitného trhu a kupujúcich zo západnej Európy: prečo sa Holanďania sťahujú do Maďarska a čo to znamená.',
+    'Analisi del mercato immobiliare ungherese e degli acquirenti dell’Europa occidentale: perché chi vive nei Paesi Bassi si trasferisce in Ungheria e che cosa significa.',
+    'Análise do mercado imobiliário húngaro e dos compradores da Europa Ocidental: porque é que quem vive nos Países Baixos se muda para a Hungria e o que isso significa.',
+    'Ανάλυση της ουγγρικής αγοράς ακινήτων και των αγοραστών από τη Δυτική Ευρώπη: γιατί άνθρωποι από την Ολλανδία μετακομίζουν στην Ουγγαρία και τι σημαίνει αυτό.',
+    'Analýza maďarského realitního trhu a kupujících ze západní Evropy: proč se lidé z Nizozemska stěhují do Maďarska a co to znamená.',
+    'Analiza madžarskega nepremičninskega trga in kupcev iz zahodne Evrope: zakaj se ljudje z Nizozemske selijo na Madžarsko in kaj to pomeni.',
+    'Analyser av den ungerska fastighetsmarknaden och köpare från Västeuropa: varför människor från Nederländerna flyttar till Ungern och vad det innebär.',
+    'Analyser af det ungarske ejendomsmarked og købere fra Vesteuropa: hvorfor folk fra Nederlandene flytter til Ungarn, og hvad det betyder.',
+    'Analyser av det ungarske eiendomsmarkedet og kjøpere fra Vest-Europa: hvorfor folk fra Nederland flytter til Ungarn, og hva det betyr.',
+    'Analyysejä Unkarin kiinteistömarkkinoista ja länsieurooppalaisista ostajista: miksi alankomaalaiset muuttavat Unkariin ja mitä se tarkoittaa.',
+    'Analüüsid Ungari kinnisvaraturu ja Lääne-Euroopa ostjate kohta: miks Madalmaade elanikud Ungarisse kolivad ja mida see tähendab.',
+    'Ungārijas nekustamo īpašumu tirgus un Rietumeiropas pircēju analīze: kāpēc cilvēki no Nīderlandes pārceļas uz Ungāriju un ko tas nozīmē.',
+    'Vengrijos nekilnojamojo turto rinkos ir Vakarų Europos pirkėjų analizė: kodėl žmonės iš Nyderlandų persikelia į Vengriją ir ką tai reiškia.'
   ),
-  eyebrow: x('Hírek és cikkek', 'Nieuws', 'News and articles', 'Neuigkeiten und Artikel', 'Actualités et articles', 'Noticias y artículos', 'Aktualności i artykuły', 'Noutăți și articole', 'Novinky a články'),
-  title: x('Piac,', 'Markt,', 'Market,', 'Markt,', 'Marché,', 'Mercado,', 'Rynek,', 'Piață,', 'Trh,'),
-  titleEm: x('háttér, tanácsok', 'achtergrond, advies', 'background, advice', 'Hintergrund, Ratgeber', 'contexte, conseils', 'contexto, consejos', 'tło, porady', 'context, sfaturi', 'súvislosti, rady'),
+  eyebrow: x('Hírek és cikkek', 'Nieuws', 'News and articles', 'Neuigkeiten und Artikel', 'Actualités et articles', 'Noticias y artículos', 'Aktualności i artykuły', 'Noutăți și articole', 'Novinky a články', 'Notizie e articoli', 'Notícias e artigos', 'Νέα και άρθρα', 'Novinky a články', 'Novice in članki', 'Nyheter och artiklar', 'Nyheder og artikler', 'Nyheter og artikler', 'Uutiset ja artikkelit', 'Uudised ja artiklid', 'Jaunumi un raksti', 'Naujienos ir straipsniai'),
+  title: x('Piac,', 'Markt,', 'Market,', 'Markt,', 'Marché,', 'Mercado,', 'Rynek,', 'Piață,', 'Trh,', 'Mercato,', 'Mercado,', 'Αγορά,', 'Trh,', 'Trg,', 'Marknad,', 'Marked,', 'Marked,', 'Markkinat,', 'Turg,', 'Tirgus,', 'Rinka,'),
+  titleEm: x('háttér, tanácsok', 'achtergrond, advies', 'background, advice', 'Hintergrund, Ratgeber', 'contexte, conseils', 'contexto, consejos', 'tło, porady', 'context, sfaturi', 'súvislosti, rady', 'contesto, consigli', 'contexto, conselhos', 'πλαίσιο, συμβουλές', 'souvislosti, rady', 'ozadje, nasveti', 'bakgrund, råd', 'baggrund, råd', 'bakgrunn, råd', 'tausta, neuvot', 'taust, nõuanded', 'konteksts, padomi', 'kontekstas, patarimai'),
   intro: x(
     'Amit a magyar ingatlanpiacról és a nyugat-európai vevőkről érdemes tudni.',
     'Wat u moet weten over de Hongaarse vastgoedmarkt en de kopers uit West-Europa.',
@@ -86,7 +110,19 @@ const t = {
     'Lo que conviene saber sobre el mercado inmobiliario húngaro y los compradores de Europa occidental.',
     'Co warto wiedzieć o węgierskim rynku nieruchomości i kupujących z Europy Zachodniej.',
     'Ce trebuie să știți despre piața imobiliară din Ungaria și despre cumpărătorii din Europa de Vest.',
-    'Čo by ste mali vedieť o maďarskom realitnom trhu a kupujúcich zo západnej Európy.'
+    'Čo by ste mali vedieť o maďarskom realitnom trhu a kupujúcich zo západnej Európy.',
+    'Che cosa sapere sul mercato immobiliare ungherese e sugli acquirenti dell’Europa occidentale.',
+    'O que convém saber sobre o mercado imobiliário húngaro e os compradores da Europa Ocidental.',
+    'Όσα αξίζει να γνωρίζετε για την ουγγρική αγορά ακινήτων και τους αγοραστές από τη Δυτική Ευρώπη.',
+    'Co byste měli vědět o maďarském realitním trhu a kupujících ze západní Evropy.',
+    'Kaj je dobro vedeti o madžarskem nepremičninskem trgu in kupcih iz zahodne Evrope.',
+    'Det här är bra att veta om den ungerska fastighetsmarknaden och köpare från Västeuropa.',
+    'Det er godt at vide om det ungarske ejendomsmarked og købere fra Vesteuropa.',
+    'Dette er nyttig å vite om det ungarske eiendomsmarkedet og kjøpere fra Vest-Europa.',
+    'Tätä kannattaa tietää Unkarin kiinteistömarkkinoista ja länsieurooppalaisista ostajista.',
+    'Mida tasub teada Ungari kinnisvaraturu ja Lääne-Euroopa ostjate kohta.',
+    'Kas jāzina par Ungārijas nekustamo īpašumu tirgu un pircējiem no Rietumeiropas.',
+    'Ką verta žinoti apie Vengrijos nekilnojamojo turto rinką ir pirkėjus iš Vakarų Europos.'
   ),
   empty: x(
     'Hamarosan új cikkekkel jelentkezünk.',
@@ -97,11 +133,23 @@ const t = {
     'Pronto publicaremos nuevos artículos.',
     'Wkrótce pojawią się nowe artykuły.',
     'În curând vor apărea articole noi.',
-    'Nové články čoskoro pribudnú.'
+    'Nové články čoskoro pribudnú.',
+    'Presto nuovi articoli.',
+    'Em breve, novos artigos.',
+    'Νέα άρθρα έρχονται σύντομα.',
+    'Nové články brzy přibudou.',
+    'Novi članki bodo kmalu na voljo.',
+    'Nya artiklar kommer snart.',
+    'Nye artikler er på vej.',
+    'Nye artikler kommer snart.',
+    'Uusia artikkeleita on tulossa pian.',
+    'Uued artiklid tulevad peagi.',
+    'Drīzumā būs jauni raksti.',
+    'Netrukus pasirodys naujų straipsnių.'
   ),
-  kinds: x('Tartalomtípus', 'Soort inhoud', 'Content type', 'Art des Inhalts', 'Type de contenu', 'Tipo de contenido', 'Rodzaj treści', 'Tip de conținut', 'Typ obsahu'),
-  articles: x('Cikkek', 'Artikelen', 'Articles', 'Artikel', 'Articles', 'Artículos', 'Artykuły', 'Articole', 'Články'),
-  cases: x('Esettanulmányok', 'Casestudies', 'Case studies', 'Fallstudien', 'Études de cas', 'Casos prácticos', 'Studia przypadków', 'Studii de caz', 'Prípadové štúdie'),
+  kinds: x('Tartalomtípus', 'Soort inhoud', 'Content type', 'Art des Inhalts', 'Type de contenu', 'Tipo de contenido', 'Rodzaj treści', 'Tip de conținut', 'Typ obsahu', 'Tipo di contenuto', 'Tipo de conteúdo', 'Είδος περιεχομένου', 'Typ obsahu', 'Vrsta vsebine', 'Innehållstyp', 'Indholdstype', 'Innholdstype', 'Sisältötyyppi', 'Sisu tüüp', 'Satura veids', 'Turinio tipas'),
+  articles: x('Cikkek', 'Artikelen', 'Articles', 'Artikel', 'Articles', 'Artículos', 'Artykuły', 'Articole', 'Články', 'Articoli', 'Artigos', 'Άρθρα', 'Články', 'Članki', 'Artiklar', 'Artikler', 'Artikler', 'Artikkelit', 'Artiklid', 'Raksti', 'Straipsniai'),
+  cases: x('Esettanulmányok', 'Casestudies', 'Case studies', 'Fallstudien', 'Études de cas', 'Casos prácticos', 'Studia przypadków', 'Studii de caz', 'Prípadové štúdie', 'Casi di studio', 'Estudos de caso', 'Μελέτες περίπτωσης', 'Případové studie', 'Študije primerov', 'Fallstudier', 'Casestudier', 'Casestudier', 'Tapaustutkimukset', 'Juhtumiuuringud', 'Gadījumu izpētes', 'Atvejų analizės'),
 };
 ---
 
@@ -185,7 +233,7 @@ const t = {
                       </time>
                     )}
                     <span aria-hidden="true">·</span>
-                    <span>{post.reading_minutes} {x('perc', 'min.', 'min', 'Min.', 'min', 'min', 'min', 'min', 'min')}</span>
+                    <span>{post.reading_minutes} {x('perc', 'min.', 'min', 'Min.', 'min', 'min', 'min', 'min', 'min', 'min', 'min', 'λεπτά', 'min', 'min', 'min', 'min', 'min', 'min', 'min', 'min', 'min')}</span>
                   </p>
                 </div>
               </a>

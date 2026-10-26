@@ -77,7 +77,7 @@ export function hasRequests(extras: RequestedExtras): boolean {
 /** Hungarian summary lines for the admin (review screen, service list). */
 export function describeRequestedExtras(extras: RequestedExtras): string[] {
   const lines: string[] = [];
-  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák' };
+  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván' };
   if (extras.translations?.length) lines.push(`Fordítás: ${extras.translations.map((code) => LANG_HU[code] ?? code).join(', ')}`);
   if (extras.categoryHighlight) lines.push('Kiemelés a kategóriában');
   if (extras.homepageHighlight) lines.push('Kiemelés a főoldalon');

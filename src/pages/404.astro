@@ -21,7 +21,7 @@ const locale = localeOfPath(original) ?? localeFrom(Astro.cookies.get('fodel_lan
 const x = localizer(locale);
 const others = LOCALES.filter((code) => code !== locale);
 
-const title = x('Az oldal nem található', 'Pagina niet gevonden', 'Page not found', 'Seite nicht gefunden', 'Page introuvable', 'Página no encontrada', 'Nie znaleziono strony', 'Pagina nu a fost găsită', 'Stránka sa nenašla');
+const title = x('Az oldal nem található', 'Pagina niet gevonden', 'Page not found', 'Seite nicht gefunden', 'Page introuvable', 'Página no encontrada', 'Nie znaleziono strony', 'Pagina nu a fost găsită', 'Stránka sa nenašla', 'Pagina non trovata', 'Página não encontrada', 'Η σελίδα δεν βρέθηκε', 'Stránka nenalezena', 'Stran ni bila najdena', 'Sidan hittades inte', 'Siden blev ikke fundet', 'Fant ikke siden', 'Sivua ei löytynyt', 'Lehte ei leitud', 'Lapa nav atrasta', 'Puslapis nerastas');
 const body = x(
   'A keresett oldal nem létezik, vagy áthelyeztük. Nézze meg a kínálatunkat, vagy vegye fel velünk a kapcsolatot.',
   'De pagina die u zocht bestaat niet of is verplaatst. Bekijk ons aanbod, of neem contact met ons op.',
@@ -31,9 +31,21 @@ const body = x(
   'La página que busca no existe o se ha trasladado. Descubra nuestros inmuebles o póngase en contacto con nosotros.',
   'Strona, której Państwo szukają, nie istnieje lub została przeniesiona. Zapraszamy do przejrzenia naszych nieruchomości lub do kontaktu.',
   'Pagina pe care o căutați nu există sau a fost mutată. Descoperiți proprietățile noastre sau contactați-ne.',
-  'Stránka, ktorú hľadáte, neexistuje alebo bola presunutá. Pozrite si naše nehnuteľnosti alebo nás kontaktujte.'
+  'Stránka, ktorú hľadáte, neexistuje alebo bola presunutá. Pozrite si naše nehnuteľnosti alebo nás kontaktujte.',
+  'La pagina che cercava non esiste o è stata spostata. Veda i nostri immobili o ci contatti.',
+  'A página que procurava não existe ou foi movida. Veja os nossos imóveis ou contacte-nos.',
+  'Η σελίδα που αναζητούσατε δεν υπάρχει ή έχει μετακινηθεί. Δείτε τα ακίνητά μας ή επικοινωνήστε μαζί μας.',
+  'Stránka, kterou hledáte, neexistuje nebo byla přesunuta. Prohlédněte si naše nemovitosti nebo nás kontaktujte.',
+  'Stran, ki ste jo iskali, ne obstaja ali je bila premaknjena. Oglejte si naše nepremičnine ali nas kontaktirajte.',
+  'Sidan du letade efter finns inte eller har flyttats. Se våra fastigheter eller kontakta oss.',
+  'Siden, du ledte efter, findes ikke eller er flyttet. Se vores ejendomme, eller kontakt os.',
+  'Siden du lette etter, finnes ikke eller er flyttet. Se eiendommene våre eller ta kontakt.',
+  'Etsimääsi sivua ei ole tai se on siirretty. Katso kiinteistömme tai ota yhteyttä.',
+  'Otsitud lehte ei ole olemas või see on teisaldatud. Vaadake meie kinnisvara või võtke ühendust.',
+  'Meklētā lapa neeksistē vai ir pārvietota. Apskatiet mūsu īpašumus vai sazinieties ar mums.',
+  'Ieškomo puslapio nėra arba jis perkeltas. Peržiūrėkite mūsų turtą arba susisiekite su mumis.'
 );
-const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another language', 'In einer anderen Sprache', 'Dans une autre langue', 'En otro idioma', 'W innym języku', 'În altă limbă', 'V inom jazyku');
+const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another language', 'In einer anderen Sprache', 'Dans une autre langue', 'En otro idioma', 'W innym języku', 'În altă limbă', 'V inom jazyku', 'In un’altra lingua', 'Noutra língua', 'Σε άλλη γλώσσα', 'V jiném jazyce', 'V drugem jeziku', 'På ett annat språk', 'På et andet sprog', 'På et annet språk', 'Toisella kielellä', 'Teises keeles', 'Citā valodā', 'Kita kalba');
 ---
 
 <Base locale={locale} title={`404 | ${title}`} description={body} noindex>
@@ -47,8 +59,8 @@ const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another langu
         <div class="col">
           <p class="col-body">{body}</p>
           <div class="actions">
-            <Button variant="dark" href={path(locale, 'properties')}>{x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens', 'Nuestros inmuebles', 'Nasze nieruchomości', 'Proprietățile noastre', 'Naše nehnuteľnosti')}</Button>
-            <Button variant="text" href={path(locale, 'contact')}>{x('Kapcsolat', 'Contact', 'Contact', 'Kontakt', 'Contact', 'Contacto', 'Kontakt', 'Contact', 'Kontakt')}</Button>
+            <Button variant="dark" href={path(locale, 'properties')}>{x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens', 'Nuestros inmuebles', 'Nasze nieruchomości', 'Proprietățile noastre', 'Naše nehnuteľnosti', 'I nostri immobili', 'Os nossos imóveis', 'Τα ακίνητά μας', 'Naše nemovitosti', 'Naše nepremičnine', 'Våra fastigheter', 'Vores ejendomme', 'Våre eiendommer', 'Kohteemme', 'Meie kinnisvara', 'Mūsu īpašumi', 'Mūsų nekilnojamasis turtas')}</Button>
+            <Button variant="text" href={path(locale, 'contact')}>{x('Kapcsolat', 'Contact', 'Contact', 'Kontakt', 'Contact', 'Contacto', 'Kontakt', 'Contact', 'Kontakt', 'Contatti', 'Contacto', 'Επικοινωνία', 'Kontakt', 'Kontakt', 'Kontakt', 'Kontakt', 'Kontakt', 'Yhteystiedot', 'Kontakt', 'Kontakti', 'Kontaktai')}</Button>
           </div>
         </div>
 

@@ -35,6 +35,18 @@ export function officeHours(h: Hours, locale: L): string {
     pl: `Poniedziałek–piątek · ${range}`,
     ro: `Luni–vineri · ${range}`,
     sk: `Pondelok–piatok · ${range}`,
+    it: `Lunedì–venerdì · ${range}`,
+    pt: `Segunda a sexta · ${range}`,
+    el: `Δευτέρα–Παρασκευή · ${range}`,
+    cs: `Pondělí–pátek · ${range}`,
+    sl: `Ponedeljek–petek · ${range}`,
+    sv: `Måndag–fredag · ${range}`,
+    da: `Mandag–fredag · ${range}`,
+    no: `Mandag–fredag · ${range}`,
+    fi: `Maanantai–perjantai · ${range}`,
+    et: `Esmaspäev–reede · ${range}`,
+    lv: `Pirmdiena–piektdiena · ${range}`,
+    lt: `Pirmadienis–penktadienis · ${range}`,
   }[locale];
 }
 
@@ -51,6 +63,18 @@ export function callbackHours(h: Hours, locale: L): string {
     pl: weekend ? `Oddzwaniamy do godz. ${to}, także w weekendy.` : `Oddzwaniamy w dni robocze do godz. ${to}.`,
     ro: weekend ? `Vă sunăm înapoi până la ora ${to}, inclusiv în weekend.` : `Vă sunăm înapoi în zilele lucrătoare până la ora ${to}.`,
     sk: weekend ? `Spätné volanie do ${to}, aj cez víkend.` : `Spätné volanie v pracovné dni do ${to}.`,
+    it: weekend ? `Richiamate fino alle ${to}, anche nel fine settimana.` : `Richiamate nei giorni feriali fino alle ${to}.`,
+    pt: weekend ? `Chamadas de retorno até às ${to}, incluindo fins de semana.` : `Chamadas de retorno nos dias úteis até às ${to}.`,
+    el: weekend ? `Επανακλήσεις έως τις ${to}, και τα Σαββατοκύριακα.` : `Επανακλήσεις τις καθημερινές έως τις ${to}.`,
+    cs: weekend ? `Zpětné volání do ${to}, i o víkendu.` : `Zpětné volání v pracovní dny do ${to}.`,
+    sl: weekend ? `Povratni klici do ${to}, tudi ob koncih tedna.` : `Povratni klici ob delavnikih do ${to}.`,
+    sv: weekend ? `Vi ringer upp till kl. ${to}, även på helger.` : `Vi ringer upp vardagar till kl. ${to}.`,
+    da: weekend ? `Vi ringer tilbage indtil kl. ${to}, også i weekenden.` : `Vi ringer tilbage på hverdage indtil kl. ${to}.`,
+    no: weekend ? `Vi ringer tilbake til kl. ${to}, også i helgene.` : `Vi ringer tilbake på hverdager til kl. ${to}.`,
+    fi: weekend ? `Soitamme takaisin klo ${to} asti, myös viikonloppuisin.` : `Soitamme takaisin arkisin klo ${to} asti.`,
+    et: weekend ? `Tagasihelistamine kuni kella ${to}-ni, ka nädalavahetusel.` : `Tagasihelistamine tööpäeviti kuni kella ${to}-ni.`,
+    lv: weekend ? `Atzvanām līdz plkst. ${to}, arī nedēļas nogalēs.` : `Atzvanām darba dienās līdz plkst. ${to}.`,
+    lt: weekend ? `Perskambiname iki ${to}, taip pat savaitgaliais.` : `Darbo dienomis perskambiname iki ${to}.`,
   }[locale];
 }
 
@@ -69,6 +93,18 @@ export function hoursSentence(h: Hours, locale: L): string {
     pl: `Prosimy dzwonić w dni robocze w godz. ${from}–${to}; oddzwaniamy do godz. ${cb}${weekend ? ', także w weekendy' : ''}.`,
     ro: `Ne puteți suna în zilele lucrătoare între orele ${from} și ${to}; vă sunăm înapoi până la ora ${cb}${weekend ? ', inclusiv în weekend' : ''}.`,
     sk: `Volajte nám v pracovné dni od ${from} do ${to}; spätné volanie je možné do ${cb}${weekend ? ', aj cez víkend' : ''}.`,
+    it: `Ci chiami nei giorni feriali tra le ${from} e le ${to}; le richiamate sono possibili fino alle ${cb}${weekend ? ', anche nel fine settimana' : ''}.`,
+    pt: `Ligue-nos nos dias úteis entre as ${from} e as ${to}; as chamadas de retorno decorrem até às ${cb}${weekend ? ', incluindo fins de semana' : ''}.`,
+    el: `Καλέστε μας τις καθημερινές από τις ${from} έως τις ${to}· οι επανακλήσεις γίνονται έως τις ${cb}${weekend ? ', και τα Σαββατοκύριακα' : ''}.`,
+    cs: `Volejte nám v pracovní dny od ${from} do ${to}; zpětné volání je možné do ${cb}${weekend ? ', i o víkendu' : ''}.`,
+    sl: `Pokličite nas ob delavnikih med ${from} in ${to}; povratni klici so mogoči do ${cb}${weekend ? ', tudi ob koncih tedna' : ''}.`,
+    sv: `Ring oss vardagar mellan kl. ${from} och ${to}; vi ringer upp till kl. ${cb}${weekend ? ', även på helger' : ''}.`,
+    da: `Ring til os på hverdage mellem kl. ${from} og ${to}; vi ringer tilbage indtil kl. ${cb}${weekend ? ', også i weekenden' : ''}.`,
+    no: `Ring oss på hverdager mellom kl. ${from} og ${to}; vi ringer tilbake til kl. ${cb}${weekend ? ', også i helgene' : ''}.`,
+    fi: `Soita meille arkisin klo ${from}–${to}; soitamme takaisin klo ${cb} asti${weekend ? ', myös viikonloppuisin' : ''}.`,
+    et: `Helistage meile tööpäeviti kella ${from}–${to}; tagasi helistame kuni kella ${cb}-ni${weekend ? ', ka nädalavahetusel' : ''}.`,
+    lv: `Zvaniet mums darba dienās no plkst. ${from} līdz ${to}; atzvanām līdz plkst. ${cb}${weekend ? ', arī nedēļas nogalēs' : ''}.`,
+    lt: `Skambinkite mums darbo dienomis nuo ${from} iki ${to}; perskambiname iki ${cb}${weekend ? ', taip pat savaitgaliais' : ''}.`,
   }[locale];
 }
 

@@ -10,7 +10,19 @@
       "es": "Terreno llano",
       "pl": "Płaska działka",
       "ro": "Teren plat",
-      "sk": "Rovinatý pozemok"
+      "sk": "Rovinatý pozemok",
+      "it": "Terreno pianeggiante",
+      "pt": "Terreno plano",
+      "el": "Επίπεδο οικόπεδο",
+      "cs": "Rovinatý pozemek",
+      "sl": "Ravno zemljišče",
+      "sv": "Plan tomt",
+      "da": "Plan grund",
+      "no": "Flat tomt",
+      "fi": "Tasainen tontti",
+      "et": "Tasane maa",
+      "lv": "Līdzens zemes gabals",
+      "lt": "Lygus sklypas"
     },
     "propertyGroups": [
       "house",
@@ -32,7 +44,19 @@
       "es": "Terreno en pendiente",
       "pl": "Działka na zboczu",
       "ro": "Teren în pantă",
-      "sk": "Svahovitý pozemok"
+      "sk": "Svahovitý pozemok",
+      "it": "Terreno in pendenza",
+      "pt": "Terreno inclinado",
+      "el": "Επικλινές οικόπεδο",
+      "cs": "Svažitý pozemek",
+      "sl": "Nagnjeno zemljišče",
+      "sv": "Sluttande tomt",
+      "da": "Skrånende grund",
+      "no": "Skrånende tomt",
+      "fi": "Rinnetontti",
+      "et": "Kaldu maa",
+      "lv": "Slīps zemes gabals",
+      "lt": "Nuožulnus sklypas"
     },
     "propertyGroups": [
       "house",
@@ -54,7 +78,19 @@
       "es": "Entorno boscoso",
       "pl": "Zalesiona okolica",
       "ro": "Împrejurimi împădurite",
-      "sk": "Zalesené okolie"
+      "sk": "Zalesené okolie",
+      "it": "Contesto boschivo",
+      "pt": "Envolvente arborizada",
+      "el": "Δασώδες περιβάλλον",
+      "cs": "Zalesněné okolí",
+      "sl": "Gozdnata okolica",
+      "sv": "Skogsnära läge",
+      "da": "Skovrige omgivelser",
+      "no": "Skogkledde omgivelser",
+      "fi": "Metsäinen ympäristö",
+      "et": "Metsane ümbrus",
+      "lv": "Mežaina apkārtne",
+      "lt": "Miškinga aplinka"
     },
     "propertyGroups": [
       "house",
@@ -74,7 +110,19 @@
       "es": "Vistas panorámicas",
       "pl": "Widok panoramiczny",
       "ro": "Priveliște panoramică",
-      "sk": "Panoramatický výhľad"
+      "sk": "Panoramatický výhľad",
+      "it": "Vista panoramica",
+      "pt": "Vista panorâmica",
+      "el": "Πανοραμική θέα",
+      "cs": "Panoramatický výhled",
+      "sl": "Panoramski razgled",
+      "sv": "Panoramautsikt",
+      "da": "Panoramaudsigt",
+      "no": "Panoramautsikt",
+      "fi": "Panoraamanäkymät",
+      "et": "Panoraamvaade",
+      "lv": "Panorāmas skats",
+      "lt": "Panoraminis vaizdas"
     },
     "propertyGroups": [
       "house",
@@ -95,7 +143,19 @@
       "es": "Acceso directo al agua",
       "pl": "Bezpośredni dostęp do wody",
       "ro": "Acces direct la apă",
-      "sk": "Priamy prístup k vode"
+      "sk": "Priamy prístup k vode",
+      "it": "Direttamente sull’acqua",
+      "pt": "Diretamente junto à água",
+      "el": "Απευθείας στο νερό",
+      "cs": "Přímo u vody",
+      "sl": "Neposredno ob vodi",
+      "sv": "Direkt vid vattnet",
+      "da": "Direkte ved vandet",
+      "no": "Rett ved vannet",
+      "fi": "Suoraan rannalla",
+      "et": "Otse vee ääres",
+      "lv": "Tieši pie ūdens",
+      "lt": "Tiesiai prie vandens"
     },
     "propertyGroups": [
       "house",
@@ -116,7 +176,19 @@
       "es": "Terraza o balcón",
       "pl": "Taras lub balkon",
       "ro": "Terasă sau balcon",
-      "sk": "Terasa alebo balkón"
+      "sk": "Terasa alebo balkón",
+      "it": "Terrazza o balcone",
+      "pt": "Terraço ou varanda",
+      "el": "Βεράντα ή μπαλκόνι",
+      "cs": "Terasa nebo balkon",
+      "sl": "Terasa ali balkon",
+      "sv": "Terrass eller balkong",
+      "da": "Terrasse eller altan",
+      "no": "Terrasse eller balkong",
+      "fi": "Terassi tai parveke",
+      "et": "Terrass või rõdu",
+      "lv": "Terase vai balkons",
+      "lt": "Terasa ar balkonas"
     },
     "propertyGroups": [
       "house",
@@ -137,7 +209,19 @@
       "es": "Garaje o aparcamiento",
       "pl": "Garaż lub miejsce parkingowe",
       "ro": "Garaj sau loc de parcare",
-      "sk": "Garáž alebo parkovanie"
+      "sk": "Garáž alebo parkovanie",
+      "it": "Garage o parcheggio",
+      "pt": "Garagem ou estacionamento",
+      "el": "Γκαράζ ή στάθμευση",
+      "cs": "Garáž nebo parkování",
+      "sl": "Garaža ali parkirišče",
+      "sv": "Garage eller parkering",
+      "da": "Garage eller parkering",
+      "no": "Garasje eller parkering",
+      "fi": "Autotalli tai pysäköinti",
+      "et": "Garaaž või parkimine",
+      "lv": "Garāža vai autostāvvieta",
+      "lt": "Garažas ar automobilių stovėjimo vieta"
     },
     "propertyGroups": [
       "house",
@@ -159,7 +243,19 @@
       "es": "Piscina",
       "pl": "Basen",
       "ro": "Piscină",
-      "sk": "Bazén"
+      "sk": "Bazén",
+      "it": "Piscina",
+      "pt": "Piscina",
+      "el": "Πισίνα",
+      "cs": "Bazén",
+      "sl": "Bazen",
+      "sv": "Pool",
+      "da": "Swimmingpool",
+      "no": "Svømmebasseng",
+      "fi": "Uima-allas",
+      "et": "Bassein",
+      "lv": "Peldbaseins",
+      "lt": "Baseinas"
     },
     "propertyGroups": [
       "house",
@@ -179,7 +275,19 @@
       "es": "Sauna o jacuzzi",
       "pl": "Sauna lub jacuzzi",
       "ro": "Saună sau jacuzzi",
-      "sk": "Sauna alebo vírivka"
+      "sk": "Sauna alebo vírivka",
+      "it": "Sauna o idromassaggio",
+      "pt": "Sauna ou jacuzzi",
+      "el": "Σάουνα ή υδρομασάζ",
+      "cs": "Sauna nebo vířivka",
+      "sl": "Savna ali masažna kad",
+      "sv": "Bastu eller badtunna",
+      "da": "Sauna eller spabad",
+      "no": "Badstue eller boblebad",
+      "fi": "Sauna tai poreallas",
+      "et": "Saun või mullivann",
+      "lv": "Pirts vai burbuļvanna",
+      "lt": "Pirtis ar sūkurinė vonia"
     },
     "propertyGroups": [
       "house",
@@ -199,7 +307,19 @@
       "es": "Chimenea",
       "pl": "Kominek",
       "ro": "Șemineu",
-      "sk": "Krb"
+      "sk": "Krb",
+      "it": "Camino",
+      "pt": "Lareira",
+      "el": "Τζάκι",
+      "cs": "Krb",
+      "sl": "Kamin",
+      "sv": "Öppen spis",
+      "da": "Pejs",
+      "no": "Peis",
+      "fi": "Takka",
+      "et": "Kamin",
+      "lv": "Kamīns",
+      "lt": "Židinys"
     },
     "propertyGroups": [
       "house",
@@ -219,7 +339,19 @@
       "es": "Placas solares",
       "pl": "Panele słoneczne",
       "ro": "Panouri solare",
-      "sk": "Solárne panely"
+      "sk": "Solárne panely",
+      "it": "Pannelli solari",
+      "pt": "Painéis solares",
+      "el": "Ηλιακά πάνελ",
+      "cs": "Solární panely",
+      "sl": "Sončni paneli",
+      "sv": "Solpaneler",
+      "da": "Solceller",
+      "no": "Solcellepaneler",
+      "fi": "Aurinkopaneelit",
+      "et": "Päikesepaneelid",
+      "lv": "Saules paneļi",
+      "lt": "Saulės baterijos"
     },
     "propertyGroups": [
       "house",
@@ -239,7 +371,19 @@
       "es": "Sótano o trastero",
       "pl": "Piwnica lub schowek",
       "ro": "Pivniță sau spațiu de depozitare",
-      "sk": "Pivnica alebo sklad"
+      "sk": "Pivnica alebo sklad",
+      "it": "Cantina o ripostiglio",
+      "pt": "Cave ou arrecadação",
+      "el": "Υπόγειο ή αποθήκη",
+      "cs": "Sklep nebo sklad",
+      "sl": "Klet ali shramba",
+      "sv": "Källare eller förråd",
+      "da": "Kælder eller depotrum",
+      "no": "Kjeller eller bod",
+      "fi": "Kellari tai varasto",
+      "et": "Kelder või panipaik",
+      "lv": "Pagrabs vai noliktava",
+      "lt": "Rūsys ar sandėliukas"
     },
     "propertyGroups": [
       "house",
@@ -260,7 +404,19 @@
       "es": "Jardín paisajístico",
       "pl": "Zagospodarowany ogród",
       "ro": "Grădină amenajată",
-      "sk": "Upravená záhrada"
+      "sk": "Upravená záhrada",
+      "it": "Giardino curato",
+      "pt": "Jardim arranjado",
+      "el": "Διαμορφωμένος κήπος",
+      "cs": "Upravená zahrada",
+      "sl": "Urejen vrt",
+      "sv": "Anlagd trädgård",
+      "da": "Anlagt have",
+      "no": "Opparbeidet hage",
+      "fi": "Hoidettu puutarha",
+      "et": "Hooldatud aed",
+      "lv": "Labiekārtots dārzs",
+      "lt": "Sutvarkytas sodas"
     },
     "propertyGroups": [
       "house",
@@ -280,7 +436,19 @@
       "es": "Caseta o perrera",
       "pl": "Buda lub kojec dla psa",
       "ro": "Cușcă sau padoc pentru câini",
-      "sk": "Búda alebo koterec"
+      "sk": "Búda alebo koterec",
+      "it": "Cuccia o canile",
+      "pt": "Casota ou canil",
+      "el": "Σπιτάκι σκύλου ή κυνοτροφείο",
+      "cs": "Psí bouda nebo kotec",
+      "sl": "Pasja uta ali pesjak",
+      "sv": "Hundkoja eller hundgård",
+      "da": "Hundehus eller hundegård",
+      "no": "Hundehus eller hundegård",
+      "fi": "Koirankoppi tai koiratarha",
+      "et": "Koerakuut või koeraaedik",
+      "lv": "Suņu būda vai voljērs",
+      "lt": "Šunų būda ar voljeras"
     },
     "propertyGroups": [
       "house",
@@ -301,7 +469,19 @@
       "es": "Orilla privada",
       "pl": "Prywatny brzeg",
       "ro": "Mal privat",
-      "sk": "Súkromný breh"
+      "sk": "Súkromný breh",
+      "it": "Riva privata",
+      "pt": "Margem privada",
+      "el": "Ιδιωτική ακτή",
+      "cs": "Soukromý břeh",
+      "sl": "Zasebna obala",
+      "sv": "Egen strand",
+      "da": "Privat strandlinje",
+      "no": "Privat strandlinje",
+      "fi": "Oma ranta",
+      "et": "Oma kallas",
+      "lv": "Privāts krasts",
+      "lt": "Privati pakrantė"
     },
     "propertyGroups": [
       "holiday"
@@ -319,7 +499,19 @@
       "es": "Embarcadero o amarre privado",
       "pl": "Prywatny pomost lub miejsce cumowania",
       "ro": "Ponton sau loc de acostare privat",
-      "sk": "Súkromné mólo alebo kotvisko"
+      "sk": "Súkromné mólo alebo kotvisko",
+      "it": "Pontile o ormeggio privato",
+      "pt": "Pontão ou amarração privada",
+      "el": "Ιδιωτική προβλήτα ή αγκυροβόλιο",
+      "cs": "Soukromé molo nebo kotviště",
+      "sl": "Zasebni pomol ali privez",
+      "sv": "Egen brygga eller förtöjning",
+      "da": "Privat badebro eller fortøjning",
+      "no": "Privat brygge eller fortøyning",
+      "fi": "Oma laituri tai kiinnityspaikka",
+      "et": "Oma kai või sildumiskoht",
+      "lv": "Privāta laivu piestātne vai piestāšanas vieta",
+      "lt": "Privati prieplauka ar švartavimo vieta"
     },
     "propertyGroups": [
       "holiday"
@@ -337,7 +529,19 @@
       "es": "Cobertizo para barcos",
       "pl": "Przechowalnia łodzi",
       "ro": "Adăpost pentru bărci",
-      "sk": "Úschovňa lodí"
+      "sk": "Úschovňa lodí",
+      "it": "Rimessaggio barche",
+      "pt": "Abrigo para barcos",
+      "el": "Χώρος φύλαξης σκαφών",
+      "cs": "Úschovna lodí",
+      "sl": "Prostor za čolne",
+      "sv": "Båtförvaring",
+      "da": "Bådopbevaring",
+      "no": "Båtopplag",
+      "fi": "Venevaja",
+      "et": "Paadikuur",
+      "lv": "Laivu novietne",
+      "lt": "Valčių laikymo vieta"
     },
     "propertyGroups": [
       "holiday"
@@ -355,7 +559,19 @@
       "es": "Terreno de montaña",
       "pl": "Teren górski",
       "ro": "Teren montan",
-      "sk": "Horský terén"
+      "sk": "Horský terén",
+      "it": "Terreno montano",
+      "pt": "Terreno de montanha",
+      "el": "Ορεινό έδαφος",
+      "cs": "Horský terén",
+      "sl": "Gorski teren",
+      "sv": "Bergig terräng",
+      "da": "Bjergterræn",
+      "no": "Fjellterreng",
+      "fi": "Vuoristomaasto",
+      "et": "Mägine maastik",
+      "lv": "Kalnains apvidus",
+      "lt": "Kalnuota vietovė"
     },
     "propertyGroups": [
       "agricultural",
@@ -374,7 +590,19 @@
       "es": "Terreno forestal",
       "pl": "Teren leśny",
       "ro": "Teren împădurit",
-      "sk": "Lesný pozemok"
+      "sk": "Lesný pozemok",
+      "it": "Bosco",
+      "pt": "Mata",
+      "el": "Δασική έκταση",
+      "cs": "Les",
+      "sl": "Gozd",
+      "sv": "Skogsmark",
+      "da": "Skov",
+      "no": "Skog",
+      "fi": "Metsämaa",
+      "et": "Metsamaa",
+      "lv": "Meža zeme",
+      "lt": "Miškas"
     },
     "propertyGroups": [
       "agricultural",
@@ -393,7 +621,19 @@
       "es": "Terreno parcialmente arbolado",
       "pl": "Teren częściowo zalesiony",
       "ro": "Teren parțial împădurit",
-      "sk": "Čiastočne zalesený pozemok"
+      "sk": "Čiastočne zalesený pozemok",
+      "it": "Terreno parzialmente boscato",
+      "pt": "Terreno parcialmente arborizado",
+      "el": "Εν μέρει δασώδης έκταση",
+      "cs": "Částečně zalesněný pozemek",
+      "sl": "Delno gozdnato zemljišče",
+      "sv": "Delvis skogbevuxen mark",
+      "da": "Delvist skovbevokset areal",
+      "no": "Delvis skogkledd areal",
+      "fi": "Osittain metsäinen maa",
+      "et": "Osaliselt metsane maa",
+      "lv": "Daļēji apmežota zeme",
+      "lt": "Iš dalies apaugusi mišku žemė"
     },
     "propertyGroups": [
       "agricultural",
@@ -412,7 +652,19 @@
       "es": "Tierra de cultivo",
       "pl": "Grunt orny",
       "ro": "Teren arabil",
-      "sk": "Orná pôda"
+      "sk": "Orná pôda",
+      "it": "Seminativo",
+      "pt": "Terra arável",
+      "el": "Καλλιεργήσιμη γη",
+      "cs": "Orná půda",
+      "sl": "Njive",
+      "sv": "Åkermark",
+      "da": "Agerjord",
+      "no": "Dyrket mark",
+      "fi": "Peltomaa",
+      "et": "Põllumaa",
+      "lv": "Aramzeme",
+      "lt": "Ariama žemė"
     },
     "propertyGroups": [
       "agricultural",
@@ -431,7 +683,19 @@
       "es": "Pasto o prado",
       "pl": "Pastwisko lub łąka",
       "ro": "Pășune sau fâneață",
-      "sk": "Pasienok alebo lúka"
+      "sk": "Pasienok alebo lúka",
+      "it": "Pascolo o prato",
+      "pt": "Pastagem ou prado",
+      "el": "Βοσκότοπος ή λιβάδι",
+      "cs": "Pastvina nebo louka",
+      "sl": "Pašnik ali travnik",
+      "sv": "Betesmark eller äng",
+      "da": "Græsningsareal eller eng",
+      "no": "Beitemark eller eng",
+      "fi": "Laidun tai niitty",
+      "et": "Karjamaa või niit",
+      "lv": "Ganības vai pļava",
+      "lt": "Ganykla ar pieva"
     },
     "propertyGroups": [
       "agricultural",
@@ -450,7 +714,19 @@
       "es": "Huerto frutal o viñedo",
       "pl": "Sad lub winnica",
       "ro": "Livadă sau viță-de-vie",
-      "sk": "Ovocný sad alebo vinica"
+      "sk": "Ovocný sad alebo vinica",
+      "it": "Frutteto o vigneto",
+      "pt": "Pomar ou vinha",
+      "el": "Οπωρώνας ή αμπελώνας",
+      "cs": "Sad nebo vinice",
+      "sl": "Sadovnjak ali vinograd",
+      "sv": "Fruktodling eller vingård",
+      "da": "Frugtplantage eller vingård",
+      "no": "Frukthage eller vingård",
+      "fi": "Hedelmätarha tai viinitarha",
+      "et": "Viljapuuaed või viinamarjaistandus",
+      "lv": "Augļu dārzs vai vīna dārzs",
+      "lt": "Sodas ar vynuogynas"
     },
     "propertyGroups": [
       "agricultural",
@@ -469,7 +745,19 @@
       "es": "Estanque piscícola u orilla",
       "pl": "Staw rybny lub brzeg wody",
       "ro": "Iaz piscicol sau mal de apă",
-      "sk": "Rybník alebo pozemok pri vode"
+      "sk": "Rybník alebo pozemok pri vode",
+      "it": "Laghetto da pesca o accesso all’acqua",
+      "pt": "Viveiro ou acesso à água",
+      "el": "Ιχθυολίμνη ή πρόσβαση σε νερό",
+      "cs": "Rybník nebo přístup k vodě",
+      "sl": "Ribnik ali dostop do vode",
+      "sv": "Fiskdamm eller strandtomt",
+      "da": "Fiskedam eller adgang til vand",
+      "no": "Fiskedam eller strandlinje",
+      "fi": "Kalalammikko tai ranta",
+      "et": "Kalatiik või veekogu kallas",
+      "lv": "Zivju dīķis vai krasts",
+      "lt": "Tvenkinys ar pakrantė"
     },
     "propertyGroups": [
       "agricultural",
@@ -488,7 +776,19 @@
       "es": "Edificaciones agrícolas",
       "pl": "Budynki gospodarcze",
       "ro": "Clădiri agricole",
-      "sk": "Hospodárske budovy"
+      "sk": "Hospodárske budovy",
+      "it": "Fabbricati agricoli",
+      "pt": "Edifícios agrícolas",
+      "el": "Αγροτικά κτίσματα",
+      "cs": "Hospodářské budovy",
+      "sl": "Gospodarska poslopja",
+      "sv": "Ekonomibyggnader",
+      "da": "Landbrugsbygninger",
+      "no": "Driftsbygninger",
+      "fi": "Maatalousrakennukset",
+      "et": "Põllumajandushooned",
+      "lv": "Saimniecības ēkas",
+      "lt": "Ūkiniai pastatai"
     },
     "propertyGroups": [
       "agricultural",
@@ -518,7 +818,19 @@
       "es": "Instalaciones ganaderas",
       "pl": "Budynki inwentarskie",
       "ro": "Adăposturi pentru animale",
-      "sk": "Maštale"
+      "sk": "Maštale",
+      "it": "Ricoveri per animali",
+      "pt": "Instalações para animais",
+      "el": "Στέγαστρα ζώων",
+      "cs": "Stáje pro zvířata",
+      "sl": "Hlevi za živali",
+      "sv": "Djurstall",
+      "da": "Stalde til dyr",
+      "no": "Dyrehus",
+      "fi": "Eläinsuojat",
+      "et": "Loomapidamishooned",
+      "lv": "Dzīvnieku novietnes",
+      "lt": "Gyvulių pastatai"
     },
     "propertyGroups": [
       "agricultural"
@@ -547,7 +859,19 @@
       "es": "Cuadra o cercado",
       "pl": "Stajnia lub padok",
       "ro": "Grajd sau padoc",
-      "sk": "Stajňa alebo výbeh"
+      "sk": "Stajňa alebo výbeh",
+      "it": "Scuderia o paddock",
+      "pt": "Cavalariça ou paddock",
+      "el": "Στάβλος ή μάντρα",
+      "cs": "Stáj nebo výběh",
+      "sl": "Konjski hlev ali ograda",
+      "sv": "Stall eller hage",
+      "da": "Hestestald eller fold",
+      "no": "Stall eller luftegård",
+      "fi": "Talli tai tarha",
+      "et": "Tall või koppel",
+      "lv": "Stallis vai aploks",
+      "lt": "Arklidė ar aptvaras"
     },
     "propertyGroups": [
       "agricultural"
@@ -576,7 +900,19 @@
       "es": "Pista de equitación",
       "pl": "Ujeżdżalnia",
       "ro": "Manej",
-      "sk": "Jazdecká hala"
+      "sk": "Jazdecká hala",
+      "it": "Maneggio",
+      "pt": "Picadeiro",
+      "el": "Στίβος ιππασίας",
+      "cs": "Jízdárna",
+      "sl": "Jahališče",
+      "sv": "Ridbana",
+      "da": "Ridebane",
+      "no": "Ridebane",
+      "fi": "Maneesi",
+      "et": "Maneež",
+      "lv": "Jāšanas manēža",
+      "lt": "Jojimo maniežas"
     },
     "propertyGroups": [
       "agricultural"
@@ -605,7 +941,19 @@
       "es": "Almacén de maquinaria y herramientas",
       "pl": "Magazyn maszyn i narzędzi",
       "ro": "Depozit pentru utilaje și unelte",
-      "sk": "Sklad strojov a náradia"
+      "sk": "Sklad strojov a náradia",
+      "it": "Deposito per macchinari e attrezzi",
+      "pt": "Armazém para máquinas e ferramentas",
+      "el": "Αποθήκη μηχανημάτων και εργαλείων",
+      "cs": "Sklad strojů a nářadí",
+      "sl": "Shramba za stroje in orodje",
+      "sv": "Maskin- och redskapsförråd",
+      "da": "Maskin- og redskabshus",
+      "no": "Maskin- og redskapslager",
+      "fi": "Kone- ja työkaluvarasto",
+      "et": "Masina- ja tööriistakuur",
+      "lv": "Tehnikas un darbarīku noliktava",
+      "lt": "Technikos ir įrankių sandėlis"
     },
     "propertyGroups": [
       "agricultural"
@@ -634,7 +982,19 @@
       "es": "Almacén de forraje",
       "pl": "Magazyn pasz",
       "ro": "Depozit de furaje",
-      "sk": "Sklad krmiva"
+      "sk": "Sklad krmiva",
+      "it": "Deposito per foraggi",
+      "pt": "Armazém de forragens",
+      "el": "Αποθήκη ζωοτροφών",
+      "cs": "Sklad krmiva",
+      "sl": "Skladišče krme",
+      "sv": "Foderförråd",
+      "da": "Foderlager",
+      "no": "Fôrlager",
+      "fi": "Rehuvarasto",
+      "et": "Söödahoidla",
+      "lv": "Lopbarības noliktava",
+      "lt": "Pašarų sandėlis"
     },
     "propertyGroups": [
       "agricultural"
@@ -663,7 +1023,19 @@
       "es": "Sistema de riego",
       "pl": "System nawadniania",
       "ro": "Sistem de irigații",
-      "sk": "Zavlažovací systém"
+      "sk": "Zavlažovací systém",
+      "it": "Impianto di irrigazione",
+      "pt": "Sistema de rega",
+      "el": "Σύστημα άρδευσης",
+      "cs": "Zavlažovací systém",
+      "sl": "Namakalni sistem",
+      "sv": "Bevattningssystem",
+      "da": "Vandingsanlæg",
+      "no": "Vanningsanlegg",
+      "fi": "Kastelujärjestelmä",
+      "et": "Niisutussüsteem",
+      "lv": "Apūdeņošanas sistēma",
+      "lt": "Drėkinimo sistema"
     },
     "propertyGroups": [
       "agricultural"
@@ -681,7 +1053,19 @@
       "es": "Pozo propio",
       "pl": "Własna studnia",
       "ro": "Fântână proprie",
-      "sk": "Vlastná studňa"
+      "sk": "Vlastná studňa",
+      "it": "Pozzo privato",
+      "pt": "Poço próprio",
+      "el": "Ιδιωτικό πηγάδι",
+      "cs": "Vlastní studna",
+      "sl": "Lasten vodnjak",
+      "sv": "Egen brunn",
+      "da": "Egen brønd",
+      "no": "Egen brønn",
+      "fi": "Oma kaivo",
+      "et": "Oma kaev",
+      "lv": "Sava aka",
+      "lt": "Nuosavas šulinys"
     },
     "propertyGroups": [
       "agricultural"
@@ -699,7 +1083,19 @@
       "es": "Casa de invitados",
       "pl": "Dom gościnny",
       "ro": "Casă de oaspeți",
-      "sk": "Dom pre hostí"
+      "sk": "Dom pre hostí",
+      "it": "Foresteria",
+      "pt": "Casa de hóspedes",
+      "el": "Ξενώνας",
+      "cs": "Domek pro hosty",
+      "sl": "Hiša za goste",
+      "sv": "Gästhus",
+      "da": "Gæstehus",
+      "no": "Gjestehus",
+      "fi": "Vierasmaja",
+      "et": "Külalistemaja",
+      "lv": "Viesu māja",
+      "lt": "Svečių namelis"
     },
     "propertyGroups": [
       "agricultural",
@@ -729,7 +1125,19 @@
       "es": "Bodega",
       "pl": "Piwnica winna",
       "ro": "Pivniță de vin",
-      "sk": "Vínna pivnica"
+      "sk": "Vínna pivnica",
+      "it": "Cantina",
+      "pt": "Adega",
+      "el": "Κελάρι κρασιού",
+      "cs": "Vinný sklep",
+      "sl": "Vinska klet",
+      "sv": "Vinkällare",
+      "da": "Vinkælder",
+      "no": "Vinkjeller",
+      "fi": "Viinikellari",
+      "et": "Veinikelder",
+      "lv": "Vīna pagrabs",
+      "lt": "Vyno rūsys"
     },
     "propertyGroups": [
       "agricultural",
@@ -749,7 +1157,19 @@
       "es": "Fachada a la calle",
       "pl": "Front od ulicy",
       "ro": "Front stradal",
-      "sk": "Priečelie do ulice"
+      "sk": "Priečelie do ulice",
+      "it": "Fronte strada",
+      "pt": "Frente para a rua",
+      "el": "Πρόσοψη σε δρόμο",
+      "cs": "Průčelí do ulice",
+      "sl": "Ob ulici",
+      "sv": "Gatufasad",
+      "da": "Facade mod gaden",
+      "no": "Gatefasade",
+      "fi": "Katujulkisivu",
+      "et": "Tänavapoolne fassaad",
+      "lv": "Fasāde uz ielu",
+      "lt": "Fasadas į gatvę"
     },
     "propertyGroups": [
       "commercial"
@@ -767,7 +1187,19 @@
       "es": "Escaparates",
       "pl": "Witryny sklepowe",
       "ro": "Vitrine",
-      "sk": "Výklady"
+      "sk": "Výklady",
+      "it": "Vetrine",
+      "pt": "Montras",
+      "el": "Βιτρίνες",
+      "cs": "Výlohy",
+      "sl": "Izložbe",
+      "sv": "Skyltfönster",
+      "da": "Butiksvinduer",
+      "no": "Utstillingsvinduer",
+      "fi": "Näyteikkunat",
+      "et": "Vaateaknad",
+      "lv": "Skatlogi",
+      "lt": "Vitrinos"
     },
     "propertyGroups": [
       "commercial"
@@ -785,7 +1217,19 @@
       "es": "Acceso para carga y descarga",
       "pl": "Dostęp dla rozładunku",
       "ro": "Acces pentru încărcare",
-      "sk": "Prístup na nakládku"
+      "sk": "Prístup na nakládku",
+      "it": "Accesso per carico e scarico",
+      "pt": "Acesso para cargas e descargas",
+      "el": "Πρόσβαση φορτοεκφόρτωσης",
+      "cs": "Přístup pro nakládku",
+      "sl": "Dostop za nakladanje",
+      "sv": "Lastningsmöjlighet",
+      "da": "Adgang til af- og pålæsning",
+      "no": "Tilgang for lasting og lossing",
+      "fi": "Lastausmahdollisuus",
+      "et": "Laadimisjuurdepääs",
+      "lv": "Piekļuve iekraušanai",
+      "lt": "Privažiavimas pakrovimui"
     },
     "propertyGroups": [
       "commercial"
@@ -803,7 +1247,19 @@
       "es": "Apto para hostelería",
       "pl": "Odpowiedni na działalność gastronomiczną",
       "ro": "Potrivit pentru HoReCa",
-      "sk": "Vhodné na gastronómiu"
+      "sk": "Vhodné na gastronómiu",
+      "it": "Adatto alla ristorazione",
+      "pt": "Adequado para restauração",
+      "el": "Κατάλληλο για εστίαση",
+      "cs": "Vhodné pro gastronomii",
+      "sl": "Primerno za gostinstvo",
+      "sv": "Lämplig för restaurang",
+      "da": "Egnet til restauration",
+      "no": "Egnet for servering",
+      "fi": "Soveltuu ravintolakäyttöön",
+      "et": "Sobib toitlustuseks",
+      "lv": "Piemērots ēdināšanai",
+      "lt": "Tinka maitinimo verslui"
     },
     "propertyGroups": [
       "commercial"
@@ -821,7 +1277,19 @@
       "es": "Cocina equipada",
       "pl": "Wyposażona kuchnia",
       "ro": "Bucătărie utilată",
-      "sk": "Vybavená kuchyňa"
+      "sk": "Vybavená kuchyňa",
+      "it": "Cucina attrezzata",
+      "pt": "Cozinha equipada",
+      "el": "Εξοπλισμένη κουζίνα",
+      "cs": "Vybavená kuchyně",
+      "sl": "Opremljena kuhinja",
+      "sv": "Utrustat kök",
+      "da": "Udstyret køkken",
+      "no": "Utstyrt kjøkken",
+      "fi": "Varusteltu keittiö",
+      "et": "Sisustatud köök",
+      "lv": "Aprīkota virtuve",
+      "lt": "Įrengta virtuvė"
     },
     "propertyGroups": [
       "commercial"
@@ -839,7 +1307,19 @@
       "es": "Accesible para personas con movilidad reducida",
       "pl": "Dostosowane do potrzeb osób z niepełnosprawnościami",
       "ro": "Accesibil persoanelor cu mobilitate redusă",
-      "sk": "Bezbariérový prístup"
+      "sk": "Bezbariérový prístup",
+      "it": "Accessibile",
+      "pt": "Acessível",
+      "el": "Προσβάσιμο",
+      "cs": "Bezbariérové",
+      "sl": "Brez ovir",
+      "sv": "Tillgänglighetsanpassad",
+      "da": "Handicapvenlig",
+      "no": "Tilgjengelig for alle",
+      "fi": "Esteetön",
+      "et": "Ligipääsetav",
+      "lv": "Piekļūstams",
+      "lt": "Pritaikyta neįgaliesiems"
     },
     "propertyGroups": [
       "commercial"
@@ -857,7 +1337,19 @@
       "es": "Espacio de almacenamiento",
       "pl": "Powierzchnia magazynowa",
       "ro": "Spațiu de depozitare",
-      "sk": "Skladový priestor"
+      "sk": "Skladový priestor",
+      "it": "Spazio di deposito",
+      "pt": "Espaço de arrumação",
+      "el": "Αποθηκευτικός χώρος",
+      "cs": "Skladovací prostor",
+      "sl": "Skladiščni prostor",
+      "sv": "Förvaringsutrymme",
+      "da": "Opbevaringsplads",
+      "no": "Lagringsplass",
+      "fi": "Säilytystilaa",
+      "et": "Hoiuruum",
+      "lv": "Uzglabāšanas telpa",
+      "lt": "Sandėliavimo patalpa"
     },
     "propertyGroups": [
       "commercial",
@@ -876,7 +1368,19 @@
       "es": "Techos altos",
       "pl": "Wysokie stropy",
       "ro": "Tavane înalte",
-      "sk": "Vysoké stropy"
+      "sk": "Vysoké stropy",
+      "it": "Soffitti alti",
+      "pt": "Pés-direitos altos",
+      "el": "Υψηλές οροφές",
+      "cs": "Vysoké stropy",
+      "sl": "Visoki stropi",
+      "sv": "Högt i tak",
+      "da": "Højt til loftet",
+      "no": "Høyt under taket",
+      "fi": "Korkeat huoneet",
+      "et": "Kõrged laed",
+      "lv": "Augsti griesti",
+      "lt": "Aukštos lubos"
     },
     "propertyGroups": [
       "industrial"
@@ -894,7 +1398,19 @@
       "es": "Suministro eléctrico industrial",
       "pl": "Przyłącze prądu siłowego",
       "ro": "Alimentare electrică industrială",
-      "sk": "Priemyselná prípojka elektriny"
+      "sk": "Priemyselná prípojka elektriny",
+      "it": "Alimentazione elettrica industriale",
+      "pt": "Alimentação elétrica industrial",
+      "el": "Βιομηχανική παροχή ρεύματος",
+      "cs": "Průmyslová přípojka elektřiny",
+      "sl": "Industrijski električni priključek",
+      "sv": "Industriell elförsörjning",
+      "da": "Industriel strømforsyning",
+      "no": "Industriell strømforsyning",
+      "fi": "Teollisuussähköliittymä",
+      "et": "Tööstuslik elektriühendus",
+      "lv": "Rūpnieciska elektroapgāde",
+      "lt": "Pramoninis elektros tiekimas"
     },
     "propertyGroups": [
       "industrial"
@@ -912,7 +1428,19 @@
       "es": "Muelle de carga",
       "pl": "Rampa załadunkowa",
       "ro": "Rampă de încărcare",
-      "sk": "Nakladacia rampa"
+      "sk": "Nakladacia rampa",
+      "it": "Banchina di carico",
+      "pt": "Cais de carga",
+      "el": "Ράμπα φόρτωσης",
+      "cs": "Nakládací rampa",
+      "sl": "Nakladalna rampa",
+      "sv": "Lastkaj",
+      "da": "Læsserampe",
+      "no": "Lasterampe",
+      "fi": "Lastauslaituri",
+      "et": "Laadimisramp",
+      "lv": "Iekraušanas rampa",
+      "lt": "Pakrovimo rampa"
     },
     "propertyGroups": [
       "industrial"
@@ -930,7 +1458,19 @@
       "es": "Zona de carga para camiones",
       "pl": "Stanowisko dla ciężarówek",
       "ro": "Loc de acostare pentru camioane",
-      "sk": "Stanovište pre nákladné autá"
+      "sk": "Stanovište pre nákladné autá",
+      "it": "Baia per camion",
+      "pt": "Baía para camiões",
+      "el": "Θέση φορτηγού",
+      "cs": "Stání pro nákladní vůz",
+      "sl": "Nakladalno mesto za tovornjake",
+      "sv": "Lastplats för lastbil",
+      "da": "Lastbilsport",
+      "no": "Lasteport for lastebil",
+      "fi": "Kuorma-auton lastauspaikka",
+      "et": "Veoki laadimiskoht",
+      "lv": "Kravas auto iekraušanas vieta",
+      "lt": "Sunkvežimių pakrovimo vieta"
     },
     "propertyGroups": [
       "industrial"
@@ -948,7 +1488,19 @@
       "es": "Aparcamiento para camiones",
       "pl": "Parking dla ciężarówek",
       "ro": "Parcare pentru camioane",
-      "sk": "Parkovisko pre nákladné autá"
+      "sk": "Parkovisko pre nákladné autá",
+      "it": "Parcheggio per camion",
+      "pt": "Estacionamento para camiões",
+      "el": "Στάθμευση φορτηγών",
+      "cs": "Parkování pro nákladní vozy",
+      "sl": "Parkirišče za tovornjake",
+      "sv": "Lastbilsparkering",
+      "da": "Lastbilparkering",
+      "no": "Lastebilparkering",
+      "fi": "Kuorma-autojen pysäköinti",
+      "et": "Veokite parkla",
+      "lv": "Kravas auto stāvvieta",
+      "lt": "Sunkvežimių stovėjimo aikštelė"
     },
     "propertyGroups": [
       "industrial"
@@ -966,7 +1518,19 @@
       "es": "Grúa o vía de rodadura",
       "pl": "Suwnica lub tor suwnicy",
       "ro": "Macara sau cale de rulare",
-      "sk": "Žeriav alebo žeriavová dráha"
+      "sk": "Žeriav alebo žeriavová dráha",
+      "it": "Gru o vie di corsa per gru",
+      "pt": "Grua ou caminho de rolamento",
+      "el": "Γερανός ή γερανογέφυρα",
+      "cs": "Jeřáb nebo jeřábová dráha",
+      "sl": "Žerjav ali žerjavna proga",
+      "sv": "Kran eller kranbana",
+      "da": "Kran eller kranbane",
+      "no": "Kran eller kranbane",
+      "fi": "Nosturi tai nosturirata",
+      "et": "Kraana või kraanatee",
+      "lv": "Celtnis vai celtņa sliedes",
+      "lt": "Kranas ar krano bėgiai"
     },
     "propertyGroups": [
       "industrial"
@@ -984,7 +1548,19 @@
       "es": "Suelo de alta resistencia",
       "pl": "Posadzka o wysokiej nośności",
       "ro": "Pardoseală cu capacitate portantă mare",
-      "sk": "Podlaha s vysokou nosnosťou"
+      "sk": "Podlaha s vysokou nosnosťou",
+      "it": "Pavimento per carichi pesanti",
+      "pt": "Pavimento para cargas pesadas",
+      "el": "Δάπεδο βαρέος τύπου",
+      "cs": "Podlaha pro těžké zatížení",
+      "sl": "Tla za velike obremenitve",
+      "sv": "Golv för tung belastning",
+      "da": "Gulv til tung belastning",
+      "no": "Gulv for tung last",
+      "fi": "Raskaan kuormituksen lattia",
+      "et": "Suure kandevõimega põrand",
+      "lv": "Grīda lielām slodzēm",
+      "lt": "Didelės apkrovos grindys"
     },
     "propertyGroups": [
       "industrial"
@@ -1002,7 +1578,19 @@
       "es": "Taller",
       "pl": "Warsztat",
       "ro": "Atelier",
-      "sk": "Dielňa"
+      "sk": "Dielňa",
+      "it": "Officina",
+      "pt": "Oficina",
+      "el": "Εργαστήριο",
+      "cs": "Dílna",
+      "sl": "Delavnica",
+      "sv": "Verkstad",
+      "da": "Værksted",
+      "no": "Verksted",
+      "fi": "Korjaamo",
+      "et": "Töökoda",
+      "lv": "Darbnīca",
+      "lt": "Dirbtuvės"
     },
     "propertyGroups": [
       "industrial"
@@ -1020,7 +1608,19 @@
       "es": "Oficinas",
       "pl": "Powierzchnia biurowa",
       "ro": "Spațiu de birouri",
-      "sk": "Kancelárske priestory"
+      "sk": "Kancelárske priestory",
+      "it": "Spazi per uffici",
+      "pt": "Espaço de escritório",
+      "el": "Χώροι γραφείων",
+      "cs": "Kancelářské prostory",
+      "sl": "Pisarniški prostori",
+      "sv": "Kontorsyta",
+      "da": "Kontorareal",
+      "no": "Kontorlokaler",
+      "fi": "Toimistotilaa",
+      "et": "Büroopind",
+      "lv": "Biroja telpas",
+      "lt": "Biuro patalpos"
     },
     "propertyGroups": [
       "industrial"
@@ -1038,7 +1638,19 @@
       "es": "Instalaciones para el personal",
       "pl": "Pomieszczenia socjalne",
       "ro": "Spații pentru personal",
-      "sk": "Sociálne zariadenia"
+      "sk": "Sociálne zariadenia",
+      "it": "Servizi per il personale",
+      "pt": "Instalações para pessoal",
+      "el": "Χώροι προσωπικού",
+      "cs": "Sociální zázemí pro zaměstnance",
+      "sl": "Prostori za zaposlene",
+      "sv": "Personalutrymmen",
+      "da": "Personalefaciliteter",
+      "no": "Personalrom",
+      "fi": "Henkilöstötilat",
+      "et": "Personaliruumid",
+      "lv": "Personāla telpas",
+      "lt": "Personalo patalpos"
     },
     "propertyGroups": [
       "industrial"
@@ -1056,7 +1668,19 @@
       "es": "Acceso para camiones",
       "pl": "Dojazd dla ciężarówek",
       "ro": "Acces pentru camioane",
-      "sk": "Prístup pre nákladné autá"
+      "sk": "Prístup pre nákladné autá",
+      "it": "Accesso per camion",
+      "pt": "Acesso para camiões",
+      "el": "Πρόσβαση φορτηγών",
+      "cs": "Příjezd pro nákladní vozy",
+      "sl": "Dostop za tovornjake",
+      "sv": "Tillfart för lastbil",
+      "da": "Adgang for lastbiler",
+      "no": "Adkomst for lastebil",
+      "fi": "Kuorma-autoliikenne mahdollinen",
+      "et": "Juurdepääs veokitele",
+      "lv": "Piekļuve kravas auto",
+      "lt": "Privažiavimas sunkvežimiams"
     },
     "propertyGroups": [
       "industrial"
@@ -1074,7 +1698,19 @@
       "es": "Carácter patrimonial",
       "pl": "Charakter zabytkowy",
       "ro": "Caracter de patrimoniu",
-      "sk": "Pamiatkový charakter"
+      "sk": "Pamiatkový charakter",
+      "it": "Vincolato o di carattere storico",
+      "pt": "Classificado ou de caráter patrimonial",
+      "el": "Διατηρητέο ή ιστορικού χαρακτήρα",
+      "cs": "Památkově chráněné nebo historického rázu",
+      "sl": "Zaščiteno ali dediščinskega značaja",
+      "sv": "Kulturminnesmärkt eller med kulturhistoriskt värde",
+      "da": "Fredet eller bevaringsværdigt",
+      "no": "Fredet eller verneverdig",
+      "fi": "Suojeltu tai kulttuurihistoriallisesti arvokas",
+      "et": "Kaitstav või pärandiväärtusega",
+      "lv": "Aizsargājams vai ar vēsturisku vērtību",
+      "lt": "Saugomas ar paveldo vertės"
     },
     "propertyGroups": [
       "mansion"
@@ -1092,7 +1728,19 @@
       "es": "Elementos arquitectónicos históricos",
       "pl": "Zabytkowe elementy architektoniczne",
       "ro": "Elemente arhitecturale istorice",
-      "sk": "Historické architektonické prvky"
+      "sk": "Historické architektonické prvky",
+      "it": "Elementi architettonici storici",
+      "pt": "Elementos arquitetónicos históricos",
+      "el": "Ιστορικά αρχιτεκτονικά στοιχεία",
+      "cs": "Historické architektonické prvky",
+      "sl": "Zgodovinski arhitekturni elementi",
+      "sv": "Historiska arkitektoniska detaljer",
+      "da": "Historiske arkitektoniske detaljer",
+      "no": "Historiske arkitektoniske detaljer",
+      "fi": "Historialliset arkkitehtoniset yksityiskohdat",
+      "et": "Ajaloolised arhitektuurielemendid",
+      "lv": "Vēsturiski arhitektūras elementi",
+      "lt": "Istoriniai architektūros elementai"
     },
     "propertyGroups": [
       "mansion"
@@ -1110,7 +1758,19 @@
       "es": "Finca arbolada",
       "pl": "Zalesiony majątek",
       "ro": "Domeniu împădurit",
-      "sk": "Zalesený statok"
+      "sk": "Zalesený statok",
+      "it": "Tenuta boscata",
+      "pt": "Propriedade arborizada",
+      "el": "Δασώδες κτήμα",
+      "cs": "Zalesněný statek",
+      "sl": "Gozdnato posestvo",
+      "sv": "Skogsegendom",
+      "da": "Skovejendom",
+      "no": "Skogeiendom",
+      "fi": "Metsätila",
+      "et": "Metsamõis",
+      "lv": "Meža īpašums",
+      "lt": "Miškingas dvaras"
     },
     "propertyGroups": [
       "mansion"
@@ -1128,7 +1788,19 @@
       "es": "Capilla privada",
       "pl": "Prywatna kaplica",
       "ro": "Capelă privată",
-      "sk": "Súkromná kaplnka"
+      "sk": "Súkromná kaplnka",
+      "it": "Cappella privata",
+      "pt": "Capela privada",
+      "el": "Ιδιωτικό παρεκκλήσι",
+      "cs": "Soukromá kaple",
+      "sl": "Zasebna kapela",
+      "sv": "Privat kapell",
+      "da": "Privat kapel",
+      "no": "Privat kapell",
+      "fi": "Oma kappeli",
+      "et": "Erakabel",
+      "lv": "Privāta kapela",
+      "lt": "Privati koplyčia"
     },
     "propertyGroups": [
       "mansion"
@@ -1146,7 +1818,19 @@
       "es": "Terreno escarpado",
       "pl": "Strome zbocze",
       "ro": "Teren abrupt",
-      "sk": "Strmý pozemok"
+      "sk": "Strmý pozemok",
+      "it": "Terreno ripido",
+      "pt": "Terreno íngreme",
+      "el": "Απότομο έδαφος",
+      "cs": "Strmý pozemek",
+      "sl": "Strmo zemljišče",
+      "sv": "Brant mark",
+      "da": "Stejlt terræn",
+      "no": "Bratt terreng",
+      "fi": "Jyrkkä maasto",
+      "et": "Järsk maa",
+      "lv": "Stāvs zemes gabals",
+      "lt": "Statūs šlaitai"
     },
     "propertyGroups": [
       "land"
@@ -1164,7 +1848,19 @@
       "es": "Pradera",
       "pl": "Teren trawiasty",
       "ro": "Pajiște",
-      "sk": "Trávnatý pozemok"
+      "sk": "Trávnatý pozemok",
+      "it": "Prato",
+      "pt": "Pastagem",
+      "el": "Χορτολιβαδική έκταση",
+      "cs": "Travní porost",
+      "sl": "Travinje",
+      "sv": "Gräsmark",
+      "da": "Græsareal",
+      "no": "Gressmark",
+      "fi": "Nurmimaa",
+      "et": "Rohumaa",
+      "lv": "Zālāji",
+      "lt": "Žolynai"
     },
     "propertyGroups": [
       "land"
@@ -1182,7 +1878,19 @@
       "es": "Acceso desde vía pública",
       "pl": "Dostęp z drogi publicznej",
       "ro": "Acces din drum public",
-      "sk": "Prístup z verejnej komunikácie"
+      "sk": "Prístup z verejnej komunikácie",
+      "it": "Accesso da strada pubblica",
+      "pt": "Acesso por via pública",
+      "el": "Πρόσβαση από δημόσιο δρόμο",
+      "cs": "Přístup z veřejné komunikace",
+      "sl": "Dostop z javne ceste",
+      "sv": "Tillfart från allmän väg",
+      "da": "Adgang fra offentlig vej",
+      "no": "Adkomst fra offentlig vei",
+      "fi": "Kulku yleiseltä tieltä",
+      "et": "Juurdepääs avalikult teelt",
+      "lv": "Piekļuve no koplietošanas ceļa",
+      "lt": "Privažiavimas viešuoju keliu"
     },
     "propertyGroups": [
       "land"
@@ -1200,7 +1908,19 @@
       "es": "Carretera asfaltada",
       "pl": "Droga asfaltowa",
       "ro": "Drum asfaltat",
-      "sk": "Asfaltová cesta"
+      "sk": "Asfaltová cesta",
+      "it": "Strada asfaltata",
+      "pt": "Estrada pavimentada",
+      "el": "Ασφαλτοστρωμένος δρόμος",
+      "cs": "Zpevněná cesta",
+      "sl": "Asfaltirana cesta",
+      "sv": "Asfalterad väg",
+      "da": "Asfalteret vej",
+      "no": "Asfaltert vei",
+      "fi": "Päällystetty tie",
+      "et": "Kõvakattega tee",
+      "lv": "Asfaltēts ceļš",
+      "lt": "Asfaltuotas kelias"
     },
     "propertyGroups": [
       "land"
@@ -1218,7 +1938,19 @@
       "es": "Camino de tierra",
       "pl": "Droga gruntowa",
       "ro": "Drum de pământ",
-      "sk": "Nespevnená cesta"
+      "sk": "Nespevnená cesta",
+      "it": "Strada sterrata",
+      "pt": "Estrada de terra",
+      "el": "Χωματόδρομος",
+      "cs": "Nezpevněná cesta",
+      "sl": "Makadamska cesta",
+      "sv": "Grusväg",
+      "da": "Grusvej",
+      "no": "Grusvei",
+      "fi": "Päällystämätön tie",
+      "et": "Kruusatee",
+      "lv": "Grants ceļš",
+      "lt": "Žvyrkelis"
     },
     "propertyGroups": [
       "land"
@@ -1236,7 +1968,19 @@
       "es": "Electricidad disponible",
       "pl": "Dostępny prąd",
       "ro": "Electricitate disponibilă",
-      "sk": "Elektrina k dispozícii"
+      "sk": "Elektrina k dispozícii",
+      "it": "Elettricità disponibile",
+      "pt": "Eletricidade disponível",
+      "el": "Διαθέσιμο ρεύμα",
+      "cs": "Elektřina k dispozici",
+      "sl": "Elektrika na voljo",
+      "sv": "El finns",
+      "da": "El tilgængelig",
+      "no": "Strøm tilgjengelig",
+      "fi": "Sähkö saatavilla",
+      "et": "Elekter olemas",
+      "lv": "Elektrība pieejama",
+      "lt": "Yra elektra"
     },
     "propertyGroups": [
       "land",
@@ -1255,7 +1999,19 @@
       "es": "Agua disponible",
       "pl": "Dostępna woda",
       "ro": "Apă disponibilă",
-      "sk": "Voda k dispozícii"
+      "sk": "Voda k dispozícii",
+      "it": "Acqua disponibile",
+      "pt": "Água disponível",
+      "el": "Διαθέσιμη ύδρευση",
+      "cs": "Voda k dispozici",
+      "sl": "Voda na voljo",
+      "sv": "Vatten finns",
+      "da": "Vand tilgængeligt",
+      "no": "Vann tilgjengelig",
+      "fi": "Vesi saatavilla",
+      "et": "Vesi olemas",
+      "lv": "Ūdensapgāde pieejama",
+      "lt": "Yra vandentiekis"
     },
     "propertyGroups": [
       "land",
@@ -1274,7 +2030,19 @@
       "es": "Alcantarillado disponible",
       "pl": "Dostępna kanalizacja",
       "ro": "Canalizare disponibilă",
-      "sk": "Kanalizácia k dispozícii"
+      "sk": "Kanalizácia k dispozícii",
+      "it": "Allaccio alla fognatura",
+      "pt": "Rede de esgotos disponível",
+      "el": "Σύνδεση με αποχέτευση",
+      "cs": "Kanalizace k dispozici",
+      "sl": "Kanalizacija na voljo",
+      "sv": "Kommunalt avlopp",
+      "da": "Kloak tilgængelig",
+      "no": "Offentlig avløp",
+      "fi": "Viemäriliittymä saatavilla",
+      "et": "Kanalisatsioon olemas",
+      "lv": "Kanalizācija pieejama",
+      "lt": "Yra kanalizacija"
     },
     "propertyGroups": [
       "land"
@@ -1292,7 +2060,19 @@
       "es": "Gas disponible",
       "pl": "Dostępny gaz",
       "ro": "Gaz disponibil",
-      "sk": "Plyn k dispozícii"
+      "sk": "Plyn k dispozícii",
+      "it": "Gas disponibile",
+      "pt": "Gás disponível",
+      "el": "Διαθέσιμο φυσικό αέριο",
+      "cs": "Plyn k dispozici",
+      "sl": "Plin na voljo",
+      "sv": "Gas finns",
+      "da": "Gas tilgængelig",
+      "no": "Gass tilgjengelig",
+      "fi": "Kaasu saatavilla",
+      "et": "Gaas olemas",
+      "lv": "Gāze pieejama",
+      "lt": "Yra dujos"
     },
     "propertyGroups": [
       "land"
@@ -1310,7 +2090,19 @@
       "es": "Telecomunicaciones disponibles",
       "pl": "Dostępna telekomunikacja",
       "ro": "Telecomunicații disponibile",
-      "sk": "Telekomunikácie k dispozícii"
+      "sk": "Telekomunikácie k dispozícii",
+      "it": "Telecomunicazioni disponibili",
+      "pt": "Telecomunicações disponíveis",
+      "el": "Διαθέσιμες τηλεπικοινωνίες",
+      "cs": "Telekomunikace k dispozici",
+      "sl": "Telekomunikacije na voljo",
+      "sv": "Tele och bredband finns",
+      "da": "Telekommunikation tilgængelig",
+      "no": "Telekommunikasjon tilgjengelig",
+      "fi": "Tietoliikenneyhteydet saatavilla",
+      "et": "Sideühendus olemas",
+      "lv": "Telekomunikācijas pieejamas",
+      "lt": "Yra ryšio linijos"
     },
     "propertyGroups": [
       "land"
@@ -1328,7 +2120,19 @@
       "es": "Alquilado",
       "pl": "Wynajęte",
       "ro": "Închiriat",
-      "sk": "Prenajaté"
+      "sk": "Prenajaté",
+      "it": "Locato",
+      "pt": "Arrendado",
+      "el": "Μισθωμένο",
+      "cs": "Pronajato",
+      "sl": "Oddano",
+      "sv": "Uthyrd",
+      "da": "Udlejet",
+      "no": "Utleid",
+      "fi": "Vuokrattu",
+      "et": "Üüritud",
+      "lv": "Izīrēts",
+      "lt": "Išnuomota"
     },
     "propertyGroups": [
       "investment"
@@ -1346,7 +2150,19 @@
       "es": "Venta con inquilino posible",
       "pl": "Możliwa sprzedaż z najemcą",
       "ro": "Vânzare posibilă cu chiriaș",
-      "sk": "Možný predaj s nájomcom"
+      "sk": "Možný predaj s nájomcom",
+      "it": "Venduto con inquilino",
+      "pt": "Vendido com inquilino",
+      "el": "Πωλείται με ενοικιαστή",
+      "cs": "Prodej s nájemníkem",
+      "sl": "Prodaja z najemnikom",
+      "sv": "Säljs med hyresgäst",
+      "da": "Sælges med lejer",
+      "no": "Selges med leietaker",
+      "fi": "Myydään vuokralaisineen",
+      "et": "Müüakse koos üürnikuga",
+      "lv": "Pārdod kopā ar īrnieku",
+      "lt": "Parduodama su nuomininku"
     },
     "propertyGroups": [
       "investment"
@@ -1364,7 +2180,19 @@
       "es": "Varias unidades alquiladas",
       "pl": "Kilka lokali na wynajem",
       "ro": "Mai multe unități închiriate",
-      "sk": "Viacero prenajatých jednotiek"
+      "sk": "Viacero prenajatých jednotiek",
+      "it": "Più unità in affitto",
+      "pt": "Várias frações arrendáveis",
+      "el": "Πολλαπλές μισθώσιμες μονάδες",
+      "cs": "Více nájemních jednotek",
+      "sl": "Več najemnih enot",
+      "sv": "Flera hyresenheter",
+      "da": "Flere lejemål",
+      "no": "Flere utleieenheter",
+      "fi": "Useita vuokrayksiköitä",
+      "et": "Mitu üüriüksust",
+      "lv": "Vairākas īres vienības",
+      "lt": "Keli nuomojami vienetai"
     },
     "propertyGroups": [
       "investment"
@@ -1382,7 +2210,19 @@
       "es": "Varios edificios",
       "pl": "Kilka budynków",
       "ro": "Mai multe clădiri",
-      "sk": "Viacero budov"
+      "sk": "Viacero budov",
+      "it": "Più edifici",
+      "pt": "Vários edifícios",
+      "el": "Πολλαπλά κτίρια",
+      "cs": "Více budov",
+      "sl": "Več stavb",
+      "sv": "Flera byggnader",
+      "da": "Flere bygninger",
+      "no": "Flere bygninger",
+      "fi": "Useita rakennuksia",
+      "et": "Mitu hoonet",
+      "lv": "Vairākas ēkas",
+      "lt": "Keli pastatai"
     },
     "propertyGroups": [
       "investment"
@@ -1400,7 +2240,19 @@
       "es": "Venta posible con negocio en funcionamiento",
       "pl": "Możliwa sprzedaż z działającą firmą",
       "ro": "Vânzare posibilă cu afacerea în funcțiune",
-      "sk": "Možný predaj s fungujúcou prevádzkou"
+      "sk": "Možný predaj s fungujúcou prevádzkou",
+      "it": "Venduto con attività avviata",
+      "pt": "Vendido com negócio em funcionamento",
+      "el": "Πωλείται με λειτουργούσα επιχείρηση",
+      "cs": "Prodej s fungujícím podnikem",
+      "sl": "Prodaja z delujočim podjetjem",
+      "sv": "Säljs med pågående verksamhet",
+      "da": "Sælges med igangværende virksomhed",
+      "no": "Selges med drift",
+      "fi": "Myydään toimivan liiketoiminnan kanssa",
+      "et": "Müüakse koos toimiva ettevõttega",
+      "lv": "Pārdod kopā ar darbojošos uzņēmumu",
+      "lt": "Parduodama su veikiančiu verslu"
     },
     "propertyGroups": [
       "investment"
@@ -1418,7 +2270,19 @@
       "es": "Genera ingresos",
       "pl": "Przynosi dochód",
       "ro": "Generează venit",
-      "sk": "Generuje príjem"
+      "sk": "Generuje príjem",
+      "it": "A reddito",
+      "pt": "Com rendimento",
+      "el": "Αποφέρει εισόδημα",
+      "cs": "Výnosové",
+      "sl": "Prinaša dohodek",
+      "sv": "Avkastningsgivande",
+      "da": "Indtægtsgivende",
+      "no": "Inntektsbringende",
+      "fi": "Tuottava",
+      "et": "Tulu teeniv",
+      "lv": "Ienākumus nesošs",
+      "lt": "Duoda pajamų"
     },
     "propertyGroups": [
       "investment"
@@ -1436,7 +2300,19 @@
       "es": "Potencial de desarrollo",
       "pl": "Potencjał inwestycyjny",
       "ro": "Potențial de dezvoltare",
-      "sk": "Rozvojový potenciál"
+      "sk": "Rozvojový potenciál",
+      "it": "Potenziale di sviluppo",
+      "pt": "Potencial de valorização",
+      "el": "Αναπτυξιακές δυνατότητες",
+      "cs": "Rozvojový potenciál",
+      "sl": "Razvojni potencial",
+      "sv": "Utvecklingspotential",
+      "da": "Udviklingspotentiale",
+      "no": "Utviklingspotensial",
+      "fi": "Kehityspotentiaalia",
+      "et": "Arenduspotentsiaal",
+      "lv": "Attīstības potenciāls",
+      "lt": "Plėtros potencialas"
     },
     "propertyGroups": [
       "investment"
@@ -1454,7 +2330,19 @@
       "es": "Aparcamiento cerrado",
       "pl": "Zamknięty parking",
       "ro": "Parcare închisă",
-      "sk": "Uzavreté parkovanie"
+      "sk": "Uzavreté parkovanie",
+      "it": "Parcheggio coperto",
+      "pt": "Estacionamento coberto",
+      "el": "Κλειστή θέση στάθμευσης",
+      "cs": "Krytá parkovací místa",
+      "sl": "Pokrito parkirišče",
+      "sv": "Inbyggd parkering",
+      "da": "Overdækket parkering",
+      "no": "Innendørs parkering",
+      "fi": "Katettu pysäköinti",
+      "et": "Kinnine parkla",
+      "lv": "Slēgta autostāvvieta",
+      "lt": "Uždara automobilių stovėjimo vieta"
     },
     "propertyGroups": [
       "other"

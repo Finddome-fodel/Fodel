@@ -37,7 +37,7 @@ const steps = copy(locale).steps;
 const catalog = listingCatalog((await getCompany()).services);
 const cheapest = priceFacts(catalog).from;
 const translationFee = extraPrice(catalog, 'translation');
-const space = locale === 'de' || locale === 'fr' || locale === 'es' || locale === 'sk' ? '\u00a0' : '';
+const space = ['de', 'fr', 'es', 'sk', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'lt'].includes(locale) ? '\u00a0' : '';
 
 // The seller FAQ doubles as FAQPage markup — this is the content answer
 // engines quote when someone asks how selling to foreign buyers works.
@@ -62,7 +62,7 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
     titleEm={c.hero.titleEm}
     body={c.hero.body}
     image={vineyard}
-    imageAlt={x('Szőlőbirtok a Dunántúlon', 'Wijngaard in Transdanubië', 'Vineyard in Transdanubia', 'Weingut in Transdanubien', 'Vignoble en Transdanubie', 'Viñedo en Transdanubia', 'Winnica w Zadunaju', 'Podgorie în Transdanubia', 'Vinica v Zadunajsku')}
+    imageAlt={x('Szőlőbirtok a Dunántúlon', 'Wijngaard in Transdanubië', 'Vineyard in Transdanubia', 'Weingut in Transdanubien', 'Vignoble en Transdanubie', 'Viñedo en Transdanubia', 'Winnica w Zadunaju', 'Podgorie în Transdanubia', 'Vinica v Zadunajsku', 'Vigneto in Transdanubia', 'Vinha na Transdanúbia', 'Αμπελώνας στην Υπερδουνάβια', 'Vinice v Zadunají', 'Vinograd v Prekdonavju', 'Vingård i Transdanubien', 'Vingård i Transdanubien', 'Vingård i Transdanubia', 'Viinitila Transdanubiassa', 'Viinamägi Transdanuubias', 'Vīnogulāji Aizdonavā', 'Vynuogynas Užduonojyje')}
     primary={{ label: c.hero.cta, href: path(locale, 'submitAd'), emphasis: true }}
     secondary={{ label: c.hero.secondary, href: path(locale, 'priceList') }}
   />
@@ -114,7 +114,19 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
           `mín. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% de IVA`,
           `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% VAT`,
           `min. ${eur(COMMISSION.minimumEur, locale)} + TVA ${COMMISSION.vatPercent}${space}%`,
-          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% DPH`
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% DPH`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + IVA ${COMMISSION.vatPercent}${space}%`,
+          `mín. ${eur(COMMISSION.minimumEur, locale)} + IVA ${COMMISSION.vatPercent}${space}%`,
+          `ελάχ. ${eur(COMMISSION.minimumEur, locale)} + ΦΠΑ ${COMMISSION.vatPercent}${space}%`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% DPH`,
+          `najmanj ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% DDV`,
+          `minst ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% moms`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% moms`,
+          `min. ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% mva.`,
+          `väh. ${eur(COMMISSION.minimumEur, locale)} + alv ${COMMISSION.vatPercent}${space}%`,
+          `vähemalt ${eur(COMMISSION.minimumEur, locale)} + käibemaks ${COMMISSION.vatPercent}${space}%`,
+          `vismaz ${eur(COMMISSION.minimumEur, locale)} + PVN ${COMMISSION.vatPercent}${space}%`,
+          `ne mažiau kaip ${eur(COMMISSION.minimumEur, locale)} + ${COMMISSION.vatPercent}${space}% PVM`
         )}
       </span>
     </div>
@@ -123,8 +135,8 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
   {/* ── Pricing summary ── */}
   <section class="pricing slab">
     <SectionHead
-      eyebrow={x('Hirdetési csomagok', 'Advertentiepakketten', 'Listing packages', 'Inseratspakete', 'Forfaits d’annonce', 'Paquetes de anuncio', 'Pakiety ogłoszeń', 'Pachete de anunț', 'Balíky inzerátov')}
-      title={x(`Hirdetés már ${cheapest} €-tól`, `Adverteren vanaf € ${cheapest}`, `Listings from ${eur(cheapest, locale)}`, `Inserieren ab ${eur(cheapest, locale)}`, `Annonces dès ${eur(cheapest, locale)}`, `Anuncios desde ${eur(cheapest, locale)}`, `Ogłoszenia od ${eur(cheapest, locale)}`, `Anunțuri de la ${eur(cheapest, locale)}`, `Inzeráty od ${eur(cheapest, locale)}`)}
+      eyebrow={x('Hirdetési csomagok', 'Advertentiepakketten', 'Listing packages', 'Inseratspakete', 'Forfaits d’annonce', 'Paquetes de anuncio', 'Pakiety ogłoszeń', 'Pachete de anunț', 'Balíky inzerátov', 'Pacchetti di annunci', 'Pacotes de anúncios', 'Πακέτα αγγελιών', 'Balíčky inzerátů', 'Paketi oglasov', 'Annonspaket', 'Annoncepakker', 'Annonsepakker', 'Ilmoituspaketit', 'Kuulutuspaketid', 'Sludinājumu paketes', 'Skelbimų paketai')}
+      title={x(`Hirdetés már ${cheapest} €-tól`, `Adverteren vanaf € ${cheapest}`, `Listings from ${eur(cheapest, locale)}`, `Inserieren ab ${eur(cheapest, locale)}`, `Annonces dès ${eur(cheapest, locale)}`, `Anuncios desde ${eur(cheapest, locale)}`, `Ogłoszenia od ${eur(cheapest, locale)}`, `Anunțuri de la ${eur(cheapest, locale)}`, `Inzeráty od ${eur(cheapest, locale)}`, `Annunci da ${eur(cheapest, locale)}`, `Anúncios a partir de ${eur(cheapest, locale)}`, `Αγγελίες από ${eur(cheapest, locale)}`, `Inzeráty od ${eur(cheapest, locale)}`, `Oglasi od ${eur(cheapest, locale)}`, `Annonser från ${eur(cheapest, locale)}`, `Annoncer fra ${eur(cheapest, locale)}`, `Annonser fra ${eur(cheapest, locale)}`, `Ilmoitukset alkaen ${eur(cheapest, locale)}`, `Kuulutused alates ${eur(cheapest, locale)}`, `Sludinājumi no ${eur(cheapest, locale)}`, `Skelbimai nuo ${eur(cheapest, locale)}`)}
       size="large"
       class="reveal"
     />
@@ -139,7 +151,19 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
           `La tarifa del anuncio incluye la revisión del texto, el tratamiento de las fotos y la maquetación del anuncio. Una traducción cuesta ${eur(translationFee, locale)} por idioma.`,
           `Opłata za ogłoszenie obejmuje redakcję tekstu, obróbkę zdjęć i przygotowanie ogłoszenia. Tłumaczenie kosztuje ${eur(translationFee, locale)} za język.`,
           `Taxa de anunț include corectarea textului, prelucrarea fotografiilor și realizarea anunțului. O traducere costă ${eur(translationFee, locale)} per limbă.`,
-          `Poplatok za inzerát zahŕňa úpravu textu, spracovanie fotografií a zostavenie inzerátu. Preklad stojí ${eur(translationFee, locale)} za jazyk.`
+          `Poplatok za inzerát zahŕňa úpravu textu, spracovanie fotografií a zostavenie inzerátu. Preklad stojí ${eur(translationFee, locale)} za jazyk.`,
+          `La tariffa dell’annuncio comprende la revisione del testo, l’elaborazione delle foto e la composizione dell’annuncio. Una traduzione costa ${eur(translationFee, locale)} per lingua.`,
+          `A taxa do anúncio inclui a revisão do texto, o tratamento das fotografias e a montagem do anúncio. Uma tradução custa ${eur(translationFee, locale)} por idioma.`,
+          `Το τέλος της αγγελίας περιλαμβάνει την επιμέλεια του κειμένου, την επεξεργασία των φωτογραφιών και τη σύνταξη της αγγελίας. Μια μετάφραση κοστίζει ${eur(translationFee, locale)} ανά γλώσσα.`,
+          `Poplatek za inzerát zahrnuje úpravu textu, zpracování fotografií a sestavení inzerátu. Překlad stojí ${eur(translationFee, locale)} za jazyk.`,
+          `Pristojbina za oglas vključuje urejanje besedila, obdelavo fotografij in pripravo oglasa. Prevod stane ${eur(translationFee, locale)} na jezik.`,
+          `Annonsavgiften omfattar textredigering, bildbehandling och sammanställning av annonsen. En översättning kostar ${eur(translationFee, locale)} per språk.`,
+          `Annoncegebyret dækker redigering af teksten, behandling af fotos og opsætning af annoncen. En oversættelse koster ${eur(translationFee, locale)} pr. sprog.`,
+          `Annonseavgiften dekker redigering av teksten, behandling av bildene og oppsett av annonsen. En oversettelse koster ${eur(translationFee, locale)} per språk.`,
+          `Ilmoitusmaksu kattaa tekstin toimittamisen, kuvien käsittelyn ja ilmoituksen kokoamisen. Käännös maksaa ${eur(translationFee, locale)} kieltä kohden.`,
+          `Kuulutuse tasu sisaldab teksti toimetamist, fotode töötlemist ja kuulutuse koostamist. Tõlge maksab ${eur(translationFee, locale)} keele kohta.`,
+          `Sludinājuma maksā ietilpst teksta rediģēšana, fotoattēlu apstrāde un sludinājuma sagatavošana. Tulkojums maksā ${eur(translationFee, locale)} par katru valodu.`,
+          `Skelbimo mokestis apima teksto redagavimą, nuotraukų apdorojimą ir skelbimo parengimą. Vertimas kainuoja ${eur(translationFee, locale)} už kalbą.`
         )}
       </p>
       <div class="pricing-actions">
@@ -151,11 +175,11 @@ const sellerFaq = faqFor(locale, 'seller').slice(0, 8);
 
   {/* ── Seller FAQ ── */}
   <FaqAccordion
-    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes', 'Preguntas frecuentes', 'Najczęściej zadawane pytania', 'Întrebări frecvente', 'Časté otázky')}
-    title={x('Amit az eladók kérdezni szoktak', 'Wat verkopers ons vragen', 'What sellers ask us', 'Was Verkäufer uns fragen', 'Ce que nous demandent les vendeurs', 'Lo que nos preguntan los vendedores', 'O co pytają nas sprzedający', 'Ce ne întreabă vânzătorii', 'Na čo sa nás pýtajú predávajúci')}
+    eyebrow={x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes', 'Preguntas frecuentes', 'Najczęściej zadawane pytania', 'Întrebări frecvente', 'Časté otázky', 'Domande frequenti', 'Perguntas frequentes', 'Συχνές ερωτήσεις', 'Časté dotazy', 'Pogosta vprašanja', 'Vanliga frågor', 'Ofte stillede spørgsmål', 'Ofte stilte spørsmål', 'Usein kysytyt kysymykset', 'Korduma kippuvad küsimused', 'Biežāk uzdotie jautājumi', 'Dažnai užduodami klausimai')}
+    title={x('Amit az eladók kérdezni szoktak', 'Wat verkopers ons vragen', 'What sellers ask us', 'Was Verkäufer uns fragen', 'Ce que nous demandent les vendeurs', 'Lo que nos preguntan los vendedores', 'O co pytają nas sprzedający', 'Ce ne întreabă vânzătorii', 'Na čo sa nás pýtajú predávajúci', 'Cosa ci chiedono i venditori', 'O que os vendedores nos perguntam', 'Τι μας ρωτούν οι πωλητές', 'Na co se nás prodávající ptají', 'Kaj nas sprašujejo prodajalci', 'Vad säljare frågar oss', 'Det spørger sælgere os om', 'Dette spør selgere oss om', 'Mitä myyjät kysyvät meiltä', 'Mida müüjad meilt küsivad', 'Ko mums jautā pārdevēji', 'Ko mūsų klausia pardavėjai')}
     entries={sellerFaq}
     moreHref={path(locale, 'faq')}
-    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses', 'Todas las preguntas y respuestas', 'Wszystkie pytania i odpowiedzi', 'Toate întrebările și răspunsurile', 'Všetky otázky a odpovede')}
+    moreLabel={x('Összes kérdés és válasz', 'Alle vragen en antwoorden', 'All questions and answers', 'Alle Fragen und Antworten', 'Toutes les questions et réponses', 'Todas las preguntas y respuestas', 'Wszystkie pytania i odpowiedzi', 'Toate întrebările și răspunsurile', 'Všetky otázky a odpovede', 'Tutte le domande e risposte', 'Todas as perguntas e respostas', 'Όλες οι ερωτήσεις και απαντήσεις', 'Všechny otázky a odpovědi', 'Vsa vprašanja in odgovori', 'Alla frågor och svar', 'Alle spørgsmål og svar', 'Alle spørsmål og svar', 'Kaikki kysymykset ja vastaukset', 'Kõik küsimused ja vastused', 'Visi jautājumi un atbildes', 'Visi klausimai ir atsakymai')}
   />
 </Base>
 

@@ -6,6 +6,7 @@
  *   en  €178,000       comma for thousands, point for decimals     1.5 ha
  *   de  178.000 €      dot for thousands, comma for decimals       1,5 ha
  *   fr  178 000 €      narrow no-break space for thousands         1,5 ha
+ *   it, el, sl, da: 178.000 €   pt, cs, sv, no, fi, et, lv, lt: 178 000 € (no-break space)
  *
  * ICU's own grouping differs from these in places (hu-HU leaves four digits
  * ungrouped, fr-FR uses U+202F but nl-NL's "€ 1.200,00" carries cents we do not
@@ -29,6 +30,18 @@ const LOCALE_TAG: Record<Locale, string> = {
   pl: 'pl-PL',
   ro: 'ro-RO',
   sk: 'sk-SK',
+  it: 'it-IT',
+  pt: 'pt-PT',
+  el: 'el-GR',
+  cs: 'cs-CZ',
+  sl: 'sl-SI',
+  sv: 'sv-SE',
+  da: 'da-DK',
+  no: 'nb-NO',
+  fi: 'fi-FI',
+  et: 'et-EE',
+  lv: 'lv-LV',
+  lt: 'lt-LT',
 };
 
 /** The BCP 47 tag Intl wants for each page language. */
@@ -51,6 +64,18 @@ const STYLE: Record<Locale, NumberStyle> = {
   pl: { group: NBSP, decimal: ',', euro: 'suffix' },
   ro: { group: '.', decimal: ',', euro: 'suffix' },
   sk: { group: NBSP, decimal: ',', euro: 'suffix' },
+  it: { group: '.', decimal: ',', euro: 'suffix' },
+  pt: { group: NBSP, decimal: ',', euro: 'suffix' },
+  el: { group: '.', decimal: ',', euro: 'suffix' },
+  cs: { group: NBSP, decimal: ',', euro: 'suffix' },
+  sl: { group: '.', decimal: ',', euro: 'suffix' },
+  sv: { group: NBSP, decimal: ',', euro: 'suffix' },
+  da: { group: '.', decimal: ',', euro: 'suffix' },
+  no: { group: NBSP, decimal: ',', euro: 'suffix' },
+  fi: { group: NBSP, decimal: ',', euro: 'suffix' },
+  et: { group: NBSP, decimal: ',', euro: 'suffix' },
+  lv: { group: NBSP, decimal: ',', euro: 'suffix' },
+  lt: { group: NBSP, decimal: ',', euro: 'suffix' },
 };
 
 /** Decimal separator and thousands separator for a language, for client scripts and tests. */
@@ -60,8 +85,8 @@ export const separators = (locale: Locale) => ({ group: STYLE[locale].group, dec
  * Thousands the way each language writes them, also for four digits:
  * "1 200 000" (hu, no-break space), "1.200.000" (nl, de), "1,200,000" (en),
  * "1 200 000" (fr, narrow no-break space; pl, sk, no-break space),
- * "1.200.000" (es, ro). Up to two decimals, trailing
- * zeros dropped.
+ * "1.200.000" (es, ro, it, el, sl, da; pt, cs, sv, no, fi, et, lv, lt with a
+ * no-break space). Up to two decimals, trailing zeros dropped.
  */
 export function grouped(amount: number, locale: Locale): string {
   const { group, decimal } = STYLE[locale];

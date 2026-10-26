@@ -32,19 +32,19 @@ const visit = ONSITE_SERVICES.find((service) => service.id === 'onsite-visit')!;
 
 const DEFAULTS: Record<PackageKind, Omit<ValuationPackage, 'kind'>> = {
   indicative: {
-    names: { hu: 'Tájékoztató, piaci alapú becslés', nl: 'Indicatieve marktwaarde', en: 'Indicative, market-based estimate', de: 'Unverbindliche, marktbasierte Einschätzung', fr: 'Estimation indicative fondée sur le marché', es: 'Estimación orientativa basada en el mercado', pl: 'Orientacyjna wycena oparta na danych rynkowych', ro: 'Estimare orientativă, bazată pe piață', sk: 'Orientačný odhad založený na trhu' },
+    names: { hu: 'Tájékoztató, piaci alapú becslés', nl: 'Indicatieve marktwaarde', en: 'Indicative, market-based estimate', de: 'Unverbindliche, marktbasierte Einschätzung', fr: 'Estimation indicative fondée sur le marché', es: 'Estimación orientativa basada en el mercado', pl: 'Orientacyjna wycena oparta na danych rynkowych', ro: 'Estimare orientativă, bazată pe piață', sk: 'Orientačný odhad založený na trhu', it: 'Stima indicativa basata sul mercato', pt: 'Estimativa indicativa baseada no mercado', el: 'Ενδεικτική εκτίμηση με βάση την αγορά', cs: 'Orientační tržní odhad', sl: 'Okvirna tržna ocena', sv: 'Preliminär, marknadsbaserad bedömning', da: 'Vejledende, markedsbaseret vurdering', no: 'Veiledende, markedsbasert vurdering', fi: 'Suuntaa-antava, markkinoihin perustuva arvio', et: 'Ligikaudne turupõhine hinnang', lv: 'Orientējošs, tirgū balstīts novērtējums', lt: 'Preliminarus rinka pagrįstas įvertinimas' },
     priceEur: 0,
     enabled: true,
     priceLocked: true,
   },
   expert_visit: {
-    names: { hu: 'Gábor helyszíni látogatása', nl: 'Persoonlijk bezoek van Gábor', en: 'A visit from Gábor', de: 'Besuch von Gábor', fr: 'Visite de Gábor', es: 'Visita de Gábor', pl: 'Wizyta Gábora', ro: 'Vizita lui Gábor', sk: 'Návšteva Gábora' },
+    names: { hu: 'Gábor helyszíni látogatása', nl: 'Persoonlijk bezoek van Gábor', en: 'A visit from Gábor', de: 'Besuch von Gábor', fr: 'Visite de Gábor', es: 'Visita de Gábor', pl: 'Wizyta Gábora', ro: 'Vizita lui Gábor', sk: 'Návšteva Gábora', it: 'Un sopralluogo di Gábor', pt: 'Uma visita do Gábor', el: 'Επίσκεψη από τον Gábor', cs: 'Návštěva Gábora', sl: 'Obisk Gábora', sv: 'Ett besök av Gábor', da: 'Et besøg af Gábor', no: 'Et besøk av Gábor', fi: 'Gáborin käynti', et: 'Gábori külastus', lv: 'Gábora apmeklējums', lt: 'Gáboro apsilankymas' },
     priceEur: visit.priceEur,
     enabled: true,
     priceLocked: false,
   },
   judicial: {
-    names: { hu: 'Igazságügyi / hivatalos értékbecslés', nl: 'Officiële / gerechtelijke taxatie', en: 'Official / court-appointed valuation', de: 'Amtliches / gerichtliches Gutachten', fr: 'Expertise officielle / judiciaire', es: 'Tasación oficial / judicial', pl: 'Operat szacunkowy / wycena sądowa', ro: 'Evaluare oficială / judiciară', sk: 'Znalecký posudok / súdny posudok' },
+    names: { hu: 'Igazságügyi / hivatalos értékbecslés', nl: 'Officiële / gerechtelijke taxatie', en: 'Official / court-appointed valuation', de: 'Amtliches / gerichtliches Gutachten', fr: 'Expertise officielle / judiciaire', es: 'Tasación oficial / judicial', pl: 'Operat szacunkowy / wycena sądowa', ro: 'Evaluare oficială / judiciară', sk: 'Znalecký posudok / súdny posudok', it: 'Perizia ufficiale / giudiziale', pt: 'Avaliação oficial / judicial', el: 'Επίσημη / δικαστική εκτίμηση', cs: 'Oficiální / soudní znalecký posudek', sl: 'Uradna / sodna cenitev', sv: 'Officiell / domstolsförordnad värdering', da: 'Officiel / retsudpeget vurdering', no: 'Offisiell / rettsoppnevnt takst', fi: 'Virallinen / tuomioistuimen määräämä arvio', et: 'Ametlik / kohtu määratud hindamine', lv: 'Oficiāls / tiesas noteikts novērtējums', lt: 'Oficialus / teismo paskirtas vertinimas' },
     priceEur: null,
     enabled: true,
     priceLocked: false,
@@ -78,7 +78,7 @@ export function isPayable(pkg: ValuationPackage | null): pkg is ValuationPackage
 /** "€ 200", or the on-request wording in the right language. */
 export function priceLabel(pkg: ValuationPackage, locale: Locale): string {
   const x = localizer(locale);
-  if (pkg.priceEur === null) return x('árajánlat alapján', 'op offerte', 'on request', 'auf Anfrage', 'sur demande', 'bajo petición', 'na zapytanie', 'la cerere', 'na požiadanie');
-  if (pkg.priceEur === 0) return x('díjmentes', 'gratis', 'free', 'kostenlos', 'gratuit', 'gratis', 'bezpłatnie', 'gratuit', 'zadarmo');
+  if (pkg.priceEur === null) return x('árajánlat alapján', 'op offerte', 'on request', 'auf Anfrage', 'sur demande', 'bajo petición', 'na zapytanie', 'la cerere', 'na požiadanie', 'su richiesta', 'a pedido', 'κατόπιν αιτήματος', 'na vyžádání', 'na zahtevo', 'på begäran', 'efter aftale', 'på forespørsel', 'pyynnöstä', 'soovi korral', 'pēc pieprasījuma', 'pagal užklausą');
+  if (pkg.priceEur === 0) return x('díjmentes', 'gratis', 'free', 'kostenlos', 'gratuit', 'gratis', 'bezpłatnie', 'gratuit', 'zadarmo', 'gratuita', 'gratuita', 'δωρεάν', 'zdarma', 'brezplačno', 'kostnadsfri', 'gratis', 'gratis', 'maksuton', 'tasuta', 'bez maksas', 'nemokamai');
   return eurCents(pkg.priceEur * 100, locale === 'hu' ? 'nl' : locale);
 }

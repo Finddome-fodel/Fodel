@@ -17,7 +17,7 @@
  */
 import { templates, type BuiltEmail, type InviteTemplate } from '~/lib/email/templates';
 
-export const INVITE_LOCALES = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const;
+export const INVITE_LOCALES = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const;
 export type InviteLocale = (typeof INVITE_LOCALES)[number];
 
 const BUILT_IN: ReadonlySet<InviteLocale> = new Set(['hu', 'nl']);

@@ -299,6 +299,66 @@ const ACK = {
        <p>Je to naliehavé? Zavolajte nám na ${escapeHtml(phones)}.</p>
        <p>S pozdravom<br>FODEL Nehnuteľnosti</p>`,
   },
+  it: {
+    subject: 'Grazie per il Suo messaggio | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Gentile ${escapeHtml(name)},` : 'Buongiorno,'}</p>\n       <p>grazie per il Suo messaggio. Lo abbiamo ricevuto e un membro del nostro team La contatterà a breve. ${escapeHtml(hours)}</p>\n       <p>Ha fretta? Ci chiami al numero ${escapeHtml(phones)}.</p>\n       <p>Cordiali saluti,<br>FODEL Immobiliare</p>`,
+  },
+  pt: {
+    subject: 'Obrigado pela sua mensagem | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Bom dia, ${escapeHtml(name)},` : 'Bom dia,'}</p>\n       <p>Obrigado pela sua mensagem. Recebemo-la e um membro da nossa equipa entrará em contacto consigo em breve. ${escapeHtml(hours)}</p>\n       <p>É urgente? Ligue-nos para ${escapeHtml(phones)}.</p>\n       <p>Com os melhores cumprimentos,<br>FODEL Imobiliária</p>`,
+  },
+  el: {
+    subject: 'Σας ευχαριστούμε για το μήνυμά σας | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Γεια σας, ${escapeHtml(name)},` : 'Γεια σας,'}</p>\n       <p>Σας ευχαριστούμε για το μήνυμά σας. Το λάβαμε και ένα μέλος της ομάδας μας θα επικοινωνήσει σύντομα μαζί σας. ${escapeHtml(hours)}</p>\n       <p>Βιάζεστε; Καλέστε μας στο ${escapeHtml(phones)}.</p>\n       <p>Με εκτίμηση,<br>FODEL Ακίνητα</p>`,
+  },
+  cs: {
+    subject: 'Děkujeme za vaši zprávu | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Dobrý den, ${escapeHtml(name)},` : 'Dobrý den,'}</p>\n       <p>děkujeme za vaši zprávu. Obdrželi jsme ji a náš kolega se vám brzy ozve. ${escapeHtml(hours)}</p>\n       <p>Spěcháte? Zavolejte nám na ${escapeHtml(phones)}.</p>\n       <p>S pozdravem<br>FODEL Nemovitosti</p>`,
+  },
+  sl: {
+    subject: 'Hvala za vaše sporočilo | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Pozdravljeni, ${escapeHtml(name)},` : 'Pozdravljeni,'}</p>\n       <p>hvala za vaše sporočilo. Prejeli smo ga in naš sodelavec vam bo kmalu odgovoril. ${escapeHtml(hours)}</p>\n       <p>Se vam mudi? Pokličite nas na ${escapeHtml(phones)}.</p>\n       <p>Lep pozdrav<br>FODEL Nepremičnine</p>`,
+  },
+  sv: {
+    subject: 'Tack för ditt meddelande | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Hej ${escapeHtml(name)},` : 'Hej,'}</p>\n       <p>Tack för ditt meddelande. Vi har tagit emot det och någon i vårt team hör av sig inom kort. ${escapeHtml(hours)}</p>\n       <p>Bråttom? Ring oss på ${escapeHtml(phones)}.</p>\n       <p>Vänliga hälsningar<br>FODEL Fastigheter</p>`,
+  },
+  da: {
+    subject: 'Tak for din besked | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Kære ${escapeHtml(name)}` : 'Hej'}</p>\n       <p>Tak for din besked. Vi har modtaget den, og en fra vores team kontakter dig snarest. ${escapeHtml(hours)}</p>\n       <p>Har du travlt? Ring til os på ${escapeHtml(phones)}.</p>\n       <p>Med venlig hilsen<br>FODEL Ejendomme</p>`,
+  },
+  no: {
+    subject: 'Takk for meldingen din | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Hei ${escapeHtml(name)},` : 'Hei,'}</p>\n       <p>Takk for meldingen din. Vi har mottatt den, og en fra teamet vårt tar snart kontakt med deg. ${escapeHtml(hours)}</p>\n       <p>Haster det? Ring oss på ${escapeHtml(phones)}.</p>\n       <p>Med vennlig hilsen<br>FODEL Eiendom</p>`,
+  },
+  fi: {
+    subject: 'Kiitos viestistäsi | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Hei ${escapeHtml(name)},` : 'Hei,'}</p>\n       <p>Kiitos viestistäsi. Olemme vastaanottaneet sen, ja tiimimme jäsen ottaa sinuun pian yhteyttä. ${escapeHtml(hours)}</p>\n       <p>Onko asialla kiire? Soita meille numeroon ${escapeHtml(phones)}.</p>\n       <p>Ystävällisin terveisin<br>FODEL Kiinteistöt</p>`,
+  },
+  et: {
+    subject: 'Täname teid sõnumi eest | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Tere, ${escapeHtml(name)}!` : 'Tere!'}</p>\n       <p>Täname teid sõnumi eest. Saime selle kätte ja meie meeskonna liige võtab teiega peagi ühendust. ${escapeHtml(hours)}</p>\n       <p>Kiire? Helistage meile numbril ${escapeHtml(phones)}.</p>\n       <p>Lugupidamisega<br>FODEL Kinnisvara</p>`,
+  },
+  lv: {
+    subject: 'Paldies par jūsu ziņojumu | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Labdien, ${escapeHtml(name)}!` : 'Labdien!'}</p>\n       <p>Paldies par jūsu ziņojumu. Mēs to saņēmām, un kāds no mūsu komandas drīz ar jums sazināsies. ${escapeHtml(hours)}</p>\n       <p>Steidzami? Zvaniet mums: ${escapeHtml(phones)}.</p>\n       <p>Ar cieņu<br>FODEL Nekustamais īpašums</p>`,
+  },
+  lt: {
+    subject: 'Ačiū už jūsų žinutę | FODEL',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${name ? `Laba diena, ${escapeHtml(name)},` : 'Laba diena,'}</p>\n       <p>dėkojame už jūsų žinutę. Ją gavome, ir mūsų komandos narys netrukus su jumis susisieks. ${escapeHtml(hours)}</p>\n       <p>Skubate? Skambinkite mums ${escapeHtml(phones)}.</p>\n       <p>Pagarbiai<br>FODEL Nekilnojamasis turtas</p>`,
+  },
 } as const;
 
 /**

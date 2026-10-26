@@ -103,7 +103,7 @@ export default defineConfig({
     sitemap({
       i18n: {
         defaultLocale: DEFAULT_LOCALE,
-        locales: { hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', pl: 'pl-PL', ro: 'ro-RO', sk: 'sk-SK' },
+        locales: { hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB', de: 'de-DE', fr: 'fr-FR', es: 'es-ES', pl: 'pl-PL', ro: 'ro-RO', sk: 'sk-SK', it: 'it-IT', pt: 'pt-PT', el: 'el-GR', cs: 'cs-CZ', sl: 'sl-SI', sv: 'sv-SE', da: 'da-DK', no: 'nb-NO', fi: 'fi-FI', et: 'et-EE', lv: 'lv-LV', lt: 'lt-LT' },
       },
       filter: (page) => !page.includes('/api/') && !page.includes('/portal/') && !page.includes('/top-10/'),
     }),
