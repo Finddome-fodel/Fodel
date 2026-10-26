@@ -673,8 +673,12 @@ const photoLimit = 20;
     if (!res.ok || !json.ok) {
       const messages = {
         'no-photos': 'Legalább egy fényképet fel kell tölteni a beküldés előtt.',
+        'incomplete-listing': 'A beküldéshez töltse ki az országot, a pontos helyet, az árat, a címet és a leírást, és mentse a hirdetést.',
       };
-      workflowStatus.textContent = messages[json.error] || 'Nem sikerült végrehajtani.';
+      const labels = { street: 'a cím', setting: 'a környezet', floor_m2: 'a lakóterület', floors: 'a szintek száma', rooms: 'a szobák száma', kitchens: 'a konyhák száma', toilets: 'a különálló WC-k száma', bedrooms: 'a hálószobák száma', bathrooms: 'a fürdőszobák száma' };
+      workflowStatus.textContent = json.error === 'incomplete-details' && json.fields?.length
+        ? `Lakóingatlannál a beküldéshez még hiányzik: ${json.fields.map((name) => labels[name] || name).join(', ')}. Töltse ki, és mentse a hirdetést.`
+        : messages[json.error] || 'Nem sikerült végrehajtani.';
       return;
     }
     location.reload();

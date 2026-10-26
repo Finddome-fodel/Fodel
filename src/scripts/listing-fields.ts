@@ -23,6 +23,13 @@ for(const form of forms){
       const kind=wrapper.dataset.relevance;
       wrapper.hidden=kind==='living'?!hasLivingArea(group(),subtype()):kind==='plot'?!hasPlot(group(),subtype()):kind==='utilities'?!hasUtilities(group()):isLandOnly(group(),subtype());
     }
+    // Street and setting exist for every type but are compulsory only for a home; their labels follow the type.
+    const wording=(name:string)=>control(name)?.closest('.fld')?.querySelector<HTMLElement>('.req')?.textContent;
+    const required=wording('rooms'),optional=wording('half_rooms');
+    for(const name of ['street','setting']){
+      const tag=control(name)?.closest('.fld')?.querySelector<HTMLElement>('.req');
+      if(tag&&required&&optional)tag.textContent=hasLivingArea(group(),subtype())?required:optional;
+    }
     for(const wrapper of form.querySelectorAll<HTMLElement>('[data-feature-groups]')){
       const selected=wrapper.querySelector<HTMLInputElement>('input')?.checked;
       const groups=(wrapper.dataset.featureGroups||'').split(',').filter(Boolean);
@@ -60,9 +67,13 @@ for(const form of forms){
   }
   // A public address must be pinned exactly, so ticking it chooses the exact location (the server enforces the same).
   const showAddress=control('address_public') as HTMLInputElement|null;
+  // Unticking hands the choice back to what the owner had picked before.
+  let before:string|null=null;
   const syncAddress=()=>{
     const precision=control('precision') as HTMLSelectElement|null;
-    if(showAddress?.checked&&precision)precision.value='exact';
+    if(!precision)return;
+    if(showAddress?.checked){before??=precision.value;precision.value='exact';}
+    else if(before!==null){precision.value=before;before=null;}
   };
   showAddress?.addEventListener('change',syncAddress);
   const unknown=control('year_built_unknown') as HTMLInputElement|null;
