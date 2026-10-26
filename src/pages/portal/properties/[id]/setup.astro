@@ -84,7 +84,11 @@ const tr = property.translations.find((t) => t.locale === lang) ?? property.tran
 const description = tr?.description || '';
 const x=(hu:string,nl:string,en:string)=>lang==='hu'?hu:lang==='nl'?nl:en;
 
-const STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
+// An admin-granted free listing has no package to choose and no invoice to address, so those two steps are left out.
+const free = Boolean(property.free_listing);
+const ALL_STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
+const STEPS = ALL_STEPS.filter((step) => !free || (step !== 'package' && step !== 'billing'));
+const at = (step: (typeof ALL_STEPS)[number]) => ALL_STEPS.indexOf(step);
 
 const t = SETUP_COPY[lang];
 
@@ -120,6 +124,7 @@ const strings = {
     data-property-id={property.id}
     data-lang={lang}
     data-steps={STEPS.join(',')}
+    data-free={free ? 'yes' : undefined}
     data-strings={JSON.stringify(strings)}
     data-pricing={JSON.stringify(pricing)}
   >
@@ -148,12 +153,13 @@ const strings = {
       </div>
       <ol class="su-steps">
         {STEPS.map((step, i) => (
-          <li><a href={`#${step}`} data-step-link={step}><span class="n">{i + 1}</span><span class="l">{t.steps[i]}</span></a></li>
+          <li><a href={`#${step}`} data-step-link={step}><span class="n">{i + 1}</span><span class="l">{t.steps[at(step)]}</span></a></li>
         ))}
       </ol>
     </div>
 
     {/* ── 1. Package ── */}
+    {!free && (
     <section class="su-step" id="package" data-step="package" aria-labelledby="h-package" tabindex="-1">
       <h1 id="h-package">{t.steps[0]}</h1>
       <p class="su-intro">{t.intros[0]}</p>
@@ -215,6 +221,7 @@ const strings = {
         </div>
       </form>
     </section>
+    )}
 
     {/* ── 2. The property ── */}
     <section class="su-step" id="property" data-step="property" aria-labelledby="h-property" tabindex="-1">
@@ -276,6 +283,7 @@ const strings = {
     </section>
 
     {/* ── 5. Billing ── */}
+    {!free && (
     <section class="su-step" id="billing" data-step="billing" aria-labelledby="h-billing" tabindex="-1">
       <h1 id="h-billing">{t.steps[4]}</h1>
       <p class="su-intro">{t.intros[4]}</p>
@@ -283,6 +291,7 @@ const strings = {
         <BillingForm billing={billing} fallbackName={(billingRow as any)?.full_name ?? ''} fallbackPhone={(billingRow as any)?.phone ?? ''} locale={lang} embedded />
       </div>
     </section>
+    )}
 
     {/* ── 6. Review ── */}
     <section class="su-step" id="review" data-step="review" aria-labelledby="h-review" tabindex="-1">
@@ -296,7 +305,7 @@ const strings = {
             ['description', t.reviewDescription],
             ['photos', t.reviewPhotos],
             ['billing', t.reviewBilling],
-          ].map(([key, label]) => (
+          ].filter(([key]) => !free || (key !== 'package' && key !== 'billing')).map(([key, label]) => (
             <div class="su-row">
               <dt>{label}</dt>
               <dd data-summary={key}></dd>
@@ -304,10 +313,17 @@ const strings = {
             </div>
           ))}
         </dl>
+        {free ? (
+          <div class="su-total">
+            <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{x('Ingyenes hirdetés: a közzététel előtt munkatársunk jóváhagyja.','Gratis advertentie: een medewerker keurt hem goed vóór publicatie.','Free listing: our team approves it before it goes live.')}</span></p>
+            <strong class="num">{x('Ingyenes','Gratis','Free')}</strong>
+          </div>
+        ) : (
         <div class="su-total">
           <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{t.totalNote}</span></p>
           <strong class="num" data-total>—</strong>
         </div>
+        )}
         <div class="su-missing" data-missing hidden></div>
         <p class="su-submit-status" role="status" data-submit-status></p>
       </div>
@@ -352,6 +368,7 @@ const strings = {
   const id = root.dataset.propertyId!;
   const lang = (root.dataset.lang === 'nl' || root.dataset.lang === 'en' ? root.dataset.lang : 'hu') as 'hu' | 'nl' | 'en';
   const steps = root.dataset.steps!.split(',');
+  const free = root.dataset.free === 'yes';
   const s = JSON.parse(root.dataset.strings!);
   const pricing = JSON.parse(root.dataset.pricing!) as Pricing;
   const saveStatus = root.querySelector<HTMLElement>('[data-save-status]')!;
@@ -569,8 +586,10 @@ const strings = {
     if (videoChip) videoChip.hidden = pkg?.video !== 'extra';
     const contact = root.querySelector<HTMLElement>('[data-contact-choice]');
     const off = root.querySelector<HTMLElement>('[data-contact-off]');
-    if (contact) contact.hidden = !pkg?.phone;
-    if (off) off.hidden = Boolean(pkg?.phone);
+    // A free listing has no package; the seller's phone choice is always offered.
+    const phone = free || Boolean(pkg?.phone);
+    if (contact) contact.hidden = !phone;
+    if (off) off.hidden = phone;
     const total = money(estimate().cents);
     root.querySelectorAll<HTMLElement>('[data-total]').forEach((el) => (el.textContent = total));
   }
@@ -614,7 +633,7 @@ const strings = {
     if (gaps.length) list.push(['property', `${s.missing.details}: ${gaps.map((name) => s.missing.fields[name]).join(', ')}`, gaps[0] === 'heating' ? 'heating_key' : gaps[0]]);
     if (!value('description', 'description')) list.push(['description', s.missing.description, 'description']);
     if (photoCount() < 1) list.push(['photos', s.missing.photos]);
-    if (!billingName()) list.push(['billing', s.missing.billing]);
+    if (!free && !billingName()) list.push(['billing', s.missing.billing]);
     return list;
   }
 
@@ -644,7 +663,7 @@ const strings = {
       });
     };
     const est = estimate();
-    put('package', est.lines);
+    if (!free) put('package', est.lines);
     put('property', [
       [value('property','property_subtype'),value('property','country'), value('property', 'settlement'), value('property', 'county')].filter(Boolean).join(', '),
       value('property','original_price') ? `${value('property','original_price')} ${value('property','original_currency')}` : '',
@@ -655,7 +674,7 @@ const strings = {
     put('photos', [photoCount() ? s.photosCount.replace('{n}', String(photoCount())) : '']);
     const b = root.querySelector<HTMLFormElement>('form[data-billing]');
     const bv = (n: string) => (b?.elements.namedItem(n) as HTMLInputElement | null)?.value.trim() ?? '';
-    put('billing', [bv('name'), [bv('postalCode'), bv('city'), bv('street')].filter(Boolean).join(' ')]);
+    if (!free) put('billing', [bv('name'), [bv('postalCode'), bv('city'), bv('street')].filter(Boolean).join(' ')]);
     root.querySelectorAll<HTMLElement>('[data-total]').forEach((el) => (el.textContent = money(est.cents)));
 
     const gaps = missing();
