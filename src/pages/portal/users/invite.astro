@@ -72,7 +72,17 @@ const SOURCE_NOTE = {
         tárolja, a linkben nem szerepel. A közzététel ekkor is munkatársi jóváhagyáshoz kötött.
       </p>
     </div>
-    <button type="submit" class="btn">Meghívó küldése</button>
+    <button type="submit" class="btn">Meghívó küldése e-mailben</button>
+    <button type="button" class="btn btn-ghost" id="copy-link-btn">Link létrehozása és másolása (e-mail nélkül)</button>
+    <div id="link-result" class="link-result" hidden>
+      <label for="link-url">Meghívó link</label>
+      <div class="link-row">
+        <input id="link-url" type="text" readonly />
+        <button type="button" class="btn" id="copy-again-btn">Másolás</button>
+      </div>
+      <p class="hint" id="link-note"></p>
+    </div>
+    <p class="notice error" id="link-error" hidden></p>
   </form>
 
   
@@ -104,6 +114,40 @@ const SOURCE_NOTE = {
   };
   role?.addEventListener('change', sync);
   sync();
+
+  // Copy link: the invite is created without an e-mail and the link is shown once (only its hash is stored).
+  const card = document.querySelector<HTMLFormElement>('.invite-card');
+  const copyBtn = document.getElementById('copy-link-btn') as HTMLButtonElement | null;
+  const copyAgain = document.getElementById('copy-again-btn') as HTMLButtonElement | null;
+  const result = document.getElementById('link-result');
+  const urlBox = document.getElementById('link-url') as HTMLInputElement | null;
+  const note = document.getElementById('link-note');
+  const error = document.getElementById('link-error');
+  const copy = async () => {
+    if (!urlBox) return false;
+    try { await navigator.clipboard.writeText(urlBox.value); return true; }
+    catch { urlBox.select(); return document.execCommand('copy'); }
+  };
+  copyBtn?.addEventListener('click', async () => {
+    if (!card || !result || !urlBox || !note || !error) return;
+    error.hidden = true;
+    if (!card.reportValidity()) return;
+    copyBtn.disabled = true;
+    try {
+      const data = new FormData(card);
+      data.set('delivery', 'link');
+      const res = await fetch('/api/portal/users/invite', { method: 'POST', body: data });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) { error.textContent = json.error || 'Nem sikerült létrehozni a linket.'; error.hidden = false; return; }
+      urlBox.value = json.url;
+      const copied = await copy();
+      note.textContent = `${copied ? 'A link a vágólapra került. ' : 'Másolja ki a linket. '}${json.email} számára készült, ${json.expiresDays} napig érvényes, egyszer használható. Biztonsági okból csak most látható — később nem kérhető le újra.`;
+      result.hidden = false;
+    } finally { copyBtn.disabled = false; }
+  });
+  copyAgain?.addEventListener('click', async () => {
+    if (await copy() && copyAgain) { const t = copyAgain.textContent; copyAgain.textContent = 'Másolva ✓'; setTimeout(() => { copyAgain.textContent = t; }, 1500); }
+  });
 </script>
 
 <style>
@@ -115,5 +159,12 @@ const SOURCE_NOTE = {
   .hint a { text-decoration: underline; text-underline-offset: 3px; }
   label.check { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-radius: var(--r-md); background: var(--paper); font-weight: var(--fw-regular); cursor: pointer; }
   #free-field[hidden] { display: none; }
-  .invite-card .btn { width: 100%; padding: 14px 24px; }
+  .invite-card > .btn { width: 100%; padding: 14px 24px; }
+  .invite-card > .btn + .btn { margin-top: 12px; }
+  .btn-ghost { background: transparent; color: var(--ink); box-shadow: 0 0 0 1px var(--pt-hair); }
+  .link-result { margin-top: 22px; display: grid; gap: 8px; }
+  .link-result[hidden], #link-error[hidden] { display: none; }
+  .link-row { display: flex; gap: 8px; }
+  .link-row input { flex: 1; min-width: 0; }
+  .link-row .btn { padding: 12px 20px; }
 </style>

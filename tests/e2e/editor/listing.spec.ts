@@ -136,10 +136,11 @@ test.describe('European listing editor',()=>{
   await setSession(page,'owner');
   await page.goto(`${path}/setup#review`);
   const item=page.locator('[data-missing] a',{hasText:'az ingatlan adatai'});await expect(item).toBeVisible();
-  await expect(item).toContainText('a szintek száma');await expect(item).not.toContainText('a cím');
+  await expect(item).toContainText('a szintek száma');await expect(item).toContainText('a fűtés');await expect(item).not.toContainText('a cím');
   await item.click();
   await expect(page).toHaveURL(/#property$/);await expect(page.locator('#f-floors')).toBeFocused();await expect(page.locator('#f-floors')).toHaveClass(/su-flash/);
   for(const [name,value] of Object.entries({rooms:'3',floors:'1',kitchens:'1',toilets:'1'}))await page.locator(`#f-${name}`).fill(value);
+  await page.locator('#f-heating_key').selectOption('none');
   await page.goto(`${path}/setup#review`);await expect(page.locator('[data-missing] a',{hasText:'az ingatlan adatai'})).toHaveCount(0);
  });
  test('responsive layout, with no client exceptions',async({page},testInfo)=>{

@@ -34,7 +34,13 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   // A free listing is a seller's entitlement; it means nothing on an admin account.
   const grantsFreeListing = role === 'owner' && form.get('free_listing') === 'yes';
 
-  const fail = (message: string) => redirect(`/portal/users/invite?error=${encodeURIComponent(message)}`);
+  // "Copy link" creates the invite without sending anything and hands the link back to the page.
+  // The token is stored only as a hash, so this response is the one time the link can be seen.
+  const linkOnly = form.get('delivery') === 'link';
+  const json = (status: number, body: Record<string, unknown>) =>
+    new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+  const fail = (message: string) =>
+    linkOnly ? json(400, { ok: false, error: message }) : redirect(`/portal/users/invite?error=${encodeURIComponent(message)}`);
 
   if (!email || !email.includes('@')) return fail('Érvénytelen e-mail cím.');
   // No default: the language is the admin's explicit choice (brief §7).
@@ -53,8 +59,8 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
 
   // Built before anything is stored: a language without approved wording must
   // leave no half-created invite behind.
-  const message = await buildInvite(locals.supabase, locale, role, acceptUrl);
-  if (!message) {
+  const message = linkOnly ? null : await buildInvite(locals.supabase, locale, role, acceptUrl);
+  if (!linkOnly && !message) {
     return fail('Ezen a nyelven még nincs jóváhagyott meghívószöveg. Előbb hagyja jóvá a Beállítások → Meghívólevelek oldalon.');
   }
 
@@ -72,7 +78,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   });
   if (error) return fail(friendlyError(error.message));
 
-  await deliver(email, message);
+  if (message) await deliver(email, message);
 
   await logEvent({
     kind: 'invite.sent',
@@ -81,8 +87,9 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     subjectType: 'invite',
     locale,
     source: 'portal',
-    payload: { role, grantsFreeListing },
+    payload: { role, grantsFreeListing, delivery: linkOnly ? 'link' : 'email' },
   }).catch(() => {});
 
+  if (linkOnly) return json(200, { ok: true, email, url: acceptUrl, expiresDays: EXPIRES_DAYS });
   return redirect(`/portal/users/invite?sent=${encodeURIComponent(email)}`);
 };

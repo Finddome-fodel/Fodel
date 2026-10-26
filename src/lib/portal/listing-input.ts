@@ -55,6 +55,8 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   const yearUnknown=building?form.get('year_built_unknown')==='yes':Boolean(current.year_built_unknown);
   const year=building?(yearUnknown?null:integer('year_built',1,new Date().getFullYear()+5)):current.year_built;
   const renovated=building?integer('renovated_in',1,new Date().getFullYear()+5):current.renovated_in;
+  // A building cannot have been renovated before it was built.
+  if(year!==null&&renovated!==null&&!errors.year_built&&!errors.renovated_in&&renovated<year)errors.renovated_in={code:'min',limit:year};
   const bedrooms=living?integer('bedrooms',0,10000):current.bedrooms,bathrooms=living?integer('bathrooms',0,10000):current.bathrooms;
   // The facts the old upload form asked for. Each kind of property only touches what applies to it;
   // anything that does not apply keeps what is already saved, so switching type never wipes data.

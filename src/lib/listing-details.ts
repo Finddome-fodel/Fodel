@@ -97,7 +97,7 @@ export function readDetails(raw: unknown): ListingDetails {
 
 /* ── The submit gate ────────────────────────────────────────────────────── */
 
-export type DetailGap = 'street' | 'setting' | 'floor_m2' | 'floors' | 'rooms' | 'kitchens' | 'toilets' | 'bedrooms' | 'bathrooms';
+export type DetailGap = 'street' | 'setting' | 'floor_m2' | 'floors' | 'rooms' | 'kitchens' | 'toilets' | 'bedrooms' | 'bathrooms' | 'heating';
 
 type GapInput = {
   property_group?: string | null;
@@ -106,6 +106,7 @@ type GapInput = {
   floor_m2?: number | null;
   bedrooms?: number | null;
   bathrooms?: number | null;
+  heating_key?: string | null;
   details?: unknown;
 };
 
@@ -115,9 +116,12 @@ type GapInput = {
  * Only homes are held to it: a plot of land has no kitchens, and a European
  * listing in another country may not have a street number to give. Rooms are
  * counted from 0 so a studio can say "0 bedrooms"; an empty box is a gap.
+ * Heating is asked of every property with a building, not only homes: "No heating" is an answer
+ * of its own, so a blank is a gap.
  */
 export function detailGaps(p: GapInput, group: string, subtype: string, street: string | null | undefined): DetailGap[] {
-  if (!hasLayout(group, subtype)) return [];
+  const heatingGap: DetailGap[] = !isLandOnly(group, subtype) && !p.heating_key ? ['heating'] : [];
+  if (!hasLayout(group, subtype)) return heatingGap;
   const d = readDetails(p.details);
   const gaps: DetailGap[] = [];
   if (!street?.trim()) gaps.push('street');
@@ -126,5 +130,5 @@ export function detailGaps(p: GapInput, group: string, subtype: string, street: 
   for (const k of ['floors', 'rooms', 'kitchens', 'toilets'] as const) if (d[k] === undefined) gaps.push(k);
   if (p.bedrooms == null) gaps.push('bedrooms');
   if (p.bathrooms == null) gaps.push('bathrooms');
-  return gaps;
+  return [...gaps, ...heatingGap];
 }
