@@ -14,7 +14,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
-import { listProperties, STATUS_LABEL } from '~/lib/portal/properties';
+import { listProperties, NO_OWNER, STATUS_LABEL } from '~/lib/portal/properties';
 import { publicUrl } from '~/lib/portal/publish';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { icon } from '~/lib/portal/icons';
@@ -34,7 +34,7 @@ if (isAdmin && statusFilter && !REVIEWED.includes(statusFilter)) {
   return Astro.redirect('/portal/inbox');
 }
 
-const [all, taxonomy, company] = await Promise.all([listProperties(supabase, statusFilter ? { status: statusFilter } : {}), getTaxonomy(), getCompany()]);
+const [all, taxonomy, company] = await Promise.all([listProperties(supabase, { ...(statusFilter ? { status: statusFilter } : {}), ...(isAdmin ? {} : { ownerId: Astro.locals.user?.id ?? NO_OWNER }) }), getTaxonomy(), getCompany()]);
 const rules = listingRules(company.services);
 const scoped = isAdmin && !statusFilter ? all.filter((p) => REVIEWED.includes(p.status)) : all;
 // "Hamarosan lejár": live and ending within 30 days. "Nem válaszolt": the

@@ -16,7 +16,7 @@ import Portal from '~/layouts/Portal.astro';
 import { portalLang } from '~/lib/portal/auth-copy';
 import Ago from '~/components/portal/Ago.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
-import { STATUS_LABEL } from '~/lib/portal/properties';
+import { NO_OWNER, STATUS_LABEL } from '~/lib/portal/properties';
 import { formatCents } from '~/lib/orders';
 import { icon } from '~/lib/portal/icons';
 import { greeting, longDate, hoursSince, listingName, newestFirst } from '~/lib/portal/time';
@@ -29,18 +29,24 @@ const isAdmin = profile?.role === 'admin';
 
 // `*` on purpose: callback fields arrive with a migration, and a column that
 // does not exist yet must not take the dashboard down.
-const [{ data: rows }, { data: openEnquiryRows }] = await Promise.all([
-supabase
+// The public read policy shows every live listing to any signed-in user, so a
+// non-admin is narrowed to their own listings here. Enquiries are already
+// limited to the property's owner by RLS (enquiries_read).
+const ownerId = isAdmin ? null : (Astro.locals.user?.id ?? NO_OWNER);
+let propertyQuery = supabase
   .from('properties')
   .select(
     '*, property_translations(locale, title), property_media(storage_path, is_hero, sort_order)'
-  ),
-supabase
-  .from('enquiries')
-  .select('*')
-  .eq('handled', false)
-  .order('created_at', { ascending: false })
-  .limit(50),
+  );
+if (ownerId) propertyQuery = propertyQuery.eq('owner_id', ownerId);
+const [{ data: rows }, { data: openEnquiryRows }] = await Promise.all([
+  propertyQuery,
+  supabase
+    .from('enquiries')
+    .select('*')
+    .eq('handled', false)
+    .order('created_at', { ascending: false })
+    .limit(50),
 ]);
 const properties = rows ?? [];
 
