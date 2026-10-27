@@ -13,6 +13,9 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 interface Props { property: PortalProperty; taxonomy: Taxonomy; locale?: PortalLang; section?: 'classification'|'location'|'details'|'features'|'all' }
 const {property:p,taxonomy,locale='hu',section='all'}=Astro.props;
 const x=(hu:string,nl:string,en:string)=>locale==='hu'?hu:locale==='nl'?nl:en;
+// A new draft is stored with the country's middle as a stand-in point (the columns cannot be empty). Until
+// somebody places the pin, show the coordinate fields empty rather than as if they had been filled in.
+const placed=Boolean(p.location_confirmed)||(Boolean(p.settlement)&&!(p.lat===47.1625&&p.lng===19.5033));
 const group=p.property_group||groupOf(p.category), subtype=subtypeOf(p.category,p.property_subtype);
 const on=(s:string)=>section==='all'||section===s;
 const number=(v:number|null|undefined)=>v!=null&&v>0?String(v):'';
@@ -50,13 +53,13 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
     <label class="lf-check"><input type="checkbox" name="address_public" value="yes" checked={Boolean(p.public_address)}/>{x('Szeretném, hogy az ingatlan címe megjelenjen a hirdetésben','Het adres van het vastgoed mag in de advertentie worden getoond','Show the property address in the listing')}</label>
     <p class="lf-note" data-address-note>{x('Alapértelmezés szerint a cím nem nyilvános: csak Ön és a FODEL munkatársai látják. Ha bejelöli, a hirdetés a címet és a pontos helyet mutatja a térképen.','Standaard is het adres niet openbaar: alleen u en FODEL zien het. Vinkt u dit aan, dan toont de advertentie het adres en de exacte plek op de kaart.','By default the address is private: only you and FODEL see it. If you tick this, the listing shows the address and the exact spot on the map.')}</p>
   </div>
-  <input type="hidden" name="location_confirmed" value={p.location_confirmed || (Boolean(p.settlement) && !(p.lat===47.1625&&p.lng===19.5033)) ? 'yes' : ''}/><div class="lf-search"><label class="sr-only" for="listing-place-query">{x('Hely keresése','Plaats zoeken','Find a place')}</label><input id="listing-place-query" type="search" placeholder={x('Település, cím vagy ismert hely…','Plaats, adres of herkenningspunt…','Town, address or landmark…')} data-place-query/><button type="button" data-place-search>{x('Keresés a térképen','Zoeken op de kaart','Find on map')} <span aria-hidden="true">↗</span></button></div>
+  <input type="hidden" name="location_confirmed" value={placed ? 'yes' : ''}/><div class="lf-search"><label class="sr-only" for="listing-place-query">{x('Hely keresése','Plaats zoeken','Find a place')}</label><input id="listing-place-query" type="search" placeholder={x('Település, cím vagy ismert hely…','Plaats, adres of herkenningspunt…','Town, address or landmark…')} data-place-query/><button type="button" data-place-search>{x('Keresés a térképen','Zoeken op de kaart','Find on map')} <span aria-hidden="true">↗</span></button></div>
   <div data-place-results class="lf-results"></div>
   <div class="lf-map" data-location-map role="region" aria-label={x('Az ingatlan helyének megjelölése','Locatie van het vastgoed kiezen','Choose the property location')}><span data-map-loading>{x('Térkép betöltése…','Kaart laden…','Loading map…')}</span></div>
   <p class="lf-status" role="status" data-location-status></p>
   <div class="lf-grid lf-coordinates">
-    <Field span="half" locale={locale} name="lat" required label={x('Szélesség','Breedtegraad','Latitude')} type="coordinate" value={String(p.lat)} min={-90} max={90}/>
-    <Field span="half" locale={locale} name="lng" required label={x('Hosszúság','Lengtegraad','Longitude')} type="coordinate" value={String(p.lng)} min={-180} max={180}/>
+    <Field span="half" locale={locale} name="lat" required label={x('Szélesség','Breedtegraad','Latitude')} type="coordinate" value={placed ? String(p.lat) : ''} min={-90} max={90}/>
+    <Field span="half" locale={locale} name="lng" required label={x('Hosszúság','Lengtegraad','Longitude')} type="coordinate" value={placed ? String(p.lng) : ''} min={-180} max={180}/>
   </div>
   <Field span="half" locale={locale} name="precision" label={x('Nyilvánosan megjelenített hely','Openbaar getoonde locatie','Public location')} type="select" value={p.precision} options={[{value:'approximate',label:x('Hozzávetőleges hely','Geschatte locatie','Approximate location')},{value:'exact',label:x('Pontos hely','Exacte locatie','Exact location')}]} hint={x('A pontos koordinátákat bizalmasan tároljuk. Közelítő megjelenítésnél csak az eltolással képzett környék nyilvános.','De exacte coördinaten worden afgeschermd bewaard. Bij een geschatte locatie is alleen de verschoven omgeving openbaar.','Exact coordinates are stored privately. Approximate listings publish only a displaced area.')}/>
   <p class="lf-credit"><a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames · CC BY 4.0</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></p>

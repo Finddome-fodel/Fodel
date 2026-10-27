@@ -23,7 +23,7 @@ import { Resend } from 'resend';
 import type { BuiltEmail } from './templates';
 import type { EmailLocale } from './layout';
 import { senderAddress, officeInbox, replyToAddress } from './routing';
-import { withRetry } from './retry';
+import { withRetry, withTimeout } from './retry';
 import { isDeliverableAddress } from './deliverable';
 
 export type { EmailLocale } from './layout';
@@ -82,19 +82,27 @@ export async function sendEmail(opts: {
 
   const resend = new Resend(apiKey);
 
+  let messageId: string | undefined;
   const result = await withRetry(async () => {
-    const { error } = await resend.emails.send({
-      from,
-      to: opts.to,
-      subject: opts.subject,
-      html: opts.html,
-      text: opts.text,
-      replyTo: opts.replyTo ?? replyToAddress(),
-      ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
-    });
+    const { data, error } = await withTimeout(
+      resend.emails.send({
+        from,
+        to: opts.to,
+        subject: opts.subject,
+        html: opts.html,
+        text: opts.text,
+        replyTo: opts.replyTo ?? replyToAddress(),
+        ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
+      })
+    );
+    messageId = data?.id;
     return error;
   });
-  if (!result.sent) {
+  if (result.sent) {
+    // Resend answers success even for a suppressed recipient, so this id is the
+    // handle for finding out in its dashboard what became of the mail.
+    console.log(`[email] accepted "${opts.subject}" to ${opts.to} id=${messageId ?? '?'}`);
+  } else {
     console.error(
       `[email] giving up on "${opts.subject}" to ${opts.to} after ${result.attempts} attempt(s)`,
       result.error

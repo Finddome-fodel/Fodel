@@ -1,6 +1,6 @@
 import { parseLocaleNumber, type FieldError } from '~/lib/validation';
 import { COUNTRIES } from '~/config/countries';
-import { validSubtype, canonicalFeature, CONTACT_LANGUAGES, hasLivingArea, isLandOnly, hasPlot, groupOf, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
+import { validSubtype, canonicalFeature, CONTACT_LANGUAGES, hasLivingArea, isLandOnly, hasPlot, categoryFor, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
 import { convertPrice, exchangeRates, PRICE_CURRENCIES } from '~/lib/exchange-rates';
 import { readDetails, SETTING_KEYS, UTILITY_KEYS, PARKING_KEYS, COUNT_FIELDS, hasLayout, hasUtilities, hasParking, hasCellar, hasExtraBuildings, type ListingDetails } from '~/lib/listing-details';
 import { extractYouTubeId } from '~/lib/video';
@@ -101,8 +101,8 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
       price={original_price:amount,original_currency:currency,price_eur:converted.eur,price_huf:converted.huf,exchange_rate:converted.rate,exchange_source:snapshot.source,price_asof:snapshot.date,price_calculated_at:new Date().toISOString()};
     }catch{throw new ListingInputError({original_price:{code:'number'}},'rates-unavailable');}
   }
-  // Preserve the category/URL of a listing while it stays in the same main group.
-  const category=groupOf(current.category)===group?current.category:(subtype==='apartment'?'apartment':subtype==='farm'?'farm':group);
+  // The category follows the subtype; only a live or sold listing keeps its published URL.
+  const category=categoryFor(current,group,subtype);
   return {
     patch:{location_confirmed:form.get('location_confirmed')==='yes'&&lat!==null&&lng!==null,category,property_group:group,property_subtype:subtype||null,country,settlement,county:get('county').slice(0,120),region:get('region').slice(0,120),precision:showAddress||get('precision')==='exact'?'exact':'approximate',details,public_address:showAddress?street:null,public_postal_code:showAddress&&postalCode?postalCode:null,...price,...areas,
       year_built:year,year_built_unknown:yearUnknown,renovated_in:renovated,condition_key:condition,heating_key:heating,wall_key:wall,epc_class:['unknown','not-applicable'].includes(get('epc_status'))?get('epc_status'):get('epc_class').slice(0,40)||'unknown',bedrooms,bathrooms,features,video_url:video||null,price_negotiable:form.get('price_negotiable')==='yes'},

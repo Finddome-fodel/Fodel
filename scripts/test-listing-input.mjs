@@ -6,7 +6,7 @@ let passed=0;
 const test=async(name,fn)=>{await fn();passed++;console.log(`✓ ${name}`);};
 try{
  const {parseCoordinate,parseArea,listingInput}=await server.ssrLoadModule('/src/lib/portal/listing-input.ts');
- const {PROPERTY_GROUPS,validSubtype,hasLivingArea,isLandOnly}=await server.ssrLoadModule('/src/lib/listing-catalogue.ts');
+ const {PROPERTY_GROUPS,validSubtype,hasLivingArea,isLandOnly,categoryFor}=await server.ssrLoadModule('/src/lib/listing-catalogue.ts');
  const {resolveText}=await server.ssrLoadModule('/src/lib/properties.ts');
  const {readDetails,detailGaps,SETTINGS,UTILITIES,PARKING}=await server.ssrLoadModule('/src/lib/listing-details.ts');
  const {parseEcbRates,convertPrice}=await server.ssrLoadModule('/src/lib/exchange-rates.ts');
@@ -23,6 +23,16 @@ try{
  const xml=`<Cube time='2026-10-23'><Cube currency='HUF' rate='400'/><Cube currency='GBP' rate='0.8'/><Cube currency='CHF' rate='0.95'/></Cube>`;
  const snapshot=parseEcbRates(xml,new Date('2026-10-24T12:00:00Z'));
  await test('ECB conversion uses currency per euro, preserving audit source/date',()=>{assert.equal(convertPrice(80000,'GBP',snapshot).eur,100000);assert.equal(convertPrice(40000000,'HUF',snapshot).eur,100000);assert.equal(convertPrice(100000,'EUR',snapshot).eur,100000);assert.equal(snapshot.date,'2026-10-23');assert.equal(snapshot.source,'ECB');assert.throws(()=>convertPrice(-1,'EUR',snapshot));assert.throws(()=>parseEcbRates(xml,new Date('2026-11-20T12:00:00Z')));});
+ await test('a forint price keeps its exact forints (99 000 000 does not become 98 999 999)',()=>{const rates=parseEcbRates(`<Cube time='2026-10-23'><Cube currency='HUF' rate='392.37'/><Cube currency='GBP' rate='0.8'/></Cube>`,new Date('2026-10-24T12:00:00Z'));for(const huf of [99000000,98999999,1234567,35000])assert.equal(convertPrice(huf,'HUF',rates).huf,huf);assert.equal(convertPrice(100000,'EUR',rates).huf,Math.round(100000*392.37));});
+ await test('the category follows the subtype; only a live or sold listing keeps its address',()=>{
+  assert.equal(categoryFor({category:'house',status:'draft'},'house','apartment'),'apartment');
+  assert.equal(categoryFor({category:'house',status:'submitted'},'house','apartment'),'apartment');
+  assert.equal(categoryFor({category:'house',status:'draft'},'house','house-villa'),'house');
+  assert.equal(categoryFor({category:'house',status:'draft'},'agricultural','farm'),'farm');
+  assert.equal(categoryFor({category:'house',status:'draft'},'land','residential-plot'),'land');
+  assert.equal(categoryFor({category:'house',status:'published'},'house','apartment'),'house');
+  assert.equal(categoryFor({category:'house',status:'sold'},'land','residential-plot'),'land');
+ });
  // The cached fallback is populated without consulting any live project.
  const logError=console.error;console.error=()=>{};let taxonomy;try{taxonomy=await getTaxonomy();}finally{console.error=logError;}
  const current={id:'10000000-0000-4000-8000-000000000001',category:'apartment',property_group:'house',property_subtype:'apartment',original_price:40000000,original_currency:'HUF',price_eur:100000,price_huf:40000000,exchange_rate:400,floor_m2:80,building_m2:90,plot_m2:null,year_built:1980,renovated_in:null,bedrooms:2,bathrooms:1,condition_key:'good',heating_key:'gas',wall_key:'tegla',features:['terrace']};
