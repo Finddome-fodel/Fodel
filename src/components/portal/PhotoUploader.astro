@@ -35,9 +35,9 @@ interface Props {
   withHeading?: boolean;
 }
 
-const { propertyId, media, photoLimit: _packageLimit, packageName, editable, isAdmin, locale = 'hu', withHeading = true } = Astro.props;
+const { propertyId, media, photoLimit: packageLimit, packageName, editable, isAdmin, locale = 'hu', withHeading = true } = Astro.props;
 
-const photoLimit=20;
+const photoLimit=packageLimit;
 const moveLabel={hu:"Kép áthelyezése",nl:"Foto verplaatsen",en:"Move photo"}[locale];
 const replaceLabel={hu:"Csere",nl:"Vervangen",en:"Replace"}[locale];
 

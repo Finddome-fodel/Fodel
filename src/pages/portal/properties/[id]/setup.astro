@@ -272,7 +272,7 @@ const strings = {
         <PhotoUploader
           propertyId={property.id}
           media={property.media}
-          photoLimit={20}
+          photoLimit={packageOf(catalog, property.package).maxImages}
           packageName={packageOf(catalog, property.package).names[lang]}
           editable={true}
           isAdmin={isAdmin}

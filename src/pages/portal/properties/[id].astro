@@ -152,7 +152,7 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
 
 // The package's photo limit (admin-set in Szolgáltatások). Admins may exceed it.
 const listingPackage = packageOf(listingCatalog(company.services), property.package);
-const photoLimit = 20;
+const photoLimit = listingPackage.maxImages;
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
