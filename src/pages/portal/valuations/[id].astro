@@ -251,7 +251,16 @@ const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'né
           {'low_huf' in v && <><label>Alsó (HUF) <input type="number" name="lowHuf" min="1" value={v.low_huf ?? ''} /></label><label>Közép (HUF) <input type="number" name="midHuf" min="1" value={v.mid_huf ?? ''} /></label><label>Felső (HUF) <input type="number" name="highHuf" min="1" value={v.high_huf ?? ''} /></label></>}
           {company.services.eurHufRate && company.services.eurHufRateDate && <p class="hint">Árfolyam: 1 EUR = {company.services.eurHufRate} HUF ({company.services.eurHufRateDate}).</p>}
           {v.low_eur == null && (
-            <p class="hint">Nincs számított sáv. Jóváhagyni csak kitöltött sávval lehet — ha kézzel árazza, adja meg mindhárom értéket.</p>
+            <p class="hint">
+              {v.mid_huf != null
+                ? !company.services.valuationBandPercent
+                  ? `Van statisztikai alapérték (közép: ${Number(v.mid_huf).toLocaleString('hu-HU')} Ft), de sáv nincs: a „Statisztikai sáv ± (%)” nincs beállítva (Beállítások → Szolgáltatások).`
+                  : !(company.services.eurHufRateDate && company.services.eurHufRate)
+                    ? 'Van forintos sáv, de nincs érvényes EUR/HUF árfolyam, ezért az euró összegek nem számolhatók (Beállítások → Szolgáltatások).'
+                    : 'A sáv euró összegei még nincsenek kiszámolva — futtassa újra a számítást.'
+                : 'Nincs számított sáv: ehhez a településhez és megyéhez, ebben a kategóriában nincs elég statisztikai adat.'}
+              {' '}Jóváhagyni csak kitöltött sávval lehet — ha kézzel árazza, adja meg mindhárom értéket.
+            </p>
           )}
           <label>Alsó (€) <input type="number" name="lowEur" min="1" value={v.low_eur ?? ''} /></label>
           <label>Közép (€) <input type="number" name="midEur" min="1" value={v.mid_eur ?? ''} /></label>
