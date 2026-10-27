@@ -160,11 +160,11 @@ for(const form of forms){
   const observer=new IntersectionObserver(async entries=>{
     if(!entries.some(e=>e.isIntersecting))return;observer.disconnect();
     try{
-      const [gl,worker]=await Promise.all([import('maplibre-gl'),import('maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'),import('maplibre-gl/dist/maplibre-gl.css')]);
+      const [gl,worker]=await Promise.all([import('maplibre-gl'),import('maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url')]);
       gl.setWorkerUrl(worker.default);locationRoot.replaceChildren();
       const point=coords();map=new gl.Map({container:locationRoot,style:'https://tiles.openfreemap.org/styles/liberty',center:point||[15,50],zoom:point?11:3});
       map.addControl(new gl.NavigationControl(),'top-right');
-      let mapFailed=false;map.on('error',()=>{if(!mapFailed){mapFailed=true;status.textContent=x('A térkép nem tölthető be. A koordinátamezők továbbra is használhatók.','De kaart kon niet laden. De coördinatenvelden blijven beschikbaar.','The map could not load. Coordinate fields remain available.');}});
+      let mapFailed=false;map.on('error',(e:any)=>{if(e?.sourceId)return;if(!mapFailed){mapFailed=true;status.textContent=x('A térkép nem tölthető be. A koordinátamezők továbbra is használhatók.','De kaart kon niet laden. De coördinatenvelden blijven beschikbaar.','The map could not load. Coordinate fields remain available.');}});
       map.on('click',e=>{set('lat',e.lngLat.lat.toFixed(6));set('lng',e.lngLat.lng.toFixed(6));void syncPin(false);control('lng')?.dispatchEvent(new Event('change',{bubbles:true}));void reverse();});
       void syncPin(false);
       new ResizeObserver(()=>map?.resize()).observe(locationRoot);
