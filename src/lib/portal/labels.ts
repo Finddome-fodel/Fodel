@@ -130,7 +130,7 @@ export function friendlyError(raw: string | null | undefined): string {
     [/violates check constraint.*whatsapp/i, 'A WhatsApp-számot nemzetközi formátumban adja meg, szóközök nélkül (pl. +36301234567).'],
     [/violates check constraint/i, 'Az egyik megadott érték nem megengedett.'],
     [/violates foreign key/i, 'Az elem máshol használatban van, ezért nem módosítható így.'],
-    [/column .* does not exist|could not find the .* column|relation .* does not exist/i, 'Az adatbázis még nincs frissítve — futtassa le a legújabb migrációt (0015).'],
+    [/column .* does not exist|could not find the .* column|relation .* does not exist/i, 'Az adatbázis séma nem naprakész — futtassa le a még hiányzó migrációkat a Supabase SQL szerkesztőben (a részletek a szerver naplójában vannak).'],
     [/fetch failed|network|timeout|ECONN/i, 'Az adatbázis most nem érhető el. Próbálja újra néhány perc múlva.'],
   ];
   for (const [pattern, text] of rules) if (pattern.test(message)) return text;
