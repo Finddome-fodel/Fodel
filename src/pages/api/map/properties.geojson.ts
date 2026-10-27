@@ -49,7 +49,7 @@ export const GET: APIRoute = async ({ url }) => {
   return new Response(JSON.stringify({ type: 'FeatureCollection', features }), {
     headers: {
       'content-type': 'application/geo+json',
-      'cache-control': 's-maxage=300, stale-while-revalidate=86400',
+      'cache-control': 's-maxage=60, stale-while-revalidate=120',
     },
   });
 };

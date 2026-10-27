@@ -3,7 +3,7 @@
  *
  * Listings are deliberately uncached in properties.ts because stale workflow
  * state is dangerous. These roughly sixty rows change a few times a year and
- * already sit behind routes with `s-maxage=300`, so a short process-local TTL
+ * already sit behind routes with `s-maxage=60`, so a short process-local TTL
  * removes repeated reads without making an approval appear stale. A failed
  * configuration read always falls back to the checked-in 1.2 facts: a database
  * blip must not turn every public page into a 500.
@@ -173,6 +173,18 @@ type Cache<T> = { value?: T; expiresAt: number; pending?: Promise<T> };
 const taxonomyCache: Cache<Taxonomy> = { expiresAt: 0 };
 const companyCache: Cache<Company> = { expiresAt: 0 };
 const TTL_MS = 60_000;
+
+/**
+ * Forget the cached settings and taxonomy. Called by the endpoints that write them,
+ * so the instance that took the save serves the new value at once instead of after
+ * the TTL; other instances still catch up within it.
+ */
+export function clearRuntimeConfigCache(): void {
+  taxonomyCache.expiresAt = 0;
+  taxonomyCache.value = undefined;
+  companyCache.expiresAt = 0;
+  companyCache.value = undefined;
+}
 
 async function cached<T>(cache: Cache<T>, load: () => Promise<T>, fallback: T): Promise<T> {
   if (cache.value && cache.expiresAt > Date.now()) return cache.value;

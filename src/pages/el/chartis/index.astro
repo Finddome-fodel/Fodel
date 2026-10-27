@@ -1,6 +1,6 @@
 ---
 export const prerender = false;
-Astro.response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
+Astro.response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
 
 import MapBrowsePage from '~/components/pages/MapBrowsePage.astro';
 ---

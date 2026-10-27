@@ -28,7 +28,7 @@ if (!property) {
   return Astro.rewrite('/404');
 }
 
-Astro.response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
+Astro.response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
 
 // The long-form prose below the summary, falling back to Hungarian when a
 // locale has none — see the note in supabase/migrations/0002_seed_properties.sql.
