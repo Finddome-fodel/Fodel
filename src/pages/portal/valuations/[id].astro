@@ -206,7 +206,10 @@ const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'né
       )}
 
       {canCompute && (
-        <button type="button" class="btn" id="compute-btn">{v.status === 'queued' ? 'Számítás futtatása' : 'Számítás újrafuttatása'}</button>
+        <>
+          <button type="button" class="btn" id="compute-btn">{v.status === 'queued' ? 'Számítás futtatása' : 'Számítás újrafuttatása'}</button>
+          <p class="action-status" id="compute-status" role="status"></p>
+        </>
       )}
 
       {comps.length > 0 && (
@@ -333,11 +336,12 @@ const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'né
   document.getElementById('compute-btn')?.addEventListener('click', async (e) => {
     e.target.disabled = true;
     e.target.textContent = 'Számítás…';
-    const { ok } = await post('compute');
+    const { ok, json } = await post('compute');
     if (ok) location.reload();
     else {
       e.target.disabled = false;
       e.target.textContent = 'Számítás sikertelen — újra';
+      document.getElementById('compute-status').textContent = failed(json);
     }
   });
 

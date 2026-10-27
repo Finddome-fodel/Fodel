@@ -59,6 +59,16 @@ export const prerender = false;
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
+/** Runs work that follows a saved change: a failure is logged, never thrown. */
+async function safely<T>(what: string, task: () => Promise<T>): Promise<T | null> {
+  try {
+    return await task();
+  } catch (e) {
+    console.error(`[status] ${what} failed after the change was saved`, e);
+    return null;
+  }
+}
+
 type OwnerContact = { email: string; locale: Locale; full_name: string | null };
 
 async function ownerContact(supabase: any, ownerId: string | null): Promise<OwnerContact | null> {
@@ -129,26 +139,33 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       .eq('id', id);
     if (error) return json(500, { ok: false, error: error.message });
 
-    const owner = await ownerContact(supabase, property.owner_id);
-    if (owner) {
-      const title = await listingTitle(supabase, property.id, owner.locale, property.ref);
-      await deliver(owner.email, templates.submissionReceived(owner.locale, { ref: property.ref, title }));
-    }
-
-    // Closes a real 1.0 gap: the owner was told "we received it" and nobody at
-    // FODEL was told anything at all, so a submission was only ever noticed by
-    // an admin who happened to open the dashboard.
-    await notifyAdmins(supabase, property, owner, mediaCount ?? 0);
-
-    await logEvent({
-      kind: 'listing.submit',
-      actorId: user!.id,
-      actorEmail: profile?.email ?? null,
-      subjectType: 'property',
-      subjectId: id,
-      propertyId: id,
-      source: 'portal',
-    }).catch(() => {});
+    // The status is saved. From here on nothing may turn this into an error
+    // response: a mail that fails, or takes so long the function is cut off,
+    // used to make the wizard report "could not submit" for a submission that
+    // had gone through (and a second click then met a 409). The mails go out
+    // together so one slow recipient cannot hold the others up.
+    const owner = await safely('owner lookup', () => ownerContact(supabase, property.owner_id));
+    await Promise.all([
+      owner
+        ? safely('submission receipt', async () => {
+            const title = await listingTitle(supabase, property.id, owner.locale, property.ref);
+            return deliver(owner.email, templates.submissionReceived(owner.locale, { ref: property.ref, title }));
+          })
+        : null,
+      // Closes a real 1.0 gap: the owner was told "we received it" and nobody at
+      // FODEL was told anything at all, so a submission was only ever noticed by
+      // an admin who happened to open the dashboard.
+      safely('admin alert', () => notifyAdmins(supabase, property, owner ?? null, mediaCount ?? 0)),
+      logEvent({
+        kind: 'listing.submit',
+        actorId: user!.id,
+        actorEmail: profile?.email ?? null,
+        subjectType: 'property',
+        subjectId: id,
+        propertyId: id,
+        source: 'portal',
+      }).catch(() => {}),
+    ]);
 
     return json(200, { ok: true });
   }
@@ -356,28 +373,44 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       if (!published.ok) return json(500, { ok: false, error: published.error });
     }
 
-    if (owner) {
-      const title = await listingTitle(supabase, property.id, locale, property.ref);
-      const sharedEmail = {
-          ref: property.ref,
-          title,
-          items: linesForEmail(lines, locale),
-          discount: discountCents > 0 ? `−${formatCents(discountCents, locale)}` : undefined,
-          total: formatCents(totalCents, locale),
-          // The email links to the listing's own page, which is where the pay
-          // button lives. A Stripe session is created at the moment they click
-          // it — never here, because a session minted now would have expired by
-          // the time a seller who reads email on Sunday gets to it.
-          payUrl: `${SITE_URL}/portal/properties/${property.id}`,
-      };
-      const email = gated
-        ? templates.approvedAwaitingPayment(locale, sharedEmail)
-        : templates.approvedPublished(locale, {
-            ...sharedEmail,
-            viewUrl: await publicUrl(property, locale),
-            dueDate: formatDate(dueAt, locale),
-          });
-      await deliver(owner.email, email);
+    // The approval is saved: a mail that cannot be built or sent is reported, never thrown.
+    // null = nobody to mail (the listing has no owner account).
+    const emailDelivered = owner
+      ? ((await safely('approval mail', async () => {
+          const title = await listingTitle(supabase, property.id, locale, property.ref);
+          const sharedEmail = {
+            ref: property.ref,
+            title,
+            items: linesForEmail(lines, locale),
+            discount: discountCents > 0 ? `−${formatCents(discountCents, locale)}` : undefined,
+            total: formatCents(totalCents, locale),
+            // The email links to the listing's own page, which is where the pay
+            // button lives. A Stripe session is created at the moment they click
+            // it — never here, because a session minted now would have expired by
+            // the time a seller who reads email on Sunday gets to it.
+            payUrl: `${SITE_URL}/portal/properties/${property.id}`,
+          };
+          const email = gated
+            ? templates.approvedAwaitingPayment(locale, sharedEmail)
+            : templates.approvedPublished(locale, {
+                ...sharedEmail,
+                viewUrl: await publicUrl(property, locale),
+                dueDate: formatDate(dueAt, locale),
+              });
+          return deliver(owner.email, email);
+        })) ?? false)
+      : null;
+    if (emailDelivered === false) {
+      await logEvent({
+        kind: 'email.failed',
+        actorId: user!.id,
+        actorEmail: profile?.email ?? null,
+        subjectType: 'property',
+        subjectId: id,
+        propertyId: id,
+        source: 'portal',
+        payload: { template: 'approved', to: owner?.email },
+      }).catch(() => {});
     }
 
     await logEvent({
@@ -391,7 +424,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       payload: { totalCents, discountCents },
     }).catch(() => {});
 
-    return json(200, { ok: true, totalCents });
+    return json(200, { ok: true, totalCents, emailDelivered });
   }
 
   /* ── publish manually (bank transfer received) ──────────────────────── */
@@ -759,7 +792,7 @@ async function notifyAdmins(
 
   // replyTo the owner: an admin can answer a question about the listing
   // without leaving their inbox.
-  for (const recipient of recipients) {
-    await deliver(recipient, email, owner?.email);
-  }
+  // Together rather than one after another: each send may retry with a wait,
+  // and the submitter is waiting on this response.
+  await Promise.all(recipients.map((recipient) => deliver(recipient, email, owner?.email)));
 }

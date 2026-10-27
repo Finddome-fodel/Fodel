@@ -710,7 +710,10 @@ const strings = {
         body: JSON.stringify({ action: 'submit' }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw Object.assign(new Error(json.error ?? 'failed'), { fields: json.fields, detail: json.message });
+      // 409 not-editable: the listing is already past draft, i.e. an earlier click (or a request whose
+      // reply was lost) did submit it. Show the thank-you rather than an error for something that worked.
+      const alreadySubmitted = res.status === 409 && json.error === 'not-editable';
+      if (!alreadySubmitted && (!res.ok || !json.ok)) throw Object.assign(new Error(json.error ?? 'failed'), { fields: json.fields, detail: json.message });
       status.textContent = '';
       // Remove, rather than hide, everything but the thank-you panel: the review block, the step list
       // and the navigation each carry their own display rules, which beat the hidden attribute.
@@ -722,6 +725,7 @@ const strings = {
       done.focus();
       done.scrollIntoView({ block: 'start' });
     } catch (error) {
+      console.warn('[setup] submit failed', error);
       const failure = error as Error & { fields?: (keyof typeof s.missing.fields)[]; detail?: string };
       status.textContent = failure.message === 'no-photos' ? s.noPhotos
         : failure.message === 'incomplete-details' && failure.fields?.length ? `${s.missing.details}: ${failure.fields.map((name) => s.missing.fields[name]).join(', ')}`

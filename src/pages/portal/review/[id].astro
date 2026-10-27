@@ -28,6 +28,7 @@ import { eur, huf, placeLabel } from '~/lib/format';
 import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM } from '~/lib/listing-details';
 import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/requested-extras';
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
+import { paymentGatesPublishing } from '~/config/flags';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
 
 function mediaSrc(storagePath: string): string {
@@ -98,6 +99,8 @@ const aboveThreshold = isAboveThreshold(property.price_huf, listing, suggested.p
 const tieredPackage = listing.packages.find((pkg) => tierApplies(pkg, property.price_huf));
 
 const reviewable = property.status === 'submitted';
+// Build-time policy, the same flag status.ts reads: the wording must match what approval actually does.
+const gated = paymentGatesPublishing();
 const awaitingPayment = property.status === 'awaiting_payment';
 
 // The owner's language decides the language of the change request (the
@@ -366,8 +369,8 @@ const { data: creditableReferral } = property.owner_id
   {(reviewable || awaitingPayment) && (
     <section class="actions card-block">
       {reviewable && (
-        <button type="button" class="btn" id="approve-btn" data-free={property.free_listing ? 'yes' : undefined}>
-          {property.free_listing ? 'Jóváhagyás és élesítés (ingyenes)' : 'Jóváhagyás és díjbekérő küldése'}
+        <button type="button" class="btn" id="approve-btn" data-free={property.free_listing ? 'yes' : undefined} data-gated={gated ? 'yes' : undefined}>
+          {property.free_listing ? 'Jóváhagyás és élesítés (ingyenes)' : gated ? 'Jóváhagyás és díjbekérő küldése' : 'Jóváhagyás és élesítés (díjkérővel)'}
         </button>
       )}
       {awaitingPayment && (
@@ -515,6 +518,10 @@ const { data: creditableReferral } = property.owner_id
       statusEl.textContent = messages[json.error] || json.message || 'Nem sikerült végrehajtani.';
       return;
     }
+    // The decision is saved either way; only a mail that could not leave needs the admin's attention.
+    if (action === 'approve' && json.emailDelivered === false) {
+      await window.pf.alert({ title: 'Jóváhagyva, de a levél nem ment ki', body: 'A hirdetés állapota mentve, de a hirdetőnek szóló értesítő nem érkezett meg a levelezőhöz. Írjon neki közvetlenül, vagy ellenőrizze a Resend naplót.' });
+    }
     location.href = '/portal/inbox';
   }
 
@@ -540,7 +547,11 @@ const { data: creditableReferral } = property.owner_id
     const order = readOrder();
     if (!order) { await window.pf.alert({ title: 'Válasszon csomagot', body: 'A díjbekérő kiküldéséhez ki kell választani a hirdetés csomagját.' }); return; }
     const shown = totalEl?.textContent ?? '';
-    if (await window.pf.confirm({ title: 'Jóváhagyja a hirdetést?', body: `A hirdető díjbekérőt kap ${shown} összegről. A hirdetés a fizetés beérkezése után élesedik.`, confirmLabel: 'Jóváhagyás és küldés' })) {
+    const gated = event.currentTarget.dataset.gated === 'yes';
+    const body = gated
+      ? `A hirdető díjbekérőt kap ${shown} összegről. A hirdetés a fizetés beérkezése után élesedik.`
+      : `A hirdetés azonnal élesedik. A hirdető e-mailben ${shown} összegű, 14 napos határidejű fizetési felszólítást kap.`;
+    if (await window.pf.confirm({ title: 'Jóváhagyja a hirdetést?', body, confirmLabel: gated ? 'Jóváhagyás és küldés' : 'Jóváhagyás és élesítés' })) {
       doAction('approve', { order });
     }
   });
