@@ -6,18 +6,34 @@ export const prerender = false;
 /**
  * 404, in the language of the address that was not found (/de/nichts/ → German).
  * An address with no language in it (the old fodel.nl URLs, a typo at the
- * root) gets the language the visitor last picked, else Dutch. Beside the
+ * root) gets the language the visitor last picked, else the one their browser
+ * asks for, else Dutch. Beside the
  * apology, the other four languages are one click away.
  */
 import Base from '~/layouts/Base.astro';
 import Button from '~/components/Button.astro';
-import { LOCALES, LOCALE_META, FALLBACK_LOCALE, localeOfPath, localeFrom, path, localizer } from '~/i18n/ui';
+import { LOCALES, LOCALE_META, FALLBACK_LOCALE, localeOfPath, localeFrom, path, localizer, type Locale } from '~/i18n/ui';
 import { COMPANY } from '~/config/company';
 
 // After a rewrite, Astro.url is the 404 route itself; the original address is
 // what tells us the language.
 const original: string = (Astro as unknown as { originPathname?: string }).originPathname ?? Astro.url.pathname;
-const locale = localeOfPath(original) ?? localeFrom(Astro.cookies.get('fodel_lang')?.value, FALLBACK_LOCALE);
+// No language in the address: the visitor's own pick, then what their browser asks for, then the default.
+// Back-office addresses are Hungarian (the portal is).
+const acceptedLocale = (): Locale | undefined => {
+  for (const part of (Astro.request.headers.get('accept-language') ?? '').split(',')) {
+    const tag = part.split(';')[0].trim().toLowerCase().split('-')[0];
+    const code = tag === 'nb' || tag === 'nn' ? 'no' : tag;
+    if ((LOCALES as readonly string[]).includes(code)) return code as Locale;
+  }
+};
+const cookieLocale = Astro.cookies.get('fodel_lang')?.value;
+const locale =
+  localeOfPath(original) ??
+  (cookieLocale ? localeFrom(cookieLocale, FALLBACK_LOCALE) : undefined) ??
+  (original.startsWith('/portal') ? 'hu' : undefined) ??
+  acceptedLocale() ??
+  FALLBACK_LOCALE;
 const x = localizer(locale);
 const others = LOCALES.filter((code) => code !== locale);
 
