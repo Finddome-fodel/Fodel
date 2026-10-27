@@ -50,6 +50,7 @@ const clientStrings = JSON.stringify({
   'CooperativeGesturesHandler.MobileHelpText': chrome.mobileHelp,
   'NavigationControl.ZoomIn': chrome.zoomIn,
   'NavigationControl.ZoomOut': chrome.zoomOut,
+  'Fodel.Unavailable': chrome.unavailable,
 });
 const listUrl = path(locale, 'properties');
 ---
@@ -143,9 +144,18 @@ const listUrl = path(locale, 'properties');
     // A tile that fails to load (a flaky connection, a navigation that aborts
     // the request) leaves a gap the next pan fills; it is not a page error. Log it
     // rather than swallow it, so a style or CSS problem is visible in the console.
+    // A failure of the style itself (no sourceId) leaves nothing to look at, so say so.
+    let failureShown = false;
     map.on('error', (e) => {
       const { sourceId } = e as unknown as { sourceId?: string };
       console.warn('[map]', sourceId ? `source ${sourceId}:` : 'style:', e.error?.message ?? e);
+      if (sourceId || failureShown || !mapStrings['Fodel.Unavailable']) return;
+      failureShown = true;
+      const note = document.createElement('p');
+      note.className = 'map-failed';
+      note.setAttribute('role', 'status');
+      note.textContent = mapStrings['Fodel.Unavailable'];
+      el.append(note);
     });
     // OpenFreeMap's style carries its own OSM/OpenMapTiles credit; the
     // self-hosted tileset has none, so it is added here.
@@ -300,6 +310,20 @@ const listUrl = path(locale, 'properties');
   }
   :global(.maplibregl-ctrl-attrib) {
     font-size: 10px;
+  }
+  :global(.fodel-map .map-failed) {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    margin: 0;
+    background: var(--mist);
+    font-size: var(--fs-body);
+    line-height: 1.5;
+    color: var(--taupe);
+    text-align: center;
   }
   :global(.fodel-map .maplibregl-ctrl-group) {
     border-radius: var(--r-md);
