@@ -69,6 +69,9 @@ images Astro emits alongside the optimised variants (11 MB, unreferenced).
    `0030_photo_limit_ceiling.sql` (photo cap is now the package setting, the
    trigger only a 200 ceiling) bring it back in line. `0031_clear_placeholder_plot.sql`
    clears the 1 m² plot area that old drafts were created with (it blocked approval).
+   `0032_category_follows_subtype.sql` files unpublished apartments/farms under their own
+   category (they were stuck as "house") and restores forint prices that lost 1 Ft; live
+   listings are left alone on purpose.
 
    **`0005` and `0014` must each be run in two steps**, and both say so at the
    top of the file (split at the `STEP 2` marker).
