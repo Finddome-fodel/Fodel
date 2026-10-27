@@ -105,6 +105,10 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     if (!mediaCount) return json(422, { ok: false, error: 'no-photos' });
     if(!property.country || !property.location_confirmed || !validSubtype(property.property_group,property.property_subtype) || !(property.original_price>0) || !property.property_translations.some((t:{title:string;description:string})=>t.title?.trim()&&t.description?.trim())) return json(422,{ok:false,error:'incomplete-listing'});
 
+    // Same rule the admin's approval applies, so nobody can submit what cannot be approved.
+    const placeholder = placeholderProblem(property, isAdmin ? 'admin' : 'owner');
+    if (placeholder) return json(422, { ok: false, error: 'placeholder', message: placeholder });
+
     // The facts the old upload form made compulsory for a home (rooms, floors, kitchens, address ...).
     // An admin may submit on an owner's behalf with less; before migration 0025 there is nothing to check.
     if (!isAdmin) {
@@ -157,7 +161,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     // Refuse before anything is sent or charged: a placeholder price or area is not an approvable listing.
     const placeholder = placeholderProblem(property);
-    if (placeholder) return json(422, { ok: false, error: placeholder });
+    if (placeholder) return json(422, { ok: false, error: 'placeholder', message: placeholder });
 
     const owner = await ownerContact(supabase, property.owner_id);
     const locale = owner?.locale ?? 'hu';

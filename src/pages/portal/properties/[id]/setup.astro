@@ -710,18 +710,22 @@ const strings = {
         body: JSON.stringify({ action: 'submit' }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.ok) throw Object.assign(new Error(json.error ?? 'failed'), { fields: json.fields });
+      if (!res.ok || !json.ok) throw Object.assign(new Error(json.error ?? 'failed'), { fields: json.fields, detail: json.message });
       status.textContent = '';
-      root.querySelector<HTMLElement>('[data-review]')!.hidden = true;
-      root.querySelector<HTMLElement>('.su-nav')!.hidden = true;
-      root.querySelector<HTMLElement>('.su-steps')!.hidden = true;
+      // Remove, rather than hide, everything but the thank-you panel: the review block, the step list
+      // and the navigation each carry their own display rules, which beat the hidden attribute.
       const done = root.querySelector<HTMLElement>('[data-done]')!;
+      done.closest('.su-step')!.replaceChildren(done);
+      root.querySelector('.su-nav')!.remove();
+      root.querySelector('.su-steps')!.remove();
       done.hidden = false;
       done.focus();
+      done.scrollIntoView({ block: 'start' });
     } catch (error) {
-      const failure = error as Error & { fields?: (keyof typeof s.missing.fields)[] };
+      const failure = error as Error & { fields?: (keyof typeof s.missing.fields)[]; detail?: string };
       status.textContent = failure.message === 'no-photos' ? s.noPhotos
         : failure.message === 'incomplete-details' && failure.fields?.length ? `${s.missing.details}: ${failure.fields.map((name) => s.missing.fields[name]).join(', ')}`
+        : failure.message === 'placeholder' && failure.detail ? failure.detail
         : s.submitFailed;
       submitBtn.disabled = false;
     }

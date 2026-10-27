@@ -179,7 +179,7 @@ const { data: creditableReferral } = property.owner_id
       <div><dt>Típus</dt><dd>{categoryLabel || property.category}</dd></div>
       <div><dt>Település</dt><dd>{placeLabel(property.settlement, property.county)}</dd></div>
       <div><dt>Ár</dt><dd>{eur(property.price_eur)} / {huf(property.price_huf, 'hu')}</dd></div>
-      <div><dt>Alapterület</dt><dd>{property.floor_m2 ?? '—'} m² / {property.plot_m2} m² telek</dd></div>
+      <div><dt>Alapterület</dt><dd>{property.floor_m2 ?? '—'} m² / {property.plot_m2 != null ? `${property.plot_m2} m²` : '—'} telek</dd></div>
       {(() => {
         const d = readDetails(property.details);
         const counts = [['szoba', d.rooms], ['félszoba', d.half_rooms], ['szint', d.floors], ['konyha', d.kitchens], ['WC', d.toilets]].filter(([, n]) => n !== undefined).map(([k, n]) => `${n} ${k}`);
@@ -512,7 +512,7 @@ const { data: creditableReferral } = property.owner_id
         'bad-quantity': 'A mennyiség 1 és 60 között lehet.',
         exclusive: 'A két helyszíni szolgáltatás közül csak az egyik választható.',
       };
-      statusEl.textContent = messages[json.error] || 'Nem sikerült végrehajtani.';
+      statusEl.textContent = messages[json.error] || json.message || 'Nem sikerült végrehajtani.';
       return;
     }
     location.href = '/portal/inbox';
