@@ -61,6 +61,14 @@ images Astro emits alongside the optimised variants (11 MB, unreferenced).
    `0004_search.sql`, `0005_fodel_11.sql`, then every later file in number
    order up to `0014_brief2.sql`.
 
+   Migrations are run by hand — a deploy never runs them — and the newer ones
+   are idempotent, so re-running one is safe. If a table in production has
+   drifted from the repo, `0028_price_history_columns.sql` (price history, the
+   reason a listing with a price could not be saved), `0029_featured_sort_and_visibility.sql`
+   (featured-first sort; every published listing is searchable) and
+   `0030_photo_limit_ceiling.sql` (photo cap is now the package setting, the
+   trigger only a 200 ceiling) bring it back in line.
+
    **`0005` and `0014` must each be run in two steps**, and both say so at the
    top of the file (split at the `STEP 2` marker).
    Its first statement adds a value to an enum, and PostgreSQL refuses to use a
@@ -102,7 +110,9 @@ sharp-optimised images. Layered on top:
   pages declare `export const prerender = true` and are built once, same as
   before. Pages that read Supabase (home, listings, a property, sold
   archive, the map, `/portal/`) render per request with a short CDN cache
-  (`s-maxage=300`), so approving a listing shows up live within minutes.
+  (`s-maxage=60`), so approving a listing or saving a setting shows up live
+  within a minute or two. The portal itself is never cached (`private, no-store`,
+  set in `src/middleware.ts`), so Back after signing out cannot replay it.
 - **Search**: `src/lib/properties.ts`'s `searchProperties()` calls a
   Postgres function (`search_properties`, in `0004_search.sql`) that does
   free-text search (PostgreSQL's built-in Hungarian/Dutch dictionaries — no
@@ -215,7 +225,8 @@ serves the real production output.
    valuation rows), but those features stay off until it is.
 1. **KvK number.** Not published on any FODEL property, and Dutch law requires it
    on the website. Set `registration.kvk` in `src/config/company.ts`. Until then
-   the footer and colofon render a red `—` and `npm run verify` fails.
+   the footer hides the "KvK:" label (it would otherwise show a bare `—`) and
+   `npm run verify` fails.
 2. **Confirm the VAT identifier.** `NL002505231B62` is published on fodel.hu.
    Confirm it is the publishable **BTW-id** and not the legacy sole-trader
    BTW-nummer, which embeds a BSN and must not appear publicly. Once confirmed,
@@ -417,7 +428,9 @@ Vercel is configured (`@astrojs/vercel`). Set every variable from
 `.env.example` in the project's Environment Variables settings — at minimum
 `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
 `RESEND_API_KEY`, `FODEL_INBOX` and `FODEL_FROM` (plus `FODEL_REPLY_TO` if
-customer replies should go somewhere other than `FODEL_INBOX`); `PMTILES_URL` once the
+customer replies should go somewhere other than `FODEL_INBOX`);
+`PUBLIC_SITE_URL` while the public domain (default `https://finddome.com`) does not
+point at Vercel yet — every link inside an e-mail is built from it; `PMTILES_URL` once the
 basemap is built and uploaded; the `STRIPE_*` vars only if card payment is
 deliberately turned on. To move host, swap the adapter in `astro.config.mjs`
 — nothing else is host-specific, though `output: 'server'` (needed for the
@@ -425,6 +438,6 @@ database-backed pages) means the new host must support SSR, not just static
 hosting.
 
 **After launch:** submit `https://finddome.com/sitemap-index.xml` to Search Console
-(the canonical origin is `SITE_URL` in `src/config/site.mjs` — the only place it
-is written), and set up the 301 map from the old fodel.nl / fodel.hu / eladod.com URLs when the real inventory
+(the canonical origin is `SITE_URL` in `src/config/site.mjs`, overridable with
+`PUBLIC_SITE_URL` — the only place it is written), and set up the 301 map from the old fodel.nl / fodel.hu / eladod.com URLs when the real inventory
 migrates. Those URLs carry thirteen years of accumulated authority.

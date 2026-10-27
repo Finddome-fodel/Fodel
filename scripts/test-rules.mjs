@@ -23,7 +23,11 @@ import {
 } from '../src/lib/validation.ts';
 import { errorMessage } from '../src/lib/validation-server.ts';
 import { LOCALES, ROUTES, UI, path, localizer, localeFrom, isLocale } from '../src/i18n/ui.ts';
-import { eur, huf, area, grouped } from '../src/lib/format.ts';
+import { eur, huf, area, grouped, placeLabel } from '../src/lib/format.ts';
+import { execFileSync } from 'node:child_process';
+import { registerHooks } from 'node:module';
+import { existsSync } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { withRetry, isRetryable } from '../src/lib/email/retry.ts';
 
 let passed = 0;
@@ -338,5 +342,91 @@ await (async () => {
   const down = await withRetry(async () => { k++; throw new Error('down'); }, NO_WAIT);
   test('gives up after three attempts', () => assert.deepEqual([down.sent, down.attempts, k], [false, 3, 3]));
 })();
+
+// The modules below import through the site's `~/` alias and without file
+// extensions, which Node does not resolve by itself. This hook teaches it both.
+const SRC = fileURLToPath(new URL('../src/', import.meta.url));
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    let target = specifier.startsWith('~/') ? SRC + specifier.slice(2) : specifier;
+    const relative = target.startsWith('.') && context.parentURL?.startsWith('file:');
+    if (relative) target = fileURLToPath(new URL(target, context.parentURL));
+    if (target.startsWith('/') && !/\.[a-z]+$/.test(target)) {
+      for (const ext of ['.ts', '/index.ts']) if (existsSync(target + ext)) return nextResolve(pathToFileURL(target + ext).href, context);
+    }
+    return nextResolve(target.startsWith('/') ? pathToFileURL(target).href : specifier, context);
+  },
+  // Vite lets a module import JSON bare; Node wants the `type: 'json'` attribute.
+  load(url, context, nextLoad) {
+    return url.endsWith('.json') ? nextLoad(url, { ...context, importAttributes: { type: 'json' } }) : nextLoad(url, context);
+  },
+});
+const { searchRequestReceived } = await import('../src/lib/email/search-request.ts');
+const { listingCatalog } = await import('../src/lib/listing-packages.ts');
+const { placeholderProblem } = await import('../src/lib/portal/placeholder.ts');
+const { fillShortHours, HOURS_TOKEN } = await import('../src/config/company.ts');
+
+console.log('Grok test findings');
+test('a place label never puts Budapest in Pest county', () => {
+  assert.equal(placeLabel('Budapest', 'Pest'), 'Budapest');
+  assert.equal(placeLabel('Budapest XI. kerület', 'Pest'), 'Budapest XI. kerület');
+  assert.equal(placeLabel('Pécs', 'Baranya'), 'Pécs, Baranya');
+  assert.equal(placeLabel('Győr', 'győr'), 'Győr');
+  assert.equal(placeLabel('Szeged', null), 'Szeged');
+});
+test('the search-request confirmation renders in every language and repeats the request', () => {
+  const asked = { name: 'Anna', propertyType: 'Farmhouse', region: 'Baranya', budgetMin: '50000', budgetMax: '90000', requirements: 'Quiet, a well' };
+  for (const l of LOCALES) {
+    const mail = searchRequestReceived(l, asked);
+    for (const part of [mail.subject, mail.html, mail.text]) {
+      assert.ok(part && !/undefined|NaN|\[object/.test(part), `${l}: bad output`);
+    }
+    assert.ok(mail.subject.includes('FODEL'), `${l}: subject`);
+    assert.ok(mail.html.includes('Baranya') && mail.text.includes('Quiet, a well'), `${l}: request not repeated`);
+    assert.ok(mail.text.includes('€ 50 000 – € 90 000'), `${l}: budget`);
+  }
+});
+await (async () => {
+  const missing = [];
+  for (const l of LOCALES) {
+    const msg = (await import(`../src/lib/validation-copy/${l}.ts`)).copy.selfReferral;
+    if (typeof msg !== 'string' || msg.length < 8) missing.push(l);
+  }
+  test('a person cannot refer themselves, in any language', () => assert.deepEqual(missing, []));
+})();
+test('the photo cap follows the saved package setting', () => {
+  const caps = (services) => listingCatalog(services).packages.map((p) => p.maxImages);
+  assert.deepEqual(caps(undefined), [20, 20]);
+  const only = (patch) => ({ listingPackages: { 'cheap-6m': patch } });
+  assert.equal(listingCatalog(only({ maxImages: 35 })).packages[0].maxImages, 35);
+  assert.equal(listingCatalog(only({ maxImages: null })).packages[0].maxImages, null);
+  assert.equal(listingCatalog(only({ maxImages: 0 })).packages[0].maxImages, 20, 'out of range → default');
+  assert.equal(listingCatalog(only({ maxImages: 9999 })).packages[0].maxImages, 20, 'out of range → default');
+  assert.equal(listingCatalog(only({ maxImages: 200 })).packages[0].maxImages, 200);
+});
+test('a €1 / 1 m² draft cannot be approved', () => {
+  assert.ok(placeholderProblem({ price_eur: 1, floor_m2: 120 }));
+  assert.ok(placeholderProblem({ price_eur: null }));
+  assert.ok(placeholderProblem({ price_eur: 95000, floor_m2: 1 }));
+  assert.ok(placeholderProblem({ price_eur: 95000, plot_m2: 1 }));
+  assert.equal(placeholderProblem({ price_eur: 95000, floor_m2: 120, building_m2: null, plot_m2: 800 }), null);
+});
+test('the opening-hours token is filled from live settings, once', () => {
+  const hours = { weekdays: { from: '09:00', to: '19:00' } };
+  const out = fillShortHours(`${HOURS_TOKEN} · free`, hours, 'hu');
+  assert.ok(out.includes('19:00') && !out.includes(HOURS_TOKEN), out);
+  assert.equal(fillShortHours('no token', hours, 'hu'), 'no token');
+});
+test('PUBLIC_SITE_URL sets the origin; junk falls back to finddome.com', () => {
+  const origin = (value) =>
+    execFileSync(process.execPath, ['--input-type=module', '-e', "import('./src/config/site.mjs').then((m) => console.log(m.SITE_URL))"], {
+      env: { ...process.env, PUBLIC_SITE_URL: value }, encoding: 'utf8',
+    }).trim();
+  assert.equal(origin('https://fodel.vercel.app/'), 'https://fodel.vercel.app');
+  assert.equal(origin('https://fodel.vercel.app/hu/x?y=1'), 'https://fodel.vercel.app');
+  assert.equal(origin('not a url'), 'https://finddome.com');
+  assert.equal(origin('javascript:alert(1)'), 'https://finddome.com');
+  assert.equal(origin(''), 'https://finddome.com');
+});
 
 console.log(process.exitCode ? '\nFAILED' : `\nAll ${passed} checks passed.`);
