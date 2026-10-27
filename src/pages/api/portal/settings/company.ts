@@ -1,4 +1,5 @@
 import { clearRuntimeConfigCache } from '~/lib/runtime-config';
+import { requestRebuild } from '~/lib/rebuild';
 import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
 export const prerender = false;
@@ -62,6 +63,9 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     ...('whatsapp' in row ? { whatsapp } : {}),
   };
   const { error } = await locals.supabase.from('site_settings').update(patch).eq('id', 1);
-  if (!error) clearRuntimeConfigCache();
+  if (!error) {
+    clearRuntimeConfigCache();
+    await requestRebuild();
+  }
   return redirect(error ? '/portal/settings/company?error=' + encodeURIComponent(friendlyError(error.message)) : '/portal/settings/company?saved=1');
 };
