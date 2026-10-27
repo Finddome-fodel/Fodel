@@ -24,7 +24,7 @@ import { resolveImage } from '~/lib/property-images';
 import { catalogue, suggestSelection, isAboveThreshold, REFERRAL_DISCOUNT_PERCENT } from '~/lib/orders';
 import { getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf, isAboveThreshold as tierApplies } from '~/lib/listing-packages';
-import { eur, huf } from '~/lib/format';
+import { eur, huf, placeLabel } from '~/lib/format';
 import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM } from '~/lib/listing-details';
 import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/requested-extras';
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
@@ -154,7 +154,7 @@ const { data: creditableReferral } = property.owner_id
     <div>
       <p class="crumbs"><a href="/portal/inbox">← Beérkező hirdetések</a><span>#{property.ref}</span></p>
       <h1>{hu?.title ?? 'Névtelen hirdetés'}</h1>
-      <p class="hero-meta"><span class="status-pill" data-status={property.status}>{STATUS_LABEL[property.status]}</span><span>{property.settlement}, {property.county}</span><span>{eur(property.price_eur)}</span></p>
+      <p class="hero-meta"><span class="status-pill" data-status={property.status}>{STATUS_LABEL[property.status]}</span><span>{placeLabel(property.settlement, property.county)}</span><span>{eur(property.price_eur)}</span></p>
     </div>
     <a href={`/portal/properties/${property.id}`} class="btn ghost">Szerkesztő megnyitása</a>
   </header>
@@ -177,7 +177,7 @@ const { data: creditableReferral } = property.owner_id
     <dl class="facts">
       {property.topic_highlight_requested && <div><dt>Témaköri kiemelés</dt><dd>Az eladó igényelte. Áregyeztetés szükséges; automatikus terhelés nem történik.</dd></div>}
       <div><dt>Típus</dt><dd>{categoryLabel || property.category}</dd></div>
-      <div><dt>Település</dt><dd>{property.settlement}, {property.county}</dd></div>
+      <div><dt>Település</dt><dd>{placeLabel(property.settlement, property.county)}</dd></div>
       <div><dt>Ár</dt><dd>{eur(property.price_eur)} / {huf(property.price_huf, 'hu')}</dd></div>
       <div><dt>Alapterület</dt><dd>{property.floor_m2 ?? '—'} m² / {property.plot_m2} m² telek</dd></div>
       {(() => {

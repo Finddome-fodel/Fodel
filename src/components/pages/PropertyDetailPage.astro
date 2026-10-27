@@ -22,7 +22,8 @@ import { featureLabel } from '~/data/features';
 import { activeProperties, similarTo, text, resolveText, url as propUrl, type Property } from '~/lib/properties';
 import { propertyAlternates, crumbs } from '~/lib/page';
 import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
-import { eur, huf, area, floorArea, epcLabel, formatDate } from '~/lib/format';
+import { eur, huf, area, floorArea, epcLabel, formatDate, placeLabel } from '~/lib/format';
+import { copy } from '~/data/copy';
 import { extractYouTubeId } from '~/lib/video';
 import WhatsApp from '~/components/WhatsApp.astro';
 import { getTaxonomy, termLabel, getCompany } from '~/lib/runtime-config';
@@ -52,7 +53,9 @@ const resolvedDescription = resolveText(d.description, locale);
 const description = resolvedDescription.text;
 const languageNote = sourceNote(locale, resolvedDescription.from, 'description');
 const category = d.categoryLabels[locale] ?? d.categoryLabels.nl ?? d.categoryLabels.hu;
-const tag = d.tag ? text(d.tag, locale) : null;
+// The same "featured" mark the homepage card carries, from the listing's own flag rather than free text.
+const featuredBadge = d.listing.featured || d.listing.homepageFeatured ? copy(locale).home.hero.featuredLabel : null;
+const tag = d.tag?.[locale] || featuredBadge;
 
 const gallery = [
   { src: d.media.hero, alt: text(d.media.heroAlt, locale), label: null as string | null },
@@ -121,12 +124,16 @@ const trail = crumbs(locale, [
   { name: title, url: pageUrl },
 ]);
 
-const mapUrl = `https://www.openstreetmap.org/?mlat=${d.location.lat}&mlon=${d.location.lng}#map=13/${d.location.lat}/${d.location.lng}`;
+// An approximate listing must not get a marker: a pin ~100 m from the true spot is
+// exactly the precision the seller chose not to publish. Centre the map, mark nothing.
+const mapUrl = d.location.precision === 'exact'
+  ? `https://www.openstreetmap.org/?mlat=${d.location.lat}&mlon=${d.location.lng}#map=16/${d.location.lat}/${d.location.lng}`
+  : `https://www.openstreetmap.org/#map=14/${d.location.lat}/${d.location.lng}`;
 
 // A stored E.164 number is shown the way it is dialled from abroad.
 const dialled = d.seller.phone ? normalizePhone(d.seller.phone, 'HU') : { ok: false as const };
 
-const metaDescription = `${title} · ${d.location.settlement}, ${d.location.county}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}${d.areas.plotM2 ? `, ${area(d.areas.plotM2,locale)}` : ''}. ${x('Azonosító', 'Referentie', 'Reference', 'Referenz', 'Référence', 'Referencia', 'Numer referencyjny', 'Referință', 'Referenčné číslo', 'Riferimento', 'Referência', 'Κωδικός', 'Číslo inzerátu', 'Referenca', 'Referens', 'Reference', 'Referanse', 'Viite', 'Viitenumber', 'Atsauce', 'Nuoroda')} ${d.ref}.`;
+const metaDescription = `${title} · ${placeLabel(d.location.settlement, d.location.county)}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}${d.areas.plotM2 ? `, ${area(d.areas.plotM2,locale)}` : ''}. ${x('Azonosító', 'Referentie', 'Reference', 'Referenz', 'Référence', 'Referencia', 'Numer referencyjny', 'Referință', 'Referenčné číslo', 'Riferimento', 'Referência', 'Κωδικός', 'Číslo inzerátu', 'Referenca', 'Referens', 'Reference', 'Referanse', 'Viite', 'Viitenumber', 'Atsauce', 'Nuoroda')} ${d.ref}.`;
 
 const videoId = d.media.videoUrl ? extractYouTubeId(d.media.videoUrl) : null;
 
@@ -273,7 +280,7 @@ const whatsappMessage = x(
       {subtitle && <p class="subtitle">{subtitle}</p>}
 
       <p class="location">
-        {d.location.settlement}, {d.location.county}
+        {placeLabel(d.location.settlement, d.location.county)}
         <a class="map-link no-print" href={mapUrl} target="_blank" rel="noopener">
           <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M10 18s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
