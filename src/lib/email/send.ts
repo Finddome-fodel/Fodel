@@ -24,6 +24,7 @@ import type { BuiltEmail } from './templates';
 import type { EmailLocale } from './layout';
 import { senderAddress, officeInbox, replyToAddress } from './routing';
 import { withRetry } from './retry';
+import { isDeliverableAddress } from './deliverable';
 
 export type { EmailLocale } from './layout';
 export { templates } from './templates';
@@ -137,7 +138,7 @@ export async function adminRecipients(adminClient: {
   const fallback = officeInbox();
   try {
     const { data } = await adminClient.from('profiles').select('email').eq('role', 'admin');
-    const emails = (data ?? []).map((row: { email: string }) => row.email).filter(Boolean);
+    const emails = (data ?? []).map((row: { email: string }) => row.email).filter(isDeliverableAddress);
     return emails.length ? emails : [fallback];
   } catch {
     return [fallback];
