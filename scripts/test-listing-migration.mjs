@@ -29,8 +29,8 @@ await db.exec(sql25);console.log('✓ 0025 executes and is repeatable');
 const sql28=fs.readFileSync(root+'/supabase/migrations/0028_price_history_columns.sql','utf8');
 try{await db.exec(sql28);}catch(e){console.error('MIGRATION 0028 FAILED',e.message,e.detail);process.exit(1);}
 await db.exec(sql28);console.log('✓ 0028 executes and is repeatable');
-// 0029 / 0030 replace functions in place.
-for(const file of ['0029_featured_sort_and_visibility','0030_photo_limit_ceiling']){const text=fs.readFileSync(root+`/supabase/migrations/${file}.sql`,'utf8');try{await db.exec(text);await db.exec(text);}catch(e){console.error(`MIGRATION ${file} FAILED`,e.message,e.detail);process.exit(1);}console.log(`✓ ${file} executes and is repeatable`);}
+// 0029 / 0030 replace functions in place; 0031 is a one-off data clean-up.
+for(const file of ['0029_featured_sort_and_visibility','0030_photo_limit_ceiling','0031_clear_placeholder_plot']){const text=fs.readFileSync(root+`/supabase/migrations/${file}.sql`,'utf8');try{await db.exec(text);await db.exec(text);}catch(e){console.error(`MIGRATION ${file} FAILED`,e.message,e.detail);process.exit(1);}console.log(`✓ ${file} executes and is repeatable`);}
 const get=async q=>(await db.query(q)).rows;
 let row=(await get(`select * from properties where id='${id}'`))[0];
 assert.equal(row.property_group,'house');assert.equal(row.property_subtype,'apartment');assert.notEqual(row.lat,47.123456);
@@ -101,4 +101,12 @@ console.log('✓ grouped/subtype public search returns the saved property');
 await db.exec(`delete from property_translations where property_id='${id}';insert into property_translations(property_id,locale,title,description)values('${id}','nl','Perceel','Nederlandse beschrijving');`);
 assert.equal((await db.query(`select * from search_european_properties(p_locale=>'hu')`)).rows.length,1);
 console.log('✓ listings with a non-Hungarian original remain searchable in other languages');
+// 0031: only the exact 1 m² placeholder on a not-yet-public listing is cleared.
+await db.exec(`reset role;set test.uid='';set test.admin='true';update properties set status='draft',plot_m2=1 where id='${id}'`);
+await db.exec(fs.readFileSync(root+'/supabase/migrations/0031_clear_placeholder_plot.sql','utf8'));
+assert.equal((await get(`select plot_m2 from properties where id='${id}'`))[0].plot_m2,null);
+await db.exec(`update properties set status='published',plot_m2=1 where id='${id}'`);
+await db.exec(fs.readFileSync(root+'/supabase/migrations/0031_clear_placeholder_plot.sql','utf8'));
+assert.equal(Number((await get(`select plot_m2 from properties where id='${id}'`))[0].plot_m2),1);
+console.log('✓ 0031 clears the placeholder plot area on drafts only');
 await db.close();

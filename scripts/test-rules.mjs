@@ -28,7 +28,7 @@ import { execFileSync } from 'node:child_process';
 import { registerHooks } from 'node:module';
 import { existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { withRetry, isRetryable } from '../src/lib/email/retry.ts';
+import { withRetry, isRetryable, retryDelay } from '../src/lib/email/retry.ts';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -341,6 +341,10 @@ await (async () => {
   let k = 0;
   const down = await withRetry(async () => { k++; throw new Error('down'); }, NO_WAIT);
   test('gives up after three attempts', () => assert.deepEqual([down.sent, down.attempts, k], [false, 3, 3]));
+  test('a rate-limit rejection waits at least a second', () => {
+    assert.deepEqual([1, 2, 3].map((attempt) => retryDelay({ statusCode: 429 }, attempt)), [1000, 1000, 1600]);
+    assert.deepEqual([1, 2].map((attempt) => retryDelay({ statusCode: 503 }, attempt)), [400, 800]);
+  });
 })();
 
 // The modules below import through the site's `~/` alias and without file
@@ -364,6 +368,8 @@ registerHooks({
 const { searchRequestReceived } = await import('../src/lib/email/search-request.ts');
 const { listingCatalog } = await import('../src/lib/listing-packages.ts');
 const { placeholderProblem } = await import('../src/lib/portal/placeholder.ts');
+const { isDeliverableAddress } = await import('../src/lib/email/deliverable.ts');
+const { submissionReceived } = await import('../src/lib/email/templates.ts');
 const { fillShortHours, HOURS_TOKEN } = await import('../src/config/company.ts');
 
 console.log('Grok test findings');
@@ -384,6 +390,14 @@ test('the search-request confirmation renders in every language and repeats the 
     assert.ok(mail.subject.includes('FODEL'), `${l}: subject`);
     assert.ok(mail.html.includes('Baranya') && mail.text.includes('Quiet, a well'), `${l}: request not repeated`);
     assert.ok(mail.text.includes('€ 50 000 – € 90 000'), `${l}: budget`);
+  }
+});
+test('a website visitor is not told they have an account or a listing', () => {
+  const lastLine = (text) => text.trim().split('\n').at(-1);
+  for (const l of LOCALES) {
+    const visitor = lastLine(searchRequestReceived(l, { name: 'Anna' }).text);
+    const owner = lastLine(submissionReceived(l, { ref: '1', title: 'x' }).text);
+    assert.ok(visitor.length > 20 && visitor !== owner, `${l}: visitor footer`);
   }
 });
 await (async () => {
@@ -410,6 +424,14 @@ test('a €1 / 1 m² draft cannot be approved', () => {
   assert.ok(placeholderProblem({ price_eur: 95000, floor_m2: 1 }));
   assert.ok(placeholderProblem({ price_eur: 95000, plot_m2: 1 }));
   assert.equal(placeholderProblem({ price_eur: 95000, floor_m2: 120, building_m2: null, plot_m2: 800 }), null);
+  assert.equal(placeholderProblem({ price_eur: 95000, floor_m2: 120, plot_m2: null }), null, 'an empty plot is fine');
+  assert.notEqual(placeholderProblem({ price_eur: 1 }, 'owner'), placeholderProblem({ price_eur: 1 }, 'admin'), 'worded for the reader');
+});
+test('reserved test domains never receive admin alerts', () => {
+  for (const bad of ['workflow-admin@fodel-test.local', 'a@b.test', 'a@x.example', 'a@example.com', 'a@host.invalid', '', null, 'nodomain']) {
+    assert.equal(isDeliverableAddress(bad), false, String(bad));
+  }
+  for (const good of ['info@fodel.com', 'marton.orosz16@gmail.com', 'fodel@admin.com']) assert.equal(isDeliverableAddress(good), true, good);
 });
 test('the opening-hours token is filled from live settings, once', () => {
   const hours = { weekdays: { from: '09:00', to: '19:00' } };
