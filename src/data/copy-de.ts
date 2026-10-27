@@ -9,7 +9,7 @@
  * Geschütztes Leerzeichen ( ) vor "%" und "€", wie im Deutschen üblich.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -60,7 +60,7 @@ export const DE = {
       eyebrow: 'Kontakt aufnehmen',
       title: 'Wir rufen Sie',
       titleEm: 'gerne zurück',
-      body: `${formatHours(L)} · Der Rückruf kostet Sie nichts.`,
+      body: `{hoursShort} · Der Rückruf kostet Sie nichts.`,
     },
     referral: {
       eyebrow: 'Empfehlungsprogramm',
@@ -80,6 +80,9 @@ export const DE = {
         referredEmail: 'E-Mail-Adresse der empfohlenen Person',
       },
       submit: 'Empfehlung senden',
+      successTitle: 'Vielen Dank für die Empfehlung!',
+      successBody:
+        'Wir haben Ihre Empfehlung erhalten. Ein Mitarbeiter nimmt Kontakt mit der empfohlenen Person auf, und wir informieren Sie per E-Mail.',
     },
   },
 
@@ -261,6 +264,7 @@ export const DE = {
     },
     hero: { eyebrow: 'Kontakt', title: 'Wir rufen Sie', titleEm: 'gerne zurück' },
     formTitle: 'Rückruf anfordern',
+    submit: 'Rückruf anfordern',
     subjects: [
       'Frage zu einer Immobilie',
       'Inserieren',

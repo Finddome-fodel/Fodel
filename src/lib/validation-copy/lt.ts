@@ -27,6 +27,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Daugiausiai ${chars(limit)}.`,
   minLength: (limit) => `Mažiausiai ${chars(limit)}.`,
   consent: 'Norėdami tęsti, sutikite su privatumo pranešimu.',
+  selfReferral: 'Negalite rekomenduoti savęs: nurodykite kitą el. pašto adresą.',
   summary: (count) =>
     count === 1
       ? 'Reikia patikrinti vieną laukelį:'

@@ -7,7 +7,7 @@
  * węgierskim: brakujący klucz przerywa build.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -63,7 +63,7 @@ export const PL = {
       eyebrow: 'Kontakt',
       title: 'Chętnie',
       titleEm: 'oddzwonimy',
-      body: `${formatHours(L)} · Oddzwonienie jest bezpłatne.`,
+      body: `{hoursShort} · Oddzwonienie jest bezpłatne.`,
     },
     referral: {
       eyebrow: 'Program poleceń',
@@ -83,6 +83,9 @@ export const PL = {
         referredEmail: 'Adres e-mail polecanej osoby',
       },
       submit: 'Wyślij polecenie',
+      successTitle: 'Dziękujemy za polecenie!',
+      successBody:
+        'Otrzymaliśmy je. Nasz pracownik skontaktuje się z poleconą osobą, a Ciebie poinformujemy e-mailem.',
     },
   },
 
@@ -264,6 +267,7 @@ export const PL = {
     },
     hero: { eyebrow: 'Kontakt', title: 'Chętnie', titleEm: 'oddzwonimy' },
     formTitle: 'Poproś o oddzwonienie',
+    submit: 'Poproś o oddzwonienie',
     subjects: [
       'Pytanie o nieruchomość',
       'Zamieszczenie ogłoszenia',

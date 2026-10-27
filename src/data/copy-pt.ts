@@ -7,7 +7,7 @@
  * Type-checked against the Hungarian copy, so a missing key fails the build.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -57,7 +57,7 @@ export const PT = {
       eyebrow: 'Contacte-nos',
       title: 'Teremos todo o gosto',
       titleEm: 'em ligar-lhe',
-      body: `${formatHours(L)} · A chamada não lhe custa nada.`,
+      body: `{hoursShort} · A chamada não lhe custa nada.`,
     },
     referral: {
       eyebrow: 'Programa de recomendação',
@@ -77,6 +77,9 @@ export const PT = {
         referredEmail: 'Endereço de e-mail da pessoa recomendada',
       },
       submit: 'Enviar recomendação',
+      successTitle: 'Obrigado pela recomendação!',
+      successBody:
+        'Recebemo-la. Um colega irá contactar a pessoa recomendada e manteremos o contacto consigo por e-mail.',
     },
   },
 
@@ -258,6 +261,7 @@ export const PT = {
     },
     hero: { eyebrow: 'Contacto', title: 'Teremos todo o gosto', titleEm: 'em ligar-lhe' },
     formTitle: 'Pedir uma chamada',
+    submit: 'Pedir que liguem de volta',
     subjects: [
       'Pergunta sobre um imóvel',
       'Anunciar um imóvel',

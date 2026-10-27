@@ -37,6 +37,7 @@ import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
 import { UI, BRAND, path, localizer, type Locale } from '~/i18n/ui';
 import { copy } from '~/data/copy';
+import { fillShortHours } from '~/config/company';
 import { homeAlternates } from '~/lib/page';
 import { activeProperties, homepageFeatured, regionsOf, text, url } from '~/lib/properties';
 import { getTaxonomy, listingCategories, getCompany } from '~/lib/runtime-config';
@@ -219,7 +220,7 @@ const quote = splitOpeningQuote(c.quote);
               >
                 <span class="hero-card-text">
                   <span class="hero-card-top">
-                    <span class="hero-card-label">{c.hero.featuredLabel}</span>
+                    {(p.data.listing.homepageFeatured || p.data.listing.featured) ? <span class="hero-card-label">{c.hero.featuredLabel}</span> : <span class="hero-card-label" aria-hidden="true" />}
                     <span class="hero-card-ref num">{ui.property.reference} {p.data.ref}</span>
                   </span>
                   <span class="hero-card-title">{text(p.data.title, locale)}</span>
@@ -530,6 +531,8 @@ const quote = splitOpeningQuote(c.quote);
         endpoint="/api/referral"
         formId="referral"
         submitLabel={referral.submit}
+        successTitle={referral.successTitle}
+        successBody={referral.successBody}
       >
         <Field locale={locale} name="referrerName" label={referral.fields.referrerName} required />
         <Field locale={locale} name="referrerEmail" label={referral.fields.referrerEmail} type="email" required />
@@ -543,7 +546,7 @@ const quote = splitOpeningQuote(c.quote);
     eyebrow={c.cta.eyebrow}
     title={c.cta.title}
     titleEm={c.cta.titleEm}
-    body={c.cta.body}
+    body={fillShortHours(c.cta.body, company.hours, locale)}
     primary={{ label: ui.cta.callback, href: path(locale, 'contact') }}
     secondary={{ label: ui.cta.browseProperties, href: path(locale, 'properties') }}
   />

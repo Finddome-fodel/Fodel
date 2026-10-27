@@ -25,6 +25,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Högst ${chars(limit)}.`,
   minLength: (limit) => `Minst ${chars(limit)}.`,
   consent: 'Godkänn integritetspolicyn för att fortsätta.',
+  selfReferral: 'Du kan inte rekommendera dig själv: ange en annan e-postadress.',
   summary: (count) =>
     count === 1
       ? 'Ett fält behöver kontrolleras:'

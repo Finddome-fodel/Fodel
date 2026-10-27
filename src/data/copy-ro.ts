@@ -7,7 +7,7 @@
  * cu textul maghiar: o cheie lipsă oprește build-ul.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -63,7 +63,7 @@ export const RO = {
       eyebrow: 'Contact',
       title: 'Vă sunăm',
       titleEm: 'cu plăcere',
-      body: `${formatHours(L)} · Apelul înapoi este gratuit.`,
+      body: `{hoursShort} · Apelul înapoi este gratuit.`,
     },
     referral: {
       eyebrow: 'Program de recomandare',
@@ -83,6 +83,9 @@ export const RO = {
         referredEmail: 'Adresa de e-mail a persoanei recomandate',
       },
       submit: 'Trimiteți recomandarea',
+      successTitle: 'Vă mulțumim pentru recomandare!',
+      successBody:
+        'Am primit-o. Un coleg va contacta persoana recomandată, iar dvs. veți fi informat prin e-mail.',
     },
   },
 
@@ -264,6 +267,7 @@ export const RO = {
     },
     hero: { eyebrow: 'Contact', title: 'Vă sunăm', titleEm: 'cu plăcere' },
     formTitle: 'Solicitați un apel',
+    submit: 'Solicită un apel',
     subjects: [
       'Întrebare despre o proprietate',
       'Publicarea unui anunț',

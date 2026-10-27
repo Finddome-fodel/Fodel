@@ -15,6 +15,7 @@ import { logEvent } from '~/lib/activity';
 import { SITE_HOST } from '~/config/site.mjs';
 import { senderAddress, officeInbox, replyToAddress } from '~/lib/email/routing';
 import { sendEmail } from '~/lib/email/send';
+import { shell, textShell, p as paragraph } from '~/lib/email/layout';
 import {
   validateField,
   normalizePhone,
@@ -77,6 +78,11 @@ export interface FormDefinition {
    */
   skipAck?: boolean;
   /**
+   * A form-specific confirmation that replaces the generic one (e.g. the search
+   * request repeats back what was asked for). Needs a visitor e-mail address.
+   */
+  ack?: (locale: Locale, values: Record<string, string>) => { subject: string; html: string; text: string };
+  /**
    * Recorded to activity_events once the submission is accepted — see
    * src/lib/activity.ts. One call site for all four public forms rather than
    * one per route file; the referral form re-uses this too.
@@ -98,6 +104,28 @@ function rateLimited(ip: string): boolean {
   hits.push(now);
   recent.set(ip, hits);
   return hits.length > RATE_MAX;
+}
+
+/**
+ * Per-instance duplicate guard. The browser sends a fresh `submissionId` for
+ * every attempt to send; a second request carrying the same one (a double
+ * click that slipped past the client guard, an impatient retry) is answered
+ * "ok" without creating a second record or a second e-mail. Serverless
+ * instances do not share memory, so this is best-effort on top of the client's
+ * own in-flight guard, not a replacement for it. A failed attempt releases its
+ * key so the visitor can retry.
+ */
+const DEDUP_TTL_MS = 10 * 60_000;
+const claimed = new Map<string, number>();
+
+function claimSubmission(formId: string, id: unknown): string | null | 'duplicate' {
+  if (typeof id !== 'string' || !/^[\w-]{8,64}$/.test(id)) return null;
+  const now = Date.now();
+  for (const [key, at] of claimed) if (now - at > DEDUP_TTL_MS) claimed.delete(key);
+  const key = `${formId}:${id}`;
+  if (claimed.has(key)) return 'duplicate';
+  claimed.set(key, now);
+  return key;
 }
 
 export interface ValidationResult {
@@ -213,6 +241,12 @@ function buildEmail(def: FormDefinition, values: Record<string, string>, extras:
 </div>`;
 }
 
+function plainEmail(def: FormDefinition, values: Record<string, string>, extras: Record<string, string>): string {
+  const lines = def.fields.filter((f) => values[f.name]).map((f) => `${f.label}: ${values[f.name]}`);
+  const more = Object.entries(extras).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+  return [def.subject, SITE_HOST, '', ...lines, ...(more.length ? ['', ...more] : [])].join('\n');
+}
+
 /**
  * The language of a submission: the form's own `locale` field (the page it was
  * rendered in), else the language in the address of the page it came from,
@@ -224,6 +258,38 @@ export function formLocale(form: FormData): Locale {
   if (typeof stated === 'string' && isLocale(stated)) return stated;
   const from = String(form.get('returnTo') ?? '');
   return localeOfPath(from.startsWith('/') ? from : '/') ?? 'hu';
+}
+
+/** The ACK tables below hold `<p>` HTML; the branded layout and the plain-text part want the paragraphs as text. */
+function ackParagraphs(html: string): string[] {
+  return html
+    .split(/<\/p>/i)
+    .map((part) =>
+      part
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&quot;/g, '"')
+        .replace(/&gt;/g, '>')
+        .replace(/&lt;/g, '<')
+        .replace(/&amp;/g, '&')
+        .split('\n')
+        .map((line) => line.trim())
+        .join('\n')
+        .trim()
+    )
+    .filter(Boolean);
+}
+
+/** The generic "we got your message" mail: branded like every other FODEL mail, with a plain-text part. */
+function genericAck(locale: Locale, name: string, phones: string, hours: string) {
+  const ack = ACK[locale];
+  const parts = ackParagraphs(ack.body(name, phones, hours));
+  const preheader = (parts[1] ?? parts[0] ?? ack.subject).replace(/\s+/g, ' ').slice(0, 110);
+  return {
+    subject: ack.subject,
+    html: shell({ locale, preheader, body: parts.map((part) => paragraph(part)).join('') }),
+    text: textShell({ locale, body: parts.join('\n\n') }),
+  };
 }
 
 const ACK = {
@@ -432,6 +498,10 @@ export async function handleForm(
     return respond(422, { ok: false, errors: result.errors });
   }
 
+  const claim = claimSubmission(def.id, form.get('submissionId'));
+  if (claim === 'duplicate') return respond(200, { ok: true, delivered: true, duplicate: true });
+  const release = () => { if (claim) claimed.delete(claim); };
+
   const extras: Record<string, string> = {
     Locale: locale,
     Page: returnTo,
@@ -472,7 +542,7 @@ export async function handleForm(
     try {
       const data = await runHook(def, result.values, extras, form);
       return respond(200, { ok: true, delivered: false, ...data });
-    } catch { return respond(500, { ok: false, error: 'save-failed' }); }
+    } catch { release(); return respond(500, { ok: false, error: 'save-failed' }); }
   }
 
   try {
@@ -486,24 +556,35 @@ export async function handleForm(
       to: inbox,
       subject,
       html,
+      text: plainEmail(def, result.values, extras),
       replyTo: result.values.email || undefined,
     });
     if (!delivered) throw new Error('office notification not delivered');
 
     // Acknowledge to the sender so they know it arrived.
     if (result.values.email && !def.skipAck) {
-      const ack = ACK[locale];
-      const { getCompany } = await import('~/lib/runtime-config');
-      const { hoursSentence } = await import('~/lib/hours');
-      const company = await getCompany();
-      const phones = company.phones.filter((phone) => phone.public).map((phone) => phone.display).join(' / ');
-      await sendEmail({
+      let ack: { subject: string; html: string; text: string };
+      if (def.ack) {
+        ack = def.ack(locale, result.values);
+      } else {
+        const { getCompany } = await import('~/lib/runtime-config');
+        const { hoursSentence } = await import('~/lib/hours');
+        const company = await getCompany();
+        const phones = company.phones.filter((phone) => phone.public).map((phone) => phone.display).join(' / ');
+        ack = genericAck(locale, result.values.name ?? '', phones, hoursSentence(company.hours, locale));
+      }
+      // The office already has the submission, so a failed acknowledgement must not
+      // fail the form — but it must not vanish either (it is how a spam-foldered or
+      // rejected sender shows up in the logs).
+      const acked = await sendEmail({
         from,
         to: result.values.email,
         subject: ack.subject,
-        html: ack.body(result.values.name ?? '', phones, hoursSentence(company.hours, locale)),
+        html: ack.html,
+        text: ack.text,
         replyTo: replyToAddress(),
       });
+      if (!acked) console.error(`[form:${def.id}] acknowledgement not delivered`, { subject: ack.subject, to: result.values.email });
     }
 
     const data = await runHook(def, result.values, extras, form);
@@ -511,6 +592,7 @@ export async function handleForm(
     return respond(200, { ok: true, delivered: true, ...data });
   } catch (error) {
     console.error(`[form:${def.id}] delivery failed`, error);
+    release();
     return respond(502, { ok: false, error: 'delivery-failed' });
   }
 }

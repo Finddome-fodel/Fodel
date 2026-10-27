@@ -11,7 +11,7 @@
  * ( ) avant « ; », « ! » et « ? », et à l’intérieur des guillemets « ».
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -67,7 +67,7 @@ export const FR = {
       eyebrow: 'Nous contacter',
       title: 'Nous vous',
       titleEm: 'rappelons volontiers',
-      body: `${formatHours(L)} · Le rappel est gratuit.`,
+      body: `{hoursShort} · Le rappel est gratuit.`,
     },
     referral: {
       eyebrow: 'Programme de parrainage',
@@ -87,6 +87,9 @@ export const FR = {
         referredEmail: 'Adresse e-mail de la personne recommandée',
       },
       submit: 'Envoyer la recommandation',
+      successTitle: 'Merci pour votre recommandation !',
+      successBody:
+        'Nous l’avons bien reçue. Un collaborateur contactera la personne recommandée et nous vous tiendrons informé par e-mail.',
     },
   },
 
@@ -268,6 +271,7 @@ export const FR = {
     },
     hero: { eyebrow: 'Contact', title: 'Nous vous', titleEm: 'rappelons volontiers' },
     formTitle: 'Demander à être rappelé',
+    submit: 'Demander un rappel',
     subjects: [
       'Question sur un bien',
       'Publier une annonce',

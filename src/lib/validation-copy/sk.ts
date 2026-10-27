@@ -24,6 +24,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Najviac ${chars(limit)}.`,
   minLength: (limit) => `Aspoň ${chars(limit)}.`,
   consent: 'Ak chcete pokračovať, prijmite zásady ochrany osobných údajov.',
+  selfReferral: 'Nemôžete odporučiť sami seba: zadajte inú e-mailovú adresu.',
   summary: (count) =>
     count === 1
       ? 'Jedno pole treba skontrolovať:'

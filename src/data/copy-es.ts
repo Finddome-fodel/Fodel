@@ -7,7 +7,7 @@
  * el texto húngaro: si falta una clave, el build falla.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -63,7 +63,7 @@ export const ES = {
       eyebrow: 'Contacto',
       title: 'Le llamamos',
       titleEm: 'con mucho gusto',
-      body: `${formatHours(L)} · La llamada de vuelta es gratuita.`,
+      body: `{hoursShort} · La llamada de vuelta es gratuita.`,
     },
     referral: {
       eyebrow: 'Programa de recomendación',
@@ -83,6 +83,9 @@ export const ES = {
         referredEmail: 'Correo electrónico de la persona recomendada',
       },
       submit: 'Enviar recomendación',
+      successTitle: '¡Gracias por su recomendación!',
+      successBody:
+        'La hemos recibido. Un compañero se pondrá en contacto con la persona recomendada y le informaremos por correo electrónico.',
     },
   },
 
@@ -264,6 +267,7 @@ export const ES = {
     },
     hero: { eyebrow: 'Contacto', title: 'Le llamamos', titleEm: 'con mucho gusto' },
     formTitle: 'Solicitar una llamada',
+    submit: 'Solicitar una llamada',
     subjects: [
       'Pregunta sobre un inmueble',
       'Publicar un anuncio',

@@ -20,5 +20,6 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Legfeljebb ${limit} karakter lehet.`,
   minLength: (limit) => `Legalább ${limit} karakter legyen.`,
   consent: 'A folytatáshoz kérjük, fogadja el az adatkezelési tájékoztatót.',
+  selfReferral: 'Saját magát nem ajánlhatja: adjon meg egy másik e-mail-címet.',
   summary: (count) => (count === 1 ? 'Egy mezőt még javítani kell:' : `${count} mezőt még javítani kell:`),
 };

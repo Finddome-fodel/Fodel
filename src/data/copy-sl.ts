@@ -7,7 +7,7 @@
  * Type-checked against the Hungarian copy, so a missing key fails the build.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -57,7 +57,7 @@ export const SL = {
       eyebrow: 'Pišite nam',
       title: 'Z veseljem',
       titleEm: 'vas pokličemo',
-      body: `${formatHours(L)} · Povratni klic vas nič ne stane.`,
+      body: `{hoursShort} · Povratni klic vas nič ne stane.`,
     },
     referral: {
       eyebrow: 'Program priporočil',
@@ -77,6 +77,9 @@ export const SL = {
         referredEmail: 'E-poštni naslov priporočene osebe',
       },
       submit: 'Pošlji priporočilo',
+      successTitle: 'Hvala za priporočilo!',
+      successBody:
+        'Prejeli smo ga. Sodelavec bo poklical priporočeno osebo, vas pa bomo obvestili po e-pošti.',
     },
   },
 
@@ -258,6 +261,7 @@ export const SL = {
     },
     hero: { eyebrow: 'Stik', title: 'Z veseljem', titleEm: 'vas pokličemo' },
     formTitle: 'Prosite za povratni klic',
+    submit: 'Zahtevajte povratni klic',
     subjects: [
       'Vprašanje o nepremičnini',
       'Oglaševanje nepremičnine',

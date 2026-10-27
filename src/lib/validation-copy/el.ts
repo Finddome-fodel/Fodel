@@ -27,6 +27,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Το πολύ ${chars(limit)}.`,
   minLength: (limit) => `Τουλάχιστον ${chars(limit)}.`,
   consent: 'Για να συνεχίσετε, αποδεχτείτε την πολιτική απορρήτου.',
+  selfReferral: 'Δεν μπορείτε να προτείνετε τον εαυτό σας: δώστε άλλη διεύθυνση email.',
   summary: (count) =>
     count === 1
       ? 'Ένα πεδίο χρειάζεται έλεγχο:'
