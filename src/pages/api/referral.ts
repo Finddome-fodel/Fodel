@@ -43,7 +43,7 @@ export const POST: APIRoute = (context) =>
         .eq('email', referrerEmail)
         .maybeSingle();
 
-      await admin.from('referrals').insert({
+      const { error: storeError } = await admin.from('referrals').insert({
         referrer_id: referrerProfile?.id ?? null,
         referrer_name: values.referrerName,
         referrer_email: referrerEmail,
@@ -51,6 +51,7 @@ export const POST: APIRoute = (context) =>
         referred_email: values.referredEmail.toLowerCase(),
         status: 'pending',
       });
+      if (storeError) console.error('[form:referral] not stored', storeError.message);
 
       const referrerLocale = referrerProfile ? localeOf(referrerProfile) : locale;
       await deliver(
