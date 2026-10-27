@@ -104,11 +104,12 @@ export async function sendEmail(opts: {
 }
 
 /** Sends a template's output. The one call site shape every trigger should use. */
-export async function deliver(to: string, email: BuiltEmail, replyTo?: string): Promise<void> {
+export async function deliver(to: string, email: BuiltEmail, replyTo?: string): Promise<boolean> {
   const sent = await sendEmail({ to, subject: email.subject, html: email.html, text: email.text, replyTo });
   // Callers fire-and-forget, so this line is the only trace of a mail that never left
   // (provider rejection, missing key). sendEmail has already logged the reason.
   if (!sent) console.error('[email] not delivered', email.subject, to);
+  return sent;
 }
 
 /**

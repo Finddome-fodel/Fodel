@@ -133,25 +133,43 @@ for(const form of forms){
   let reverseSequence=0;
   const coords=():[number,number]|null=>{const lat=coordinate(get('lat')),lng=coordinate(get('lng'));return Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180?[lng,lat]:null;};
   type Hit={lat:number;lng:number;country:string;settlement:string;county:string;label:string};
-  function applyPlace(hit:Hit,move:boolean){
+  // Place fields the owner typed are theirs: a pin click may only fill what is empty or what an earlier lookup filled.
+  const filled=new Set<string>();
+  for(const name of ['settlement','county'])control(name)?.addEventListener('input',()=>filled.delete(name));
+  const writable=(name:string)=>!get(name).trim()||filled.has(name);
+  function applyPlace(hit:Hit,move:boolean,keepTyped=false){
     if(hit.country!==country.value){set('country',hit.country);refreshCountry();set('region','');}
-    if(hit.settlement)set('settlement',hit.settlement);
-    if(hit.county)set('county',hit.county.replace(/ (vármegye|County)$/,''));
-    if(move){set('lat',String(hit.lat));set('lng',String(hit.lng));void syncPin(false);}
+    const fill=(name:string,value:string)=>{if(value&&(!keepTyped||writable(name))){set(name,value);filled.add(name);}};
+    fill('settlement',hit.settlement);
+    fill('county',hit.county.replace(/ (vármegye|County)$/,''));
+    if(move){set('lat',String(hit.lat));set('lng',String(hit.lng));}
     control('lng')?.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  // The geocoder answers one request a second per person; wait our turn instead of drawing a 429.
+  let lastLookup=0;
+  async function lookup(url:string){
+    const wait=lastLookup+1100-Date.now();if(wait>0)await new Promise(r=>setTimeout(r,wait));
+    lastLookup=Date.now();return fetch(url);
   }
   async function reverse(){
     const point=coords();if(!point)return;const seq=++reverseSequence;
     const oldSettlement=get('settlement');
     try{
-      const response=await fetch(`/api/portal/geocode?lat=${point[1]}&lng=${point[0]}&country=${country.value}`);
+      const response=await lookup(`/api/portal/geocode?lat=${point[1]}&lng=${point[0]}&country=${country.value}`);
       if(!response.ok)throw new Error('lookup');const json=await response.json();if(seq!==reverseSequence||get('settlement')!==oldSettlement)return;
-      if(json.results?.[0]){applyPlace(json.results[0],false);status.textContent=x('A helyadatokat kitöltöttük. Kérjük, ellenőrizze őket.','Locatiegegevens ingevuld. Controleer ze alstublieft.','Location details filled in. Please check them.');}
+      const hit:Hit|undefined=json.results?.[0];
+      if(hit){
+        const kept=get('settlement').trim()&&!writable('settlement')&&hit.settlement&&hit.settlement.localeCompare(get('settlement').trim(),locale,{sensitivity:'base'})!==0;
+        applyPlace(hit,false,true);
+        status.textContent=kept?x(`A jelölő ${hit.label} közelében van; az Ön által megadott települést megtartottuk. Ellenőrizze, hogy a jelölő a jó helyen áll-e.`,`De pin staat bij ${hit.label}; de door u ingevulde plaats is behouden. Controleer of de pin goed staat.`,`The pin is near ${hit.label}; the locality you entered was kept. Check that the pin is in the right place.`)
+          :x('A helyadatokat kitöltöttük. Kérjük, ellenőrizze őket.','Locatiegegevens ingevuld. Controleer ze alstublieft.','Location details filled in. Please check them.');
+      }
       else status.textContent=x('A koordináták megmaradnak. A települést kézzel is megadhatja.','De coördinaten blijven bewaard. U kunt de plaats handmatig invullen.','Coordinates are retained. Enter the locality manually if needed.');
     }catch{status.textContent=x('A helykereső most nem érhető el. A koordinátákat és a helyadatokat kézzel is megadhatja.','Plaats zoeken is nu niet beschikbaar. Vul de coördinaten en locatie handmatig in.','Place lookup is unavailable. You can still enter coordinates and location details manually.');}
   }
   async function syncPin(lookup:boolean){
-    const point=coords();if(!point||!map)return;
+    // The pin a new draft starts with is a placeholder for the form's required fields, not a location: show nothing until it is chosen.
+    const point=coords();if(!point||!map||get('location_confirmed')!=='yes')return;
     if(!marker){const {Marker}=await import('maplibre-gl');marker=new Marker({color:'#102A43',draggable:true}).setLngLat(point).addTo(map);marker.on('dragend',()=>{const p=marker!.getLngLat();set('lat',p.lat.toFixed(6));set('lng',p.lng.toFixed(6));control('lng')?.dispatchEvent(new Event('change',{bubbles:true}));void reverse();});}
     else marker.setLngLat(point).addTo(map);
     map.easeTo({center:point,zoom:Math.max(map.getZoom(),11)});if(lookup)void reverse();
@@ -162,10 +180,12 @@ for(const form of forms){
     try{
       const [gl,worker]=await Promise.all([import('maplibre-gl'),import('maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url')]);
       gl.setWorkerUrl(worker.default);locationRoot.replaceChildren();
-      const point=coords();map=new gl.Map({container:locationRoot,style:'https://tiles.openfreemap.org/styles/liberty',center:point||[15,50],zoom:point?11:3});
+      const point=coords(),chosen=Boolean(point)&&get('location_confirmed')==='yes';
+      // Not chosen yet: the whole country (or Europe), so a click lands where the owner means rather than on a default town.
+      map=new gl.Map({container:locationRoot,style:'https://tiles.openfreemap.org/styles/liberty',center:chosen?point!:country.value==='HU'&&point?point:[15,50],zoom:chosen?11:country.value==='HU'&&point?6:3});
       map.addControl(new gl.NavigationControl(),'top-right');
       let mapFailed=false;map.on('error',(e:any)=>{if(e?.sourceId)return;if(!mapFailed){mapFailed=true;status.textContent=x('A térkép nem tölthető be. A koordinátamezők továbbra is használhatók.','De kaart kon niet laden. De coördinatenvelden blijven beschikbaar.','The map could not load. Coordinate fields remain available.');}});
-      map.on('click',e=>{set('lat',e.lngLat.lat.toFixed(6));set('lng',e.lngLat.lng.toFixed(6));void syncPin(false);control('lng')?.dispatchEvent(new Event('change',{bubbles:true}));void reverse();});
+      map.on('click',e=>{set('lat',e.lngLat.lat.toFixed(6));set('lng',e.lngLat.lng.toFixed(6));control('lng')?.dispatchEvent(new Event('change',{bubbles:true}));void reverse();});
       void syncPin(false);
       new ResizeObserver(()=>map?.resize()).observe(locationRoot);
     }catch{locationRoot.textContent=x('A térkép nem tölthető be. Adja meg a koordinátákat az alábbi mezőkben.','De kaart kon niet laden. Vul hieronder de coördinaten in.','The map could not load. Enter coordinates below.');}
@@ -178,8 +198,11 @@ for(const form of forms){
     searchButton.disabled=true;results.replaceChildren();status.textContent=x('Hely keresése…','Plaats zoeken…','Finding a place…');
     try{
       const searchCountry=country.value;
-      const r=await fetch(`/api/portal/geocode?q=${encodeURIComponent(q)}&country=${searchCountry}`);if(!r.ok)throw new Error('lookup');const json=await r.json();if(country.value!==searchCountry)return;
-      for(const hit of json.results||[]){const button=document.createElement('button');button.type='button';button.textContent=hit.label;button.addEventListener('click',()=>{applyPlace(hit,true);results.replaceChildren();status.textContent=x('A helyet megjelöltük. A jelölőt húzással pontosíthatja.','Locatie gemarkeerd. Versleep de pin om te verfijnen.','Location marked. Drag the pin to refine it.');});results.append(button);}
+      const r=await lookup(`/api/portal/geocode?q=${encodeURIComponent(q)}&country=${searchCountry}`);if(!r.ok)throw new Error('lookup');const json=await r.json();if(country.value!==searchCountry)return;
+      const hits:Hit[]=json.results||[];
+      // One match is the answer: no list to pick from, no extra click.
+      if(hits.length===1){applyPlace(hits[0],true);status.textContent=x('A helyet megjelöltük. A jelölőt húzással pontosíthatja.','Locatie gemarkeerd. Versleep de pin om te verfijnen.','Location marked. Drag the pin to refine it.');return;}
+      for(const hit of hits){const button=document.createElement('button');button.type='button';button.textContent=hit.label;button.addEventListener('click',()=>{applyPlace(hit,true);results.replaceChildren();status.textContent=x('A helyet megjelöltük. A jelölőt húzással pontosíthatja.','Locatie gemarkeerd. Versleep de pin om te verfijnen.','Location marked. Drag the pin to refine it.');});results.append(button);}
       status.textContent=results.children.length?x('Válassza ki a megfelelő helyet.','Kies de juiste locatie.','Choose the matching location.'):x('Nincs találat. A térképen vagy koordinátákkal is megadhatja.','Geen resultaten. Gebruik de kaart of coördinaten.','No results. Use the map or enter coordinates.');
     }catch{status.textContent=x('A helykereső most nem érhető el. A kézi megadás továbbra is működik.','Plaats zoeken is niet beschikbaar. Handmatige invoer blijft mogelijk.','Place search is unavailable. Manual entry still works.');}finally{searchButton.disabled=false;}
   }
