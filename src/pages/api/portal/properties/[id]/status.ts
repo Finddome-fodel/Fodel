@@ -35,6 +35,7 @@ import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send'
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
 import { publishProperty, listingTitle, publicUrl, renewProperty } from '~/lib/portal/publish';
+import { placeholderProblem } from '~/lib/portal/placeholder';
 import { deleteImage } from '~/lib/media';
 import { logEvent } from '~/lib/activity';
 import {
@@ -79,7 +80,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   const { data: property } = await supabase
     .from('properties')
     .select(
-      'id, ref, category, status, owner_id, package, price_huf, price_eur, settlement, county, video_url, homepage_featured, featured, free_listing, country, lat, lng, location_confirmed, original_price, property_group, property_subtype, property_translations(locale,title,description)'
+      'id, ref, category, status, owner_id, package, price_huf, price_eur, settlement, county, floor_m2, building_m2, plot_m2, video_url, homepage_featured, featured, free_listing, country, lat, lng, location_confirmed, original_price, property_group, property_subtype, property_translations(locale,title,description)'
     )
     .eq('id', id)
     .maybeSingle();
@@ -153,6 +154,10 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   if (action === 'approve') {
     if (!isAdmin) return json(403, { ok: false });
     if (property.status !== 'submitted') return json(409, { ok: false, error: 'not-submitted' });
+
+    // Refuse before anything is sent or charged: a placeholder price or area is not an approvable listing.
+    const placeholder = placeholderProblem(property);
+    if (placeholder) return json(422, { ok: false, error: placeholder });
 
     const owner = await ownerContact(supabase, property.owner_id);
     const locale = owner?.locale ?? 'hu';
