@@ -164,6 +164,7 @@ for(const form of forms){
         status.textContent=kept?x(`A jelölő ${hit.label} közelében van; az Ön által megadott települést megtartottuk. Ellenőrizze, hogy a jelölő a jó helyen áll-e.`,`De pin staat bij ${hit.label}; de door u ingevulde plaats is behouden. Controleer of de pin goed staat.`,`The pin is near ${hit.label}; the locality you entered was kept. Check that the pin is in the right place.`)
           :x('A helyadatokat kitöltöttük. Kérjük, ellenőrizze őket.','Locatiegegevens ingevuld. Controleer ze alstublieft.','Location details filled in. Please check them.');
       }
+      else if(get('settlement').trim())status.textContent=x('A beírt települést és megyét megtartottuk, csak a koordináták változtak.','De ingevulde plaats en provincie zijn behouden; alleen de coördinaten zijn gewijzigd.','The locality and county you entered were kept; only the coordinates changed.');
       else status.textContent=x('A koordináták megmaradnak. A települést kézzel is megadhatja.','De coördinaten blijven bewaard. U kunt de plaats handmatig invullen.','Coordinates are retained. Enter the locality manually if needed.');
     }catch{status.textContent=x('A helykereső most nem érhető el. A koordinátákat és a helyadatokat kézzel is megadhatja.','Plaats zoeken is nu niet beschikbaar. Vul de coördinaten en locatie handmatig in.','Place lookup is unavailable. You can still enter coordinates and location details manually.');}
   }
