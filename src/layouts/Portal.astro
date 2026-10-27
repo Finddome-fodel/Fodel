@@ -251,14 +251,10 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
     main?.removeAttribute('data-leaving');
     main?.querySelector(':scope > .pt-skel')?.remove();
   };
-  // Back/forward restores the page from memory: undo whatever was showing when it was left.
+  // Back/forward can restore the page from memory (bfcache), which would replay a portal screen
+  // after signing out. The server says no-store; this makes the browser ask again.
   window.addEventListener('pageshow', (event) => {
-    if (!event.persisted) return;
-    reset();
-    // A drawer or question that was open when the page was left must not come back open.
-    setDrawer(false);
-    if (dialog?.open) dialog.close();
-    document.body.style.overflow = '';
+    if (event.persisted) location.reload();
   });
 
   const showSkeleton = () => {
