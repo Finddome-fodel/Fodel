@@ -27,7 +27,8 @@ export function convertPrice(amount: number, currency: string, snapshot: RateSna
   const rate = snapshot.rates[currency];
   if (!(PRICE_CURRENCIES as readonly string[]).includes(currency) || !Number.isFinite(amount) || amount <= 0 || !rate) throw new Error('invalid-price');
   const eur = Math.round(amount / rate * 100) / 100;
-  const huf = Math.round(eur * snapshot.rates.HUF);
+  // A forint price is already whole forints: going through euro cents and back lost one (99 000 000 became 98 999 999).
+  const huf = currency === 'HUF' ? Math.round(amount) : Math.round(eur * snapshot.rates.HUF);
   if (!Number.isFinite(eur) || !Number.isFinite(huf) || eur <= 0 || huf <= 0 || eur > 1e12 || huf > 1e15) throw new Error('invalid-price');
   return { eur, huf, rate };
 }

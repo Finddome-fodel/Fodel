@@ -9,6 +9,15 @@ export type GroupKey = string;
 export type Labels = Partial<Record<string, string>>;
 export const labelIn = (labels: Labels, locale: string) => labels[locale] || labels.en || labels.hu || '';
 export const groupOf = (category: string) => category === 'apartment' ? 'house' : category === 'farm' ? 'agricultural' : category;
+/**
+ * The category (and so the public URL) a listing is filed under. It follows the subtype: an
+ * apartment is not a house just because both belong to the house group. A live or sold listing
+ * keeps the category its address was published under, as long as it stays in the same group.
+ */
+export const categoryFor = (current: { category: string; status?: string }, group: string, subtype: string) =>
+  ['published', 'sold'].includes(current.status ?? '') && groupOf(current.category) === group
+    ? current.category
+    : subtype === 'apartment' ? 'apartment' : subtype === 'farm' ? 'farm' : group;
 export const subtypeOf = (category: string, subtype?: string | null) => subtype || ({ house: 'house-villa', apartment: 'apartment', farm: 'farm', holiday: 'holiday-house', land: 'residential-plot', commercial: 'commercial-other', industrial: 'industrial-other', agricultural: 'agricultural-other', mansion: 'castle-manor' }[category] ?? '');
 export const validSubtype = (group: string, subtype: string) => groups.some(g => g.key === group && g.subtypes.some(s => s.key === subtype));
 export const subtypeLabel = (group: string, subtype: string, locale: string) => {
