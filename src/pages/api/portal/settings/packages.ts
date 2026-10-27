@@ -7,6 +7,7 @@
  * New prices apply to new orders only — a stored order keeps its own lines.
  */
 import { clearRuntimeConfigCache } from '~/lib/runtime-config';
+import { requestRebuild } from '~/lib/rebuild';
 import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
 import { logEvent } from '~/lib/activity';
@@ -68,6 +69,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const { error } = await locals.supabase.from('site_settings').update({ services }).eq('id', 1);
   if (error) return back('error=' + encodeURIComponent(friendlyError(error.message)));
   clearRuntimeConfigCache();
+  await requestRebuild();
 
   await logEvent({
     kind: 'settings.packages',

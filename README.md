@@ -67,7 +67,8 @@ images Astro emits alongside the optimised variants (11 MB, unreferenced).
    reason a listing with a price could not be saved), `0029_featured_sort_and_visibility.sql`
    (featured-first sort; every published listing is searchable) and
    `0030_photo_limit_ceiling.sql` (photo cap is now the package setting, the
-   trigger only a 200 ceiling) bring it back in line.
+   trigger only a 200 ceiling) bring it back in line. `0031_clear_placeholder_plot.sql`
+   clears the 1 m² plot area that old drafts were created with (it blocked approval).
 
    **`0005` and `0014` must each be run in two steps**, and both say so at the
    top of the file (split at the `STEP 2` marker).
@@ -113,6 +114,10 @@ sharp-optimised images. Layered on top:
   (`s-maxage=60`), so approving a listing or saving a setting shows up live
   within a minute or two. The portal itself is never cached (`private, no-store`,
   set in `src/middleware.ts`), so Back after signing out cannot replay it.
+  Blog articles use `s-maxage=60` with no stale window, so an unpublished post is gone
+  within a minute. The prerendered content pages (footer, contact, hours) are frozen at
+  build time: saving company, package or service settings asks Vercel for a rebuild via
+  `VERCEL_DEPLOY_HOOK_URL` (see `src/lib/rebuild.ts`).
 - **Search**: `src/lib/properties.ts`'s `searchProperties()` calls a
   Postgres function (`search_properties`, in `0004_search.sql`) that does
   free-text search (PostgreSQL's built-in Hungarian/Dutch dictionaries — no
@@ -432,7 +437,9 @@ customer replies should go somewhere other than `FODEL_INBOX`);
 `PUBLIC_SITE_URL` while the public domain (default `https://finddome.com`) does not
 point at Vercel yet — every link inside an e-mail is built from it; `PMTILES_URL` once the
 basemap is built and uploaded; the `STRIPE_*` vars only if card payment is
-deliberately turned on. To move host, swap the adapter in `astro.config.mjs`
+deliberately turned on; `VERCEL_DEPLOY_HOOK_URL` (a Vercel deploy hook for `main`) if
+saved settings — phone, hours, package prices — should reach the prerendered pages in
+about a minute rather than at the next deploy. To move host, swap the adapter in `astro.config.mjs`
 — nothing else is host-specific, though `output: 'server'` (needed for the
 database-backed pages) means the new host must support SSR, not just static
 hosting.

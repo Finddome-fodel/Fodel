@@ -10,6 +10,10 @@
  * No role check on purpose: the query returns what RLS permits — every
  * enquiry for an admin, only their own listings' for an owner.
  *
+ * Admins also get the other front-door requests as read-only tabs: callbacks (kept
+ * in the activity log, they have no table of their own), search requests and
+ * referrals, so nothing a visitor sends is visible only in the office mailbox.
+ *
  * `select('*')` so the columns added by migration 0016 (contact_pref,
  * crm_synced_at, handled_at …) are simply absent until it runs, never an error.
  */
@@ -24,7 +28,38 @@ import { hoursSince } from '~/lib/portal/time';
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
 
-const tab = Astro.url.searchParams.get('show') === 'handled' ? 'handled' : 'open';
+const show = Astro.url.searchParams.get('show');
+const OTHER_TABS = { callbacks: 'Visszahívás', searches: 'Kerestetés', referrals: 'Ajánlás' } as const;
+const other = isAdmin && show && show in OTHER_TABS ? (show as keyof typeof OTHER_TABS) : null;
+const tab = show === 'handled' ? 'handled' : 'open';
+
+type OtherRow = { id: string; name: string; email: string | null; phone: string | null; when: string; locale: string | null; lines: [string, string][] };
+const budget = (min: number | null, max: number | null) =>
+  min != null && max != null ? `€ ${min.toLocaleString('hu-HU')} – € ${max.toLocaleString('hu-HU')}` : min != null ? `€ ${min.toLocaleString('hu-HU')}-tól` : max != null ? `€ ${max.toLocaleString('hu-HU')}-ig` : '';
+const present = (lines: [string, string | null | undefined][]) => lines.filter(([, value]) => value && String(value).trim()) as [string, string][];
+
+// Read only for the tab being shown; RLS lets admins read all three sources.
+let otherRows: OtherRow[] = [];
+if (other === 'callbacks') {
+  const { data } = await supabase.from('activity_events').select('id, occurred_at, locale, payload').eq('kind', 'callback.requested').order('occurred_at', { ascending: false }).limit(200);
+  otherRows = (data ?? []).map((r: any) => ({
+    id: r.id, name: r.payload?.name ?? '—', email: r.payload?.email ?? null, phone: r.payload?.phone || null, when: r.occurred_at, locale: r.locale,
+    lines: present([['Tárgy', r.payload?.subject], ['Mikor hívhatjuk', r.payload?.callTime], ['Üzenet', r.payload?.message]]),
+  }));
+} else if (other === 'searches') {
+  const { data } = await supabase.from('search_requests').select('*').order('created_at', { ascending: false }).limit(200);
+  otherRows = (data ?? []).map((r: any) => ({
+    id: r.id, name: r.name, email: r.email, phone: r.phone, when: r.created_at, locale: r.locale,
+    lines: present([['Típus', r.type], ['Régió', r.region], ['Költségkeret', budget(r.budget_min, r.budget_max)], ['Elvárások', r.requirements]]),
+  }));
+} else if (other === 'referrals') {
+  const { data } = await supabase.from('referrals').select('*').order('created_at', { ascending: false }).limit(200);
+  const STATUS = { pending: 'Függőben', applied: 'Kedvezmény felhasználva', credited: 'Jóváírva' } as Record<string, string>;
+  otherRows = (data ?? []).map((r: any) => ({
+    id: r.id, name: `${r.referrer_name ?? r.referrer_email} → ${r.referred_name}`, email: r.referred_email, phone: null, when: r.created_at, locale: null,
+    lines: present([['Ajánló', `${r.referrer_name ?? ''} <${r.referrer_email}>`], ['Ajánlott', `${r.referred_name} <${r.referred_email}>`], ['Állapot', STATUS[r.status] ?? r.status]]),
+  }));
+}
 
 const [{ data: enquiries }, openCount, handledCount] = await Promise.all([
   supabase
@@ -68,25 +103,77 @@ const initials = (name: string) =>
     <p class="eyebrow">Teendők</p>
     <h1>Érdeklődők</h1>
     <p class="lead">
-      {tab === 'open'
+      {other
+        ? 'A weboldalon beküldött többi megkeresés — csak olvasható lista. Az irodai levélben is megkapja őket, itt viszont mindig visszakereshetők.'
+        : tab === 'open'
         ? 'Akik visszahívást kértek, 24 órán belül várják a hívását. Hívás után jelölje elintézettnek, és átkerül a Kezelt fülre.'
         : 'A már kezelt érdeklődők — itt visszanézheti, ki jelentkezett és mikor.'}
     </p>
   </header>
 
   <div class="tabs" role="tablist">
-    <a href="/portal/enquiries" aria-current={tab === 'open' ? 'page' : undefined}>
+    <a href="/portal/enquiries" aria-current={!other && tab === 'open' ? 'page' : undefined}>
       Új <span class="n">{openCount.count ?? 0}</span>
     </a>
-    <a href="/portal/enquiries?show=handled" aria-current={tab === 'handled' ? 'page' : undefined}>
+    <a href="/portal/enquiries?show=handled" aria-current={!other && tab === 'handled' ? 'page' : undefined}>
       Kezelt <span class="n">{handledCount.count ?? 0}</span>
     </a>
+    {isAdmin && Object.entries(OTHER_TABS).map(([key, label]) => (
+      <a href={`/portal/enquiries?show=${key}`} aria-current={other === key ? 'page' : undefined}>{label}</a>
+    ))}
   </div>
 
   <p class="status" id="status" role="status" aria-live="polite"></p>
 
   {
-    enquiries && enquiries.length > 0 ? (
+    other ? (
+      otherRows.length > 0 ? (
+        <ul class="cards">
+          {otherRows.map((r) => (
+            <li class="card">
+              <div class="who">
+                <span class="av" aria-hidden="true">{initials(r.name)}</span>
+                <div class="id">
+                  <b>{r.name}</b>
+                  <span class="when">
+                    <Ago iso={r.when} />
+                    {r.locale && r.locale !== 'hu' ? ` · ${(LOCALE_LABEL[r.locale] ?? r.locale).toLowerCase()}` : ''}
+                  </span>
+                </div>
+              </div>
+              {r.lines.length > 0 && (
+                <dl class="lines">
+                  {r.lines.map(([label, value]) => (
+                    <div><dt>{label}</dt><dd>{value}</dd></div>
+                  ))}
+                </dl>
+              )}
+              {(r.phone || r.email) && (
+                <div class="foot">
+                  {r.phone && (
+                    <a class="dial" href={telHref(r.phone)}>
+                      <Fragment set:html={icon('phone', 20)} />
+                      <span>
+                        <small>Hívás</small>
+                        {r.phone}
+                      </span>
+                    </a>
+                  )}
+                  {r.email && (
+                    <a class:list={['mail', !r.phone && 'primary']} href={`mailto:${r.email}?subject=FODEL`}>
+                      <Fragment set:html={icon('mail', 17)} />
+                      {r.email}
+                    </a>
+                  )}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">Még nincs beérkezett {OTHER_TABS[other].toLowerCase()}.</p>
+      )
+    ) : enquiries && enquiries.length > 0 ? (
       <ul class="cards">
         {enquiries.map((e: any) => {
           const property = e.property_id ? propertyById.get(e.property_id) : null;
@@ -218,6 +305,7 @@ const initials = (name: string) =>
   }
   .tabs {
     display: flex;
+    flex-wrap: wrap;
     margin-bottom: 18px;
   }
   .n {
@@ -348,6 +436,32 @@ const initials = (name: string) =>
   .about a:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+  .lines {
+    display: grid;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: var(--fs-body);
+    line-height: 1.55;
+  }
+  .lines div {
+    display: grid;
+    grid-template-columns: minmax(110px, 160px) 1fr;
+    gap: 12px;
+  }
+  .lines dt {
+    color: var(--ink-quiet);
+  }
+  .lines dd {
+    color: var(--taupe);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 640px) {
+    .lines div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
   }
   blockquote {
     margin: 14px 0 0;

@@ -11,7 +11,8 @@ if (!found) {
   Astro.response.status = 404;
   return Astro.rewrite('/404');
 }
-Astro.response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
+// No stale-while-revalidate here: an unpublished post must stop being served within the minute.
+Astro.response.headers.set('Cache-Control', 's-maxage=60');
 ---
 
 <ArticlePage locale="it" post={found.post} from={found.from} />

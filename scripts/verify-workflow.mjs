@@ -24,10 +24,18 @@ if (!url || !anonKey || !serviceKey) {
   process.exit(1);
 }
 
+// This script creates users and deletes listings with refs 9997/9998, so it must never run against a
+// live project by accident (it once did, and left an admin on the alert list that bounced).
+if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(url) && process.env.VERIFY_ALLOW_REMOTE !== '1') {
+  console.error(`Refusing to run against ${new URL(url).host}. Point SUPABASE_URL at a local/test project, or set VERIFY_ALLOW_REMOTE=1 if you are sure.`);
+  process.exit(1);
+}
+
 const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
 const publicClient = createClient(url, anonKey, { auth: { persistSession: false } });
 const PASSWORD = 'workflow-test-password-not-real-123!';
 let failures = 0;
+const createdUsers = [];
 const pass = (message) => console.log(`  ✓ ${message}`);
 const fail = (message) => { console.error(`  ✗ ${message}`); failures += 1; };
 
@@ -41,6 +49,7 @@ async function ensureUser(email, role) {
     });
     if (error) throw error;
     user = data.user;
+    createdUsers.push(user.id);
   }
   const { error } = await admin.from('profiles').upsert({
     id: user.id, role, email, full_name: `Workflow test (${role})`,
@@ -158,8 +167,14 @@ async function main() {
   await admin.from('payments').delete().in('property_id', [freeId, legacyId]);
   await admin.from('review_notes').delete().in('property_id', [freeId, legacyId]);
   await admin.from('properties').delete().in('id', [freeId, legacyId]);
+  await removeCreatedUsers();
   console.log(`\n${failures === 0 ? 'PASS' : 'FAIL'} — ${failures} failure(s)\n`);
   process.exit(failures === 0 ? 0 : 1);
 }
 
-main().catch((error) => { console.error(error); process.exit(1); });
+// Only the users this run created are removed, so a pre-existing account of the same address survives.
+async function removeCreatedUsers() {
+  for (const id of createdUsers) await admin.auth.admin.deleteUser(id).catch(() => {});
+}
+
+main().catch(async (error) => { console.error(error); await removeCreatedUsers(); process.exit(1); });

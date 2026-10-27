@@ -76,7 +76,7 @@ export type PortalProperty = {
   price_asof: string;
   price_negotiable: boolean;
   floor_m2: number | null;
-  plot_m2: number;
+  plot_m2: number | null;
   bedrooms: number | null;
   bathrooms: number | null;
   year_built: number | null;
@@ -180,7 +180,6 @@ export async function createDraft(supabase: SupabaseClient, ownerId: string): Pr
       price_eur: 1,
       price_huf: 1,
       price_asof: new Date().toISOString().slice(0, 10),
-      plot_m2: 1,
       package: 'cheap-6m',
     })
     .select('id')

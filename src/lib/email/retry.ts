@@ -2,9 +2,12 @@
  * The retry policy for sending mail, kept free of any SDK so it can be tested
  * on its own (scripts/test-rules.mjs): up to three attempts, doubling the wait
  * between them, and no retry at all for a rejection a second try cannot fix.
+ * A rate-limit rejection waits at least a second: Resend allows 2 requests a
+ * second and one form sends three or four mails back to back.
  */
 export const MAX_ATTEMPTS = 3;
 export const RETRY_BASE_MS = 400;
+export const RATE_LIMIT_WAIT_MS = 1000;
 
 /** Resend rejects outright on a bad payload; retrying that just wastes time. */
 export function isRetryable(error: unknown): boolean {
@@ -12,6 +15,14 @@ export function isRetryable(error: unknown): boolean {
     ?? (error as { status?: number } | null)?.status;
   if (typeof status !== 'number') return true; // network-level failure, worth another go
   return status === 429 || status >= 500;
+}
+
+/** How long to wait after the `attempt`-th failure (1-based). */
+export function retryDelay(error: unknown, attempt: number): number {
+  const status = (error as { statusCode?: number; status?: number } | null)?.statusCode
+    ?? (error as { status?: number } | null)?.status;
+  const backoff = RETRY_BASE_MS * 2 ** (attempt - 1);
+  return status === 429 ? Math.max(backoff, RATE_LIMIT_WAIT_MS) : backoff;
 }
 
 const realSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -34,7 +45,7 @@ export async function withRetry(
       last = error;
     }
     if (!isRetryable(last) || n === MAX_ATTEMPTS) return { sent: false, attempts: n, error: last };
-    await sleep(RETRY_BASE_MS * 2 ** (n - 1));
+    await sleep(retryDelay(last, n));
   }
   return { sent: false, attempts: MAX_ATTEMPTS, error: last };
 }

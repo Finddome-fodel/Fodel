@@ -270,6 +270,36 @@ const FOOTER_COPY = {
   },
 } as const;
 
+/**
+ * The footer line for someone who has no FODEL account and never placed a
+ * listing: they filled in a form on the website and are getting the reply.
+ * Pass `audience: 'visitor'` to shell()/textShell() to use it instead of the
+ * account-holder line above, which would be false for them.
+ */
+const VISITOR_WHY: Record<ShellLocale, string> = {
+  hu: 'Ezt az e-mailt azért kapja, mert felvette velünk a kapcsolatot a FODEL weboldalán.',
+  nl: 'U ontvangt deze e-mail omdat u via de FODEL-website contact met ons heeft opgenomen.',
+  en: 'You are receiving this email because you contacted us through the FODEL website.',
+  de: 'Sie erhalten diese E-Mail, weil Sie uns über die FODEL-Website kontaktiert haben.',
+  fr: 'Vous recevez cet e-mail parce que vous nous avez contactés via le site FODEL.',
+  es: 'Recibe este correo porque se puso en contacto con nosotros a través del sitio web de FODEL.',
+  pl: 'Otrzymują Państwo tę wiadomość, ponieważ skontaktowali się Państwo z nami za pośrednictwem strony FODEL.',
+  ro: 'Primiți acest e-mail deoarece ne-ați contactat prin site-ul FODEL.',
+  sk: 'Tento e-mail dostávate, pretože ste nás kontaktovali cez web FODEL.',
+  it: 'Riceve questa e-mail perché ci ha contattato tramite il sito FODEL.',
+  pt: 'Recebe este e-mail porque nos contactou através do site da FODEL.',
+  el: 'Λαμβάνετε αυτό το email επειδή επικοινωνήσατε μαζί μας μέσω του ιστότοπου της FODEL.',
+  cs: 'Tento e-mail dostáváte, protože jste nás kontaktovali prostřednictvím webu FODEL.',
+  sl: 'To sporočilo prejemate, ker ste nas kontaktirali prek spletnega mesta FODEL.',
+  sv: 'Du får det här mejlet eftersom du kontaktade oss via FODEL:s webbplats.',
+  da: 'Du modtager denne e-mail, fordi du har kontaktet os via FODEL’s hjemmeside.',
+  no: 'Du mottar denne e-posten fordi du kontaktet oss via FODELs nettsted.',
+  fi: 'Saat tämän viestin, koska otit meihin yhteyttä FODELin verkkosivuston kautta.',
+  et: 'Saate selle kirja, sest võtsite meiega ühendust FODELi veebilehe kaudu.',
+  lv: 'Jūs saņemat šo e-pastu, jo sazinājāties ar mums, izmantojot FODEL tīmekļa vietni.',
+  lt: 'Šį laišką gaunate, nes susisiekėte su mumis per FODEL svetainę.',
+};
+
 function wordmark(locale: ShellLocale): string {
   // BRAND[locale].name is "FODEL INGATLAN" / "FODEL VASTGOED" — the sub-label
   // is whatever follows the wordmark, exactly as src/components/Logo.astro
@@ -293,6 +323,8 @@ export function shell(opts: {
   body: string;
   /** Replaces the "why you get this" line (HTML allowed — the newsletter puts its unsubscribe link here). */
   whyHtml?: string;
+  /** 'visitor': the reader only filled in a form on the website (no account, no listing). */
+  audience?: 'visitor';
 }): string {
   const { locale, preheader, body } = opts;
   const footer = FOOTER_COPY[locale];
@@ -346,7 +378,7 @@ export function shell(opts: {
               <a href="mailto:${mail}" style="color:${TAUPE};text-decoration:underline;">${mail}</a> &nbsp;·&nbsp; ${esc(COMPANY.phones[0].display)}
             </p>
             <p style="margin:14px 0 0;font-family:${SANS};font-size:11px;line-height:1.6;color:${TAUPE};">
-              ${opts.whyHtml ?? esc(footer.why)}
+              ${opts.whyHtml ?? esc(opts.audience === 'visitor' ? VISITOR_WHY[locale] : footer.why)}
             </p>
           </td>
         </tr>
@@ -368,7 +400,7 @@ export function shell(opts: {
  * than stripping tags from the HTML, because a good plain-text email is
  * written, not generated — the button becomes a labelled URL on its own line.
  */
-export function textShell(opts: { locale: ShellLocale; body: string; why?: string }): string {
+export function textShell(opts: { locale: ShellLocale; body: string; why?: string; audience?: 'visitor' }): string {
   const { locale, body } = opts;
   const mail = locale === 'hu' ? COMPANY.email.hu : COMPANY.email.primary;
   const sub = BRAND[locale].name.replace('FODEL', '').trim();
@@ -381,6 +413,6 @@ ${'—'.repeat(24)}
 ${BRAND[locale].name}
 ${addressLine(COMPANY.address, locale)}
 ${mail} · ${COMPANY.phones[0].display}
-${opts.why ?? FOOTER_COPY[locale].why}
+${opts.why ?? (opts.audience === 'visitor' ? VISITOR_WHY[locale] : FOOTER_COPY[locale].why)}
 `;
 }

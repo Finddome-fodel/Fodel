@@ -287,8 +287,8 @@ function genericAck(locale: Locale, name: string, phones: string, hours: string)
   const preheader = (parts[1] ?? parts[0] ?? ack.subject).replace(/\s+/g, ' ').slice(0, 110);
   return {
     subject: ack.subject,
-    html: shell({ locale, preheader, body: parts.map((part) => paragraph(part)).join('') }),
-    text: textShell({ locale, body: parts.join('\n\n') }),
+    html: shell({ locale, preheader, body: parts.map((part) => paragraph(part)).join(''), audience: 'visitor' }),
+    text: textShell({ locale, body: parts.join('\n\n'), audience: 'visitor' }),
   };
 }
 
@@ -562,6 +562,7 @@ export async function handleForm(
     if (!delivered) throw new Error('office notification not delivered');
 
     // Acknowledge to the sender so they know it arrived.
+    let ackDelivered: boolean | null = null; // null: no acknowledgement was due
     if (result.values.email && !def.skipAck) {
       let ack: { subject: string; html: string; text: string };
       if (def.ack) {
@@ -584,12 +585,24 @@ export async function handleForm(
         text: ack.text,
         replyTo: replyToAddress(),
       });
-      if (!acked) console.error(`[form:${def.id}] acknowledgement not delivered`, { subject: ack.subject, to: result.values.email });
+      if (!acked) {
+        console.error(`[form:${def.id}] acknowledgement not delivered`, { subject: ack.subject, to: result.values.email });
+        await logEvent({
+          kind: 'email.failed',
+          actorEmail: result.values.email,
+          subjectType: 'form',
+          subjectId: def.id,
+          locale,
+          source: returnTo,
+          payload: { subject: ack.subject, purpose: 'acknowledgement' },
+        }).catch(() => {});
+      }
+      ackDelivered = acked;
     }
 
     const data = await runHook(def, result.values, extras, form);
 
-    return respond(200, { ok: true, delivered: true, ...data });
+    return respond(200, { ok: true, delivered: true, ackDelivered, ...data });
   } catch (error) {
     console.error(`[form:${def.id}] delivery failed`, error);
     release();
