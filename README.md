@@ -392,9 +392,10 @@ dev-mode framework anywhere · unique title/description/canonical per page ·
 hreflang reciprocity · JSON-LD validity, numeric prices, coordinates · alt text
 and explicit dimensions on every image · modern image formats · crawlable links
 · required assets · client JS budget (two budgets since Stage 7: near-zero for
-everything except a map, a generous gzipped ceiling for pages that show one) ·
+everything except a map, measured on the heaviest page's own scripts rather than every chunk in the build,
+a generous gzipped ceiling for pages that show a map) ·
 legal preflight. `npm run verify:rls` and `npm run verify:workflow` need a
-configured Supabase project and aren't part of the default `verify` chain for
+configured Supabase project (`verify:workflow` refuses a non-local one unless `VERIFY_ALLOW_REMOTE=1`) and aren't part of the default `verify` chain for
 that reason — run them once the database is set up. Since 1.1 `verify:rls`
 also proves one seller cannot read another's orders or review notes, and that
 no signed-in user can read `password_resets` (a readable reset token is an

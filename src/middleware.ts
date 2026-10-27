@@ -97,7 +97,8 @@ const guard: MiddlewareHandler = async (context, next) => {
   const isPublicPortalPath = PUBLIC_PORTAL_PATHS.some((p) => pathname.startsWith(p)) && !pathname.startsWith('/portal/invoices/new');
 
   if (pathname.startsWith('/portal') && !isPublicPortalPath && !user) {
-    return context.redirect(`/portal/login?next=${encodeURIComponent(pathname)}`);
+    // Signing out while already signed out should not send the next sign-in straight back to /portal/logout.
+    return context.redirect(pathname === '/portal/logout' ? '/portal/login' : `/portal/login?next=${encodeURIComponent(pathname)}`);
   }
 
   // Every endpoint reachable while signed out. Each one authenticates by its

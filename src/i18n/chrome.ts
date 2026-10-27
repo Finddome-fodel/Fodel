@@ -46,6 +46,8 @@ export interface ChromeStrings {
     mobileHelp: string;
     zoomIn: string;
     zoomOut: string;
+    /** Shown over the map when its style cannot be loaded at all. */
+    unavailable: string;
   };
   photoTips: { heading: string; guide: string; why: string };
   onsite: { heading: string; intro: string; none: string; noneBody: string; once: string };
@@ -92,6 +94,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Két ujjal mozgathatja a térképet',
       zoomIn: 'Nagyítás',
       zoomOut: 'Kicsinyítés',
+      unavailable: 'A térkép most nem tölthető be. Kérjük, próbálja meg később.',
     },
     photoTips: { heading: 'Mielőtt fotózna', guide: 'A teljes fotózási útmutató', why: 'Miért számít?' },
     onsite: {
@@ -144,6 +147,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Gebruik twee vingers om de kaart te verplaatsen',
       zoomIn: 'Inzoomen',
       zoomOut: 'Uitzoomen',
+      unavailable: 'De kaart kan nu niet worden geladen. Probeer het later opnieuw.',
     },
     photoTips: { heading: 'Voordat u fotografeert', guide: 'De volledige fotografiegids', why: 'Waarom het ertoe doet' },
     onsite: {
@@ -196,6 +200,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Use two fingers to move the map',
       zoomIn: 'Zoom in',
       zoomOut: 'Zoom out',
+      unavailable: 'The map could not be loaded. Please try again later.',
     },
     photoTips: { heading: 'Before you take photos', guide: 'The full photo guide', why: 'Why it matters' },
     onsite: {
@@ -248,6 +253,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Die Karte mit zwei Fingern bewegen',
       zoomIn: 'Vergrößern',
       zoomOut: 'Verkleinern',
+      unavailable: 'Die Karte konnte nicht geladen werden. Bitte versuchen Sie es später erneut.',
     },
     photoTips: { heading: 'Bevor Sie fotografieren', guide: 'Der vollständige Foto-Ratgeber', why: 'Warum das wichtig ist' },
     onsite: {
@@ -306,6 +312,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Utilisez deux doigts pour déplacer la carte',
       zoomIn: 'Zoomer',
       zoomOut: 'Dézoomer',
+      unavailable: 'La carte n’a pas pu être chargée. Veuillez réessayer plus tard.',
     },
     photoTips: { heading: 'Avant de prendre vos photos', guide: 'Le guide photo complet', why: 'Pourquoi c’est important' },
     onsite: {
@@ -363,6 +370,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Use dos dedos para mover el mapa',
       zoomIn: 'Acercar',
       zoomOut: 'Alejar',
+      unavailable: 'No se ha podido cargar el mapa. Inténtelo de nuevo más tarde.',
     },
     photoTips: { heading: 'Antes de hacer las fotos', guide: 'La guía fotográfica completa', why: 'Por qué es importante' },
     onsite: {
@@ -420,6 +428,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Użyj dwóch palców, aby przesunąć mapę',
       zoomIn: 'Powiększ',
       zoomOut: 'Pomniejsz',
+      unavailable: 'Nie udało się załadować mapy. Spróbuj ponownie później.',
     },
     photoTips: { heading: 'Zanim zrobią Państwo zdjęcia', guide: 'Pełny poradnik fotograficzny', why: 'Dlaczego to ważne' },
     onsite: {
@@ -477,6 +486,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Folosiți două degete pentru a muta harta',
       zoomIn: 'Mărire',
       zoomOut: 'Micșorare',
+      unavailable: 'Harta nu a putut fi încărcată. Încercați din nou mai târziu.',
     },
     photoTips: { heading: 'Înainte de a face fotografiile', guide: 'Ghidul foto complet', why: 'De ce contează' },
     onsite: {
@@ -534,6 +544,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Na posun mapy použite dva prsty',
       zoomIn: 'Priblížiť',
       zoomOut: 'Oddialiť',
+      unavailable: 'Mapu sa nepodarilo načítať. Skúste to prosím neskôr.',
     },
     photoTips: { heading: 'Skôr než začnete fotiť', guide: 'Kompletný fotografický návod', why: 'Prečo na tom záleží' },
     onsite: {
@@ -591,6 +602,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Usi due dita per spostare la mappa',
       zoomIn: 'Ingrandisci',
       zoomOut: 'Riduci',
+      unavailable: 'Impossibile caricare la mappa. Riprovi più tardi.',
     },
     photoTips: { heading: 'Prima di scattare le foto', guide: 'La guida fotografica completa', why: 'Perché è importante' },
     onsite: {
@@ -648,6 +660,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Use dois dedos para mover o mapa',
       zoomIn: 'Ampliar',
       zoomOut: 'Reduzir',
+      unavailable: 'Não foi possível carregar o mapa. Tente novamente mais tarde.',
     },
     photoTips: { heading: 'Antes de tirar as fotografias', guide: 'O guia de fotografia completo', why: 'Porque é importante' },
     onsite: {
@@ -705,6 +718,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Χρησιμοποιήστε δύο δάχτυλα για να μετακινήσετε τον χάρτη',
       zoomIn: 'Μεγέθυνση',
       zoomOut: 'Σμίκρυνση',
+      unavailable: 'Δεν ήταν δυνατή η φόρτωση του χάρτη. Δοκιμάστε ξανά αργότερα.',
     },
     photoTips: { heading: 'Πριν τραβήξετε φωτογραφίες', guide: 'Ο πλήρης οδηγός φωτογράφισης', why: 'Γιατί έχει σημασία' },
     onsite: {
@@ -762,6 +776,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Mapu posunete dvěma prsty',
       zoomIn: 'Přiblížit',
       zoomOut: 'Oddálit',
+      unavailable: 'Mapu se nepodařilo načíst. Zkuste to prosím později.',
     },
     photoTips: { heading: 'Než začnete fotit', guide: 'Kompletní návod k fotografování', why: 'Proč na tom záleží' },
     onsite: {
@@ -819,6 +834,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Zemljevid premikajte z dvema prstoma',
       zoomIn: 'Povečaj',
       zoomOut: 'Pomanjšaj',
+      unavailable: 'Zemljevida ni bilo mogoče naložiti. Poskusite znova pozneje.',
     },
     photoTips: { heading: 'Preden začnete fotografirati', guide: 'Celotna navodila za fotografiranje', why: 'Zakaj je to pomembno' },
     onsite: {
@@ -876,6 +892,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Använd två fingrar för att flytta kartan',
       zoomIn: 'Zooma in',
       zoomOut: 'Zooma ut',
+      unavailable: 'Kartan kunde inte laddas. Försök igen senare.',
     },
     photoTips: { heading: 'Innan du fotograferar', guide: 'Den fullständiga fotoguiden', why: 'Varför det spelar roll' },
     onsite: {
@@ -933,6 +950,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Brug to fingre til at flytte kortet',
       zoomIn: 'Zoom ind',
       zoomOut: 'Zoom ud',
+      unavailable: 'Kortet kunne ikke indlæses. Prøv igen senere.',
     },
     photoTips: { heading: 'Før du tager billeder', guide: 'Den komplette fotoguide', why: 'Hvorfor det er vigtigt' },
     onsite: {
@@ -990,6 +1008,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Bruk to fingre for å flytte kartet',
       zoomIn: 'Zoom inn',
       zoomOut: 'Zoom ut',
+      unavailable: 'Kartet kunne ikke lastes. Prøv igjen senere.',
     },
     photoTips: { heading: 'Før du tar bilder', guide: 'Den komplette fotoguiden', why: 'Hvorfor det er viktig' },
     onsite: {
@@ -1047,6 +1066,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Siirrä karttaa kahdella sormella',
       zoomIn: 'Lähennä',
       zoomOut: 'Loitonna',
+      unavailable: 'Karttaa ei voitu ladata. Yritä myöhemmin uudelleen.',
     },
     photoTips: { heading: 'Ennen kuin kuvaat', guide: 'Koko valokuvausopas', why: 'Miksi tällä on väliä' },
     onsite: {
@@ -1104,6 +1124,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Kaardi liigutamiseks kasutage kahte sõrme',
       zoomIn: 'Suurenda',
       zoomOut: 'Vähenda',
+      unavailable: 'Kaarti ei õnnestunud laadida. Proovige hiljem uuesti.',
     },
     photoTips: { heading: 'Enne pildistamist', guide: 'Täielik fotojuhend', why: 'Miks see on oluline' },
     onsite: {
@@ -1161,6 +1182,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Lai pārvietotu karti, izmantojiet divus pirkstus',
       zoomIn: 'Tuvināt',
       zoomOut: 'Tālināt',
+      unavailable: 'Karti neizdevās ielādēt. Lūdzu, mēģiniet vēlāk vēlreiz.',
     },
     photoTips: { heading: 'Pirms fotografēšanas', guide: 'Pilnais fotografēšanas ceļvedis', why: 'Kāpēc tas ir svarīgi' },
     onsite: {
@@ -1218,6 +1240,7 @@ export const CHROME: L10n<ChromeStrings> = {
       mobileHelp: 'Žemėlapį perkelkite dviem pirštais',
       zoomIn: 'Priartinti',
       zoomOut: 'Nutolinti',
+      unavailable: 'Nepavyko įkelti žemėlapio. Bandykite vėliau dar kartą.',
     },
     photoTips: { heading: 'Prieš fotografuodami', guide: 'Visas fotografavimo vadovas', why: 'Kodėl tai svarbu' },
     onsite: {

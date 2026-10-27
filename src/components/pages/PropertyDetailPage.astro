@@ -45,11 +45,13 @@ const ui = UI[locale];
 const x = localizer(locale);
 const colon = locale === 'fr' ? '\u00a0:' : ':';
 
-const title = text(d.title, locale);
 const subtitle = d.subtitle ? text(d.subtitle, locale) : '';
 // English, German and French pages show the Dutch (or Hungarian) text the
 // seller wrote, and say so; the facts around it are in the visitor's language.
 const resolvedDescription = resolveText(d.description, locale);
+// The title follows the description when the visitor's own language has no title, so the heading and
+// the text under it are never in two different languages.
+const title = d.title[locale] || d.title[resolvedDescription.from] || text(d.title, locale);
 const description = resolvedDescription.text;
 const languageNote = sourceNote(locale, resolvedDescription.from, 'description');
 const category = d.categoryLabels[locale] ?? d.categoryLabels.nl ?? d.categoryLabels.hu;

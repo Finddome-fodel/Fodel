@@ -473,7 +473,7 @@ console.log('\nJavaScript budget');
   // budget for everything else still applies, measured the same way as
   // before (raw bytes), since that promise predates maps and nothing here
   // should have made it worse.
-  const isMapChunk = (name) => /Map\.astro/i.test(name);
+  const isMapChunk = (name) => /Map\.astro|^maplibre-gl\./i.test(name);
   // MapLibre's tile worker (bundled since 0019 — before that it was never
   // emitted, so every map stayed empty). Fetched only by map pages and run
   // off the main thread, so it is measured on its own line.
@@ -483,7 +483,9 @@ console.log('\nJavaScript budget');
   // field, so no page loads it up front. Measured on its own line, gzipped.
   const isValidationChunk = (name) => /^validation\./i.test(name);
   let validationGzipBytes = 0;
-  let coreBytes = 0;
+  // Every other chunk, by file name. The budget below is about what a page loads, not about the
+  // sum of every chunk in the build (which also holds the portal's editor scripts).
+  const chunkSizes = new Map();
   let mapRawBytes = 0;
   let mapGzipBytes = 0;
   let workerGzipBytes = 0;
@@ -501,7 +503,7 @@ console.log('\nJavaScript budget');
           mapRawBytes += buf.byteLength;
           mapGzipBytes += gzipSync(buf).byteLength;
         } else {
-          coreBytes += (await fs.stat(full)).size;
+          chunkSizes.set(entry.name, (await fs.stat(full)).size);
         }
       }
     }
@@ -522,9 +524,26 @@ console.log('\nJavaScript budget');
     if (validationKb > 60) fail(`form validation chunk is ${validationKb.toFixed(1)} kB gzipped (budget 60 kB, loaded only when a form field is used)`);
     else pass(`form validation chunk ${validationKb.toFixed(1)} kB gzipped (budget 60 kB, loaded only when a form field is used)`);
   }
+  // Non-map client JS = the scripts a page references plus what they import up front
+  // (dynamic imports, such as the validation chunk, load later and are measured above),
+  // for the heaviest page checked here.
+  const importsOf = async (name, seen) => {
+    if (seen.has(name) || !chunkSizes.has(name)) return;
+    seen.add(name);
+    const text = await read(path.join(astroDir, name));
+    for (const m of text.matchAll(/\bfrom\s*["']\.\/([^"']+\.js)["']/g)) await importsOf(m[1], seen);
+  };
+  let coreBytes = 0;
+  let heaviest = '';
+  for (const { relPath, html } of files) {
+    const loaded = new Set();
+    for (const m of html.matchAll(/\/_astro\/([^"'\s]+\.js)/g)) await importsOf(m[1], loaded);
+    const bytes = [...loaded].reduce((sum, name) => sum + chunkSizes.get(name), 0);
+    if (bytes > coreBytes) [coreBytes, heaviest] = [bytes, relPath];
+  }
   const coreKb = coreBytes / 1024;
-  if (coreKb > 100) fail(`non-map client JS is ${coreKb.toFixed(1)} kB (budget 100 kB)`);
-  else pass(`non-map client JS ${coreKb.toFixed(1)} kB (budget 100 kB)`);
+  if (coreKb > 100) fail(`non-map client JS is ${coreKb.toFixed(1)} kB on ${heaviest} (budget 100 kB)`);
+  else pass(`non-map client JS ${coreKb.toFixed(1)} kB on the heaviest page, ${heaviest} (budget 100 kB)`);
 
   if (mapRawBytes > 0) {
     const mapGzipKb = mapGzipBytes / 1024;
