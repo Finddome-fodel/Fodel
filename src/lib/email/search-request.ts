@@ -56,7 +56,7 @@ export function searchRequestReceived(
   const rows = ([[c.type, a.propertyType], [c.region, a.region], [c.budget, budget], [c.requirements, a.requirements]] as [string, string | undefined][]).filter(([, v]) => v) as [string, string][];
   return {
     subject: c.subject,
-    html: shell({ locale, preheader: c.preheader, body: h1(c.heading) + lead(c.intro) + (rows.length ? facts(rows) : '') + small(c.outro) }),
-    text: textShell({ locale, body: `${c.heading}\n\n${c.intro}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\n${c.outro}` }),
+    html: shell({ locale, preheader: c.preheader, body: h1(c.heading) + lead(c.intro) + (rows.length ? facts(rows) : '') + small(c.outro), audience: 'visitor' }),
+    text: textShell({ locale, body: `${c.heading}\n\n${c.intro}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\n${c.outro}`, audience: 'visitor' }),
   };
 }

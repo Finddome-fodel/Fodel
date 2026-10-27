@@ -604,8 +604,8 @@ ${common.signOff}`,
 export function valuationReceived(locale: EmailLocale): BuiltEmail {
   const c = copyFor(locale).valuationReceived;
   return { subject: c.heading + ' | FODEL',
-    html: shell({ locale, preheader: c.heading, body: h1(c.heading) + lead(c.body) + signOff(locale) }),
-    text: textShell({ locale, body: `${c.heading}\n\n${c.body}` }) };
+    html: shell({ locale, preheader: c.heading, body: h1(c.heading) + lead(c.body) + signOff(locale), audience: 'visitor' }),
+    text: textShell({ locale, body: `${c.heading}\n\n${c.body}`, audience: 'visitor' }) };
 }
 
 export function valuationReady(
@@ -639,9 +639,11 @@ export function valuationReady(
         (opts.visitUrl ? linkFallback(c.visit, opts.visitUrl) : '') +
         (opts.judicialUrl ? linkFallback(c.judicial, opts.judicialUrl) : '') +
         signOff(locale),
+      audience: 'visitor',
     }),
     text: textShell({
       locale,
+      audience: 'visitor',
       body: `${c.heading}\n\n${intro}\n${opts.mid ? `\n${c.mid}${colon} ${opts.mid}` : ''}${opts.basis ? `\n${c.basis}${colon} ${opts.basis}` : ''}${opts.rateDate ? `\n${c.rateDate}${colon} ${opts.rateDate}` : ''}${opts.sourceUrl ? `\n${sourceLine} · ${opts.sourceUrl}` : ''}\n${opts.factors?.map((f) => `${direction(f.direction)}${colon} ${f.text}`).join('\n') ?? ''}\n${opts.notice ?? ''}\n${disclaimer}\n\n${textCta(c.cta, opts.submitAdUrl)}${opts.visitUrl ? `\n${c.visit}${colon} ${opts.visitUrl}` : ''}${opts.judicialUrl ? `\n${c.judicial}${colon} ${opts.judicialUrl}` : ''}`,
     }),
   };
@@ -651,8 +653,8 @@ export function valuationDeclined(locale: EmailLocale): BuiltEmail {
   const c = copyFor(locale).valuationDeclined;
   return {
     subject: c.subject,
-    html: shell({ locale, preheader: c.preheader, body: h1(c.heading) + lead(c.body) + signOff(locale) }),
-    text: textShell({ locale, body: `${c.heading}\n\n${c.body}` }),
+    html: shell({ locale, preheader: c.preheader, body: h1(c.heading) + lead(c.body) + signOff(locale), audience: 'visitor' }),
+    text: textShell({ locale, body: `${c.heading}\n\n${c.body}`, audience: 'visitor' }),
   };
 }
 
@@ -666,10 +668,12 @@ export function valuationNeedsInfo(locale: EmailLocale, opts: { note: string }):
       locale,
       preheader: c.preheader,
       body: h1(c.heading) + lead(c.body) + quote(opts.note) + p(c.after) + signOff(locale),
+      audience: 'visitor',
     }),
     text: textShell({
       locale,
       body: `${c.heading}\n\n${c.body}\n\n  "${opts.note.replace(/\n/g, '\n  ')}"\n\n${c.after}\n\n${common.signOff}`,
+      audience: 'visitor',
     }),
   };
 }
@@ -859,6 +863,7 @@ export function referralRegistered(
       locale,
       preheader: c.preheader,
       body: h1(c.heading) + lead(c.body(opts.referredName)) + small(c.note) + signOff(locale),
+      audience: 'visitor',
     }),
     text: textShell({
       locale,
@@ -869,6 +874,7 @@ ${c.body(opts.referredName)}
 ${c.note}
 
 ${common.signOff}`,
+      audience: 'visitor',
     }),
   };
 }
