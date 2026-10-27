@@ -25,6 +25,22 @@ export function retryDelay(error: unknown, attempt: number): number {
   return status === 429 ? Math.max(backoff, RATE_LIMIT_WAIT_MS) : backoff;
 }
 
+/**
+ * A provider call that hangs must not hold up the request that triggered the
+ * mail (a submit used to wait on every recipient before answering). The
+ * timeout carries a 408 so `isRetryable` does not try again: the mail may well
+ * have gone out, and a second send would deliver it twice.
+ */
+export const SEND_TIMEOUT_MS = 5000;
+
+export function withTimeout<T>(work: Promise<T>, ms: number = SEND_TIMEOUT_MS): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  const expiry = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(Object.assign(new Error(`no answer from the mail provider after ${ms} ms`), { statusCode: 408 })), ms);
+  });
+  return Promise.race([work, expiry]).finally(() => clearTimeout(timer));
+}
+
 const realSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /**

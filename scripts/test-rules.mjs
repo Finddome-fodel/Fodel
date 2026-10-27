@@ -26,9 +26,9 @@ import { LOCALES, ROUTES, UI, path, localizer, localeFrom, isLocale } from '../s
 import { eur, huf, area, grouped, placeLabel } from '../src/lib/format.ts';
 import { execFileSync } from 'node:child_process';
 import { registerHooks } from 'node:module';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { withRetry, isRetryable, retryDelay } from '../src/lib/email/retry.ts';
+import { withRetry, withTimeout, isRetryable, retryDelay } from '../src/lib/email/retry.ts';
 
 let passed = 0;
 const test = (name, fn) => {
@@ -344,6 +344,23 @@ await (async () => {
   test('a rate-limit rejection waits at least a second', () => {
     assert.deepEqual([1, 2, 3].map((attempt) => retryDelay({ statusCode: 429 }, attempt)), [1000, 1000, 1600]);
     assert.deepEqual([1, 2].map((attempt) => retryDelay({ statusCode: 503 }, attempt)), [400, 800]);
+  });
+  const quick = await withTimeout(Promise.resolve('ok'), 50);
+  test('a provider call that answers in time passes through', () => assert.equal(quick, 'ok'));
+  const slow = await withTimeout(new Promise(() => {}), 20).catch((error) => error);
+  test('a call that never answers times out with a 408', () => assert.equal(slow.statusCode, 408));
+  test('a timed-out send is not retried (it may already have gone out)', () => assert.equal(isRetryable(slow), false));
+})();
+
+// The wizard's thank-you panel is found by its own hook. [data-done] is also set on the step links
+// (setup.astro marks the finished ones), and the first of them once matched instead of the panel, so a
+// submit that had worked ended in "could not submit".
+(() => {
+  const source = readFileSync(new URL('../src/pages/portal/properties/[id]/setup.astro', import.meta.url), 'utf8');
+  test('setup wizard: the thank-you panel has a hook no step link shares', () => {
+    assert.ok(source.includes('data-thanks hidden'));
+    assert.ok(source.includes("querySelector<HTMLElement>('[data-thanks]')"));
+    assert.ok(!source.includes("querySelector<HTMLElement>('[data-done]')"));
   });
 })();
 

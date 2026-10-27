@@ -327,7 +327,7 @@ const strings = {
         <div class="su-missing" data-missing hidden></div>
         <p class="su-submit-status" role="status" data-submit-status></p>
       </div>
-      <div class="su-done" data-done hidden tabindex="-1">
+      <div class="su-done" data-thanks hidden tabindex="-1">
         <span class="su-done-mark" aria-hidden="true">
           <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 11.5l4 4 8-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </span>
@@ -713,11 +713,12 @@ const strings = {
       // 409 not-editable: the listing is already past draft, i.e. an earlier click (or a request whose
       // reply was lost) did submit it. Show the thank-you rather than an error for something that worked.
       const alreadySubmitted = res.status === 409 && json.error === 'not-editable';
-      if (!alreadySubmitted && (!res.ok || !json.ok)) throw Object.assign(new Error(json.error ?? 'failed'), { fields: json.fields, detail: json.message });
+      if (!alreadySubmitted && (!res.ok || !json.ok)) throw Object.assign(new Error(json.error ?? 'failed'), { fields: json.fields, detail: json.message, httpStatus: res.status });
       status.textContent = '';
       // Remove, rather than hide, everything but the thank-you panel: the review block, the step list
       // and the navigation each carry their own display rules, which beat the hidden attribute.
-      const done = root.querySelector<HTMLElement>('[data-done]')!;
+      // (Not [data-done]: the step links carry that, and the first of them matched here.)
+      const done = root.querySelector<HTMLElement>('[data-thanks]')!;
       done.closest('.su-step')!.replaceChildren(done);
       root.querySelector('.su-nav')!.remove();
       root.querySelector('.su-steps')!.remove();
@@ -725,8 +726,8 @@ const strings = {
       done.focus();
       done.scrollIntoView({ block: 'start' });
     } catch (error) {
-      console.warn('[setup] submit failed', error);
-      const failure = error as Error & { fields?: (keyof typeof s.missing.fields)[]; detail?: string };
+      const failure = error as Error & { fields?: (keyof typeof s.missing.fields)[]; detail?: string; httpStatus?: number };
+      console.warn('[setup] submit failed', failure.httpStatus ?? '(no response)', error);
       status.textContent = failure.message === 'no-photos' ? s.noPhotos
         : failure.message === 'incomplete-details' && failure.fields?.length ? `${s.missing.details}: ${failure.fields.map((name) => s.missing.fields[name]).join(', ')}`
         : failure.message === 'placeholder' && failure.detail ? failure.detail
