@@ -39,7 +39,7 @@ const { hours } = await getCompany();
     <h1>{ui.form.successTitle}</h1>
     <p class="body">{fillHours(ui.form.successBody, hours, locale)}</p>
 
-    <p class="hours">{formatHours(locale)}</p>
+    <p class="hours">{formatHours(locale, hours)}</p>
     <p class="phones">
       {COMPANY.phones.slice(0, 2).map((p) => <a href={p.href}>{p.display}</a>)}
     </p>

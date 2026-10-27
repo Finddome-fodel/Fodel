@@ -27,6 +27,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Al massimo ${chars(limit)}.`,
   minLength: (limit) => `Almeno ${chars(limit)}.`,
   consent: 'Per continuare, accetti l’informativa sulla privacy.',
+  selfReferral: 'Non può raccomandare sé stesso: inserisca un altro indirizzo e-mail.',
   summary: (count) =>
     count === 1
       ? 'Un campo da controllare:'

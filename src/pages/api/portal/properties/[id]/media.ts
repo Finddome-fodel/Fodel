@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import { processAndUploadImage, deleteImage, MediaUploadError, LOW_RESOLUTION_EDGE } from '~/lib/media';
 import { OWNER_EDITABLE } from '~/lib/portal/properties';
 import { logEvent } from '~/lib/activity';
+import { getCompany } from '~/lib/runtime-config';
+import { listingCatalog, packageOf } from '~/lib/listing-packages';
 
 export const prerender = false;
 
@@ -38,8 +40,9 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
   const replaceId=String(form.get('replace')||'');
   const {data:replaced,error:replaceError}=replaceId?await supabase.from('property_media').select('id,storage_path').eq('id',replaceId).eq('property_id',id).maybeSingle():{data:null,error:null};
   if(replaceId && (replaceError||!replaced))return json(404,{ok:false,error:'not-found'});
-  const maxImages=20;
-  if(!replaceId && (count??0)>=maxImages)return json(409,{ok:false,error:'photo-limit',max:maxImages});
+  // The package's own cap (null = unlimited); the database trigger keeps a hard ceiling underneath.
+  const maxImages=packageOf(listingCatalog((await getCompany()).services),property.package).maxImages;
+  if(!replaceId && maxImages!==null && (count??0)>=maxImages)return json(409,{ok:false,error:'photo-limit',max:maxImages});
 
   try {
     const uploaded = await processAndUploadImage(supabase, id!, file);

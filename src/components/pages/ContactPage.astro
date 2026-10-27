@@ -140,7 +140,7 @@ const weekdayHours = officeHours(COMPANY.hours, locale);
       <div class="form-card">
         <h2>{c.formTitle}</h2>
 
-        <FormShell locale={locale} endpoint="/api/callback" formId="callback">
+        <FormShell locale={locale} endpoint="/api/callback" formId="callback" submitLabel={c.submit}>
           <Field locale={locale} name="name" label={ui.form.name} required autocomplete="name" span="half" />
           <Field locale={locale} name="email" label={ui.form.email} type="email" required autocomplete="email" span="half" />
           <Field locale={locale} name="phone" label={ui.form.phone} type="tel" autocomplete="tel" span="full" />

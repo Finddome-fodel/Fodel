@@ -26,6 +26,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Enintään ${chars(limit)}.`,
   minLength: (limit) => `Vähintään ${chars(limit)}.`,
   consent: 'Hyväksy tietosuojaseloste jatkaaksesi.',
+  selfReferral: 'Et voi suositella itseäsi: anna toinen sähköpostiosoite.',
   summary: (count) =>
     count === 1
       ? 'Yksi kenttä on tarkistettava:'

@@ -26,6 +26,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Kuni ${chars(limit)}.`,
   minLength: (limit) => `Vähemalt ${chars(limit)}.`,
   consent: 'Jätkamiseks nõustuge privaatsuspoliitikaga.',
+  selfReferral: 'Iseennast ei saa soovitada: sisestage teine e-posti aadress.',
   summary: (count) =>
     count === 1
       ? 'Üks väli vajab kontrollimist:'

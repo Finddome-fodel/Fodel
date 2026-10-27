@@ -143,12 +143,12 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
       </p>
       <p>
         {chrome.vatLabel}: {COMPANY.registration.vat}
-        {' · '}
-        KvK: {
-          COMPANY.registration.kvk ?? (
-            <span class="missing" title="Not yet supplied by the client">
-              —
-            </span>
+        {
+          COMPANY.registration.kvk && (
+            <>
+              {' · '}
+              KvK: {COMPANY.registration.kvk}
+            </>
           )
         }
       </p>
@@ -347,10 +347,6 @@ const featuredCategories: (keyof typeof CATEGORY_FALLBACK)[] = [
     font-size: 13.5px;
     line-height: 1.8;
     color: var(--on-dark-faint);
-  }
-  .missing {
-    color: #e9b8b8;
-    font-weight: var(--fw-medium);
   }
   .legal-links ul {
     display: flex;

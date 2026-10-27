@@ -103,7 +103,8 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
       priceEurAbove: 'priceEurAbove' in s ? (s.priceEurAbove == null ? null : num(s.priceEurAbove, base.priceEurAbove ?? 0, 0, PRICE_MAX)) : base.priceEurAbove,
       thresholdHuf: 'thresholdHuf' in s ? (s.thresholdHuf == null ? null : num(s.thresholdHuf, base.thresholdHuf ?? 0, 1, 100_000_000_000)) : base.thresholdHuf,
       months: num(s.months, base.months, 1, 36),
-      maxImages: 20,
+      // Saved per package: a number is the cap, null is unlimited, absent keeps the default.
+      maxImages: 'maxImages' in s ? (s.maxImages === null ? null : num(s.maxImages, base.maxImages ?? 20, 1, IMAGES_MAX)) : base.maxImages,
       video: VIDEO_MODES.includes(s.video as VideoMode) ? (s.video as VideoMode) : base.video,
       phone: phone[base.id],
       editedImages: bool(s.editedImages, base.editedImages),

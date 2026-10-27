@@ -141,8 +141,12 @@ const listUrl = path(locale, 'properties');
       locale: mapStrings,
     });
     // A tile that fails to load (a flaky connection, a navigation that aborts
-    // the request) leaves a gap the next pan fills; it is not a page error.
-    map.on('error', () => {});
+    // the request) leaves a gap the next pan fills; it is not a page error. Log it
+    // rather than swallow it, so a style or CSS problem is visible in the console.
+    map.on('error', (e) => {
+      const { sourceId } = e as unknown as { sourceId?: string };
+      console.warn('[map]', sourceId ? `source ${sourceId}:` : 'style:', e.error?.message ?? e);
+    });
     // OpenFreeMap's style carries its own OSM/OpenMapTiles credit; the
     // self-hosted tileset has none, so it is added here.
     map.addControl(new AttributionControl({ compact: true, ...(pmtilesUrl ? { customAttribution: PMTILES_ATTRIBUTION } : {}) }));
@@ -158,11 +162,19 @@ const listUrl = path(locale, 'properties');
         // Approximate: a soft area and no pin — never more precision than the
         // seller agreed to publish.
         const radius = Number(el.dataset.radius ?? 900);
-        map.on('load', () => {
+        // Draw as soon as the style is usable — 'load' alone can be missed or never
+        // arrive when a tile errors, which left the page with no circle at all.
+        const drawApprox = () => {
+          if (map.getSource('approx')) return;
           map.addSource('approx', { type: 'geojson', data: circle(lng, lat, radius) });
           map.addLayer({ id: 'approx-fill', type: 'fill', source: 'approx', paint: { 'fill-color': '#102A43', 'fill-opacity': 0.12 } });
           map.addLayer({ id: 'approx-line', type: 'line', source: 'approx', paint: { 'line-color': '#102A43', 'line-opacity': 0.45, 'line-width': 1.5 } });
-        });
+        };
+        if (map.isStyleLoaded()) drawApprox();
+        else {
+          map.once('style.load', drawApprox);
+          map.once('load', drawApprox);
+        }
       }
       return;
     }

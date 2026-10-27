@@ -327,13 +327,24 @@ const phoneDisplay = contactPhone?.display ?? '';
       return invalid;
     };
 
+    // validateAll() awaits, so a second click can land before the button is
+    // disabled. This flag is set synchronously, as the very first thing the
+    // handler does, and cleared on every path that lets the visitor retry.
+    // The key lets the server drop a duplicate that still gets through (a
+    // retry after a slow response, two tabs…); it is new per attempt-to-send.
+    let inFlight = false;
+    let submissionId = crypto.randomUUID();
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      if (inFlight) return;
+      inFlight = true;
       formError.hidden = true;
       summary.hidden = true;
 
       const invalid = await validateAll();
       if (invalid.length) {
+        inFlight = false;
         await showSummary(invalid);
         return;
       }
@@ -342,10 +353,12 @@ const phoneDisplay = contactPhone?.display ?? '';
       submitLabel.textContent = sendingText;
 
       try {
+        const body = new FormData(form);
+        body.set('submissionId', submissionId);
         const response = await fetch(form.action, {
           method: 'POST',
           headers: { Accept: 'application/json' },
-          body: new FormData(form),
+          body,
         });
         const data = await response.json().catch(() => ({}));
 
@@ -365,6 +378,8 @@ const phoneDisplay = contactPhone?.display ?? '';
           }
           submit.disabled = false;
           submitLabel.textContent = originalLabel;
+          inFlight = false;
+          submissionId = crypto.randomUUID();
           if (serverInvalid.length) {
             await showSummary(serverInvalid);
             return;
@@ -381,11 +396,15 @@ const phoneDisplay = contactPhone?.display ?? '';
         submitLabel.textContent = originalLabel;
         success.scrollIntoView({ behavior: 'smooth', block: 'center' });
         (success.querySelector('h3, h2, [tabindex="-1"]') as HTMLElement | null)?.focus?.();
+        // The form is hidden after a success; nothing more to send.
+        inFlight = false;
+        submissionId = crypto.randomUUID();
       } catch {
         formError.textContent = sendError;
         formError.hidden = false;
         submit.disabled = false;
         submitLabel.textContent = originalLabel;
+        inFlight = false;
       }
     });
   });

@@ -7,7 +7,7 @@
  * s maďarským textom: chýbajúci kľúč zastaví build.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -63,7 +63,7 @@ export const SK = {
       eyebrow: 'Kontakt',
       title: 'Radi vám',
       titleEm: 'zavoláme späť',
-      body: `${formatHours(L)} · Spätné zavolanie je bezplatné.`,
+      body: `{hoursShort} · Spätné zavolanie je bezplatné.`,
     },
     referral: {
       eyebrow: 'Odporúčací program',
@@ -83,6 +83,9 @@ export const SK = {
         referredEmail: 'E-mail odporúčanej osoby',
       },
       submit: 'Odoslať odporúčanie',
+      successTitle: 'Ďakujeme za odporúčanie!',
+      successBody:
+        'Dostali sme ho. Kolega kontaktuje odporúčanú osobu a vás budeme informovať e-mailom.',
     },
   },
 
@@ -264,6 +267,7 @@ export const SK = {
     },
     hero: { eyebrow: 'Kontakt', title: 'Radi vám', titleEm: 'zavoláme späť' },
     formTitle: 'Požiadať o spätné zavolanie',
+    submit: 'Požiadať o spätné zavolanie',
     subjects: [
       'Otázka k nehnuteľnosti',
       'Podanie inzerátu',

@@ -34,6 +34,8 @@ export function errorMessageIn(copy: ValidationCopy, error: FieldError): string 
       return copy.minLength(error.limit ?? 0);
     case 'consent':
       return copy.consent;
+    case 'self-referral':
+      return copy.selfReferral;
   }
 }
 

@@ -44,7 +44,7 @@ ${urls.join('\n')}
   return new Response(body, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 's-maxage=300, stale-while-revalidate=86400',
+      'Cache-Control': 's-maxage=60, stale-while-revalidate=120',
     },
   });
 };

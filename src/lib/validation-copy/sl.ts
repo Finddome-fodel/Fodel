@@ -28,6 +28,7 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Največ ${chars(limit)}.`,
   minLength: (limit) => `Vsaj ${chars(limit)}.`,
   consent: 'Za nadaljevanje sprejmite obvestilo o zasebnosti.',
+  selfReferral: 'Ne morete priporočiti samega sebe: vpišite drug e-poštni naslov.',
   summary: (count) =>
     count === 1
       ? 'Eno polje je treba preveriti:'

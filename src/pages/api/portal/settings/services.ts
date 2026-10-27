@@ -11,7 +11,7 @@
 import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
 import { PACKAGE_KINDS, valuationPackages } from '~/lib/valuation/packages';
-import type { StoredValuationPackage } from '~/lib/runtime-config';
+import { clearRuntimeConfigCache, type StoredValuationPackage } from '~/lib/runtime-config';
 import { listingRules } from '~/lib/listing-rules';
 
 export const prerender = false;
@@ -96,5 +96,6 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const automation = { registrationReminder: false, inviteAutomation: false };
 
   const { error } = await locals.supabase.from('site_settings').update({ services, automation }).eq('id', 1);
+  if (!error) clearRuntimeConfigCache();
   return back(error ? 'error=' + encodeURIComponent(friendlyError(error.message)) : 'saved=1');
 };

@@ -14,7 +14,7 @@
  */
 
 import type { Locale } from '~/i18n/ui';
-import { COMPANY, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { EN } from '~/data/copy-en';
 import { DE } from '~/data/copy-de';
@@ -97,7 +97,7 @@ const BASE = {
         eyebrow: 'Lépjen kapcsolatba velünk',
         title: 'Forduljon hozzánk',
         titleEm: 'bizalommal!',
-        body: `${formatHours('hu')} · A visszahívás ingyenes.`,
+        body: `{hoursShort} · A visszahívás ingyenes.`,
       },
       referral: {
         eyebrow: 'Ajánlói program',
@@ -117,6 +117,9 @@ const BASE = {
           referredEmail: 'Ajánlott e-mail címe',
         },
         submit: 'Ajánlás elküldése',
+        successTitle: 'Köszönjük az ajánlást!',
+        successBody:
+          'Megkaptuk az ajánlását. Munkatársunk felveszi a kapcsolatot az ajánlott személlyel, és e-mailben tájékoztatjuk Önt.',
       },
     },
 
@@ -304,6 +307,7 @@ const BASE = {
         titleEm: 'bizalommal',
       },
       formTitle: 'Ingyenes visszahívás kérése',
+      submit: 'Visszahívást kérek',
       subjects: [
         'Hirdetési érdeklődés',
         'Vételi érdeklődés',
@@ -356,7 +360,7 @@ const BASE = {
         eyebrow: 'Neem contact op',
         title: 'Wij bellen u',
         titleEm: 'graag terug',
-        body: `${formatHours('nl')} · Terugbellen kost u niets.`,
+        body: `{hoursShort} · Terugbellen kost u niets.`,
       },
       referral: {
         eyebrow: 'Aanbevelingsprogramma',
@@ -376,6 +380,9 @@ const BASE = {
           referredEmail: 'E-mailadres van de aanbevolen persoon',
         },
         submit: 'Aanbeveling versturen',
+        successTitle: 'Bedankt voor uw aanbeveling!',
+        successBody:
+          'We hebben uw aanbeveling ontvangen. Een medewerker neemt contact op met de aanbevolen persoon en wij houden u per e-mail op de hoogte.',
       },
     },
 
@@ -559,6 +566,7 @@ const BASE = {
       },
       hero: { eyebrow: 'Contact', title: 'Wij bellen u', titleEm: 'graag terug' },
       formTitle: 'Vraag om teruggebeld te worden',
+      submit: 'Terugbelverzoek versturen',
       subjects: [
         'Vraag over een woning',
         'Adverteren',

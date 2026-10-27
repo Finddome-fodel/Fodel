@@ -11,7 +11,7 @@ if (!found) {
   Astro.response.status = 404;
   return Astro.rewrite('/404');
 }
-Astro.response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
+Astro.response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
 ---
 
 <ArticlePage locale="pt" post={found.post} from={found.from} />

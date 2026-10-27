@@ -5,7 +5,7 @@ import { categoryBySlug, getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { LOCALES, path } from '~/i18n/ui';
 const term = categoryBySlug(await getTaxonomy(), 'no', Astro.params.type ?? '');
 if (!term) return new Response('Ikke funnet.', { status: 404 });
-Astro.response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
+Astro.response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
 // Every language has the category page, under its own slug for the term.
 const alternates = Object.fromEntries(
   LOCALES.filter((l) => term.slugs[l]).map((l) => [l, `${path(l, 'properties')}${term.slugs[l]}/`])

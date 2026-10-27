@@ -6,6 +6,7 @@
  * what is stored is exactly what the public pages and checkout will use.
  * New prices apply to new orders only — a stored order keeps its own lines.
  */
+import { clearRuntimeConfigCache } from '~/lib/runtime-config';
 import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
 import { logEvent } from '~/lib/activity';
@@ -41,7 +42,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
       priceEurAbove: tiered ? numOrNull(k('price_above')) : null,
       thresholdHuf: tiered && thresholdM !== null ? thresholdM * 1_000_000 : null,
       months: numOrNull(k('months')) ?? pkg.months,
-      maxImages: 20,
+      maxImages: pkg.maxImages, // not editable in the form yet: keep what is stored
       video: VIDEO_MODES.includes(video) ? video : pkg.video,
       editedImages: form.get(k('edited_images')) === 'yes',
       editedText: form.get(k('edited_text')) === 'yes',
@@ -66,6 +67,7 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const services = { ...(existing?.services ?? {}), ...stored };
   const { error } = await locals.supabase.from('site_settings').update({ services }).eq('id', 1);
   if (error) return back('error=' + encodeURIComponent(friendlyError(error.message)));
+  clearRuntimeConfigCache();
 
   await logEvent({
     kind: 'settings.packages',

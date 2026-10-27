@@ -1,0 +1,7 @@
+---
+// Nobody has a reason to be at /admin except to reach the back office, which
+// lives under /portal (the dashboard, or the sign-in page first). Without this
+// the address answered with a 404, in whatever language the fallback picked.
+export const prerender = false;
+return Astro.redirect('/portal/dashboard', 302);
+---

@@ -22,6 +22,7 @@ import type { Locale } from '~/i18n/ui';
 import { logEvent } from '~/lib/activity';
 import { addMonths, renewedExpiry } from '~/lib/listing-rules';
 import { lifecycleEmails } from '~/lib/email/lifecycle';
+import { placeholderProblem } from '~/lib/portal/placeholder';
 
 /** The public URL of a listing, in the owner's own language. */
 export async function publicUrl(
@@ -60,7 +61,7 @@ export async function publishProperty(
 ): Promise<PublishResult> {
   const { data: property, error } = await client
     .from('properties')
-    .select('id, ref, category, status, owner_id, package')
+    .select('id, ref, category, status, owner_id, package, price_eur, floor_m2, building_m2, plot_m2')
     .eq('id', propertyId)
     .maybeSingle();
 
@@ -69,6 +70,9 @@ export async function publishProperty(
 
   // Already live — a Stripe retry, or two admins clicking at once. Not an error.
   if (property.status === 'published') return { ok: true, alreadyPublished: true };
+
+  const placeholder = placeholderProblem(property);
+  if (placeholder) return { ok: false, error: placeholder };
 
   const now = new Date();
   const expires = addMonths(now, await monthsForPackage(property.package));

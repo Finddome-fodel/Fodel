@@ -20,5 +20,6 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `No more than ${limit} characters.`,
   minLength: (limit) => `At least ${limit} characters.`,
   consent: 'Please accept the privacy notice to continue.',
+  selfReferral: 'You cannot refer yourself: enter a different email address.',
   summary: (count) => (count === 1 ? 'One field still needs checking:' : `${count} fields still need checking:`),
 };

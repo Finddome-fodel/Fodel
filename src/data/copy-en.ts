@@ -7,7 +7,7 @@
  * Type-checked against the Hungarian copy, so a missing key fails the build.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -57,7 +57,7 @@ export const EN = {
       eyebrow: 'Get in touch',
       title: 'We will gladly',
       titleEm: 'call you back',
-      body: `${formatHours(L)} · A callback costs you nothing.`,
+      body: `{hoursShort} · A callback costs you nothing.`,
     },
     referral: {
       eyebrow: 'Referral programme',
@@ -77,6 +77,9 @@ export const EN = {
         referredEmail: 'Email address of the person you recommend',
       },
       submit: 'Send recommendation',
+      successTitle: 'Thank you for the recommendation!',
+      successBody:
+        'We have received it. A colleague will get in touch with the person you recommended, and we will keep you posted by e-mail.',
     },
   },
 
@@ -258,6 +261,7 @@ export const EN = {
     },
     hero: { eyebrow: 'Contact', title: 'We will gladly', titleEm: 'call you back' },
     formTitle: 'Ask for a callback',
+    submit: 'Request a callback',
     subjects: [
       'Question about a property',
       'Advertising a property',

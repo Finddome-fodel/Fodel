@@ -20,7 +20,7 @@ import Eyebrow from './Eyebrow.astro';
 import ArrowChip from './ArrowChip.astro';
 import { type Locale, UI } from '~/i18n/ui';
 import { text, url as propertyUrl, type Property } from '~/lib/properties';
-import { eur, area, floorArea } from '~/lib/format';
+import { eur, area, floorArea, placeLabel } from '~/lib/format';
 import { CHROME } from '~/i18n/chrome';
 
 interface Props {
@@ -54,7 +54,8 @@ const ui = UI[locale];
 
 const href = propertyUrl(property, locale);
 const title = text(d.title, locale);
-const tag = d.tag ? text(d.tag, locale) : null;
+// A free-text tag is shown only in the visitor's own language: the fallback would print a Dutch "Aanbevolen" on an English card.
+const tag = d.tag?.[locale] || null;
 const category = d.categoryLabels[locale] ?? d.categoryLabels.nl ?? d.categoryLabels.hu;
 const heroAlt = text(d.media.heroAlt, locale);
 
@@ -117,7 +118,7 @@ const specs = [
       <Eyebrow class="card-meta">{d.location.region} · {category}</Eyebrow>
       <h3 class="card-title">{title}</h3>
       <p class="card-location">
-        {d.location.settlement}, {d.location.county}
+        {placeLabel(d.location.settlement, d.location.county)}
         <span class="ref">· {ui.property.reference} {d.ref}</span>
       </p>
       <div class="card-foot">

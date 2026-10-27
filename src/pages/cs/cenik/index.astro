@@ -2,7 +2,7 @@
 // Prices come from the admin's package settings, so this page renders per
 // request (edge-cached for five minutes) instead of freezing them at build time.
 export const prerender = false;
-Astro.response.headers.set('Cache-Control', 's-maxage=300, stale-while-revalidate=86400');
+Astro.response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
 import PriceListPage from "~/components/pages/PriceListPage.astro";
 ---
 

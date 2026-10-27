@@ -99,6 +99,17 @@ export function grouped(amount: number, locale: Locale): string {
 }
 
 /** € 178 000 (hu), € 178.000 (nl), €178,000 (en), 178.000 € (de), 178 000 € (fr). */
+/**
+ * "Settlement, County" for a listing — except that Budapest is not part of Pest
+ * county (it is its own), and a county that just repeats the settlement adds nothing.
+ */
+export function placeLabel(settlement: string, county?: string | null): string {
+  const place = (settlement ?? '').trim();
+  const area = (county ?? '').trim();
+  if (!area || area.toLowerCase() === place.toLowerCase() || /^budapest\b/i.test(place)) return place || area;
+  return place ? `${place}, ${area}` : area;
+}
+
 export function eur(amount: number, locale: Locale = 'nl'): string {
   const body = grouped(amount, locale);
   switch (STYLE[locale].euro) {

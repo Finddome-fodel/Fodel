@@ -11,6 +11,7 @@
  * same rules independently at the database. See supabase/migrations/0001_init.sql.
  */
 import { defineMiddleware } from 'astro/middleware';
+import type { MiddlewareHandler } from 'astro';
 import type { User } from '@supabase/supabase-js';
 import { createSupabaseServerClient } from '~/lib/supabase-server';
 
@@ -63,7 +64,7 @@ const ADMIN_ONLY_PREFIXES = [
   '/api/portal/newsletter',
 ];
 
-export const onRequest = defineMiddleware(async (context, next) => {
+const guard: MiddlewareHandler = async (context, next) => {
   const { pathname } = context.url;
   if (!pathname.startsWith('/portal') && !pathname.startsWith('/api/portal')) {
     return next();
@@ -126,4 +127,26 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   return next();
+};
+
+/**
+ * The portal is per-person and per-session, so no cache — browser, back/forward
+ * cache or CDN — may keep a copy. Without this the browser's Back button, after
+ * signing out, replayed the dashboard from cache (Vercel's default for a
+ * dynamic page is "public, max-age=0, must-revalidate").
+ */
+export const onRequest = defineMiddleware(async (context, next) => {
+  const response = (await guard(context, next)) as Response;
+  const { pathname } = context.url;
+  if (pathname.startsWith('/portal') || pathname.startsWith('/api/portal')) {
+    try {
+      response.headers.set('Cache-Control', 'private, no-store');
+    } catch {
+      // A response with immutable headers: hand back a copy that carries the header.
+      const copy = new Response(response.body, response);
+      copy.headers.set('Cache-Control', 'private, no-store');
+      return copy;
+    }
+  }
+  return response;
 });

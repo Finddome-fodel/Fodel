@@ -7,6 +7,9 @@ import { readDetails, SETTINGS, UTILITIES, PARKING, detailLabel, hasUtilities, h
 import { termLabel, type Taxonomy } from '~/lib/runtime-config';
 import type { PortalProperty } from '~/lib/portal/properties';
 import type { PortalLang } from '~/lib/portal/auth-copy';
+// Static on purpose: build.inlineStylesheets is 'always', so a dynamic import of this
+// stylesheet from the client script has no .css file to fetch and fails with a 404.
+import 'maplibre-gl/dist/maplibre-gl.css';
 interface Props { property: PortalProperty; taxonomy: Taxonomy; locale?: PortalLang; section?: 'classification'|'location'|'details'|'features'|'all' }
 const {property:p,taxonomy,locale='hu',section='all'}=Astro.props;
 const x=(hu:string,nl:string,en:string)=>locale==='hu'?hu:locale==='nl'?nl:en;

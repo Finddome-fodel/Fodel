@@ -18,10 +18,12 @@ import { COMPANY } from '~/config/company';
 /** `portal` is lifecycle mail (accounts, listings); `website` is a form's own notification. */
 // The sender must be on a domain verified in Resend (finddome.com today). Replies and form mail go to
 // the company inbox, info@fodel.com, whatever the sender is: see replyToAddress() and officeInbox().
-export function senderAddress(kind: 'portal' | 'website' = 'portal'): string {
-  const configured = import.meta.env.FODEL_FROM;
-  if (configured) return configured;
-  return kind === 'portal' ? 'FODEL Portál <info@finddome.com>' : 'FODEL Website <info@finddome.com>';
+//
+// One display name for everything: a visitor who gets a "FODEL Website" thanks and then a
+// "FODEL Portál" mail from the same domain sees two senders, which spam filters read the
+// same way. `kind` stays in the signature for the call sites that already pass it.
+export function senderAddress(_kind: 'portal' | 'website' = 'portal'): string {
+  return import.meta.env.FODEL_FROM || 'FODEL <info@finddome.com>';
 }
 
 export function officeInbox(): string {

@@ -13,8 +13,8 @@ import { SITE_URL, LOCALES, DEFAULT_LOCALE } from './src/config/site.mjs';
  * (about, sellers, legal, blog, …) still declare `export const prerender =
  * true` and are exactly as static as before. Pages that read from Supabase —
  * home, property list, property detail, sold archive — render on request
- * with a short CDN cache (`s-maxage=300`), so an admin approving a listing
- * shows up live within minutes without a full rebuild. The four form
+ * with a short CDN cache (`s-maxage=60`), so an admin approving a listing
+ * shows up live within a minute or two without a full rebuild. The four form
  * endpoints under /api were already `prerender = false`; nothing changes for
  * them.
  *

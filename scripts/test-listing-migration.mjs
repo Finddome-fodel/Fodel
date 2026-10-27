@@ -16,6 +16,8 @@ await db.exec(`alter table properties drop constraint properties_lat_check;alter
 await db.exec('create table payments(id uuid primary key);');
 const owner='00000000-0000-4000-8000-000000000001',other='00000000-0000-4000-8000-000000000002',id='10000000-0000-4000-8000-000000000001';
 await db.exec(`insert into auth.users values('${owner}'),('${other}');insert into profiles(id,email)values('${owner}','owner@test.local'),('${other}','other@test.local');insert into properties(id,ref,owner_id,status,category,country,settlement,county,region,lat,lng,price_eur,price_huf,price_asof,plot_m2)values('${id}','1234','${owner}','draft','apartment','HU','Budapest','Budapest','',47.123456,19.345678,200000,80000000,'2026-10-23',1);`);
+// Production already had 0019's property_price_history, so 0022's "create table if not exists" skipped it. Reproduce that.
+await db.exec(`create table property_price_history(id uuid primary key default gen_random_uuid(),property_id uuid not null references properties(id) on delete cascade,old_eur integer,new_eur integer not null,old_huf integer,new_huf integer not null,source text not null default 'owner-refresh',changed_at timestamptz not null default now());`);
 const sql=fs.readFileSync(root+'/supabase/migrations/0022_european_listing_intake.sql','utf8');
 try{await db.exec(sql);}catch(e){console.error('MIGRATION FAILED',e.message,e.detail);process.exit(1);}
 await db.exec(sql);console.log('✓ migration executes and is repeatable');
@@ -23,6 +25,12 @@ await db.exec(sql);console.log('✓ migration executes and is repeatable');
 const sql25=fs.readFileSync(root+'/supabase/migrations/0025_listing_details.sql','utf8');
 try{await db.exec(sql25);}catch(e){console.error('MIGRATION 0025 FAILED',e.message,e.detail);process.exit(1);}
 await db.exec(sql25);console.log('✓ 0025 executes and is repeatable');
+// 0028 reconciles the legacy table with what save_listing_editor writes; it must be repeatable too.
+const sql28=fs.readFileSync(root+'/supabase/migrations/0028_price_history_columns.sql','utf8');
+try{await db.exec(sql28);}catch(e){console.error('MIGRATION 0028 FAILED',e.message,e.detail);process.exit(1);}
+await db.exec(sql28);console.log('✓ 0028 executes and is repeatable');
+// 0029 / 0030 replace functions in place.
+for(const file of ['0029_featured_sort_and_visibility','0030_photo_limit_ceiling']){const text=fs.readFileSync(root+`/supabase/migrations/${file}.sql`,'utf8');try{await db.exec(text);await db.exec(text);}catch(e){console.error(`MIGRATION ${file} FAILED`,e.message,e.detail);process.exit(1);}console.log(`✓ ${file} executes and is repeatable`);}
 const get=async q=>(await db.query(q)).rows;
 let row=(await get(`select * from properties where id='${id}'`))[0];
 assert.equal(row.property_group,'house');assert.equal(row.property_subtype,'apartment');assert.notEqual(row.lat,47.123456);
@@ -80,8 +88,9 @@ await assert.rejects(()=>get('select * from property_private'));await assert.rej
 const publicRows=await get(`select lat,lng from properties where id='${id}'`);assert.notEqual(publicRows[0].lat,48.123456);
 console.log('✓ another owner cannot read/write private data; anonymous access denied; published coordinates remain masked');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
-for(let i=0;i<20;i++)await db.query('insert into property_media(property_id,storage_path)values($1,$2)',[id,`image-${i}.jpg`]);
-await assert.rejects(()=>db.query('insert into property_media(property_id,storage_path)values($1,$2)',[id,'image-21.jpg']));
+// 0030: the package cap lives in the application; the database keeps a hard ceiling of 200.
+for(let i=0;i<200;i++)await db.query('insert into property_media(property_id,storage_path)values($1,$2)',[id,`image-${i}.jpg`]);
+await assert.rejects(()=>db.query('insert into property_media(property_id,storage_path)values($1,$2)',[id,'image-201.jpg']));
 let photos=await get(`select id from property_media where property_id='${id}' order by storage_path`);
 const ids=photos.map(p=>p.id).reverse();await db.query('select reorder_property_media($1,$2,$3)',[id,ids,ids[2]]);
 const gallery=await get(`select id,is_hero from property_media where property_id='${id}' order by sort_order`);assert.deepEqual(gallery.map(p=>p.id),ids);assert.equal(gallery.filter(p=>p.is_hero).length,1);assert.equal(gallery.find(p=>p.is_hero).id,ids[2]);

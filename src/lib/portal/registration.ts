@@ -153,7 +153,8 @@ export async function register(
       .select('id, full_name, email')
       .eq('referral_code', referralCode)
       .maybeSingle();
-    if (referrer) {
+    // Using your own link for your own registration earns no credit.
+    if (referrer && referrer.email?.trim().toLowerCase() !== email) {
       const { data: referral } = await admin
         .from('referrals')
         .insert({

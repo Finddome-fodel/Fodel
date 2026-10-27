@@ -39,6 +39,8 @@ const cardPayments = isStripeEnabled();
 const clientText = JSON.stringify({
   factor: v.factor, direction: v.direction, removeRow: v.removeRow, dirUnsure: v.dirUnsure, dirPlus: v.dirPlus, dirMinus: v.dirMinus,
   docMax: v.docMax, docTooBig: v.docTooBig, docFailed: v.docFailed, docPending: v.docPending, docUploaded: v.docUploaded,
+  hintVisit: v.hintVisit + (cardPayments ? v.hintCard : ''), hintOfficial: v.hintOfficial.trim(),
+  successVisit: v.successBodyVisit, successOfficial: v.successBodyOfficial,
   retry: v.retry, paid: v.paid, resultHeading: v.resultHeading, mid: v.mid, basisCounty: v.basisCounty, basisTown: v.basisTown,
   basisListings: v.basisListings, source: v.source, rateDate: v.rateDate, noRate: v.noRate, factorsHeading: v.factorsHeading,
   postAd: v.postAd, visit: v.visit, judicial: v.judicial, received: v.received,
@@ -99,7 +101,7 @@ const clientText = JSON.stringify({
           <fieldset class="chips"><legend>{v.requestLegend}</legend>
             {packages.map((pkg) => <label><input type="radio" name="requestKind" value={pkg.kind} checked={pkg.kind === 'indicative'} /><span>{pkg.names[locale]}{pkg.kind === 'indicative' ? (company.services.valuationFreeConfirmed ? ` · ${priceLabel(pkg, locale)}` : '') : ` · ${priceLabel(pkg, locale)}`}</span></label>)}
           </fieldset>
-          <p class="question-hint">{v.hintVisit}{cardPayments ? v.hintCard : ''}{v.hintOfficial}</p>
+          <p class="question-hint" id="kind-hint" role="status" aria-live="polite" hidden></p>
           <p class="notice">{notice}</p>
         </section>
       </FormShell>
@@ -126,6 +128,14 @@ const clientText = JSON.stringify({
   const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   let current = 0;
   const storageKey = 'fodel-valuation-v2';
+  // Once the request is sent the saved draft must never come back — not on a reload,
+  // not after a later keystroke re-saves it. Registered first, before anything else
+  // in this script could throw and leave it unregistered.
+  let submitted = false;
+  form?.addEventListener('fodel:success', () => {
+    submitted = true;
+    try { localStorage.removeItem(storageKey); } catch {}
+  });
   wizard?.classList.add('is-ready');
   const show = (step: number) => {
     current = Math.max(0, Math.min(4, step));
@@ -163,6 +173,7 @@ const clientText = JSON.stringify({
     }
   }, true);
   form?.addEventListener('input', () => {
+    if (submitted) return;
     try {
       const values: Record<string, string | string[]> = {};
       new FormData(form).forEach((value, key) => {
@@ -363,8 +374,27 @@ const clientText = JSON.stringify({
     banner.textContent = T.paid;
     wizard?.prepend(banner);
   }
+  // What the chosen kind of request means: the description follows the radio.
+  const kindHint = document.querySelector<HTMLElement>('#kind-hint');
+  const kindOf = () => form?.querySelector<HTMLInputElement>('input[name="requestKind"]:checked')?.value ?? 'indicative';
+  const showKindHint = () => {
+    if (!kindHint) return;
+    const kind = kindOf();
+    const text = kind === 'expert_visit' ? T.hintVisit : kind === 'judicial' ? T.hintOfficial : '';
+    kindHint.textContent = text ?? '';
+    kindHint.hidden = !text;
+  };
+  form?.querySelectorAll('input[name="requestKind"]').forEach((radio) => radio.addEventListener('change', showKindHint));
+  showKindHint();
+
   form?.addEventListener('fodel:success', (event) => {
     try { localStorage.removeItem(storageKey); } catch {}
+    // The generic thank-you promises "the indicative result by e-mail"; a visit or an official request gets its own next step.
+    const requestedKind = kindOf();
+    const kindBody = requestedKind === 'expert_visit' ? T.successVisit : requestedKind === 'judicial' ? T.successOfficial : '';
+    const kindPanel = document.querySelector<HTMLElement>('#valuation-success');
+    const kindParagraph = kindPanel?.querySelector('p');
+    if (kindBody && kindParagraph) kindParagraph.textContent = kindBody;
     if (actions) actions.hidden = true;
     const data = (event as CustomEvent).detail;
     const successPanel = document.querySelector<HTMLElement>('#valuation-success');

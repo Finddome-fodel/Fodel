@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { localeFrom } from '~/i18n/ui';
 import { handleForm } from '~/lib/form-handler';
+import { searchRequestReceived } from '~/lib/email/search-request';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 
 export const prerender = false;
@@ -31,9 +32,10 @@ export const POST: APIRoute = (context) =>
       { name: 'budgetMax', label: 'Budget-ig (€)', type: 'number', maxLength: 20 },
       { name: 'requirements', label: 'Elvárások / Wensen', maxLength: 4000 },
     ],
+    ack: (locale, values) => searchRequestReceived(locale, values),
     onSuccess: async (values, extras) => {
       const admin = createSupabaseAdminClient();
-      await admin.from('search_requests').insert({
+      const { error } = await admin.from('search_requests').insert({
         name: values.name,
         email: values.email,
         phone: values.phone || null,
@@ -44,5 +46,6 @@ export const POST: APIRoute = (context) =>
         requirements: values.requirements || null,
         locale: localeFrom(extras.Locale, 'hu'),
       });
+      if (error) console.error('[form:search-request] not stored', error.message);
     },
   });

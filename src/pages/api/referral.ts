@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { localeFrom } from '~/i18n/ui';
 import { handleForm } from '~/lib/form-handler';
+import type { FieldError } from '~/lib/validation';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
 
@@ -26,6 +27,11 @@ export const POST: APIRoute = (context) =>
       { name: 'referredName', label: 'Ajánlott neve', required: true, maxLength: 120 },
       { name: 'referredEmail', label: 'Ajánlott e-mail', type: 'email', required: true, maxLength: 160 },
     ],
+    // A person cannot nominate themselves (it would earn them the referral credit).
+    refine: (values): Record<string, FieldError> =>
+      values.referrerEmail && values.referredEmail && values.referrerEmail.trim().toLowerCase() === values.referredEmail.trim().toLowerCase()
+        ? { referredEmail: { code: 'self-referral' } }
+        : {},
     onSuccess: async (values, extras) => {
       const locale = localeFrom(extras.Locale, 'hu');
       const referrerEmail = values.referrerEmail.toLowerCase();

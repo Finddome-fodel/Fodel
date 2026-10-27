@@ -5,8 +5,9 @@
  */
 import { test, expect } from '@playwright/test';
 import { LOCALES } from '../../../src/i18n/ui';
+import { SITE_URL } from '../../../src/config/site.mjs';
 
-const ORIGIN = 'https://finddome.com';
+const ORIGIN = SITE_URL;
 
 test('every template renders in all nine languages with clean text and production links', async ({ request }) => {
   test.setTimeout(600_000);

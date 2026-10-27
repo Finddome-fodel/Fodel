@@ -303,13 +303,15 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
  * more languages). FODEL never translates seller text on the fly. So:
  *   hu, nl      the visitor's language, then Hungarian;
  *   en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt
- *               a translation the seller paid for, then the Dutch text, then
- *               Hungarian. `from` tells the page when it is not the visitor's
- *               own language, so it can say so.
+ *               a translation the seller paid for, then English (the common
+ *               second language — an English reader should not get Dutch
+ *               while English exists), then the Dutch text, then Hungarian.
+ *               `from` tells the page when it is not the visitor's own
+ *               language, so it can say so.
  */
 export function resolveText(field: LocalisedText | undefined, locale: Locale): { text: string; from: Locale } {
   if (!field) return { text: '', from: locale };
-  const order: Locale[] = locale === 'hu' || locale === 'nl' ? [locale, 'hu'] : [locale, 'nl', 'hu'];
+  const order: Locale[] = locale === 'hu' || locale === 'nl' ? [locale, 'hu'] : locale === 'en' ? [locale, 'nl', 'hu'] : [locale, 'en', 'nl', 'hu'];
   for (const candidate of order) {
     const value = field[candidate];
     if (value) return { text: value, from: candidate };

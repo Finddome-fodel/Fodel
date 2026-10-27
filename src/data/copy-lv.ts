@@ -7,7 +7,7 @@
  * Type-checked against the Hungarian copy, so a missing key fails the build.
  */
 
-import { COMPANY, COMMISSION, formatHours, foundedInLabel } from '~/config/company';
+import { COMPANY, COMMISSION, foundedInLabel } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { BRAND } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -57,7 +57,7 @@ export const LV = {
       eyebrow: 'Sazinieties ar mums',
       title: 'Mēs labprāt',
       titleEm: 'jums atzvanīsim',
-      body: `${formatHours(L)} · Atzvanīšana jums neko nemaksā.`,
+      body: `{hoursShort} · Atzvanīšana jums neko nemaksā.`,
     },
     referral: {
       eyebrow: 'Ieteikumu programma',
@@ -77,6 +77,9 @@ export const LV = {
         referredEmail: 'Ieteiktās personas e-pasta adrese',
       },
       submit: 'Nosūtīt ieteikumu',
+      successTitle: 'Paldies par ieteikumu!',
+      successBody:
+        'Esam to saņēmuši. Kolēģis sazināsies ar ieteikto personu, un mēs jūs informēsim pa e-pastu.',
     },
   },
 
@@ -258,6 +261,7 @@ export const LV = {
     },
     hero: { eyebrow: 'Saziņa', title: 'Mēs labprāt', titleEm: 'jums atzvanīsim' },
     formTitle: 'Pieteikt atzvanu',
+    submit: 'Pieprasīt atzvanu',
     subjects: [
       'Jautājums par īpašumu',
       'Īpašuma sludināšana',

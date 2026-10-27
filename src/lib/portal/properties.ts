@@ -138,13 +138,19 @@ export async function getProperty(
   };
 }
 
+/** An owner scope that matches nothing, for when a signed-in user's id is somehow missing — fail closed, never unfiltered. */
+export const NO_OWNER = '00000000-0000-0000-0000-000000000000';
+
 export async function listProperties(
   supabase: SupabaseClient,
-  opts: { status?: string } = {}
+  opts: { status?: string; ownerId?: string } = {}
 ): Promise<PortalProperty[]> {
   // Newest first, id as the tie-breaker; photos below keep their own sort_order.
   let query = supabase.from('properties').select(SELECT).order('created_at', { ascending: false }).order('id', { ascending: false });
   if (opts.status) query = query.eq('status', opts.status);
+  // The public read policy lets any signed-in user see every live listing, so an
+  // owner's own list must be narrowed here — RLS alone does not do it.
+  if (opts.ownerId) query = query.eq('owner_id', opts.ownerId);
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return (data ?? []).map((row: any) => ({

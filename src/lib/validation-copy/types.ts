@@ -24,6 +24,8 @@ export interface ValidationCopy {
   tooLong: (limit: number) => string;
   minLength: (limit: number) => string;
   consent: string;
+  /** The referral form: the person nominated is the person nominating. */
+  selfReferral: string;
   /** The heading above a form that failed to submit. */
   summary: (count: number) => string;
 }

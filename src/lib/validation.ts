@@ -43,7 +43,8 @@ export type ErrorCode =
   | 'url'
   | 'too-long'
   | 'min-length'
-  | 'consent';
+  | 'consent'
+  | 'self-referral';
 
 export type FieldError = { code: ErrorCode; country?: string; example?: string; limit?: number };
 

@@ -112,6 +112,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   const {error:updateError}=await supabase.rpc('save_listing_editor',{
     p_id:id,p_patch:patch,p_private:{...values.privateData,internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations,
   });
+  if(updateError){console.error('[update] save_listing_editor failed',id,updateError.message);}
   if(updateError)return back('error='+encodeURIComponent(friendlyError(updateError.message)));
 
   await logEvent({

@@ -358,8 +358,14 @@ export const AGRI_HECTARE_LIMIT = 300;
 
 /* ── Derived helpers ──────────────────────────────────────────────────── */
 
-export function formatHours(locale: Locale): string {
-  const { from, to } = COMPANY.hours.weekdays;
+/**
+ * "Monday–Friday · 09:00–18:00". Pass the hours read from the settings; the default
+ * is the checked-in fallback, which an admin's edit never changes. Copy files must
+ * therefore not call this at import time (their text is built once per process and
+ * would keep the old hours) — they carry HOURS_TOKEN and a page fills it, see fillShortHours.
+ */
+export function formatHours(locale: Locale, hours: { weekdays: { from: string; to: string } } = COMPANY.hours): string {
+  const { from, to } = hours.weekdays;
   const days: Record<Locale, string> = {
     hu: 'Hétfő–Péntek',
     nl: 'Maandag–vrijdag',
@@ -384,6 +390,14 @@ export function formatHours(locale: Locale): string {
     lt: 'Pirmadienis–penktadienis',
   };
   return `${days[locale]} · ${from}–${to}`;
+}
+
+/** Stands in for the short opening-hours line inside static copy; replaced at render time. */
+export const HOURS_TOKEN = '{hoursShort}';
+
+/** Fills HOURS_TOKEN with the live opening hours. */
+export function fillShortHours(text: string, hours: { weekdays: { from: string; to: string } }, locale: Locale): string {
+  return text.includes(HOURS_TOKEN) ? text.replace(HOURS_TOKEN, formatHours(locale, hours)) : text;
 }
 
 /**

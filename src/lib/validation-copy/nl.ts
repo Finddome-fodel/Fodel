@@ -20,5 +20,6 @@ export const copy: ValidationCopy = {
   tooLong: (limit) => `Maximaal ${limit} tekens.`,
   minLength: (limit) => `Minimaal ${limit} tekens.`,
   consent: 'Ga akkoord met de privacyverklaring om verder te gaan.',
+  selfReferral: 'U kunt uzelf niet aanbevelen: vul een ander e-mailadres in.',
   summary: (count) => (count === 1 ? 'Nog één veld controleren:' : `Nog ${count} velden controleren:`),
 };
