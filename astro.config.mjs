@@ -55,6 +55,10 @@ export default defineConfig({
       { protocol: 'https', hostname: 'fodel.vercel.app' },
       { protocol: 'https', hostname: 'fodel-marton-oroszs-projects.vercel.app' },
       { protocol: 'https', hostname: 'fodel-git-main-marton-oroszs-projects.vercel.app' },
+      // The client's Vercel project (see README, "Accounts").
+      { protocol: 'https', hostname: 'fodel-rho.vercel.app' },
+      { protocol: 'https', hostname: 'fodel-fodel.vercel.app' },
+      { protocol: 'https', hostname: 'fodel-git-main-fodel.vercel.app' },
       // The real domain, once DNS is pointed at Vercel — see README's
       // "Before this can go live".
       { protocol: 'https', hostname: 'finddome.com' },
