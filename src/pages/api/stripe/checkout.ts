@@ -109,6 +109,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const session = await stripe.checkout.sessions.create(
     {
       mode: 'payment',
+      // Prices are quoted in euro everywhere on the site. Adaptive Pricing would
+      // default the card page to the buyer's local currency (HUF for a Hungarian
+      // card) and add a 4% conversion fee the buyer never agreed to.
+      adaptive_pricing: { enabled: false },
       // One Stripe line per order line, so the seller's card statement and the
       // Stripe dashboard show the same breakdown as the email they were sent.
       line_items: lines.map((line) => ({

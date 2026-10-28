@@ -97,7 +97,7 @@ const HU = {
     submitFailed: 'Nem sikerült beküldeni. Kérjük, próbálja újra.',
     noPhotos: 'Legalább egy fotót fel kell tölteni a beküldés előtt.',
     doneTitle: 'Köszönjük, megkaptuk',
-    doneBody: 'Munkatársunk átnézi a hirdetést. Ha valamit javítani kell, e-mailben jelezzük. Ha minden rendben, jóváhagyjuk, és a hirdetés azonnal megjelenik; a díjbekérőt ekkor küldjük el.',
+    doneBody: 'Munkatársunk átnézi a hirdetést. Ha valamit javítani kell, e-mailben jelezzük. Ha minden rendben, jóváhagyjuk, és e-mailben elküldjük a fizetési linket. A hirdetés a bankkártyás fizetés beérkezése után jelenik meg.',
     doneCta: 'Tovább az áttekintéshez',
     required: 'Kérjük, töltse ki ezt a mezőt.',
 };
@@ -194,7 +194,7 @@ const NL: SetupCopy = {
     submitFailed: 'Indienen is niet gelukt. Probeer het opnieuw.',
     noPhotos: 'Upload minstens één foto voordat u indient.',
     doneTitle: 'Dank u wel, wij hebben hem ontvangen',
-    doneBody: 'Onze medewerker beoordeelt de advertentie. Moet er iets worden aangepast, dan laten wij het u per e-mail weten. Is alles in orde, dan keuren wij hem goed en staat hij direct online; dan sturen wij ook het betaalverzoek.',
+    doneBody: 'Onze medewerker beoordeelt de advertentie. Moet er iets worden aangepast, dan laten wij het u per e-mail weten. Is alles in orde, dan keuren wij hem goed en sturen wij u per e-mail de betaallink. De advertentie gaat online zodra uw kaartbetaling is ontvangen.',
     doneCta: 'Naar het overzicht',
     required: 'Vul dit veld in.',
 };
@@ -289,7 +289,7 @@ const EN_COPY: SetupCopy = {
     submitFailed: 'Submitting failed. Please try again.',
     noPhotos: 'Please upload at least one photo before you submit.',
     doneTitle: 'Thank you, we have received it',
-    doneBody: 'One of our team will review the listing. If anything needs changing, we will let you know by email. If everything is in order, we approve it and it goes online straight away. We send the payment request at that point.',
+    doneBody: 'One of our team will review the listing. If anything needs changing, we will let you know by email. If everything is in order, we approve it and email you the payment link. The listing goes online once your card payment arrives.',
     doneCta: 'Go to the overview',
     required: 'Please fill in this field.',
 };
