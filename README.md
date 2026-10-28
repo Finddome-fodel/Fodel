@@ -448,6 +448,24 @@ about a minute rather than at the next deploy. To move host, swap the adapter in
 database-backed pages) means the new host must support SSR, not just static
 hosting.
 
+### Accounts
+
+Everything runs on the client's accounts (moved from a personal setup on 2026-10-28):
+
+| Service | Where | Notes |
+|---|---|---|
+| Code | GitHub organisation `Finddome-fodel`, repo `fodel` | Branch, open a PR, merge into `main`; `main` deploys itself. |
+| Hosting | Client's Vercel (Hobby plan, project `fodel`) | Functions run in `dub1` (`vercel.json`), next to the database. Hobby has no team members, so people share the client's login. |
+| Database, auth, files | Client's Supabase project `finddome` (eu-west-1) | Free plan: pauses after a week of inactivity and has no backups; upgrade before real customers. |
+| Mail | Resend | Sender domain and DMARC are set in Resend and at the domain registrar. |
+| Domain | `finddome.com` at Rackhost, DNS pointing at Vercel | Vercel redirects `finddome.com` to `www.finddome.com`; `PUBLIC_SITE_URL` is set to the `www` address so canonical and e-mail links match. |
+
+The CSRF origin check only accepts hosts listed in `security.allowedDomains` in
+`astro.config.mjs`. A new domain or Vercel project URL has to be added there, or every form
+answers "Cross-site POST form submissions are forbidden". Supabase **Authentication → URL
+Configuration** must carry the same public address (Site URL and the redirect list), or
+reset and invite links point elsewhere.
+
 **After launch:** submit `https://finddome.com/sitemap-index.xml` to Search Console
 (the canonical origin is `SITE_URL` in `src/config/site.mjs`, overridable with
 `PUBLIC_SITE_URL` — the only place it is written), and set up the 301 map from the old fodel.nl / fodel.hu / eladod.com URLs when the real inventory
