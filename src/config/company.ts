@@ -119,14 +119,15 @@ export const COMPANY = {
 
   /**
    * finddome.com is the company domain from 2026-10-24 (client decision, "for now";
-   * it was fodel.eu from 2026-09-29). The old
+   * it was fodel.eu from 2026-09-29), and info@finddome.com is the one address shown
+   * and used for mail from 2026-10-28 (migration 0033). The old
    * addresses stay listed until Gábor and Éva decide whether they are kept,
    * forwarded or retired — the live values come from site_settings.emails.
    */
   email: {
-    primary: 'info@fodel.com',
-    hu: 'info@fodel.com',
-    all: ['info@fodel.com', 'info@fodel.nl', 'info@fodel.hu', 'info@ingatlan.nl'],
+    primary: 'info@finddome.com',
+    hu: 'info@finddome.com',
+    all: ['info@finddome.com', 'info@fodel.com', 'info@fodel.nl', 'info@fodel.hu', 'info@ingatlan.nl'],
   },
 
   /**
