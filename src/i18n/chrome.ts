@@ -51,6 +51,8 @@ export interface ChromeStrings {
   };
   photoTips: { heading: string; guide: string; why: string };
   onsite: { heading: string; intro: string; none: string; noneBody: string; once: string };
+  /** The Dutch-speaking agent request: a checkbox card, its price wording, and the photography premium note. */
+  dutchAgent: { title: string; body: string; price: string; photoNote: string };
 }
 
 export const CHROME: L10n<ChromeStrings> = {
@@ -105,6 +107,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'A fotókat én készítem el.',
       once: 'egyszeri díj',
     },
+    dutchAgent: {
+      title: 'Holland nyelvű ingatlanos',
+      body:
+        'Szeretne személyes segítséget egy holland nyelven beszélő ingatlanostól? Munkatársunk felveszi Önnel a kapcsolatot, megbeszélik az igényeit, és közösen egyeztetik az árat.',
+      price: 'Egyedi ár',
+      photoNote:
+        'A professzionális fotózás egyedi, prémium áron kérhető, a szokásos magyar áron felül.',
+    },
   },
 
   nl: {
@@ -157,6 +167,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Nee, dank u',
       noneBody: 'Ik maak de foto’s zelf.',
       once: 'eenmalig',
+    },
+    dutchAgent: {
+      title: 'Nederlandstalige makelaar',
+      body:
+        'Wilt u persoonlijke hulp van een Nederlandstalige makelaar? Wij nemen contact met u op om uw wensen te bespreken en samen een prijs af te spreken.',
+      price: 'Prijs op maat',
+      photoNote:
+        'Professionele fotografie is mogelijk tegen een premiumprijs op maat, bovenop de gewone Hongaarse prijs.',
     },
   },
 
@@ -211,6 +229,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'I will take the photos myself.',
       once: 'one-off fee',
     },
+    dutchAgent: {
+      title: 'Dutch-speaking real-estate agent',
+      body:
+        'Would you like personal help from an agent who speaks Dutch? We will contact you to discuss what you need and agree a price together.',
+      price: 'Custom price',
+      photoNote:
+        'Professional photography is available at a custom premium price, on top of the standard Hungarian price.',
+    },
   },
 
   de: {
@@ -263,6 +289,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Nein, danke',
       noneBody: 'Ich fotografiere selbst.',
       once: 'einmalig',
+    },
+    dutchAgent: {
+      title: 'Niederländischsprachiger Immobilienmakler',
+      body:
+        'Möchten Sie persönliche Unterstützung von einem niederländischsprachigen Makler? Wir melden uns bei Ihnen, besprechen Ihre Wünsche und vereinbaren gemeinsam einen Preis.',
+      price: 'Individueller Preis',
+      photoNote:
+        'Professionelle Fotografie ist zu einem individuellen Premiumpreis möglich, zusätzlich zum üblichen ungarischen Preis.',
     },
   },
 
@@ -323,6 +357,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Je prends les photos moi-même.',
       once: 'paiement unique',
     },
+    dutchAgent: {
+      title: 'Agent immobilier néerlandophone',
+      body:
+        'Souhaitez-vous l’aide personnelle d’un agent néerlandophone ? Nous vous contactons pour discuter de vos besoins et convenir ensemble d’un prix.',
+      price: 'Prix sur mesure',
+      photoNote:
+        'La photographie professionnelle est possible à un tarif premium sur mesure, en plus du prix hongrois habituel.',
+    },
   },
   es: {
     valuationNav: 'Valoración',
@@ -380,6 +422,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'No, gracias',
       noneBody: 'Haré las fotos yo mismo.',
       once: 'pago único',
+    },
+    dutchAgent: {
+      title: 'Agente inmobiliario de habla neerlandesa',
+      body:
+        '¿Desea la ayuda personal de un agente que hable neerlandés? Nos pondremos en contacto con usted para hablar de lo que necesita y acordar un precio.',
+      price: 'Precio a medida',
+      photoNote:
+        'La fotografía profesional está disponible a un precio premium a medida, además del precio húngaro habitual.',
     },
   },
   pl: {
@@ -439,6 +489,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Zdjęcia zrobię samodzielnie.',
       once: 'opłata jednorazowa',
     },
+    dutchAgent: {
+      title: 'Niderlandzkojęzyczny pośrednik nieruchomości',
+      body:
+        'Czy zależy Państwu na osobistej pomocy pośrednika mówiącego po niderlandzku? Skontaktujemy się z Państwem, aby omówić potrzeby i wspólnie ustalić cenę.',
+      price: 'Cena indywidualna',
+      photoNote:
+        'Profesjonalna fotografia jest dostępna w indywidualnej cenie premium, oprócz zwykłej ceny węgierskiej.',
+    },
   },
   ro: {
     valuationNav: 'Evaluare',
@@ -496,6 +554,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Nu, mulțumesc',
       noneBody: 'Fac singur fotografiile.',
       once: 'plată unică',
+    },
+    dutchAgent: {
+      title: 'Agent imobiliar vorbitor de neerlandeză',
+      body:
+        'Doriți ajutorul personal al unui agent care vorbește olandeză? Vă contactăm pentru a discuta ce aveți nevoie și pentru a stabili împreună un preț.',
+      price: 'Preț personalizat',
+      photoNote:
+        'Fotografia profesională este disponibilă la un preț premium personalizat, în plus față de prețul maghiar obișnuit.',
     },
   },
   sk: {
@@ -555,6 +621,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Fotografie urobím sám.',
       once: 'jednorazový poplatok',
     },
+    dutchAgent: {
+      title: 'Holandsky hovoriaci realitný maklér',
+      body:
+        'Chcete osobnú pomoc od makléra, ktorý hovorí po holandsky? Ozveme sa vám, prediskutujeme vaše potreby a spoločne dohodneme cenu.',
+      price: 'Cena na mieru',
+      photoNote:
+        'Profesionálne fotografovanie je možné za individuálnu prémiovú cenu, nad bežnú maďarskú cenu.',
+    },
   },
   it: {
     valuationNav: 'Valutazione',
@@ -612,6 +686,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'No, grazie',
       noneBody: 'Le foto le scatto io.',
       once: 'tariffa una tantum',
+    },
+    dutchAgent: {
+      title: 'Agente immobiliare di lingua olandese',
+      body:
+        'Desidera l’aiuto personale di un agente che parla olandese? La contatteremo per capire le sue esigenze e concordare insieme un prezzo.',
+      price: 'Prezzo su misura',
+      photoNote:
+        'La fotografia professionale è disponibile a un prezzo premium su misura, in aggiunta al normale prezzo ungherese.',
     },
   },
   pt: {
@@ -671,6 +753,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Eu tiro as fotografias.',
       once: 'taxa única',
     },
+    dutchAgent: {
+      title: 'Agente imobiliário de língua neerlandesa',
+      body:
+        'Gostaria de ajuda pessoal de um agente que fale neerlandês? Entraremos em contacto consigo para falar das suas necessidades e acordar um preço.',
+      price: 'Preço personalizado',
+      photoNote:
+        'A fotografia profissional está disponível a um preço premium personalizado, acrescido do preço húngaro habitual.',
+    },
   },
   el: {
     valuationNav: 'Εκτίμηση',
@@ -728,6 +818,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Όχι, ευχαριστώ',
       noneBody: 'Τις φωτογραφίες θα τις τραβήξω εγώ.',
       once: 'εφάπαξ χρέωση',
+    },
+    dutchAgent: {
+      title: 'Ολλανδόφωνος μεσίτης ακινήτων',
+      body:
+        'Θέλετε προσωπική βοήθεια από μεσίτη που μιλά ολλανδικά; Θα επικοινωνήσουμε μαζί σας για να συζητήσουμε τις ανάγκες σας και να συμφωνήσουμε μαζί μια τιμή.',
+      price: 'Εξατομικευμένη τιμή',
+      photoNote:
+        'Η επαγγελματική φωτογράφιση είναι διαθέσιμη σε εξατομικευμένη τιμή premium, επιπλέον της συνήθους ουγγρικής τιμής.',
     },
   },
   cs: {
@@ -787,6 +885,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Fotografie si pořídím sám.',
       once: 'jednorázový poplatek',
     },
+    dutchAgent: {
+      title: 'Nizozemsky mluvící realitní makléř',
+      body:
+        'Chcete osobní pomoc makléře, který mluví nizozemsky? Ozveme se vám, probereme, co potřebujete, a společně se dohodneme na ceně.',
+      price: 'Cena na míru',
+      photoNote:
+        'Profesionální fotografování je k dispozici za individuální prémiovou cenu, nad rámec běžné maďarské ceny.',
+    },
   },
   sl: {
     valuationNav: 'Ocena vrednosti',
@@ -844,6 +950,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Ne, hvala',
       noneBody: 'Fotografije bom posnel sam.',
       once: 'enkratno plačilo',
+    },
+    dutchAgent: {
+      title: 'Nizozemsko govoreči nepremičninski posrednik',
+      body:
+        'Želite osebno pomoč posrednika, ki govori nizozemsko? Obrnili se bomo na vas, se pogovorili o vaših željah in skupaj dogovorili ceno.',
+      price: 'Cena po dogovoru',
+      photoNote:
+        'Profesionalno fotografiranje je na voljo po individualni premium ceni, poleg običajne madžarske cene.',
     },
   },
   sv: {
@@ -903,6 +1017,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Jag tar bilderna själv.',
       once: 'engångsavgift',
     },
+    dutchAgent: {
+      title: 'Nederländskspråkig fastighetsmäklare',
+      body:
+        'Vill du ha personlig hjälp av en mäklare som talar nederländska? Vi kontaktar dig för att tala om vad du behöver och komma överens om ett pris.',
+      price: 'Pris enligt överenskommelse',
+      photoNote:
+        'Professionell fotografering finns till ett individuellt premiumpris, utöver det vanliga ungerska priset.',
+    },
   },
   da: {
     valuationNav: 'Vurdering',
@@ -960,6 +1082,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Nej tak',
       noneBody: 'Jeg tager selv billederne.',
       once: 'engangsgebyr',
+    },
+    dutchAgent: {
+      title: 'Hollandsktalende ejendomsmægler',
+      body:
+        'Vil du have personlig hjælp fra en mægler, der taler hollandsk? Vi kontakter dig for at tale om dine behov og aftale en pris sammen.',
+      price: 'Pris efter aftale',
+      photoNote:
+        'Professionel fotografering kan fås til en individuel premiumpris, oven i den almindelige ungarske pris.',
     },
   },
   no: {
@@ -1019,6 +1149,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Jeg tar bildene selv.',
       once: 'engangsgebyr',
     },
+    dutchAgent: {
+      title: 'Nederlandsktalende eiendomsmegler',
+      body:
+        'Vil du ha personlig hjelp fra en megler som snakker nederlandsk? Vi kontakter deg for å snakke om hva du trenger og bli enige om en pris.',
+      price: 'Pris etter avtale',
+      photoNote:
+        'Profesjonell fotografering er tilgjengelig til en individuell premiumpris, i tillegg til den vanlige ungarske prisen.',
+    },
   },
   fi: {
     valuationNav: 'Arvio',
@@ -1076,6 +1214,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Ei kiitos',
       noneBody: 'Otan kuvat itse.',
       once: 'kertamaksu',
+    },
+    dutchAgent: {
+      title: 'Hollanninkielinen kiinteistönvälittäjä',
+      body:
+        'Haluatko henkilökohtaista apua hollantia puhuvalta välittäjältä? Otamme sinuun yhteyttä, keskustelemme tarpeistasi ja sovimme hinnasta yhdessä.',
+      price: 'Hinta sopimuksen mukaan',
+      photoNote:
+        'Ammattivalokuvaus on saatavilla yksilöllisellä premium-hinnalla tavallisen unkarilaisen hinnan lisäksi.',
     },
   },
   et: {
@@ -1135,6 +1281,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Pildistan ise.',
       once: 'ühekordne tasu',
     },
+    dutchAgent: {
+      title: 'Hollandi keelt kõnelev kinnisvaramaakler',
+      body:
+        'Kas soovite isiklikku abi hollandi keelt kõnelevalt maaklerilt? Võtame teiega ühendust, arutame teie vajadusi ja lepime koos kokku hinna.',
+      price: 'Hind kokkuleppel',
+      photoNote:
+        'Professionaalne fotograafia on saadaval individuaalse premium-hinnaga, tavalise Ungari hinna lisaks.',
+    },
   },
   lv: {
     valuationNav: 'Novērtējums',
@@ -1193,6 +1347,14 @@ export const CHROME: L10n<ChromeStrings> = {
       noneBody: 'Fotografēšu pats.',
       once: 'vienreizēja maksa',
     },
+    dutchAgent: {
+      title: 'Holandiešu valodā runājošs nekustamā īpašuma aģents',
+      body:
+        'Vai vēlaties personīgu palīdzību no aģenta, kas runā holandiešu valodā? Sazināsimies ar jums, pārrunāsim jūsu vajadzības un kopīgi vienosimies par cenu.',
+      price: 'Cena pēc vienošanās',
+      photoNote:
+        'Profesionāla fotografēšana ir pieejama par individuālu premium cenu papildus parastajai Ungārijas cenai.',
+    },
   },
   lt: {
     valuationNav: 'Vertinimas',
@@ -1250,6 +1412,14 @@ export const CHROME: L10n<ChromeStrings> = {
       none: 'Ne, ačiū',
       noneBody: 'Fotografuosiu pats.',
       once: 'vienkartinis mokestis',
+    },
+    dutchAgent: {
+      title: 'Olandiškai kalbantis nekilnojamojo turto agentas',
+      body:
+        'Ar norite asmeninės pagalbos iš olandiškai kalbančio agento? Susisieksime su jumis, aptarsime jūsų poreikius ir kartu susitarsime dėl kainos.',
+      price: 'Kaina pagal susitarimą',
+      photoNote:
+        'Profesionali fotografija galima už individualią premium kainą, papildomai prie įprastos Vengrijos kainos.',
     },
   },
 };

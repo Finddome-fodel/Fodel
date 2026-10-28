@@ -22,6 +22,8 @@ export type RequestedExtras = {
   categoryHighlight?: boolean;
   homepageHighlight?: boolean;
   topicHighlight?: boolean;
+  /** Wants a Dutch-speaking agent; the price is always agreed personally, so none is stored. */
+  dutchAgent?: boolean;
   video?: boolean;
   service?: OnsiteServiceId | null;
 };
@@ -62,6 +64,7 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
     categoryHighlight: raw.categoryHighlight === true,
     homepageHighlight: raw.homepageHighlight === true,
     topicHighlight: raw.topicHighlight === true,
+    dutchAgent: raw.dutchAgent === true,
     video: raw.video === true,
     service: isOnsiteServiceId(raw.service) ? raw.service : null,
   };
@@ -70,7 +73,7 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
 /** True when the owner asked for anything beyond the package. */
 export function hasRequests(extras: RequestedExtras): boolean {
   return Boolean(
-    (extras.translations?.length ?? 0) > 0 || extras.categoryHighlight || extras.homepageHighlight || extras.topicHighlight || extras.video || extras.service
+    (extras.translations?.length ?? 0) > 0 || extras.categoryHighlight || extras.homepageHighlight || extras.topicHighlight || extras.dutchAgent || extras.video || extras.service
   );
 }
 
@@ -82,6 +85,7 @@ export function describeRequestedExtras(extras: RequestedExtras): string[] {
   if (extras.categoryHighlight) lines.push('Kiemelés a kategóriában');
   if (extras.homepageHighlight) lines.push('Kiemelés a főoldalon');
   if (extras.topicHighlight) lines.push('Témakörön belüli kiemelés: altípus, egyedi áregyeztetéssel');
+  if (extras.dutchAgent) lines.push('Holland nyelvű ingatlanos: egyedi áron, személyes egyeztetéssel');
   if (extras.video) lines.push('Videós bemutató (saját videó elhelyezése)');
   return lines;
 }

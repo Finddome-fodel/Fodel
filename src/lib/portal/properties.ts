@@ -53,6 +53,9 @@ export type PortalProperty = {
   year_built_unknown?: boolean;
   topic_featured?: boolean;
   topic_highlight_requested?: boolean;
+  /** Migration 0035: the owner asked for a Dutch-speaking agent (price agreed personally). */
+  dutch_agent_requested?: boolean;
+  dutch_agent_requested_at?: string | null;
   internal_note?: string;
   /** Migration 0025. `details` is the rooms/utilities/parking object (src/lib/listing-details.ts). */
   details?: unknown;

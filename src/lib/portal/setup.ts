@@ -23,6 +23,7 @@ import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import { TRANSLATION_LANGUAGES, isOnsiteServiceId } from '~/config/company';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { createServiceRequest } from '~/lib/portal/service-requests';
+import { syncDutchAgent } from '~/lib/portal/dutch-agent';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { type FieldError } from '~/lib/validation';
 import { getProperty } from '~/lib/portal/properties';
@@ -80,6 +81,7 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
     categoryHighlight: form.get('categoryHighlight') === 'yes',
     homepageHighlight: form.get('homepageHighlight') === 'yes',
     topicHighlight: form.get('topicHighlight') === 'yes',
+    dutchAgent: form.get('dutchAgent') === 'yes',
     // Only a package that sells video as an extra takes the request.
     video: chosen.video === 'extra' && form.get('video') === 'yes',
     service,
@@ -91,6 +93,7 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
   if(topicError)return {ok:false,error:'save-failed'};
   const {error:promotionError}=await supabase.rpc('sync_listing_promotion_requests',{p_id:existing.id});
   if(promotionError)return {ok:false,error:'save-failed'};
+  if (!(await syncDutchAgent(supabase, existing, form.get('dutchAgent') === 'yes'))) return { ok: false, error: 'save-failed' };
   await syncService(supabase, existing, service);
   return { ok: true };
 }

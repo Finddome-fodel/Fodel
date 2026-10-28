@@ -23,6 +23,7 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import { icon } from '~/lib/portal/icons';
 import Ago from '~/components/portal/Ago.astro';
+import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
 import { hoursSince, listingName, newestFirst } from '~/lib/portal/time';
 import { isSelfRegistration } from '~/lib/portal/registration';
 
@@ -32,7 +33,7 @@ const [{ data: rows }, { data: people }, { data: inviteRows }] = await Promise.a
   supabase
     .from('properties')
     .select(
-      'id, ref, status, settlement, price_eur, owner_id, created_at, submitted_at, property_translations(locale, title), property_media(storage_path, is_hero, sort_order)'
+      'id, ref, status, settlement, price_eur, owner_id, created_at, submitted_at, dutch_agent_requested, property_translations(locale, title), property_media(storage_path, is_hero, sort_order)'
     )
     .in('status', ['draft', 'submitted', 'changes_requested', 'rejected'])
     .order('created_at', { ascending: false }),
@@ -193,6 +194,7 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
                         {p.settlement || 'Település nélkül'} · €{Number(p.price_eur).toLocaleString('de-DE')}
                       </p>
                       <p class="o">{(p.owner_id && ownerName.get(p.owner_id)) || 'Ismeretlen hirdető'}</p>
+                      {p.dutch_agent_requested && <p class="badges"><DutchAgentBadge /></p>}
                     </div>
                     <div class="foot">
                       <span class:list={['when', late && 'late']}>
@@ -701,6 +703,9 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
   .o {
     font-size: 13px;
     color: var(--ink-quiet);
+  }
+  .badges {
+    margin-top: 8px;
   }
   .foot {
     grid-column: 1 / -1;
