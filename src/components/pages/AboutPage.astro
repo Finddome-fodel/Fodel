@@ -20,7 +20,7 @@ import NumberedColumns from '~/components/NumberedColumns.astro';
 import StatsBand from '~/components/StatsBand.astro';
 import ParallaxCta from '~/components/ParallaxCta.astro';
 import { UI, path, localizer, type Locale } from '~/i18n/ui';
-import { addressLine } from '~/config/company';
+import { addressLine, fillShortHours } from '~/config/company';
 import { getCompany } from '~/lib/runtime-config';
 import { copy } from '~/data/copy';
 import { alternatesFor } from '~/lib/page';
@@ -120,7 +120,7 @@ const quote = splitOpeningQuote(c.origin.quote);
     eyebrow={cta.eyebrow}
     title={cta.title}
     titleEm={cta.titleEm}
-    body={cta.body}
+    body={fillShortHours(cta.body, COMPANY.hours, locale)}
     primary={{ label: ui.cta.callback, href: path(locale, 'contact') }}
     secondary={{ label: ui.cta.browseProperties, href: path(locale, 'properties') }}
   />
