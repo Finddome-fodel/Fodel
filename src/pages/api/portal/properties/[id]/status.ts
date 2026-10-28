@@ -388,7 +388,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
             // button lives. A Stripe session is created at the moment they click
             // it — never here, because a session minted now would have expired by
             // the time a seller who reads email on Sunday gets to it.
-            payUrl: `${SITE_URL}/portal/properties/${property.id}`,
+            payUrl: `${SITE_URL}/portal/properties/${property.id}#pay`,
           };
           const email = gated
             ? templates.approvedAwaitingPayment(locale, sharedEmail)

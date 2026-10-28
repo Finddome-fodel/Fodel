@@ -223,6 +223,7 @@ const photoLimit = listingPackage.maxImages;
       a mezők nem szerkeszthetők.
       {property.status === 'submitted' && ' Amint elbírálásra kerül, ismét szerkesztheti, ha javítás szükséges.'}
       {awaitingPayment && ' A díj rendezése után a hirdetés automatikusan élesedik.'}
+      {awaitingPayment && order && <> <a href="#pay"><strong>Ugrás a fizetéshez ↓</strong></a></>}
     </p>
   )}
 

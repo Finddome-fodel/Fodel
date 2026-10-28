@@ -150,7 +150,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       items: linesForEmail(lines, locale),
       discount: order.discount_cents ? `−${formatCents(order.discount_cents, locale)}` : undefined,
       total: formatCents(order.amount_cents, locale),
-      payUrl: `${SITE_URL}/portal/properties/${order.property_id}`,
+      payUrl: `${SITE_URL}/portal/properties/${order.property_id}#pay`,
     };
     const email = property.status === 'published'
       ? templates.approvedPublished(locale, {
