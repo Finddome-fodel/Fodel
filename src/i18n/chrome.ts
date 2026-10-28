@@ -53,6 +53,8 @@ export interface ChromeStrings {
   onsite: { heading: string; intro: string; none: string; noneBody: string; once: string };
   /** The Dutch-speaking agent request: a checkbox card, its price wording, and the photography premium note. */
   dutchAgent: { title: string; body: string; price: string; photoNote: string };
+  /** Shown instead of listings while the catalogue has none at all (not the same as "no match for these filters"). */
+  emptyCatalogue: { title: string; hint: string };
 }
 
 export const CHROME: L10n<ChromeStrings> = {
@@ -115,6 +117,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'A professzionális fotózás egyedi, prémium áron kérhető, a szokásos magyar áron felül.',
     },
+    emptyCatalogue: {
+      title: 'Hamarosan új ingatlanok érkeznek.',
+      hint:
+        'Kérjen ingyenes kerestetést, és elsőként értesítjük, ha megfelelő ingatlan érkezik.',
+    },
   },
 
   nl: {
@@ -175,6 +182,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Prijs op maat',
       photoNote:
         'Professionele fotografie is mogelijk tegen een premiumprijs op maat, bovenop de gewone Hongaarse prijs.',
+    },
+    emptyCatalogue: {
+      title: 'Binnenkort verschijnen hier nieuwe woningen.',
+      hint:
+        'Plaats een gratis zoekopdracht en wij laten u als eerste weten wanneer er iets passends binnenkomt.',
     },
   },
 
@@ -237,6 +249,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Professional photography is available at a custom premium price, on top of the standard Hungarian price.',
     },
+    emptyCatalogue: {
+      title: 'New homes will appear here soon.',
+      hint:
+        'Place a free search request and we will let you know first when something suitable comes in.',
+    },
   },
 
   de: {
@@ -297,6 +314,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Individueller Preis',
       photoNote:
         'Professionelle Fotografie ist zu einem individuellen Premiumpreis möglich, zusätzlich zum üblichen ungarischen Preis.',
+    },
+    emptyCatalogue: {
+      title: 'Bald erscheinen hier neue Immobilien.',
+      hint:
+        'Geben Sie einen kostenlosen Suchauftrag auf, und wir melden uns als Erstes bei Ihnen, sobald etwas Passendes eingeht.',
     },
   },
 
@@ -365,6 +387,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'La photographie professionnelle est possible à un tarif premium sur mesure, en plus du prix hongrois habituel.',
     },
+    emptyCatalogue: {
+      title: 'De nouveaux biens apparaîtront bientôt ici.',
+      hint:
+        'Déposez une recherche gratuite et nous vous prévenons en premier dès qu’un bien correspondant arrive.',
+    },
   },
   es: {
     valuationNav: 'Valoración',
@@ -430,6 +457,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Precio a medida',
       photoNote:
         'La fotografía profesional está disponible a un precio premium a medida, además del precio húngaro habitual.',
+    },
+    emptyCatalogue: {
+      title: 'Pronto aparecerán aquí nuevos inmuebles.',
+      hint:
+        'Haga una solicitud de búsqueda gratuita y le avisaremos los primeros cuando llegue algo adecuado.',
     },
   },
   pl: {
@@ -497,6 +529,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Profesjonalna fotografia jest dostępna w indywidualnej cenie premium, oprócz zwykłej ceny węgierskiej.',
     },
+    emptyCatalogue: {
+      title: 'Wkrótce pojawią się tu nowe nieruchomości.',
+      hint:
+        'Proszę złożyć bezpłatne zlecenie poszukiwania, a jako pierwsi poinformujemy Państwa, gdy pojawi się coś odpowiedniego.',
+    },
   },
   ro: {
     valuationNav: 'Evaluare',
@@ -562,6 +599,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Preț personalizat',
       photoNote:
         'Fotografia profesională este disponibilă la un preț premium personalizat, în plus față de prețul maghiar obișnuit.',
+    },
+    emptyCatalogue: {
+      title: 'În curând vor apărea aici proprietăți noi.',
+      hint:
+        'Trimiteți o cerere gratuită de căutare și vă anunțăm primii când apare ceva potrivit.',
     },
   },
   sk: {
@@ -629,6 +671,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Profesionálne fotografovanie je možné za individuálnu prémiovú cenu, nad bežnú maďarskú cenu.',
     },
+    emptyCatalogue: {
+      title: 'Čoskoro sa tu objavia nové nehnuteľnosti.',
+      hint:
+        'Zadajte bezplatné zadanie na hľadanie a ako prví vám dáme vedieť, keď pribudne niečo vhodné.',
+    },
   },
   it: {
     valuationNav: 'Valutazione',
@@ -694,6 +741,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Prezzo su misura',
       photoNote:
         'La fotografia professionale è disponibile a un prezzo premium su misura, in aggiunta al normale prezzo ungherese.',
+    },
+    emptyCatalogue: {
+      title: 'A breve qui compariranno nuovi immobili.',
+      hint:
+        'Invii una richiesta di ricerca gratuita e Le comunicheremo per primi quando arriverà qualcosa di adatto.',
     },
   },
   pt: {
@@ -761,6 +813,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'A fotografia profissional está disponível a um preço premium personalizado, acrescido do preço húngaro habitual.',
     },
+    emptyCatalogue: {
+      title: 'Em breve surgirão aqui novos imóveis.',
+      hint:
+        'Faça um pedido de pesquisa gratuito e avisamos primeiro quando surgir algo adequado.',
+    },
   },
   el: {
     valuationNav: 'Εκτίμηση',
@@ -826,6 +883,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Εξατομικευμένη τιμή',
       photoNote:
         'Η επαγγελματική φωτογράφιση είναι διαθέσιμη σε εξατομικευμένη τιμή premium, επιπλέον της συνήθους ουγγρικής τιμής.',
+    },
+    emptyCatalogue: {
+      title: 'Σύντομα θα εμφανιστούν εδώ νέα ακίνητα.',
+      hint:
+        'Υποβάλετε δωρεάν αίτημα αναζήτησης και θα σας ενημερώσουμε πρώτοι όταν προκύψει κάτι κατάλληλο.',
     },
   },
   cs: {
@@ -893,6 +955,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Profesionální fotografování je k dispozici za individuální prémiovou cenu, nad rámec běžné maďarské ceny.',
     },
+    emptyCatalogue: {
+      title: 'Brzy se zde objeví nové nemovitosti.',
+      hint:
+        'Zadejte bezplatnou poptávku a my vás jako první upozorníme, až přibude něco vhodného.',
+    },
   },
   sl: {
     valuationNav: 'Ocena vrednosti',
@@ -958,6 +1025,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Cena po dogovoru',
       photoNote:
         'Profesionalno fotografiranje je na voljo po individualni premium ceni, poleg običajne madžarske cene.',
+    },
+    emptyCatalogue: {
+      title: 'Kmalu se bodo tukaj pojavile nove nepremičnine.',
+      hint:
+        'Oddajte brezplačno povpraševanje in prvi vas bomo obvestili, ko bo na voljo kaj primernega.',
     },
   },
   sv: {
@@ -1025,6 +1097,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Professionell fotografering finns till ett individuellt premiumpris, utöver det vanliga ungerska priset.',
     },
+    emptyCatalogue: {
+      title: 'Nya bostäder dyker snart upp här.',
+      hint:
+        'Lämna en kostnadsfri sökförfrågan så meddelar vi dig först när något passande kommer in.',
+    },
   },
   da: {
     valuationNav: 'Vurdering',
@@ -1090,6 +1167,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Pris efter aftale',
       photoNote:
         'Professionel fotografering kan fås til en individuel premiumpris, oven i den almindelige ungarske pris.',
+    },
+    emptyCatalogue: {
+      title: 'Nye boliger dukker snart op her.',
+      hint:
+        'Opret en gratis søgeopgave, så giver vi dig besked først, når der kommer noget passende.',
     },
   },
   no: {
@@ -1157,6 +1239,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Profesjonell fotografering er tilgjengelig til en individuell premiumpris, i tillegg til den vanlige ungarske prisen.',
     },
+    emptyCatalogue: {
+      title: 'Nye boliger dukker snart opp her.',
+      hint:
+        'Legg inn en gratis søkeforespørsel, så gir vi deg beskjed først når det kommer noe passende.',
+    },
   },
   fi: {
     valuationNav: 'Arvio',
@@ -1222,6 +1309,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Hinta sopimuksen mukaan',
       photoNote:
         'Ammattivalokuvaus on saatavilla yksilöllisellä premium-hinnalla tavallisen unkarilaisen hinnan lisäksi.',
+    },
+    emptyCatalogue: {
+      title: 'Uusia kohteita ilmestyy tänne pian.',
+      hint:
+        'Jätä maksuton hakutoive, niin kerromme sinulle ensimmäisenä, kun sopiva kohde tulee myyntiin.',
     },
   },
   et: {
@@ -1289,6 +1381,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Professionaalne fotograafia on saadaval individuaalse premium-hinnaga, tavalise Ungari hinna lisaks.',
     },
+    emptyCatalogue: {
+      title: 'Siia lisandub peagi uusi kinnisvara.',
+      hint:
+        'Esitage tasuta otsingupäring ja anname teile esimesena teada, kui ilmub midagi sobivat.',
+    },
   },
   lv: {
     valuationNav: 'Novērtējums',
@@ -1355,6 +1452,11 @@ export const CHROME: L10n<ChromeStrings> = {
       photoNote:
         'Profesionāla fotografēšana ir pieejama par individuālu premium cenu papildus parastajai Ungārijas cenai.',
     },
+    emptyCatalogue: {
+      title: 'Drīzumā šeit parādīsies jauni īpašumi.',
+      hint:
+        'Iesniedziet bezmaksas meklēšanas pieprasījumu, un mēs jūs informēsim pirmos, kad parādīsies kaut kas piemērots.',
+    },
   },
   lt: {
     valuationNav: 'Vertinimas',
@@ -1420,6 +1522,11 @@ export const CHROME: L10n<ChromeStrings> = {
       price: 'Kaina pagal susitarimą',
       photoNote:
         'Profesionali fotografija galima už individualią premium kainą, papildomai prie įprastos Vengrijos kainos.',
+    },
+    emptyCatalogue: {
+      title: 'Netrukus čia atsiras naujo turto.',
+      hint:
+        'Pateikite nemokamą paieškos užklausą, ir mes pirmieji informuosime, kai atsiras kas nors tinkama.',
     },
   },
 };

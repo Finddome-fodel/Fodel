@@ -36,6 +36,7 @@ import ArrowChip from '~/components/ArrowChip.astro';
 import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
 import { UI, BRAND, path, localizer, type Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 import { copy } from '~/data/copy';
 import { fillShortHours } from '~/config/company';
 import { homeAlternates } from '~/lib/page';
@@ -243,10 +244,10 @@ const quote = splitOpeningQuote(c.quote);
   {/* ── SEARCH ── */}
   <section class="search-band reveal">
     <HomeSearch locale={locale} regions={regionsOf(all)} categories={listingCategories(taxonomy)}>
-      <p class="search-count">
+      {all.length > 0 && <p class="search-count">
         <span class="search-count-n num" data-count={String(all.length)}>{all.length}</span>
         <span class="search-count-text">{x('aktív hirdetés, közvetlenül a tulajdonostól', 'actieve advertenties, direct van de eigenaar', 'active listings, direct from the owner', 'aktive Inserate, direkt vom Eigentümer', 'annonces actives, en direct du propriétaire', 'anuncios activos, directamente del propietario', 'aktywnych ogłoszeń bezpośrednio od właścicieli', 'anunțuri active, direct de la proprietar', 'aktívnych inzerátov priamo od majiteľov', 'annunci attivi, direttamente dal proprietario', 'anúncios ativos, diretamente do proprietário', 'ενεργές αγγελίες, απευθείας από τον ιδιοκτήτη', 'aktivních inzerátů přímo od vlastníků', 'aktivnih oglasov neposredno od lastnikov', 'aktiva annonser, direkt från ägaren', 'aktive annoncer direkte fra ejeren', 'aktive annonser, direkte fra eieren', 'aktiivista ilmoitusta suoraan omistajalta', 'aktiivset kuulutust otse omanikult', 'aktīvi sludinājumi tieši no īpašnieka', 'aktyvūs skelbimai tiesiogiai iš savininko')}</span>
-      </p>
+      </p>}
     </HomeSearch>
   </section>
 
@@ -301,6 +302,15 @@ const quote = splitOpeningQuote(c.quote);
       </Button>
     </SectionHead>
 
+    {featured.length === 0 && (
+      <div class="featured-empty reveal">
+        <span class="featured-empty-dot" aria-hidden="true"></span>
+        <p class="featured-empty-title">{CHROME[locale].emptyCatalogue.title}</p>
+        <p class="featured-empty-hint">{CHROME[locale].emptyCatalogue.hint}</p>
+        <Button variant="dark" href={path(locale, 'searchRequest')} arrow>{ui.cta.searchRequest}</Button>
+      </div>
+    )}
+
     <div class="bento">
       {
         featured.map((p, i) => (
@@ -315,9 +325,11 @@ const quote = splitOpeningQuote(c.quote);
       }
     </div>
 
-    <Button variant="outline" href={path(locale, 'properties')} block arrow class="cards-more">
-      {ui.cta.allProperties}
-    </Button>
+    {featured.length > 0 && (
+      <Button variant="outline" href={path(locale, 'properties')} block arrow class="cards-more">
+        {ui.cta.allProperties}
+      </Button>
+    )}
   </section>
 
   {/* ── STATEMENT: five languages, the line, the figures ── */}
@@ -1063,6 +1075,38 @@ const quote = splitOpeningQuote(c.quote);
   }
   .featured :global(.section-head) {
     margin-bottom: 56px;
+  }
+  /* A catalogue with nothing in it yet: one quiet, centred message. */
+  .featured-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 56px 24px 24px;
+    text-align: center;
+  }
+  .featured-empty-dot {
+    width: 10px;
+    height: 10px;
+    margin-bottom: 28px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+  .featured-empty-title {
+    max-width: 26ch;
+    margin-bottom: 12px;
+    font-family: var(--serif);
+    font-weight: var(--fw-medium);
+    font-size: clamp(24px, 2.2vw, 32px);
+    letter-spacing: var(--ls-heading);
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .featured-empty-hint {
+    max-width: 44ch;
+    margin-bottom: 36px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--taupe);
   }
   /* Big photograph on the left, two beside it. The big one has no ratio of
      its own: it takes whatever height the two on the right add up to, so

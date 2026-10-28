@@ -16,6 +16,7 @@ import Base from '~/layouts/Base.astro';
 import Button from '~/components/Button.astro';
 import PropertyCard from '~/components/PropertyCard.astro';
 import { UI, path, localizer, type Locale } from '~/i18n/ui';
+import { CHROME } from '~/i18n/chrome';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { PROPERTY_GROUPS, labelIn, subtypeLabel, validSubtype, groupOf } from '~/lib/listing-catalogue';
 import { countryLabel as labelCountry } from '~/config/countries';
@@ -50,6 +51,8 @@ const params = Astro.url.searchParams;
 // current result set, so a search that returns zero results still lets the
 // visitor pivot to a different filter instead of hitting a dead end.
 const facetSource = await activeProperties();
+// Nothing published at all (a new site): say so, instead of blaming the filters.
+const catalogueEmpty = facetSource.length === 0;
 const regions = regionsOf(facetSource);
 const counties = countiesOf(facetSource);
 const categories = PROPERTY_GROUPS.map(g=>g.key);
@@ -552,8 +555,8 @@ const labels = {
         ) : (
           <div class="empty">
             <span class="empty-rule" aria-hidden="true"></span>
-            <p class="empty-title">{ui.filters.noResults}</p>
-            <p class="empty-hint">{ui.filters.noResultsHint}</p>
+            <p class="empty-title">{catalogueEmpty ? CHROME[locale].emptyCatalogue.title : ui.filters.noResults}</p>
+            <p class="empty-hint">{catalogueEmpty ? CHROME[locale].emptyCatalogue.hint : ui.filters.noResultsHint}</p>
             <div class="empty-actions">
               <Button variant="dark" href={path(locale, 'searchRequest')}>{ui.cta.searchRequest}</Button>
               {chips.length > 0 && <Button variant="text" href={clearHref}>{ui.filters.reset}</Button>}
