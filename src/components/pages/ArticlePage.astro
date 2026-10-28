@@ -310,6 +310,29 @@ const trail = crumbs(locale, [
   .prose :global(img) {
     border-radius: var(--r-lg);
   }
+  /* Markdown tables (e.g. a tax-rate schedule): readable, and scrollable on a phone. */
+  .prose :global(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 0 0 28px;
+    font-size: var(--fs-body);
+    line-height: 1.55;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    color: var(--taupe);
+  }
+  .prose :global(th) {
+    font-weight: var(--fw-medium);
+    color: var(--ink);
+    background: rgba(16, 42, 67, 0.04);
+  }
 
   .foot {
     display: flex;
