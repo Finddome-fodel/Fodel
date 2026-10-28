@@ -260,6 +260,16 @@ console.log('Server-rendered content');
   pass('no in-browser Babel or React development build anywhere');
 }
 
+/* ── 1b. No placeholder reaches a visitor ────────────────────────────── */
+// Static copy carries {hours} / {hoursShort}; a page that forgets to fill it shows the raw token.
+console.log('\nUnfilled placeholders');
+{
+  const tokens = ['{hoursShort}', '{hours}'];
+  const leaks = files.filter((f) => tokens.some((t) => f.html.includes(t))).map((f) => f.relPath);
+  if (leaks.length) fail(`unfilled placeholder on ${leaks.length} pages, e.g. ${leaks.slice(0, 3).join(', ')}`);
+  else pass(`no {hours} / {hoursShort} left on any of ${files.length} pages`);
+}
+
 /* ── 2. Per-page metadata ────────────────────────────────────────────── */
 console.log('\nMetadata');
 {
