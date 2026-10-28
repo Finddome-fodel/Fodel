@@ -111,6 +111,18 @@ test.describe('European listing editor',()=>{
   await page.reload();await expect(page.locator('[name="dutchAgent"]')).toBeChecked({checked:!before});
   if(!before){await page.goto(`${path}/setup#review`);await expect(page.locator('[data-summary="package"]')).toContainText('Holland nyelvű ingatlanos');}
  });
+ test('an approved listing leads with a highlighted Fizetés step and the pay box on top',async({page})=>{
+  await page.request.patch(`${fixture}/rest/v1/properties?id=eq.${id}`,{data:{status:'awaiting_payment'}});
+  await setSession(page,'owner');
+  await page.goto(path);
+  const first=page.locator('.ed-rail a').first();
+  await expect(first).toHaveText(/Fizetés/);await expect(first).toHaveClass(/rail-pay/);
+  await expect(page.locator('#pay-btn')).toBeVisible();
+  // The pay box comes before the (read-only) form, not after it.
+  const payTop=(await page.locator('#pay').boundingBox())!.y,formTop=(await page.locator('#editor-form').boundingBox())!.y;
+  expect(payTop).toBeLessThan(formTop);
+  await first.click();await expect(page).toHaveURL(/#pay$/);
+ });
  test('a home asks for the old form\'s facts; land does not',async({page})=>{
   await page.goto(path);
   await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');

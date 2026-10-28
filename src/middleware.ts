@@ -64,9 +64,20 @@ const ADMIN_ONLY_PREFIXES = [
   '/api/portal/newsletter',
 ];
 
+/**
+ * Paths that get a session (locals.user / profile / supabase): the portal, its
+ * API, and the card-payment checkout — an owner's signed-in action that lives
+ * under /api/stripe. Without the last one the checkout saw no user and refused
+ * every payment with 401. The webhook (Stripe calls it, no session) and the
+ * valuation checkout (anonymous visitors) must stay outside.
+ */
+export function wantsSession(pathname: string): boolean {
+  return pathname.startsWith('/portal') || pathname.startsWith('/api/portal') || pathname === '/api/stripe/checkout';
+}
+
 const guard: MiddlewareHandler = async (context, next) => {
   const { pathname } = context.url;
-  if (!pathname.startsWith('/portal') && !pathname.startsWith('/api/portal')) {
+  if (!wantsSession(pathname)) {
     return next();
   }
 

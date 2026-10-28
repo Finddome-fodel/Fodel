@@ -247,6 +247,18 @@ test('a referral discount reaches Stripe as a coupon, not a negative line', asyn
   assert.equal(world.stripeCalls.find((c) => c.coupon).coupon.amount_off, 1000);
 });
 
+/* ── The wiring ──────────────────────────────────────────────────────── */
+
+test('the checkout is given the signed-in session; the webhook and the anonymous valuation checkout are not', async () => {
+  const { wantsSession } = await import('../src/middleware.ts');
+  assert.equal(wantsSession('/api/stripe/checkout'), true, 'without a session the checkout answers 401 to everyone');
+  assert.equal(wantsSession('/api/stripe/webhook'), false, 'Stripe has no session');
+  assert.equal(wantsSession('/api/stripe/valuation-checkout'), false, 'valuation buyers are anonymous');
+  assert.equal(wantsSession('/portal/properties/x'), true);
+  assert.equal(wantsSession('/api/portal/payments/x/action'), true);
+  assert.equal(wantsSession('/nl/tarieven/'), false);
+});
+
 let failed = 0;
 for (const [name, fn] of tests) {
   try { await fn(); console.log(`  ✓ ${name}`); }

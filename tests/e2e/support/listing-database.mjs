@@ -44,6 +44,7 @@ http.createServer(async(req,res)=>{
  if(!['GET','HEAD'].includes(req.method))return send(res,403,{error:'fixture-refuses-this-write'});
  let rows=[];
  if(table==='properties')rows=[property];
+ if(table==='payments'&&property.status==='awaiting_payment')rows=[{id:'order-1',property_id:ID,owner_id:OWNER,status:'pending',amount_cents:12900,line_items:[{kind:'package',id:'normal-12m',label:'Standard hirdetés',quantity:1,unitCents:12900}],billing:{}}];
  if(table==='property_private')rows=[privateData];
  if(table==='property_media')rows=media;
  if(table==='profiles')rows=[{id,role:id===ADMIN?'admin':'owner',full_name:'Teszt Eladó',phone:'+36301234567',email:sessionFor(id).user.email,locale:profileLocale,billing:{kind:'person',name:'Teszt Eladó',country:'HU',postalCode:'8254',city:'Kékkút',street:'Teszt utca 1.'}}];
