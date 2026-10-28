@@ -418,36 +418,59 @@ const strings = {
   const fieldError = (control: HTMLElement) =>
     control.closest('.field, .fld')?.querySelector<HTMLElement>(':scope > .error');
 
+  const checkable = (scope: HTMLElement) =>
+    [...scope.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input[name], textarea[name], select[name]')].filter(
+      (control) => !control.disabled && !control.closest('[hidden]') && !['radio', 'checkbox', 'hidden'].includes(control.type)
+    );
+
+  /** Shows or clears one field's message from its current value; true when the value is acceptable. */
+  const checkControl = (
+    control: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+    validateField: typeof import('~/lib/validation').validateField,
+    errorMessage: (error: never) => string
+  ) => {
+    const error = validateField(
+      {
+        rule: (control.dataset.rule as never) ?? 'text',
+        required: control.required,
+        min: control.dataset.min ? Number(control.dataset.min) : undefined,
+        max: control.dataset.max ? Number(control.dataset.max) : undefined,
+        maxLength: 'maxLength' in control && control.maxLength > 0 ? control.maxLength : undefined,
+      },
+      control.value
+    );
+    const el = fieldError(control);
+    if (error) {
+      control.setAttribute('aria-invalid', 'true');
+      if (el) {
+        el.textContent = errorMessage(error as never);
+        el.hidden = false;
+      }
+    } else {
+      control.removeAttribute('aria-invalid');
+      if (el) el.hidden = true;
+    }
+    return !error;
+  };
+
   async function validate(scope: HTMLElement): Promise<HTMLElement | null> {
     const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording()]);
     let first: HTMLElement | null = null;
-    scope.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input[name], textarea[name], select[name]').forEach((control) => {
-      if (control.disabled || control.closest('[hidden]')) return;
-      if (control.type === 'radio' || control.type === 'checkbox' || control.type === 'hidden') return;
-      const error = validateField(
-        {
-          rule: (control.dataset.rule as never) ?? 'text',
-          required: control.required,
-          min: control.dataset.min ? Number(control.dataset.min) : undefined,
-          max: control.dataset.max ? Number(control.dataset.max) : undefined,
-          maxLength: 'maxLength' in control && control.maxLength > 0 ? control.maxLength : undefined,
-        },
-        control.value
-      );
-      const el = fieldError(control);
-      if (error) {
-        control.setAttribute('aria-invalid', 'true');
-        if (el) {
-          el.textContent = errorMessage(error as never);
-          el.hidden = false;
-        }
-        first ??= control;
-      } else {
-        control.removeAttribute('aria-invalid');
-        if (el) el.hidden = true;
-      }
-    });
+    for (const control of checkable(scope)) if (!checkControl(control, validateField, errorMessage)) first ??= control;
     return first;
+  }
+
+  /**
+   * Once a field shows a message it follows its value, like the other forms do (FormShell.astro).
+   * The map, the geocoder and the pin set latitude and longitude from code and announce it with
+   * one `change` on longitude, so every field in the step that is showing a message is looked at
+   * again, not only the one the event came from.
+   */
+  async function revalidateShown(scope: HTMLElement) {
+    const shown = checkable(scope).filter((control) => control.getAttribute('aria-invalid') === 'true');
+    if (!shown.length) return;
+    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording()]);
+    for (const control of shown) checkControl(control, validateField, errorMessage);
   }
 
   /** The server's own refusals, shown on the fields they belong to. */
@@ -499,7 +522,9 @@ const strings = {
   // Autosave when a field is left — quietly, and only once something changed.
   let pending: number | undefined;
   root.querySelectorAll<HTMLFormElement>('[data-step-form]').forEach((f) => {
+    f.addEventListener('input', () => void revalidateShown(f));
     f.addEventListener('change', () => {
+      void revalidateShown(f);
       window.clearTimeout(pending);
       pending = window.setTimeout(() => void save(f.dataset.stepForm!, true), 400);
     });
