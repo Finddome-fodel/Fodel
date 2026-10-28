@@ -11,11 +11,11 @@ interface Props {
 const { locale, light = false, href = `/${locale}/` } = Astro.props;
 
 /** "INGATLAN", "VASTGOED", "REAL ESTATES", "IMMOBILIEN", "IMMOBILIER": the brand name minus the wordmark. */
-const subLabel = BRAND[locale].name.replace('FODEL', '').trim();
+const subLabel = BRAND[locale].name.replace('FINDDOME', '').trim();
 ---
 
 <a class="logo" class:list={{ light }} href={href} aria-label={BRAND[locale].name}>
-  <span class="word">FODEL</span>
+  <span class="word">FINDDOME</span>
   <span class="rule" aria-hidden="true"></span>
   <span class="sub">{subLabel}</span>
 </a>

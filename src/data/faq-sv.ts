@@ -26,7 +26,7 @@ export const FAQ_SV = [
     question: 'Vad kostar er förmedling?',
     answer: [
       `Vår provision är ${COMMISSION.percent}\u00a0% netto, minst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nederländsk moms. Den betalas av den ungerska säljaren, inte av dig.`,
-      'Vi fakturerar bara när alla tre villkor är uppfyllda: det finns ett skriftligt köpeavtal, köparen har presenterats av FODEL och handpenningen har betalats.',
+      'Vi fakturerar bara när alla tre villkor är uppfyllda: det finns ett skriftligt köpeavtal, köparen har presenterats av FINDDOME och handpenningen har betalats.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_SV = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Vad exakt ordnar FODEL när du köper?',
+    question: 'Vad exakt ordnar FINDDOME när du köper?',
     answer: [
       '- Rådgivning per telefon och e-post samt kommunikation mellan parterna',
       '- Personliga möten och visningar på plats',

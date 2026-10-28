@@ -20,7 +20,7 @@ const L = 'sv' as const;
 export const SV = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Köp bostad i Ungern direkt av ägaren',
+      title: 'FINDDOME Real Estates | Köp bostad i Ungern direkt av ägaren',
       description:
         'Hus, gårdar och lantegendomar i Ungern, ofta direkt av ägaren. Vägledning på ditt eget språk och tvåspråkiga köpeavtal.',
     },
@@ -37,7 +37,7 @@ export const SV = {
       {
         eyebrow: 'För köpare',
         title: 'Bostäder direkt\nav ägaren',
-        body: 'Äkta ungerska hus, gårdar, lantegendomar och vingårdar. Kontakta ägaren direkt eller låt FODEL sköta hela processen.',
+        body: 'Äkta ungerska hus, gårdar, lantegendomar och vingårdar. Kontakta ägaren direkt eller låt FINDDOME sköta hela processen.',
         cta: 'Bläddra bland objekt',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const SV = {
     featured: { eyebrow: 'Urval', title: 'Utvalda objekt' },
     quote: '”Nederländare tror ofta inte sina ögon när de ser vad man kan köpa i Ungern, och för hur lite.”',
     quoteSource: `${BRAND.sv.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Så fungerar det', title: 'Så fungerar FODEL' },
+    how: { eyebrow: 'Så fungerar det', title: 'Så fungerar FINDDOME' },
     cta: {
       eyebrow: 'Kontakta oss',
       title: 'Vi ringer gärna',
@@ -63,7 +63,7 @@ export const SV = {
       eyebrow: 'Värvningsprogram',
       title: 'Tipsa om en annonsör,',
       titleEm: 'få 10\u00a0%',
-      body: 'Om någon lägger in en annons hos FODEL efter ditt tips får hen 10\u00a0% rabatt på sitt paket, och vi tillgodoräknar dig 10\u00a0% på din nästa annons. Annonserar du redan hos oss? Din egen värvningskod hittar du under Inställningar i portalen.',
+      body: 'Om någon lägger in en annons hos FINDDOME efter ditt tips får hen 10\u00a0% rabatt på sitt paket, och vi tillgodoräknar dig 10\u00a0% på din nästa annons. Annonserar du redan hos oss? Din egen värvningskod hittar du under Inställningar i portalen.',
       steps: [
         'Tipsa en bekant via formuläret nedan, eller dela din egen länk från portalen',
         'Någon i vårt team kontaktar hen',
@@ -111,13 +111,13 @@ export const SV = {
   sellers: {
     meta: {
       title: 'För säljare | Din ungerska bostad i Västeuropa',
-      description: `Annonsera din ungerska bostad på ${REACH_LANGUAGES} språk i ${REACH_COUNTRIES} länder, från ${eur(69, L)} och utan exklusivitet. Provision bara om FODEL hittar köparen: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% moms.`,
+      description: `Annonsera din ungerska bostad på ${REACH_LANGUAGES} språk i ${REACH_COUNTRIES} länder, från ${eur(69, L)} och utan exklusivitet. Provision bara om FINDDOME hittar köparen: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% moms.`,
     },
     hero: {
       eyebrow: 'För säljare',
       title: 'Din bostad',
       titleEm: 'i Västeuropa',
-      body: `Med FODEL-modellen visas din bostad på ${REACH_LANGUAGES} språk i ${REACH_COUNTRIES} länder, utan exklusivavtal. Vi arbetar bara med seriösa köpare.`,
+      body: `Med FINDDOME-modellen visas din bostad på ${REACH_LANGUAGES} språk i ${REACH_COUNTRIES} länder, utan exklusivavtal. Vi arbetar bara med seriösa köpare.`,
       cta: 'Lägg in annons',
       secondary: 'Se priser',
     },
@@ -129,7 +129,7 @@ export const SV = {
         'Betalning i ett svep via banköverföring, snabbt och säkert.',
         'Seriösa avsikter: en enda visning kostar dem två dagar och 200–300\u00a0€.',
         'Realistisk prissättning: inget orimligt prutande.',
-        'FODEL bedömer varje köpare personligen innan någon tid bokas.',
+        'FINDDOME bedömer varje köpare personligen innan någon tid bokas.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const SV = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Steg för steg', title: 'FODEL-modellen' },
+    how: { eyebrow: 'Steg för steg', title: 'FINDDOME-modellen' },
     commission: {
       eyebrow: 'Priser',
       title: 'Provision endast\nvid genomförd försäljning',
-      body: `Om köparen kontaktar dig direkt och du inte behöver vår hjälp betalar du ingenting utöver annonsavgiften. Om FODEL förmedlar försäljningen: ${COMMISSION.percent}\u00a0% netto (minst ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% nederländsk moms.`,
+      body: `Om köparen kontaktar dig direkt och du inte behöver vår hjälp betalar du ingenting utöver annonsavgiften. Om FINDDOME förmedlar försäljningen: ${COMMISSION.percent}\u00a0% netto (minst ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% nederländsk moms.`,
       cta: 'Se priser',
     },
   },
@@ -248,7 +248,7 @@ export const SV = {
       title: 'Bron vi',
       titleEm: 'har byggt',
       paragraphs: [
-        'FODEL grundades av ungrare bosatta i Nederländerna. Vi började i Almere-Buiten 2013, där vi märkte hur många nederländare och belgare som ville köpa ett genuint ungerskt hus men inte visste var de skulle börja.',
+        'FINDDOME grundades av ungrare bosatta i Nederländerna. Vi började i Almere-Buiten 2013, där vi märkte hur många nederländare och belgare som ville köpa ett genuint ungerskt hus men inte visste var de skulle börja.',
         `I dag annonserar vi i ${REACH_COUNTRIES} länder och på ${REACH_LANGUAGES} språk och följer varje affär från början till slut: tvåspråkigt köpeavtal, ombud med fullmakt och inskrivning i fastighetsregistret. Vårt kontor ligger i Haag.`,
       ],
     },

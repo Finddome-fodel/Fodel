@@ -25,7 +25,7 @@ const hour = (hhmm: string) => {
 export const PL = {
   home: {
     meta: {
-      title: 'FODEL Nieruchomości | Kup nieruchomość na Węgrzech bezpośrednio od właściciela',
+      title: 'FINDDOME Nieruchomości | Kup nieruchomość na Węgrzech bezpośrednio od właściciela',
       description:
         'Domy, gospodarstwa i dwory na Węgrzech, często bezpośrednio od właściciela. Osobista opieka i dwujęzyczne umowy kupna-sprzedaży.',
     },
@@ -42,7 +42,7 @@ export const PL = {
       {
         eyebrow: 'Dla kupujących',
         title: 'Nieruchomości bezpośrednio\nod właściciela',
-        body: 'Autentyczne węgierskie domy, gospodarstwa, dwory i winnice. Proszę skontaktować się bezpośrednio z właścicielem albo powierzyć cały proces FODEL.',
+        body: 'Autentyczne węgierskie domy, gospodarstwa, dwory i winnice. Proszę skontaktować się bezpośrednio z właścicielem albo powierzyć cały proces FINDDOME.',
         cta: 'Zobacz nieruchomości',
         to: 'properties',
       },
@@ -58,7 +58,7 @@ export const PL = {
     quote:
       '„Holendrzy często nie wierzą własnym oczom, gdy widzą, co można kupić na Węgrzech i za jaką cenę”.',
     quoteSource: `${BRAND.pl.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Jak to działa', title: 'Jak działa FODEL' },
+    how: { eyebrow: 'Jak to działa', title: 'Jak działa FINDDOME' },
     cta: {
       eyebrow: 'Kontakt',
       title: 'Chętnie',
@@ -69,7 +69,7 @@ export const PL = {
       eyebrow: 'Program poleceń',
       title: 'Polecając ogłoszeniodawcę,',
       titleEm: `zyskują Państwo ${pct(10)}`,
-      body: `Jeśli ktoś z Państwa polecenia zamieści ogłoszenie w FODEL, otrzyma ${pct(10)} rabatu na swój pakiet, a my zaliczymy Państwu ${pct(10)} na kolejne ogłoszenie. Już się Państwo u nas ogłaszają? Kod polecający znajdą Państwo w portalu, w zakładce „Instellingen” (Ustawienia).`,
+      body: `Jeśli ktoś z Państwa polecenia zamieści ogłoszenie w FINDDOME, otrzyma ${pct(10)} rabatu na swój pakiet, a my zaliczymy Państwu ${pct(10)} na kolejne ogłoszenie. Już się Państwo u nas ogłaszają? Kod polecający znajdą Państwo w portalu, w zakładce „Instellingen” (Ustawienia).`,
       steps: [
         'Proszę polecić znajomego przez poniższy formularz lub udostępnić swój osobisty link z portalu',
         'Nasz pracownik skontaktuje się z tą osobą',
@@ -117,13 +117,13 @@ export const PL = {
   sellers: {
     meta: {
       title: 'Sprzedający | Państwa węgierska nieruchomość w Europie Zachodniej',
-      description: `Ogłoszenie Państwa węgierskiej nieruchomości w ${REACH_LANGUAGES} językach i ${REACH_COUNTRIES} krajach, od ${eur(69, L)} i bez wyłączności. Prowizja tylko wtedy, gdy kupującego znajdzie FODEL: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} niderlandzkiego VAT.`,
+      description: `Ogłoszenie Państwa węgierskiej nieruchomości w ${REACH_LANGUAGES} językach i ${REACH_COUNTRIES} krajach, od ${eur(69, L)} i bez wyłączności. Prowizja tylko wtedy, gdy kupującego znajdzie FINDDOME: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} niderlandzkiego VAT.`,
     },
     hero: {
       eyebrow: 'Dla sprzedających',
       title: 'Państwa nieruchomość',
       titleEm: 'w Europie Zachodniej',
-      body: `W modelu FODEL Państwa nieruchomość ukazuje się w ${REACH_LANGUAGES} językach i ${REACH_COUNTRIES} krajach, bez umowy na wyłączność. Współpracujemy wyłącznie z poważnymi kupującymi.`,
+      body: `W modelu FINDDOME Państwa nieruchomość ukazuje się w ${REACH_LANGUAGES} językach i ${REACH_COUNTRIES} krajach, bez umowy na wyłączność. Współpracujemy wyłącznie z poważnymi kupującymi.`,
       cta: 'Dodaj ogłoszenie',
       secondary: 'Zobacz cennik',
     },
@@ -135,12 +135,12 @@ export const PL = {
         'Płatność jednorazowa przelewem bankowym, szybko i bezpiecznie.',
         `Rzeczywisty zamiar zakupu: oględziny kosztują ich dwa dni i od ${eur(200, L)} do ${eur(300, L)}.`,
         'Realistyczne ceny: bez przesadnego targowania się.',
-        'FODEL osobiście weryfikuje każdego kupującego przed umówieniem spotkania.',
+        'FINDDOME osobiście weryfikuje każdego kupującego przed umówieniem spotkania.',
       ],
     },
     personas: {
       eyebrow: 'Kupujący',
-      title: 'Kto kupuje przez FODEL',
+      title: 'Kto kupuje przez FINDDOME',
       items: [
         {
           title: 'Emeryci',
@@ -160,11 +160,11 @@ export const PL = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Krok po kroku', title: 'Model FODEL' },
+    how: { eyebrow: 'Krok po kroku', title: 'Model FINDDOME' },
     commission: {
       eyebrow: 'Cennik',
       title: 'Prowizja wyłącznie\npo sfinalizowanej sprzedaży',
-      body: `Jeśli kupujący skontaktuje się z Państwem bezpośrednio i nie potrzebują Państwo naszej pomocy, płacą Państwo jedynie opłatę za ogłoszenie. Jeśli FODEL pośredniczy w sprzedaży: ${pct(COMMISSION.percent)} netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} niderlandzkiego VAT.`,
+      body: `Jeśli kupujący skontaktuje się z Państwem bezpośrednio i nie potrzebują Państwo naszej pomocy, płacą Państwo jedynie opłatę za ogłoszenie. Jeśli FINDDOME pośredniczy w sprzedaży: ${pct(COMMISSION.percent)} netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} niderlandzkiego VAT.`,
       cta: 'Zobacz cennik',
     },
   },
@@ -254,7 +254,7 @@ export const PL = {
       title: 'Most, który',
       titleEm: 'zbudowaliśmy',
       paragraphs: [
-        'FODEL założyli Węgrzy mieszkający w Holandii. Zaczęliśmy w 2013 roku w Almere-Buiten, gdzie zauważyliśmy, że wielu Holendrów i Belgów chce kupić autentyczny węgierski dom, ale nie wie, od czego zacząć.',
+        'FINDDOME założyli Węgrzy mieszkający w Holandii. Zaczęliśmy w 2013 roku w Almere-Buiten, gdzie zauważyliśmy, że wielu Holendrów i Belgów chce kupić autentyczny węgierski dom, ale nie wie, od czego zacząć.',
         `Dziś publikujemy ogłoszenia w ${REACH_COUNTRIES} krajach i ${REACH_LANGUAGES} językach i prowadzimy każdą transakcję od początku do końca: dwujęzyczna umowa kupna-sprzedaży, reprezentacja na podstawie pełnomocnictwa i wpis do księgi wieczystej. Nasze biuro mieści się w Hadze.`,
       ],
     },

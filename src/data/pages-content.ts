@@ -90,7 +90,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
           type: 'prose',
           title: 'Mikor kell jutalékot fizetni?',
           paragraphs: [
-            `Jutalékot kizárólag akkor számítunk fel, ha a vevőt a FODEL közvetítette, írásos adásvételi szerződés jött létre és a foglaló megfizetésre került. Mértéke ${COMMISSION.percent}% nettó, de legalább ${COMMISSION.minimumEur} €, plusz ${COMMISSION.vatPercent}% holland áfa.`,
+            `Jutalékot kizárólag akkor számítunk fel, ha a vevőt a FINDDOME közvetítette, írásos adásvételi szerződés jött létre és a foglaló megfizetésre került. Mértéke ${COMMISSION.percent}% nettó, de legalább ${COMMISSION.minimumEur} €, plusz ${COMMISSION.vatPercent}% holland áfa.`,
             'Ha az érdeklődő közvetlenül az Eladónál jelentkezik és nem kell segítenünk az ügymenetet, a hirdetés árán felül semmilyen más díjat nem kell megfizetni.',
           ],
         },
@@ -107,7 +107,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
     agricultural: {
       metaTitle: 'Agráringatlan: 300 hektárig vásárolhat Magyarországon',
       metaDescription:
-        'Uniós állampolgár agrárvégzettséggel Magyarországon összesen 300 hektár földterület megvásárlására jogosult. A teljes procedúra leszervezését a FODEL vállalja.',
+        'Uniós állampolgár agrárvégzettséggel Magyarországon összesen 300 hektár földterület megvásárlására jogosult. A teljes procedúra leszervezését a FINDDOME vállalja.',
       eyebrow: 'Agráringatlan',
       title: 'Termőföld és',
       titleEm: 'agrárbirtok',
@@ -118,7 +118,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
           type: 'prose',
           title: 'A 300 hektáros keret',
           paragraphs: [
-            `Uniós állampolgár agrárvégzettséggel Magyarországon összesen ${AGRI_HECTARE_LIMIT} hektár földterület megvásárlására jogosult. Ennek a procedúrának a teljes körű leszervezését a FODEL vállalja.`,
+            `Uniós állampolgár agrárvégzettséggel Magyarországon összesen ${AGRI_HECTARE_LIMIT} hektár földterület megvásárlására jogosult. Ennek a procedúrának a teljes körű leszervezését a FINDDOME vállalja.`,
             'A folyamat több hatósági lépésből áll, és a végzettség elismertetésével kezdődik. Munkatársaink végigkísérik az eljárást, és a szükséges dokumentumokat mindkét nyelven elkészítjük.',
           ],
         },
@@ -162,7 +162,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
     photoGuide: {
       metaTitle: 'Fotózási útmutató: így adja el gyorsabban az ingatlanát',
       metaDescription:
-        'A jó fotó a leggyorsabb eladás egyetlen legfontosabb eszköze. A FODEL fotózási útmutatója: megvilágítás, tájolás, felbontás és a leggyakoribb hibák.',
+        'A jó fotó a leggyorsabb eladás egyetlen legfontosabb eszköze. A FINDDOME fotózási útmutatója: megvilágítás, tájolás, felbontás és a leggyakoribb hibák.',
       eyebrow: 'Eladóknak',
       title: 'Fotózási',
       titleEm: 'útmutató',
@@ -209,7 +209,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
             'Ügyvédi díj a szerződés elkészítéséért és ellenjegyzéséért',
             'Kétnyelvű szerződés fordítása: 150 €-tól nyelvpártól függően',
             'Földhivatali eljárási díj',
-            'Adott esetben a FODEL közvetítői jutaléka: ezt az eladó fizeti, nem Ön',
+            'Adott esetben a FINDDOME közvetítői jutaléka: ezt az eladó fizeti, nem Ön',
           ],
         },
         {
@@ -341,7 +341,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
           type: 'prose',
           title: 'Wanneer is courtage verschuldigd?',
           paragraphs: [
-            `Courtage brengen wij uitsluitend in rekening wanneer FODEL de koper heeft aangebracht, er een schriftelijke koopovereenkomst is en de aanbetaling is voldaan. Het tarief is ${COMMISSION.percent}% netto met een minimum van € ${COMMISSION.minimumEur}, plus ${COMMISSION.vatPercent}% Nederlandse btw. De verkoper betaalt, niet de koper.`,
+            `Courtage brengen wij uitsluitend in rekening wanneer FINDDOME de koper heeft aangebracht, er een schriftelijke koopovereenkomst is en de aanbetaling is voldaan. Het tarief is ${COMMISSION.percent}% netto met een minimum van € ${COMMISSION.minimumEur}, plus ${COMMISSION.vatPercent}% Nederlandse btw. De verkoper betaalt, niet de koper.`,
           ],
         },
         {
@@ -356,7 +356,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
 
     agricultural: {
       metaTitle: `Agrarisch vastgoed: tot ${AGRI_HECTARE_LIMIT} hectare in Hongarije`,
-      metaDescription: `Een EU-burger met een agrarische kwalificatie mag in Hongarije tot ${AGRI_HECTARE_LIMIT} hectare grond verwerven. FODEL regelt de volledige procedure.`,
+      metaDescription: `Een EU-burger met een agrarische kwalificatie mag in Hongarije tot ${AGRI_HECTARE_LIMIT} hectare grond verwerven. FINDDOME regelt de volledige procedure.`,
       eyebrow: 'Agrarisch vastgoed',
       title: 'Landbouwgrond en',
       titleEm: 'landgoederen',
@@ -438,7 +438,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
             'Advocaatkosten voor het opstellen en tegentekenen van de akte',
             'Vertaling van het tweetalige contract: vanaf € 150, afhankelijk van de talencombinatie',
             'Kadasterkosten',
-            'Eventuele courtage van FODEL: die betaalt de verkoper, niet u',
+            'Eventuele courtage van FINDDOME: die betaalt de verkoper, niet u',
           ],
         },
         {
@@ -514,7 +514,7 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
     photoGuide: {
       metaTitle: 'Fotografiegids voor adverteerders',
       metaDescription:
-        'Goede foto’s zijn het belangrijkste middel voor een snelle verkoop. De fotografiegids van FODEL: licht, oriëntatie, resolutie en de meestgemaakte fouten.',
+        'Goede foto’s zijn het belangrijkste middel voor een snelle verkoop. De fotografiegids van FINDDOME: licht, oriëntatie, resolutie en de meestgemaakte fouten.',
       eyebrow: 'Adverteren',
       title: 'Fotografie',
       titleEm: 'gids',

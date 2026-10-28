@@ -33,7 +33,7 @@ export const FAQ_PL = [
     question: 'Ile kosztuje Państwa pośrednictwo?',
     answer: [
       `Nasza prowizja wynosi ${pct(COMMISSION.percent)} netto, co najmniej ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} niderlandzkiego VAT. Płaci ją węgierski sprzedający, a nie Państwo.`,
-      'Naliczamy ją tylko wtedy, gdy spełnione są trzy warunki: istnieje pisemna umowa kupna-sprzedaży, kupującego pozyskał FODEL i wpłacono zadatek.',
+      'Naliczamy ją tylko wtedy, gdy spełnione są trzy warunki: istnieje pisemna umowa kupna-sprzedaży, kupującego pozyskał FINDDOME i wpłacono zadatek.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -70,7 +70,7 @@ export const FAQ_PL = [
   },
   {
     id: 'czym-zajmuje-sie-fodel',
-    question: 'Czym zajmuje się FODEL przy zakupie?',
+    question: 'Czym zajmuje się FINDDOME przy zakupie?',
     answer: [
       '- Kontakt telefoniczny i mailowy oraz komunikacja między obiema stronami',
       '- Osobiste spotkania i oględziny na miejscu',

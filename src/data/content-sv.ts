@@ -66,7 +66,7 @@ export const CONTENT_SV = {
         type: 'prose',
         title: 'När provisionen ska betalas',
         paragraphs: [
-          `Vi tar ut provision endast när FODEL har presenterat köparen, det finns ett skriftligt köpeavtal och handpenningen har betalats. Provisionen är ${COMMISSION.percent}\u00a0% netto, minst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nederländsk moms. Det är säljaren som betalar, inte köparen.`,
+          `Vi tar ut provision endast när FINDDOME har presenterat köparen, det finns ett skriftligt köpeavtal och handpenningen har betalats. Provisionen är ${COMMISSION.percent}\u00a0% netto, minst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nederländsk moms. Det är säljaren som betalar, inte köparen.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_SV = {
 
   agricultural: {
     metaTitle: `Jordbruksfastigheter: upp till ${AGRI_HECTARE_LIMIT} hektar i Ungern`,
-    metaDescription: `En EU-medborgare med jordbruksutbildning får förvärva upp till ${AGRI_HECTARE_LIMIT} hektar mark i Ungern. FODEL sköter hela förfarandet.`,
+    metaDescription: `En EU-medborgare med jordbruksutbildning får förvärva upp till ${AGRI_HECTARE_LIMIT} hektar mark i Ungern. FINDDOME sköter hela förfarandet.`,
     eyebrow: 'Jordbruksfastigheter',
     title: 'Jordbruksmark och',
     titleEm: 'lantegendomar',
@@ -163,7 +163,7 @@ export const CONTENT_SV = {
           'Advokatarvode för upprättande och kontrasignering av köpehandlingen',
           `Översättning av det tvåspråkiga avtalet: ${from('hu')}, beroende på språkkombination`,
           'Inskrivningsavgifter',
-          'Eventuell provision till FODEL: den betalar säljaren, inte du',
+          'Eventuell provision till FINDDOME: den betalar säljaren, inte du',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_SV = {
   photoGuide: {
     metaTitle: 'Fotoguide för annonsörer',
     metaDescription:
-      'Bra bilder är det viktigaste verktyget för en snabb försäljning. FODEL:s fotoguide: ljus, orientering, upplösning och de vanligaste misstagen.',
+      'Bra bilder är det viktigaste verktyget för en snabb försäljning. FINDDOME:s fotoguide: ljus, orientering, upplösning och de vanligaste misstagen.',
     eyebrow: 'För säljare',
     title: 'Guide till',
     titleEm: 'fotografering',

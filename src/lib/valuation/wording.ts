@@ -44,27 +44,27 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
   }
   if (baseline.kind === 'comps') {
     return x(
-      `${n} hasonló FODEL-hirdetés`,
-      `${n} vergelijkbare FODEL-advertenties`,
-      `${n} comparable FODEL listings`,
-      `${n} vergleichbare FODEL-Inserate`,
-      `${n} annonces FODEL comparables`,
-      `${nOf('es', n, 'anuncio FODEL comparable', 'anuncios FODEL comparables')}`,
-      `${nOf('pl', n, 'porównywalne ogłoszenie FODEL', 'porównywalne ogłoszenia FODEL', 'porównywalnych ogłoszeń FODEL')}`,
-      `${nOf('ro', n, 'anunț FODEL comparabil', 'anunțuri FODEL comparabile', 'de anunțuri FODEL comparabile')}`,
-      `${nOf('sk', n, 'porovnateľný inzerát FODEL', 'porovnateľné inzeráty FODEL', 'porovnateľných inzerátov FODEL')}`,
-      `${n} ${n === 1 ? 'annuncio FODEL comparabile' : 'annunci FODEL comparabili'}`,
-      `${n} ${n === 1 ? 'anúncio FODEL comparável' : 'anúncios FODEL comparáveis'}`,
-      `${n} ${n === 1 ? 'συγκρίσιμη αγγελία FODEL' : 'συγκρίσιμες αγγελίες FODEL'}`,
-      `${nOf('cs', n, 'srovnatelný inzerát FODEL', 'srovnatelné inzeráty FODEL', 'srovnatelných inzerátů FODEL')}`,
-      `${nOf('sl', n, 'primerljiv oglas FODEL', 'primerljivi oglasi FODEL', 'primerljivih oglasov FODEL', 'primerljiva oglasa FODEL')}`,
-      `${n} ${n === 1 ? 'jämförbar FODEL-annons' : 'jämförbara FODEL-annonser'}`,
-      `${n} ${n === 1 ? 'sammenlignelig FODEL-annonce' : 'sammenlignelige FODEL-annoncer'}`,
-      `${n} ${n === 1 ? 'sammenlignbar FODEL-annonse' : 'sammenlignbare FODEL-annonser'}`,
-      `${n} ${n === 1 ? 'vertailukelpoinen FODEL-ilmoitus' : 'vertailukelpoista FODEL-ilmoitusta'}`,
-      `${n} ${n === 1 ? 'võrreldav FODELi kuulutus' : 'võrreldavat FODELi kuulutust'}`,
-      `${nOf('lv', n, 'salīdzināms FODEL sludinājums', 'salīdzināmi FODEL sludinājumi', 'salīdzināmu FODEL sludinājumu')}`,
-      `${nOf('lt', n, 'palyginamas FODEL skelbimas', 'palyginami FODEL skelbimai', 'palyginamų FODEL skelbimų')}`
+      `${n} hasonló FINDDOME-hirdetés`,
+      `${n} vergelijkbare FINDDOME-advertenties`,
+      `${n} comparable FINDDOME listings`,
+      `${n} vergleichbare FINDDOME-Inserate`,
+      `${n} annonces FINDDOME comparables`,
+      `${nOf('es', n, 'anuncio FINDDOME comparable', 'anuncios FINDDOME comparables')}`,
+      `${nOf('pl', n, 'porównywalne ogłoszenie FINDDOME', 'porównywalne ogłoszenia FINDDOME', 'porównywalnych ogłoszeń FINDDOME')}`,
+      `${nOf('ro', n, 'anunț FINDDOME comparabil', 'anunțuri FINDDOME comparabile', 'de anunțuri FINDDOME comparabile')}`,
+      `${nOf('sk', n, 'porovnateľný inzerát FINDDOME', 'porovnateľné inzeráty FINDDOME', 'porovnateľných inzerátov FINDDOME')}`,
+      `${n} ${n === 1 ? 'annuncio FINDDOME comparabile' : 'annunci FINDDOME comparabili'}`,
+      `${n} ${n === 1 ? 'anúncio FINDDOME comparável' : 'anúncios FINDDOME comparáveis'}`,
+      `${n} ${n === 1 ? 'συγκρίσιμη αγγελία FINDDOME' : 'συγκρίσιμες αγγελίες FINDDOME'}`,
+      `${nOf('cs', n, 'srovnatelný inzerát FINDDOME', 'srovnatelné inzeráty FINDDOME', 'srovnatelných inzerátů FINDDOME')}`,
+      `${nOf('sl', n, 'primerljiv oglas FINDDOME', 'primerljivi oglasi FINDDOME', 'primerljivih oglasov FINDDOME', 'primerljiva oglasa FINDDOME')}`,
+      `${n} ${n === 1 ? 'jämförbar FINDDOME-annons' : 'jämförbara FINDDOME-annonser'}`,
+      `${n} ${n === 1 ? 'sammenlignelig FINDDOME-annonce' : 'sammenlignelige FINDDOME-annoncer'}`,
+      `${n} ${n === 1 ? 'sammenlignbar FINDDOME-annonse' : 'sammenlignbare FINDDOME-annonser'}`,
+      `${n} ${n === 1 ? 'vertailukelpoinen FINDDOME-ilmoitus' : 'vertailukelpoista FINDDOME-ilmoitusta'}`,
+      `${n} ${n === 1 ? 'võrreldav FINDDOME’i kuulutus' : 'võrreldavat FINDDOME’i kuulutust'}`,
+      `${nOf('lv', n, 'salīdzināms FINDDOME sludinājums', 'salīdzināmi FINDDOME sludinājumi', 'salīdzināmu FINDDOME sludinājumu')}`,
+      `${nOf('lt', n, 'palyginamas FINDDOME skelbimas', 'palyginami FINDDOME skelbimai', 'palyginamų FINDDOME skelbimų')}`
     );
   }
   return undefined;

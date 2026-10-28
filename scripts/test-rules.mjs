@@ -404,7 +404,7 @@ test('the search-request confirmation renders in every language and repeats the 
     for (const part of [mail.subject, mail.html, mail.text]) {
       assert.ok(part && !/undefined|NaN|\[object/.test(part), `${l}: bad output`);
     }
-    assert.ok(mail.subject.includes('FODEL'), `${l}: subject`);
+    assert.ok(mail.subject.includes('FINDDOME'), `${l}: subject`);
     assert.ok(mail.html.includes('Baranya') && mail.text.includes('Quiet, a well'), `${l}: request not repeated`);
     assert.ok(mail.text.includes('€ 50 000 – € 90 000'), `${l}: budget`);
   }

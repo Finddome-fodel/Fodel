@@ -16,13 +16,13 @@ export const ES = {
   common: {
     greeting: (name: string) => `Hola, ${name}:`,
     greetingNoName: 'Hola:',
-    signOff: 'Atentamente,\nFODEL Inmobiliaria',
+    signOff: 'Atentamente,\nFINDDOME Inmobiliaria',
     questions: '¿Alguna pregunta? Basta con responder a este correo.',
     linkFallback: '¿No funciona el botón? Copie esta dirección en su navegador:',
   },
 
   registrationConfirm: {
-    subject: 'Defina su contraseña | FODEL',
+    subject: 'Defina su contraseña | FINDDOME',
     preheader: 'Un clic y podrá preparar su anuncio.',
     heading: 'Defina su contraseña',
     intro: 'Gracias por registrarse. Su cuenta está casi lista; solo falta la contraseña.',
@@ -32,21 +32,21 @@ export const ES = {
   },
 
   accountExists: {
-    subject: 'Ya tiene una cuenta en FODEL',
+    subject: 'Ya tiene una cuenta en FINDDOME',
     preheader: 'Inicie sesión o defina una contraseña nueva.',
     heading: 'Ya existe una cuenta con esta dirección',
-    body: 'Alguien acaba de intentar registrarse en el sitio web de FODEL con esta dirección de correo electrónico. Como ya existe una cuenta con ella, no hemos creado una nueva.',
+    body: 'Alguien acaba de intentar registrarse en el sitio web de FINDDOME con esta dirección de correo electrónico. Como ya existe una cuenta con ella, no hemos creado una nueva.',
     cta: 'Iniciar sesión',
     reset: '¿Ha olvidado su contraseña? Solicite una nueva',
     ignore: '¿No ha sido usted? No tiene que hacer nada: su cuenta sigue igual.',
   },
 
   invite: {
-    subject: 'Invitación al portal de FODEL',
+    subject: 'Invitación al portal de FINDDOME',
     preheader: 'Defina su contraseña y acceda al área de anunciantes.',
-    heading: 'Le invitamos al portal de FODEL',
+    heading: 'Le invitamos al portal de FINDDOME',
     body: (role: string) =>
-      `FODEL le invita a unirse al portal ${role}, donde se gestionan anuncios inmobiliarios.`,
+      `FINDDOME le invita a unirse al portal ${role}, donde se gestionan anuncios inmobiliarios.`,
     roleAdmin: 'como administrador',
     roleOwner: 'como anunciante',
     cta: 'Aceptar la invitación',
@@ -54,7 +54,7 @@ export const ES = {
   },
 
   welcome: {
-    subject: 'Bienvenido al portal de FODEL',
+    subject: 'Bienvenido al portal de FINDDOME',
     preheader: 'Su cuenta está activa. Así publicará su primer anuncio.',
     heading: (name: string) => `Le damos la bienvenida, ${name}`,
     body: 'Su cuenta está activa. En el portal puede preparar su anuncio, subir las fotos y seguir su revisión.',
@@ -97,7 +97,7 @@ export const ES = {
     discountLabel: 'Descuento por recomendación (10 %)',
     totalLabel: 'Importe pendiente',
     ctaCard: 'Pagar con tarjeta',
-    cardNote: 'El pago se realiza en el entorno seguro de Stripe. FODEL no ve ni guarda los datos de su tarjeta.',
+    cardNote: 'El pago se realiza en el entorno seguro de Stripe. FINDDOME no ve ni guarda los datos de su tarjeta.',
     bankTitle: 'O por transferencia bancaria',
     bankNote: (ref: string) =>
       `Indique esta referencia en la transferencia: ${ref}. En cuanto llegue, nuestro equipo publicará el anuncio.`,
@@ -115,7 +115,7 @@ export const ES = {
     totalLabel: 'Importe pendiente',
     dueLabel: 'Fecha límite de pago',
     ctaCard: 'Pagar con tarjeta',
-    cardNote: 'El pago se realiza en el entorno seguro de Stripe. FODEL no ve ni guarda los datos de su tarjeta.',
+    cardNote: 'El pago se realiza en el entorno seguro de Stripe. FINDDOME no ve ni guarda los datos de su tarjeta.',
     bankTitle: 'Transferencia bancaria',
     bankNote: (ref: string) => `Indique esta referencia en la transferencia: ${ref}.`,
     vatNote: 'Todos los importes indicados incluyen un 21 % de IVA neerlandés.',
@@ -156,17 +156,17 @@ export const ES = {
   },
 
   passwordReset: {
-    subject: 'Restablecer la contraseña | Portal de FODEL',
+    subject: 'Restablecer la contraseña | Portal de FINDDOME',
     preheader: 'El enlace es válido durante una hora.',
     heading: 'Restablecer la contraseña',
-    body: 'Hemos recibido una solicitud para restablecer la contraseña de su cuenta en el portal de FODEL. Haga clic en el botón de abajo para definir una nueva.',
+    body: 'Hemos recibido una solicitud para restablecer la contraseña de su cuenta en el portal de FINDDOME. Haga clic en el botón de abajo para definir una nueva.',
     cta: 'Definir una contraseña nueva',
     expiry: 'El enlace es válido durante una hora y solo puede utilizarse una vez.',
     ignore: '¿No ha hecho usted esta solicitud? Ignore este correo. Su contraseña no cambiará y no ocurrirá nada.',
   },
 
   referralRegistered: {
-    subject: 'Hemos recibido su recomendación | FODEL',
+    subject: 'Hemos recibido su recomendación | FINDDOME',
     preheader: 'Un miembro de nuestro equipo se pondrá pronto en contacto con la persona recomendada.',
     heading: 'Gracias por la recomendación',
     body: (referredName: string) =>
@@ -180,7 +180,7 @@ export const ES = {
   },
 
   valuationReady: {
-    subject: 'Su valoración está lista | FODEL',
+    subject: 'Su valoración está lista | FINDDOME',
     preheader: 'Hemos preparado una valoración orientativa de su inmueble.',
     heading: 'Su valoración está lista',
     body: (range: string) =>
@@ -206,7 +206,7 @@ export const ES = {
   },
 
   valuationDeclined: {
-    subject: 'Su solicitud de valoración | FODEL',
+    subject: 'Su solicitud de valoración | FINDDOME',
     preheader: 'Un miembro de nuestro equipo se pondrá en contacto con usted personalmente.',
     heading: 'Gracias por su solicitud',
     body: 'Con los datos facilitados, ahora mismo disponemos de muy pocos inmuebles comparables para una valoración fiable. Un miembro de nuestro equipo se pondrá en contacto con usted personalmente.',
@@ -249,7 +249,7 @@ export const ES = {
   },
 
   serviceRequested: {
-    subject: 'Hemos recibido su solicitud | FODEL',
+    subject: 'Hemos recibido su solicitud | FINDDOME',
     preheader: 'Un miembro de nuestro equipo se pondrá en contacto con usted para concertar una cita.',
     heading: 'Hemos recibido su solicitud',
     body: (service: string, price: string) => `Gracias, hemos registrado su solicitud: ${service} (${price}).`,
@@ -259,7 +259,7 @@ export const ES = {
   },
 
   valuationPaid: {
-    subject: 'Confirmación de pago | Valoración FODEL',
+    subject: 'Confirmación de pago | Valoración FINDDOME',
     preheader: 'Gracias, hemos recibido su pago.',
     heading: 'Gracias, hemos recibido su pago',
     body: (service: string) => `Hemos recibido el pago de «${service}».`,
@@ -271,7 +271,7 @@ export const ES = {
   },
 
   judicialRequested: {
-    subject: 'Solicitud de tasación oficial | FODEL',
+    subject: 'Solicitud de tasación oficial | FINDDOME',
     preheader: 'Un miembro de nuestro equipo se pondrá en contacto con usted para explicarle las opciones.',
     heading: 'Hemos recibido su solicitud',
     body: 'Gracias, hemos registrado que desea una tasación oficial (judicial) realizada por un perito. Es distinta de la valoración orientativa, basada en el mercado, que ofrecemos en nuestro sitio web: la realiza un perito habilitado, previo presupuesto.',

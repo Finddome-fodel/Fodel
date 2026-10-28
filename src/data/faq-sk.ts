@@ -33,7 +33,7 @@ export const FAQ_SK = [
     question: 'Koľko stojí vaše sprostredkovanie?',
     answer: [
       `Naša provízia je ${pct(COMMISSION.percent)} bez DPH, najmenej ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} holandskej DPH. Platí ju maďarský predávajúci, nie vy.`,
-      'Účtujeme ju len vtedy, ak sú splnené všetky tri podmienky: existuje písomná kúpna zmluva, kupujúceho priviedol FODEL a bola zaplatená záloha.',
+      'Účtujeme ju len vtedy, ak sú splnené všetky tri podmienky: existuje písomná kúpna zmluva, kupujúceho priviedol FINDDOME a bola zaplatená záloha.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -70,7 +70,7 @@ export const FAQ_SK = [
   },
   {
     id: 'co-zabezpeci-fodel',
-    question: 'O čo sa FODEL pri kúpe postará?',
+    question: 'O čo sa FINDDOME pri kúpe postará?',
     answer: [
       '- Telefonická a e-mailová komunikácia a sprostredkovanie kontaktu medzi oboma stranami',
       '- Osobné stretnutia a obhliadky na mieste',

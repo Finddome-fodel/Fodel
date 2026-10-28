@@ -158,7 +158,7 @@ async function fetchLivePages() {
   return supabaseConfigured ? pages : null;
 }
 
-console.log(`\nFODEL build verification\n`);
+console.log(`\nFINDDOME build verification\n`);
 console.log('Starting a dev server to check the Supabase-backed pages…');
 const livePages = await fetchLivePages();
 if (!livePages) {
@@ -184,7 +184,7 @@ const getHtml = (name) => files.find((f) => f.relPath === name)?.html;
 console.log('Server-rendered content');
 {
   const checks = [
-    ['hu/index.html', ['Magyar', 'Ingatlanok', 'Balatoni Panorámaház', 'FODEL']],
+    ['hu/index.html', ['Magyar', 'Ingatlanok', 'Balatoni Panorámaház', 'FINDDOME']],
     ['nl/index.html', ['Vastgoed', 'Hongarije', 'Panoramavilla']],
     ['hu/haz-elado-6412/index.html', ['Balatoni Panorámaház', 'Badacsony', '178', '6412']],
     ['nl/huis-te-koop-6412/index.html', ['Panoramavilla', 'Badacsony', '178']],
@@ -450,7 +450,7 @@ console.log('\nLinks and images');
 
 /* ── 6. Assets ───────────────────────────────────────────────────────── */
 console.log('\nAssets');
-for (const asset of ['robots.txt', 'sitemap-index.xml', 'favicon.svg', 'llms.txt', 'og/fodel-default.jpg']) {
+for (const asset of ['robots.txt', 'sitemap-index.xml', 'favicon.svg', 'llms.txt', 'og/finddome-default.jpg']) {
   try {
     await fs.access(path.join(dist, asset));
     pass(asset);
@@ -563,7 +563,7 @@ console.log('\nLegal preflight');
   if (!hasKvk) {
     const message =
       'LAUNCH BLOCKER — KvK number is not set. Dutch law requires it on the site. ' +
-      'Ask FODEL for it and set registration.kvk in src/config/company.ts. ' +
+      'Ask FINDDOME for it and set registration.kvk in src/config/company.ts. ' +
       'Pass --allow-missing-kvk to continue during development.';
     if (waived) warn(message);
     else fail(message);

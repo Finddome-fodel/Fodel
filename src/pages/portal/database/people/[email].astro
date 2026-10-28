@@ -55,9 +55,9 @@ const suggestions = seed ? similarTo(seed, active, 6) : [];
 const mailtoBody = suggestions.length
   ? `Kedves ${email},\n\nAz alábbi ingatlanok is érdekelhetik:\n\n${suggestions
       .map((p) => `- ${text(p.data.title, 'hu')} — ${SITE_URL}${propertyUrl(p, 'hu')}`)
-      .join('\n')}\n\nÜdvözlettel,\nFODEL Ingatlan`
+      .join('\n')}\n\nÜdvözlettel,\nFINDDOME Ingatlan`
   : '';
-const mailtoHref = `mailto:${email}${mailtoBody ? `?subject=${encodeURIComponent('Hasonló ingatlanok — FODEL')}&body=${encodeURIComponent(mailtoBody)}` : ''}`;
+const mailtoHref = `mailto:${email}${mailtoBody ? `?subject=${encodeURIComponent('Hasonló ingatlanok — FINDDOME')}&body=${encodeURIComponent(mailtoBody)}` : ''}`;
 ---
 
 <Portal title={email}>

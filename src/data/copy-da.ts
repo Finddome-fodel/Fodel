@@ -20,7 +20,7 @@ const L = 'da' as const;
 export const DA = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Køb ejendom i Ungarn direkte fra ejeren',
+      title: 'FINDDOME Real Estates | Køb ejendom i Ungarn direkte fra ejeren',
       description:
         'Huse, gårde og landejendomme i Ungarn, ofte direkte fra ejeren. Vejledning på dit eget sprog og tosprogede købsaftaler.',
     },
@@ -37,7 +37,7 @@ export const DA = {
       {
         eyebrow: 'For købere',
         title: 'Ejendomme direkte\nfra ejeren',
-        body: 'Autentiske ungarske huse, gårde, landejendomme og vinmarker. Kontakt ejeren direkte, eller lad FODEL klare hele forløbet.',
+        body: 'Autentiske ungarske huse, gårde, landejendomme og vinmarker. Kontakt ejeren direkte, eller lad FINDDOME klare hele forløbet.',
         cta: 'Se ejendomme',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const DA = {
     featured: { eyebrow: 'Udvælgelse', title: 'Udvalgte ejendomme' },
     quote: '”Hollændere kan ofte ikke tro deres egne øjne, når de ser, hvad man kan købe i Ungarn, og til hvilken pris.”',
     quoteSource: `${BRAND.da.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Sådan fungerer det', title: 'Sådan fungerer FODEL' },
+    how: { eyebrow: 'Sådan fungerer det', title: 'Sådan fungerer FINDDOME' },
     cta: {
       eyebrow: 'Kontakt os',
       title: 'Vi ringer gerne',
@@ -63,7 +63,7 @@ export const DA = {
       eyebrow: 'Henvisningsprogram',
       title: 'Anbefal en annoncør,',
       titleEm: 'få 10\u00a0%',
-      body: 'Hvis nogen opretter en annonce hos FODEL efter din anbefaling, får vedkommende 10\u00a0% rabat på sin pakke, og vi godskriver dig 10\u00a0% på din næste annonce. Annoncerer du allerede hos os? Din egen henvisningskode finder du under Indstillinger i portalen.',
+      body: 'Hvis nogen opretter en annonce hos FINDDOME efter din anbefaling, får vedkommende 10\u00a0% rabat på sin pakke, og vi godskriver dig 10\u00a0% på din næste annonce. Annoncerer du allerede hos os? Din egen henvisningskode finder du under Indstillinger i portalen.',
       steps: [
         'Anbefal en bekendt via formularen nedenfor, eller del dit eget link fra portalen',
         'En fra vores team kontakter vedkommende',
@@ -111,13 +111,13 @@ export const DA = {
   sellers: {
     meta: {
       title: 'For sælgere | Din ungarske ejendom i Vesteuropa',
-      description: `Annoncér din ungarske ejendom på ${REACH_LANGUAGES} sprog i ${REACH_COUNTRIES} lande, fra ${eur(69, L)} og uden eneret. Provision kun, hvis FODEL skaffer køberen: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% moms.`,
+      description: `Annoncér din ungarske ejendom på ${REACH_LANGUAGES} sprog i ${REACH_COUNTRIES} lande, fra ${eur(69, L)} og uden eneret. Provision kun, hvis FINDDOME skaffer køberen: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% moms.`,
     },
     hero: {
       eyebrow: 'For sælgere',
       title: 'Din ejendom',
       titleEm: 'i Vesteuropa',
-      body: `Med FODEL-modellen vises din ejendom på ${REACH_LANGUAGES} sprog i ${REACH_COUNTRIES} lande uden eneretsaftale. Vi arbejder kun med seriøse købere.`,
+      body: `Med FINDDOME-modellen vises din ejendom på ${REACH_LANGUAGES} sprog i ${REACH_COUNTRIES} lande uden eneretsaftale. Vi arbejder kun med seriøse købere.`,
       cta: 'Opret annonce',
       secondary: 'Se priser',
     },
@@ -129,7 +129,7 @@ export const DA = {
         'Betaling i ét hug via bankoverførsel, hurtigt og sikkert.',
         'Seriøse hensigter: en enkelt fremvisning koster dem to dage og 200–300\u00a0€.',
         'Realistisk prissætning: ingen urimelig prutning.',
-        'FODEL vurderer hver køber personligt, før der aftales et møde.',
+        'FINDDOME vurderer hver køber personligt, før der aftales et møde.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const DA = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Trin for trin', title: 'FODEL-modellen' },
+    how: { eyebrow: 'Trin for trin', title: 'FINDDOME-modellen' },
     commission: {
       eyebrow: 'Priser',
       title: 'Salær kun\nved gennemført salg',
-      body: `Hvis køberen kontakter dig direkte, og du ikke har brug for vores hjælp, betaler du intet ud over annoncegebyret. Hvis FODEL formidler salget: ${COMMISSION.percent}\u00a0% netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% hollandsk moms.`,
+      body: `Hvis køberen kontakter dig direkte, og du ikke har brug for vores hjælp, betaler du intet ud over annoncegebyret. Hvis FINDDOME formidler salget: ${COMMISSION.percent}\u00a0% netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% hollandsk moms.`,
       cta: 'Se priser',
     },
   },
@@ -248,7 +248,7 @@ export const DA = {
       title: 'Broen, vi',
       titleEm: 'har bygget',
       paragraphs: [
-        'FODEL blev grundlagt af ungarere bosat i Nederlandene. Vi begyndte i Almere-Buiten i 2013, hvor vi lagde mærke til, hvor mange hollændere og belgiere der ønskede at købe et autentisk ungarsk hus, men ikke vidste, hvor de skulle begynde.',
+        'FINDDOME blev grundlagt af ungarere bosat i Nederlandene. Vi begyndte i Almere-Buiten i 2013, hvor vi lagde mærke til, hvor mange hollændere og belgiere der ønskede at købe et autentisk ungarsk hus, men ikke vidste, hvor de skulle begynde.',
         `I dag annoncerer vi i ${REACH_COUNTRIES} lande og på ${REACH_LANGUAGES} sprog og følger hver handel fra start til slut: tosproget købsaftale, repræsentation ved fuldmagt og tinglysning. Vores kontor ligger i Haag.`,
       ],
     },

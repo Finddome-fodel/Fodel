@@ -54,7 +54,7 @@ export const HEARD_FROM = [
   { key: 'social', labels: { hu: 'Facebook, Instagram vagy más közösségi oldal', nl: 'Facebook, Instagram of andere social media', en: 'Facebook, Instagram or other social media' } },
   { key: 'youtube', labels: { hu: 'YouTube', nl: 'YouTube', en: 'YouTube' } },
   { key: 'recommendation', labels: { hu: 'Ismerős ajánlása', nl: 'Aanbeveling van een bekende', en: 'Recommended by someone I know' } },
-  { key: 'returning', labels: { hu: 'Korábban már hirdettem a FODEL-nél', nl: 'Ik heb eerder bij FODEL geadverteerd', en: 'I have advertised with FODEL before' } },
+  { key: 'returning', labels: { hu: 'Korábban már hirdettem a FINDDOME-nél', nl: 'Ik heb eerder bij FINDDOME geadverteerd', en: 'I have advertised with FINDDOME before' } },
   { key: 'press', labels: { hu: 'Sajtó, hírlevél vagy hirdetés', nl: 'Pers, nieuwsbrief of advertentie', en: 'Press, newsletter or an advert' } },
   { key: 'other', labels: { hu: 'Egyéb', nl: 'Anders', en: 'Other' } },
 ] as const;

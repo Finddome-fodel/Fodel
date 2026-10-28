@@ -66,7 +66,7 @@ export const CONTENT_FI = {
         type: 'prose',
         title: 'Milloin palkkio erääntyy',
         paragraphs: [
-          `Veloitamme palkkion vain, kun FODEL on tuonut ostajan, kirjallinen kauppakirja on olemassa ja käsiraha on maksettu. Palkkio on ${COMMISSION.percent}\u00a0% netto, vähintään ${eur(COMMISSION.minimumEur, L)}, lisäksi ${COMMISSION.vatPercent}\u00a0% Alankomaiden arvonlisävero. Palkkion maksaa myyjä, ei ostaja.`,
+          `Veloitamme palkkion vain, kun FINDDOME on tuonut ostajan, kirjallinen kauppakirja on olemassa ja käsiraha on maksettu. Palkkio on ${COMMISSION.percent}\u00a0% netto, vähintään ${eur(COMMISSION.minimumEur, L)}, lisäksi ${COMMISSION.vatPercent}\u00a0% Alankomaiden arvonlisävero. Palkkion maksaa myyjä, ei ostaja.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_FI = {
 
   agricultural: {
     metaTitle: `Maatilakiinteistöt: enintään ${AGRI_HECTARE_LIMIT} hehtaaria Unkarissa`,
-    metaDescription: `Maatalousalan pätevyyden omaava EU-kansalainen voi hankkia Unkarista enintään ${AGRI_HECTARE_LIMIT} hehtaaria maata. FODEL hoitaa koko menettelyn.`,
+    metaDescription: `Maatalousalan pätevyyden omaava EU-kansalainen voi hankkia Unkarista enintään ${AGRI_HECTARE_LIMIT} hehtaaria maata. FINDDOME hoitaa koko menettelyn.`,
     eyebrow: 'Maatilakiinteistöt',
     title: 'Viljelymaat ja',
     titleEm: 'maatilat',
@@ -163,7 +163,7 @@ export const CONTENT_FI = {
           'Asianajajan palkkio kauppakirjan laatimisesta ja varmentamisesta',
           `Kaksikielisen sopimuksen käännös: ${from('hu')}, kieliparista riippuen`,
           'Kirjaamismaksut',
-          'Mahdollinen välityspalkkio FODELille: sen maksaa myyjä, et sinä',
+          'Mahdollinen välityspalkkio FINDDOMElle: sen maksaa myyjä, et sinä',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_FI = {
   photoGuide: {
     metaTitle: 'Kuvausopas ilmoittajille',
     metaDescription:
-      'Hyvät kuvat ovat tärkein työkalu nopeaan myyntiin. FODELin kuvausopas: valo, suunta, tarkkuus ja yleisimmät virheet.',
+      'Hyvät kuvat ovat tärkein työkalu nopeaan myyntiin. FINDDOMEn kuvausopas: valo, suunta, tarkkuus ja yleisimmät virheet.',
     eyebrow: 'Myyjille',
     title: 'Opas',
     titleEm: 'valokuvaukseen',

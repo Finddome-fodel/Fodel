@@ -70,7 +70,7 @@ export const CONTENT_RO = {
         type: 'prose',
         title: 'Când se datorează comision',
         paragraphs: [
-          `Percepem comision doar dacă FODEL a adus cumpărătorul, există un contract de vânzare-cumpărare scris și avansul a fost plătit. Comisionul este de ${pct(COMMISSION.percent)} net, cel puțin ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} TVA neerlandez. Îl plătește vânzătorul, nu cumpărătorul.`,
+          `Percepem comision doar dacă FINDDOME a adus cumpărătorul, există un contract de vânzare-cumpărare scris și avansul a fost plătit. Comisionul este de ${pct(COMMISSION.percent)} net, cel puțin ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} TVA neerlandez. Îl plătește vânzătorul, nu cumpărătorul.`,
         ],
       },
       {
@@ -85,7 +85,7 @@ export const CONTENT_RO = {
 
   agricultural: {
     metaTitle: `Proprietăți agricole: până la ${ha} în Ungaria`,
-    metaDescription: `Un cetățean UE cu calificare în agricultură poate dobândi în Ungaria până la ${ha} de teren. FODEL se ocupă de întreaga procedură.`,
+    metaDescription: `Un cetățean UE cu calificare în agricultură poate dobândi în Ungaria până la ${ha} de teren. FINDDOME se ocupă de întreaga procedură.`,
     eyebrow: 'Proprietăți agricole',
     title: 'Terenuri agricole și',
     titleEm: 'domenii',
@@ -167,7 +167,7 @@ export const CONTENT_RO = {
           'Onorariul avocatului pentru redactarea și contrasemnarea actului',
           `Traducerea contractului bilingv: ${des('hu')}, în funcție de combinația de limbi`,
           'Taxe de carte funciară',
-          'Eventualul comision FODEL: îl plătește vânzătorul, nu dumneavoastră',
+          'Eventualul comision FINDDOME: îl plătește vânzătorul, nu dumneavoastră',
         ],
       },
       {
@@ -243,7 +243,7 @@ export const CONTENT_RO = {
   photoGuide: {
     metaTitle: 'Ghid foto pentru cei care publică anunțuri',
     metaDescription:
-      'Fotografiile bune sunt cel mai bun mijloc pentru o vânzare rapidă. Ghidul foto FODEL: lumină, încadrare, rezoluție și cele mai frecvente greșeli.',
+      'Fotografiile bune sunt cel mai bun mijloc pentru o vânzare rapidă. Ghidul foto FINDDOME: lumină, încadrare, rezoluție și cele mai frecvente greșeli.',
     eyebrow: 'Pentru vânzători',
     title: 'Ghidul',
     titleEm: 'foto',

@@ -26,7 +26,7 @@ export const FAQ_LT = [
     question: 'Kiek kainuoja jūsų tarpininkavimas?',
     answer: [
       `Mūsų komisinis yra ${COMMISSION.percent}\u00a0% be mokesčių, ne mažiau kaip ${eur(COMMISSION.minimumEur, L)}, plius ${COMMISSION.vatPercent}\u00a0% Nyderlandų PVM. Jį moka Vengrijos pardavėjas, ne jūs.`,
-      'Sąskaitą išrašome tik tada, kai įvykdytos visos trys sąlygos: yra rašytinė pirkimo–pardavimo sutartis, pirkėją surado FODEL ir sumokėtas avansas.',
+      'Sąskaitą išrašome tik tada, kai įvykdytos visos trys sąlygos: yra rašytinė pirkimo–pardavimo sutartis, pirkėją surado FINDDOME ir sumokėtas avansas.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_LT = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Kuo tiksliai pasirūpina FODEL, kai perkate?',
+    question: 'Kuo tiksliai pasirūpina FINDDOME, kai perkate?',
     answer: [
       '- Konsultacijos telefonu ir el. paštu bei bendravimas tarp šalių',
       '- Asmeniniai susitikimai ir apžiūros vietoje',

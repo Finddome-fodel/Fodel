@@ -126,7 +126,7 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} | {lang === 'hu' ? 'FODEL portál' : 'FODEL'}</title>
+    <title>{title} | {lang === 'hu' ? 'FINDDOME portál' : 'FINDDOME'}</title>
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <FontPreload />
@@ -144,8 +144,8 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
           <aside class="pt-side" id="pt-side" aria-label="Portál menü">
             <div class="pt-side-in surface-ink">
               <div class="pt-brand">
-                <a href="/portal/dashboard" aria-label="FODEL — áttekintés">
-                  <span class="word">FODEL</span>
+                <a href="/portal/dashboard" aria-label="FINDDOME — áttekintés">
+                  <span class="word">FINDDOME</span>
                   <span class="rule" aria-hidden="true" />
                   <span class="sub">Ingatlan</span>
                 </a>
@@ -212,7 +212,7 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
 
           <div class="pt-main-wrap">
             <div class="pt-mobilebar">
-              <span class="word">FODEL</span>
+              <span class="word">FINDDOME</span>
               <button type="button" class="pt-burger" data-drawer-toggle aria-controls="pt-side" aria-label="Menü megnyitása">
                 <Fragment set:html={icon('menu', 18)} />
                 Menü

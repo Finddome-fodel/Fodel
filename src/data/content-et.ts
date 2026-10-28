@@ -66,7 +66,7 @@ export const CONTENT_ET = {
         type: 'prose',
         title: 'Millal tuleb maksta vahendustasu',
         paragraphs: [
-          `Vahendustasu võtame ainult siis, kui ostja on leidnud FODEL, olemas on kirjalik müügileping ja käsiraha on tasutud. Tasu on ${COMMISSION.percent}% netosummast, vähemalt ${eur(COMMISSION.minimumEur, L)}, millele lisandub ${COMMISSION.vatPercent}% Hollandi käibemaks. Tasu maksab müüja, mitte ostja.`,
+          `Vahendustasu võtame ainult siis, kui ostja on leidnud FINDDOME, olemas on kirjalik müügileping ja käsiraha on tasutud. Tasu on ${COMMISSION.percent}% netosummast, vähemalt ${eur(COMMISSION.minimumEur, L)}, millele lisandub ${COMMISSION.vatPercent}% Hollandi käibemaks. Tasu maksab müüja, mitte ostja.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_ET = {
 
   agricultural: {
     metaTitle: `Põllumajanduskinnisvara: kuni ${AGRI_HECTARE_LIMIT} hektarit Ungaris`,
-    metaDescription: `Põllumajandusliku kvalifikatsiooniga ELi kodanik võib Ungaris omandada kuni ${AGRI_HECTARE_LIMIT} hektarit maad. FODEL korraldab kogu menetluse.`,
+    metaDescription: `Põllumajandusliku kvalifikatsiooniga ELi kodanik võib Ungaris omandada kuni ${AGRI_HECTARE_LIMIT} hektarit maad. FINDDOME korraldab kogu menetluse.`,
     eyebrow: 'Põllumajanduskinnisvara',
     title: 'Põllumaa ja',
     titleEm: 'maamõisad',
@@ -163,7 +163,7 @@ export const CONTENT_ET = {
           'Advokaaditasu lepingu koostamise ja kaasallkirjastamise eest',
           `Kakskeelse lepingu tõlge: ${from('hu')}, olenevalt keelepaarist`,
           'Kinnistamistasud',
-          'Võimalik vahendustasu FODELile: selle maksab müüja, mitte teie',
+          'Võimalik vahendustasu FINDDOME’ile: selle maksab müüja, mitte teie',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_ET = {
   photoGuide: {
     metaTitle: 'Fotojuhend kuulutajatele',
     metaDescription:
-      'Head fotod on kiire müügi kõige tähtsam tööriist. FODELi fotojuhend: valgus, suund, eraldusvõime ja levinumad vead.',
+      'Head fotod on kiire müügi kõige tähtsam tööriist. FINDDOME’i fotojuhend: valgus, suund, eraldusvõime ja levinumad vead.',
     eyebrow: 'Müüjatele',
     title: 'Juhend',
     titleEm: 'juhend',

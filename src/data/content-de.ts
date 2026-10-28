@@ -68,7 +68,7 @@ export const CONTENT_DE = {
         type: 'prose',
         title: 'Wann Provision anfällt',
         paragraphs: [
-          `Provision berechnen wir ausschließlich, wenn FODEL den Käufer vermittelt hat, ein schriftlicher Kaufvertrag vorliegt und die Anzahlung geleistet ist. Der Satz beträgt ${pct(COMMISSION.percent)} netto, mindestens ${eur(COMMISSION.minimumEur, L)}, zuzüglich ${pct(COMMISSION.vatPercent)} niederländische USt. Zahlen muss der Verkäufer, nicht der Käufer.`,
+          `Provision berechnen wir ausschließlich, wenn FINDDOME den Käufer vermittelt hat, ein schriftlicher Kaufvertrag vorliegt und die Anzahlung geleistet ist. Der Satz beträgt ${pct(COMMISSION.percent)} netto, mindestens ${eur(COMMISSION.minimumEur, L)}, zuzüglich ${pct(COMMISSION.vatPercent)} niederländische USt. Zahlen muss der Verkäufer, nicht der Käufer.`,
         ],
       },
       {
@@ -83,7 +83,7 @@ export const CONTENT_DE = {
 
   agricultural: {
     metaTitle: `Agrarimmobilien: bis zu ${AGRI_HECTARE_LIMIT} Hektar in Ungarn`,
-    metaDescription: `Ein EU-Bürger mit landwirtschaftlicher Qualifikation darf in Ungarn bis zu ${AGRI_HECTARE_LIMIT} Hektar Land erwerben. FODEL übernimmt das gesamte Verfahren.`,
+    metaDescription: `Ein EU-Bürger mit landwirtschaftlicher Qualifikation darf in Ungarn bis zu ${AGRI_HECTARE_LIMIT} Hektar Land erwerben. FINDDOME übernimmt das gesamte Verfahren.`,
     eyebrow: 'Agrarimmobilien',
     title: 'Ackerland und',
     titleEm: 'Landgüter',
@@ -165,7 +165,7 @@ export const CONTENT_DE = {
           'Anwaltskosten für das Erstellen und Gegenzeichnen der Urkunde',
           `Übersetzung des zweisprachigen Vertrags: ${ab('hu')}, je nach Sprachkombination`,
           'Grundbuchgebühren',
-          'Gegebenenfalls Provision für FODEL: Die zahlt der Verkäufer, nicht Sie',
+          'Gegebenenfalls Provision für FINDDOME: Die zahlt der Verkäufer, nicht Sie',
         ],
       },
       {
@@ -241,7 +241,7 @@ export const CONTENT_DE = {
   photoGuide: {
     metaTitle: 'Foto-Ratgeber für Inserenten',
     metaDescription:
-      'Gute Fotos sind das wichtigste Mittel für einen schnellen Verkauf. Der FODEL-Foto-Ratgeber: Licht, Ausrichtung, Auflösung und die häufigsten Fehler.',
+      'Gute Fotos sind das wichtigste Mittel für einen schnellen Verkauf. Der FINDDOME-Foto-Ratgeber: Licht, Ausrichtung, Auflösung und die häufigsten Fehler.',
     eyebrow: 'Für Verkäufer',
     title: 'Ratgeber für',
     titleEm: 'gute Fotos',

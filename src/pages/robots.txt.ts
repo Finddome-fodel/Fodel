@@ -13,7 +13,7 @@ export const GET: APIRoute = () =>
 Allow: /
 Disallow: /api/
 
-# Answer engines. FODEL's content is factual and plainly stated — prices,
+# Answer engines. FINDDOME's content is factual and plainly stated — prices,
 # commission terms, process steps — which is what these crawlers surface well.
 User-agent: GPTBot
 Allow: /

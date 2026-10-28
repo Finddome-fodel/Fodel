@@ -185,87 +185,87 @@ export function itemisedTotal(
 
 const FOOTER_COPY = {
   hu: {
-    why: 'Ezt az e-mailt azért kapja, mert FODEL-fiókkal rendelkezik, vagy hirdetést adott fel nálunk.',
+    why: 'Ezt az e-mailt azért kapja, mert FINDDOME-fiókkal rendelkezik, vagy hirdetést adott fel nálunk.',
     contact: 'Kapcsolat',
   },
   nl: {
-    why: 'U ontvangt deze e-mail omdat u een FODEL-account heeft of een advertentie bij ons heeft geplaatst.',
+    why: 'U ontvangt deze e-mail omdat u een FINDDOME-account heeft of een advertentie bij ons heeft geplaatst.',
     contact: 'Contact',
   },
   en: {
-    why: 'You are receiving this email because you have a FODEL account or placed a listing with us.',
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
     contact: 'Contact',
   },
   de: {
-    why: 'Sie erhalten diese E-Mail, weil Sie ein FODEL-Konto haben oder bei uns ein Inserat aufgegeben haben.',
+    why: 'Sie erhalten diese E-Mail, weil Sie ein FINDDOME-Konto haben oder bei uns ein Inserat aufgegeben haben.',
     contact: 'Kontakt',
   },
   fr: {
-    why: 'Vous recevez cet e-mail parce que vous avez un compte FODEL ou que vous avez déposé une annonce chez nous.',
+    why: 'Vous recevez cet e-mail parce que vous avez un compte FINDDOME ou que vous avez déposé une annonce chez nous.',
     contact: 'Contact',
   },
   es: {
-    why: 'Recibe este correo porque tiene una cuenta en FODEL o ha publicado un anuncio con nosotros.',
+    why: 'Recibe este correo porque tiene una cuenta en FINDDOME o ha publicado un anuncio con nosotros.',
     contact: 'Contacto',
   },
   pl: {
-    why: 'Otrzymują Państwo tę wiadomość, ponieważ mają Państwo konto w FODEL lub zamieścili u nas ogłoszenie.',
+    why: 'Otrzymują Państwo tę wiadomość, ponieważ mają Państwo konto w FINDDOME lub zamieścili u nas ogłoszenie.',
     contact: 'Kontakt',
   },
   ro: {
-    why: 'Primiți acest e-mail deoarece aveți un cont FODEL sau ați publicat un anunț la noi.',
+    why: 'Primiți acest e-mail deoarece aveți un cont FINDDOME sau ați publicat un anunț la noi.',
     contact: 'Contact',
   },
   sk: {
-    why: 'Tento e-mail dostávate, pretože máte účet vo FODEL alebo ste u nás podali inzerát.',
+    why: 'Tento e-mail dostávate, pretože máte účet vo FINDDOME alebo ste u nás podali inzerát.',
     contact: 'Kontakt',
   },
   it: {
-    why: 'Riceve questa e-mail perché ha un account FODEL o ha pubblicato un annuncio con noi.',
+    why: 'Riceve questa e-mail perché ha un account FINDDOME o ha pubblicato un annuncio con noi.',
     contact: 'Contatti',
   },
   pt: {
-    why: 'Recebe este e-mail porque tem uma conta FODEL ou publicou um anúncio connosco.',
+    why: 'Recebe este e-mail porque tem uma conta FINDDOME ou publicou um anúncio connosco.',
     contact: 'Contacto',
   },
   el: {
-    why: 'Λαμβάνετε αυτό το email επειδή έχετε λογαριασμό FODEL ή καταχωρίσατε αγγελία σε εμάς.',
+    why: 'Λαμβάνετε αυτό το email επειδή έχετε λογαριασμό FINDDOME ή καταχωρίσατε αγγελία σε εμάς.',
     contact: 'Επικοινωνία',
   },
   cs: {
-    why: 'Tento e-mail dostáváte, protože máte účet FODEL nebo jste u nás zadali inzerát.',
+    why: 'Tento e-mail dostáváte, protože máte účet FINDDOME nebo jste u nás zadali inzerát.',
     contact: 'Kontakt',
   },
   sl: {
-    why: 'To sporočilo prejemate, ker imate račun FODEL ali ste pri nas oddali oglas.',
+    why: 'To sporočilo prejemate, ker imate račun FINDDOME ali ste pri nas oddali oglas.',
     contact: 'Kontakt',
   },
   sv: {
-    why: 'Du får det här mejlet eftersom du har ett FODEL-konto eller har lagt in en annons hos oss.',
+    why: 'Du får det här mejlet eftersom du har ett FINDDOME-konto eller har lagt in en annons hos oss.',
     contact: 'Kontakt',
   },
   da: {
-    why: 'Du modtager denne e-mail, fordi du har en FODEL-konto eller har oprettet en annonce hos os.',
+    why: 'Du modtager denne e-mail, fordi du har en FINDDOME-konto eller har oprettet en annonce hos os.',
     contact: 'Kontakt',
   },
   no: {
-    why: 'Du mottar denne e-posten fordi du har en FODEL-konto eller har lagt inn en annonse hos oss.',
+    why: 'Du mottar denne e-posten fordi du har en FINDDOME-konto eller har lagt inn en annonse hos oss.',
     contact: 'Kontakt',
   },
   fi: {
-    why: 'Saat tämän viestin, koska sinulla on FODEL-tili tai olet jättänyt meille ilmoituksen.',
+    why: 'Saat tämän viestin, koska sinulla on FINDDOME-tili tai olet jättänyt meille ilmoituksen.',
     contact: 'Yhteystiedot',
   },
   et: {
-    why: 'Saate selle kirja, sest teil on FODELi konto või olete meie juures kuulutuse avaldanud.',
+    why: 'Saate selle kirja, sest teil on FINDDOME’i konto või olete meie juures kuulutuse avaldanud.',
     contact: 'Kontakt',
   },
   lv: {
-    why: 'Jūs saņemat šo e-pastu, jo jums ir FODEL konts vai esat pie mums ievietojis sludinājumu.',
+    why: 'Jūs saņemat šo e-pastu, jo jums ir FINDDOME konts vai esat pie mums ievietojis sludinājumu.',
     contact: 'Kontakti',
   },
   lt: {
-    why: 'Šį laišką gaunate, nes turite FODEL paskyrą arba pas mus įdėjote skelbimą.',
+    why: 'Šį laišką gaunate, nes turite FINDDOME paskyrą arba pas mus įdėjote skelbimą.',
     contact: 'Kontaktai',
   },
 } as const;
@@ -277,36 +277,36 @@ const FOOTER_COPY = {
  * account-holder line above, which would be false for them.
  */
 const VISITOR_WHY: Record<ShellLocale, string> = {
-  hu: 'Ezt az e-mailt azért kapja, mert felvette velünk a kapcsolatot a FODEL weboldalán.',
-  nl: 'U ontvangt deze e-mail omdat u via de FODEL-website contact met ons heeft opgenomen.',
-  en: 'You are receiving this email because you contacted us through the FODEL website.',
-  de: 'Sie erhalten diese E-Mail, weil Sie uns über die FODEL-Website kontaktiert haben.',
-  fr: 'Vous recevez cet e-mail parce que vous nous avez contactés via le site FODEL.',
-  es: 'Recibe este correo porque se puso en contacto con nosotros a través del sitio web de FODEL.',
-  pl: 'Otrzymują Państwo tę wiadomość, ponieważ skontaktowali się Państwo z nami za pośrednictwem strony FODEL.',
-  ro: 'Primiți acest e-mail deoarece ne-ați contactat prin site-ul FODEL.',
-  sk: 'Tento e-mail dostávate, pretože ste nás kontaktovali cez web FODEL.',
-  it: 'Riceve questa e-mail perché ci ha contattato tramite il sito FODEL.',
-  pt: 'Recebe este e-mail porque nos contactou através do site da FODEL.',
-  el: 'Λαμβάνετε αυτό το email επειδή επικοινωνήσατε μαζί μας μέσω του ιστότοπου της FODEL.',
-  cs: 'Tento e-mail dostáváte, protože jste nás kontaktovali prostřednictvím webu FODEL.',
-  sl: 'To sporočilo prejemate, ker ste nas kontaktirali prek spletnega mesta FODEL.',
-  sv: 'Du får det här mejlet eftersom du kontaktade oss via FODEL:s webbplats.',
-  da: 'Du modtager denne e-mail, fordi du har kontaktet os via FODEL’s hjemmeside.',
-  no: 'Du mottar denne e-posten fordi du kontaktet oss via FODELs nettsted.',
-  fi: 'Saat tämän viestin, koska otit meihin yhteyttä FODELin verkkosivuston kautta.',
-  et: 'Saate selle kirja, sest võtsite meiega ühendust FODELi veebilehe kaudu.',
-  lv: 'Jūs saņemat šo e-pastu, jo sazinājāties ar mums, izmantojot FODEL tīmekļa vietni.',
-  lt: 'Šį laišką gaunate, nes susisiekėte su mumis per FODEL svetainę.',
+  hu: 'Ezt az e-mailt azért kapja, mert felvette velünk a kapcsolatot a FINDDOME weboldalán.',
+  nl: 'U ontvangt deze e-mail omdat u via de FINDDOME-website contact met ons heeft opgenomen.',
+  en: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  de: 'Sie erhalten diese E-Mail, weil Sie uns über die FINDDOME-Website kontaktiert haben.',
+  fr: 'Vous recevez cet e-mail parce que vous nous avez contactés via le site FINDDOME.',
+  es: 'Recibe este correo porque se puso en contacto con nosotros a través del sitio web de FINDDOME.',
+  pl: 'Otrzymują Państwo tę wiadomość, ponieważ skontaktowali się Państwo z nami za pośrednictwem strony FINDDOME.',
+  ro: 'Primiți acest e-mail deoarece ne-ați contactat prin site-ul FINDDOME.',
+  sk: 'Tento e-mail dostávate, pretože ste nás kontaktovali cez web FINDDOME.',
+  it: 'Riceve questa e-mail perché ci ha contattato tramite il sito FINDDOME.',
+  pt: 'Recebe este e-mail porque nos contactou através do site da FINDDOME.',
+  el: 'Λαμβάνετε αυτό το email επειδή επικοινωνήσατε μαζί μας μέσω του ιστότοπου της FINDDOME.',
+  cs: 'Tento e-mail dostáváte, protože jste nás kontaktovali prostřednictvím webu FINDDOME.',
+  sl: 'To sporočilo prejemate, ker ste nas kontaktirali prek spletnega mesta FINDDOME.',
+  sv: 'Du får det här mejlet eftersom du kontaktade oss via FINDDOME:s webbplats.',
+  da: 'Du modtager denne e-mail, fordi du har kontaktet os via FINDDOME’s hjemmeside.',
+  no: 'Du mottar denne e-posten fordi du kontaktet oss via FINDDOMEs nettsted.',
+  fi: 'Saat tämän viestin, koska otit meihin yhteyttä FINDDOMEn verkkosivuston kautta.',
+  et: 'Saate selle kirja, sest võtsite meiega ühendust FINDDOME’i veebilehe kaudu.',
+  lv: 'Jūs saņemat šo e-pastu, jo sazinājāties ar mums, izmantojot FINDDOME tīmekļa vietni.',
+  lt: 'Šį laišką gaunate, nes susisiekėte su mumis per FINDDOME svetainę.',
 };
 
 function wordmark(locale: ShellLocale): string {
   // BRAND[locale].name is "FODEL INGATLAN" / "FODEL VASTGOED" — the sub-label
   // is whatever follows the wordmark, exactly as src/components/Logo.astro
   // derives it. Same rule, one source.
-  const sub = BRAND[locale].name.replace('FODEL', '').trim();
+  const sub = BRAND[locale].name.replace('FINDDOME', '').trim();
   return `<a href="${SITE}/${locale}/" style="text-decoration:none;">
-  <span style="display:block;font-family:${DISPLAY};font-size:19px;font-weight:500;letter-spacing:0.34em;text-transform:uppercase;color:${INK};">FODEL</span>
+  <span style="display:block;font-family:${DISPLAY};font-size:19px;font-weight:500;letter-spacing:0.34em;text-transform:uppercase;color:${INK};">FINDDOME</span>
   <span style="display:block;width:34px;height:1px;background-color:${INK};font-size:0;line-height:0;margin:9px 0 8px;">&nbsp;</span>
   <span style="display:block;font-family:${SANS};font-size:9.5px;font-weight:400;letter-spacing:0.30em;text-transform:uppercase;color:${TAUPE};">${esc(sub)}</span>
 </a>`;
@@ -338,7 +338,7 @@ export function shell(opts: {
 <meta name="x-apple-disable-message-reformatting" />
 <meta name="color-scheme" content="light" />
 <meta name="supported-color-schemes" content="light" />
-<title>FODEL</title>
+<title>FINDDOME</title>
 <style type="text/css">
   /* Progressive enhancement only — nothing here is required for the email to
      read correctly, because Gmail discards this block in several contexts. */
@@ -403,8 +403,8 @@ export function shell(opts: {
 export function textShell(opts: { locale: ShellLocale; body: string; why?: string; audience?: 'visitor' }): string {
   const { locale, body } = opts;
   const mail = locale === 'hu' ? COMPANY.email.hu : COMPANY.email.primary;
-  const sub = BRAND[locale].name.replace('FODEL', '').trim();
-  return `FODEL ${sub}
+  const sub = BRAND[locale].name.replace('FINDDOME', '').trim();
+  return `FINDDOME ${sub}
 ${'—'.repeat(24)}
 
 ${body.trim()}

@@ -65,11 +65,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Túl sok próbálkozás. Várjon egy percet, majd próbálja újra.',
         other: 'Nem sikerült bejelentkezni. Kérjük, próbálja újra.',
       },
-      invited: 'Meghívót kapott a FODEL-től? A meghívó e-mailben lévő linkkel állíthatja be a jelszavát.',
+      invited: 'Meghívót kapott a FINDDOME-től? A meghívó e-mailben lévő linkkel állíthatja be a jelszavát.',
     },
     register: {
       title: 'Regisztráció',
-      heading: 'Hirdessen a FODEL-en',
+      heading: 'Hirdessen a FINDDOME-en',
       intro: 'Adja meg a nevét és az elérhetőségét. Küldünk egy linket, amellyel jelszót állít be, és utána lépésről lépésre összeállítja a hirdetését.',
     },
     forgot: {
@@ -116,11 +116,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Te veel pogingen. Wacht een minuut en probeer het opnieuw.',
         other: 'Inloggen is niet gelukt. Probeer het opnieuw.',
       },
-      invited: 'Uitgenodigd door FODEL? Met de link in de uitnodiging stelt u uw wachtwoord in.',
+      invited: 'Uitgenodigd door FINDDOME? Met de link in de uitnodiging stelt u uw wachtwoord in.',
     },
     register: {
       title: 'Registreren',
-      heading: 'Adverteren bij FODEL',
+      heading: 'Adverteren bij FINDDOME',
       intro: 'Vul uw naam en contactgegevens in. Wij sturen u een link om een wachtwoord in te stellen; daarna stelt u stap voor stap uw advertentie samen.',
     },
     forgot: {
@@ -167,11 +167,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Too many attempts. Wait a minute and try again.',
         other: 'We could not sign you in. Please try again.',
       },
-      invited: 'Invited by FODEL? Use the link in the invitation to set your password.',
+      invited: 'Invited by FINDDOME? Use the link in the invitation to set your password.',
     },
     register: {
       title: 'Register',
-      heading: 'Advertise with FODEL',
+      heading: 'Advertise with FINDDOME',
       intro: 'Enter your name and contact details. We send you a link to set a password; after that you put your listing together step by step.',
     },
     forgot: {
@@ -218,11 +218,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Zu viele Versuche. Warten Sie eine Minute und versuchen Sie es erneut.',
         other: 'Die Anmeldung hat nicht geklappt. Bitte versuchen Sie es erneut.',
       },
-      invited: 'Von FODEL eingeladen? Über den Link in der Einladung legen Sie Ihr Passwort fest.',
+      invited: 'Von FINDDOME eingeladen? Über den Link in der Einladung legen Sie Ihr Passwort fest.',
     },
     register: {
       title: 'Registrieren',
-      heading: 'Bei FODEL inserieren',
+      heading: 'Bei FINDDOME inserieren',
       intro: 'Geben Sie Ihren Namen und Ihre Kontaktdaten an. Wir senden Ihnen einen Link zum Festlegen eines Passworts; danach stellen Sie Schritt für Schritt Ihr Inserat zusammen.',
     },
     forgot: {
@@ -269,11 +269,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Trop de tentatives. Attendez une minute, puis réessayez.',
         other: 'La connexion a échoué. Veuillez réessayer.',
       },
-      invited: 'Invité par FODEL\u202f? Le lien de l’invitation vous permet de définir votre mot de passe.',
+      invited: 'Invité par FINDDOME\u202f? Le lien de l’invitation vous permet de définir votre mot de passe.',
     },
     register: {
       title: 'Inscription',
-      heading: 'Publiez chez FODEL',
+      heading: 'Publiez chez FINDDOME',
       intro: 'Indiquez votre nom et vos coordonnées. Nous vous envoyons un lien pour définir un mot de passe\u00a0; vous composez ensuite votre annonce étape par étape.',
     },
     forgot: {
@@ -320,11 +320,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Demasiados intentos. Espere un minuto y vuelva a intentarlo.',
         other: 'No se ha podido iniciar sesión. Vuelva a intentarlo.',
       },
-      invited: '¿Le ha invitado FODEL? Con el enlace de la invitación podrá definir su contraseña.',
+      invited: '¿Le ha invitado FINDDOME? Con el enlace de la invitación podrá definir su contraseña.',
     },
     register: {
       title: 'Registro',
-      heading: 'Anúnciese en FODEL',
+      heading: 'Anúnciese en FINDDOME',
       intro: 'Indique su nombre y sus datos de contacto. Le enviaremos un enlace para definir una contraseña; después, preparará su anuncio paso a paso.',
     },
     forgot: {
@@ -371,11 +371,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Zbyt wiele prób. Prosimy odczekać minutę i spróbować ponownie.',
         other: 'Nie udało się zalogować. Prosimy spróbować ponownie.',
       },
-      invited: 'Otrzymali Państwo zaproszenie od FODEL? Link z zaproszenia pozwala ustawić hasło.',
+      invited: 'Otrzymali Państwo zaproszenie od FINDDOME? Link z zaproszenia pozwala ustawić hasło.',
     },
     register: {
       title: 'Rejestracja',
-      heading: 'Ogłaszaj się w FODEL',
+      heading: 'Ogłaszaj się w FINDDOME',
       intro: 'Prosimy podać imię i nazwisko oraz dane kontaktowe. Wyślemy link do ustawienia hasła, a potem krok po kroku przygotują Państwo ogłoszenie.',
     },
     forgot: {
@@ -422,11 +422,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Prea multe încercări. Așteptați un minut și încercați din nou.',
         other: 'Autentificarea nu a reușit. Vă rugăm să încercați din nou.',
       },
-      invited: 'Ați fost invitat de FODEL? Cu linkul din invitație vă puteți seta parola.',
+      invited: 'Ați fost invitat de FINDDOME? Cu linkul din invitație vă puteți seta parola.',
     },
     register: {
       title: 'Înregistrare',
-      heading: 'Publicați la FODEL',
+      heading: 'Publicați la FINDDOME',
       intro: 'Indicați numele și datele de contact. Vă trimitem un link pentru a seta o parolă; apoi vă alcătuiți anunțul pas cu pas.',
     },
     forgot: {
@@ -473,11 +473,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Príliš veľa pokusov. Počkajte minútu a skúste to znova.',
         other: 'Prihlásenie sa nepodarilo. Skúste to, prosím, znova.',
       },
-      invited: 'Pozval vás FODEL? Pomocou odkazu v pozvánke si nastavíte heslo.',
+      invited: 'Pozval vás FINDDOME? Pomocou odkazu v pozvánke si nastavíte heslo.',
     },
     register: {
       title: 'Registrácia',
-      heading: 'Inzerujte vo FODEL',
+      heading: 'Inzerujte vo FINDDOME',
       intro: 'Zadajte svoje meno a kontaktné údaje. Pošleme vám odkaz na nastavenie hesla; potom si krok za krokom pripravíte inzerát.',
     },
     forgot: {
@@ -524,11 +524,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Troppi tentativi. Attenda un minuto e riprovi.',
         other: 'Non è stato possibile effettuare l’accesso. Riprovi.',
       },
-      invited: 'Ha ricevuto un invito da FODEL? Usi il link dell’invito per impostare la password.',
+      invited: 'Ha ricevuto un invito da FINDDOME? Usi il link dell’invito per impostare la password.',
     },
     register: {
       title: 'Registrazione',
-      heading: 'Pubblichi con FODEL',
+      heading: 'Pubblichi con FINDDOME',
       intro: 'Inserisca il Suo nome e i Suoi recapiti. Le inviamo un link per impostare la password; dopo di che compone il Suo annuncio passo dopo passo.',
     },
     forgot: {
@@ -575,11 +575,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Demasiadas tentativas. Aguarde um minuto e tente novamente.',
         other: 'Não foi possível iniciar sessão. Tente novamente.',
       },
-      invited: 'Foi convidado pela FODEL? Use a ligação do convite para definir a sua palavra-passe.',
+      invited: 'Foi convidado pela FINDDOME? Use a ligação do convite para definir a sua palavra-passe.',
     },
     register: {
       title: 'Registo',
-      heading: 'Anuncie com a FODEL',
+      heading: 'Anuncie com a FINDDOME',
       intro: 'Indique o seu nome e os seus contactos. Enviamos-lhe uma ligação para definir a palavra-passe; depois, monta o seu anúncio passo a passo.',
     },
     forgot: {
@@ -626,11 +626,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Πάρα πολλές προσπάθειες. Περιμένετε ένα λεπτό και δοκιμάστε ξανά.',
         other: 'Δεν ήταν δυνατή η σύνδεση. Δοκιμάστε ξανά.',
       },
-      invited: 'Σας προσκάλεσε η FODEL; Χρησιμοποιήστε τον σύνδεσμο της πρόσκλησης για να ορίσετε κωδικό.',
+      invited: 'Σας προσκάλεσε η FINDDOME; Χρησιμοποιήστε τον σύνδεσμο της πρόσκλησης για να ορίσετε κωδικό.',
     },
     register: {
       title: 'Εγγραφή',
-      heading: 'Διαφημιστείτε με τη FODEL',
+      heading: 'Διαφημιστείτε με τη FINDDOME',
       intro: 'Συμπληρώστε το όνομα και τα στοιχεία επικοινωνίας σας. Θα σας στείλουμε σύνδεσμο για να ορίσετε κωδικό· στη συνέχεια δημιουργείτε την αγγελία σας βήμα προς βήμα.',
     },
     forgot: {
@@ -677,11 +677,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Příliš mnoho pokusů. Počkejte minutu a zkuste to znovu.',
         other: 'Přihlášení se nezdařilo. Zkuste to prosím znovu.',
       },
-      invited: 'Pozvala vás FODEL? Heslo si nastavte pomocí odkazu v pozvánce.',
+      invited: 'Pozvala vás FINDDOME? Heslo si nastavte pomocí odkazu v pozvánce.',
     },
     register: {
       title: 'Registrace',
-      heading: 'Inzerujte s FODEL',
+      heading: 'Inzerujte s FINDDOME',
       intro: 'Zadejte své jméno a kontaktní údaje. Pošleme vám odkaz k nastavení hesla; poté inzerát krok za krokem sestavíte.',
     },
     forgot: {
@@ -728,11 +728,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Preveč poskusov. Počakajte minuto in poskusite znova.',
         other: 'Prijava ni uspela. Poskusite znova.',
       },
-      invited: 'Vas je povabil FODEL? Geslo nastavite s povezavo v povabilu.',
+      invited: 'Vas je povabil FINDDOME? Geslo nastavite s povezavo v povabilu.',
     },
     register: {
       title: 'Registracija',
-      heading: 'Oglašujte s FODEL',
+      heading: 'Oglašujte s FINDDOME',
       intro: 'Vnesite svoje ime in kontaktne podatke. Poslali vam bomo povezavo za nastavitev gesla; nato oglas sestavite korak za korakom.',
     },
     forgot: {
@@ -779,11 +779,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'För många försök. Vänta en minut och försök igen.',
         other: 'Vi kunde inte logga in dig. Försök igen.',
       },
-      invited: 'Inbjuden av FODEL? Använd länken i inbjudan för att välja lösenord.',
+      invited: 'Inbjuden av FINDDOME? Använd länken i inbjudan för att välja lösenord.',
     },
     register: {
       title: 'Registrering',
-      heading: 'Annonsera med FODEL',
+      heading: 'Annonsera med FINDDOME',
       intro: 'Ange ditt namn och dina kontaktuppgifter. Vi skickar en länk där du väljer lösenord; därefter bygger du upp din annons steg för steg.',
     },
     forgot: {
@@ -830,11 +830,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'For mange forsøg. Vent et minut, og prøv igen.',
         other: 'Vi kunne ikke logge dig ind. Prøv igen.',
       },
-      invited: 'Inviteret af FODEL? Brug linket i invitationen til at vælge din adgangskode.',
+      invited: 'Inviteret af FINDDOME? Brug linket i invitationen til at vælge din adgangskode.',
     },
     register: {
       title: 'Tilmelding',
-      heading: 'Annoncér hos FODEL',
+      heading: 'Annoncér hos FINDDOME',
       intro: 'Angiv dit navn og dine kontaktoplysninger. Vi sender dig et link til at vælge en adgangskode; derefter opretter du din annonce trin for trin.',
     },
     forgot: {
@@ -881,11 +881,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'For mange forsøk. Vent et minutt og prøv igjen.',
         other: 'Vi kunne ikke logge deg inn. Prøv igjen.',
       },
-      invited: 'Invitert av FODEL? Bruk lenken i invitasjonen for å velge passord.',
+      invited: 'Invitert av FINDDOME? Bruk lenken i invitasjonen for å velge passord.',
     },
     register: {
       title: 'Registrering',
-      heading: 'Annonser hos FODEL',
+      heading: 'Annonser hos FINDDOME',
       intro: 'Oppgi navn og kontaktopplysninger. Vi sender deg en lenke for å velge passord; deretter setter du sammen annonsen steg for steg.',
     },
     forgot: {
@@ -932,11 +932,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Liian monta yritystä. Odota minuutti ja yritä uudelleen.',
         other: 'Kirjautuminen ei onnistunut. Yritä uudelleen.',
       },
-      invited: 'Saitko kutsun FODELilta? Aseta salasanasi kutsussa olevan linkin kautta.',
+      invited: 'Saitko kutsun FINDDOMElta? Aseta salasanasi kutsussa olevan linkin kautta.',
     },
     register: {
       title: 'Rekisteröityminen',
-      heading: 'Ilmoita FODELissa',
+      heading: 'Ilmoita FINDDOMEssa',
       intro: 'Anna nimesi ja yhteystietosi. Lähetämme sinulle linkin salasanan asettamista varten; sen jälkeen kokoat ilmoituksesi vaihe vaiheelta.',
     },
     forgot: {
@@ -983,11 +983,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Liiga palju katseid. Oodake minut ja proovige uuesti.',
         other: 'Sisselogimine ei õnnestunud. Proovige uuesti.',
       },
-      invited: 'Kas FODEL kutsus teid? Määrake parool kutses oleva lingi kaudu.',
+      invited: 'Kas FINDDOME kutsus teid? Määrake parool kutses oleva lingi kaudu.',
     },
     register: {
       title: 'Registreerimine',
-      heading: 'Kuulutage FODELis',
+      heading: 'Kuulutage FINDDOME’is',
       intro: 'Sisestage oma nimi ja kontaktandmed. Saadame teile lingi parooli määramiseks; seejärel koostate kuulutuse samm-sammult.',
     },
     forgot: {
@@ -1034,11 +1034,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Pārāk daudz mēģinājumu. Uzgaidiet minūti un mēģiniet vēlreiz.',
         other: 'Pieteikšanās neizdevās. Lūdzu, mēģiniet vēlreiz.',
       },
-      invited: 'Jūs uzaicināja FODEL? Izmantojiet uzaicinājumā esošo saiti, lai iestatītu paroli.',
+      invited: 'Jūs uzaicināja FINDDOME? Izmantojiet uzaicinājumā esošo saiti, lai iestatītu paroli.',
     },
     register: {
       title: 'Reģistrācija',
-      heading: 'Sludiniet ar FODEL',
+      heading: 'Sludiniet ar FINDDOME',
       intro: 'Ievadiet savu vārdu un kontaktinformāciju. Mēs jums nosūtīsim saiti paroles iestatīšanai; pēc tam sludinājumu sagatavosiet soli pa solim.',
     },
     forgot: {
@@ -1085,11 +1085,11 @@ export const AUTH_COPY: Record<Locale, AuthStrings> = {
         'rate-limited': 'Per daug bandymų. Palaukite minutę ir bandykite dar kartą.',
         other: 'Prisijungti nepavyko. Bandykite dar kartą.',
       },
-      invited: 'Jus pakvietė FODEL? Slaptažodį nustatykite naudodami kvietime esančią nuorodą.',
+      invited: 'Jus pakvietė FINDDOME? Slaptažodį nustatykite naudodami kvietime esančią nuorodą.',
     },
     register: {
       title: 'Registracija',
-      heading: 'Skelbkitės su FODEL',
+      heading: 'Skelbkitės su FINDDOME',
       intro: 'Įveskite savo vardą ir kontaktinius duomenis. Atsiųsime nuorodą slaptažodžiui nustatyti; tada skelbimą sudarysite žingsnis po žingsnio.',
     },
     forgot: {

@@ -14,13 +14,13 @@ export const FI = {
   common: {
     greeting: (name: string) => `Hei ${name},`,
     greetingNoName: 'Hyvä ilmoittaja,',
-    signOff: 'Ystävällisin terveisin\nFODEL Kiinteistöt',
+    signOff: 'Ystävällisin terveisin\nFINDDOME Kiinteistöt',
     questions: 'Jos sinulla on kysyttävää, vastaa vain tähän viestiin.',
     linkFallback: 'Jos painike ei toimi, kopioi tämä osoite selaimeesi:',
   },
 
   registrationConfirm: {
-    subject: 'Aseta salasanasi | FODEL',
+    subject: 'Aseta salasanasi | FINDDOME',
     preheader: 'Yksi napsautus, ja voit koota ilmoituksesi.',
     heading: 'Aseta salasanasi',
     intro: 'Kiitos rekisteröitymisestä. Tilisi on melkein valmis; vain salasana puuttuu.',
@@ -30,21 +30,21 @@ export const FI = {
   },
 
   accountExists: {
-    subject: 'Sinulla on jo FODEL-tili',
+    subject: 'Sinulla on jo FINDDOME-tili',
     preheader: 'Kirjaudu sisään tai aseta uusi salasana.',
     heading: 'Tällä osoitteella on jo tili',
-    body: 'Joku yritti juuri rekisteröityä FODELin sivustolle tällä sähköpostiosoitteella. Osoitteelle on jo tili, joten emme luoneet uutta.',
+    body: 'Joku yritti juuri rekisteröityä FINDDOMEn sivustolle tällä sähköpostiosoitteella. Osoitteelle on jo tili, joten emme luoneet uutta.',
     cta: 'Kirjaudu sisään',
     reset: 'Unohditko salasanasi? Pyydä uusi',
     ignore: 'Jos se et ollut sinä, sinun ei tarvitse tehdä mitään: tilisi on ennallaan.',
   },
 
   invite: {
-    subject: 'Kutsu FODEL-portaaliin',
+    subject: 'Kutsu FINDDOME-portaaliin',
     preheader: 'Aseta salasanasi ja kirjaudu ilmoittajaportaaliin.',
-    heading: 'Sinut on kutsuttu FODEL-portaaliin',
+    heading: 'Sinut on kutsuttu FINDDOME-portaaliin',
     body: (role: string) =>
-      `FODEL kutsuu sinut portaaliin ${role}, jossa hallinnoit kiinteistöilmoituksia.`,
+      `FINDDOME kutsuu sinut portaaliin ${role}, jossa hallinnoit kiinteistöilmoituksia.`,
     roleAdmin: 'ylläpitäjäksi',
     roleOwner: 'ilmoittajaksi',
     cta: 'Hyväksy kutsu',
@@ -52,7 +52,7 @@ export const FI = {
   },
 
   welcome: {
-    subject: 'Tervetuloa FODEL-portaaliin',
+    subject: 'Tervetuloa FINDDOME-portaaliin',
     preheader: 'Tilisi on aktiivinen. Näin jätät ensimmäisen ilmoituksesi.',
     heading: (name: string) => `Tervetuloa, ${name}`,
     body: 'Tilisi on aktiivinen. Portaalissa kokoat ilmoituksen, lataat kuvat ja seuraat tarkastusta.',
@@ -95,7 +95,7 @@ export const FI = {
     discountLabel: 'Suosittelualennus (10\u00a0%)',
     totalLabel: 'Maksettavaa',
     ctaCard: 'Maksa kortilla',
-    cardNote: 'Maksu tapahtuu Stripen suojatussa ympäristössä. FODEL ei näe eikä tallenna korttitietojasi.',
+    cardNote: 'Maksu tapahtuu Stripen suojatussa ympäristössä. FINDDOME ei näe eikä tallenna korttitietojasi.',
     bankTitle: 'Tai tilisiirrolla',
     bankNote: (ref: string) =>
       `Merkitse tilisiirtoon viitenumero: ${ref}. Kun maksu saapuu, joku tiimistämme julkaisee ilmoituksen.`,
@@ -113,7 +113,7 @@ export const FI = {
     totalLabel: 'Maksettavaa',
     dueLabel: 'Maksettava viimeistään',
     ctaCard: 'Maksa kortilla',
-    cardNote: 'Maksu tapahtuu Stripen suojatussa ympäristössä. FODEL ei näe eikä tallenna korttitietojasi.',
+    cardNote: 'Maksu tapahtuu Stripen suojatussa ympäristössä. FINDDOME ei näe eikä tallenna korttitietojasi.',
     bankTitle: 'Tilisiirto',
     bankNote: (ref: string) => `Merkitse tilisiirtoon viitenumero: ${ref}.`,
     vatNote: 'Kaikki summat sisältävät Alankomaiden 21\u00a0%:n arvonlisäveron.',
@@ -154,17 +154,17 @@ export const FI = {
   },
 
   passwordReset: {
-    subject: 'Vaihda salasana | FODEL-portaali',
+    subject: 'Vaihda salasana | FINDDOME-portaali',
     preheader: 'Linkki on voimassa tunnin.',
     heading: 'Vaihda salasanasi',
-    body: 'Saimme pyynnön vaihtaa FODEL-portaalin tilisi salasanan. Aseta uusi salasana napsauttamalla alla olevaa painiketta.',
+    body: 'Saimme pyynnön vaihtaa FINDDOME-portaalin tilisi salasanan. Aseta uusi salasana napsauttamalla alla olevaa painiketta.',
     cta: 'Aseta uusi salasana',
     expiry: 'Linkki on voimassa tunnin, ja sitä voi käyttää kerran.',
     ignore: 'Jos et pyytänyt tätä, jätä viesti huomiotta. Salasanasi pysyy ennallaan, eikä mitään tapahdu.',
   },
 
   referralRegistered: {
-    subject: 'Olemme vastaanottaneet suosituksesi | FODEL',
+    subject: 'Olemme vastaanottaneet suosituksesi | FINDDOME',
     preheader: 'Joku tiimistämme ottaa pian yhteyttä suosittelemaasi henkilöön.',
     heading: 'Kiitos suosituksesta',
     body: (referredName: string) =>
@@ -178,7 +178,7 @@ export const FI = {
   },
 
   valuationReady: {
-    subject: 'Arviosi on valmis | FODEL',
+    subject: 'Arviosi on valmis | FINDDOME',
     preheader: 'Olemme tehneet kiinteistöstäsi suuntaa-antavan arvion.',
     heading: 'Arviosi on valmis',
     body: (range: string) =>
@@ -204,7 +204,7 @@ export const FI = {
   },
 
   valuationDeclined: {
-    subject: 'Arviopyyntösi | FODEL',
+    subject: 'Arviopyyntösi | FINDDOME',
     preheader: 'Joku tiimistämme ottaa sinuun henkilökohtaisesti yhteyttä.',
     heading: 'Kiitos pyynnöstäsi',
     body: 'Antamiesi tietojen perusteella meillä on tällä hetkellä liian vähän vertailukelpoisia kiinteistöjä luotettavaan arvioon. Joku tiimistämme ottaa sinuun henkilökohtaisesti yhteyttä.',
@@ -247,7 +247,7 @@ export const FI = {
   },
 
   serviceRequested: {
-    subject: 'Olemme vastaanottaneet pyyntösi | FODEL',
+    subject: 'Olemme vastaanottaneet pyyntösi | FINDDOME',
     preheader: 'Joku tiimistämme ottaa sinuun yhteyttä ajankohdan sopimiseksi.',
     heading: 'Olemme vastaanottaneet pyyntösi',
     body: (service: string, price: string) => `Kiitos, olemme kirjanneet pyyntösi: ${service} (${price}).`,
@@ -257,7 +257,7 @@ export const FI = {
   },
 
   valuationPaid: {
-    subject: 'Maksuvahvistus | FODEL-arvio',
+    subject: 'Maksuvahvistus | FINDDOME-arvio',
     preheader: 'Kiitos, maksusi on saapunut.',
     heading: 'Kiitos, maksusi on saapunut',
     body: (service: string) => `Olemme vastaanottaneet maksun palvelusta ”${service}”.`,
@@ -269,7 +269,7 @@ export const FI = {
   },
 
   judicialRequested: {
-    subject: 'Virallisen arvion pyyntö | FODEL',
+    subject: 'Virallisen arvion pyyntö | FINDDOME',
     preheader: 'Joku tiimistämme ottaa sinuun yhteyttä vaihtoehdoista.',
     heading: 'Olemme vastaanottaneet pyyntösi',
     body: 'Kiitos, olemme kirjanneet, että haluat asiantuntijan tekemän virallisen (tuomioistuimen määräämän) arvion. Se ei ole sama kuin sivustomme suuntaa-antava, markkinoihin perustuva arvio: sen tekee valtuutettu asiantuntija tarjouksen perusteella.',

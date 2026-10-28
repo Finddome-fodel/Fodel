@@ -14,13 +14,13 @@ export const ET = {
   common: {
     greeting: (name: string) => `Tere, ${name}!`,
     greetingNoName: 'Lugupeetud kuulutaja!',
-    signOff: 'Lugupidamisega\nFODEL Kinnisvara',
+    signOff: 'Lugupidamisega\nFINDDOME Kinnisvara',
     questions: 'Kui teil on küsimusi, vastake lihtsalt sellele kirjale.',
     linkFallback: 'Kui nupp ei tööta, kopeerige see aadress brauserisse:',
   },
 
   registrationConfirm: {
-    subject: 'Määrake oma parool | FODEL',
+    subject: 'Määrake oma parool | FINDDOME',
     preheader: 'Üks klõps ja saate oma kuulutuse koostada.',
     heading: 'Määrake oma parool',
     intro: 'Täname registreerumast. Teie konto on peaaegu valmis, puudu on ainult parool.',
@@ -30,21 +30,21 @@ export const ET = {
   },
 
   accountExists: {
-    subject: 'Teil on juba FODELi konto',
+    subject: 'Teil on juba FINDDOME’i konto',
     preheader: 'Logige sisse või määrake uus parool.',
     heading: 'Sellel aadressil on juba konto',
-    body: 'Keegi püüdis äsja selle e-posti aadressiga FODELi veebisaidil registreeruda. Sellele aadressile on juba konto olemas, seega uut me ei loonud.',
+    body: 'Keegi püüdis äsja selle e-posti aadressiga FINDDOME’i veebisaidil registreeruda. Sellele aadressile on juba konto olemas, seega uut me ei loonud.',
     cta: 'Logi sisse',
     reset: 'Unustasite parooli? Taotlege uus',
     ignore: 'Kui see ei olnud teie, ei pea te midagi tegema: teie konto jääb muutmata.',
   },
 
   invite: {
-    subject: 'Kutse FODELi portaali',
+    subject: 'Kutse FINDDOME’i portaali',
     preheader: 'Määrake parool ja logige sisse kuulutajate portaali.',
-    heading: 'Teid on kutsutud FODELi portaali',
+    heading: 'Teid on kutsutud FINDDOME’i portaali',
     body: (role: string) =>
-      `FODEL kutsub teid portaali ${role}, kus haldate kinnisvarakuulutusi.`,
+      `FINDDOME kutsub teid portaali ${role}, kus haldate kinnisvarakuulutusi.`,
     roleAdmin: 'administraatorina',
     roleOwner: 'kuulutajana',
     cta: 'Võta kutse vastu',
@@ -52,7 +52,7 @@ export const ET = {
   },
 
   welcome: {
-    subject: 'Tere tulemast FODELi portaali',
+    subject: 'Tere tulemast FINDDOME’i portaali',
     preheader: 'Teie konto on aktiivne. Nii lisate oma esimese kuulutuse.',
     heading: (name: string) => `Tere tulemast, ${name}`,
     body: 'Teie konto on aktiivne. Portaalis panete kuulutuse kokku, laadite üles fotod ja jälgite ülevaatust.',
@@ -95,7 +95,7 @@ export const ET = {
     discountLabel: 'Soovitusallahindlus (10%)',
     totalLabel: 'Tasuda',
     ctaCard: 'Maksa kaardiga',
-    cardNote: 'Makse toimub Stripe’i turvalises keskkonnas. FODEL ei näe ega salvesta teie kaardiandmeid.',
+    cardNote: 'Makse toimub Stripe’i turvalises keskkonnas. FINDDOME ei näe ega salvesta teie kaardiandmeid.',
     bankTitle: 'Või pangaülekandega',
     bankNote: (ref: string) =>
       `Märkige ülekandele viitenumber: ${ref}. Niipea kui makse laekub, avaldab keegi meie meeskonnast kuulutuse.`,
@@ -113,7 +113,7 @@ export const ET = {
     totalLabel: 'Tasuda',
     dueLabel: 'Tasuda hiljemalt',
     ctaCard: 'Maksa kaardiga',
-    cardNote: 'Makse toimub Stripe’i turvalises keskkonnas. FODEL ei näe ega salvesta teie kaardiandmeid.',
+    cardNote: 'Makse toimub Stripe’i turvalises keskkonnas. FINDDOME ei näe ega salvesta teie kaardiandmeid.',
     bankTitle: 'Pangaülekanne',
     bankNote: (ref: string) => `Märkige ülekandele viitenumber: ${ref}.`,
     vatNote: 'Kõik summad sisaldavad Hollandi 21% käibemaksu.',
@@ -154,17 +154,17 @@ export const ET = {
   },
 
   passwordReset: {
-    subject: 'Lähtestage parool | FODELi portaal',
+    subject: 'Lähtestage parool | FINDDOME’i portaal',
     preheader: 'Link kehtib ühe tunni.',
     heading: 'Lähtestage oma parool',
-    body: 'Saime taotluse lähtestada teie FODELi portaali konto parool. Uue parooli määramiseks klõpsake allolevat nuppu.',
+    body: 'Saime taotluse lähtestada teie FINDDOME’i portaali konto parool. Uue parooli määramiseks klõpsake allolevat nuppu.',
     cta: 'Määra uus parool',
     expiry: 'Link kehtib ühe tunni ja seda saab kasutada ühe korra.',
     ignore: 'Kui te seda ei taotlenud, eirake seda e-kirja. Teie parool jääb samaks ja midagi ei juhtu.',
   },
 
   referralRegistered: {
-    subject: 'Oleme teie soovituse kätte saanud | FODEL',
+    subject: 'Oleme teie soovituse kätte saanud | FINDDOME',
     preheader: 'Keegi meie meeskonnast võtab peagi ühendust teie soovitatud isikuga.',
     heading: 'Täname soovituse eest',
     body: (referredName: string) =>
@@ -178,7 +178,7 @@ export const ET = {
   },
 
   valuationReady: {
-    subject: 'Teie hinnang on valmis | FODEL',
+    subject: 'Teie hinnang on valmis | FINDDOME',
     preheader: 'Oleme teie kinnisvarale teinud ligikaudse hinnangu.',
     heading: 'Teie hinnang on valmis',
     body: (range: string) =>
@@ -204,7 +204,7 @@ export const ET = {
   },
 
   valuationDeclined: {
-    subject: 'Teie hindamissoov | FODEL',
+    subject: 'Teie hindamissoov | FINDDOME',
     preheader: 'Keegi meie meeskonnast võtab teiega isiklikult ühendust.',
     heading: 'Täname teid päringu eest',
     body: 'Esitatud andmete põhjal on meil praegu usaldusväärse hinnangu jaoks liiga vähe võrreldavat kinnisvara. Keegi meie meeskonnast võtab teiega isiklikult ühendust.',
@@ -247,7 +247,7 @@ export const ET = {
   },
 
   serviceRequested: {
-    subject: 'Oleme teie päringu kätte saanud | FODEL',
+    subject: 'Oleme teie päringu kätte saanud | FINDDOME',
     preheader: 'Keegi meie meeskonnast võtab teiega aja kokkuleppimiseks ühendust.',
     heading: 'Oleme teie päringu kätte saanud',
     body: (service: string, price: string) => `Täname, oleme teie päringu kirja pannud: ${service} (${price}).`,
@@ -257,7 +257,7 @@ export const ET = {
   },
 
   valuationPaid: {
-    subject: 'Makse kinnitus | FODELi hindamine',
+    subject: 'Makse kinnitus | FINDDOME’i hindamine',
     preheader: 'Täname, teie makse on laekunud.',
     heading: 'Täname, teie makse on laekunud',
     body: (service: string) => `Oleme saanud makse teenuse „${service}“ eest.`,
@@ -269,7 +269,7 @@ export const ET = {
   },
 
   judicialRequested: {
-    subject: 'Ametliku hindamise taotlus | FODEL',
+    subject: 'Ametliku hindamise taotlus | FINDDOME',
     preheader: 'Keegi meie meeskonnast võtab teiega võimaluste osas ühendust.',
     heading: 'Oleme teie päringu kätte saanud',
     body: 'Täname, panime kirja, et soovite eksperdi ametlikku (kohtu määratud) hindamist. See ei ole sama mis meie veebisaidi ligikaudne turupõhine hinnang: selle teeb volitatud ekspert hinnapakkumise alusel.',

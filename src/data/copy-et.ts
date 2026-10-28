@@ -20,7 +20,7 @@ const L = 'et' as const;
 export const ET = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Ostke kinnisvara Ungaris otse omanikult',
+      title: 'FINDDOME Real Estates | Ostke kinnisvara Ungaris otse omanikult',
       description:
         'Majad, talud ja maavaldused Ungaris, sageli otse omanikult. Nõustamine teie emakeeles ja kakskeelsed ostu-müügilepingud.',
     },
@@ -37,7 +37,7 @@ export const ET = {
       {
         eyebrow: 'Ostjatele',
         title: 'Kinnisvara otse\nomanikult',
-        body: 'Ehtsad Ungari majad, talud, maavaldused ja viinamäed. Võtke omanikuga otse ühendust või laske FODELil kogu protsess korraldada.',
+        body: 'Ehtsad Ungari majad, talud, maavaldused ja viinamäed. Võtke omanikuga otse ühendust või laske FINDDOME’il kogu protsess korraldada.',
         cta: 'Sirvi kinnisvara',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const ET = {
     featured: { eyebrow: 'Valik', title: 'Esiletõstetud kinnisvara' },
     quote: '„Hollandlased ei usu sageli oma silmi, kui näevad, mida Ungaris osta saab ja mis hinnaga.“',
     quoteSource: `${BRAND.et.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Kuidas see käib', title: 'Kuidas FODEL töötab' },
+    how: { eyebrow: 'Kuidas see käib', title: 'Kuidas FINDDOME töötab' },
     cta: {
       eyebrow: 'Võtke ühendust',
       title: 'Helistame teile',
@@ -63,7 +63,7 @@ export const ET = {
       eyebrow: 'Soovitusprogramm',
       title: 'Soovitage kuulutajat,',
       titleEm: 'saage 10%',
-      body: 'Kui keegi teie soovitusel FODELis kuulutuse avaldab, saab ta oma paketilt 10% allahindlust ja meie arvestame teile 10% teie järgmise kuulutuse eest. Kuulutate juba meie juures? Oma soovituskoodi leiate portaalis jaotisest Seaded.',
+      body: 'Kui keegi teie soovitusel FINDDOME’is kuulutuse avaldab, saab ta oma paketilt 10% allahindlust ja meie arvestame teile 10% teie järgmise kuulutuse eest. Kuulutate juba meie juures? Oma soovituskoodi leiate portaalis jaotisest Seaded.',
       steps: [
         'Soovitage tuttavat allpool oleva vormiga või jagage portaalist oma linki',
         'Meie meeskonnaliige võtab temaga ühendust',
@@ -111,13 +111,13 @@ export const ET = {
   sellers: {
     meta: {
       title: 'Müüjatele | Teie Ungari kinnisvara Lääne-Euroopas',
-      description: `Kuulutage oma Ungari kinnisvara ${REACH_LANGUAGES} keeles ${REACH_COUNTRIES} riigis alates ${eur(69, L)} ja ilma ainuõiguseta. Vahendustasu ainult siis, kui ostja leiab FODEL: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% käibemaksu.`,
+      description: `Kuulutage oma Ungari kinnisvara ${REACH_LANGUAGES} keeles ${REACH_COUNTRIES} riigis alates ${eur(69, L)} ja ilma ainuõiguseta. Vahendustasu ainult siis, kui ostja leiab FINDDOME: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% käibemaksu.`,
     },
     hero: {
       eyebrow: 'Müüjatele',
       title: 'Teie kinnisvara',
       titleEm: 'Lääne-Euroopas',
-      body: `FODELi mudeli puhul ilmub teie kinnisvara ${REACH_LANGUAGES} keeles ${REACH_COUNTRIES} riigis ilma ainuõiguslepinguta. Teeme koostööd ainult tõsiste ostjatega.`,
+      body: `FINDDOME’i mudeli puhul ilmub teie kinnisvara ${REACH_LANGUAGES} keeles ${REACH_COUNTRIES} riigis ilma ainuõiguslepinguta. Teeme koostööd ainult tõsiste ostjatega.`,
       cta: 'Lisa kuulutus',
       secondary: 'Vaata hindu',
     },
@@ -129,7 +129,7 @@ export const ET = {
         'Makse korraga pangaülekandega, kiiresti ja turvaliselt.',
         'Tõsine kavatsus: üksainus vaatamine maksab neile kaks päeva ja 200–300\u00a0€.',
         'Realistlik hinnakujundus: ei mingit põhjendamatut tingimist.',
-        'FODEL hindab iga ostjat isiklikult enne, kui mõni kohtumine kokku lepitakse.',
+        'FINDDOME hindab iga ostjat isiklikult enne, kui mõni kohtumine kokku lepitakse.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const ET = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Samm-sammult', title: 'FODELi mudel' },
+    how: { eyebrow: 'Samm-sammult', title: 'FINDDOME’i mudel' },
     commission: {
       eyebrow: 'Hinnad',
       title: 'Vahendustasu ainult\nedukalt müügilt',
-      body: `Kui ostja võtab teiega otse ühendust ja te ei vaja meie abi, ei maksa te peale kuulutuse tasu midagi. Kui müüki vahendab FODEL: ${COMMISSION.percent}% neto (min ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Hollandi käibemaks.`,
+      body: `Kui ostja võtab teiega otse ühendust ja te ei vaja meie abi, ei maksa te peale kuulutuse tasu midagi. Kui müüki vahendab FINDDOME: ${COMMISSION.percent}% neto (min ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Hollandi käibemaks.`,
       cta: 'Vaata hindu',
     },
   },
@@ -248,7 +248,7 @@ export const ET = {
       title: 'Sild, mille',
       titleEm: 'oleme ehitanud',
       paragraphs: [
-        'FODELi asutasid Hollandis elavad ungarlased. Alustasime 2013. aastal Almere-Buitenis, kus märkasime, kui paljud hollandlased ja belglased tahtsid osta ehedat Ungari kodu, kuid ei teadnud, kust alustada.',
+        'FINDDOME’i asutasid Hollandis elavad ungarlased. Alustasime 2013. aastal Almere-Buitenis, kus märkasime, kui paljud hollandlased ja belglased tahtsid osta ehedat Ungari kodu, kuid ei teadnud, kust alustada.',
         `Täna kuulutame ${REACH_COUNTRIES} riigis ja ${REACH_LANGUAGES} keeles ning juhendame iga tehingut algusest lõpuni: kakskeelne müügileping, esindamine volikirja alusel ja kinnistusraamatusse kandmine. Meie kontor asub Haagis.`,
       ],
     },

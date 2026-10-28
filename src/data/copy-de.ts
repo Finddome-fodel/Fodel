@@ -23,7 +23,7 @@ const pct = (n: number) => `${n} %`;
 export const DE = {
   home: {
     meta: {
-      title: 'FODEL Immobilien | Immobilien in Ungarn direkt vom Eigentümer kaufen',
+      title: 'FINDDOME Immobilien | Immobilien in Ungarn direkt vom Eigentümer kaufen',
       description:
         'Häuser, Höfe und Landgüter in Ungarn, oft direkt vom Eigentümer. Betreuung in Ihrer Sprache und zweisprachige Kaufverträge.',
     },
@@ -40,7 +40,7 @@ export const DE = {
       {
         eyebrow: 'Für Käufer',
         title: 'Immobilien direkt\nvom Eigentümer',
-        body: 'Authentische ungarische Häuser, Höfe, Landgüter und Weingüter. Nehmen Sie direkt Kontakt mit dem Eigentümer auf oder lassen Sie FODEL den gesamten Ablauf übernehmen.',
+        body: 'Authentische ungarische Häuser, Höfe, Landgüter und Weingüter. Nehmen Sie direkt Kontakt mit dem Eigentümer auf oder lassen Sie FINDDOME den gesamten Ablauf übernehmen.',
         cta: 'Immobilien ansehen',
         to: 'properties',
       },
@@ -55,7 +55,7 @@ export const DE = {
     featured: { eyebrow: 'Auswahl', title: 'Empfohlene Immobilien' },
     quote: '„Niederländer glauben oft ihren Augen nicht, wenn sie sehen, was man in Ungarn für welchen Preis kaufen kann.“',
     quoteSource: `${BRAND.de.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'So funktioniert es', title: 'So arbeitet FODEL' },
+    how: { eyebrow: 'So funktioniert es', title: 'So arbeitet FINDDOME' },
     cta: {
       eyebrow: 'Kontakt aufnehmen',
       title: 'Wir rufen Sie',
@@ -66,7 +66,7 @@ export const DE = {
       eyebrow: 'Empfehlungsprogramm',
       title: 'Empfehlen Sie einen Inserenten,',
       titleEm: `erhalten Sie ${pct(10)}`,
-      body: `Gibt jemand auf Ihre Empfehlung ein Inserat bei FODEL auf, erhält er ${pct(10)} Rabatt auf sein Paket, und wir schreiben Ihnen ${pct(10)} auf Ihr nächstes Inserat gut. Inserieren Sie bereits bei uns? Ihren persönlichen Empfehlungscode finden Sie im Portal unter „Instellingen“ (Einstellungen).`,
+      body: `Gibt jemand auf Ihre Empfehlung ein Inserat bei FINDDOME auf, erhält er ${pct(10)} Rabatt auf sein Paket, und wir schreiben Ihnen ${pct(10)} auf Ihr nächstes Inserat gut. Inserieren Sie bereits bei uns? Ihren persönlichen Empfehlungscode finden Sie im Portal unter „Instellingen“ (Einstellungen).`,
       steps: [
         'Empfehlen Sie einen Bekannten mit dem Formular unten oder teilen Sie Ihren persönlichen Link aus dem Portal',
         'Ein Mitarbeiter nimmt Kontakt mit ihm auf',
@@ -114,13 +114,13 @@ export const DE = {
   sellers: {
     meta: {
       title: 'Für Verkäufer | Ihre ungarische Immobilie in Westeuropa',
-      description: `Inserieren Sie Ihre ungarische Immobilie in ${REACH_LANGUAGES} Sprachen in ${REACH_COUNTRIES} Ländern, ab ${eur(69, L)} und ohne Exklusivität. Provision nur, wenn FODEL den Käufer vermittelt: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} niederländische USt.`,
+      description: `Inserieren Sie Ihre ungarische Immobilie in ${REACH_LANGUAGES} Sprachen in ${REACH_COUNTRIES} Ländern, ab ${eur(69, L)} und ohne Exklusivität. Provision nur, wenn FINDDOME den Käufer vermittelt: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} niederländische USt.`,
     },
     hero: {
       eyebrow: 'Für Verkäufer',
       title: 'Ihre Immobilie',
       titleEm: 'in Westeuropa',
-      body: `Mit dem Modell von FODEL erscheint Ihre Immobilie in ${REACH_LANGUAGES} Sprachen in ${REACH_COUNTRIES} Ländern, ohne Alleinvermittlungsvertrag. Wir arbeiten ausschließlich mit seriösen Käufern.`,
+      body: `Mit dem Modell von FINDDOME erscheint Ihre Immobilie in ${REACH_LANGUAGES} Sprachen in ${REACH_COUNTRIES} Ländern, ohne Alleinvermittlungsvertrag. Wir arbeiten ausschließlich mit seriösen Käufern.`,
       cta: 'Inserat aufgeben',
       secondary: 'Preise ansehen',
     },
@@ -132,12 +132,12 @@ export const DE = {
         'Zahlung in einer Summe per Banküberweisung, schnell und sicher.',
         `Ernsthafte Absicht: Eine Besichtigung kostet sie zwei Tage und ${eur(200, L)} bis ${eur(300, L)}.`,
         'Realistische Preisfindung: Es wird nicht unvernünftig gefeilscht.',
-        'FODEL prüft den Käufer persönlich, bevor ein Termin zustande kommt.',
+        'FINDDOME prüft den Käufer persönlich, bevor ein Termin zustande kommt.',
       ],
     },
     personas: {
       eyebrow: 'Die Käufer',
-      title: 'Wer über FODEL kauft',
+      title: 'Wer über FINDDOME kauft',
       items: [
         {
           title: 'Ruheständler',
@@ -157,11 +157,11 @@ export const DE = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Schritt für Schritt', title: 'Das FODEL-Modell' },
+    how: { eyebrow: 'Schritt für Schritt', title: 'Das FINDDOME-Modell' },
     commission: {
       eyebrow: 'Preise',
       title: 'Provision nur bei\nerfolgreichem Verkauf',
-      body: `Nimmt der Käufer direkt Kontakt mit Ihnen auf und benötigen Sie unsere Hilfe nicht, zahlen Sie nichts über die Inseratskosten hinaus. Vermittelt FODEL den Verkauf, gilt: ${pct(COMMISSION.percent)} netto (mind. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} niederländische USt.`,
+      body: `Nimmt der Käufer direkt Kontakt mit Ihnen auf und benötigen Sie unsere Hilfe nicht, zahlen Sie nichts über die Inseratskosten hinaus. Vermittelt FINDDOME den Verkauf, gilt: ${pct(COMMISSION.percent)} netto (mind. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} niederländische USt.`,
       cta: 'Preise ansehen',
     },
   },
@@ -251,7 +251,7 @@ export const DE = {
       title: 'Die Brücke, die wir',
       titleEm: 'gebaut haben',
       paragraphs: [
-        'FODEL wurde von in den Niederlanden lebenden Ungarn gegründet. Wir haben 2013 in Almere-Buiten angefangen und dort gemerkt, wie viele Niederländer und Belgier ein authentisches ungarisches Haus kaufen wollten, aber nicht wussten, wie sie anfangen sollten.',
+        'FINDDOME wurde von in den Niederlanden lebenden Ungarn gegründet. Wir haben 2013 in Almere-Buiten angefangen und dort gemerkt, wie viele Niederländer und Belgier ein authentisches ungarisches Haus kaufen wollten, aber nicht wussten, wie sie anfangen sollten.',
         `Heute inserieren wir in ${REACH_COUNTRIES} Ländern und ${REACH_LANGUAGES} Sprachen und begleiten jede Transaktion von Anfang bis Ende: zweisprachiger Kaufvertrag, Vertretung per Vollmacht und Eintragung im Grundbuch. Unser Büro befindet sich in Den Haag.`,
       ],
     },

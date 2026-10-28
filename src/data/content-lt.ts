@@ -66,7 +66,7 @@ export const CONTENT_LT = {
         type: 'prose',
         title: 'Kada mokamas komisinis atlygis',
         paragraphs: [
-          `Komisinį atlygį imame tik tada, kai pirkėją surado FODEL, yra sudaryta rašytinė pirkimo–pardavimo sutartis ir sumokėtas avansas. Tarifas – ${COMMISSION.percent}\u00a0% be mokesčių, ne mažiau kaip ${eur(COMMISSION.minimumEur, L)}, plius ${COMMISSION.vatPercent}\u00a0% Nyderlandų PVM. Moka pardavėjas, ne pirkėjas.`,
+          `Komisinį atlygį imame tik tada, kai pirkėją surado FINDDOME, yra sudaryta rašytinė pirkimo–pardavimo sutartis ir sumokėtas avansas. Tarifas – ${COMMISSION.percent}\u00a0% be mokesčių, ne mažiau kaip ${eur(COMMISSION.minimumEur, L)}, plius ${COMMISSION.vatPercent}\u00a0% Nyderlandų PVM. Moka pardavėjas, ne pirkėjas.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_LT = {
 
   agricultural: {
     metaTitle: `Žemės ūkio turtas: iki ${AGRI_HECTARE_LIMIT} hektarų Vengrijoje`,
-    metaDescription: `Žemės ūkio kvalifikaciją turintis ES pilietis Vengrijoje gali įsigyti iki ${AGRI_HECTARE_LIMIT} hektarų žemės. FODEL pasirūpina visa procedūra.`,
+    metaDescription: `Žemės ūkio kvalifikaciją turintis ES pilietis Vengrijoje gali įsigyti iki ${AGRI_HECTARE_LIMIT} hektarų žemės. FINDDOME pasirūpina visa procedūra.`,
     eyebrow: 'Žemės ūkio turtas',
     title: 'Žemės ūkio paskirties žemė ir',
     titleEm: 'kaimo valdos',
@@ -163,7 +163,7 @@ export const CONTENT_LT = {
           'Advokato atlyginimas už sutarties parengimą ir kontrasignavimą',
           `Dvikalbės sutarties vertimas: ${from('hu')}, priklausomai nuo kalbų poros`,
           'Registro mokesčiai',
-          'Galimas komisinis atlyginimas FODEL: jį moka pardavėjas, o ne jūs',
+          'Galimas komisinis atlyginimas FINDDOME: jį moka pardavėjas, o ne jūs',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_LT = {
   photoGuide: {
     metaTitle: 'Fotografavimo vadovas skelbėjams',
     metaDescription:
-      'Geros nuotraukos – svarbiausia greito pardavimo priemonė. FODEL fotografavimo vadovas: šviesa, orientacija, raiška ir dažniausios klaidos.',
+      'Geros nuotraukos – svarbiausia greito pardavimo priemonė. FINDDOME fotografavimo vadovas: šviesa, orientacija, raiška ir dažniausios klaidos.',
     eyebrow: 'Pardavėjams',
     title: 'Fotografavimo',
     titleEm: 'vadovas',

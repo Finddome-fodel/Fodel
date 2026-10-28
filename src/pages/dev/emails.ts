@@ -195,7 +195,7 @@ const approvedStub = {
 };
 
 const SAMPLE_INVITE = {
-  subject: '[MINTA] Meghívó a FODEL portálra',
+  subject: '[MINTA] Meghívó a FINDDOME portálra',
   heading: '[MINTA] Meghívó',
   body: 'Ez mintaszöveg. A végleges meghívószöveget Gábor és Éva adja meg a Beállítások → Meghívólevelek oldalon.',
   cta: 'Meghívó elfogadása',
@@ -323,7 +323,7 @@ const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promise<Buil
     templates.valuationReady(l, {
       range: say(l)('42 000 000 – 54 000 000 Ft', '€ 142.000 – € 168.000', '€142,000 – €168,000', '142.000 € – 168.000 €', '142 000 € – 168 000 €', '142.000 € – 168.000 €', '142\u00a0000 € – 168\u00a0000 €', '142.000 € – 168.000 €', '142\u00a0000 € – 168\u00a0000 €'),
       mid: say(l)('48 000 000 Ft', '€ 155.000', '€155,000', '155.000 €', '155 000 €', '155.000 €', '155\u00a0000 €', '155.000 €', '155\u00a0000 €'),
-      basis: say(l)('11 hasonló FODEL-hirdetés', '11 vergelijkbare FODEL-advertenties', '11 comparable FODEL listings', '11 vergleichbare FODEL-Inserate', '11 annonces FODEL comparables', '11 anuncios FODEL comparables', '11 porównywalnych ogłoszeń FODEL', '11 anunțuri FODEL comparabile', '11 porovnateľných inzerátov FODEL'),
+      basis: say(l)('11 hasonló FINDDOME-hirdetés', '11 vergelijkbare FINDDOME-advertenties', '11 comparable FINDDOME listings', '11 vergleichbare FINDDOME-Inserate', '11 annonces FINDDOME comparables', '11 anuncios FINDDOME comparables', '11 porównywalnych ogłoszeń FINDDOME', '11 anunțuri FINDDOME comparabile', '11 porovnateľných inzerátov FINDDOME'),
       factors: [{ text: say(l)('Panorámás kilátás', 'Panoramisch uitzicht', 'Panoramic view', 'Panoramablick', 'Vue panoramique', 'Vistas panorámicas', 'Widok panoramiczny', 'Priveliște panoramică', 'Panoramatický výhľad'), direction: 'plus' }],
       notice: say(l)('Tájékoztató, piaci alapú értékmeghatározás.', 'Indicatieve, marktgebaseerde waardebepaling.', 'Indicative, market-based valuation.', 'Unverbindliche, marktbasierte Wertermittlung.', 'Estimation indicative, fondée sur le marché.', 'Valoración orientativa, basada en el mercado.', 'Orientacyjna wycena oparta na danych rynkowych.', 'Evaluare orientativă, bazată pe piață.', 'Orientačný odhad založený na trhu.'),
       compCount: 11,
@@ -445,7 +445,7 @@ function index(): string {
     )
     .join('');
 
-  return `<!doctype html><meta charset="utf-8"><title>FODEL email preview</title>
+  return `<!doctype html><meta charset="utf-8"><title>FINDDOME email preview</title>
 <style>
   body { font: 15px/1.7 system-ui, sans-serif; max-width: 720px; margin: 48px auto; padding: 0 24px; color: #102a43; }
   h1 { font-size: 22px; margin-bottom: 6px; }

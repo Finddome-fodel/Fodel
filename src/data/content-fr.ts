@@ -71,7 +71,7 @@ export const CONTENT_FR = {
         type: 'prose',
         title: 'Quand une commission est due',
         paragraphs: [
-          `Nous ne facturons de commission que si FODEL a amené l’acheteur, qu’un contrat de vente écrit existe et que l’acompte a été versé. Le taux est de ${pct(COMMISSION.percent)} net, avec un minimum de ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} de TVA néerlandaise. C’est le vendeur qui paie, pas l’acheteur.`,
+          `Nous ne facturons de commission que si FINDDOME a amené l’acheteur, qu’un contrat de vente écrit existe et que l’acompte a été versé. Le taux est de ${pct(COMMISSION.percent)} net, avec un minimum de ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} de TVA néerlandaise. C’est le vendeur qui paie, pas l’acheteur.`,
         ],
       },
       {
@@ -86,7 +86,7 @@ export const CONTENT_FR = {
 
   agricultural: {
     metaTitle: `Immobilier agricole : jusqu’à ${AGRI_HECTARE_LIMIT} hectares en Hongrie`,
-    metaDescription: `Un citoyen de l’UE titulaire d’une qualification agricole peut acquérir jusqu’à ${AGRI_HECTARE_LIMIT} hectares de terres en Hongrie. FODEL prend en charge toute la procédure.`,
+    metaDescription: `Un citoyen de l’UE titulaire d’une qualification agricole peut acquérir jusqu’à ${AGRI_HECTARE_LIMIT} hectares de terres en Hongrie. FINDDOME prend en charge toute la procédure.`,
     eyebrow: 'Immobilier agricole',
     title: 'Terres agricoles et',
     titleEm: 'domaines',
@@ -168,7 +168,7 @@ export const CONTENT_FR = {
           'Honoraires d’avocat pour la rédaction et la contresignature de l’acte',
           `Traduction du contrat bilingue : ${des('hu')}, selon la combinaison de langues`,
           'Frais de registre foncier',
-          'Éventuelle commission de FODEL : elle est payée par le vendeur, pas par vous',
+          'Éventuelle commission de FINDDOME : elle est payée par le vendeur, pas par vous',
         ],
       },
       {
@@ -244,7 +244,7 @@ export const CONTENT_FR = {
   photoGuide: {
     metaTitle: 'Guide photo pour les annonceurs',
     metaDescription:
-      'De bonnes photos sont le meilleur moyen de vendre vite. Le guide photo de FODEL : lumière, cadrage, résolution et erreurs les plus fréquentes.',
+      'De bonnes photos sont le meilleur moyen de vendre vite. Le guide photo de FINDDOME : lumière, cadrage, résolution et erreurs les plus fréquentes.',
     eyebrow: 'Pour les vendeurs',
     title: 'Le guide',
     titleEm: 'photo',

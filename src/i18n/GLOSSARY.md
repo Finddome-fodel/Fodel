@@ -1,4 +1,4 @@
-# FODEL glossary
+# FINDDOME glossary
 
 One term per concept per language. If you add copy, use these words; if a word is missing, add a row here first.
 
@@ -69,12 +69,12 @@ Typography: percent signs are written `10 %` with a no-break space in cs, sl, sv
 | energy certificate | APE | certificado energético | πιστοποιητικό ενεργειακής απόδοσης | PENB | energetska izkaznica | energideklaration | energimærke | energiattest | energiatodistus | energiamärgis | energosertifikāts | energinio naudingumo sertifikatas |
 | land registry | catasto / registro fondiario | registo predial | κτηματολόγιο | katastr nemovitostí | zemljiška knjiga | fastighetsregister | tingbog | grunnbok | kiinteistörekisteri | kinnistusraamat | zemesgrāmata | nekilnojamojo turto registras |
 
-Brand lines (`BRAND` in `src/i18n/ui.ts`): FODEL IMMOBILIARE, FODEL IMOBILIÁRIA, FODEL ΑΚΙΝΗΤΑ, FODEL NEMOVITOSTI, FODEL NEPREMIČNINE, FODEL FASTIGHETER, FODEL EJENDOMME, FODEL EIENDOM, FODEL KIINTEISTÖT, FODEL KINNISVARA, FODEL NEKUSTAMAIS ĪPAŠUMS, FODEL NEKILNOJAMASIS TURTAS. Greek URL slugs are Latin transliterations; Danish and Norwegian slugs write ø as o, å as a and æ as ae.
+Brand lines (`BRAND` in `src/i18n/ui.ts`): FINDDOME IMMOBILIARE, FINDDOME IMOBILIÁRIA, FINDDOME ΑΚΙΝΗΤΑ, FINDDOME NEMOVITOSTI, FINDDOME NEPREMIČNINE, FINDDOME FASTIGHETER, FINDDOME EJENDOMME, FINDDOME EIENDOM, FINDDOME KIINTEISTÖT, FINDDOME KINNISVARA, FINDDOME NEKUSTAMAIS ĪPAŠUMS, FINDDOME NEKILNOJAMASIS TURTAS. Greek URL slugs are Latin transliterations; Danish and Norwegian slugs write ø as o, å as a and æ as ae.
 
 ## Notes
 
 - Hungarian place names, counties and property types keep their Hungarian name, with a short translation where it helps: “Zala County”, “Zala (Komitat)”, “comitat de Zala”.
 - “Commission” is used for the 4% fee. “Fee” and “price” are used for the listing packages.
-- FODEL is never “an agency that sells for you in Hungary”: it advertises properties and helps with the sale. Do not write “broker” for FODEL.
+- FINDDOME is never “an agency that sells for you in Hungary”: it advertises properties and helps with the sale. Do not write “broker” for FINDDOME.
 - No marketing filler, no rhetorical questions, few em-dashes. Use commas, colons and full stops.
 - Facts never change between languages: prices, percentages, hours and promises come from `src/config/company.ts` and `src/lib/listing-packages.ts`.

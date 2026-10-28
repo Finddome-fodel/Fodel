@@ -122,7 +122,7 @@ const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'né
         </>
       )}
       {factors.length > 0 && <><h2>Értéket befolyásoló szempontok</h2><ul class="ai-factors">{factors.map((factor) => <li>{factor.direction === 'plus' ? 'Értéknövelő' : factor.direction === 'minus' ? 'Értékcsökkentő' : 'Bizonytalan'}: {factor.text}</li>)}</ul></>}
-      {baseline && <><h2>Adatalap</h2><p class="hint">{baseline.kind === 'ksh' ? `KSH Ingatlanadattár, ${baseline.year} · ${baseline.level === 'county' ? 'vármegyei helyettesítés' : 'települési adat'} · ${baseline.count} ügylet` : `${baseline.count} hasonló FODEL-hirdetés`}</p>{baseline.dispersionPercent != null && <p class="hint">KSH szórás: {baseline.dispersionPercent}% (tájékoztató statisztikai adat).</p>}{baseline.url && <a href={baseline.url} target="_blank" rel="noopener">Forrás: KSH Ingatlanadattár, {baseline.year}{baseline.retrievedAt ? ` (letöltve: ${baseline.retrievedAt})` : ''} · CC BY 4.0</a>}</>}
+      {baseline && <><h2>Adatalap</h2><p class="hint">{baseline.kind === 'ksh' ? `KSH Ingatlanadattár, ${baseline.year} · ${baseline.level === 'county' ? 'vármegyei helyettesítés' : 'települési adat'} · ${baseline.count} ügylet` : `${baseline.count} hasonló FINDDOME-hirdetés`}</p>{baseline.dispersionPercent != null && <p class="hint">KSH szórás: {baseline.dispersionPercent}% (tájékoztató statisztikai adat).</p>}{baseline.url && <a href={baseline.url} target="_blank" rel="noopener">Forrás: KSH Ingatlanadattár, {baseline.year}{baseline.retrievedAt ? ` (letöltve: ${baseline.retrievedAt})` : ''} · CC BY 4.0</a>}</>}
 
       {photoRows.length > 0 && (
         <>
@@ -232,7 +232,7 @@ const leadLanguage = ({ hu: 'magyarul', nl: 'hollandul', en: 'angolul', de: 'né
       )}
 
       {v.status === 'insufficient_data' && (
-        <p class="notice">Nincs automatikus adatalap ehhez a kéréshez (kevesebb mint 8 FODEL-összehasonlító, és a kategóriához nincs használható KSH-adat). A sávot kézzel lehet megadni.</p>
+        <p class="notice">Nincs automatikus adatalap ehhez a kéréshez (kevesebb mint 8 FINDDOME-összehasonlító, és a kategóriához nincs használható KSH-adat). A sávot kézzel lehet megadni.</p>
       )}
 
       {(v.ai_rationale_hu || v.ai_adjustment_percent != null) && (

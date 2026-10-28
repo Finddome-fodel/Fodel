@@ -66,8 +66,8 @@ const brand = BRAND[locale];
 const ui = UI[locale];
 
 const canonical = abs(canonicalPath ?? Astro.url.pathname);
-const fullTitle = title.includes('FODEL') ? title : `${title} | ${brand.name}`;
-const socialImage = abs(ogImage ?? '/og/fodel-default.jpg');
+const fullTitle = title.includes('FINDDOME') ? title : `${title} | ${brand.name}`;
+const socialImage = abs(ogImage ?? '/og/finddome-default.jpg');
 
 const company = await getCompany();
 const jsonLd = graph([organisationSchema(locale, company), ...schema]);

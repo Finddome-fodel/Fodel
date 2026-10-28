@@ -33,7 +33,7 @@ export const FAQ_RO = [
     question: 'Cât costă intermedierea dumneavoastră?',
     answer: [
       `Comisionul nostru este de ${pct(COMMISSION.percent)} net, cel puțin ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} TVA neerlandez. Îl plătește vânzătorul maghiar, nu dumneavoastră.`,
-      'Se facturează numai dacă sunt îndeplinite toate cele trei condiții: există un contract de vânzare-cumpărare scris, cumpărătorul a fost adus de FODEL și avansul a fost plătit.',
+      'Se facturează numai dacă sunt îndeplinite toate cele trei condiții: există un contract de vânzare-cumpărare scris, cumpărătorul a fost adus de FINDDOME și avansul a fost plătit.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -70,7 +70,7 @@ export const FAQ_RO = [
   },
   {
     id: 'de-ce-se-ocupa-fodel',
-    question: 'De ce se ocupă FODEL la o achiziție?',
+    question: 'De ce se ocupă FINDDOME la o achiziție?',
     answer: [
       '- Comunicarea prin telefon și e-mail, precum și legătura dintre cele două părți',
       '- Întâlniri personale și vizionări la fața locului',

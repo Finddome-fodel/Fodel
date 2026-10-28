@@ -17,17 +17,17 @@ const onsite = ONSITE_SERVICES.map((service) => `- ${service.id === 'onsite-medi
 
 export const GET: APIRoute = () =>
   new Response(
-    `# FODEL VASTGOED / FODEL INGATLAN
+    `# FINDDOME VASTGOED / FINDDOME INGATLAN
 
 > Dutch-Hungarian real estate marketplace, founded 2013, based in Den Haag.
 > Advertises Hungarian property to Western European buyers in five languages
 > across eight countries, without exclusivity contracts. Website: ${SITE_URL}
 
-## What FODEL does
+## What FINDDOME does
 - Hungarian owners pay to list a property; the listing appears in up to 5
   languages (Hungarian, Dutch, German, English, French) across 8 countries.
 - No exclusivity is ever required. The seller may sell through any other channel.
-- Many listings publish the owner's own name and phone number alongside FODEL's,
+- Many listings publish the owner's own name and phone number alongside FINDDOME's,
   so buyers can contact the seller directly.
 - If the buyer and seller conclude the sale directly, no commission is charged —
   only the advertising fee already paid.
@@ -44,7 +44,7 @@ ${onsite}
 
 ## Commission
 4% net, minimum EUR 2,000, plus 21% Dutch VAT. Payable by the seller and only
-when all three hold: a written sale contract exists, FODEL introduced the buyer,
+when all three hold: a written sale contract exists, FINDDOME introduced the buyer,
 and the deposit has been paid.
 
 ## Contact

@@ -196,7 +196,7 @@ const extraMeta: Record<ExtraId, { label: string; unit: string; note?: string }>
       on('editedImages') ? 'A képeket szakszerűen feldolgozzuk' : 'A képek az eredeti állapotban jelennek meg',
       on('editedText') ? 'A szöveget szakszerűen megszerkesztjük' : 'A szöveg a beküldött formában jelenik meg',
       video === 'included' ? 'Videós bemutató a csomag része' : video === 'extra' ? `Videós bemutató külön kérhető (${extraPrice('video')} €)` : '',
-      on('phone') ? 'Az Ön telefonszáma megjelenhet a hirdetésben' : 'Az érdeklődők a FODEL-en keresztül érik el',
+      on('phone') ? 'Az Ön telefonszáma megjelenhet a hirdetésben' : 'Az érdeklődők a FINDDOME-en keresztül érik el',
     ].filter(Boolean);
     const list = out('features');
     list.replaceChildren(...lines.map((line) => Object.assign(document.createElement('li'), { textContent: line })));

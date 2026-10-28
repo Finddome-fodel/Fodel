@@ -160,7 +160,7 @@ const initials = (name: string) =>
                     </a>
                   )}
                   {r.email && (
-                    <a class:list={['mail', !r.phone && 'primary']} href={`mailto:${r.email}?subject=FODEL`}>
+                    <a class:list={['mail', !r.phone && 'primary']} href={`mailto:${r.email}?subject=FINDDOME`}>
                       <Fragment set:html={icon('mail', 17)} />
                       {r.email}
                     </a>
@@ -230,7 +230,7 @@ const initials = (name: string) =>
                 )}
                 <a
                   class:list={['mail', !e.phone && 'primary']}
-                  href={`mailto:${e.email}?subject=${encodeURIComponent(property ? `FODEL #${property.ref}` : 'FODEL')}`}
+                  href={`mailto:${e.email}?subject=${encodeURIComponent(property ? `FINDDOME #${property.ref}` : 'FINDDOME')}`}
                 >
                   <Fragment set:html={icon('mail', 17)} />
                   {e.email}

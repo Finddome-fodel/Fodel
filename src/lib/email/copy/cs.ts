@@ -14,13 +14,13 @@ export const CS = {
   common: {
     greeting: (name: string) => `Dobrý den, ${name},`,
     greetingNoName: 'Vážený inzerente,',
-    signOff: 'S pozdravem\nFODEL Nemovitosti',
+    signOff: 'S pozdravem\nFINDDOME Nemovitosti',
     questions: 'Máte-li dotaz, stačí odpovědět na tento e-mail.',
     linkFallback: 'Pokud tlačítko nefunguje, zkopírujte tuto adresu do prohlížeče:',
   },
 
   registrationConfirm: {
-    subject: 'Nastavte si heslo | FODEL',
+    subject: 'Nastavte si heslo | FINDDOME',
     preheader: 'Jedno kliknutí a můžete sestavit svůj inzerát.',
     heading: 'Nastavte si heslo',
     intro: 'Děkujeme za registraci. Váš účet je téměř připraven; chybí už jen heslo.',
@@ -30,21 +30,21 @@ export const CS = {
   },
 
   accountExists: {
-    subject: 'U FODEL už máte účet',
+    subject: 'U FINDDOME už máte účet',
     preheader: 'Přihlaste se, nebo si nastavte nové heslo.',
     heading: 'K této adrese už účet existuje',
-    body: 'Někdo se právě pokusil zaregistrovat na webu FODEL s touto e-mailovou adresou. Protože k ní už účet existuje, nový jsme nevytvořili.',
+    body: 'Někdo se právě pokusil zaregistrovat na webu FINDDOME s touto e-mailovou adresou. Protože k ní už účet existuje, nový jsme nevytvořili.',
     cta: 'Přihlásit se',
     reset: 'Zapomněli jste heslo? Vyžádejte si nové',
     ignore: 'Pokud jste to nebyli vy, nemusíte nic dělat: váš účet zůstává beze změny.',
   },
 
   invite: {
-    subject: 'Pozvánka do portálu FODEL',
+    subject: 'Pozvánka do portálu FINDDOME',
     preheader: 'Nastavte si heslo a přihlaste se do portálu inzerentů.',
-    heading: 'Byli jste pozváni do portálu FODEL',
+    heading: 'Byli jste pozváni do portálu FINDDOME',
     body: (role: string) =>
-      `FODEL vás zve do portálu ${role}, kde spravujete inzeráty nemovitostí.`,
+      `FINDDOME vás zve do portálu ${role}, kde spravujete inzeráty nemovitostí.`,
     roleAdmin: 'jako administrátor',
     roleOwner: 'jako inzerent',
     cta: 'Přijmout pozvánku',
@@ -52,7 +52,7 @@ export const CS = {
   },
 
   welcome: {
-    subject: 'Vítejte v portálu FODEL',
+    subject: 'Vítejte v portálu FINDDOME',
     preheader: 'Váš účet je aktivní. Takto zadáte svůj první inzerát.',
     heading: (name: string) => `Vítejte, ${name}`,
     body: 'Váš účet je aktivní. V portálu sestavíte inzerát, nahrajete fotografie a sledujete jeho kontrolu.',
@@ -95,7 +95,7 @@ export const CS = {
     discountLabel: 'Sleva za doporučení (10\u00a0%)',
     totalLabel: 'K úhradě',
     ctaCard: 'Zaplatit kartou',
-    cardNote: 'Platba probíhá v zabezpečeném prostředí Stripe. FODEL údaje o vaší kartě nevidí ani neukládá.',
+    cardNote: 'Platba probíhá v zabezpečeném prostředí Stripe. FINDDOME údaje o vaší kartě nevidí ani neukládá.',
     bankTitle: 'Nebo bankovním převodem',
     bankNote: (ref: string) =>
       `Při převodu uveďte referenční číslo: ${ref}. Jakmile platba dorazí, někdo z našeho týmu inzerát zveřejní.`,
@@ -113,7 +113,7 @@ export const CS = {
     totalLabel: 'K úhradě',
     dueLabel: 'Uhradit do',
     ctaCard: 'Zaplatit kartou',
-    cardNote: 'Platba probíhá v zabezpečeném prostředí Stripe. FODEL údaje o vaší kartě nevidí ani neukládá.',
+    cardNote: 'Platba probíhá v zabezpečeném prostředí Stripe. FINDDOME údaje o vaší kartě nevidí ani neukládá.',
     bankTitle: 'Bankovní převod',
     bankNote: (ref: string) => `Při převodu uveďte referenční číslo: ${ref}.`,
     vatNote: 'Všechny částky zahrnují 21% nizozemské DPH.',
@@ -154,17 +154,17 @@ export const CS = {
   },
 
   passwordReset: {
-    subject: 'Obnovení hesla | Portál FODEL',
+    subject: 'Obnovení hesla | Portál FINDDOME',
     preheader: 'Odkaz platí jednu hodinu.',
     heading: 'Obnovte si heslo',
-    body: 'Obdrželi jsme žádost o obnovení hesla k vašemu účtu v portálu FODEL. Nové heslo nastavíte kliknutím na tlačítko níže.',
+    body: 'Obdrželi jsme žádost o obnovení hesla k vašemu účtu v portálu FINDDOME. Nové heslo nastavíte kliknutím na tlačítko níže.',
     cta: 'Nastavit nové heslo',
     expiry: 'Odkaz platí jednu hodinu a lze jej použít jednou.',
     ignore: 'Pokud jste o to nežádali, tento e-mail ignorujte. Vaše heslo zůstane beze změny a nic se nestane.',
   },
 
   referralRegistered: {
-    subject: 'Vaše doporučení jsme obdrželi | FODEL',
+    subject: 'Vaše doporučení jsme obdrželi | FINDDOME',
     preheader: 'Někdo z našeho týmu brzy kontaktuje osobu, kterou jste doporučili.',
     heading: 'Děkujeme za doporučení',
     body: (referredName: string) =>
@@ -178,7 +178,7 @@ export const CS = {
   },
 
   valuationReady: {
-    subject: 'Vaše ocenění je připraveno | FODEL',
+    subject: 'Vaše ocenění je připraveno | FINDDOME',
     preheader: 'Pro vaši nemovitost jsme připravili orientační odhad.',
     heading: 'Vaše ocenění je připraveno',
     body: (range: string) =>
@@ -204,7 +204,7 @@ export const CS = {
   },
 
   valuationDeclined: {
-    subject: 'Vaše žádost o ocenění | FODEL',
+    subject: 'Vaše žádost o ocenění | FINDDOME',
     preheader: 'Někdo z našeho týmu vás bude osobně kontaktovat.',
     heading: 'Děkujeme za vaši žádost',
     body: 'Na základě zadaných údajů máme v současnosti příliš málo srovnatelných nemovitostí pro spolehlivý odhad. Někdo z našeho týmu vás bude osobně kontaktovat.',
@@ -247,7 +247,7 @@ export const CS = {
   },
 
   serviceRequested: {
-    subject: 'Vaši žádost jsme obdrželi | FODEL',
+    subject: 'Vaši žádost jsme obdrželi | FINDDOME',
     preheader: 'Někdo z našeho týmu vás bude kontaktovat kvůli domluvení termínu.',
     heading: 'Vaši žádost jsme obdrželi',
     body: (service: string, price: string) => `Děkujeme, vaši žádost jsme zaznamenali: ${service} (${price}).`,
@@ -257,7 +257,7 @@ export const CS = {
   },
 
   valuationPaid: {
-    subject: 'Potvrzení platby | Ocenění FODEL',
+    subject: 'Potvrzení platby | Ocenění FINDDOME',
     preheader: 'Děkujeme, vaše platba dorazila.',
     heading: 'Děkujeme, vaše platba dorazila',
     body: (service: string) => `Obdrželi jsme platbu za „${service}“.`,
@@ -269,7 +269,7 @@ export const CS = {
   },
 
   judicialRequested: {
-    subject: 'Žádost o oficiální ocenění | FODEL',
+    subject: 'Žádost o oficiální ocenění | FINDDOME',
     preheader: 'Někdo z našeho týmu vás bude kontaktovat ohledně možností.',
     heading: 'Vaši žádost jsme obdrželi',
     body: 'Děkujeme, zaznamenali jsme, že máte zájem o oficiální (soudní) ocenění znalcem. Nejde o totéž co orientační tržní ocenění na našem webu: provádí jej autorizovaný znalec na základě cenové nabídky.',

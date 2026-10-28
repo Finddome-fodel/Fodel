@@ -14,13 +14,13 @@ export const LT = {
   common: {
     greeting: (name: string) => `Laba diena, ${name},`,
     greetingNoName: 'Gerbiamas skelbėjau,',
-    signOff: 'Pagarbiai\nFODEL Nekilnojamasis turtas',
+    signOff: 'Pagarbiai\nFINDDOME Nekilnojamasis turtas',
     questions: 'Jei turite klausimų, tiesiog atsakykite į šį laišką.',
     linkFallback: 'Jei mygtukas neveikia, nukopijuokite šį adresą į naršyklę:',
   },
 
   registrationConfirm: {
-    subject: 'Nustatykite slaptažodį | FODEL',
+    subject: 'Nustatykite slaptažodį | FINDDOME',
     preheader: 'Vienas paspaudimas – ir galite parengti savo skelbimą.',
     heading: 'Nustatykite slaptažodį',
     intro: 'Dėkojame, kad užsiregistravote. Jūsų paskyra beveik paruošta – trūksta tik slaptažodžio.',
@@ -30,21 +30,21 @@ export const LT = {
   },
 
   accountExists: {
-    subject: 'Jau turite FODEL paskyrą',
+    subject: 'Jau turite FINDDOME paskyrą',
     preheader: 'Prisijunkite arba nustatykite naują slaptažodį.',
     heading: 'Šiuo adresu paskyra jau yra',
-    body: 'Kažkas ką tik bandė užsiregistruoti FODEL svetainėje šiuo el. pašto adresu. Jam paskyra jau yra, todėl naujos nesukūrėme.',
+    body: 'Kažkas ką tik bandė užsiregistruoti FINDDOME svetainėje šiuo el. pašto adresu. Jam paskyra jau yra, todėl naujos nesukūrėme.',
     cta: 'Prisijungti',
     reset: 'Pamiršote slaptažodį? Paprašykite naujo',
     ignore: 'Jei tai buvote ne jūs, nieko daryti nereikia: jūsų paskyra nepakito.',
   },
 
   invite: {
-    subject: 'Kvietimas į FODEL portalą',
+    subject: 'Kvietimas į FINDDOME portalą',
     preheader: 'Nustatykite slaptažodį ir prisijunkite prie skelbėjų portalo.',
-    heading: 'Esate pakviesti į FODEL portalą',
+    heading: 'Esate pakviesti į FINDDOME portalą',
     body: (role: string) =>
-      `FODEL kviečia jus prisijungti prie portalo ${role}, kuriame tvarkote nekilnojamojo turto skelbimus.`,
+      `FINDDOME kviečia jus prisijungti prie portalo ${role}, kuriame tvarkote nekilnojamojo turto skelbimus.`,
     roleAdmin: 'kaip administratorius',
     roleOwner: 'kaip skelbėjas',
     cta: 'Priimti kvietimą',
@@ -52,7 +52,7 @@ export const LT = {
   },
 
   welcome: {
-    subject: 'Sveiki atvykę į FODEL portalą',
+    subject: 'Sveiki atvykę į FINDDOME portalą',
     preheader: 'Jūsų paskyra aktyvi. Štai kaip pateikti pirmąjį skelbimą.',
     heading: (name: string) => `Sveiki, ${name}`,
     body: 'Jūsų paskyra aktyvi. Portale sudarote skelbimą, įkeliate nuotraukas ir stebite peržiūrą.',
@@ -95,7 +95,7 @@ export const LT = {
     discountLabel: 'Rekomendacijos nuolaida (10\u00a0%)',
     totalLabel: 'Mokėti',
     ctaCard: 'Mokėti kortele',
-    cardNote: 'Mokėjimas atliekamas saugioje „Stripe“ aplinkoje. FODEL nemato ir nesaugo jūsų kortelės duomenų.',
+    cardNote: 'Mokėjimas atliekamas saugioje „Stripe“ aplinkoje. FINDDOME nemato ir nesaugo jūsų kortelės duomenų.',
     bankTitle: 'Arba banko pavedimu',
     bankNote: (ref: string) =>
       `Pavedime nurodykite nuorodos numerį: ${ref}. Kai tik mokėjimas bus gautas, vienas iš mūsų komandos narių paskelbs skelbimą.`,
@@ -113,7 +113,7 @@ export const LT = {
     totalLabel: 'Mokėti',
     dueLabel: 'Sumokėti iki',
     ctaCard: 'Mokėti kortele',
-    cardNote: 'Mokėjimas atliekamas saugioje „Stripe“ aplinkoje. FODEL nemato ir nesaugo jūsų kortelės duomenų.',
+    cardNote: 'Mokėjimas atliekamas saugioje „Stripe“ aplinkoje. FINDDOME nemato ir nesaugo jūsų kortelės duomenų.',
     bankTitle: 'Banko pavedimas',
     bankNote: (ref: string) => `Pavedime nurodykite nuorodos numerį: ${ref}.`,
     vatNote: 'Visos sumos nurodytos su 21\u00a0% Nyderlandų PVM.',
@@ -154,17 +154,17 @@ export const LT = {
   },
 
   passwordReset: {
-    subject: 'Atkurkite slaptažodį | FODEL portalas',
+    subject: 'Atkurkite slaptažodį | FINDDOME portalas',
     preheader: 'Nuoroda galioja vieną valandą.',
     heading: 'Atkurkite slaptažodį',
-    body: 'Gavome prašymą atkurti jūsų FODEL portalo paskyros slaptažodį. Spustelėkite toliau esantį mygtuką ir nustatykite naują.',
+    body: 'Gavome prašymą atkurti jūsų FINDDOME portalo paskyros slaptažodį. Spustelėkite toliau esantį mygtuką ir nustatykite naują.',
     cta: 'Nustatyti naują slaptažodį',
     expiry: 'Nuoroda galioja vieną valandą ir gali būti panaudota vieną kartą.',
     ignore: 'Jei to neprašėte, nekreipkite dėmesio į šį laišką. Jūsų slaptažodis nepasikeis ir nieko neįvyks.',
   },
 
   referralRegistered: {
-    subject: 'Gavome jūsų rekomendaciją | FODEL',
+    subject: 'Gavome jūsų rekomendaciją | FINDDOME',
     preheader: 'Netrukus vienas iš mūsų komandos narių susisieks su jūsų rekomenduotu asmeniu.',
     heading: 'Dėkojame už rekomendaciją',
     body: (referredName: string) =>
@@ -178,7 +178,7 @@ export const LT = {
   },
 
   valuationReady: {
-    subject: 'Jūsų įvertinimas paruoštas | FODEL',
+    subject: 'Jūsų įvertinimas paruoštas | FINDDOME',
     preheader: 'Parengėme orientacinį jūsų objekto įvertinimą.',
     heading: 'Jūsų įvertinimas paruoštas',
     body: (range: string) =>
@@ -204,7 +204,7 @@ export const LT = {
   },
 
   valuationDeclined: {
-    subject: 'Jūsų vertinimo užklausa | FODEL',
+    subject: 'Jūsų vertinimo užklausa | FINDDOME',
     preheader: 'Vienas iš mūsų komandos narių susisieks su jumis asmeniškai.',
     heading: 'Dėkojame už jūsų užklausą',
     body: 'Remiantis pateiktais duomenimis, šiuo metu turime per mažai panašių objektų patikimam įvertinimui. Vienas iš mūsų komandos narių susisieks su jumis asmeniškai.',
@@ -247,7 +247,7 @@ export const LT = {
   },
 
   serviceRequested: {
-    subject: 'Gavome jūsų užklausą | FODEL',
+    subject: 'Gavome jūsų užklausą | FINDDOME',
     preheader: 'Vienas iš mūsų komandos narių susisieks su jumis dėl datos.',
     heading: 'Gavome jūsų užklausą',
     body: (service: string, price: string) => `Dėkojame, užregistravome jūsų užklausą: ${service} (${price}).`,
@@ -257,7 +257,7 @@ export const LT = {
   },
 
   valuationPaid: {
-    subject: 'Mokėjimo patvirtinimas | FODEL vertinimas',
+    subject: 'Mokėjimo patvirtinimas | FINDDOME vertinimas',
     preheader: 'Dėkojame, jūsų mokėjimas gautas.',
     heading: 'Dėkojame, jūsų mokėjimas gautas',
     body: (service: string) => `Gavome mokėjimą už „${service}“.`,
@@ -269,7 +269,7 @@ export const LT = {
   },
 
   judicialRequested: {
-    subject: 'Oficialaus vertinimo užklausa | FODEL',
+    subject: 'Oficialaus vertinimo užklausa | FINDDOME',
     preheader: 'Vienas iš mūsų komandos narių susisieks su jumis dėl galimybių.',
     heading: 'Gavome jūsų užklausą',
     body: 'Dėkojame, pažymėjome, kad norite oficialaus (teismo paskirto) eksperto vertinimo. Tai nėra tas pats, kas orientacinis rinka pagrįstas įvertinimas mūsų svetainėje: jį atlieka įgaliotas ekspertas pagal kainos pasiūlymą.',

@@ -13,13 +13,13 @@ export const NL = {
   common: {
     greeting: (name: string) => `Beste ${name},`,
     greetingNoName: 'Geachte adverteerder,',
-    signOff: 'Met vriendelijke groet,\nFODEL Vastgoed',
+    signOff: 'Met vriendelijke groet,\nFINDDOME Vastgoed',
     questions: 'Heeft u een vraag? U kunt gewoon op deze e-mail antwoorden.',
     linkFallback: 'Werkt de knop niet? Kopieer dan dit adres naar uw browser:',
   },
 
   registrationConfirm: {
-    subject: 'Stel uw wachtwoord in | FODEL',
+    subject: 'Stel uw wachtwoord in | FINDDOME',
     preheader: 'Eén klik en u kunt uw advertentie samenstellen.',
     heading: 'Stel uw wachtwoord in',
     intro: 'Dank u voor uw registratie. Uw account is bijna klaar, alleen het wachtwoord ontbreekt nog.',
@@ -29,21 +29,21 @@ export const NL = {
   },
 
   accountExists: {
-    subject: 'U heeft al een FODEL-account',
+    subject: 'U heeft al een FINDDOME-account',
     preheader: 'Log in, of stel een nieuw wachtwoord in.',
     heading: 'Bij dit adres hoort al een account',
-    body: 'Iemand probeerde zich zojuist met dit e-mailadres te registreren op de website van FODEL. Bij dit adres hoort al een account, dus wij hebben geen nieuw account aangemaakt.',
+    body: 'Iemand probeerde zich zojuist met dit e-mailadres te registreren op de website van FINDDOME. Bij dit adres hoort al een account, dus wij hebben geen nieuw account aangemaakt.',
     cta: 'Inloggen',
     reset: 'Wachtwoord vergeten? Nieuw wachtwoord aanvragen',
     ignore: 'Was u dit niet? Dan hoeft u niets te doen: uw account blijft zoals het is.',
   },
 
   invite: {
-    subject: 'Uitnodiging voor het FODEL-portaal',
+    subject: 'Uitnodiging voor het FINDDOME-portaal',
     preheader: 'Stel uw wachtwoord in en log in op het adverteerdersportaal.',
-    heading: 'U bent uitgenodigd voor het FODEL-portaal',
+    heading: 'U bent uitgenodigd voor het FINDDOME-portaal',
     body: (role: string) =>
-      `FODEL nodigt u uit om ${role} deel te nemen aan het portaal, waar u vastgoedadvertenties beheert.`,
+      `FINDDOME nodigt u uit om ${role} deel te nemen aan het portaal, waar u vastgoedadvertenties beheert.`,
     roleAdmin: 'als beheerder',
     roleOwner: 'als adverteerder',
     cta: 'Uitnodiging accepteren',
@@ -51,7 +51,7 @@ export const NL = {
   },
 
   welcome: {
-    subject: 'Welkom bij het FODEL-portaal',
+    subject: 'Welkom bij het FINDDOME-portaal',
     preheader: 'Uw account is actief. Zo plaatst u uw eerste advertentie.',
     heading: (name: string) => `Welkom, ${name}`,
     body: 'Uw account is actief. In het portaal stelt u uw advertentie samen, uploadt u foto’s en volgt u de beoordeling.',
@@ -111,7 +111,7 @@ export const NL = {
     discountLabel: 'Aanbrengkorting (10%)',
     totalLabel: 'Te betalen',
     ctaCard: 'Betalen met creditcard',
-    cardNote: 'De betaling verloopt via de beveiligde omgeving van Stripe. FODEL ziet en bewaart uw kaartgegevens niet.',
+    cardNote: 'De betaling verloopt via de beveiligde omgeving van Stripe. FINDDOME ziet en bewaart uw kaartgegevens niet.',
     bankTitle: 'Of per bankoverschrijving',
     bankNote: (ref: string) =>
       `Vermeld bij de overschrijving het referentienummer: ${ref}. Zodra de overschrijving binnen is, zet onze medewerker de advertentie live.`,
@@ -129,7 +129,7 @@ export const NL = {
     totalLabel: 'Te betalen',
     dueLabel: 'Uiterste betaaldatum',
     ctaCard: 'Betalen met creditcard',
-    cardNote: 'De betaling verloopt via de beveiligde omgeving van Stripe. FODEL ziet en bewaart uw kaartgegevens niet.',
+    cardNote: 'De betaling verloopt via de beveiligde omgeving van Stripe. FINDDOME ziet en bewaart uw kaartgegevens niet.',
     bankTitle: 'Bankoverschrijving',
     bankNote: (ref: string) => `Vermeld bij de overschrijving het referentienummer: ${ref}.`,
     vatNote: 'Alle genoemde bedragen zijn inclusief 21% Nederlandse btw.',
@@ -170,17 +170,17 @@ export const NL = {
   },
 
   passwordReset: {
-    subject: 'Wachtwoord herstellen | FODEL-portaal',
+    subject: 'Wachtwoord herstellen | FINDDOME-portaal',
     preheader: 'De link is één uur geldig.',
     heading: 'Wachtwoord herstellen',
-    body: 'Wij ontvingen een verzoek om het wachtwoord van uw FODEL-portaalaccount te herstellen. Klik op de knop hieronder om een nieuw wachtwoord in te stellen.',
+    body: 'Wij ontvingen een verzoek om het wachtwoord van uw FINDDOME-portaalaccount te herstellen. Klik op de knop hieronder om een nieuw wachtwoord in te stellen.',
     cta: 'Nieuw wachtwoord instellen',
     expiry: 'De link is één uur geldig en kan maar één keer worden gebruikt.',
     ignore: 'Heeft u dit niet zelf aangevraagd? Negeer deze e-mail. Uw wachtwoord blijft ongewijzigd en er gebeurt niets.',
   },
 
   referralRegistered: {
-    subject: 'Uw aanbeveling is ontvangen | FODEL',
+    subject: 'Uw aanbeveling is ontvangen | FINDDOME',
     preheader: 'Onze medewerker neemt binnenkort contact op met de door u aanbevolen persoon.',
     heading: 'Dank u voor de aanbeveling',
     body: (referredName: string) =>
@@ -194,7 +194,7 @@ export const NL = {
   },
 
   valuationReady: {
-    subject: 'Uw waardebepaling is gereed | FODEL',
+    subject: 'Uw waardebepaling is gereed | FINDDOME',
     preheader: 'Wij hebben een indicatieve schatting voor uw woning gemaakt.',
     heading: 'Uw waardebepaling is gereed',
     body: (range: string) =>
@@ -220,7 +220,7 @@ export const NL = {
   },
 
   valuationDeclined: {
-    subject: 'Uw aanvraag voor een waardebepaling | FODEL',
+    subject: 'Uw aanvraag voor een waardebepaling | FINDDOME',
     preheader: 'Onze medewerker neemt persoonlijk contact met u op.',
     heading: 'Dank u voor uw aanvraag',
     body: 'Op basis van de opgegeven gegevens hebben wij momenteel te weinig vergelijkbare woningen voor een betrouwbare schatting. Onze medewerker neemt persoonlijk contact met u op.',
@@ -263,7 +263,7 @@ export const NL = {
   },
 
   serviceRequested: {
-    subject: 'Uw aanvraag is ontvangen | FODEL',
+    subject: 'Uw aanvraag is ontvangen | FINDDOME',
     preheader: 'Onze medewerker neemt contact met u op om een afspraak te maken.',
     heading: 'Wij hebben uw aanvraag ontvangen',
     body: (service: string, price: string) => `Dank u wel, wij hebben uw aanvraag genoteerd: ${service} (${price}).`,
@@ -273,7 +273,7 @@ export const NL = {
   },
 
   valuationPaid: {
-    subject: 'Betalingsbevestiging | FODEL waardebepaling',
+    subject: 'Betalingsbevestiging | FINDDOME waardebepaling',
     preheader: 'Dank u wel, uw betaling is ontvangen.',
     heading: 'Dank u wel, uw betaling is ontvangen',
     body: (service: string) => `Wij hebben de betaling voor „${service}” ontvangen.`,
@@ -285,7 +285,7 @@ export const NL = {
   },
 
   judicialRequested: {
-    subject: 'Aanvraag officiële taxatie | FODEL',
+    subject: 'Aanvraag officiële taxatie | FINDDOME',
     preheader: 'Onze medewerker neemt contact met u op over de mogelijkheden.',
     heading: 'Wij hebben uw verzoek ontvangen',
     body: 'Dank u wel, wij hebben genoteerd dat u een officiële (gerechtelijke) taxatie door een deskundige wenst. Dit is iets anders dan de indicatieve, marktgebaseerde waardebepaling op onze website: een bevoegde taxateur voert deze uit, op basis van een offerte.',
