@@ -158,6 +158,8 @@ for(const form of forms){
       const response=await lookup(`/api/portal/geocode?lat=${point[1]}&lng=${point[0]}&country=${country.value}`);
       if(!response.ok)throw new Error('lookup');const json=await response.json();if(seq!==reverseSequence||get('settlement')!==oldSettlement)return;
       const hit:Hit|undefined=json.results?.[0];
+      // A pin dropped outside the chosen country must not quietly rewrite the country, county and settlement the owner picked.
+      if(hit&&hit.country!==country.value){status.textContent=x(`A jelölő másik országban van (${hit.label}). Az országot és a helyadatokat nem módosítottuk; helyezze át a jelölőt, vagy válassza ki az országot.`,`De pin staat in een ander land (${hit.label}). Land en locatiegegevens zijn niet gewijzigd; verplaats de pin of kies het land.`,`The pin is in another country (${hit.label}). We left the country and location details unchanged; move the pin or choose the country.`);return;}
       if(hit){
         const kept=get('settlement').trim()&&!writable('settlement')&&hit.settlement&&hit.settlement.localeCompare(get('settlement').trim(),locale,{sensitivity:'base'})!==0;
         applyPlace(hit,false,true);
