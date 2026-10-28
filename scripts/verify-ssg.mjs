@@ -568,7 +568,8 @@ console.log('\nJavaScript budget');
 console.log('\nLegal preflight');
 {
   const imprint = await read(path.join(dist, 'nl/colofon/index.html'));
-  const hasKvk = /KvK-nummer<\/th><td>\d{6,}/.test(imprint.replace(/\s+/g, ''));
+  // Astro adds scoped-style attributes to the cells (<td data-astro-cid-…>), so allow attributes and whitespace.
+  const hasKvk = /KvK-nummer<\/th>\s*<td[^>]*>\s*\d{6,}/.test(imprint);
   const waived = process.argv.includes('--allow-missing-kvk');
   if (!hasKvk) {
     const message =

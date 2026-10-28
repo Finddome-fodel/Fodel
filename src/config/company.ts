@@ -58,11 +58,11 @@ export const COMPANY = {
 
   registration: {
     /**
-     * OUTSTANDING — not published on any FODEL property. Required on Dutch
-     * business websites. Ask Gábor; until it is set the build refuses to pass
-     * preflight. Set it here, nowhere else.
+     * Chamber of Commerce number, required on Dutch business websites (the
+     * build's preflight fails while it is empty). Also stored in
+     * site_settings.registration (migration 0037), which the live pages read.
      */
-    kvk: null as string | null,
+    kvk: '57412561' as string | null,
 
     /**
      * Published on fodel.hu/kapcsolat. Before launch, confirm this is the
