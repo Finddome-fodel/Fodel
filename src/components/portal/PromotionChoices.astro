@@ -5,7 +5,7 @@ interface Props {property:PortalProperty;isAdmin:boolean}
 const {property:p,isAdmin}=Astro.props;
 const requested=readRequestedExtras(p.requested_extras);
 const choices=[
- {key:'homepage_featured',request:'request_homepage',title:'Főoldali kiemelés',body:'Kiemelt megjelenés a FODEL főoldalán.',active:p.homepage_featured,asked:requested.homepageHighlight},
+ {key:'homepage_featured',request:'request_homepage',title:'Főoldali kiemelés',body:'Kiemelt megjelenés a FINDDOME főoldalán.',active:p.homepage_featured,asked:requested.homepageHighlight},
  {key:'featured',request:'request_category',title:'Kategórián belüli kiemelés',body:'Kiemelt hely a kiválasztott ingatlankategória találatai között.',active:p.featured,asked:requested.categoryHighlight},
  {key:'topic_featured',request:'topic_highlight_requested',title:'Témakörön belüli kiemelés',body:'Kiemelt megjelenés a választott altípus találatai között. Az árat munkatársunkkal egyeztetheti.',active:p.topic_featured,asked:p.topic_highlight_requested||requested.topicHighlight},
 ];

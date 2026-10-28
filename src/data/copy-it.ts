@@ -20,7 +20,7 @@ const L = 'it' as const;
 export const IT = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Acquisti un immobile in Ungheria direttamente dal proprietario',
+      title: 'FINDDOME Real Estates | Acquisti un immobile in Ungheria direttamente dal proprietario',
       description:
         'Case, aziende agricole e tenute in Ungheria, spesso direttamente dal proprietario. Assistenza nella Sua lingua e contratti di compravendita bilingui.',
     },
@@ -37,7 +37,7 @@ export const IT = {
       {
         eyebrow: 'Per gli acquirenti',
         title: 'Immobili direttamente\ndal proprietario',
-        body: 'Autentiche case ungheresi, aziende agricole, tenute e vigneti. Contatti direttamente il proprietario o lasci che FODEL gestisca l’intero processo.',
+        body: 'Autentiche case ungheresi, aziende agricole, tenute e vigneti. Contatti direttamente il proprietario o lasci che FINDDOME gestisca l’intero processo.',
         cta: 'Sfoglia gli immobili',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const IT = {
     featured: { eyebrow: 'Scelta', title: 'Immobili in evidenza' },
     quote: '“Gli olandesi spesso non credono ai propri occhi quando vedono cosa si può comprare in Ungheria, e a quale prezzo.”',
     quoteSource: `${BRAND.it.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Come funziona', title: 'Come funziona FODEL' },
+    how: { eyebrow: 'Come funziona', title: 'Come funziona FINDDOME' },
     cta: {
       eyebrow: 'Contattateci',
       title: 'Saremo lieti',
@@ -63,7 +63,7 @@ export const IT = {
       eyebrow: 'Programma di segnalazione',
       title: 'Segnali un inserzionista,',
       titleEm: 'riceva il 10%',
-      body: 'Se qualcuno pubblica un annuncio su FODEL su Sua segnalazione, ottiene il 10% di sconto sul pacchetto e noi Le accreditiamo il 10% sul prossimo annuncio. Pubblica già da noi? Trova il Suo codice di segnalazione personale nel portale, alla voce Impostazioni.',
+      body: 'Se qualcuno pubblica un annuncio su FINDDOME su Sua segnalazione, ottiene il 10% di sconto sul pacchetto e noi Le accreditiamo il 10% sul prossimo annuncio. Pubblica già da noi? Trova il Suo codice di segnalazione personale nel portale, alla voce Impostazioni.',
       steps: [
         'Segnali un conoscente con il modulo qui sotto o condivida il Suo link personale dal portale',
         'Un membro del nostro team lo contatta',
@@ -111,13 +111,13 @@ export const IT = {
   sellers: {
     meta: {
       title: 'Per i venditori | Il Suo immobile ungherese in Europa occidentale',
-      description: `Pubblichi il Suo immobile ungherese in ${REACH_LANGUAGES} lingue in ${REACH_COUNTRIES} Paesi, da ${eur(69, L)} e senza esclusiva. Provvigione solo se FODEL trova l’acquirente: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% di IVA.`,
+      description: `Pubblichi il Suo immobile ungherese in ${REACH_LANGUAGES} lingue in ${REACH_COUNTRIES} Paesi, da ${eur(69, L)} e senza esclusiva. Provvigione solo se FINDDOME trova l’acquirente: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% di IVA.`,
     },
     hero: {
       eyebrow: 'Per i venditori',
       title: 'Il Suo immobile',
       titleEm: 'in Europa occidentale',
-      body: `Con il modello FODEL il Suo immobile compare in ${REACH_LANGUAGES} lingue in ${REACH_COUNTRIES} Paesi, senza contratto di esclusiva. Lavoriamo solo con acquirenti seri.`,
+      body: `Con il modello FINDDOME il Suo immobile compare in ${REACH_LANGUAGES} lingue in ${REACH_COUNTRIES} Paesi, senza contratto di esclusiva. Lavoriamo solo con acquirenti seri.`,
       cta: 'Pubblica un annuncio',
       secondary: 'Vedi i prezzi',
     },
@@ -129,7 +129,7 @@ export const IT = {
         'Pagamento in un’unica soluzione tramite bonifico, rapido e sicuro.',
         'Intenzione seria: una sola visita costa loro due giorni e 200–300\u00a0€.',
         'Prezzi realistici: nessuna trattativa irragionevole.',
-        'FODEL valuta personalmente ogni acquirente prima di fissare un appuntamento.',
+        'FINDDOME valuta personalmente ogni acquirente prima di fissare un appuntamento.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const IT = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Passo dopo passo', title: 'Il modello FODEL' },
+    how: { eyebrow: 'Passo dopo passo', title: 'Il modello FINDDOME' },
     commission: {
       eyebrow: 'Prezzi',
       title: 'Provvigione solo\na vendita conclusa',
-      body: `Se l’acquirente vi contatta direttamente e non avete bisogno del nostro aiuto, non pagate nulla oltre al costo dell’annuncio. Se invece è FODEL a mediare la vendita: ${COMMISSION.percent}% netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% di IVA olandese.`,
+      body: `Se l’acquirente vi contatta direttamente e non avete bisogno del nostro aiuto, non pagate nulla oltre al costo dell’annuncio. Se invece è FINDDOME a mediare la vendita: ${COMMISSION.percent}% netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% di IVA olandese.`,
       cta: 'Vedi i prezzi',
     },
   },
@@ -248,7 +248,7 @@ export const IT = {
       title: 'Il ponte che',
       titleEm: 'abbiamo costruito',
       paragraphs: [
-        'FODEL è stata fondata da ungheresi che vivono nei Paesi Bassi. Abbiamo iniziato ad Almere-Buiten nel 2013, dove abbiamo notato quanti olandesi e belgi volessero acquistare un’autentica casa ungherese senza sapere da dove cominciare.',
+        'FINDDOME è stata fondata da ungheresi che vivono nei Paesi Bassi. Abbiamo iniziato ad Almere-Buiten nel 2013, dove abbiamo notato quanti olandesi e belgi volessero acquistare un’autentica casa ungherese senza sapere da dove cominciare.',
         `Oggi pubblicizziamo in ${REACH_COUNTRIES} Paesi e ${REACH_LANGUAGES} lingue e seguiamo ogni transazione dall’inizio alla fine: contratto di compravendita bilingue, rappresentanza tramite procura e iscrizione al catasto. La nostra sede è all’Aia.`,
       ],
     },

@@ -23,7 +23,7 @@ import { COMPANY } from '~/config/company';
 // "FODEL Portál" mail from the same domain sees two senders, which spam filters read the
 // same way. `kind` stays in the signature for the call sites that already pass it.
 export function senderAddress(_kind: 'portal' | 'website' = 'portal'): string {
-  return import.meta.env.FODEL_FROM || 'FODEL <info@finddome.com>';
+  return import.meta.env.FODEL_FROM || 'FINDDOME <info@finddome.com>';
 }
 
 export function officeInbox(): string {

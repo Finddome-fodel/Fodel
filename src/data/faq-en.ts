@@ -26,7 +26,7 @@ export const FAQ_EN = [
     question: 'What does your brokerage cost?',
     answer: [
       `Our commission is ${COMMISSION.percent}% net with a minimum of ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Dutch VAT. It is paid by the Hungarian seller, not by you.`,
-      'We invoice only when all three conditions are met: there is a written sale and purchase agreement, the buyer was introduced by FODEL, and the deposit has been paid.',
+      'We invoice only when all three conditions are met: there is a written sale and purchase agreement, the buyer was introduced by FINDDOME, and the deposit has been paid.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_EN = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'What exactly does FODEL arrange when you buy?',
+    question: 'What exactly does FINDDOME arrange when you buy?',
     answer: [
       '- Consultation by phone and email, and communication between both parties',
       '- Personal appointments and viewings on site',

@@ -26,7 +26,7 @@ export const FAQ_PT = [
     question: 'Quanto custa a vossa mediação?',
     answer: [
       `A nossa comissão é de ${COMMISSION.percent}% líquida, com um mínimo de ${eur(COMMISSION.minimumEur, L)}, acrescida de ${COMMISSION.vatPercent}% de IVA neerlandês. É paga pelo vendedor húngaro, não por si.`,
-      'Só faturamos quando se verificam as três condições: existe um contrato de compra e venda escrito, o comprador foi apresentado pela FODEL e o sinal foi pago.',
+      'Só faturamos quando se verificam as três condições: existe um contrato de compra e venda escrito, o comprador foi apresentado pela FINDDOME e o sinal foi pago.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_PT = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'O que trata exatamente a FODEL quando compra?',
+    question: 'O que trata exatamente a FINDDOME quando compra?',
     answer: [
       '- Aconselhamento por telefone e e-mail e comunicação entre as partes',
       '- Encontros pessoais e visitas no local',

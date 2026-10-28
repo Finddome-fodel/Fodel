@@ -20,7 +20,7 @@ const L = 'cs' as const;
 export const CS = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Kupte nemovitost v Maďarsku přímo od majitele',
+      title: 'FINDDOME Real Estates | Kupte nemovitost v Maďarsku přímo od majitele',
       description:
         'Domy, statky a venkovská sídla v Maďarsku, často přímo od majitele. Poradenství ve vašem jazyce a dvojjazyčné kupní smlouvy.',
     },
@@ -37,7 +37,7 @@ export const CS = {
       {
         eyebrow: 'Pro kupující',
         title: 'Nemovitosti přímo\nod majitele',
-        body: 'Autentické maďarské domy, statky, venkovská sídla a vinice. Kontaktujte přímo majitele, nebo nechte celý proces na FODEL.',
+        body: 'Autentické maďarské domy, statky, venkovská sídla a vinice. Kontaktujte přímo majitele, nebo nechte celý proces na FINDDOME.',
         cta: 'Prohlédnout nemovitosti',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const CS = {
     featured: { eyebrow: 'Výběr', title: 'Doporučené nemovitosti' },
     quote: '„Nizozemci často nevěří vlastním očím, když vidí, co se dá v Maďarsku koupit a za kolik.“',
     quoteSource: `${BRAND.cs.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Jak to funguje', title: 'Jak FODEL funguje' },
+    how: { eyebrow: 'Jak to funguje', title: 'Jak FINDDOME funguje' },
     cta: {
       eyebrow: 'Kontaktujte nás',
       title: 'Rádi vám',
@@ -63,7 +63,7 @@ export const CS = {
       eyebrow: 'Doporučující program',
       title: 'Doporučte inzerenta,',
       titleEm: 'získejte 10\u00a0%',
-      body: 'Pokud někdo na vaše doporučení zadá inzerát u FODEL, získá slevu 10\u00a0% na svůj balíček a vám připíšeme 10\u00a0% na váš příští inzerát. Už u nás inzerujete? Svůj doporučující kód najdete v portálu v Nastavení.',
+      body: 'Pokud někdo na vaše doporučení zadá inzerát u FINDDOME, získá slevu 10\u00a0% na svůj balíček a vám připíšeme 10\u00a0% na váš příští inzerát. Už u nás inzerujete? Svůj doporučující kód najdete v portálu v Nastavení.',
       steps: [
         'Doporučte známého pomocí formuláře níže, nebo sdílejte svůj odkaz z portálu',
         'Někdo z našeho týmu ho kontaktuje',
@@ -111,13 +111,13 @@ export const CS = {
   sellers: {
     meta: {
       title: 'Pro prodávající | Vaše maďarská nemovitost v západní Evropě',
-      description: `Inzerujte svou maďarskou nemovitost v ${REACH_LANGUAGES} jazycích v ${REACH_COUNTRIES} zemích, od ${eur(69, L)} a bez exkluzivity. Provize jen tehdy, když kupce přivede FODEL: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% DPH.`,
+      description: `Inzerujte svou maďarskou nemovitost v ${REACH_LANGUAGES} jazycích v ${REACH_COUNTRIES} zemích, od ${eur(69, L)} a bez exkluzivity. Provize jen tehdy, když kupce přivede FINDDOME: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% DPH.`,
     },
     hero: {
       eyebrow: 'Pro prodávající',
       title: 'Vaše nemovitost',
       titleEm: 'v západní Evropě',
-      body: `S modelem FODEL se vaše nemovitost objeví v ${REACH_LANGUAGES} jazycích v ${REACH_COUNTRIES} zemích, bez smlouvy o exkluzivitě. Spolupracujeme jen s vážnými kupci.`,
+      body: `S modelem FINDDOME se vaše nemovitost objeví v ${REACH_LANGUAGES} jazycích v ${REACH_COUNTRIES} zemích, bez smlouvy o exkluzivitě. Spolupracujeme jen s vážnými kupci.`,
       cta: 'Zadat inzerát',
       secondary: 'Zobrazit ceny',
     },
@@ -129,7 +129,7 @@ export const CS = {
         'Jednorázová platba bankovním převodem, rychle a bezpečně.',
         'Vážný zájem: jediná prohlídka je stojí dva dny a 200–300\u00a0€.',
         'Realistické ceny: žádné nepřiměřené smlouvání.',
-        'FODEL osobně posoudí každého kupujícího, než se domluví jakákoli schůzka.',
+        'FINDDOME osobně posoudí každého kupujícího, než se domluví jakákoli schůzka.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const CS = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Krok za krokem', title: 'Model FODEL' },
+    how: { eyebrow: 'Krok za krokem', title: 'Model FINDDOME' },
     commission: {
       eyebrow: 'Ceník',
       title: 'Provize jen\npři úspěšném prodeji',
-      body: `Pokud vás kupující kontaktuje přímo a naši pomoc nepotřebujete, nad rámec poplatku za inzerát nic neplatíte. Pokud prodej zprostředkuje FODEL: ${COMMISSION.percent}\u00a0% netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% nizozemské DPH.`,
+      body: `Pokud vás kupující kontaktuje přímo a naši pomoc nepotřebujete, nad rámec poplatku za inzerát nic neplatíte. Pokud prodej zprostředkuje FINDDOME: ${COMMISSION.percent}\u00a0% netto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% nizozemské DPH.`,
       cta: 'Zobrazit ceny',
     },
   },
@@ -248,7 +248,7 @@ export const CS = {
       title: 'Most, který',
       titleEm: 'jsme postavili',
       paragraphs: [
-        'FODEL založili Maďaři žijící v Nizozemsku. Začínali jsme v roce 2013 v Almere-Buiten, kde jsme si všimli, kolik Nizozemců a Belgičanů chce koupit autentický maďarský dům, ale neví, kde začít.',
+        'FINDDOME založili Maďaři žijící v Nizozemsku. Začínali jsme v roce 2013 v Almere-Buiten, kde jsme si všimli, kolik Nizozemců a Belgičanů chce koupit autentický maďarský dům, ale neví, kde začít.',
         `Dnes inzerujeme v ${REACH_COUNTRIES} zemích a ${REACH_LANGUAGES} jazycích a provázíme každou transakci od začátku do konce: dvojjazyčná kupní smlouva, zastoupení na základě plné moci a zápis do katastru. Naše kancelář sídlí v Haagu.`,
       ],
     },

@@ -66,7 +66,7 @@ export const CONTENT_IT = {
         type: 'prose',
         title: 'Quando è dovuta la provvigione',
         paragraphs: [
-          `Applichiamo la provvigione solo se FODEL ha presentato l’acquirente, esiste un contratto di compravendita scritto e la caparra è stata versata. L’aliquota è del ${COMMISSION.percent}% netto, con un minimo di ${eur(COMMISSION.minimumEur, L)}, più il ${COMMISSION.vatPercent}% di IVA olandese. La paga il venditore, non l’acquirente.`,
+          `Applichiamo la provvigione solo se FINDDOME ha presentato l’acquirente, esiste un contratto di compravendita scritto e la caparra è stata versata. L’aliquota è del ${COMMISSION.percent}% netto, con un minimo di ${eur(COMMISSION.minimumEur, L)}, più il ${COMMISSION.vatPercent}% di IVA olandese. La paga il venditore, non l’acquirente.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_IT = {
 
   agricultural: {
     metaTitle: `Immobili agricoli: fino a ${AGRI_HECTARE_LIMIT} ettari in Ungheria`,
-    metaDescription: `Un cittadino UE con qualifica agricola può acquistare fino a ${AGRI_HECTARE_LIMIT} ettari di terreno in Ungheria. FODEL gestisce l’intera procedura.`,
+    metaDescription: `Un cittadino UE con qualifica agricola può acquistare fino a ${AGRI_HECTARE_LIMIT} ettari di terreno in Ungheria. FINDDOME gestisce l’intera procedura.`,
     eyebrow: 'Immobili agricoli',
     title: 'Terreni agricoli e',
     titleEm: 'tenute agricole',
@@ -163,7 +163,7 @@ export const CONTENT_IT = {
           'Onorario dell’avvocato per la redazione e la controfirma dell’atto',
           `Traduzione del contratto bilingue: ${from('hu')}, a seconda della combinazione linguistica`,
           'Diritti catastali',
-          'Eventuale provvigione a FODEL: la paga il venditore, non Lei',
+          'Eventuale provvigione a FINDDOME: la paga il venditore, non Lei',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_IT = {
   photoGuide: {
     metaTitle: 'Guida fotografica per gli inserzionisti',
     metaDescription:
-      'Le buone foto sono lo strumento più importante per vendere in fretta. La guida fotografica FODEL: luce, orientamento, risoluzione e gli errori più comuni.',
+      'Le buone foto sono lo strumento più importante per vendere in fretta. La guida fotografica FINDDOME: luce, orientamento, risoluzione e gli errori più comuni.',
     eyebrow: 'Per i venditori',
     title: 'Guida',
     titleEm: 'fotografica',

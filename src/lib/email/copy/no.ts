@@ -14,13 +14,13 @@ export const NO = {
   common: {
     greeting: (name: string) => `Hei ${name},`,
     greetingNoName: 'Kjære annonsør,',
-    signOff: 'Med vennlig hilsen\nFODEL Eiendom',
+    signOff: 'Med vennlig hilsen\nFINDDOME Eiendom',
     questions: 'Har du spørsmål, kan du bare svare på denne e-posten.',
     linkFallback: 'Hvis knappen ikke fungerer, kopierer du denne adressen inn i nettleseren:',
   },
 
   registrationConfirm: {
-    subject: 'Velg passordet ditt | FODEL',
+    subject: 'Velg passordet ditt | FINDDOME',
     preheader: 'Ett klikk, så kan du sette sammen annonsen din.',
     heading: 'Velg passordet ditt',
     intro: 'Takk for registreringen. Kontoen din er nesten klar; bare passordet mangler.',
@@ -30,21 +30,21 @@ export const NO = {
   },
 
   accountExists: {
-    subject: 'Du har allerede en FODEL-konto',
+    subject: 'Du har allerede en FINDDOME-konto',
     preheader: 'Logg inn, eller velg et nytt passord.',
     heading: 'Denne adressen har allerede en konto',
-    body: 'Noen prøvde nettopp å registrere seg på FODELs nettsted med denne e-postadressen. Det finnes allerede en konto for den, så vi har ikke opprettet en ny.',
+    body: 'Noen prøvde nettopp å registrere seg på FINDDOMEs nettsted med denne e-postadressen. Det finnes allerede en konto for den, så vi har ikke opprettet en ny.',
     cta: 'Logg inn',
     reset: 'Glemt passordet? Be om et nytt',
     ignore: 'Hvis det ikke var deg, trenger du ikke gjøre noe: kontoen din er uendret.',
   },
 
   invite: {
-    subject: 'Invitasjon til FODEL-portalen',
+    subject: 'Invitasjon til FINDDOME-portalen',
     preheader: 'Velg passordet ditt og logg inn i annonsørportalen.',
-    heading: 'Du er invitert til FODEL-portalen',
+    heading: 'Du er invitert til FINDDOME-portalen',
     body: (role: string) =>
-      `FODEL inviterer deg til portalen ${role}, der du administrerer eiendomsannonser.`,
+      `FINDDOME inviterer deg til portalen ${role}, der du administrerer eiendomsannonser.`,
     roleAdmin: 'som administrator',
     roleOwner: 'som annonsør',
     cta: 'Godta invitasjonen',
@@ -52,7 +52,7 @@ export const NO = {
   },
 
   welcome: {
-    subject: 'Velkommen til FODEL-portalen',
+    subject: 'Velkommen til FINDDOME-portalen',
     preheader: 'Kontoen din er aktiv. Slik legger du inn din første annonse.',
     heading: (name: string) => `Velkommen, ${name}`,
     body: 'Kontoen din er aktiv. I portalen setter du sammen annonsen, laster opp bilder og følger gjennomgangen.',
@@ -95,7 +95,7 @@ export const NO = {
     discountLabel: 'Vervingsrabatt (10\u00a0%)',
     totalLabel: 'Å betale',
     ctaCard: 'Betal med kort',
-    cardNote: 'Betalingen skjer i Stripes sikre miljø. FODEL ser ikke og lagrer ikke kortopplysningene dine.',
+    cardNote: 'Betalingen skjer i Stripes sikre miljø. FINDDOME ser ikke og lagrer ikke kortopplysningene dine.',
     bankTitle: 'Eller med bankoverføring',
     bankNote: (ref: string) =>
       `Oppgi referansenummeret ved overføringen: ${ref}. Så snart den er mottatt, publiserer noen i teamet vårt annonsen.`,
@@ -113,7 +113,7 @@ export const NO = {
     totalLabel: 'Å betale',
     dueLabel: 'Betales innen',
     ctaCard: 'Betal med kort',
-    cardNote: 'Betalingen skjer i Stripes sikre miljø. FODEL ser ikke og lagrer ikke kortopplysningene dine.',
+    cardNote: 'Betalingen skjer i Stripes sikre miljø. FINDDOME ser ikke og lagrer ikke kortopplysningene dine.',
     bankTitle: 'Bankoverføring',
     bankNote: (ref: string) => `Oppgi referansenummeret ved overføringen: ${ref}.`,
     vatNote: 'Alle beløp inkluderer 21\u00a0% nederlandsk mva.',
@@ -154,17 +154,17 @@ export const NO = {
   },
 
   passwordReset: {
-    subject: 'Tilbakestill passordet | FODEL-portalen',
+    subject: 'Tilbakestill passordet | FINDDOME-portalen',
     preheader: 'Lenken er gyldig i én time.',
     heading: 'Tilbakestill passordet ditt',
-    body: 'Vi har mottatt en forespørsel om å tilbakestille passordet til kontoen din i FODEL-portalen. Klikk på knappen nedenfor for å velge et nytt.',
+    body: 'Vi har mottatt en forespørsel om å tilbakestille passordet til kontoen din i FINDDOME-portalen. Klikk på knappen nedenfor for å velge et nytt.',
     cta: 'Velg et nytt passord',
     expiry: 'Lenken er gyldig i én time og kan brukes én gang.',
     ignore: 'Hvis du ikke har bedt om dette, kan du se bort fra denne e-posten. Passordet ditt forblir uendret, og ingenting skjer.',
   },
 
   referralRegistered: {
-    subject: 'Vi har mottatt anbefalingen din | FODEL',
+    subject: 'Vi har mottatt anbefalingen din | FINDDOME',
     preheader: 'Noen i teamet vårt tar snart kontakt med personen du anbefalte.',
     heading: 'Takk for anbefalingen',
     body: (referredName: string) =>
@@ -178,7 +178,7 @@ export const NO = {
   },
 
   valuationReady: {
-    subject: 'Verdivurderingen din er klar | FODEL',
+    subject: 'Verdivurderingen din er klar | FINDDOME',
     preheader: 'Vi har laget et veiledende anslag for eiendommen din.',
     heading: 'Verdivurderingen din er klar',
     body: (range: string) =>
@@ -204,7 +204,7 @@ export const NO = {
   },
 
   valuationDeclined: {
-    subject: 'Forespørselen din om verdivurdering | FODEL',
+    subject: 'Forespørselen din om verdivurdering | FINDDOME',
     preheader: 'Noen i teamet vårt tar personlig kontakt med deg.',
     heading: 'Takk for forespørselen din',
     body: 'Basert på opplysningene som er gitt, har vi for øyeblikket for få sammenlignbare eiendommer til et pålitelig anslag. Noen i teamet vårt tar personlig kontakt med deg.',
@@ -247,7 +247,7 @@ export const NO = {
   },
 
   serviceRequested: {
-    subject: 'Vi har mottatt forespørselen din | FODEL',
+    subject: 'Vi har mottatt forespørselen din | FINDDOME',
     preheader: 'Noen i teamet vårt kontakter deg for å avtale en dato.',
     heading: 'Vi har mottatt forespørselen din',
     body: (service: string, price: string) => `Takk, vi har notert forespørselen din: ${service} (${price}).`,
@@ -257,7 +257,7 @@ export const NO = {
   },
 
   valuationPaid: {
-    subject: 'Betalingsbekreftelse | FODEL-verdivurdering',
+    subject: 'Betalingsbekreftelse | FINDDOME-verdivurdering',
     preheader: 'Takk, betalingen din har kommet.',
     heading: 'Takk, betalingen din har kommet',
     body: (service: string) => `Vi har mottatt betalingen for «${service}».`,
@@ -269,7 +269,7 @@ export const NO = {
   },
 
   judicialRequested: {
-    subject: 'Forespørsel om offisiell verdivurdering | FODEL',
+    subject: 'Forespørsel om offisiell verdivurdering | FINDDOME',
     preheader: 'Noen i teamet vårt kontakter deg om mulighetene.',
     heading: 'Vi har mottatt forespørselen din',
     body: 'Takk, vi har notert at du ønsker en offisiell (rettsoppnevnt) verdivurdering av en sakkyndig. Dette er ikke det samme som den veiledende, markedsbaserte verdivurderingen på nettstedet vårt: den utføres av en autorisert sakkyndig, på grunnlag av et tilbud.',

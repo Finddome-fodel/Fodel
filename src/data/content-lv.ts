@@ -66,7 +66,7 @@ export const CONTENT_LV = {
         type: 'prose',
         title: 'Kad jāmaksā komisijas maksa',
         paragraphs: [
-          `Komisijas maksu iekasējam tikai tad, ja pircēju ir atradis FODEL, ir noslēgts rakstisks pirkuma līgums un ir samaksāta rokasnauda. Likme ir ${COMMISSION.percent}% neto, vismaz ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Nīderlandes PVN. Maksā pārdevējs, nevis pircējs.`,
+          `Komisijas maksu iekasējam tikai tad, ja pircēju ir atradis FINDDOME, ir noslēgts rakstisks pirkuma līgums un ir samaksāta rokasnauda. Likme ir ${COMMISSION.percent}% neto, vismaz ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Nīderlandes PVN. Maksā pārdevējs, nevis pircējs.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_LV = {
 
   agricultural: {
     metaTitle: `Lauksaimniecības īpašumi: līdz ${AGRI_HECTARE_LIMIT} hektāriem Ungārijā`,
-    metaDescription: `ES pilsonis ar lauksaimniecības kvalifikāciju Ungārijā var iegādāties līdz ${AGRI_HECTARE_LIMIT} hektāriem zemes. FODEL nokārto visu procedūru.`,
+    metaDescription: `ES pilsonis ar lauksaimniecības kvalifikāciju Ungārijā var iegādāties līdz ${AGRI_HECTARE_LIMIT} hektāriem zemes. FINDDOME nokārto visu procedūru.`,
     eyebrow: 'Lauksaimniecības īpašumi',
     title: 'Lauksaimniecības zeme un',
     titleEm: 'lauku īpašumi',
@@ -163,7 +163,7 @@ export const CONTENT_LV = {
           'Jurista honorārs par līguma sagatavošanu un kontrasignēšanu',
           `Divvalodu līguma tulkojums: ${from('hu')}, atkarībā no valodu kombinācijas`,
           'Zemesgrāmatas nodevas',
-          'Iespējamā komisijas maksa FODEL: to maksā pārdevējs, nevis jūs',
+          'Iespējamā komisijas maksa FINDDOME: to maksā pārdevējs, nevis jūs',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_LV = {
   photoGuide: {
     metaTitle: 'Fotografēšanas ceļvedis sludinājumu iesniedzējiem',
     metaDescription:
-      'Labas fotogrāfijas ir svarīgākais instruments ātrai pārdošanai. FODEL fotografēšanas ceļvedis: gaisma, orientācija, izšķirtspēja un biežākās kļūdas.',
+      'Labas fotogrāfijas ir svarīgākais instruments ātrai pārdošanai. FINDDOME fotografēšanas ceļvedis: gaisma, orientācija, izšķirtspēja un biežākās kļūdas.',
     eyebrow: 'Pārdevējiem',
     title: 'Fotografēšanas',
     titleEm: 'ceļvedis',

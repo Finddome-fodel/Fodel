@@ -66,7 +66,7 @@ export const CONTENT_SL = {
         type: 'prose',
         title: 'Kdaj je treba plačati provizijo',
         paragraphs: [
-          `Provizijo zaračunamo le, če je kupca pripeljal FODEL, obstaja pisna prodajna pogodba in je bila plačana ara. Stopnja znaša ${COMMISSION.percent}\u00a0% neto, najmanj ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nizozemskega DDV. Plača prodajalec, ne kupec.`,
+          `Provizijo zaračunamo le, če je kupca pripeljal FINDDOME, obstaja pisna prodajna pogodba in je bila plačana ara. Stopnja znaša ${COMMISSION.percent}\u00a0% neto, najmanj ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nizozemskega DDV. Plača prodajalec, ne kupec.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_SL = {
 
   agricultural: {
     metaTitle: `Kmetijske nepremičnine: do ${AGRI_HECTARE_LIMIT} hektarjev na Madžarskem`,
-    metaDescription: `Državljan EU s kmetijsko izobrazbo lahko na Madžarskem pridobi do ${AGRI_HECTARE_LIMIT} hektarjev zemljišč. FODEL izpelje celoten postopek.`,
+    metaDescription: `Državljan EU s kmetijsko izobrazbo lahko na Madžarskem pridobi do ${AGRI_HECTARE_LIMIT} hektarjev zemljišč. FINDDOME izpelje celoten postopek.`,
     eyebrow: 'Kmetijske nepremičnine',
     title: 'Kmetijska zemljišča in',
     titleEm: 'podeželska posestva',
@@ -163,7 +163,7 @@ export const CONTENT_SL = {
           'Odvetniški stroški za sestavo in sopodpis pogodbe',
           `Prevod dvojezične pogodbe: ${from('hu')}, odvisno od jezikovne kombinacije`,
           'Takse zemljiške knjige',
-          'Morebitno provizijo družbi FODEL plača prodajalec, ne vi',
+          'Morebitno provizijo družbi FINDDOME plača prodajalec, ne vi',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_SL = {
   photoGuide: {
     metaTitle: 'Fotografski vodnik za oglaševalce',
     metaDescription:
-      'Dobre fotografije so najpomembnejše orodje za hitro prodajo. Fotografski vodnik FODEL: svetloba, usmerjenost, ločljivost in najpogostejše napake.',
+      'Dobre fotografije so najpomembnejše orodje za hitro prodajo. Fotografski vodnik FINDDOME: svetloba, usmerjenost, ločljivost in najpogostejše napake.',
     eyebrow: 'Za prodajalce',
     title: 'Fotografski',
     titleEm: 'za fotografiranje',

@@ -20,7 +20,7 @@ const L = 'fi' as const;
 export const FI = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Osta kiinteistö Unkarista suoraan omistajalta',
+      title: 'FINDDOME Real Estates | Osta kiinteistö Unkarista suoraan omistajalta',
       description:
         'Taloja, maatiloja ja maaseututiloja Unkarissa, usein suoraan omistajalta. Opastusta omalla kielelläsi ja kaksikieliset kauppakirjat.',
     },
@@ -37,7 +37,7 @@ export const FI = {
       {
         eyebrow: 'Ostajille',
         title: 'Kiinteistöjä suoraan\nomistajalta',
-        body: 'Aitoja unkarilaisia taloja, maatiloja, maaseututiloja ja viinitarhoja. Ota yhteyttä suoraan omistajaan tai anna FODELin hoitaa koko prosessi.',
+        body: 'Aitoja unkarilaisia taloja, maatiloja, maaseututiloja ja viinitarhoja. Ota yhteyttä suoraan omistajaan tai anna FINDDOMEn hoitaa koko prosessi.',
         cta: 'Selaa kohteita',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const FI = {
     featured: { eyebrow: 'Valinta', title: 'Nostetut kohteet' },
     quote: '”Hollantilaiset eivät usein meinaa uskoa silmiään, kun he näkevät, mitä Unkarista voi ostaa ja millä hinnalla.”',
     quoteSource: `${BRAND.fi.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Näin se toimii', title: 'Näin FODEL toimii' },
+    how: { eyebrow: 'Näin se toimii', title: 'Näin FINDDOME toimii' },
     cta: {
       eyebrow: 'Ota yhteyttä',
       title: 'Soitamme mielellämme',
@@ -63,7 +63,7 @@ export const FI = {
       eyebrow: 'Suositteluohjelma',
       title: 'Suosittele ilmoittajaa,',
       titleEm: 'saat 10\u00a0%',
-      body: 'Jos joku jättää suosituksestasi ilmoituksen FODELiin, hän saa 10\u00a0%:n alennuksen paketistaan ja me hyvitämme sinulle 10\u00a0% seuraavasta ilmoituksestasi. Ilmoitatko jo meillä? Oman suosituskoodisi löydät portaalista kohdasta Asetukset.',
+      body: 'Jos joku jättää suosituksestasi ilmoituksen FINDDOMEen, hän saa 10\u00a0%:n alennuksen paketistaan ja me hyvitämme sinulle 10\u00a0% seuraavasta ilmoituksestasi. Ilmoitatko jo meillä? Oman suosituskoodisi löydät portaalista kohdasta Asetukset.',
       steps: [
         'Suosittele tuttavaa alla olevalla lomakkeella tai jaa oma linkkisi portaalista',
         'Tiimistämme otetaan häneen yhteyttä',
@@ -111,13 +111,13 @@ export const FI = {
   sellers: {
     meta: {
       title: 'Myyjille | Unkarilainen kiinteistösi Länsi-Euroopan ostajille',
-      description: `Ilmoita unkarilainen kiinteistösi ${REACH_LANGUAGES} kielellä ${REACH_COUNTRIES} maassa alkaen ${eur(69, L)} ja ilman yksinmyyntiä. Välityspalkkio vain, jos ostaja tulee FODELin kautta: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% ALV.`,
+      description: `Ilmoita unkarilainen kiinteistösi ${REACH_LANGUAGES} kielellä ${REACH_COUNTRIES} maassa alkaen ${eur(69, L)} ja ilman yksinmyyntiä. Välityspalkkio vain, jos ostaja tulee FINDDOMEn kautta: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% ALV.`,
     },
     hero: {
       eyebrow: 'Myyjille',
       title: 'Kiinteistösi',
       titleEm: 'Länsi-Euroopan ostajille',
-      body: `FODEL-mallissa kiinteistösi näkyy ${REACH_LANGUAGES} kielellä ${REACH_COUNTRIES} maassa ilman yksinmyyntisopimusta. Teemme työtä vain vakavasti otettavien ostajien kanssa.`,
+      body: `FINDDOME-mallissa kiinteistösi näkyy ${REACH_LANGUAGES} kielellä ${REACH_COUNTRIES} maassa ilman yksinmyyntisopimusta. Teemme työtä vain vakavasti otettavien ostajien kanssa.`,
       cta: 'Jätä ilmoitus',
       secondary: 'Katso hinnat',
     },
@@ -129,7 +129,7 @@ export const FI = {
         'Maksu kerralla pankkisiirtona, nopeasti ja turvallisesti.',
         'Vakava aikomus: yksi esittely maksaa heille kaksi päivää ja 200–300\u00a0€.',
         'Realistinen hinnoittelu: ei kohtuutonta tinkimistä.',
-        'FODEL arvioi jokaisen ostajan henkilökohtaisesti ennen kuin aikaa sovitaan.',
+        'FINDDOME arvioi jokaisen ostajan henkilökohtaisesti ennen kuin aikaa sovitaan.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const FI = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Vaihe vaiheelta', title: 'FODEL-malli' },
+    how: { eyebrow: 'Vaihe vaiheelta', title: 'FINDDOME-malli' },
     commission: {
       eyebrow: 'Hinnasto',
       title: 'Palkkio vain\nonnistuneesta kaupasta',
-      body: `Jos ostaja ottaa sinuun suoraan yhteyttä etkä tarvitse apuamme, et maksa mitään ilmoitusmaksun lisäksi. Jos FODEL välittää kaupan: ${COMMISSION.percent}\u00a0% netto (väh. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% Alankomaiden ALV.`,
+      body: `Jos ostaja ottaa sinuun suoraan yhteyttä etkä tarvitse apuamme, et maksa mitään ilmoitusmaksun lisäksi. Jos FINDDOME välittää kaupan: ${COMMISSION.percent}\u00a0% netto (väh. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% Alankomaiden ALV.`,
       cta: 'Katso hinnat',
     },
   },
@@ -248,7 +248,7 @@ export const FI = {
       title: 'Silta, jonka',
       titleEm: 'olemme rakentaneet',
       paragraphs: [
-        'FODELin perustivat Alankomaissa asuvat unkarilaiset. Aloitimme Almere-Buitenissa vuonna 2013, jolloin huomasimme, kuinka moni hollantilainen ja belgialainen halusi ostaa aidon unkarilaisen kodin tietämättä, mistä aloittaa.',
+        'FINDDOMEn perustivat Alankomaissa asuvat unkarilaiset. Aloitimme Almere-Buitenissa vuonna 2013, jolloin huomasimme, kuinka moni hollantilainen ja belgialainen halusi ostaa aidon unkarilaisen kodin tietämättä, mistä aloittaa.',
         `Nykyään ilmoitamme ${REACH_COUNTRIES} maassa ja ${REACH_LANGUAGES} kielellä ja ohjaamme jokaisen kaupan alusta loppuun: kaksikielinen kauppakirja, edustus valtakirjalla ja kiinteistörekisteröinti. Toimistomme sijaitsee Haagissa.`,
       ],
     },

@@ -27,7 +27,7 @@ export const FAQ_DE = [
     question: 'Was kostet Ihre Vermittlung?',
     answer: [
       `Unsere Provision beträgt ${pct(COMMISSION.percent)} netto, mindestens ${eur(COMMISSION.minimumEur, L)}, zuzüglich ${pct(COMMISSION.vatPercent)} niederländische USt. Sie wird vom ungarischen Verkäufer gezahlt, nicht von Ihnen.`,
-      'Berechnet wird sie nur, wenn alle drei Bedingungen erfüllt sind: Es gibt einen schriftlichen Kaufvertrag, der Käufer wurde von FODEL vermittelt, und die Anzahlung ist geleistet.',
+      'Berechnet wird sie nur, wenn alle drei Bedingungen erfüllt sind: Es gibt einen schriftlichen Kaufvertrag, der Käufer wurde von FINDDOME vermittelt, und die Anzahlung ist geleistet.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -64,7 +64,7 @@ export const FAQ_DE = [
   },
   {
     id: 'was-fodel-uebernimmt',
-    question: 'Was genau übernimmt FODEL bei einem Kauf?',
+    question: 'Was genau übernimmt FINDDOME bei einem Kauf?',
     answer: [
       '- Beratung per Telefon und E-Mail sowie die Kommunikation zwischen beiden Parteien',
       '- Persönliche Termine und Besichtigungen vor Ort',

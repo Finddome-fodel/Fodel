@@ -244,7 +244,7 @@ const photoLimit = listingPackage.maxImages;
       <section id="seller" class="ed-card">
         <header class="card-head"><div><h2>Eladó elérhetősége</h2><p>Ha engedi, a vevő közvetlenül is felveheti Önnel a kapcsolatot.</p></div></header>
         <p class="hint">
-          A FODEL egyedi modellje: ha ehhez hozzájárul, a neve és telefonszáma megjelenik a
+          A FINDDOME egyedi modellje: ha ehhez hozzájárul, a neve és telefonszáma megjelenik a
           hirdetésen, hogy a vevő közvetlenül is felvehesse Önnel a kapcsolatot.
         </p>
         <label class="checkbox">
@@ -303,8 +303,8 @@ const photoLimit = listingPackage.maxImages;
             </div>
           );
         })}
-        <Field locale="hu" name="heard_from" label="Honnan értesült a FODEL-ről?" type="select" value={property.heard_from||''} options={[{value:'',label:'Nincs megadva'},...HEARD_FROM.map(o=>({value:o.key,label:o.labels.hu}))]} hint="Csak a FODEL munkatársai látják."/>
-        <Field locale="hu" name="internal_note" label="Megjegyzés (belső használatra)" type="textarea" rows={3} value={property.internal_note||''} hint="Csak Ön és a FODEL munkatársai láthatják. A nyilvános hirdetésben soha nem jelenik meg." maxlength={10000}/>
+        <Field locale="hu" name="heard_from" label="Honnan értesült a FINDDOME-ről?" type="select" value={property.heard_from||''} options={[{value:'',label:'Nincs megadva'},...HEARD_FROM.map(o=>({value:o.key,label:o.labels.hu}))]} hint="Csak a FINDDOME munkatársai látják."/>
+        <Field locale="hu" name="internal_note" label="Megjegyzés (belső használatra)" type="textarea" rows={3} value={property.internal_note||''} hint="Csak Ön és a FINDDOME munkatársai láthatják. A nyilvános hirdetésben soha nem jelenik meg." maxlength={10000}/>
       </section>
 
       {editable && (
@@ -356,7 +356,7 @@ const photoLimit = listingPackage.maxImages;
         <>
           <button type="button" class="btn" id="pay-btn">Fizetés bankkártyával</button>
           <p class="hint">
-            A fizetés a Stripe biztonságos felületén történik. A kártyaadatokat a FODEL nem látja
+            A fizetés a Stripe biztonságos felületén történik. A kártyaadatokat a FINDDOME nem látja
             és nem tárolja.
           </p>
         </>

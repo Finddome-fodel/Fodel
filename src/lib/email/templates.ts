@@ -603,7 +603,7 @@ ${common.signOff}`,
 
 export function valuationReceived(locale: EmailLocale): BuiltEmail {
   const c = copyFor(locale).valuationReceived;
-  return { subject: c.heading + ' | FODEL',
+  return { subject: c.heading + ' | FINDDOME',
     html: shell({ locale, preheader: c.heading, body: h1(c.heading) + lead(c.body) + signOff(locale), audience: 'visitor' }),
     text: textShell({ locale, body: `${c.heading}\n\n${c.body}`, audience: 'visitor' }) };
 }

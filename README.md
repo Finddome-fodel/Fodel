@@ -45,7 +45,7 @@ instead of the real page until `SUPABASE_URL`/`SUPABASE_ANON_KEY` are set and
 | `npm run verify:workflow` | Scripted pass through draft → submitted → changes requested → approved → awaiting payment → paid → published, including that an owner cannot publish or settle their own listing |
 | `npm run seed:500` | Generates 500 synthetic listings for search/pagination load-testing |
 | `npm run build:pmtiles` | Builds the self-hosted map basemap (real data-engineering step, not part of `npm run build`) |
-| `npm run og` | Regenerates `public/og/fodel-default.jpg` |
+| `npm run og` | Regenerates `public/og/finddome-default.jpg` |
 
 `build` runs `scripts/prune-assets.mjs` afterwards, which drops the source
 images Astro emits alongside the optimised variants (11 MB, unreferenced).

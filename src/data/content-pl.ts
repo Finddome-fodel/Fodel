@@ -71,7 +71,7 @@ export const CONTENT_PL = {
         type: 'prose',
         title: 'Kiedy należy się prowizja',
         paragraphs: [
-          `Prowizję naliczamy tylko wtedy, gdy kupującego pozyskał FODEL, istnieje pisemna umowa kupna-sprzedaży i wpłacono zadatek. Stawka wynosi ${pct(COMMISSION.percent)} netto, co najmniej ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} niderlandzkiego VAT. Płaci ją sprzedający, nie kupujący.`,
+          `Prowizję naliczamy tylko wtedy, gdy kupującego pozyskał FINDDOME, istnieje pisemna umowa kupna-sprzedaży i wpłacono zadatek. Stawka wynosi ${pct(COMMISSION.percent)} netto, co najmniej ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} niderlandzkiego VAT. Płaci ją sprzedający, nie kupujący.`,
         ],
       },
       {
@@ -86,7 +86,7 @@ export const CONTENT_PL = {
 
   agricultural: {
     metaTitle: `Nieruchomości rolne: do ${ha} na Węgrzech`,
-    metaDescription: `Obywatel UE z kwalifikacjami rolniczymi może nabyć na Węgrzech do ${ha} ziemi. FODEL przeprowadza całą procedurę.`,
+    metaDescription: `Obywatel UE z kwalifikacjami rolniczymi może nabyć na Węgrzech do ${ha} ziemi. FINDDOME przeprowadza całą procedurę.`,
     eyebrow: 'Nieruchomości rolne',
     title: 'Grunty rolne i',
     titleEm: 'majątki ziemskie',
@@ -168,7 +168,7 @@ export const CONTENT_PL = {
           'Honorarium prawnika za sporządzenie i kontrasygnatę umowy',
           `Tłumaczenie dwujęzycznej umowy: ${des('hu')}, zależnie od kombinacji języków`,
           'Opłaty za wpis do księgi wieczystej',
-          'Ewentualna prowizja FODEL: płaci ją sprzedający, nie Państwo',
+          'Ewentualna prowizja FINDDOME: płaci ją sprzedający, nie Państwo',
         ],
       },
       {
@@ -244,7 +244,7 @@ export const CONTENT_PL = {
   photoGuide: {
     metaTitle: 'Poradnik fotograficzny dla ogłoszeniodawców',
     metaDescription:
-      'Dobre zdjęcia to najlepszy sposób na szybką sprzedaż. Poradnik fotograficzny FODEL: światło, kadrowanie, rozdzielczość i najczęstsze błędy.',
+      'Dobre zdjęcia to najlepszy sposób na szybką sprzedaż. Poradnik fotograficzny FINDDOME: światło, kadrowanie, rozdzielczość i najczęstsze błędy.',
     eyebrow: 'Dla sprzedających',
     title: 'Poradnik',
     titleEm: 'fotograficzny',

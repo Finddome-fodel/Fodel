@@ -26,7 +26,7 @@ export const FAQ_IT = [
     question: 'Quanto costa la vostra intermediazione?',
     answer: [
       `La nostra provvigione è del ${COMMISSION.percent}% netto con un minimo di ${eur(COMMISSION.minimumEur, L)}, più il ${COMMISSION.vatPercent}% di IVA olandese. La paga il venditore ungherese, non voi.`,
-      'Fatturiamo solo quando sono soddisfatte tutte e tre le condizioni: esiste un contratto di compravendita scritto, l’acquirente è stato presentato da FODEL e la caparra è stata versata.',
+      'Fatturiamo solo quando sono soddisfatte tutte e tre le condizioni: esiste un contratto di compravendita scritto, l’acquirente è stato presentato da FINDDOME e la caparra è stata versata.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_IT = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Di cosa si occupa esattamente FODEL quando acquistate?',
+    question: 'Di cosa si occupa esattamente FINDDOME quando acquistate?',
     answer: [
       '- Consulenza telefonica e via e-mail e comunicazione tra le due parti',
       '- Appuntamenti personali e visite in loco',

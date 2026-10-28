@@ -26,7 +26,7 @@ export const FAQ_LV = [
     question: 'Cik maksā jūsu starpniecība?',
     answer: [
       `Mūsu komisija ir ${COMMISSION.percent}% neto, vismaz ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Nīderlandes PVN. To maksā Ungārijas pārdevējs, nevis jūs.`,
-      'Rēķinu izrakstām tikai tad, ja izpildīti visi trīs nosacījumi: ir rakstisks pirkuma līgums, pircēju ir atradis FODEL un ir samaksāta rokasnauda.',
+      'Rēķinu izrakstām tikai tad, ja izpildīti visi trīs nosacījumi: ir rakstisks pirkuma līgums, pircēju ir atradis FINDDOME un ir samaksāta rokasnauda.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_LV = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Ko tieši FODEL nokārto, kad pērkat?',
+    question: 'Ko tieši FINDDOME nokārto, kad pērkat?',
     answer: [
       '- Konsultācijas pa tālruni un e-pastu un saziņa starp abām pusēm',
       '- Personīgas tikšanās un apskates uz vietas',

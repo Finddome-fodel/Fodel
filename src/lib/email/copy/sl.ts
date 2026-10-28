@@ -14,13 +14,13 @@ export const SL = {
   common: {
     greeting: (name: string) => `Spoštovani ${name},`,
     greetingNoName: 'Spoštovani oglaševalec,',
-    signOff: 'Lep pozdrav,\nFODEL Nepremičnine',
+    signOff: 'Lep pozdrav,\nFINDDOME Nepremičnine',
     questions: 'Če imate vprašanje, preprosto odgovorite na to sporočilo.',
     linkFallback: 'Če gumb ne deluje, kopirajte ta naslov v brskalnik:',
   },
 
   registrationConfirm: {
-    subject: 'Nastavite geslo | FODEL',
+    subject: 'Nastavite geslo | FINDDOME',
     preheader: 'En klik in lahko pripravite svoj oglas.',
     heading: 'Nastavite geslo',
     intro: 'Hvala za registracijo. Vaš račun je skoraj pripravljen; manjka le še geslo.',
@@ -30,21 +30,21 @@ export const SL = {
   },
 
   accountExists: {
-    subject: 'Pri FODEL že imate račun',
+    subject: 'Pri FINDDOME že imate račun',
     preheader: 'Prijavite se ali nastavite novo geslo.',
     heading: 'Ta naslov že ima račun',
-    body: 'Nekdo se je pravkar poskušal registrirati na spletni strani FODEL s tem e-poštnim naslovom. Ker zanj račun že obstaja, novega nismo ustvarili.',
+    body: 'Nekdo se je pravkar poskušal registrirati na spletni strani FINDDOME s tem e-poštnim naslovom. Ker zanj račun že obstaja, novega nismo ustvarili.',
     cta: 'Prijava',
     reset: 'Ste pozabili geslo? Zahtevajte novo',
     ignore: 'Če to niste bili vi, vam ni treba storiti ničesar: vaš račun ostane nespremenjen.',
   },
 
   invite: {
-    subject: 'Povabilo na portal FODEL',
+    subject: 'Povabilo na portal FINDDOME',
     preheader: 'Nastavite geslo in se prijavite v portal za oglaševalce.',
-    heading: 'Povabljeni ste na portal FODEL',
+    heading: 'Povabljeni ste na portal FINDDOME',
     body: (role: string) =>
-      `FODEL vas vabi, da se pridružite portalu ${role}, kjer upravljate oglase za nepremičnine.`,
+      `FINDDOME vas vabi, da se pridružite portalu ${role}, kjer upravljate oglase za nepremičnine.`,
     roleAdmin: 'kot skrbnik',
     roleOwner: 'kot oglaševalec',
     cta: 'Sprejmi povabilo',
@@ -52,7 +52,7 @@ export const SL = {
   },
 
   welcome: {
-    subject: 'Dobrodošli na portalu FODEL',
+    subject: 'Dobrodošli na portalu FINDDOME',
     preheader: 'Vaš račun je aktiven. Tako objavite svoj prvi oglas.',
     heading: (name: string) => `Dobrodošli, ${name}`,
     body: 'Vaš račun je aktiven. Na portalu sestavite oglas, naložite fotografije in spremljate pregled.',
@@ -95,7 +95,7 @@ export const SL = {
     discountLabel: 'Popust za priporočilo (10\u00a0%)',
     totalLabel: 'Za plačilo',
     ctaCard: 'Plačaj s kartico',
-    cardNote: 'Plačilo poteka v varnem okolju Stripe. FODEL vaših podatkov o kartici ne vidi in ne shranjuje.',
+    cardNote: 'Plačilo poteka v varnem okolju Stripe. FINDDOME vaših podatkov o kartici ne vidi in ne shranjuje.',
     bankTitle: 'Ali z bančnim nakazilom',
     bankNote: (ref: string) =>
       `Pri nakazilu navedite referenčno številko: ${ref}. Ko plačilo prispe, član naše ekipe objavi oglas.`,
@@ -113,7 +113,7 @@ export const SL = {
     totalLabel: 'Za plačilo',
     dueLabel: 'Plačati do',
     ctaCard: 'Plačaj s kartico',
-    cardNote: 'Plačilo poteka v varnem okolju Stripe. FODEL vaših podatkov o kartici ne vidi in ne shranjuje.',
+    cardNote: 'Plačilo poteka v varnem okolju Stripe. FINDDOME vaših podatkov o kartici ne vidi in ne shranjuje.',
     bankTitle: 'Bančno nakazilo',
     bankNote: (ref: string) => `Pri nakazilu navedite referenčno številko: ${ref}.`,
     vatNote: 'Vsi zneski vključujejo 21-odstotni nizozemski DDV.',
@@ -154,17 +154,17 @@ export const SL = {
   },
 
   passwordReset: {
-    subject: 'Ponastavitev gesla | Portal FODEL',
+    subject: 'Ponastavitev gesla | Portal FINDDOME',
     preheader: 'Povezava velja eno uro.',
     heading: 'Ponastavite geslo',
-    body: 'Prejeli smo zahtevo za ponastavitev gesla vašega računa na portalu FODEL. Za nastavitev novega kliknite spodnji gumb.',
+    body: 'Prejeli smo zahtevo za ponastavitev gesla vašega računa na portalu FINDDOME. Za nastavitev novega kliknite spodnji gumb.',
     cta: 'Nastavi novo geslo',
     expiry: 'Povezava velja eno uro in jo je mogoče uporabiti enkrat.',
     ignore: 'Če tega niste zahtevali, sporočilo prezrite. Vaše geslo ostane nespremenjeno in nič se ne zgodi.',
   },
 
   referralRegistered: {
-    subject: 'Vaše priporočilo smo prejeli | FODEL',
+    subject: 'Vaše priporočilo smo prejeli | FINDDOME',
     preheader: 'Član naše ekipe bo kmalu stopil v stik z osebo, ki ste jo priporočili.',
     heading: 'Hvala za priporočilo',
     body: (referredName: string) =>
@@ -178,7 +178,7 @@ export const SL = {
   },
 
   valuationReady: {
-    subject: 'Vaša ocena je pripravljena | FODEL',
+    subject: 'Vaša ocena je pripravljena | FINDDOME',
     preheader: 'Za vašo nepremičnino smo pripravili okvirno oceno.',
     heading: 'Vaša ocena je pripravljena',
     body: (range: string) =>
@@ -204,7 +204,7 @@ export const SL = {
   },
 
   valuationDeclined: {
-    subject: 'Vaša zahteva za oceno | FODEL',
+    subject: 'Vaša zahteva za oceno | FINDDOME',
     preheader: 'Član naše ekipe vas bo osebno kontaktiral.',
     heading: 'Hvala za vašo zahtevo',
     body: 'Na podlagi navedenih podatkov imamo trenutno premalo primerljivih nepremičnin za zanesljivo oceno. Član naše ekipe vas bo osebno kontaktiral.',
@@ -247,7 +247,7 @@ export const SL = {
   },
 
   serviceRequested: {
-    subject: 'Vašo zahtevo smo prejeli | FODEL',
+    subject: 'Vašo zahtevo smo prejeli | FINDDOME',
     preheader: 'Član naše ekipe vas bo kontaktiral za dogovor o terminu.',
     heading: 'Vašo zahtevo smo prejeli',
     body: (service: string, price: string) => `Hvala, vašo zahtevo smo zabeležili: ${service} (${price}).`,
@@ -257,7 +257,7 @@ export const SL = {
   },
 
   valuationPaid: {
-    subject: 'Potrdilo o plačilu | Ocena FODEL',
+    subject: 'Potrdilo o plačilu | Ocena FINDDOME',
     preheader: 'Hvala, vaše plačilo je prispelo.',
     heading: 'Hvala, vaše plačilo je prispelo',
     body: (service: string) => `Prejeli smo plačilo za »${service}«.`,
@@ -269,7 +269,7 @@ export const SL = {
   },
 
   judicialRequested: {
-    subject: 'Zahteva za uradno cenitev | FODEL',
+    subject: 'Zahteva za uradno cenitev | FINDDOME',
     preheader: 'Član naše ekipe vas bo kontaktiral glede možnosti.',
     heading: 'Vašo zahtevo smo prejeli',
     body: 'Hvala, zabeležili smo, da želite uradno (sodno) cenitev izvedenca. To ni enako kot okvirna tržna ocena na naši spletni strani: izvede jo pooblaščeni cenilec na podlagi ponudbe.',

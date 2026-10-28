@@ -294,136 +294,136 @@ function genericAck(locale: Locale, name: string, phones: string, hours: string)
 
 const ACK = {
   hu: {
-    subject: 'Köszönjük megkeresését | FODEL',
+    subject: 'Köszönjük megkeresését | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>Kedves ${escapeHtml(name || 'Érdeklődőnk')}!</p>
        <p>Köszönjük, hogy felvette velünk a kapcsolatot. Üzenetét megkaptuk, munkatársunk hamarosan jelentkezik. ${escapeHtml(hours)}</p>
        <p>Ha sürgős, hívjon minket: ${escapeHtml(phones)}.</p>
-       <p>Üdvözlettel,<br>FODEL Ingatlan</p>`,
+       <p>Üdvözlettel,<br>FINDDOME Ingatlan</p>`,
   },
   nl: {
-    subject: 'Bedankt voor uw bericht | FODEL',
+    subject: 'Bedankt voor uw bericht | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>Beste ${escapeHtml(name || 'bezoeker')},</p>
        <p>Bedankt voor uw bericht. Wij hebben het ontvangen; een medewerker neemt spoedig contact met u op. ${escapeHtml(hours)}</p>
        <p>Heeft u haast? Bel ons op ${escapeHtml(phones)}.</p>
-       <p>Met vriendelijke groet,<br>FODEL Vastgoed</p>`,
+       <p>Met vriendelijke groet,<br>FINDDOME Vastgoed</p>`,
   },
   en: {
-    subject: 'Thank you for your message | FODEL',
+    subject: 'Thank you for your message | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>Dear ${escapeHtml(name || 'visitor')},</p>
        <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
        <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
-       <p>Kind regards,<br>FODEL Real Estates</p>`,
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
   },
   de: {
-    subject: 'Vielen Dank für Ihre Nachricht | FODEL',
+    subject: 'Vielen Dank für Ihre Nachricht | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Guten Tag ${escapeHtml(name)},` : 'Guten Tag,'}</p>
        <p>vielen Dank für Ihre Nachricht. Wir haben sie erhalten, und ein Mitarbeiter meldet sich in Kürze bei Ihnen. ${escapeHtml(hours)}</p>
        <p>Eilt es? Rufen Sie uns an: ${escapeHtml(phones)}.</p>
-       <p>Mit freundlichen Grüßen<br>FODEL Immobilien</p>`,
+       <p>Mit freundlichen Grüßen<br>FINDDOME Immobilien</p>`,
   },
   fr: {
-    subject: 'Merci pour votre message | FODEL',
+    subject: 'Merci pour votre message | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Bonjour ${escapeHtml(name)},` : 'Bonjour,'}</p>
        <p>Merci pour votre message. Nous l’avons bien reçu et un collaborateur vous répondra très prochainement. ${escapeHtml(hours)}</p>
        <p>C’est urgent&#8239;? Appelez-nous au ${escapeHtml(phones)}.</p>
-       <p>Cordialement,<br>FODEL Immobilier</p>`,
+       <p>Cordialement,<br>FINDDOME Immobilier</p>`,
   },
   es: {
-    subject: 'Gracias por su mensaje | FODEL',
+    subject: 'Gracias por su mensaje | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Hola, ${escapeHtml(name)}:` : 'Hola:'}</p>
        <p>Gracias por su mensaje. Lo hemos recibido y un miembro de nuestro equipo le responderá muy pronto. ${escapeHtml(hours)}</p>
        <p>¿Es urgente? Llámenos al ${escapeHtml(phones)}.</p>
-       <p>Atentamente,<br>FODEL Inmobiliaria</p>`,
+       <p>Atentamente,<br>FINDDOME Inmobiliaria</p>`,
   },
   pl: {
-    subject: 'Dziękujemy za wiadomość | FODEL',
+    subject: 'Dziękujemy za wiadomość | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Dzień dobry, ${escapeHtml(name)},` : 'Dzień dobry,'}</p>
        <p>dziękujemy za wiadomość. Otrzymaliśmy ją, a nasz pracownik wkrótce się z Państwem skontaktuje. ${escapeHtml(hours)}</p>
        <p>Sprawa jest pilna? Prosimy zadzwonić: ${escapeHtml(phones)}.</p>
-       <p>Z poważaniem<br>FODEL Nieruchomości</p>`,
+       <p>Z poważaniem<br>FINDDOME Nieruchomości</p>`,
   },
   ro: {
-    subject: 'Vă mulțumim pentru mesaj | FODEL',
+    subject: 'Vă mulțumim pentru mesaj | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Bună ziua, ${escapeHtml(name)},` : 'Bună ziua,'}</p>
        <p>Vă mulțumim pentru mesaj. L-am primit, iar un coleg vă va răspunde în cel mai scurt timp. ${escapeHtml(hours)}</p>
        <p>Este urgent? Sunați-ne la ${escapeHtml(phones)}.</p>
-       <p>Cu stimă,<br>FODEL Imobiliare</p>`,
+       <p>Cu stimă,<br>FINDDOME Imobiliare</p>`,
   },
   sk: {
-    subject: 'Ďakujeme za vašu správu | FODEL',
+    subject: 'Ďakujeme za vašu správu | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Dobrý deň, ${escapeHtml(name)},` : 'Dobrý deň,'}</p>
        <p>ďakujeme za Vašu správu. Dostali sme ju a náš kolega Vám čoskoro odpovie. ${escapeHtml(hours)}</p>
        <p>Je to naliehavé? Zavolajte nám na ${escapeHtml(phones)}.</p>
-       <p>S pozdravom<br>FODEL Nehnuteľnosti</p>`,
+       <p>S pozdravom<br>FINDDOME Nehnuteľnosti</p>`,
   },
   it: {
-    subject: 'Grazie per il Suo messaggio | FODEL',
+    subject: 'Grazie per il Suo messaggio | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Gentile ${escapeHtml(name)},` : 'Buongiorno,'}</p>\n       <p>grazie per il Suo messaggio. Lo abbiamo ricevuto e un membro del nostro team La contatterà a breve. ${escapeHtml(hours)}</p>\n       <p>Ha fretta? Ci chiami al numero ${escapeHtml(phones)}.</p>\n       <p>Cordiali saluti,<br>FODEL Immobiliare</p>`,
+      `<p>${name ? `Gentile ${escapeHtml(name)},` : 'Buongiorno,'}</p>\n       <p>grazie per il Suo messaggio. Lo abbiamo ricevuto e un membro del nostro team La contatterà a breve. ${escapeHtml(hours)}</p>\n       <p>Ha fretta? Ci chiami al numero ${escapeHtml(phones)}.</p>\n       <p>Cordiali saluti,<br>FINDDOME Immobiliare</p>`,
   },
   pt: {
-    subject: 'Obrigado pela sua mensagem | FODEL',
+    subject: 'Obrigado pela sua mensagem | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Bom dia, ${escapeHtml(name)},` : 'Bom dia,'}</p>\n       <p>Obrigado pela sua mensagem. Recebemo-la e um membro da nossa equipa entrará em contacto consigo em breve. ${escapeHtml(hours)}</p>\n       <p>É urgente? Ligue-nos para ${escapeHtml(phones)}.</p>\n       <p>Com os melhores cumprimentos,<br>FODEL Imobiliária</p>`,
+      `<p>${name ? `Bom dia, ${escapeHtml(name)},` : 'Bom dia,'}</p>\n       <p>Obrigado pela sua mensagem. Recebemo-la e um membro da nossa equipa entrará em contacto consigo em breve. ${escapeHtml(hours)}</p>\n       <p>É urgente? Ligue-nos para ${escapeHtml(phones)}.</p>\n       <p>Com os melhores cumprimentos,<br>FINDDOME Imobiliária</p>`,
   },
   el: {
-    subject: 'Σας ευχαριστούμε για το μήνυμά σας | FODEL',
+    subject: 'Σας ευχαριστούμε για το μήνυμά σας | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Γεια σας, ${escapeHtml(name)},` : 'Γεια σας,'}</p>\n       <p>Σας ευχαριστούμε για το μήνυμά σας. Το λάβαμε και ένα μέλος της ομάδας μας θα επικοινωνήσει σύντομα μαζί σας. ${escapeHtml(hours)}</p>\n       <p>Βιάζεστε; Καλέστε μας στο ${escapeHtml(phones)}.</p>\n       <p>Με εκτίμηση,<br>FODEL Ακίνητα</p>`,
+      `<p>${name ? `Γεια σας, ${escapeHtml(name)},` : 'Γεια σας,'}</p>\n       <p>Σας ευχαριστούμε για το μήνυμά σας. Το λάβαμε και ένα μέλος της ομάδας μας θα επικοινωνήσει σύντομα μαζί σας. ${escapeHtml(hours)}</p>\n       <p>Βιάζεστε; Καλέστε μας στο ${escapeHtml(phones)}.</p>\n       <p>Με εκτίμηση,<br>FINDDOME Ακίνητα</p>`,
   },
   cs: {
-    subject: 'Děkujeme za vaši zprávu | FODEL',
+    subject: 'Děkujeme za vaši zprávu | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Dobrý den, ${escapeHtml(name)},` : 'Dobrý den,'}</p>\n       <p>děkujeme za vaši zprávu. Obdrželi jsme ji a náš kolega se vám brzy ozve. ${escapeHtml(hours)}</p>\n       <p>Spěcháte? Zavolejte nám na ${escapeHtml(phones)}.</p>\n       <p>S pozdravem<br>FODEL Nemovitosti</p>`,
+      `<p>${name ? `Dobrý den, ${escapeHtml(name)},` : 'Dobrý den,'}</p>\n       <p>děkujeme za vaši zprávu. Obdrželi jsme ji a náš kolega se vám brzy ozve. ${escapeHtml(hours)}</p>\n       <p>Spěcháte? Zavolejte nám na ${escapeHtml(phones)}.</p>\n       <p>S pozdravem<br>FINDDOME Nemovitosti</p>`,
   },
   sl: {
-    subject: 'Hvala za vaše sporočilo | FODEL',
+    subject: 'Hvala za vaše sporočilo | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Pozdravljeni, ${escapeHtml(name)},` : 'Pozdravljeni,'}</p>\n       <p>hvala za vaše sporočilo. Prejeli smo ga in naš sodelavec vam bo kmalu odgovoril. ${escapeHtml(hours)}</p>\n       <p>Se vam mudi? Pokličite nas na ${escapeHtml(phones)}.</p>\n       <p>Lep pozdrav<br>FODEL Nepremičnine</p>`,
+      `<p>${name ? `Pozdravljeni, ${escapeHtml(name)},` : 'Pozdravljeni,'}</p>\n       <p>hvala za vaše sporočilo. Prejeli smo ga in naš sodelavec vam bo kmalu odgovoril. ${escapeHtml(hours)}</p>\n       <p>Se vam mudi? Pokličite nas na ${escapeHtml(phones)}.</p>\n       <p>Lep pozdrav<br>FINDDOME Nepremičnine</p>`,
   },
   sv: {
-    subject: 'Tack för ditt meddelande | FODEL',
+    subject: 'Tack för ditt meddelande | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Hej ${escapeHtml(name)},` : 'Hej,'}</p>\n       <p>Tack för ditt meddelande. Vi har tagit emot det och någon i vårt team hör av sig inom kort. ${escapeHtml(hours)}</p>\n       <p>Bråttom? Ring oss på ${escapeHtml(phones)}.</p>\n       <p>Vänliga hälsningar<br>FODEL Fastigheter</p>`,
+      `<p>${name ? `Hej ${escapeHtml(name)},` : 'Hej,'}</p>\n       <p>Tack för ditt meddelande. Vi har tagit emot det och någon i vårt team hör av sig inom kort. ${escapeHtml(hours)}</p>\n       <p>Bråttom? Ring oss på ${escapeHtml(phones)}.</p>\n       <p>Vänliga hälsningar<br>FINDDOME Fastigheter</p>`,
   },
   da: {
-    subject: 'Tak for din besked | FODEL',
+    subject: 'Tak for din besked | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Kære ${escapeHtml(name)}` : 'Hej'}</p>\n       <p>Tak for din besked. Vi har modtaget den, og en fra vores team kontakter dig snarest. ${escapeHtml(hours)}</p>\n       <p>Har du travlt? Ring til os på ${escapeHtml(phones)}.</p>\n       <p>Med venlig hilsen<br>FODEL Ejendomme</p>`,
+      `<p>${name ? `Kære ${escapeHtml(name)}` : 'Hej'}</p>\n       <p>Tak for din besked. Vi har modtaget den, og en fra vores team kontakter dig snarest. ${escapeHtml(hours)}</p>\n       <p>Har du travlt? Ring til os på ${escapeHtml(phones)}.</p>\n       <p>Med venlig hilsen<br>FINDDOME Ejendomme</p>`,
   },
   no: {
-    subject: 'Takk for meldingen din | FODEL',
+    subject: 'Takk for meldingen din | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Hei ${escapeHtml(name)},` : 'Hei,'}</p>\n       <p>Takk for meldingen din. Vi har mottatt den, og en fra teamet vårt tar snart kontakt med deg. ${escapeHtml(hours)}</p>\n       <p>Haster det? Ring oss på ${escapeHtml(phones)}.</p>\n       <p>Med vennlig hilsen<br>FODEL Eiendom</p>`,
+      `<p>${name ? `Hei ${escapeHtml(name)},` : 'Hei,'}</p>\n       <p>Takk for meldingen din. Vi har mottatt den, og en fra teamet vårt tar snart kontakt med deg. ${escapeHtml(hours)}</p>\n       <p>Haster det? Ring oss på ${escapeHtml(phones)}.</p>\n       <p>Med vennlig hilsen<br>FINDDOME Eiendom</p>`,
   },
   fi: {
-    subject: 'Kiitos viestistäsi | FODEL',
+    subject: 'Kiitos viestistäsi | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Hei ${escapeHtml(name)},` : 'Hei,'}</p>\n       <p>Kiitos viestistäsi. Olemme vastaanottaneet sen, ja tiimimme jäsen ottaa sinuun pian yhteyttä. ${escapeHtml(hours)}</p>\n       <p>Onko asialla kiire? Soita meille numeroon ${escapeHtml(phones)}.</p>\n       <p>Ystävällisin terveisin<br>FODEL Kiinteistöt</p>`,
+      `<p>${name ? `Hei ${escapeHtml(name)},` : 'Hei,'}</p>\n       <p>Kiitos viestistäsi. Olemme vastaanottaneet sen, ja tiimimme jäsen ottaa sinuun pian yhteyttä. ${escapeHtml(hours)}</p>\n       <p>Onko asialla kiire? Soita meille numeroon ${escapeHtml(phones)}.</p>\n       <p>Ystävällisin terveisin<br>FINDDOME Kiinteistöt</p>`,
   },
   et: {
-    subject: 'Täname teid sõnumi eest | FODEL',
+    subject: 'Täname teid sõnumi eest | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Tere, ${escapeHtml(name)}!` : 'Tere!'}</p>\n       <p>Täname teid sõnumi eest. Saime selle kätte ja meie meeskonna liige võtab teiega peagi ühendust. ${escapeHtml(hours)}</p>\n       <p>Kiire? Helistage meile numbril ${escapeHtml(phones)}.</p>\n       <p>Lugupidamisega<br>FODEL Kinnisvara</p>`,
+      `<p>${name ? `Tere, ${escapeHtml(name)}!` : 'Tere!'}</p>\n       <p>Täname teid sõnumi eest. Saime selle kätte ja meie meeskonna liige võtab teiega peagi ühendust. ${escapeHtml(hours)}</p>\n       <p>Kiire? Helistage meile numbril ${escapeHtml(phones)}.</p>\n       <p>Lugupidamisega<br>FINDDOME Kinnisvara</p>`,
   },
   lv: {
-    subject: 'Paldies par jūsu ziņojumu | FODEL',
+    subject: 'Paldies par jūsu ziņojumu | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Labdien, ${escapeHtml(name)}!` : 'Labdien!'}</p>\n       <p>Paldies par jūsu ziņojumu. Mēs to saņēmām, un kāds no mūsu komandas drīz ar jums sazināsies. ${escapeHtml(hours)}</p>\n       <p>Steidzami? Zvaniet mums: ${escapeHtml(phones)}.</p>\n       <p>Ar cieņu<br>FODEL Nekustamais īpašums</p>`,
+      `<p>${name ? `Labdien, ${escapeHtml(name)}!` : 'Labdien!'}</p>\n       <p>Paldies par jūsu ziņojumu. Mēs to saņēmām, un kāds no mūsu komandas drīz ar jums sazināsies. ${escapeHtml(hours)}</p>\n       <p>Steidzami? Zvaniet mums: ${escapeHtml(phones)}.</p>\n       <p>Ar cieņu<br>FINDDOME Nekustamais īpašums</p>`,
   },
   lt: {
-    subject: 'Ačiū už jūsų žinutę | FODEL',
+    subject: 'Ačiū už jūsų žinutę | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>${name ? `Laba diena, ${escapeHtml(name)},` : 'Laba diena,'}</p>\n       <p>dėkojame už jūsų žinutę. Ją gavome, ir mūsų komandos narys netrukus su jumis susisieks. ${escapeHtml(hours)}</p>\n       <p>Skubate? Skambinkite mums ${escapeHtml(phones)}.</p>\n       <p>Pagarbiai<br>FODEL Nekilnojamasis turtas</p>`,
+      `<p>${name ? `Laba diena, ${escapeHtml(name)},` : 'Laba diena,'}</p>\n       <p>dėkojame už jūsų žinutę. Ją gavome, ir mūsų komandos narys netrukus su jumis susisieks. ${escapeHtml(hours)}</p>\n       <p>Skubate? Skambinkite mums ${escapeHtml(phones)}.</p>\n       <p>Pagarbiai<br>FINDDOME Nekilnojamasis turtas</p>`,
   },
 } as const;
 

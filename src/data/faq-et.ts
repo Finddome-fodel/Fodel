@@ -26,7 +26,7 @@ export const FAQ_ET = [
     question: 'Kui palju teie vahendus maksab?',
     answer: [
       `Meie vahendustasu on ${COMMISSION.percent}% netosummast, vähemalt ${eur(COMMISSION.minimumEur, L)}, millele lisandub ${COMMISSION.vatPercent}% Hollandi käibemaks. Selle maksab Ungari müüja, mitte teie.`,
-      'Arve esitame ainult siis, kui kõik kolm tingimust on täidetud: olemas on kirjalik müügileping, ostja on leidnud FODEL ja käsiraha on tasutud.',
+      'Arve esitame ainult siis, kui kõik kolm tingimust on täidetud: olemas on kirjalik müügileping, ostja on leidnud FINDDOME ja käsiraha on tasutud.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_ET = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Mida FODEL ostu puhul täpselt korraldab?',
+    question: 'Mida FINDDOME ostu puhul täpselt korraldab?',
     answer: [
       '- Nõustamine telefoni ja e-posti teel ning suhtlus poolte vahel',
       '- Isiklikud kohtumised ja vaatamised kohapeal',

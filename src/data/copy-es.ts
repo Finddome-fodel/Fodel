@@ -25,7 +25,7 @@ const hour = (hhmm: string) => {
 export const ES = {
   home: {
     meta: {
-      title: 'FODEL Inmobiliaria | Comprar un inmueble en Hungría directamente al propietario',
+      title: 'FINDDOME Inmobiliaria | Comprar un inmueble en Hungría directamente al propietario',
       description:
         'Casas, fincas y casas señoriales en Hungría, a menudo directamente al propietario. Acompañamiento personal y contratos de compraventa bilingües.',
     },
@@ -42,7 +42,7 @@ export const ES = {
       {
         eyebrow: 'Para compradores',
         title: 'Inmuebles directamente\ndel propietario',
-        body: 'Auténticas casas, fincas, casas señoriales y viñedos húngaros. Contacte directamente con el propietario o deje que FODEL gestione todo el proceso.',
+        body: 'Auténticas casas, fincas, casas señoriales y viñedos húngaros. Contacte directamente con el propietario o deje que FINDDOME gestione todo el proceso.',
         cta: 'Ver inmuebles',
         to: 'properties',
       },
@@ -58,7 +58,7 @@ export const ES = {
     quote:
       '«Los neerlandeses a menudo no dan crédito cuando descubren lo que se puede comprar en Hungría, y a qué precio».',
     quoteSource: `${BRAND.es.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Cómo funciona', title: 'Así funciona FODEL' },
+    how: { eyebrow: 'Cómo funciona', title: 'Así funciona FINDDOME' },
     cta: {
       eyebrow: 'Contacto',
       title: 'Le llamamos',
@@ -69,7 +69,7 @@ export const ES = {
       eyebrow: 'Programa de recomendación',
       title: 'Recomiende a un anunciante',
       titleEm: `y reciba un ${pct(10)}`,
-      body: `Si alguien publica un anuncio en FODEL por recomendación suya, obtiene un ${pct(10)} de descuento en su paquete y a usted le abonamos un ${pct(10)} en su próximo anuncio. ¿Ya anuncia con nosotros? Encontrará su código de recomendación en el portal, en «Instellingen» (Ajustes).`,
+      body: `Si alguien publica un anuncio en FINDDOME por recomendación suya, obtiene un ${pct(10)} de descuento en su paquete y a usted le abonamos un ${pct(10)} en su próximo anuncio. ¿Ya anuncia con nosotros? Encontrará su código de recomendación en el portal, en «Instellingen» (Ajustes).`,
       steps: [
         'Recomiende a un conocido con el formulario de abajo o comparta su enlace personal del portal',
         'Un miembro de nuestro equipo se pone en contacto con esa persona',
@@ -117,13 +117,13 @@ export const ES = {
   sellers: {
     meta: {
       title: 'Vendedores | Su inmueble húngaro en Europa Occidental',
-      description: `Publique su inmueble húngaro en ${REACH_LANGUAGES} idiomas y ${REACH_COUNTRIES} países, desde ${eur(69, L)} y sin exclusividad. Comisión solo si FODEL aporta al comprador: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} de IVA neerlandés.`,
+      description: `Publique su inmueble húngaro en ${REACH_LANGUAGES} idiomas y ${REACH_COUNTRIES} países, desde ${eur(69, L)} y sin exclusividad. Comisión solo si FINDDOME aporta al comprador: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} de IVA neerlandés.`,
     },
     hero: {
       eyebrow: 'Para vendedores',
       title: 'Su inmueble',
       titleEm: 'en Europa Occidental',
-      body: `Con el modelo FODEL, su inmueble se publica en ${REACH_LANGUAGES} idiomas y ${REACH_COUNTRIES} países, sin contrato de exclusividad. Solo trabajamos con compradores serios.`,
+      body: `Con el modelo FINDDOME, su inmueble se publica en ${REACH_LANGUAGES} idiomas y ${REACH_COUNTRIES} países, sin contrato de exclusividad. Solo trabajamos con compradores serios.`,
       cta: 'Publicar un anuncio',
       secondary: 'Ver tarifas',
     },
@@ -135,12 +135,12 @@ export const ES = {
         'Pago en una sola vez por transferencia bancaria, rápido y seguro.',
         `Verdadera intención de compra: una visita les cuesta dos días y entre ${eur(200, L)} y ${eur(300, L)}.`,
         'Precios realistas: sin regateos excesivos.',
-        'FODEL valora personalmente a cada comprador antes de cualquier cita.',
+        'FINDDOME valora personalmente a cada comprador antes de cualquier cita.',
       ],
     },
     personas: {
       eyebrow: 'Los compradores',
-      title: 'Quién compra a través de FODEL',
+      title: 'Quién compra a través de FINDDOME',
       items: [
         {
           title: 'Jubilados',
@@ -160,11 +160,11 @@ export const ES = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Paso a paso', title: 'El modelo FODEL' },
+    how: { eyebrow: 'Paso a paso', title: 'El modelo FINDDOME' },
     commission: {
       eyebrow: 'Tarifas',
       title: 'Comisión solo\ncuando se cierra la venta',
-      body: `Si el comprador le contacta directamente y no necesita nuestra ayuda, no paga nada más que la tarifa del anuncio. Si FODEL interviene en la venta: ${pct(COMMISSION.percent)} neto (mín. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} de IVA neerlandés.`,
+      body: `Si el comprador le contacta directamente y no necesita nuestra ayuda, no paga nada más que la tarifa del anuncio. Si FINDDOME interviene en la venta: ${pct(COMMISSION.percent)} neto (mín. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} de IVA neerlandés.`,
       cta: 'Ver tarifas',
     },
   },
@@ -254,7 +254,7 @@ export const ES = {
       title: 'El puente que',
       titleEm: 'hemos construido',
       paragraphs: [
-        'FODEL fue fundada por húngaros residentes en los Países Bajos. Empezamos en 2013 en Almere-Buiten, donde vimos que muchos neerlandeses y belgas querían comprar una auténtica casa húngara sin saber por dónde empezar.',
+        'FINDDOME fue fundada por húngaros residentes en los Países Bajos. Empezamos en 2013 en Almere-Buiten, donde vimos que muchos neerlandeses y belgas querían comprar una auténtica casa húngara sin saber por dónde empezar.',
         `Hoy publicamos anuncios en ${REACH_COUNTRIES} países y ${REACH_LANGUAGES} idiomas, y acompañamos cada operación de principio a fin: contrato de compraventa bilingüe, representación mediante poder notarial e inscripción en el Registro de la Propiedad. Nuestra oficina está en La Haya.`,
       ],
     },

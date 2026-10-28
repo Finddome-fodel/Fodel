@@ -66,7 +66,7 @@ export const CONTENT_CS = {
         type: 'prose',
         title: 'Kdy je splatná provize',
         paragraphs: [
-          `Provizi účtujeme jen tehdy, když kupujícího přivedla FODEL, existuje písemná kupní smlouva a byla zaplacena záloha. Sazba činí ${COMMISSION.percent}\u00a0% netto, nejméně však ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nizozemské DPH. Platí prodávající, nikoli kupující.`,
+          `Provizi účtujeme jen tehdy, když kupujícího přivedla FINDDOME, existuje písemná kupní smlouva a byla zaplacena záloha. Sazba činí ${COMMISSION.percent}\u00a0% netto, nejméně však ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nizozemské DPH. Platí prodávající, nikoli kupující.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_CS = {
 
   agricultural: {
     metaTitle: `Zemědělské nemovitosti: až ${AGRI_HECTARE_LIMIT} hektarů v Maďarsku`,
-    metaDescription: `Občan EU se zemědělskou kvalifikací může v Maďarsku nabýt až ${AGRI_HECTARE_LIMIT} hektarů půdy. FODEL zajistí celé řízení.`,
+    metaDescription: `Občan EU se zemědělskou kvalifikací může v Maďarsku nabýt až ${AGRI_HECTARE_LIMIT} hektarů půdy. FINDDOME zajistí celé řízení.`,
     eyebrow: 'Zemědělské nemovitosti',
     title: 'Zemědělská půda a',
     titleEm: 'venkovská sídla',
@@ -163,7 +163,7 @@ export const CONTENT_CS = {
           'Odměna advokáta za sepsání a autorizaci smlouvy',
           `Překlad dvojjazyčné smlouvy: ${from('hu')} podle jazykové kombinace`,
           'Poplatky katastru nemovitostí',
-          'Případnou provizi FODEL platí prodávající, ne vy',
+          'Případnou provizi FINDDOME platí prodávající, ne vy',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_CS = {
   photoGuide: {
     metaTitle: 'Fotografický průvodce pro inzerenty',
     metaDescription:
-      'Dobré fotografie jsou nejdůležitějším nástrojem pro rychlý prodej. Fotografický průvodce FODEL: světlo, orientace, rozlišení a nejčastější chyby.',
+      'Dobré fotografie jsou nejdůležitějším nástrojem pro rychlý prodej. Fotografický průvodce FINDDOME: světlo, orientace, rozlišení a nejčastější chyby.',
     eyebrow: 'Pro prodávající',
     title: 'Fotografický',
     titleEm: 'fotografováním',

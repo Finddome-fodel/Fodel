@@ -51,7 +51,7 @@ export async function estimateValuation(client: SupabaseClient, input: {
     if (values.length >= 8) {
       const q = (p: number) => { const i = (values.length - 1) * p; const lo = Math.floor(i); const hi = Math.ceil(i); return values[lo] + (values[hi] - values[lo]) * (i - lo); };
       return { lowHuf: Math.round(q(.25) * input.floorM2), midHuf: Math.round(q(.5) * input.floorM2),
-        highHuf: Math.round(q(.75) * input.floorM2), baseline: { kind: 'comps', source: 'FODEL hirdetések', year: null,
+        highHuf: Math.round(q(.75) * input.floorM2), baseline: { kind: 'comps', source: 'FINDDOME hirdetések', year: null,
           count: values.length, level: 'comps', category: null } };
     }
   }

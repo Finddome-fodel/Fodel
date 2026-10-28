@@ -66,7 +66,7 @@ const HU_NL = {
       id: 'miert-fizetek-hirdetesert',
       question: 'Miért fizetek a hirdetésemért?',
       answer: [
-        `„A FODEL egyedülálló hirdetési és kizárólagosság nélküli értékesítési modelljében minden hirdetés ${COMPANY.reach.languages} nyelven jelenik meg ${COMPANY.reach.countries} országban.”`,
+        `„A FINDDOME egyedülálló hirdetési és kizárólagosság nélküli értékesítési modelljében minden hirdetés ${COMPANY.reach.languages} nyelven jelenik meg ${COMPANY.reach.countries} országban.”`,
         'A hirdetési díj tartalmazza a szöveg szerkesztését, a fordítást, a képfeldolgozást, a címalkotást és a hirdetés összeállítását. Munkatársaink egy-egy anyag adminisztrációjával 1–4 órát töltenek el.',
       ],
       audience: 'seller',
@@ -154,9 +154,9 @@ const HU_NL = {
     },
     {
       id: 'egyedulallo-modell',
-      question: 'Mit takar a FODEL egyedülálló hirdetési és értékesítési modellje?',
+      question: 'Mit takar a FINDDOME egyedülálló hirdetési és értékesítési modellje?',
       answer: [
-        '„A többnyelvű weboldalunkon megjelentetett hirdetésekben nemcsak az ingatlan pontos címe látható kiemelten, de — a FODEL elérhetősége mellett — feltüntetésre kerül az ingatlan tulajdonosának a neve, telefonszáma és e-mail címe is.”',
+        '„A többnyelvű weboldalunkon megjelentetett hirdetésekben nemcsak az ingatlan pontos címe látható kiemelten, de — a FINDDOME elérhetősége mellett — feltüntetésre kerül az ingatlan tulajdonosának a neve, telefonszáma és e-mail címe is.”',
         'Ez teszi lehetővé, hogy a külföldi érdeklődő közvetlenül Önnel vegye fel a kapcsolatot.',
       ],
       audience: 'both',
@@ -166,14 +166,14 @@ const HU_NL = {
       id: 'jutalek-nelkul',
       question: 'Jutalékfizetés nélkül is eladhatom az ingatlanomat a weboldalukon keresztül?',
       answer: [
-        'Igen. „Amennyiben sem Ön, sem az ingatlant megvásárló külföldi személy nem kéri segítségünket az adásvétel lebonyolításában”, akkor „a FODEL a már korábban befizetett hirdetési költségen felül semmilyen egyéb jutalékra nem tart igényt”.',
+        'Igen. „Amennyiben sem Ön, sem az ingatlant megvásárló külföldi személy nem kéri segítségünket az adásvétel lebonyolításában”, akkor „a FINDDOME a már korábban befizetett hirdetési költségen felül semmilyen egyéb jutalékra nem tart igényt”.',
       ],
       audience: 'seller',
       sourced: true,
     },
     {
       id: 'mit-tartalmaz-jutalek',
-      question: 'Ha igénybe veszem a FODEL közreműködését, pontosan milyen szolgáltatásért fizetek jutalékot?',
+      question: 'Ha igénybe veszem a FINDDOME közreműködését, pontosan milyen szolgáltatásért fizetek jutalékot?',
       answer: [
         '- Telefonos és e-mailes konzultáció, kommunikáció a felekkel',
         '- Személyes találkozók lebonyolítása',
@@ -190,7 +190,7 @@ const HU_NL = {
     },
     {
       id: 'terhelt-ingatlan',
-      question: 'Eladhatom-e banki vagy más teherrel bíró ingatlanomat a FODEL-en keresztül?',
+      question: 'Eladhatom-e banki vagy más teherrel bíró ingatlanomat a FINDDOME-en keresztül?',
       answer: [
         'Igen. „Egy terhelt ingatlan eladása rendszerint nem okoz gondot.”',
         'Az adásvételi szerződésben kell rendezni, hogy a vételár első része az ingatlant érintő teher rendezésére fordítódjon, a maradék része pedig az eladót illesse meg.',
@@ -314,7 +314,7 @@ const HU_NL = {
       question: 'Wat kost uw bemiddeling?',
       answer: [
         'Onze courtage bedraagt 4% netto met een minimum van € 2.000, vermeerderd met 21% Nederlandse btw. Die wordt betaald door de Hongaarse verkoper, niet door u.',
-        'Er wordt alleen gefactureerd als aan alle drie de voorwaarden is voldaan: er is een schriftelijke koopovereenkomst, de koper is door FODEL aangebracht, en de aanbetaling is voldaan.',
+        'Er wordt alleen gefactureerd als aan alle drie de voorwaarden is voldaan: er is een schriftelijke koopovereenkomst, de koper is door FINDDOME aangebracht, en de aanbetaling is voldaan.',
       ],
       audience: 'buyer',
       sourced: true,
@@ -351,7 +351,7 @@ const HU_NL = {
     },
     {
       id: 'wat-regelt-fodel',
-      question: 'Wat regelt FODEL precies bij een aankoop?',
+      question: 'Wat regelt FINDDOME precies bij een aankoop?',
       answer: [
         '- Overleg per telefoon en e-mail, en de communicatie tussen beide partijen',
         '- Persoonlijke afspraken en bezichtigingen ter plaatse',

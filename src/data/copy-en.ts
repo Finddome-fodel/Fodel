@@ -20,7 +20,7 @@ const L = 'en' as const;
 export const EN = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Buy property in Hungary direct from the owner',
+      title: 'FINDDOME Real Estates | Buy property in Hungary direct from the owner',
       description:
         'Houses, farms and country estates in Hungary, often direct from the owner. Guidance in your own language and bilingual sale contracts.',
     },
@@ -37,7 +37,7 @@ export const EN = {
       {
         eyebrow: 'For buyers',
         title: 'Property direct\nfrom the owner',
-        body: 'Authentic Hungarian houses, farms, country estates and vineyards. Contact the owner directly, or let FODEL handle the whole process.',
+        body: 'Authentic Hungarian houses, farms, country estates and vineyards. Contact the owner directly, or let FINDDOME handle the whole process.',
         cta: 'Browse properties',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const EN = {
     featured: { eyebrow: 'Selection', title: 'Featured properties' },
     quote: '“People from the Netherlands often can’t believe their eyes when they see what you can buy in Hungary, and for how much.”',
     quoteSource: `${BRAND.en.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'How it works', title: 'How FODEL works' },
+    how: { eyebrow: 'How it works', title: 'How FINDDOME works' },
     cta: {
       eyebrow: 'Get in touch',
       title: 'We will gladly',
@@ -63,7 +63,7 @@ export const EN = {
       eyebrow: 'Referral programme',
       title: 'Recommend an advertiser,',
       titleEm: 'receive 10%',
-      body: 'If someone places a listing with FODEL on your recommendation, they get 10% off their package and we credit 10% against your next listing. Already advertising with us? You will find your own referral code under Settings in the portal.',
+      body: 'If someone places a listing with FINDDOME on your recommendation, they get 10% off their package and we credit 10% against your next listing. Already advertising with us? You will find your own referral code under Settings in the portal.',
       steps: [
         'Recommend an acquaintance with the form below, or share your own link from the portal',
         'One of our team gets in touch with them',
@@ -111,13 +111,13 @@ export const EN = {
   sellers: {
     meta: {
       title: 'For sellers | Your Hungarian property in Western Europe',
-      description: `Advertise your Hungarian property in ${REACH_LANGUAGES} languages in ${REACH_COUNTRIES} countries, from ${eur(69, L)} and with no exclusivity. Commission only if FODEL brings the buyer: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% VAT.`,
+      description: `Advertise your Hungarian property in ${REACH_LANGUAGES} languages in ${REACH_COUNTRIES} countries, from ${eur(69, L)} and with no exclusivity. Commission only if FINDDOME brings the buyer: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% VAT.`,
     },
     hero: {
       eyebrow: 'For sellers',
       title: 'Your property',
       titleEm: 'in Western Europe',
-      body: `With the FODEL model your property appears in ${REACH_LANGUAGES} languages in ${REACH_COUNTRIES} countries, with no exclusivity contract. We work only with serious buyers.`,
+      body: `With the FINDDOME model your property appears in ${REACH_LANGUAGES} languages in ${REACH_COUNTRIES} countries, with no exclusivity contract. We work only with serious buyers.`,
       cta: 'Place a listing',
       secondary: 'View prices',
     },
@@ -129,7 +129,7 @@ export const EN = {
         'Payment in one go by bank transfer, quick and safe.',
         'Serious intent: a single viewing costs them two days and €200–300.',
         'Realistic pricing: no unreasonable haggling.',
-        'FODEL assesses each buyer personally before any appointment is made.',
+        'FINDDOME assesses each buyer personally before any appointment is made.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const EN = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Step by step', title: 'The FODEL model' },
+    how: { eyebrow: 'Step by step', title: 'The FINDDOME model' },
     commission: {
       eyebrow: 'Prices',
       title: 'Commission only on\na successful sale',
-      body: `If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee. If FODEL does broker the sale: ${COMMISSION.percent}% net (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Dutch VAT.`,
+      body: `If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee. If FINDDOME does broker the sale: ${COMMISSION.percent}% net (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Dutch VAT.`,
       cta: 'View prices',
     },
   },
@@ -248,7 +248,7 @@ export const EN = {
       title: 'The bridge we',
       titleEm: 'have built',
       paragraphs: [
-        'FODEL was founded by Hungarians living in the Netherlands. We started in Almere-Buiten in 2013, where we noticed how many Dutch and Belgian people wanted to buy an authentic Hungarian home but did not know where to begin.',
+        'FINDDOME was founded by Hungarians living in the Netherlands. We started in Almere-Buiten in 2013, where we noticed how many Dutch and Belgian people wanted to buy an authentic Hungarian home but did not know where to begin.',
         `Today we advertise in ${REACH_COUNTRIES} countries and ${REACH_LANGUAGES} languages, and guide every transaction from start to finish: a bilingual sale contract, representation under power of attorney and registration at the land registry. Our office is in The Hague.`,
       ],
     },

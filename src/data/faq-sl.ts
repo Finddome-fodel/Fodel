@@ -26,7 +26,7 @@ export const FAQ_SL = [
     question: 'Koliko stane vaše posredovanje?',
     answer: [
       `Naša provizija znaša ${COMMISSION.percent}\u00a0% neto, najmanj ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% nizozemskega DDV. Plača jo madžarski prodajalec, ne vi.`,
-      'Račun izstavimo le, ko so izpolnjeni vsi trije pogoji: obstaja pisna prodajna pogodba, kupca je pripeljal FODEL in ara je bila plačana.',
+      'Račun izstavimo le, ko so izpolnjeni vsi trije pogoji: obstaja pisna prodajna pogodba, kupca je pripeljal FINDDOME in ara je bila plačana.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_SL = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Kaj natanko FODEL uredi pri nakupu?',
+    question: 'Kaj natanko FINDDOME uredi pri nakupu?',
     answer: [
       '- Svetovanje po telefonu in e-pošti ter komunikacija med obema stranema',
       '- Osebni sestanki in ogledi na kraju samem',

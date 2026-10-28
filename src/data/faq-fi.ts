@@ -26,7 +26,7 @@ export const FAQ_FI = [
     question: 'Mitä välityksenne maksaa?',
     answer: [
       `Palkkiomme on ${COMMISSION.percent}\u00a0% netto, vähintään ${eur(COMMISSION.minimumEur, L)}, lisäksi ${COMMISSION.vatPercent}\u00a0% Alankomaiden ALV. Sen maksaa unkarilainen myyjä, et sinä.`,
-      'Laskutamme vain, kun kaikki kolme ehtoa täyttyvät: kirjallinen kauppakirja on olemassa, ostajan on tuonut FODEL ja käsiraha on maksettu.',
+      'Laskutamme vain, kun kaikki kolme ehtoa täyttyvät: kirjallinen kauppakirja on olemassa, ostajan on tuonut FINDDOME ja käsiraha on maksettu.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_FI = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Mitä FODEL tarkalleen hoitaa, kun ostat?',
+    question: 'Mitä FINDDOME tarkalleen hoitaa, kun ostat?',
     answer: [
       '- Neuvonta puhelimitse ja sähköpostitse sekä viestintä osapuolten välillä',
       '- Henkilökohtaiset tapaamiset ja esittelyt paikan päällä',

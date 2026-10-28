@@ -36,5 +36,5 @@ export function crumbs(
   locale: Locale,
   items: { name: string; url: string }[]
 ): { name: string; url: string }[] {
-  return [{ name: 'FODEL', url: `/${locale}/` }, ...items];
+  return [{ name: 'FINDDOME', url: `/${locale}/` }, ...items];
 }

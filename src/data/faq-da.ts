@@ -26,7 +26,7 @@ export const FAQ_DA = [
     question: 'Hvad koster jeres formidling?',
     answer: [
       `Vores salær er ${COMMISSION.percent}\u00a0% netto, dog mindst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% hollandsk moms. Det betales af den ungarske sælger, ikke af dig.`,
-      'Vi fakturerer kun, når alle tre betingelser er opfyldt: der foreligger en skriftlig købsaftale, køberen er formidlet af FODEL, og depositummet er betalt.',
+      'Vi fakturerer kun, når alle tre betingelser er opfyldt: der foreligger en skriftlig købsaftale, køberen er formidlet af FINDDOME, og depositummet er betalt.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -63,7 +63,7 @@ export const FAQ_DA = [
   },
   {
     id: 'what-fodel-handles',
-    question: 'Hvad præcis ordner FODEL, når du køber?',
+    question: 'Hvad præcis ordner FINDDOME, når du køber?',
     answer: [
       '- Rådgivning pr. telefon og e-mail samt kommunikation mellem parterne',
       '- Personlige aftaler og fremvisninger på stedet',

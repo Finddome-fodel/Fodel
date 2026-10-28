@@ -71,7 +71,7 @@ export const CONTENT_SK = {
         type: 'prose',
         title: 'Kedy sa platí provízia',
         paragraphs: [
-          `Províziu účtujeme len vtedy, ak kupujúceho priviedol FODEL, existuje písomná kúpna zmluva a bola zaplatená záloha. Sadzba je ${pct(COMMISSION.percent)} bez DPH, najmenej ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} holandskej DPH. Platí ju predávajúci, nie kupujúci.`,
+          `Províziu účtujeme len vtedy, ak kupujúceho priviedol FINDDOME, existuje písomná kúpna zmluva a bola zaplatená záloha. Sadzba je ${pct(COMMISSION.percent)} bez DPH, najmenej ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} holandskej DPH. Platí ju predávajúci, nie kupujúci.`,
         ],
       },
       {
@@ -86,7 +86,7 @@ export const CONTENT_SK = {
 
   agricultural: {
     metaTitle: `Poľnohospodárske nehnuteľnosti: až ${ha} v Maďarsku`,
-    metaDescription: `Občan EÚ s poľnohospodárskou kvalifikáciou môže v Maďarsku nadobudnúť až ${ha} pôdy. FODEL vybaví celé konanie.`,
+    metaDescription: `Občan EÚ s poľnohospodárskou kvalifikáciou môže v Maďarsku nadobudnúť až ${ha} pôdy. FINDDOME vybaví celé konanie.`,
     eyebrow: 'Poľnohospodárske nehnuteľnosti',
     title: 'Poľnohospodárska pôda a',
     titleEm: 'statky',
@@ -168,7 +168,7 @@ export const CONTENT_SK = {
           'Odmena advokáta za vyhotovenie a autorizáciu zmluvy',
           `Preklad dvojjazyčnej zmluvy: ${des('hu')}, podľa jazykovej kombinácie`,
           'Poplatky za zápis do katastra',
-          'Prípadná provízia FODEL: platí ju predávajúci, nie vy',
+          'Prípadná provízia FINDDOME: platí ju predávajúci, nie vy',
         ],
       },
       {
@@ -244,7 +244,7 @@ export const CONTENT_SK = {
   photoGuide: {
     metaTitle: 'Fotografický návod pre inzerentov',
     metaDescription:
-      'Dobré fotografie sú najlepším spôsobom, ako rýchlo predať. Fotografický návod FODEL: svetlo, kompozícia, rozlíšenie a najčastejšie chyby.',
+      'Dobré fotografie sú najlepším spôsobom, ako rýchlo predať. Fotografický návod FINDDOME: svetlo, kompozícia, rozlíšenie a najčastejšie chyby.',
     eyebrow: 'Pre predávajúcich',
     title: 'Fotografický',
     titleEm: 'návod',

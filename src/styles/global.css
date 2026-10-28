@@ -736,7 +736,7 @@ svg {
 }
 
 /* ── Launch round: the call-to-action pill ──
-   For the one action FODEL most wants a visitor to take ("Hirdetés
+   For the one action FINDDOME most wants a visitor to take ("Hirdetés
    feladása"). Calm by design: every few seconds a soft band of warm light
    crosses the pill; on hover or keyboard focus it crosses once straight away
    and the arrow chip leans forward. Compositor-only (transform, opacity), so

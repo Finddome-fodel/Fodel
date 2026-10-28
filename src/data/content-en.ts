@@ -66,7 +66,7 @@ export const CONTENT_EN = {
         type: 'prose',
         title: 'When commission is due',
         paragraphs: [
-          `We charge commission only when FODEL has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. The rate is ${COMMISSION.percent}% net with a minimum of ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Dutch VAT. The seller pays, not the buyer.`,
+          `We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. The rate is ${COMMISSION.percent}% net with a minimum of ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}% Dutch VAT. The seller pays, not the buyer.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_EN = {
 
   agricultural: {
     metaTitle: `Agricultural property: up to ${AGRI_HECTARE_LIMIT} hectares in Hungary`,
-    metaDescription: `An EU citizen with an agricultural qualification may acquire up to ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. FODEL handles the whole procedure.`,
+    metaDescription: `An EU citizen with an agricultural qualification may acquire up to ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. FINDDOME handles the whole procedure.`,
     eyebrow: 'Agricultural property',
     title: 'Farmland and',
     titleEm: 'country estates',
@@ -163,7 +163,7 @@ export const CONTENT_EN = {
           'Lawyer’s fees for drawing up and countersigning the deed',
           `Translation of the bilingual contract: ${from('hu')}, depending on the language combination`,
           'Land registry fees',
-          'Any commission to FODEL: the seller pays this, not you',
+          'Any commission to FINDDOME: the seller pays this, not you',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_EN = {
   photoGuide: {
     metaTitle: 'Photo guide for advertisers',
     metaDescription:
-      'Good photos are the most important tool for a quick sale. The FODEL photo guide: light, orientation, resolution and the most common mistakes.',
+      'Good photos are the most important tool for a quick sale. The FINDDOME photo guide: light, orientation, resolution and the most common mistakes.',
     eyebrow: 'For sellers',
     title: 'Photo',
     titleEm: 'guide',

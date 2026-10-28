@@ -59,7 +59,7 @@ const BASE = {
   hu: {
     home: {
       meta: {
-        title: 'FODEL Ingatlan | Magyar ingatlanok hirdetése Nyugat-Európában',
+        title: 'FINDDOME Ingatlan | Magyar ingatlanok hirdetése Nyugat-Európában',
         description:
           `Hirdesse magyar ingatlanát ${REACH_LANGUAGES} nyelven, ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Készpénzes holland, belga és német vevők. Jutalék csak sikeres eladás esetén.`,
       },
@@ -83,7 +83,7 @@ const BASE = {
         {
           eyebrow: 'Vevőknek',
           title: 'Ingatlan közvetlenül\na tulajdonostól',
-          body: 'Autentikus magyar házak, birtokok, gazdaságok és szőlők. Lépjen kapcsolatba közvetlenül a tulajdonosokkal, vagy bízza a FODEL-re a teljes folyamatot.',
+          body: 'Autentikus magyar házak, birtokok, gazdaságok és szőlők. Lépjen kapcsolatba közvetlenül a tulajdonosokkal, vagy bízza a FINDDOME-re a teljes folyamatot.',
           cta: 'Ingatlanok böngészése',
           to: 'properties',
         },
@@ -91,8 +91,8 @@ const BASE = {
       featured: { eyebrow: 'Válogatás', title: 'Kiemelt ingatlanok' },
       // Verbatim FODEL, from their own editorial copy.
       quote: '„A hollandok gyakran nem hisznek a szemüknek, amikor megtudják, hogy Magyarországon mit és milyen áron vásárolhatnak.”',
-      quoteSource: `FODEL INGATLAN · ${SITE_HOST}`,
-      how: { eyebrow: 'Egyedülálló modell', title: 'Így működik a FODEL' },
+      quoteSource: `FINDDOME INGATLAN · ${SITE_HOST}`,
+      how: { eyebrow: 'Egyedülálló modell', title: 'Így működik a FINDDOME' },
       cta: {
         eyebrow: 'Lépjen kapcsolatba velünk',
         title: 'Forduljon hozzánk',
@@ -103,7 +103,7 @@ const BASE = {
         eyebrow: 'Ajánlói program',
         title: 'Ajánljon egy hirdetőt,',
         titleEm: 'kapjon 10%-ot',
-        body: 'Ha valaki az Ön ajánlására ad fel hirdetést a FODEL-nél, 10% kedvezményt kap a csomagjából, Önnek pedig 10% jóváírást írunk a következő hirdetésére. Ha már hirdetett nálunk, saját ajánlói kódját a portál Beállítások menüjében találja.',
+        body: 'Ha valaki az Ön ajánlására ad fel hirdetést a FINDDOME-nél, 10% kedvezményt kap a csomagjából, Önnek pedig 10% jóváírást írunk a következő hirdetésére. Ha már hirdetett nálunk, saját ajánlói kódját a portál Beállítások menüjében találja.',
         steps: [
           'Ajánlja ismerősét a lenti űrlappal, vagy ossza meg a portálban található saját linkjét',
           'Munkatársunk felveszi vele a kapcsolatot',
@@ -158,7 +158,7 @@ const BASE = {
         eyebrow: 'Eladóknak',
         title: 'Hirdesse ingatlanát',
         titleEm: 'Nyugat-Európában',
-        body: `A FODEL egyedülálló hirdetési modelljével ingatlana ${REACH_LANGUAGES} nyelven jelenik meg ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Csak komoly, készpénzes külföldi vevőkkel dolgozunk.`,
+        body: `A FINDDOME egyedülálló hirdetési modelljével ingatlana ${REACH_LANGUAGES} nyelven jelenik meg ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Csak komoly, készpénzes külföldi vevőkkel dolgozunk.`,
         cta: 'Hirdetés feladása',
         secondary: 'Árlista megtekintése',
       },
@@ -170,12 +170,12 @@ const BASE = {
           'Egy összegben, banki átutalással fizetnek, gyorsan és biztonságosan.',
           'Komoly szándék: egy megtekintés legalább 2 napba és 200–300 €-ba kerül nekik.',
           'Stabil, reális vételár: nem alkudoznak irreálisan.',
-          'A FODEL a vevőt személyesen minősíti, Önhöz csak komoly partnert küldünk.',
+          'A FINDDOME a vevőt személyesen minősíti, Önhöz csak komoly partnert küldünk.',
         ],
       },
       personas: {
         eyebrow: 'A vevők',
-        title: 'Kik a FODEL vásárlói?',
+        title: 'Kik a FINDDOME vásárlói?',
         items: [
           {
             title: 'Kisnyugdíjasok',
@@ -195,11 +195,11 @@ const BASE = {
           },
         ] as Persona[],
       },
-      how: { eyebrow: 'Lépésről lépésre', title: 'Az egyedülálló FODEL-modell' },
+      how: { eyebrow: 'Lépésről lépésre', title: 'Az egyedülálló FINDDOME-modell' },
       commission: {
         eyebrow: 'Díjszabás',
         title: 'Jutalék csak sikeres\ntranzakció esetén',
-        body: 'Ha a vevő közvetlenül veszi fel Önnel a kapcsolatot és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie. FODEL közvetítése esetén: 4% nettó (min. 2 000 €) + 21% holland áfa.',
+        body: 'Ha a vevő közvetlenül veszi fel Önnel a kapcsolatot és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie. FINDDOME közvetítése esetén: 4% nettó (min. 2 000 €) + 21% holland áfa.',
         cta: 'Árlista megtekintése',
       },
     },
@@ -214,7 +214,7 @@ const BASE = {
         eyebrow: 'Vevőknek',
         title: 'Ingatlan közvetlenül',
         titleEm: 'a tulajdonostól',
-        body: 'Hirdetéseinkben a FODEL elérhetősége mellett gyakran a tulajdonos neve és telefonszáma is szerepel. Közvetlenül tárgyalhat, vagy ránk bízhatja a teljes folyamatot.',
+        body: 'Hirdetéseinkben a FINDDOME elérhetősége mellett gyakran a tulajdonos neve és telefonszáma is szerepel. Közvetlenül tárgyalhat, vagy ránk bízhatja a teljes folyamatot.',
         cta: 'Ingatlanok böngészése',
         secondary: 'Ingyenes kerestetés',
       },
@@ -289,7 +289,7 @@ const BASE = {
         title: 'A híd, amelyet',
         titleEm: 'megépítettünk',
         paragraphs: [
-          'A FODEL Hollandiában élő magyarok által alapított ingatlanközvetítő iroda. Almere-Buitenben indultunk el 2013-ban, ahol rájöttünk: rengeteg holland és belga érdeklődő szeretne autentikus magyar ingatlant vásárolni, de nem tudja, hogyan fogjon hozzá.',
+          'A FINDDOME Hollandiában élő magyarok által alapított ingatlanközvetítő iroda. Almere-Buitenben indultunk el 2013-ban, ahol rájöttünk: rengeteg holland és belga érdeklődő szeretne autentikus magyar ingatlant vásárolni, de nem tudja, hogyan fogjon hozzá.',
           `Ma ${REACH_COUNTRIES} országban hirdetünk, ${REACH_LANGUAGES} nyelven. Minden tranzakciót elejétől a végéig kísérünk, kétnyelvű adásvételi szerződéssel, meghatalmazásos képviselettel és földhivatali ügyintézéssel. Irodánk ma Hágában működik.`,
         ],
       },
@@ -322,7 +322,7 @@ const BASE = {
   nl: {
     home: {
       meta: {
-        title: 'FODEL Vastgoed | Onroerend goed kopen direct van de eigenaar',
+        title: 'FINDDOME Vastgoed | Onroerend goed kopen direct van de eigenaar',
         description:
           'Huizen, boerderijen en landgoederen in Hongarije, vaak rechtstreeks van de eigenaar. Nederlandse begeleiding en tweetalige contracten.',
       },
@@ -339,7 +339,7 @@ const BASE = {
         {
           eyebrow: 'Voor kopers',
           title: 'Vastgoed direct\nvan de eigenaar',
-          body: 'Authentieke Hongaarse huizen, boerderijen, landgoederen en wijngaarden. Neem rechtstreeks contact op met de eigenaar, of laat FODEL het volledige traject regelen.',
+          body: 'Authentieke Hongaarse huizen, boerderijen, landgoederen en wijngaarden. Neem rechtstreeks contact op met de eigenaar, of laat FINDDOME het volledige traject regelen.',
           cta: 'Woningen bekijken',
           to: 'properties',
         },
@@ -354,8 +354,8 @@ const BASE = {
       featured: { eyebrow: 'Selectie', title: 'Uitgelicht aanbod' },
       quote:
         '“Nederlanders geloven hun ogen vaak niet wanneer ze zien wat je in Hongarije voor welk bedrag kunt kopen.”',
-      quoteSource: `FODEL VASTGOED · ${SITE_HOST}`,
-      how: { eyebrow: 'Hoe het werkt', title: 'Zo werkt FODEL' },
+      quoteSource: `FINDDOME VASTGOED · ${SITE_HOST}`,
+      how: { eyebrow: 'Hoe het werkt', title: 'Zo werkt FINDDOME' },
       cta: {
         eyebrow: 'Neem contact op',
         title: 'Wij bellen u',
@@ -366,7 +366,7 @@ const BASE = {
         eyebrow: 'Aanbevelingsprogramma',
         title: 'Beveel een adverteerder aan,',
         titleEm: 'ontvang 10%',
-        body: 'Plaatst iemand op uw aanbeveling een advertentie bij FODEL, dan krijgt hij 10% korting op zijn pakket. Wij schrijven 10% bij op uw volgende advertentie. Adverteert u al bij ons? Uw eigen aanbevelingscode vindt u onder Instellingen in het portaal.',
+        body: 'Plaatst iemand op uw aanbeveling een advertentie bij FINDDOME, dan krijgt hij 10% korting op zijn pakket. Wij schrijven 10% bij op uw volgende advertentie. Adverteert u al bij ons? Uw eigen aanbevelingscode vindt u onder Instellingen in het portaal.',
         steps: [
           'Beveel een kennis aan met het formulier hieronder, of deel uw eigen link uit het portaal',
           'Onze medewerker neemt contact op',
@@ -415,13 +415,13 @@ const BASE = {
       meta: {
         title: 'Adverteren | Uw Hongaarse woning in West-Europa',
         description:
-          `Adverteer uw Hongaarse woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, vanaf € 69 en zonder exclusiviteit. Courtage alleen als FODEL de koper aanbrengt: 4% + 21% btw.`,
+          `Adverteer uw Hongaarse woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, vanaf € 69 en zonder exclusiviteit. Courtage alleen als FINDDOME de koper aanbrengt: 4% + 21% btw.`,
       },
       hero: {
         eyebrow: 'Adverteren',
         title: 'Uw woning',
         titleEm: 'in West-Europa',
-        body: `Met het model van FODEL verschijnt uw woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, zonder exclusiviteitscontract. Wij werken uitsluitend met serieuze kopers.`,
+        body: `Met het model van FINDDOME verschijnt uw woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, zonder exclusiviteitscontract. Wij werken uitsluitend met serieuze kopers.`,
         cta: 'Advertentie plaatsen',
         secondary: 'Tarieven bekijken',
       },
@@ -433,12 +433,12 @@ const BASE = {
           'Betaling ineens per bankoverschrijving, snel en veilig.',
           'Serieuze intentie: één bezichtiging kost hen twee dagen en € 200–300.',
           'Realistische prijsvorming: er wordt niet onredelijk onderhandeld.',
-          'FODEL beoordeelt de koper persoonlijk voordat er een afspraak komt.',
+          'FINDDOME beoordeelt de koper persoonlijk voordat er een afspraak komt.',
         ],
       },
       personas: {
         eyebrow: 'De kopers',
-        title: 'Wie koopt er via FODEL?',
+        title: 'Wie koopt er via FINDDOME?',
         items: [
           {
             title: 'Gepensioneerden',
@@ -458,11 +458,11 @@ const BASE = {
           },
         ] as Persona[],
       },
-      how: { eyebrow: 'Stap voor stap', title: 'Het model van FODEL' },
+      how: { eyebrow: 'Stap voor stap', title: 'Het model van FINDDOME' },
       commission: {
         eyebrow: 'Tarieven',
         title: 'Courtage alleen bij\neen geslaagde verkoop',
-        body: 'Neemt de koper rechtstreeks contact met u op en heeft u onze hulp niet nodig, dan betaalt u niets bovenop de advertentiekosten. Bemiddelt FODEL wel: 4% netto (min. € 2.000) + 21% Nederlandse btw.',
+        body: 'Neemt de koper rechtstreeks contact met u op en heeft u onze hulp niet nodig, dan betaalt u niets bovenop de advertentiekosten. Bemiddelt FINDDOME wel: 4% netto (min. € 2.000) + 21% Nederlandse btw.',
         cta: 'Tarieven bekijken',
       },
     },
@@ -552,7 +552,7 @@ const BASE = {
         title: 'De brug die wij',
         titleEm: 'hebben gebouwd',
         paragraphs: [
-          'FODEL is opgericht door in Nederland wonende Hongaren. Wij begonnen in 2013 in Almere-Buiten, waar wij merkten hoeveel Nederlanders en Belgen een authentieke Hongaarse woning wilden kopen, maar niet wisten hoe ze moesten beginnen.',
+          'FINDDOME is opgericht door in Nederland wonende Hongaren. Wij begonnen in 2013 in Almere-Buiten, waar wij merkten hoeveel Nederlanders en Belgen een authentieke Hongaarse woning wilden kopen, maar niet wisten hoe ze moesten beginnen.',
           `Vandaag adverteren wij in ${REACH_COUNTRIES} landen en ${REACH_LANGUAGES} talen, en begeleiden wij elke transactie van begin tot eind: tweetalig koopcontract, vertegenwoordiging met volmacht en inschrijving bij het kadaster. Ons kantoor is gevestigd in Den Haag.`,
         ],
       },

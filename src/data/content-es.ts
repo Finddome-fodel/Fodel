@@ -68,7 +68,7 @@ export const CONTENT_ES = {
         type: 'prose',
         title: 'Cuándo se paga comisión',
         paragraphs: [
-          `Solo cobramos comisión si FODEL ha aportado al comprador, existe un contrato de compraventa por escrito y se ha pagado la señal. La tarifa es del ${pct(COMMISSION.percent)} neto, con un mínimo de ${eur(COMMISSION.minimumEur, L)}, más un ${pct(COMMISSION.vatPercent)} de IVA neerlandés. La paga el vendedor, no el comprador.`,
+          `Solo cobramos comisión si FINDDOME ha aportado al comprador, existe un contrato de compraventa por escrito y se ha pagado la señal. La tarifa es del ${pct(COMMISSION.percent)} neto, con un mínimo de ${eur(COMMISSION.minimumEur, L)}, más un ${pct(COMMISSION.vatPercent)} de IVA neerlandés. La paga el vendedor, no el comprador.`,
         ],
       },
       {
@@ -83,7 +83,7 @@ export const CONTENT_ES = {
 
   agricultural: {
     metaTitle: `Inmuebles agrícolas: hasta ${AGRI_HECTARE_LIMIT} hectáreas en Hungría`,
-    metaDescription: `Un ciudadano de la UE con cualificación agraria puede adquirir hasta ${AGRI_HECTARE_LIMIT} hectáreas de tierra en Hungría. FODEL se encarga de todo el procedimiento.`,
+    metaDescription: `Un ciudadano de la UE con cualificación agraria puede adquirir hasta ${AGRI_HECTARE_LIMIT} hectáreas de tierra en Hungría. FINDDOME se encarga de todo el procedimiento.`,
     eyebrow: 'Inmuebles agrícolas',
     title: 'Tierras agrícolas y',
     titleEm: 'fincas',
@@ -165,7 +165,7 @@ export const CONTENT_ES = {
           'Honorarios del abogado por la redacción y la contrafirma de la escritura',
           `Traducción del contrato bilingüe: ${des('hu')}, según la combinación de idiomas`,
           'Tasas del Registro de la Propiedad',
-          'La posible comisión de FODEL: la paga el vendedor, no usted',
+          'La posible comisión de FINDDOME: la paga el vendedor, no usted',
         ],
       },
       {
@@ -241,7 +241,7 @@ export const CONTENT_ES = {
   photoGuide: {
     metaTitle: 'Guía fotográfica para anunciantes',
     metaDescription:
-      'Unas buenas fotos son la mejor forma de vender rápido. La guía fotográfica de FODEL: luz, encuadre, resolución y los errores más frecuentes.',
+      'Unas buenas fotos son la mejor forma de vender rápido. La guía fotográfica de FINDDOME: luz, encuadre, resolución y los errores más frecuentes.',
     eyebrow: 'Para vendedores',
     title: 'Guía',
     titleEm: 'fotográfica',

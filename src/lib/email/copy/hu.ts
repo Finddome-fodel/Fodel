@@ -17,13 +17,13 @@ export const HU = {
   common: {
     greeting: (name: string) => `Kedves ${name}!`,
     greetingNoName: 'Tisztelt Hirdetőnk!',
-    signOff: 'Üdvözlettel,\nFODEL Ingatlan',
+    signOff: 'Üdvözlettel,\nFINDDOME Ingatlan',
     questions: 'Ha bármi kérdése van, egyszerűen válaszoljon erre az e-mailre.',
     linkFallback: 'Ha a gomb nem működik, másolja be ezt a címet a böngészőjébe:',
   },
 
   registrationConfirm: {
-    subject: 'Állítsa be a jelszavát | FODEL',
+    subject: 'Állítsa be a jelszavát | FINDDOME',
     preheader: 'Egy kattintás, és már állíthatja össze a hirdetését.',
     heading: 'Állítsa be a jelszavát',
     intro: 'Köszönjük a regisztrációt. A fiókja szinte kész, már csak egy jelszó hiányzik.',
@@ -33,21 +33,21 @@ export const HU = {
   },
 
   accountExists: {
-    subject: 'Már van FODEL-fiókja',
+    subject: 'Már van FINDDOME-fiókja',
     preheader: 'Jelentkezzen be, vagy állítson be új jelszót.',
     heading: 'Ehhez a címhez már tartozik fiók',
-    body: 'Valaki most regisztrálni próbált ezzel az e-mail-címmel a FODEL oldalán. A címhez már tartozik fiók, ezért újat nem hoztunk létre.',
+    body: 'Valaki most regisztrálni próbált ezzel az e-mail-címmel a FINDDOME oldalán. A címhez már tartozik fiók, ezért újat nem hoztunk létre.',
     cta: 'Bejelentkezés',
     reset: 'Elfelejtette a jelszavát? Új jelszó kérése',
     ignore: 'Ha nem Ön próbált regisztrálni, nincs teendője: a fiókja változatlan.',
   },
 
   invite: {
-    subject: 'Meghívó a FODEL portálra',
+    subject: 'Meghívó a FINDDOME portálra',
     preheader: 'Állítsa be jelszavát, és lépjen be a hirdetői felületre.',
-    heading: 'Meghívást kapott a FODEL portálra',
+    heading: 'Meghívást kapott a FINDDOME portálra',
     body: (role: string) =>
-      `A FODEL meghívta Önt, hogy ${role} csatlakozzon a portálhoz, ahol az ingatlanhirdetéseket kezelheti.`,
+      `A FINDDOME meghívta Önt, hogy ${role} csatlakozzon a portálhoz, ahol az ingatlanhirdetéseket kezelheti.`,
     roleAdmin: 'adminisztrátorként',
     roleOwner: 'hirdetőként',
     cta: 'Meghívó elfogadása',
@@ -55,7 +55,7 @@ export const HU = {
   },
 
   welcome: {
-    subject: 'Üdvözöljük a FODEL portálon',
+    subject: 'Üdvözöljük a FINDDOME portálon',
     preheader: 'A fiókja aktív. Így adhatja fel az első hirdetését.',
     heading: (name: string) => `Üdvözöljük, ${name}`,
     body: 'A fiókja aktív. A portálon összeállíthatja hirdetését, fényképeket tölthet fel, és nyomon követheti, hol tart az elbírálás.',
@@ -115,7 +115,7 @@ export const HU = {
     discountLabel: 'Ajánlói kedvezmény (10%)',
     totalLabel: 'Fizetendő',
     ctaCard: 'Fizetés bankkártyával',
-    cardNote: 'A fizetés a Stripe biztonságos felületén történik. A kártyaadatokat a FODEL nem látja és nem tárolja.',
+    cardNote: 'A fizetés a Stripe biztonságos felületén történik. A kártyaadatokat a FINDDOME nem látja és nem tárolja.',
     bankTitle: 'Vagy banki átutalással',
     bankNote: (ref: string) =>
       `Átutaláskor kérjük, a közleménybe írja be a hirdetés azonosítóját: ${ref}. Az átutalás beérkezése után munkatársunk élesíti a hirdetést.`,
@@ -133,7 +133,7 @@ export const HU = {
     totalLabel: 'Fizetendő',
     dueLabel: 'Fizetési határidő',
     ctaCard: 'Fizetés bankkártyával',
-    cardNote: 'A fizetés a Stripe biztonságos felületén történik. A kártyaadatokat a FODEL nem látja és nem tárolja.',
+    cardNote: 'A fizetés a Stripe biztonságos felületén történik. A kártyaadatokat a FINDDOME nem látja és nem tárolja.',
     bankTitle: 'Banki átutalás',
     bankNote: (ref: string) => `Átutaláskor kérjük, a közleménybe írja be a hirdetés azonosítóját: ${ref}.`,
     vatNote: 'A feltüntetett árak a 21% holland áfát tartalmazzák.',
@@ -174,17 +174,17 @@ export const HU = {
   },
 
   passwordReset: {
-    subject: 'Jelszó visszaállítása | FODEL portál',
+    subject: 'Jelszó visszaállítása | FINDDOME portál',
     preheader: 'A link egy óráig érvényes.',
     heading: 'Jelszó visszaállítása',
-    body: 'Jelszó-visszaállítási kérelmet kaptunk a FODEL portál fiókjához. Az alábbi gombra kattintva állíthat be újat.',
+    body: 'Jelszó-visszaállítási kérelmet kaptunk a FINDDOME portál fiókjához. Az alábbi gombra kattintva állíthat be újat.',
     cta: 'Új jelszó beállítása',
     expiry: 'A link egy óráig érvényes, és csak egyszer használható fel.',
     ignore: 'Ha nem Ön kérte a visszaállítást, hagyja figyelmen kívül ezt a levelet. A jelszava változatlan marad, és nem történik semmi.',
   },
 
   referralRegistered: {
-    subject: 'Ajánlását megkaptuk | FODEL',
+    subject: 'Ajánlását megkaptuk | FINDDOME',
     preheader: 'Munkatársunk hamarosan felveszi a kapcsolatot az Ön által ajánlott személlyel.',
     heading: 'Köszönjük az ajánlást',
     body: (referredName: string) =>
@@ -198,7 +198,7 @@ export const HU = {
   },
 
   valuationReady: {
-    subject: 'Elkészült az értékbecslése | FODEL',
+    subject: 'Elkészült az értékbecslése | FINDDOME',
     preheader: 'Tájékoztató jellegű becslést készítettünk az Ön ingatlanára.',
     heading: 'Elkészült az értékbecslése',
     body: (range: string) =>
@@ -224,7 +224,7 @@ export const HU = {
   },
 
   valuationDeclined: {
-    subject: 'Az Ön értékbecslési igénye | FODEL',
+    subject: 'Az Ön értékbecslési igénye | FINDDOME',
     preheader: 'Munkatársunk személyesen felveszi Önnel a kapcsolatot.',
     heading: 'Köszönjük a megkeresést',
     body: 'A megadott adatok alapján jelenleg nem áll elég összehasonlítható ingatlan a rendelkezésünkre egy megbízható becsléshez. Munkatársunk személyesen felveszi Önnel a kapcsolatot.',
@@ -267,7 +267,7 @@ export const HU = {
   },
 
   serviceRequested: {
-    subject: 'Megkaptuk szolgáltatásigényét | FODEL',
+    subject: 'Megkaptuk szolgáltatásigényét | FINDDOME',
     preheader: 'Munkatársunk felveszi Önnel a kapcsolatot az időpont egyeztetéséhez.',
     heading: 'Megkaptuk az igényét',
     body: (service: string, price: string) => `Köszönjük, rögzítettük az igényét: ${service} (${price}).`,
@@ -277,7 +277,7 @@ export const HU = {
   },
 
   valuationPaid: {
-    subject: 'Fizetési visszaigazolás | FODEL értékbecslés',
+    subject: 'Fizetési visszaigazolás | FINDDOME értékbecslés',
     preheader: 'Köszönjük, a fizetés megérkezett.',
     heading: 'Köszönjük, a fizetés megérkezett',
     body: (service: string) => `Megkaptuk a(z) „${service}” díját.`,
@@ -289,7 +289,7 @@ export const HU = {
   },
 
   judicialRequested: {
-    subject: 'Hivatalos értékbecslési igény | FODEL',
+    subject: 'Hivatalos értékbecslési igény | FINDDOME',
     preheader: 'Munkatársunk felveszi Önnel a kapcsolatot a lehetőségekről.',
     heading: 'Megkaptuk kérését',
     body: 'Köszönjük, rögzítettük, hogy hivatalos (igazságügyi) szakértői értékbecslést szeretne. Ez nem azonos az oldalunkon kérhető tájékoztató, piaci alapú értékmeghatározással: erre jogosult szakértő végzi, egyedi árajánlat alapján.',

@@ -25,7 +25,7 @@ const hour = (hhmm: string) => {
 export const RO = {
   home: {
     meta: {
-      title: 'FODEL Imobiliare | Cumpărați o proprietate în Ungaria direct de la proprietar',
+      title: 'FINDDOME Imobiliare | Cumpărați o proprietate în Ungaria direct de la proprietar',
       description:
         'Case, ferme și conace în Ungaria, adesea direct de la proprietar. Asistență personală și contracte de vânzare-cumpărare bilingve.',
     },
@@ -42,7 +42,7 @@ export const RO = {
       {
         eyebrow: 'Pentru cumpărători',
         title: 'Proprietăți direct\nde la proprietar',
-        body: 'Case, ferme, conace și podgorii autentic maghiare. Contactați direct proprietarul sau lăsați FODEL să se ocupe de întregul proces.',
+        body: 'Case, ferme, conace și podgorii autentic maghiare. Contactați direct proprietarul sau lăsați FINDDOME să se ocupe de întregul proces.',
         cta: 'Vedeți proprietățile',
         to: 'properties',
       },
@@ -58,7 +58,7 @@ export const RO = {
     quote:
       '„Neerlandezilor adesea nu le vine să creadă ce se poate cumpăra în Ungaria și la ce preț.”',
     quoteSource: `${BRAND.ro.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Cum funcționează', title: 'Cum funcționează FODEL' },
+    how: { eyebrow: 'Cum funcționează', title: 'Cum funcționează FINDDOME' },
     cta: {
       eyebrow: 'Contact',
       title: 'Vă sunăm',
@@ -69,7 +69,7 @@ export const RO = {
       eyebrow: 'Program de recomandare',
       title: 'Recomandați un nou client',
       titleEm: `și primiți ${pct(10)}`,
-      body: `Dacă cineva publică un anunț la FODEL la recomandarea dumneavoastră, primește o reducere de ${pct(10)} la pachetul său, iar noi vă credităm ${pct(10)} pentru următorul anunț. Publicați deja la noi? Codul de recomandare îl găsiți în portal, la „Instellingen” (Setări).`,
+      body: `Dacă cineva publică un anunț la FINDDOME la recomandarea dumneavoastră, primește o reducere de ${pct(10)} la pachetul său, iar noi vă credităm ${pct(10)} pentru următorul anunț. Publicați deja la noi? Codul de recomandare îl găsiți în portal, la „Instellingen” (Setări).`,
       steps: [
         'Recomandați o cunoștință prin formularul de mai jos sau distribuiți linkul personal din portal',
         'Un membru al echipei noastre o contactează',
@@ -117,13 +117,13 @@ export const RO = {
   sellers: {
     meta: {
       title: 'Vânzători | Proprietatea dumneavoastră din Ungaria în Europa de Vest',
-      description: `Publicați proprietatea din Ungaria în ${REACH_LANGUAGES} limbi și ${REACH_COUNTRIES} țări, de la ${eur(69, L)} și fără exclusivitate. Comision doar dacă FODEL aduce cumpărătorul: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} TVA neerlandez.`,
+      description: `Publicați proprietatea din Ungaria în ${REACH_LANGUAGES} limbi și ${REACH_COUNTRIES} țări, de la ${eur(69, L)} și fără exclusivitate. Comision doar dacă FINDDOME aduce cumpărătorul: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} TVA neerlandez.`,
     },
     hero: {
       eyebrow: 'Pentru vânzători',
       title: 'Proprietatea dumneavoastră',
       titleEm: 'în Europa de Vest',
-      body: `Prin modelul FODEL, proprietatea dumneavoastră este publicată în ${REACH_LANGUAGES} limbi și ${REACH_COUNTRIES} țări, fără contract de exclusivitate. Lucrăm numai cu cumpărători serioși.`,
+      body: `Prin modelul FINDDOME, proprietatea dumneavoastră este publicată în ${REACH_LANGUAGES} limbi și ${REACH_COUNTRIES} țări, fără contract de exclusivitate. Lucrăm numai cu cumpărători serioși.`,
       cta: 'Publicați un anunț',
       secondary: 'Vedeți tarifele',
     },
@@ -135,12 +135,12 @@ export const RO = {
         'Plată integrală prin transfer bancar, rapid și sigur.',
         `O intenție reală de cumpărare: o vizionare îi costă două zile și între ${eur(200, L)} și ${eur(300, L)}.`,
         'Prețuri realiste: fără negocieri excesive.',
-        'FODEL evaluează personal fiecare cumpărător înainte de orice întâlnire.',
+        'FINDDOME evaluează personal fiecare cumpărător înainte de orice întâlnire.',
       ],
     },
     personas: {
       eyebrow: 'Cumpărătorii',
-      title: 'Cine cumpără prin FODEL',
+      title: 'Cine cumpără prin FINDDOME',
       items: [
         {
           title: 'Pensionari',
@@ -160,11 +160,11 @@ export const RO = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Pas cu pas', title: 'Modelul FODEL' },
+    how: { eyebrow: 'Pas cu pas', title: 'Modelul FINDDOME' },
     commission: {
       eyebrow: 'Tarife',
       title: 'Comision doar\nla vânzarea încheiată',
-      body: `Dacă cumpărătorul vă contactează direct și nu aveți nevoie de ajutorul nostru, nu plătiți nimic în afară de taxa pentru anunț. Dacă FODEL intermediază vânzarea: ${pct(COMMISSION.percent)} net (min. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} TVA neerlandez.`,
+      body: `Dacă cumpărătorul vă contactează direct și nu aveți nevoie de ajutorul nostru, nu plătiți nimic în afară de taxa pentru anunț. Dacă FINDDOME intermediază vânzarea: ${pct(COMMISSION.percent)} net (min. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} TVA neerlandez.`,
       cta: 'Vedeți tarifele',
     },
   },
@@ -254,7 +254,7 @@ export const RO = {
       title: 'Puntea pe care',
       titleEm: 'am construit-o',
       paragraphs: [
-        'FODEL a fost fondată de maghiari stabiliți în Țările de Jos. Am început în 2013 la Almere-Buiten, unde am observat că mulți neerlandezi și belgieni voiau să cumpere o casă maghiară autentică, dar nu știau de unde să înceapă.',
+        'FINDDOME a fost fondată de maghiari stabiliți în Țările de Jos. Am început în 2013 la Almere-Buiten, unde am observat că mulți neerlandezi și belgieni voiau să cumpere o casă maghiară autentică, dar nu știau de unde să înceapă.',
         `Astăzi publicăm anunțuri în ${REACH_COUNTRIES} țări și ${REACH_LANGUAGES} limbi și însoțim fiecare tranzacție de la început până la sfârșit: contract de vânzare-cumpărare bilingv, reprezentare prin procură și înscriere în cartea funciară. Biroul nostru se află la Haga.`,
       ],
     },

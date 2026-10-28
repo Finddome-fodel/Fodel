@@ -29,7 +29,7 @@ const hour = (hhmm: string) => {
 export const FR = {
   home: {
     meta: {
-      title: 'FODEL Immobilier | Acheter un bien en Hongrie, directement auprès du propriétaire',
+      title: 'FINDDOME Immobilier | Acheter un bien en Hongrie, directement auprès du propriétaire',
       description:
         'Maisons, fermes et domaines en Hongrie, souvent directement auprès du propriétaire. Accompagnement dans votre langue et contrats de vente bilingues.',
     },
@@ -46,7 +46,7 @@ export const FR = {
       {
         eyebrow: 'Pour les acheteurs',
         title: 'Des biens en direct\ndu propriétaire',
-        body: 'Maisons, fermes, domaines et vignobles hongrois authentiques. Contactez directement le propriétaire ou laissez FODEL gérer toute la procédure.',
+        body: 'Maisons, fermes, domaines et vignobles hongrois authentiques. Contactez directement le propriétaire ou laissez FINDDOME gérer toute la procédure.',
         cta: 'Voir les biens',
         to: 'properties',
       },
@@ -62,7 +62,7 @@ export const FR = {
     quote:
       '« Les Néerlandais n’en croient souvent pas leurs yeux quand ils découvrent ce que l’on peut acheter en Hongrie, et à quel prix. »',
     quoteSource: `${BRAND.fr.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Comment ça marche', title: 'Comment fonctionne FODEL' },
+    how: { eyebrow: 'Comment ça marche', title: 'Comment fonctionne FINDDOME' },
     cta: {
       eyebrow: 'Nous contacter',
       title: 'Nous vous',
@@ -73,7 +73,7 @@ export const FR = {
       eyebrow: 'Programme de parrainage',
       title: 'Recommandez un annonceur,',
       titleEm: `recevez ${pct(10)}`,
-      body: `Si une personne publie une annonce chez FODEL sur votre recommandation, elle bénéficie de ${pct(10)} de remise sur son forfait et nous créditons ${pct(10)} sur votre prochaine annonce. Vous annoncez déjà chez nous ? Votre code de parrainage se trouve dans le portail, sous « Instellingen » (Paramètres).`,
+      body: `Si une personne publie une annonce chez FINDDOME sur votre recommandation, elle bénéficie de ${pct(10)} de remise sur son forfait et nous créditons ${pct(10)} sur votre prochaine annonce. Vous annoncez déjà chez nous ? Votre code de parrainage se trouve dans le portail, sous « Instellingen » (Paramètres).`,
       steps: [
         'Recommandez une connaissance avec le formulaire ci-dessous, ou partagez votre lien personnel du portail',
         'Un collaborateur la contacte',
@@ -121,13 +121,13 @@ export const FR = {
   sellers: {
     meta: {
       title: 'Vendeurs | Votre bien hongrois en Europe de l’Ouest',
-      description: `Publiez votre bien hongrois en ${REACH_LANGUAGES} langues dans ${REACH_COUNTRIES} pays, dès ${eur(69, L)} et sans exclusivité. Commission uniquement si FODEL amène l’acheteur : ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} de TVA néerlandaise.`,
+      description: `Publiez votre bien hongrois en ${REACH_LANGUAGES} langues dans ${REACH_COUNTRIES} pays, dès ${eur(69, L)} et sans exclusivité. Commission uniquement si FINDDOME amène l’acheteur : ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} de TVA néerlandaise.`,
     },
     hero: {
       eyebrow: 'Pour les vendeurs',
       title: 'Votre bien',
       titleEm: 'en Europe de l’Ouest',
-      body: `Avec le modèle FODEL, votre bien est publié en ${REACH_LANGUAGES} langues dans ${REACH_COUNTRIES} pays, sans contrat d’exclusivité. Nous ne travaillons qu’avec des acheteurs sérieux.`,
+      body: `Avec le modèle FINDDOME, votre bien est publié en ${REACH_LANGUAGES} langues dans ${REACH_COUNTRIES} pays, sans contrat d’exclusivité. Nous ne travaillons qu’avec des acheteurs sérieux.`,
       cta: 'Déposer une annonce',
       secondary: 'Voir les tarifs',
     },
@@ -139,12 +139,12 @@ export const FR = {
         'Paiement en une fois par virement bancaire, rapide et sûr.',
         `Une vraie intention d’achat : une visite leur coûte deux jours et ${eur(200, L)} à ${eur(300, L)}.`,
         'Des prix réalistes : pas de marchandage excessif.',
-        'FODEL évalue personnellement chaque acheteur avant tout rendez-vous.',
+        'FINDDOME évalue personnellement chaque acheteur avant tout rendez-vous.',
       ],
     },
     personas: {
       eyebrow: 'Les acheteurs',
-      title: 'Qui achète par FODEL',
+      title: 'Qui achète par FINDDOME',
       items: [
         {
           title: 'Retraités',
@@ -164,11 +164,11 @@ export const FR = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Étape par étape', title: 'Le modèle FODEL' },
+    how: { eyebrow: 'Étape par étape', title: 'Le modèle FINDDOME' },
     commission: {
       eyebrow: 'Tarifs',
       title: 'Une commission uniquement\nen cas de vente conclue',
-      body: `Si l’acheteur vous contacte directement et que vous n’avez pas besoin de notre aide, vous ne payez rien en plus des frais d’annonce. Si FODEL intervient dans la vente : ${pct(COMMISSION.percent)} net (min. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} de TVA néerlandaise.`,
+      body: `Si l’acheteur vous contacte directement et que vous n’avez pas besoin de notre aide, vous ne payez rien en plus des frais d’annonce. Si FINDDOME intervient dans la vente : ${pct(COMMISSION.percent)} net (min. ${eur(COMMISSION.minimumEur, L)}) + ${pct(COMMISSION.vatPercent)} de TVA néerlandaise.`,
       cta: 'Voir les tarifs',
     },
   },
@@ -258,7 +258,7 @@ export const FR = {
       title: 'Le pont que nous',
       titleEm: 'avons construit',
       paragraphs: [
-        'FODEL a été fondée par des Hongrois installés aux Pays-Bas. Nous avons commencé en 2013 à Almere-Buiten, où nous avons constaté que de nombreux Néerlandais et Belges voulaient acheter une maison hongroise authentique sans savoir par où commencer.',
+        'FINDDOME a été fondée par des Hongrois installés aux Pays-Bas. Nous avons commencé en 2013 à Almere-Buiten, où nous avons constaté que de nombreux Néerlandais et Belges voulaient acheter une maison hongroise authentique sans savoir par où commencer.',
         `Aujourd’hui, nous publions des annonces dans ${REACH_COUNTRIES} pays et en ${REACH_LANGUAGES} langues, et nous accompagnons chaque transaction du début à la fin : contrat de vente bilingue, représentation par procuration et inscription au registre foncier. Notre bureau est à La Haye.`,
       ],
     },

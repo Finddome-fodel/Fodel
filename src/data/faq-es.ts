@@ -32,7 +32,7 @@ export const FAQ_ES = [
     question: '¿Cuánto cuesta su intermediación?',
     answer: [
       `Nuestra comisión es del ${pct(COMMISSION.percent)} neto, con un mínimo de ${eur(COMMISSION.minimumEur, L)}, más un ${pct(COMMISSION.vatPercent)} de IVA neerlandés. La paga el vendedor húngaro, no usted.`,
-      'Solo se cobra si se cumplen las tres condiciones: existe un contrato de compraventa por escrito, FODEL ha aportado al comprador y se ha pagado la señal.',
+      'Solo se cobra si se cumplen las tres condiciones: existe un contrato de compraventa por escrito, FINDDOME ha aportado al comprador y se ha pagado la señal.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -69,7 +69,7 @@ export const FAQ_ES = [
   },
   {
     id: 'de-que-se-encarga-fodel',
-    question: '¿De qué se encarga FODEL en una compra?',
+    question: '¿De qué se encarga FINDDOME en una compra?',
     answer: [
       '- Las gestiones por teléfono y correo electrónico, y la comunicación entre ambas partes',
       '- Las citas en persona y las visitas al inmueble',

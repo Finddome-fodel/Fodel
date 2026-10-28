@@ -66,7 +66,7 @@ export const CONTENT_PT = {
         type: 'prose',
         title: 'Quando é devida a comissão',
         paragraphs: [
-          `Só cobramos comissão quando a FODEL apresentou o comprador, existe um contrato de compra e venda escrito e o sinal foi pago. A taxa é de ${COMMISSION.percent}% líquida, com um mínimo de ${eur(COMMISSION.minimumEur, L)}, acrescida de ${COMMISSION.vatPercent}% de IVA neerlandês. Quem paga é o vendedor, não o comprador.`,
+          `Só cobramos comissão quando a FINDDOME apresentou o comprador, existe um contrato de compra e venda escrito e o sinal foi pago. A taxa é de ${COMMISSION.percent}% líquida, com um mínimo de ${eur(COMMISSION.minimumEur, L)}, acrescida de ${COMMISSION.vatPercent}% de IVA neerlandês. Quem paga é o vendedor, não o comprador.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_PT = {
 
   agricultural: {
     metaTitle: `Imóveis agrícolas: até ${AGRI_HECTARE_LIMIT} hectares na Hungria`,
-    metaDescription: `Um cidadão da UE com qualificação agrícola pode adquirir até ${AGRI_HECTARE_LIMIT} hectares de terreno na Hungria. A FODEL trata de todo o processo.`,
+    metaDescription: `Um cidadão da UE com qualificação agrícola pode adquirir até ${AGRI_HECTARE_LIMIT} hectares de terreno na Hungria. A FINDDOME trata de todo o processo.`,
     eyebrow: 'Imóveis agrícolas',
     title: 'Terras agrícolas e',
     titleEm: 'propriedades rurais',
@@ -163,7 +163,7 @@ export const CONTENT_PT = {
           'Honorários do advogado pela redação e autenticação da escritura',
           `Tradução do contrato bilingue: ${from('hu')}, consoante a combinação linguística`,
           'Emolumentos do registo predial',
-          'Eventual comissão à FODEL: é paga pelo vendedor, não por si',
+          'Eventual comissão à FINDDOME: é paga pelo vendedor, não por si',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_PT = {
   photoGuide: {
     metaTitle: 'Guia de fotografia para anunciantes',
     metaDescription:
-      'Boas fotografias são a ferramenta mais importante para vender depressa. O guia de fotografia FODEL: luz, orientação, resolução e os erros mais comuns.',
+      'Boas fotografias são a ferramenta mais importante para vender depressa. O guia de fotografia FINDDOME: luz, orientação, resolução e os erros mais comuns.',
     eyebrow: 'Para vendedores',
     title: 'Guia de',
     titleEm: 'fotografia',

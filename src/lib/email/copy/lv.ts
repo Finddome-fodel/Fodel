@@ -14,13 +14,13 @@ export const LV = {
   common: {
     greeting: (name: string) => `Labdien, ${name}!`,
     greetingNoName: 'Cienījamais sludinātāj!',
-    signOff: 'Ar cieņu\nFODEL Nekustamais īpašums',
+    signOff: 'Ar cieņu\nFINDDOME Nekustamais īpašums',
     questions: 'Ja jums ir jautājums, vienkārši atbildiet uz šo e-pastu.',
     linkFallback: 'Ja poga nedarbojas, iekopējiet šo adresi pārlūkā:',
   },
 
   registrationConfirm: {
-    subject: 'Iestatiet paroli | FODEL',
+    subject: 'Iestatiet paroli | FINDDOME',
     preheader: 'Viens klikšķis, un varat sagatavot savu sludinājumu.',
     heading: 'Iestatiet paroli',
     intro: 'Paldies par reģistrāciju. Jūsu konts ir gandrīz gatavs, trūkst tikai paroles.',
@@ -30,21 +30,21 @@ export const LV = {
   },
 
   accountExists: {
-    subject: 'Jums jau ir FODEL konts',
+    subject: 'Jums jau ir FINDDOME konts',
     preheader: 'Piesakieties vai iestatiet jaunu paroli.',
     heading: 'Šai adresei jau ir konts',
-    body: 'Kāds tikko mēģināja reģistrēties FODEL vietnē ar šo e-pasta adresi. Tai jau ir konts, tāpēc jaunu mēs neizveidojām.',
+    body: 'Kāds tikko mēģināja reģistrēties FINDDOME vietnē ar šo e-pasta adresi. Tai jau ir konts, tāpēc jaunu mēs neizveidojām.',
     cta: 'Pieteikties',
     reset: 'Aizmirsāt paroli? Pieprasiet jaunu',
     ignore: 'Ja tas nebijāt jūs, nekas nav jādara: jūsu konts paliek nemainīts.',
   },
 
   invite: {
-    subject: 'Ielūgums uz FODEL portālu',
+    subject: 'Ielūgums uz FINDDOME portālu',
     preheader: 'Iestatiet paroli un piesakieties sludinātāju portālā.',
-    heading: 'Jūs esat uzaicināts uz FODEL portālu',
+    heading: 'Jūs esat uzaicināts uz FINDDOME portālu',
     body: (role: string) =>
-      `FODEL aicina jūs pievienoties portālam ${role}, kur pārvaldāt īpašumu sludinājumus.`,
+      `FINDDOME aicina jūs pievienoties portālam ${role}, kur pārvaldāt īpašumu sludinājumus.`,
     roleAdmin: 'kā administrators',
     roleOwner: 'kā sludinātājs',
     cta: 'Pieņemt ielūgumu',
@@ -52,7 +52,7 @@ export const LV = {
   },
 
   welcome: {
-    subject: 'Laipni lūdzam FODEL portālā',
+    subject: 'Laipni lūdzam FINDDOME portālā',
     preheader: 'Jūsu konts ir aktīvs. Lūk, kā ievietot pirmo sludinājumu.',
     heading: (name: string) => `Laipni lūdzam, ${name}`,
     body: 'Jūsu konts ir aktīvs. Portālā jūs sagatavojat sludinājumu, augšupielādējat fotoattēlus un sekojat pārbaudei.',
@@ -95,7 +95,7 @@ export const LV = {
     discountLabel: 'Ieteikuma atlaide (10%)',
     totalLabel: 'Jāmaksā',
     ctaCard: 'Maksāt ar karti',
-    cardNote: 'Maksājums notiek Stripe drošajā vidē. FODEL neredz un neglabā jūsu kartes datus.',
+    cardNote: 'Maksājums notiek Stripe drošajā vidē. FINDDOME neredz un neglabā jūsu kartes datus.',
     bankTitle: 'Vai ar bankas pārskaitījumu',
     bankNote: (ref: string) =>
       `Pārskaitījumā norādiet atsauces numuru: ${ref}. Tiklīdz maksājums būs saņemts, kāds no mūsu komandas publicēs sludinājumu.`,
@@ -113,7 +113,7 @@ export const LV = {
     totalLabel: 'Jāmaksā',
     dueLabel: 'Samaksāt līdz',
     ctaCard: 'Maksāt ar karti',
-    cardNote: 'Maksājums notiek Stripe drošajā vidē. FODEL neredz un neglabā jūsu kartes datus.',
+    cardNote: 'Maksājums notiek Stripe drošajā vidē. FINDDOME neredz un neglabā jūsu kartes datus.',
     bankTitle: 'Bankas pārskaitījums',
     bankNote: (ref: string) => `Pārskaitījumā norādiet atsauces numuru: ${ref}.`,
     vatNote: 'Visās summās ir iekļauts Nīderlandes PVN 21%.',
@@ -154,17 +154,17 @@ export const LV = {
   },
 
   passwordReset: {
-    subject: 'Atiestatiet paroli | FODEL portāls',
+    subject: 'Atiestatiet paroli | FINDDOME portāls',
     preheader: 'Saite ir derīga vienu stundu.',
     heading: 'Atiestatiet paroli',
-    body: 'Esam saņēmuši pieprasījumu atiestatīt jūsu FODEL portāla konta paroli. Noklikšķiniet uz pogas zemāk, lai iestatītu jaunu.',
+    body: 'Esam saņēmuši pieprasījumu atiestatīt jūsu FINDDOME portāla konta paroli. Noklikšķiniet uz pogas zemāk, lai iestatītu jaunu.',
     cta: 'Iestatīt jaunu paroli',
     expiry: 'Saite ir derīga vienu stundu, un to var izmantot vienu reizi.',
     ignore: 'Ja to nepieprasījāt jūs, ignorējiet šo e-pastu. Jūsu parole paliek nemainīta, un nekas nenotiek.',
   },
 
   referralRegistered: {
-    subject: 'Esam saņēmuši jūsu ieteikumu | FODEL',
+    subject: 'Esam saņēmuši jūsu ieteikumu | FINDDOME',
     preheader: 'Kāds no mūsu komandas drīz sazināsies ar jūsu ieteikto personu.',
     heading: 'Paldies par ieteikumu',
     body: (referredName: string) =>
@@ -178,7 +178,7 @@ export const LV = {
   },
 
   valuationReady: {
-    subject: 'Jūsu novērtējums ir gatavs | FODEL',
+    subject: 'Jūsu novērtējums ir gatavs | FINDDOME',
     preheader: 'Esam sagatavojuši orientējošu jūsu īpašuma novērtējumu.',
     heading: 'Jūsu novērtējums ir gatavs',
     body: (range: string) =>
@@ -204,7 +204,7 @@ export const LV = {
   },
 
   valuationDeclined: {
-    subject: 'Jūsu novērtējuma pieprasījums | FODEL',
+    subject: 'Jūsu novērtējuma pieprasījums | FINDDOME',
     preheader: 'Kāds no mūsu komandas sazināsies ar jums personīgi.',
     heading: 'Paldies par jūsu pieprasījumu',
     body: 'Pamatojoties uz sniegtajiem datiem, mums pašlaik ir pārāk maz salīdzināmu īpašumu uzticamam novērtējumam. Kāds no mūsu komandas sazināsies ar jums personīgi.',
@@ -247,7 +247,7 @@ export const LV = {
   },
 
   serviceRequested: {
-    subject: 'Esam saņēmuši jūsu pieprasījumu | FODEL',
+    subject: 'Esam saņēmuši jūsu pieprasījumu | FINDDOME',
     preheader: 'Kāds no mūsu komandas sazināsies ar jums, lai vienotos par datumu.',
     heading: 'Esam saņēmuši jūsu pieprasījumu',
     body: (service: string, price: string) => `Paldies, esam reģistrējuši jūsu pieprasījumu: ${service} (${price}).`,
@@ -257,7 +257,7 @@ export const LV = {
   },
 
   valuationPaid: {
-    subject: 'Maksājuma apstiprinājums | FODEL novērtējums',
+    subject: 'Maksājuma apstiprinājums | FINDDOME novērtējums',
     preheader: 'Paldies, jūsu maksājums ir saņemts.',
     heading: 'Paldies, jūsu maksājums ir saņemts',
     body: (service: string) => `Esam saņēmuši maksājumu par “${service}”.`,
@@ -269,7 +269,7 @@ export const LV = {
   },
 
   judicialRequested: {
-    subject: 'Oficiāla novērtējuma pieprasījums | FODEL',
+    subject: 'Oficiāla novērtējuma pieprasījums | FINDDOME',
     preheader: 'Kāds no mūsu komandas sazināsies ar jums par iespējām.',
     heading: 'Esam saņēmuši jūsu pieprasījumu',
     body: 'Paldies, esam atzīmējuši, ka vēlaties oficiālu (tiesas noteiktu) eksperta novērtējumu. Tas nav tas pats, kas orientējošais, tirgū balstītais novērtējums mūsu vietnē: to veic sertificēts eksperts, pamatojoties uz cenu piedāvājumu.',

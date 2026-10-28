@@ -20,7 +20,7 @@ const L = 'lt' as const;
 export const LT = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Įsigykite nekilnojamąjį turtą Vengrijoje tiesiai iš savininko',
+      title: 'FINDDOME Real Estates | Įsigykite nekilnojamąjį turtą Vengrijoje tiesiai iš savininko',
       description:
         'Namai, ūkiai ir kaimo valdos Vengrijoje, dažnai tiesiai iš savininko. Konsultacijos jūsų kalba ir dvikalbės pirkimo–pardavimo sutartys.',
     },
@@ -37,7 +37,7 @@ export const LT = {
       {
         eyebrow: 'Pirkėjams',
         title: 'Turtas tiesiai\niš savininko',
-        body: 'Autentiški vengriški namai, ūkiai, kaimo valdos ir vynuogynai. Susisiekite tiesiogiai su savininku arba leiskite FODEL pasirūpinti visu procesu.',
+        body: 'Autentiški vengriški namai, ūkiai, kaimo valdos ir vynuogynai. Susisiekite tiesiogiai su savininku arba leiskite FINDDOME pasirūpinti visu procesu.',
         cta: 'Peržiūrėti objektus',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const LT = {
     featured: { eyebrow: 'Pasirinkimas', title: 'Rekomenduojami objektai' },
     quote: '„Olandai dažnai netiki savo akimis, kai pamato, ką galima nusipirkti Vengrijoje ir už kiek.“',
     quoteSource: `${BRAND.lt.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Kaip tai veikia', title: 'Kaip veikia FODEL' },
+    how: { eyebrow: 'Kaip tai veikia', title: 'Kaip veikia FINDDOME' },
     cta: {
       eyebrow: 'Susisiekite su mumis',
       title: 'Mielai',
@@ -63,7 +63,7 @@ export const LT = {
       eyebrow: 'Rekomendacijų programa',
       title: 'Rekomenduokite skelbėją,',
       titleEm: 'gaukite 10\u00a0%',
-      body: 'Jei kas nors jūsų rekomendacija pateikia skelbimą FODEL, gauna 10\u00a0% nuolaidą savo paketui, o mes jums įskaitome 10\u00a0% kitam jūsų skelbimui. Jau skelbiatės pas mus? Savo rekomendacijos kodą rasite portalo skiltyje „Nustatymai“.',
+      body: 'Jei kas nors jūsų rekomendacija pateikia skelbimą FINDDOME, gauna 10\u00a0% nuolaidą savo paketui, o mes jums įskaitome 10\u00a0% kitam jūsų skelbimui. Jau skelbiatės pas mus? Savo rekomendacijos kodą rasite portalo skiltyje „Nustatymai“.',
       steps: [
         'Rekomenduokite pažįstamą per toliau pateiktą formą arba pasidalykite savo nuoroda iš portalo',
         'Mūsų komandos narys su juo susisiekia',
@@ -111,13 +111,13 @@ export const LT = {
   sellers: {
     meta: {
       title: 'Pardavėjams | Jūsų turtas Vengrijoje – Vakarų Europoje',
-      description: `Skelbkite savo turtą Vengrijoje ${REACH_LANGUAGES} kalbomis ${REACH_COUNTRIES} šalyse nuo ${eur(69, L)} ir be išimtinės sutarties. Komisinis tik tada, jei pirkėją suranda FODEL: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% PVM.`,
+      description: `Skelbkite savo turtą Vengrijoje ${REACH_LANGUAGES} kalbomis ${REACH_COUNTRIES} šalyse nuo ${eur(69, L)} ir be išimtinės sutarties. Komisinis tik tada, jei pirkėją suranda FINDDOME: ${COMMISSION.percent}\u00a0% + ${COMMISSION.vatPercent}\u00a0% PVM.`,
     },
     hero: {
       eyebrow: 'Pardavėjams',
       title: 'Jūsų turtas',
       titleEm: 'Vakarų Europoje',
-      body: `Pagal FODEL modelį jūsų turtas rodomas ${REACH_LANGUAGES} kalbomis ${REACH_COUNTRIES} šalyse be išimtinės sutarties. Dirbame tik su rimtais pirkėjais.`,
+      body: `Pagal FINDDOME modelį jūsų turtas rodomas ${REACH_LANGUAGES} kalbomis ${REACH_COUNTRIES} šalyse be išimtinės sutarties. Dirbame tik su rimtais pirkėjais.`,
       cta: 'Pateikti skelbimą',
       secondary: 'Peržiūrėti kainas',
     },
@@ -129,7 +129,7 @@ export const LT = {
         'Mokėjimas vienu kartu banko pavedimu, greitai ir saugiai.',
         'Rimti ketinimai: viena apžiūra jiems kainuoja dvi dienas ir 200–300\u00a0€.',
         'Realios kainos: jokio nepagrįsto derėjimosi.',
-        'FODEL asmeniškai įvertina kiekvieną pirkėją prieš sutardama bet kokį susitikimą.',
+        'FINDDOME asmeniškai įvertina kiekvieną pirkėją prieš sutardama bet kokį susitikimą.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const LT = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Žingsnis po žingsnio', title: 'FODEL modelis' },
+    how: { eyebrow: 'Žingsnis po žingsnio', title: 'FINDDOME modelis' },
     commission: {
       eyebrow: 'Kainos',
       title: 'Komisinis tik\nsėkmingai pardavus',
-      body: `Jei pirkėjas susisiekia su jumis tiesiogiai ir jums nereikia mūsų pagalbos, be skelbimo mokesčio nieko nemokate. Jei pardavimą tarpininkauja FODEL: ${COMMISSION.percent}\u00a0% be mokesčių (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% Nyderlandų PVM.`,
+      body: `Jei pirkėjas susisiekia su jumis tiesiogiai ir jums nereikia mūsų pagalbos, be skelbimo mokesčio nieko nemokate. Jei pardavimą tarpininkauja FINDDOME: ${COMMISSION.percent}\u00a0% be mokesčių (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}\u00a0% Nyderlandų PVM.`,
       cta: 'Peržiūrėti kainas',
     },
   },
@@ -248,7 +248,7 @@ export const LT = {
       title: 'Tiltas, kurį',
       titleEm: 'pastatėme',
       paragraphs: [
-        'FODEL įkūrė Nyderlanduose gyvenantys vengrai. Pradėjome 2013 m. Almere-Buitene, kur pastebėjome, kiek daug nyderlandų ir belgų norėjo įsigyti autentišką vengrišką namą, bet nežinojo, nuo ko pradėti.',
+        'FINDDOME įkūrė Nyderlanduose gyvenantys vengrai. Pradėjome 2013 m. Almere-Buitene, kur pastebėjome, kiek daug nyderlandų ir belgų norėjo įsigyti autentišką vengrišką namą, bet nežinojo, nuo ko pradėti.',
         `Šiandien skelbiamės ${REACH_COUNTRIES} šalyse ${REACH_LANGUAGES} kalbomis ir lydime kiekvieną sandorį nuo pradžios iki pabaigos: dvikalbė pirkimo–pardavimo sutartis, atstovavimas pagal įgaliojimą ir įregistravimas registre. Mūsų biuras yra Hagoje.`,
       ],
     },

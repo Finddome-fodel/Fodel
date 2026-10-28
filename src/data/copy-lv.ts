@@ -20,7 +20,7 @@ const L = 'lv' as const;
 export const LV = {
   home: {
     meta: {
-      title: 'FODEL Real Estates | Iegādājieties īpašumu Ungārijā tieši no īpašnieka',
+      title: 'FINDDOME Real Estates | Iegādājieties īpašumu Ungārijā tieši no īpašnieka',
       description:
         'Mājas, saimniecības un lauku īpašumi Ungārijā, bieži tieši no īpašnieka. Konsultācijas jūsu valodā un divvalodu pirkuma līgumi.',
     },
@@ -37,7 +37,7 @@ export const LV = {
       {
         eyebrow: 'Pircējiem',
         title: 'Īpašumi tieši\nno īpašnieka',
-        body: 'Autentiskas Ungārijas mājas, saimniecības, lauku īpašumi un vīnogulāji. Sazinieties tieši ar īpašnieku vai uzticiet visu procesu FODEL.',
+        body: 'Autentiskas Ungārijas mājas, saimniecības, lauku īpašumi un vīnogulāji. Sazinieties tieši ar īpašnieku vai uzticiet visu procesu FINDDOME.',
         cta: 'Skatīt īpašumus',
         to: 'properties',
       },
@@ -52,7 +52,7 @@ export const LV = {
     featured: { eyebrow: 'Izvēle', title: 'Izceltie īpašumi' },
     quote: '“Nīderlandieši bieži netic savām acīm, kad redz, ko Ungārijā var nopirkt un par kādu cenu.”',
     quoteSource: `${BRAND.lv.name} · ${SITE_HOST}`,
-    how: { eyebrow: 'Kā tas notiek', title: 'Kā darbojas FODEL' },
+    how: { eyebrow: 'Kā tas notiek', title: 'Kā darbojas FINDDOME' },
     cta: {
       eyebrow: 'Sazinieties ar mums',
       title: 'Mēs labprāt',
@@ -63,7 +63,7 @@ export const LV = {
       eyebrow: 'Ieteikumu programma',
       title: 'Iesakiet sludinātāju,',
       titleEm: 'saņemiet 10%',
-      body: 'Ja kāds pēc jūsu ieteikuma publicē sludinājumu FODEL, viņš saņem 10% atlaidi savai paketei, bet mēs jums ieskaitām 10% nākamajam sludinājumam. Jau publicējat pie mums? Savu ieteikuma kodu atradīsiet portālā sadaļā Iestatījumi.',
+      body: 'Ja kāds pēc jūsu ieteikuma publicē sludinājumu FINDDOME, viņš saņem 10% atlaidi savai paketei, bet mēs jums ieskaitām 10% nākamajam sludinājumam. Jau publicējat pie mums? Savu ieteikuma kodu atradīsiet portālā sadaļā Iestatījumi.',
       steps: [
         'Iesakiet paziņu, izmantojot tālāk esošo veidlapu, vai kopīgojiet savu saiti no portāla',
         'Kāds no mūsu komandas ar viņu sazinās',
@@ -111,13 +111,13 @@ export const LV = {
   sellers: {
     meta: {
       title: 'Pārdevējiem | Jūsu Ungārijas īpašums Rietumeiropā',
-      description: `Publicējiet savu Ungārijas īpašumu ${REACH_LANGUAGES} valodās ${REACH_COUNTRIES} valstīs no ${eur(69, L)} un bez ekskluzivitātes. Komisijas maksa tikai tad, ja pircēju atrod FODEL: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% PVN.`,
+      description: `Publicējiet savu Ungārijas īpašumu ${REACH_LANGUAGES} valodās ${REACH_COUNTRIES} valstīs no ${eur(69, L)} un bez ekskluzivitātes. Komisijas maksa tikai tad, ja pircēju atrod FINDDOME: ${COMMISSION.percent}% + ${COMMISSION.vatPercent}% PVN.`,
     },
     hero: {
       eyebrow: 'Pārdevējiem',
       title: 'Jūsu īpašums',
       titleEm: 'Rietumeiropā',
-      body: `Ar FODEL modeli jūsu īpašums tiek rādīts ${REACH_LANGUAGES} valodās ${REACH_COUNTRIES} valstīs bez ekskluzivitātes līguma. Mēs strādājam tikai ar nopietniem pircējiem.`,
+      body: `Ar FINDDOME modeli jūsu īpašums tiek rādīts ${REACH_LANGUAGES} valodās ${REACH_COUNTRIES} valstīs bez ekskluzivitātes līguma. Mēs strādājam tikai ar nopietniem pircējiem.`,
       cta: 'Iesniegt sludinājumu',
       secondary: 'Skatīt cenas',
     },
@@ -129,7 +129,7 @@ export const LV = {
         'Samaksa vienā reizē ar bankas pārskaitījumu, ātri un droši.',
         'Nopietns nodoms: viena apskate viņiem izmaksā divas dienas un 200–300\u00a0€.',
         'Reālistiskas cenas: nekādas nesaprātīgas kaulēšanās.',
-        'FODEL personīgi izvērtē katru pircēju, pirms tiek norunāta tikšanās.',
+        'FINDDOME personīgi izvērtē katru pircēju, pirms tiek norunāta tikšanās.',
       ],
     },
     personas: {
@@ -154,11 +154,11 @@ export const LV = {
         },
       ] as Persona[],
     },
-    how: { eyebrow: 'Soli pa solim', title: 'FODEL modelis' },
+    how: { eyebrow: 'Soli pa solim', title: 'FINDDOME modelis' },
     commission: {
       eyebrow: 'Cenas',
       title: 'Komisija tikai\npar veiksmīgu pārdošanu',
-      body: `Ja pircējs sazinās ar jums tieši un jums nav vajadzīga mūsu palīdzība, jūs nemaksājat neko papildus sludinājuma maksai. Ja pārdošanā starpnieks ir FODEL: ${COMMISSION.percent}% neto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Nīderlandes PVN.`,
+      body: `Ja pircējs sazinās ar jums tieši un jums nav vajadzīga mūsu palīdzība, jūs nemaksājat neko papildus sludinājuma maksai. Ja pārdošanā starpnieks ir FINDDOME: ${COMMISSION.percent}% neto (min. ${eur(COMMISSION.minimumEur, L)}) + ${COMMISSION.vatPercent}% Nīderlandes PVN.`,
       cta: 'Skatīt cenas',
     },
   },
@@ -248,7 +248,7 @@ export const LV = {
       title: 'Tilts, ko',
       titleEm: 'esam uzbūvējuši',
       paragraphs: [
-        'FODEL dibināja Nīderlandē dzīvojoši ungāri. Sākām 2013. gadā Almere-Buitenā, kur pamanījām, cik daudz nīderlandiešu un beļģu vēlas iegādāties autentisku ungāru māju, bet nezina, ar ko sākt.',
+        'FINDDOME dibināja Nīderlandē dzīvojoši ungāri. Sākām 2013. gadā Almere-Buitenā, kur pamanījām, cik daudz nīderlandiešu un beļģu vēlas iegādāties autentisku ungāru māju, bet nezina, ar ko sākt.',
         `Šodien sludinām ${REACH_COUNTRIES} valstīs un ${REACH_LANGUAGES} valodās un pavadām katru darījumu no sākuma līdz beigām: divvalodu pirkuma līgums, pārstāvība ar pilnvaru un reģistrācija zemesgrāmatā. Mūsu birojs atrodas Hāgā.`,
       ],
     },

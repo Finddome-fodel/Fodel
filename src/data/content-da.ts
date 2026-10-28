@@ -66,7 +66,7 @@ export const CONTENT_DA = {
         type: 'prose',
         title: 'Hvornår salæret skal betales',
         paragraphs: [
-          `Vi opkræver kun salær, når FODEL har formidlet køberen, der foreligger en skriftlig købsaftale, og depositummet er betalt. Satsen er ${COMMISSION.percent}\u00a0% netto, dog mindst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% hollandsk moms. Det er sælger, der betaler, ikke køber.`,
+          `Vi opkræver kun salær, når FINDDOME har formidlet køberen, der foreligger en skriftlig købsaftale, og depositummet er betalt. Satsen er ${COMMISSION.percent}\u00a0% netto, dog mindst ${eur(COMMISSION.minimumEur, L)}, plus ${COMMISSION.vatPercent}\u00a0% hollandsk moms. Det er sælger, der betaler, ikke køber.`,
         ],
       },
       {
@@ -81,7 +81,7 @@ export const CONTENT_DA = {
 
   agricultural: {
     metaTitle: `Landbrugsejendomme: op til ${AGRI_HECTARE_LIMIT} hektar i Ungarn`,
-    metaDescription: `En EU-borger med landbrugsuddannelse kan erhverve op til ${AGRI_HECTARE_LIMIT} hektar jord i Ungarn. FODEL håndterer hele proceduren.`,
+    metaDescription: `En EU-borger med landbrugsuddannelse kan erhverve op til ${AGRI_HECTARE_LIMIT} hektar jord i Ungarn. FINDDOME håndterer hele proceduren.`,
     eyebrow: 'Landbrugsejendomme',
     title: 'Landbrugsjord og',
     titleEm: 'landejendomme',
@@ -163,7 +163,7 @@ export const CONTENT_DA = {
           'Advokatsalær for udarbejdelse og kontrasignering af skødet',
           `Oversættelse af den tosprogede kontrakt: ${from('hu')}, afhængigt af sprogkombinationen`,
           'Tinglysningsafgift',
-          'Eventuel provision til FODEL: den betaler sælger, ikke dig',
+          'Eventuel provision til FINDDOME: den betaler sælger, ikke dig',
         ],
       },
       {
@@ -239,7 +239,7 @@ export const CONTENT_DA = {
   photoGuide: {
     metaTitle: 'Fotoguide for annoncører',
     metaDescription:
-      'Gode billeder er det vigtigste værktøj til et hurtigt salg. FODELs fotoguide: lys, retning, opløsning og de mest almindelige fejl.',
+      'Gode billeder er det vigtigste værktøj til et hurtigt salg. FINDDOMEs fotoguide: lys, retning, opløsning og de mest almindelige fejl.',
     eyebrow: 'For sælgere',
     title: 'Guide til',
     titleEm: 'fotografering',

@@ -18,13 +18,13 @@ export const RO = {
   common: {
     greeting: (name: string) => `Bună ziua, ${name},`,
     greetingNoName: 'Bună ziua,',
-    signOff: 'Cu stimă,\nFODEL Imobiliare',
+    signOff: 'Cu stimă,\nFINDDOME Imobiliare',
     questions: 'Aveți întrebări? Este suficient să răspundeți la acest e-mail.',
     linkFallback: 'Butonul nu funcționează? Copiați această adresă în browser:',
   },
 
   registrationConfirm: {
-    subject: 'Setați-vă parola | FODEL',
+    subject: 'Setați-vă parola | FINDDOME',
     preheader: 'Un clic și vă puteți alcătui anunțul.',
     heading: 'Setați-vă parola',
     intro: 'Vă mulțumim pentru înregistrare. Contul dumneavoastră este aproape gata; mai lipsește doar parola.',
@@ -34,21 +34,21 @@ export const RO = {
   },
 
   accountExists: {
-    subject: 'Aveți deja un cont FODEL',
+    subject: 'Aveți deja un cont FINDDOME',
     preheader: 'Conectați-vă sau setați o parolă nouă.',
     heading: 'Există deja un cont pentru această adresă',
-    body: 'Cineva tocmai a încercat să se înregistreze pe site-ul FODEL cu această adresă de e-mail. Deoarece există deja un cont pentru ea, nu am creat unul nou.',
+    body: 'Cineva tocmai a încercat să se înregistreze pe site-ul FINDDOME cu această adresă de e-mail. Deoarece există deja un cont pentru ea, nu am creat unul nou.',
     cta: 'Conectați-vă',
     reset: 'Ați uitat parola? Solicitați o parolă nouă',
     ignore: 'Nu ați fost dumneavoastră? Nu trebuie să faceți nimic: contul rămâne neschimbat.',
   },
 
   invite: {
-    subject: 'Invitație în portalul FODEL',
+    subject: 'Invitație în portalul FINDDOME',
     preheader: 'Setați-vă parola și conectați-vă la zona dedicată anunțurilor.',
-    heading: 'Sunteți invitat în portalul FODEL',
+    heading: 'Sunteți invitat în portalul FINDDOME',
     body: (role: string) =>
-      `FODEL vă invită să vă alăturați portalului ${role}; acolo se administrează anunțurile imobiliare.`,
+      `FINDDOME vă invită să vă alăturați portalului ${role}; acolo se administrează anunțurile imobiliare.`,
     roleAdmin: 'în calitate de administrator',
     roleOwner: 'în calitate de autor de anunțuri',
     cta: 'Acceptați invitația',
@@ -56,7 +56,7 @@ export const RO = {
   },
 
   welcome: {
-    subject: 'Bine ați venit în portalul FODEL',
+    subject: 'Bine ați venit în portalul FINDDOME',
     preheader: 'Contul dumneavoastră este activ. Iată cum publicați primul anunț.',
     heading: (name: string) => `Bine ați venit, ${name}`,
     body: 'Contul dumneavoastră este activ. În portal vă alcătuiți anunțul, încărcați fotografiile și urmăriți verificarea acestuia.',
@@ -99,7 +99,7 @@ export const RO = {
     discountLabel: 'Reducere pentru recomandare (10%)',
     totalLabel: 'De plată',
     ctaCard: 'Plătiți cu cardul',
-    cardNote: 'Plata se face în mediul securizat Stripe. FODEL nu vede și nu păstrează datele cardului dumneavoastră.',
+    cardNote: 'Plata se face în mediul securizat Stripe. FINDDOME nu vede și nu păstrează datele cardului dumneavoastră.',
     bankTitle: 'Sau prin transfer bancar',
     bankNote: (ref: string) =>
       `Menționați la transfer referința: ${ref}. Imediat ce sosește transferul, colegul nostru publică anunțul.`,
@@ -117,7 +117,7 @@ export const RO = {
     totalLabel: 'De plată',
     dueLabel: 'De plătit până la',
     ctaCard: 'Plătiți cu cardul',
-    cardNote: 'Plata se face în mediul securizat Stripe. FODEL nu vede și nu păstrează datele cardului dumneavoastră.',
+    cardNote: 'Plata se face în mediul securizat Stripe. FINDDOME nu vede și nu păstrează datele cardului dumneavoastră.',
     bankTitle: 'Transfer bancar',
     bankNote: (ref: string) => `Menționați la transfer referința: ${ref}.`,
     vatNote: 'Toate sumele indicate includ TVA olandez de 21%.',
@@ -158,17 +158,17 @@ export const RO = {
   },
 
   passwordReset: {
-    subject: 'Resetarea parolei | Portalul FODEL',
+    subject: 'Resetarea parolei | Portalul FINDDOME',
     preheader: 'Linkul este valabil o oră.',
     heading: 'Resetarea parolei',
-    body: 'Am primit o cerere de resetare a parolei contului dumneavoastră din portalul FODEL. Faceți clic pe butonul de mai jos pentru a seta una nouă.',
+    body: 'Am primit o cerere de resetare a parolei contului dumneavoastră din portalul FINDDOME. Faceți clic pe butonul de mai jos pentru a seta una nouă.',
     cta: 'Setați o parolă nouă',
     expiry: 'Linkul este valabil o oră și poate fi folosit o singură dată.',
     ignore: 'Nu ați trimis dumneavoastră această cerere? Ignorați acest e-mail. Parola rămâne neschimbată și nu se întâmplă nimic.',
   },
 
   referralRegistered: {
-    subject: 'Am primit recomandarea dumneavoastră | FODEL',
+    subject: 'Am primit recomandarea dumneavoastră | FINDDOME',
     preheader: 'Un coleg va contacta în curând persoana recomandată.',
     heading: 'Vă mulțumim pentru recomandare',
     body: (referredName: string) =>
@@ -182,7 +182,7 @@ export const RO = {
   },
 
   valuationReady: {
-    subject: 'Evaluarea dumneavoastră este gata | FODEL',
+    subject: 'Evaluarea dumneavoastră este gata | FINDDOME',
     preheader: 'Am întocmit o evaluare orientativă a proprietății dumneavoastră.',
     heading: 'Evaluarea dumneavoastră este gata',
     body: (range: string) =>
@@ -208,7 +208,7 @@ export const RO = {
   },
 
   valuationDeclined: {
-    subject: 'Cererea dumneavoastră de evaluare | FODEL',
+    subject: 'Cererea dumneavoastră de evaluare | FINDDOME',
     preheader: 'Un coleg vă va contacta personal.',
     heading: 'Vă mulțumim pentru cerere',
     body: 'Pe baza informațiilor furnizate, avem în prezent prea puține proprietăți comparabile pentru o evaluare fiabilă. Un coleg vă va contacta personal.',
@@ -251,7 +251,7 @@ export const RO = {
   },
 
   serviceRequested: {
-    subject: 'Am primit cererea dumneavoastră | FODEL',
+    subject: 'Am primit cererea dumneavoastră | FINDDOME',
     preheader: 'Un coleg vă va contacta pentru a stabili o programare.',
     heading: 'Am primit cererea dumneavoastră',
     body: (service: string, price: string) => `Vă mulțumim, am înregistrat cererea dumneavoastră: ${service} (${price}).`,
@@ -261,7 +261,7 @@ export const RO = {
   },
 
   valuationPaid: {
-    subject: 'Confirmare de plată | Evaluare FODEL',
+    subject: 'Confirmare de plată | Evaluare FINDDOME',
     preheader: 'Vă mulțumim, plata a sosit.',
     heading: 'Vă mulțumim, plata a sosit',
     body: (service: string) => `Am primit plata pentru „${service}”.`,
@@ -273,7 +273,7 @@ export const RO = {
   },
 
   judicialRequested: {
-    subject: 'Cerere de evaluare oficială | FODEL',
+    subject: 'Cerere de evaluare oficială | FINDDOME',
     preheader: 'Un coleg vă va contacta în privința variantelor posibile.',
     heading: 'Am primit cererea dumneavoastră',
     body: 'Vă mulțumim, am notat că doriți o evaluare oficială (judiciară) efectuată de un expert. Aceasta diferă de evaluarea orientativă, bazată pe piață, oferită pe site-ul nostru: este realizată de un evaluator autorizat, pe baza unei oferte de preț.',

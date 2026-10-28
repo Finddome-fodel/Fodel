@@ -35,7 +35,7 @@ export const FAQ_FR = [
     question: 'Combien coûte votre intermédiation ?',
     answer: [
       `Notre commission est de ${pct(COMMISSION.percent)} net, avec un minimum de ${eur(COMMISSION.minimumEur, L)}, plus ${pct(COMMISSION.vatPercent)} de TVA néerlandaise. Elle est payée par le vendeur hongrois, pas par vous.`,
-      'Elle n’est facturée que si les trois conditions sont réunies : il existe un contrat de vente écrit, l’acheteur a été amené par FODEL et l’acompte a été versé.',
+      'Elle n’est facturée que si les trois conditions sont réunies : il existe un contrat de vente écrit, l’acheteur a été amené par FINDDOME et l’acompte a été versé.',
     ],
     audience: 'buyer',
     sourced: true,
@@ -72,7 +72,7 @@ export const FAQ_FR = [
   },
   {
     id: 'ce-que-fodel-prend-en-charge',
-    question: 'Que prend en charge FODEL lors d’un achat ?',
+    question: 'Que prend en charge FINDDOME lors d’un achat ?',
     answer: [
       '- Échanges par téléphone et par e-mail, et communication entre les deux parties',
       '- Rendez-vous personnels et visites sur place',
