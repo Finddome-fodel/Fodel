@@ -18,6 +18,7 @@ import { listProperties, NO_OWNER, STATUS_LABEL } from '~/lib/portal/properties'
 import { publicUrl } from '~/lib/portal/publish';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { icon } from '~/lib/portal/icons';
+import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
 import { listingName } from '~/lib/portal/time';
 import { getCompany } from '~/lib/runtime-config';
 import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
@@ -50,7 +51,9 @@ const properties =
         scoped.filter(expiringSoon).sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)))
       : view === 'silent'
         ? scoped.filter(silent)
-        : scoped;
+        : view === 'dutch'
+          ? scoped.filter((p) => p.dutch_agent_requested)
+          : scoped;
 
 const categoryLabel = (key: string) => termLabel(taxonomy.category.find((term) => term.key === key), 'hu') || key;
 
@@ -100,6 +103,7 @@ const chips: [string, string][] = isAdmin
       {isAdmin && <a href="/portal/properties?view=curation" aria-current={view === 'curation' ? 'page' : undefined}>Kiemelt megjelenések</a>}
       {isAdmin && <a href="/portal/properties?view=expiring" aria-current={view === 'expiring' ? 'page' : undefined}>Hamarosan lejár</a>}
       {isAdmin && <a href="/portal/properties?view=silent" aria-current={view === 'silent' ? 'page' : undefined}>Nem válaszolt</a>}
+      {isAdmin && <a href="/portal/properties?view=dutch" aria-current={view === 'dutch' ? 'page' : undefined}>Holland ingatlanost kér</a>}
       {chips.map(([value, label]) => (
         <a
           href={value ? `/portal/properties?status=${value}` : '/portal/properties'}
@@ -167,6 +171,7 @@ const chips: [string, string][] = isAdmin
                   <td class="st">
                     <span class:list={['pill', `pill-${p.status}`]}>{p.status === 'archived' && p.expired_at ? 'Lejárt' : STATUS_LABEL[p.status] ?? p.status}</span>
                     {isAdmin && silent(p) && <span class="pill pill-bad">Nem válaszolt</span>}
+                    {isAdmin && p.dutch_agent_requested && <DutchAgentBadge />}
                     {isAdmin && expiringSoon(p) && <span class="pill pill-warn">{Math.max(0, daysLeft(p.expires_at!))} nap</span>}
                   </td>
                   {isAdmin && <td class="owner">{flags(p).join(' · ') || '—'}</td>}
@@ -242,6 +247,7 @@ const chips: [string, string][] = isAdmin
                 <div class="info">
                   <b>{name}</b>
                   <p>{p.settlement} · {categoryLabel(p.category)}</p>
+                  {isAdmin && p.dutch_agent_requested && <p><DutchAgentBadge /></p>}
                   <p class="row">
                     <span class="price">€{p.price_eur.toLocaleString('de-DE')}</span>
                     <span class="ref">#{p.ref}</span>
@@ -415,6 +421,7 @@ const chips: [string, string][] = isAdmin
 <style>
   .st { white-space: nowrap; }
   .st .pill + .pill { margin-left: 6px; }
+  .st :global(.dutch-badge) { margin-left: 6px; }
   .head {
     display: flex;
     align-items: flex-end;

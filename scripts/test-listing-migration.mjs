@@ -120,4 +120,16 @@ await db.exec(m32);
 assert.equal((await get(`select category from properties where id='${id}'`))[0].category,'house');
 assert.equal(Number((await get(`select price_huf from properties where id='${id}'`))[0].price_huf),98999999);
 console.log('✓ 0032 corrects the category and forint price of unpublished listings only');
+// 0035: the Dutch-agent request is a plain flag on the listing; the owner may set it on their own draft.
+const sql35=fs.readFileSync(root+'/supabase/migrations/0035_dutch_agent_request.sql','utf8');
+try{await db.exec(sql35);}catch(e){console.error('MIGRATION 0035 FAILED',e.message,e.detail);process.exit(1);}
+await db.exec(sql35);
+row=(await get(`select dutch_agent_requested,dutch_agent_requested_at from properties where id='${id}'`))[0];
+assert.equal(row.dutch_agent_requested,false);assert.equal(row.dutch_agent_requested_at,null);
+await db.exec(`reset role;set test.uid='';set test.admin='true';update properties set status='draft' where id='${id}'`);
+await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';update properties set dutch_agent_requested=true,dutch_agent_requested_at=now() where id='${id}';`);
+await db.exec(`set test.uid='${other}';update properties set dutch_agent_requested=false where id='${id}';`);
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+assert.equal((await get(`select dutch_agent_requested from properties where id='${id}'`))[0].dutch_agent_requested,true);
+console.log('✓ 0035 executes, is repeatable, and the owner can set the Dutch-agent request');
 await db.close();

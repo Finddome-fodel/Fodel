@@ -25,6 +25,7 @@ import { normalizePhone, isPhoneCountry } from '~/lib/validation';
 import { friendlyError } from '~/lib/portal/labels';
 import { getTaxonomy, getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
+import { syncDutchAgent } from '~/lib/portal/dutch-agent';
 import { saveSetupStep, SETUP_STEPS, type SetupStep } from '~/lib/portal/setup';
 
 export const prerender = false;
@@ -94,7 +95,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     return back('error=' + encodeURIComponent(message));
   }
   const patch: Record<string,unknown> = {...values.patch,
-    requested_extras:{...current.requested_extras,categoryHighlight:form.get('request_category')==='yes',homepageHighlight:form.get('request_homepage')==='yes',topicHighlight:form.get('topic_highlight_requested')==='yes'},
+    requested_extras:{...current.requested_extras,categoryHighlight:form.get('request_category')==='yes',homepageHighlight:form.get('request_homepage')==='yes',topicHighlight:form.get('topic_highlight_requested')==='yes',dutchAgent:form.get('dutch_agent_requested')==='yes'},
     seller_contact_visible:form.get('seller_contact_visible')==='yes',seller_name:str(form,'seller_name').slice(0,160)||null,
     seller_phone:sellerPhone(form),seller_speaks:contactLanguages(form),
     ...(existing.status==='published'?{reserved:form.get('reserved')==='yes'}:{}),
@@ -114,6 +115,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   });
   if(updateError){console.error('[update] save_listing_editor failed',id,updateError.message);}
   if(updateError)return back('error='+encodeURIComponent(friendlyError(updateError.message)));
+  if(!(await syncDutchAgent(supabase,{id:id!,owner_id:existing.owner_id,status:existing.status},form.get('dutch_agent_requested')==='yes')))return back('error='+encodeURIComponent('Nem sikerült menteni.'));
 
   await logEvent({
     kind: 'listing.edited',

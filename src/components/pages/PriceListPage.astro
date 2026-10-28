@@ -20,6 +20,7 @@ import { approvedWording } from '~/lib/approved-text';
 import { listingServiceSchema } from '~/lib/seo';
 import { getCompany } from '~/lib/runtime-config';
 import { nOf } from '~/i18n/plural';
+import { CHROME } from '~/i18n/chrome';
 
 interface Props {
   locale: Locale;
@@ -823,8 +824,14 @@ const packageSchema = listingServiceSchema(locale, {
             </tr>
           ))
         }
+        <tr>
+          <th scope="row">{CHROME[locale].dutchAgent.title}</th>
+          <td class="amount">{CHROME[locale].dutchAgent.price}</td>
+          <td class="unit"></td>
+        </tr>
       </tbody>
     </table>
+    <p class="note">{CHROME[locale].dutchAgent.photoNote}</p>
   </section>
 
   {/* ── Contracts + services ── */}

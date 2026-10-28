@@ -28,6 +28,8 @@ import Logo from '~/components/Logo.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
 import PackageCard from '~/components/PackageCard.astro';
 import OnsiteServiceChoice from '~/components/OnsiteServiceChoice.astro';
+import DutchAgentChoice from '~/components/DutchAgentChoice.astro';
+import { CHROME } from '~/i18n/chrome';
 import ListingFields from '~/components/portal/ListingFields.astro';
 import {languageName} from '~/lib/listing-catalogue';
 import { HEARD_FROM } from '~/lib/listing-details';
@@ -113,7 +115,7 @@ const strings = {
   saving: t.saving, saved: t.saved, saveFailed: t.saveFailed, required: t.required, none: t.none,
   submitting: t.submitting, submitFailed: t.submitFailed, noPhotos: t.noPhotos,
   missing: t.missing, missingHead: t.missingHead, photosCount: t.photosCount(0).replace('0', '{n}'),
-  translation: t.translation, categoryHighlight: t.categoryHighlight, homepageHighlight: t.homepageHighlight, video: t.video,
+  translation: t.translation, categoryHighlight: t.categoryHighlight, homepageHighlight: t.homepageHighlight, video: t.video, dutchAgent: CHROME[lang].dutchAgent.title,
 };
 ---
 
@@ -213,6 +215,7 @@ const strings = {
 
         <div class="su-onsite">
           <OnsiteServiceChoice locale={lang} selected={service} />
+          <DutchAgentChoice locale={lang} checked={Boolean(property.dutch_agent_requested || requested.dutchAgent)} />
         </div>
 
         <div class="su-total" aria-live="polite">
@@ -602,6 +605,8 @@ const strings = {
     add(pkg.video === 'extra' && flag('video'), pricing.videoCents, s.video);
     const service = f.querySelector<HTMLInputElement>('input[name="service"]:checked')?.value ?? '';
     add(Boolean(pricing.services[service]), pricing.services[service]?.cents ?? 0, pricing.services[service]?.name ?? '');
+    // No amount: the price is agreed personally, so it joins the summary but not the total.
+    add(flag('dutchAgent'), 0, s.dutchAgent);
     return { cents, lines };
   }
 

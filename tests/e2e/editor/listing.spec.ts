@@ -98,6 +98,19 @@ test.describe('European listing editor',()=>{
   await page.goto(`${path}/setup#review`);await expect(page.locator('[data-summary="property"]')).not.toHaveText('');
   await page.goto(`${path}/setup#package`);await expect(page.locator('[name="topicHighlight"]')).toBeVisible();await expect(page.locator('[name="service"]')).toHaveCount(3);
  });
+ test('owner can ask for a Dutch-speaking agent; it is kept and listed in the review summary',async({page})=>{
+  await setSession(page,'owner');
+  await page.goto(`${path}/setup#package`);
+  const box=page.locator('[name="dutchAgent"]');
+  // The fixture keeps state across browser projects, so flip whatever it holds and expect the flip to stick.
+  const before=await box.isChecked();
+  // The price is agreed personally: the card shows words, and the photography premium is stated beside it.
+  await expect(page.locator('.dutch .price')).toHaveText(/Egyedi ár/);await expect(page.locator('.dutch .photo')).toHaveText(/prémium/);
+  const saved=page.waitForResponse((r)=>r.url().includes('/update')&&r.request().method()==='POST');
+  await page.locator('label.card:has([name="dutchAgent"])').click();await expect(box).toBeChecked({checked:!before});await saved;
+  await page.reload();await expect(page.locator('[name="dutchAgent"]')).toBeChecked({checked:!before});
+  if(!before){await page.goto(`${path}/setup#review`);await expect(page.locator('[data-summary="package"]')).toContainText('Holland nyelvű ingatlanos');}
+ });
  test('a home asks for the old form\'s facts; land does not',async({page})=>{
   await page.goto(path);
   await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');
