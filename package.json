@@ -21,6 +21,7 @@
     "verify:rls": "node scripts/verify-rls.mjs",
     "verify:workflow": "node scripts/verify-workflow.mjs",
     "test:rules": "node scripts/test-rules.mjs",
+    "test:stripe": "node --no-warnings scripts/test-stripe-flow.mjs",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "test:e2e": "playwright test",
     "test:e2e:webkit": "playwright test --project=webkit --project=mobile-safari",

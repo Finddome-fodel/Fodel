@@ -81,6 +81,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const stripe = getStripe();
   const origin = new URL(request.url).origin;
 
+  // A second click, a second tab or a return from the card page must land on
+  // the session already open for this order, never mint a second one (two open
+  // sessions could be paid twice). Only a dead one — expired, say after a day
+  // away — is replaced, and the next session gets its own idempotency key
+  // because Stripe would otherwise hand the dead one straight back.
+  let replaced = 'first';
+  if (order.stripe_session_id) {
+    const earlier = await stripe.checkout.sessions.retrieve(order.stripe_session_id).catch(() => null);
+    if (earlier?.status === 'open' && earlier.url) return json(200, { ok: true, url: earlier.url });
+    if (earlier?.payment_status === 'paid') return json(409, { ok: false, error: 'already-paid' });
+    replaced = order.stripe_session_id;
+  }
+
   // A referral discount lives on its own column, never as a negative
   // OrderLine — Stripe rejects a negative unit_amount outright. A one-off
   // coupon reproduces the same breakdown on the seller's statement instead.
@@ -114,7 +127,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       metadata: { orderId: order.id, propertyId, ref: property.ref },
     },
     // Double-clicking "pay" must not create two sessions against one order.
-    { idempotencyKey: `order-${order.id}` }
+    { idempotencyKey: `order-${order.id}-${replaced}` }
   );
 
   await admin

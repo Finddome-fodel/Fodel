@@ -152,11 +152,14 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(null, { status: 200 });
   }
 
-  // The session expired unpaid, or a delayed payment was refused: the order is
-  // closed, and nothing is published.
+  // A delayed payment was refused, or a valuation's session ran out: that order
+  // is closed and nothing is published. A listing's session simply expiring
+  // (the owner left the card page open and walked away) is NOT the end of the
+  // order: it stays open and the next click on "pay" gets a fresh session.
   if (event.type === 'checkout.session.expired' || event.type === 'checkout.session.async_payment_failed') {
-    const session = event.data.object as { id: string };
+    const session = event.data.object as { id: string; metadata?: { kind?: string } | null };
     if (event.type === 'checkout.session.async_payment_failed') console.warn(`[stripe] delayed payment failed for session ${session.id}`);
+    if (event.type === 'checkout.session.expired' && session.metadata?.kind !== 'valuation') return new Response(null, { status: 200 });
     await admin
       .from('payments')
       .update({ status: 'cancelled' })
