@@ -22,23 +22,40 @@ Kód: `src/lib/mail/`, `src/pages/portal/email/`, `src/pages/api/portal/email/`,
 
 ## Teendők
 
-- [ ] **1. Migrációk futtatása, ebben a sorrendben** (Supabase → SQL Editor):
-  - [ ] `supabase/migrations/0038_email_automation.sql`: az e-mail automatizáció táblái. Az admin oldal ezek nélkül hibaüzenetet ír ki.
-  - [ ] `supabase/migrations/0039_api_grants_catchup.sql`: **minden más migráció után** fusson. 2026-10-30-tól a Supabase nem ad automatikus Data API-jogot az új táblákhoz, ez pótolja a régiekét. A szándékosan REVOKE-olt táblák (`invoice_counters`, `property_private`, `property_price_history`, `property_promotion_requests`) és a `mail_*` táblák `anon` joga ki van zárva belőle.
-  - Ha a `pg_cron` / `pg_net` nem engedélyezhető a projekten, a 0038 utolsó blokkja („The minute dispatcher”) kihagyható. Ilyenkor a napi cron és a „Folytatás most” gomb küldi ki a leveleket.
-- [ ] **2. Percre pontos időzítés** (a 0038 után, SQL Editorban, a valódi értékekkel):
+A kód úgy készült, hogy a migrációk **előtt** is biztonságosan élesíthető: amíg a 0038 nem futott, az űrlapok a megszokott, beépített visszaigazolást küldik, a `/portal/email` pedig egy barátságos „Még nincs bekapcsolva” oldalt mutat a teendőkkel. A javasolt sorrend mégis ez:
+
+- [ ] **1. Migrációk futtatása, ebben a sorrendben** (Supabase → a projekt → **SQL Editor** → New query):
+  - [ ] `supabase/migrations/0038_email_automation.sql`: a fájl teljes tartalmát másold be, majd **Run**. Az e-mail automatizáció táblái, jogai és a percenkénti ütemező. Ha a `pg_cron` / `pg_net` nem kapcsolható be a projekten, a migráció ettől még lefut (csak egy figyelmeztetést ír); ilyenkor a napi cron és a küldés oldalán a „Folytatás most” gomb küldi ki a leveleket.
+  - [ ] `supabase/migrations/0039_api_grants_catchup.sql`: ugyanígy, **a 0038 után**. 2026-10-30-tól a Supabase nem ad automatikus Data API-jogot az új táblákhoz, ez pótolja a régiekét. A szándékosan REVOKE-olt táblák (`invoice_counters`, `property_private`, `property_price_history`, `property_promotion_requests`) és a `mail_*` táblák `anon` joga ki van zárva belőle. Többször is lefuttatható, nem árt.
+  - Ellenőrzés: `select jobname, schedule from cron.job;` → egy `dispatch-mail-jobs` sor, `* * * * *` (ha a pg_cron elérhető).
+- [ ] **2. Percre pontos időzítés** (nem kötelező, de ajánlott; SQL Editorban, a 0038 után):
   ```sql
-  select vault.create_secret('https://<éles domain>/api/cron/mail', 'mail_cron_url');
+  select vault.create_secret('https://www.finddome.com/api/cron/mail', 'mail_cron_url');
   select vault.create_secret('<a Vercel CRON_SECRET értéke>', 'cron_secret');
   ```
-- [ ] **3. Resend webhook**: Resend → Webhooks → új endpoint: `https://<éles domain>/api/webhooks/resend`. Események: `email.delivered`, `email.opened`, `email.clicked`, `email.bounced`, `email.complained`. A signing secretet (`whsec_…`) a Vercelben **`RESEND_WEBHOOK_SECRET`** néven kell beállítani (Production). Enélkül a küldés működik, csak a követés nem.
-- [ ] **4. Követés bekapcsolása**: Resend → Domains → finddome.com → Open tracking + Click tracking.
-- [ ] **5. Deploy**, a migrációk után. A `vercel.json`-ba bekerült egy második napi cron (`/api/cron/mail`, 07:30) biztonsági hálónak.
-- [ ] **6. Kipróbálás élesen**:
-  - [ ] `/portal/email` → „Alapsablonok létrehozása”, egy sablon kitöltése (sárga részek, fő fotó), mentés, tesztlevél saját címre.
-  - [ ] A sablonnál „Automatikus válasz ingatlan-érdeklődésre” és Aktív → érdeklődés küldése egy hirdetésről az adott nyelven → a sablonlevél jön, a beépített visszaigazolás nem.
-  - [ ] Tömeges küldés néhány saját címre → a „Kiküldött” fülön látszik a megnyitás és a kattintás, a levél alján működik a leiratkozó link.
-- [ ] **7. Ismert, régebbi hiba (nem ehhez tartozik, de érdemes javítani)**: az Astro `checkOrigin` letiltja a levelezőprogramok egykattintásos leiratkozó POST kérését (nincs Origin fejléc). Emiatt a hírlevél RFC 8058 leiratkozása (`/newsletter/unsubscribe` POST) 403-at kap. Az új `/mail/unsubscribe` ezt megerősítő oldallal kerüli meg.
+  Fontos a **www**: a `finddome.com` átirányít a `www`-re, és az átirányítás közben elveszne a jelszó. A `CRON_SECRET` a Vercelben már megvan (a napi cron is ezt használja): Vercel → Settings → Environment Variables. Vault nélkül az ütemezett küldés a napi 07:30-as cronnal vagy a „Folytatás most” gombbal megy ki.
+- [ ] **3. PR #20 merge** → a Vercel automatikusan élesít. A `vercel.json`-ba bekerült egy második napi cron (`/api/cron/mail`, 07:30 UTC) biztonsági hálónak.
+- [ ] **4. Resend webhook** (a merge után, mert az endpoint ezzel kerül élesbe): Resend → **Webhooks** → Add endpoint:
+  - URL: `https://www.finddome.com/api/webhooks/resend`
+  - Események: `email.delivered`, `email.opened`, `email.clicked`, `email.bounced`, `email.complained`
+  - A létrehozás után a **Signing secretet** (`whsec_…`) a Vercelben **`RESEND_WEBHOOK_SECRET`** néven add hozzá (Production), majd **Redeploy** (a környezeti változó csak új deploy után él). Enélkül a küldés működik, csak a megnyitás/kattintás/visszapattanás nem látszik.
+- [ ] **5. Követés bekapcsolása**: Resend → Domains → finddome.com → **Open tracking** és **Click tracking**. Ez a domain minden levelére vonatkozik (a rendszerlevelekre is).
+- [ ] **6. Kipróbálás élesen** (csak saját címekre):
+  - [ ] `/portal/email` → „Alapsablonok létrehozása”. Az érdeklődésre válaszoló sablonok már automatikus válasznak vannak jelölve, de kikapcsolva jönnek létre.
+  - [ ] A magyar sablon megnyitása → átnézés → „Teszt küldése” saját címre.
+  - [ ] Ugyanott **Aktív** → Mentés → érdeklődés küldése egy magyar hirdetésről saját címmel → a sablonlevél jön, a hirdetés címével, fotójával, adataival. Egy másik nyelven (amelyiknek a sablonja nincs bekapcsolva) a megszokott visszaigazolás jön.
+  - [ ] Tömeges küldés: Kiknek? → szűrés úgy, hogy csak saját címek maradjanak (Keresés mező) → küldés → a küldés oldalán „Kész”. A „Kiküldött” fülön a megnyitás és a kattintás pár percen belül megjelenik; a levél alján a leiratkozó link működik, a cím a „Letiltott címek” közé kerül (onnan visszavehető).
+  - [ ] Egy ütemezett küldés (pl. holnapra) → „Lemondás” → a lista „Lemondva” állapotot mutat.
+- [ ] **7. Ismert, régebbi hiba (nem ehhez tartozik, de érdemes javítani)**: az Astro `checkOrigin` letiltja a levelezőprogramok egykattintásos leiratkozó POST kérését (nincs Origin fejléc). Emiatt a hírlevél RFC 8058 leiratkozása (`/newsletter/unsubscribe` POST) 403-at kap. Az új `/mail/unsubscribe` ezt megerősítő oldallal kerüli meg. Aki a levelezőprogram „Leiratkozás” gombjával e-mailt küld (`mailto`), azt kézzel kell felvenni a „Letiltott címek” közé.
+
+## Jó tudni
+
+- **Duplikáció ellen**: minden tömeges levél egyedi Resend idempotency kulccsal megy ki, így egy újrapróbált köteg nem küld kétszer ugyanannak (24 órán belül).
+- **Tempó**: percenként kb. 10–15 levél (a Resend 2 kérés/másodperces korlátja alatt). Egy 300 fős küldés így kb. 20–30 perc.
+- **Leállítás**: futó küldésnél a „Küldés leállítása” gomb; akinek még nem ment ki, nem kapja meg (a folyamatban lévő legfeljebb 10 levél még kimegy).
+- **Visszapattanás**: csak a végleges (Permanent) visszapattanás és a spamjelölés tiltja le a címet; az átmeneti (pl. tele a postafiók) nem.
+- **Webhook a migráció előtt**: ha a Resend webhook már be van állítva, de a 0038 még nem futott, a végpont 503-at ad, és a Resend később újrapróbálja, nem vész el semmi.
+- **GDPR**: tömeges levél csak olyanoknak menjen, akikkel üzleti kapcsolat van vagy feliratkoztak; minden tömeges levél alján ott a leiratkozás.
 
 ## Szabály mostantól (a `CLAUDE.md`-ben is benne van)
 

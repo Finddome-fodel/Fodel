@@ -7,7 +7,7 @@ Richárd átadott Marcinak egy csomagot (E-mail automatizáció + Supabase GRANT
 **Minden munkamenet elején, mielőtt bármi mással foglalkoznál:**
 
 1. Olvasd el a `docs/TEENDOK-MARCI.md` fájlt.
-2. Ha van benne kipipálatlan (`- [ ]`) pont, **szólj Marcinak** röviden, magyarul: mi jött be (egy mondat), mi van még hátra (a nyitott pontok listája), és melyik a következő lépés. Az 1. pont (migrációk 0038, majd 0039, ebben a sorrendben) megelőzi a deployt.
+2. Ha van benne kipipálatlan (`- [ ]`) pont, **szólj Marcinak** röviden, magyarul: mi jött be (egy mondat), mi van még hátra (a nyitott pontok listája), és melyik a következő lépés. Az 1. pont: migrációk 0038, majd 0039, ebben a sorrendben. A kód a migrációk előtt is biztonságosan élesíthető (az űrlapok a beépített visszaigazolást küldik, a `/portal/email` egy „Még nincs bekapcsolva” oldalt mutat), de a javasolt sorrend: migrációk → PR merge → Resend webhook.
 3. Ajánld fel, hogy segítesz: SQL-t és beállítási lépéseket adsz, a kódot átnézed, a deploy után végigteszteled. Marci gépén és a Supabase/Vercel/Resend fiókjaiban magadtól ne változtass semmit; minden ilyen lépés előtt kérdezz.
 4. Amikor Marci megerősíti, hogy egy pont kész, pipáld ki a fájlban. Ha minden pont kész, javasold, hogy ez a szakasz és a fájl törölhető.
 
