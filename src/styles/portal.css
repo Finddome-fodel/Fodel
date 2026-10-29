@@ -720,6 +720,8 @@ main.pm.pm :is(.btn, button, .pill-btn, [role='button']):not(:disabled):active,
 /* Dialog: one element, reconfigured per question, by window.pf (Portal.astro). */
 .pt-dialog {
   width: min(480px, calc(100vw - 32px));
+  /* The global reset zeroes every margin; a modal <dialog> centres itself with auto margins. */
+  margin: auto;
   padding: 0;
   border: 0;
   border-radius: var(--r-xl);
@@ -1763,4 +1765,50 @@ main.pm.pm .cal-grid {
 }
 .pt-dialog .expect {
   white-space: pre-wrap;
+}
+
+/* E-mail automation tables: full width, and on a phone each row becomes a
+   small card (first cell on its own line, the rest wrap beneath it). */
+main.pm.pm table.mail-list {
+  width: 100%;
+}
+@media (max-width: 720px) {
+  main.pm.pm table.mail-list,
+  main.pm.pm table.mail-list tbody {
+    display: block;
+  }
+  main.pm.pm table.mail-list thead {
+    display: none;
+  }
+  main.pm.pm table.mail-list tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--pt-hair);
+  }
+  main.pm.pm table.mail-list tbody tr:last-child {
+    border-bottom: 0;
+  }
+  main.pm.pm table.mail-list td {
+    padding: 0;
+    border: 0;
+    font-size: 14px;
+  }
+  main.pm.pm table.mail-list td:first-child {
+    flex: 1 0 100%;
+    font-size: inherit;
+  }
+  main.pm.pm table.mail-list tr:has(td.actions-col) {
+    position: relative;
+    padding-right: 56px;
+  }
+  main.pm.pm table.mail-list td.actions-col {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: auto;
+    transform: translateY(-50%);
+  }
 }

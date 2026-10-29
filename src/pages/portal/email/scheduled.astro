@@ -7,12 +7,15 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
 import MailNav from '~/components/portal/MailNav.astro';
 import { icon } from '~/lib/portal/icons';
 import { JOB_STATUS_LABEL, JOB_STATUS_PILL, budapestDateTime, processDueJobs, type JobStatus } from '~/lib/mail/jobs';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
 
 try {
   await processDueJobs(supabase, 4_000);
@@ -41,13 +44,13 @@ const p = Astro.url.searchParams;
   </header>
 
   <MailNav current="scheduled" />
-  {p.get('cancelled') && <p class="notice ok" data-toast="ok">A küldés lemondva.</p>}
+  {p.get('cancelled') && <p class="notice ok" data-toast="ok">A küldés lemondva — akinek még nem ment ki, nem kapja meg.</p>}
 
   {[{ title: 'Várakozik / folyamatban', rows: upcoming, empty: 'Nincs ütemezett küldés.' }, { title: 'Korábbi küldések', rows: past, empty: 'Még nem volt tömeges küldés.' }].map((group) => (
     <section class="block">
       <h2>{group.title}</h2>
       {group.rows.length === 0 ? <p class="soft">{group.empty}</p> : (
-        <table class="list">
+        <table class="list mail-list">
           <thead><tr><th>Küldés</th><th>Időpont</th><th>Állapot</th><th>Haladás</th></tr></thead>
           <tbody>
             {group.rows.map((j: any) => (

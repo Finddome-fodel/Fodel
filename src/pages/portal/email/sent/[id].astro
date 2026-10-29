@@ -3,6 +3,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
 import MailNav from '~/components/portal/MailNav.astro';
 import { LOCALE_LABEL } from '~/lib/portal/labels';
 import { AUDIENCE_LABEL } from '~/lib/mail/audience';
@@ -11,6 +12,8 @@ import { budapestDateTime } from '~/lib/mail/jobs';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
 
 const { id } = Astro.params;
 const { data: message } = await supabase.from('mail_messages').select('*, mail_templates(id, name)').eq('id', id).maybeSingle();
@@ -38,7 +41,7 @@ const clicks = (events ?? []).filter((e: any) => e.type === 'CLICKED').length;
       <dl>
         <dt>Címzett</dt><dd>{message.to_name && <>{message.to_name}<br /></>}{message.to_email}</dd>
         <dt>Küldve</dt><dd>{budapestDateTime(message.created_at)}</dd>
-        <dt>Típus</dt><dd>{SOURCE_LABEL[message.source] ?? message.source}{message.job_id && <> · <a href={`/portal/email/jobs/${message.job_id}`}>a küldés</a></>}</dd>
+        <dt>Típus</dt><dd>{SOURCE_LABEL[message.source] ?? message.source}{message.job_id && <> · <a href={`/portal/email/jobs/${message.job_id}`}>a küldés megnyitása →</a></>}</dd>
         {message.audience && <><dt>Forrás</dt><dd>{AUDIENCE_LABEL[message.audience as keyof typeof AUDIENCE_LABEL] ?? message.audience}</dd></>}
         {message.mail_templates && <><dt>Sablon</dt><dd><a href={`/portal/email/templates/${message.mail_templates.id}`}>{message.mail_templates.name}</a></dd></>}
         {message.locale && <><dt>Nyelv</dt><dd>{LOCALE_LABEL[message.locale] ?? message.locale}</dd></>}

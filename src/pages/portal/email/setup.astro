@@ -1,0 +1,58 @@
+---
+/**
+ * What every /portal/email page shows while migration 0038 has not been run
+ * (src/lib/mail/schema.ts). Nothing here can break: it reads nothing but the
+ * one readiness check, and once the tables exist it sends the admin on to the
+ * real page.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+if (await mailSchemaReady(supabase)) return Astro.redirect('/portal/email');
+---
+
+<Portal title="E-mail automatizáció">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">Tartalom</p>
+      <h1>E-mail <em>automatizáció</em></h1>
+      <p class="lede">Saját tervezésű levelek, automatikus válaszok, tömeges és ütemezett küldés — egy lépés választja el a bekapcsolástól.</p>
+    </div>
+  </header>
+
+  <MailNav current="overview" />
+
+  <section class="setup set-card">
+    <p class="kicker">Még nincs bekapcsolva</p>
+    <h2>Az adatbázis még nem áll készen erre a részre</h2>
+    <p>
+      Az e-mail automatizáció táblái egy adatbázis-frissítéssel (migrációval) jönnek létre, ez pedig még nem futott le.
+      Addig semmi sem romlik el: a weboldal űrlapjai ugyanúgy elküldik a megszokott, beépített visszaigazoló levelet,
+      a rendszerlevelek (regisztráció, számla, hirdetés állapota) is változatlanul mennek.
+    </p>
+    <ol>
+      <li>Nyissa meg a Supabase projektet, azon belül az <b>SQL Editor</b>-t.</li>
+      <li>Másolja be és futtassa a <code>supabase/migrations/0038_email_automation.sql</code> fájl teljes tartalmát.</li>
+      <li>Utána ugyanígy a <code>0039_api_grants_catchup.sql</code> fájlt.</li>
+      <li>Frissítse ezt az oldalt — innentől itt a sablonok jelennek meg.</li>
+    </ol>
+    <p class="soft">A részletes, lépésenkénti leírás a <code>docs/TEENDOK-MARCI.md</code> fájlban van.</p>
+    <a class="btn" href="/portal/email">Újra megnézem</a>
+  </section>
+</Portal>
+
+<style>
+  .setup { display: grid; gap: 14px; max-width: 760px; padding: 28px 30px; }
+  .setup h2 { margin: 0; font-family: var(--serif); font-weight: var(--fw-display); font-size: 26px; line-height: 1.2; color: var(--ink); }
+  .setup p { margin: 0; line-height: 1.65; }
+  .kicker { font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pt-amber); }
+  .setup ol { margin: 4px 0; padding-left: 22px; display: grid; gap: 8px; line-height: 1.6; }
+  .setup code { font-size: 0.92em; padding: 1px 6px; border-radius: 6px; background: var(--linen); overflow-wrap: anywhere; }
+  .soft { color: var(--ink-quiet); font-size: 14px; }
+  .setup .btn { justify-self: start; margin-top: 6px; }
+</style>

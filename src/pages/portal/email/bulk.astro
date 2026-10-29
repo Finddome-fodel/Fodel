@@ -9,6 +9,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
 import MailNav from '~/components/portal/MailNav.astro';
 import { LOCALES } from '~/i18n/ui';
 import { LOCALE_LABEL } from '~/lib/portal/labels';
@@ -18,6 +19,8 @@ import { unfinishedParts } from '~/lib/mail/editable';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
 
 const params = Astro.url.searchParams;
 const filters = filtersFrom((key) => params.get(key));

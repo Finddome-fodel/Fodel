@@ -1,12 +1,13 @@
 ---
 /**
  * One bulk send: progress, every recipient with its outcome, and the buttons —
- * continue now, resend the failed ones, cancel before it starts. A due send
+ * continue now, resend the failed ones, cancel or stop it. A due send
  * is nudged on page load; while it is still going the page refreshes itself.
  */
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
 import MailNav from '~/components/portal/MailNav.astro';
 import { LOCALE_LABEL } from '~/lib/portal/labels';
 import { AUDIENCE_LABEL } from '~/lib/mail/audience';
@@ -15,6 +16,8 @@ import { engagementFor, engagementBadge } from '~/lib/mail/tracking';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
 
 const { id } = Astro.params;
 try {
@@ -40,7 +43,7 @@ const p = Astro.url.searchParams;
 ---
 
 <Portal title={job.name || 'Tömeges küldés'}>
-  {live && <script is:inline>setTimeout(() => location.replace(location.pathname + location.search.replace(/[?&]created=1/, '')), 8000);</script>}
+  {live && <script is:inline>(function tick() { setTimeout(() => (window.__mailConfirming ? tick() : location.replace(location.pathname + location.search.replace(/[?&]created=1/, ''))), 8000); })();</script>}
   <header class="ph">
     <div>
       <p class="eyebrow"><a href="/portal/email/scheduled">← Ütemezett küldések</a></p>
@@ -55,8 +58,8 @@ const p = Astro.url.searchParams;
       </p>
     </div>
     <div class="ph-side">
-      {status === 'SCHEDULED' && !due && (
-        <form method="post" action={`/api/portal/email/jobs/${job.id}`}><input type="hidden" name="action" value="cancel" /><button class="btn ghost danger" type="submit">Lemondás</button></form>
+      {(status === 'SCHEDULED' || status === 'RUNNING' || status === 'DRAFT') && (
+        <form method="post" action={`/api/portal/email/jobs/${job.id}`} data-confirm-cancel={status === 'RUNNING' ? 'running' : 'scheduled'}><input type="hidden" name="action" value="cancel" /><button class="btn ghost danger" type="submit">{status === 'RUNNING' ? 'Küldés leállítása' : 'Lemondás'}</button></form>
       )}
       {(status === 'RUNNING' || (status === 'SCHEDULED' && due)) && (
         <form method="post" action={`/api/portal/email/jobs/${job.id}`}><input type="hidden" name="action" value="continue" /><button class="btn" type="submit">Folytatás most</button></form>
@@ -74,7 +77,7 @@ const p = Astro.url.searchParams;
   <ul class="stats">
     <li><b>{job.total_recipients}</b><span>címzett</span></li>
     <li class="ok"><b>{job.sent_count}</b><span>elküldve</span></li>
-    {pending > 0 && <li><b>{pending}</b><span>hátra van</span></li>}
+    {pending > 0 && <li><b>{pending}</b><span>{status === 'CANCELLED' ? 'nem ment ki (leállítva)' : 'hátra van'}</span></li>}
     <li class:list={{ bad: job.failed_count > 0 }}><b>{job.failed_count}</b><span>sikertelen</span></li>
     {job.skipped_count > 0 && <li><b>{job.skipped_count}</b><span>letiltott — kihagyva</span></li>}
   </ul>
@@ -85,7 +88,7 @@ const p = Astro.url.searchParams;
   </nav>
 
   {(recipients ?? []).length === 0 ? <p class="soft">Nincs ilyen címzett.</p> : (
-    <table class="list">
+    <table class="list mail-list">
       <thead><tr><th>Címzett</th><th>Nyelv</th><th>Állapot</th><th>Küldve</th></tr></thead>
       <tbody>
         {(recipients ?? []).map((r: any) => (
@@ -104,6 +107,29 @@ const p = Astro.url.searchParams;
     </table>
   )}
 </Portal>
+
+<script>
+  document.querySelector<HTMLFormElement>('[data-confirm-cancel]')?.addEventListener('submit', async (event) => {
+    const formEl = event.currentTarget as HTMLFormElement;
+    if (formEl.dataset.confirmed) return;
+    event.preventDefault();
+    const running = formEl.dataset.confirmCancel === 'running';
+    const title = running ? 'Leállítja a küldést?' : 'Lemondja ezt a küldést?';
+    const body = running
+      ? 'Akik még nem kapták meg, már nem kapják meg. A már kiment levelek kimentek, a folyamatban lévő legfeljebb 10 levél még elmegy.'
+      : 'Senki nem kap levelet ebből a küldésből. Később újat indíthat.';
+    (window as any).__mailConfirming = true;
+    const pf = (window as any).pf;
+    const ok = pf?.confirm
+      ? await pf.confirm({ title, body, confirmLabel: running ? 'Leállítás' : 'Lemondás', danger: true })
+      : window.confirm(title);
+    (window as any).__mailConfirming = false;
+    if (ok) {
+      formEl.dataset.confirmed = '1';
+      formEl.requestSubmit();
+    }
+  });
+</script>
 
 <style>
   .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 40px; margin-bottom: 24px; }

@@ -6,11 +6,14 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
 import MailNav from '~/components/portal/MailNav.astro';
 import { signatureHtml } from '~/lib/mail/send';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
 
 const { data: signature } = await supabase.from('mail_signatures').select('*').eq('is_default', true).maybeSingle();
 const s = signature ?? { name: profile?.full_name ?? '', title: '', phone: profile?.phone ?? '', email: 'info@finddome.com', website_url: 'https://finddome.com', facebook_url: '', instagram_url: '', linkedin_url: '' };

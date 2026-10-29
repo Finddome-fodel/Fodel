@@ -8,16 +8,19 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
 import MailNav from '~/components/portal/MailNav.astro';
 import Ago from '~/components/portal/Ago.astro';
 import { icon } from '~/lib/portal/icons';
-import { LOCALE_LABEL } from '~/lib/portal/labels';
+import { LOCALE_LABEL, friendlyError } from '~/lib/portal/labels';
 import { unfinishedParts } from '~/lib/mail/editable';
 import { AUTOMATION_LABEL, type AutomationKind } from '~/lib/mail/automation';
 import { engagementFor, engagementBadge } from '~/lib/mail/tracking';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
 
 const params = Astro.url.searchParams;
 const { data: templates, error } = await supabase
@@ -32,6 +35,8 @@ const { data: recent } = migrated
   : { data: [] };
 const engagement = await engagementFor(supabase, (recent ?? []).map((m: any) => m.id));
 
+/** "magyar, holland" — language names run mid-sentence, so lower case. */
+const langs = (codes: string[]) => codes.map((l) => (LOCALE_LABEL[l] ?? l).toLowerCase()).join(', ');
 const automations = (Object.keys(AUTOMATION_LABEL) as AutomationKind[]).map((kind) => ({
   kind,
   label: AUTOMATION_LABEL[kind],
@@ -62,10 +67,10 @@ const STATUS_PILL: Record<string, string> = { SENT: 'pill-queued', DELIVERED: 'p
 
   <MailNav current="overview" />
 
-  {!migrated && <p class="notice error">Az e-mail automatizáció táblái a <code>0038_email_automation.sql</code> migrációval jönnek létre. Futtassa le a Supabase SQL szerkesztőben, utána frissítse az oldalt.</p>}
+  {!migrated && <p class="notice error">A sablonok most nem tölthetők be: {friendlyError(error?.message)}</p>}
   {params.get('error') && <p class="notice error">{params.get('error')}</p>}
   {params.get('deleted') && <p class="notice ok" data-toast="ok">Sablon törölve.</p>}
-  {params.get('starters') && <p class="notice ok" data-toast="ok">{params.get('starters') === '0' ? 'Az alapsablonok már mind megvannak.' : `${params.get('starters')} alapsablon létrehozva — kapcsolja be azokat, amelyeket használni szeretne.`}</p>}
+  {params.get('starters') && <p class="notice ok" data-toast="ok">{params.get('starters') === '0' ? 'Az alapsablonok már mind megvannak.' : `${params.get('starters')} alapsablon létrehozva. Az érdeklődésre válaszolók már automatikus válasznak vannak jelölve — nézze át őket, és kapcsolja be azokat, amelyeket használni szeretne.`}</p>}
 
   {migrated && (
     <section class="autos" aria-label="Automatikus válaszok">
@@ -76,9 +81,11 @@ const STATUS_PILL: Record<string, string> = { SENT: 'pill-queued', DELIVERED: 'p
             <b>{auto.label}</b>
             <span>
               {auto.live.length
-                ? <>Bekapcsolva: {auto.live.map((l) => LOCALE_LABEL[l] ?? l).join(', ')}. Más nyelven a beépített visszaigazolás megy.</>
-                : <>Nincs bekapcsolva — minden nyelven a beépített visszaigazolás megy. Egy sablon beállításainál jelölheti ki.</>}
-              {auto.idle.length > 0 && <> Kijelölve, de inaktív: {auto.idle.map((l) => LOCALE_LABEL[l] ?? l).join(', ')}.</>}
+                ? <>Bekapcsolva: {langs(auto.live)}. Más nyelven a beépített visszaigazolás megy ki.</>
+                : <>Nincs bekapcsolva — most minden nyelven a beépített visszaigazolás megy ki.</>}
+              {auto.idle.length > 0
+                ? <> Elkészült, de még kikapcsolt sablon: {langs(auto.idle)} — nyissa meg, nézze át, és kapcsolja be.</>
+                : auto.live.length === 0 && <> Egy sablon beállításainál jelölheti ki.</>}
             </span>
           </div>
         </div>
@@ -99,7 +106,7 @@ const STATUS_PILL: Record<string, string> = { SENT: 'pill-queued', DELIVERED: 'p
         <form method="post" action="/api/portal/email/starters"><button class="btn" type="submit">Alapsablonok létrehozása</button></form>
       </div>
     ) : rows.length > 0 && (
-      <table class="list">
+      <table class="list mail-list">
         <thead><tr><th>Sablon</th><th>Nyelv</th><th>Állapot</th><th>Módosítva</th></tr></thead>
         <tbody>
           {rows.map((t) => (
@@ -139,7 +146,7 @@ const STATUS_PILL: Record<string, string> = { SENT: 'pill-queued', DELIVERED: 'p
       {(recent ?? []).length === 0 ? (
         <p class="muted">Még nem ment ki sablonlevél.</p>
       ) : (
-        <table class="list">
+        <table class="list mail-list">
           <thead><tr><th>Tárgy</th><th>Címzett</th><th>Típus</th><th>Állapot</th><th>Küldve</th></tr></thead>
           <tbody>
             {(recent ?? []).map((m: any) => (

@@ -13,14 +13,18 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
 import { LOCALES } from '~/i18n/ui';
 import { LOCALE_LABEL } from '~/lib/portal/labels';
 import { icon } from '~/lib/portal/icons';
 import { MERGE_FIELD_KEYS, MERGE_FIELD_LABEL } from '~/lib/mail/merge';
 import { AUTOMATION_LABEL } from '~/lib/mail/automation';
+import { fixedListingParts, unfinishedParts } from '~/lib/mail/editable';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
 
 const { id } = Astro.params;
 const { data: template } = await supabase.from('mail_templates').select('*').eq('id', id).maybeSingle();
@@ -36,6 +40,10 @@ const slotOwners = Object.fromEntries((slots ?? []).map((s: any) => [`${s.automa
 const linkedListed = !template.linked_property_id || (listings ?? []).some((l: any) => l.id === template.linked_property_id);
 
 const p = Astro.url.searchParams;
+const startsUnfinished = unfinishedParts(template.body_html).length > 0;
+const fillsFromListing = template.body_html.includes('{{property_');
+// The automatic enquiry reply answers about every listing: fixed listing text in it would reach the wrong people.
+const fixedInReply = template.automation === 'enquiry' ? fixedListingParts(template.body_html) : [];
 const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LABEL[key] }));
 ---
 
@@ -57,7 +65,20 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
     </div>
   </header>
 
-  {p.get('created') && <p class="notice ok">Sablon létrehozva. Írja át a sárgával jelölt részeket, cserélje le a képeket, mentsen — utána kapcsolja be (Aktív), ha használni szeretné.</p>}
+  {p.get('created') && (
+    <p class="notice ok">
+      {startsUnfinished
+        ? 'Sablon létrehozva. Írja át a sárgával jelölt részeket, cserélje le a képeket, mentsen — utána kapcsolja be (Aktív), ha használni szeretné.'
+        : fillsFromListing
+          ? 'Sablon létrehozva. A hirdetés adatai — cím, fotó, leírás, alapterület, ár és link — küldéskor automatikusan abból a hirdetésből töltődnek ki, amelyről a levél szól. Nézze át a szövegeket, mentsen, majd kapcsolja be (Aktív).'
+          : 'Sablon létrehozva. Nézze át a szövegeket, mentsen, majd kapcsolja be (Aktív), ha használni szeretné.'}
+    </p>
+  )}
+  {fixedInReply.length > 0 && (
+    <p class="notice warn">
+      Figyelem: ez a sablon az automatikus válasz <b>minden</b> ingatlan-érdeklődésre, de ezek a részei egyetlen hirdetés rögzített adatait mutatják: <b>{fixedInReply.join(', ')}</b>. Így minden érdeklődő ugyanezt kapná, bármelyik hirdetésről kérdez. Írja vissza ezekbe a mezőkbe a megfelelő mezőkódot (például {'{{property_description}}'}, {'{{property_area}}'}, {'{{property_bedrooms}}'}), a fotónál pedig válassza a „Helyette mindig a hirdetés saját fotója” lehetőséget.
+    </p>
+  )}
   {p.get('copied') && <p class="notice ok">Másolat létrehozva, inaktívként.</p>}
   {p.get('saved') && <p class="notice ok" data-toast="ok">Mentve.</p>}
   {p.get('testSent') && <p class="notice ok">Tesztlevél elküldve ide: {p.get('testSent')}</p>}
@@ -137,7 +158,7 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
             </select>
             <small id="automation-hint"></small>
           </label>
-          <label class="check"><input type="checkbox" name="active" checked={template.active} /> Aktív — választható tömeges küldésnél, és automatikus válaszként kimegy</label>
+          <label class="check"><input type="checkbox" name="active" checked={template.active} /> Aktív — kiválasztható tömeges küldéshez, és ha fent automatikus válasznak jelölte, az űrlapokra is ez megy ki</label>
         </fieldset>
 
         <div class="savebar">
@@ -178,7 +199,7 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
 </script>
 
 <script>
-  import { SAMPLE_MERGE_FIELDS, findUnresolvedMergeFields, renderTemplate } from '~/lib/mail/merge';
+  import { MERGE_FIELD_LABEL, SAMPLE_MERGE_FIELDS, SAMPLE_PROPERTY_PHOTO_PATH, findUnresolvedMergeFields, renderTemplate, type MergeFieldKey } from '~/lib/mail/merge';
   import {
     applyEditableFieldUpdate,
     applyEditableImageUpdate,
@@ -203,6 +224,15 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
 
   const esc = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+  // The preview loads the sample photo and the "photo goes here" images from
+  // this very site, so they show on a preview deployment or localhost too,
+  // not only once the live domain serves them.
+  const SAMPLE = { ...SAMPLE_MERGE_FIELDS, property_photo_url: `${location.origin}${SAMPLE_PROPERTY_PHOTO_PATH}` };
+  const localAssets = (html: string) => html.replace(/https?:\/\/[^"'\s]+?(\/email\/(?:placeholder|sample)-[a-z]+\.jpg)/g, `${location.origin}$1`);
+  const imageShown = (src: string) => localAssets(renderTemplate(src, SAMPLE, { html: true }));
+  /** `{{property_description}}` alone in a field: filled per recipient. */
+  const soleMergeField = (value: string) => value.trim().match(/^{{\s*(\w+)\s*}}$/)?.[1] as MergeFieldKey | undefined;
+
   /* ── Preview ── */
   let frame = 0;
   function renderPreview() {
@@ -210,8 +240,8 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
     frame = requestAnimationFrame(() => {
       let html = source.value;
       for (const [key, src] of Object.entries(imagePreviews)) html = applyEditableImageUpdate(html, key, src);
-      iframe.srcdoc = highlightPlaceholdersForPreview(renderTemplate(html, SAMPLE_MERGE_FIELDS, { html: true }));
-      (document.getElementById('preview-subject') as HTMLElement).textContent = renderTemplate(subject.value, SAMPLE_MERGE_FIELDS) || '(nincs tárgy)';
+      iframe.srcdoc = highlightPlaceholdersForPreview(localAssets(renderTemplate(html, SAMPLE, { html: true })));
+      (document.getElementById('preview-subject') as HTMLElement).textContent = renderTemplate(subject.value, SAMPLE) || '(nincs tárgy)';
       const unresolved = [...new Set([...findUnresolvedMergeFields(subject.value), ...findUnresolvedMergeFields(source.value)])];
       const line = document.getElementById('unresolved') as HTMLElement;
       line.hidden = unresolved.length === 0;
@@ -247,18 +277,25 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
     if (!any) (document.getElementById('source-panel') as HTMLElement).hidden = false;
 
     fieldsBox.innerHTML = [
-      ...images.map((image) => `
+      ...images.map((image) => {
+        const automatic = !imagePreviews[image.key] && image.src.includes('{{property_photo_url}}');
+        const canGoAutomatic = image.key === 'main_photo' && !automatic;
+        return `
         <div class="img-field" data-key="${esc(image.key)}" data-kind="image">
           <span class="lbl">${esc(image.label)}<em class="todo-badge">kitöltendő</em></span>
           <div class="img-row">
-            <img src="${esc(imagePreviews[image.key] ?? image.src)}" alt="" />
+            <img src="${esc(imagePreviews[image.key] ?? imageShown(image.src))}" alt="" />
             <div>
-              <button type="button" class="btn ghost small" data-browse="${esc(image.key)}">Tallózás…</button>
-              <small>vagy húzza ide a képet (JPG, PNG, WebP)</small>
+              <button type="button" class="btn ghost small" data-browse="${esc(image.key)}">${automatic ? 'Saját kép…' : 'Tallózás…'}</button>
+              <small>${automatic
+                ? 'Küldéskor automatikusan a hirdetés fő fotója kerül ide (az előnézetben mintakép). Saját képet is választhat — akkor mindig az jelenik meg.'
+                : 'vagy húzza ide a képet (JPG, PNG, WebP)'}</small>
+              ${canGoAutomatic ? `<button type="button" class="link-btn" data-auto-photo="${esc(image.key)}">Helyette mindig a hirdetés saját fotója</button>` : ''}
             </div>
             <input type="file" name="image:${esc(image.key)}" accept="image/jpeg,image/png,image/webp" hidden />
           </div>
-        </div>`),
+        </div>`;
+      }),
       ...links.map((link) => `
         <label class="set-field" data-key="${esc(link.key)}" data-kind="link">${esc(link.label)}
           <input type="url" value="${esc(link.href)}" placeholder="https://…" />
@@ -266,14 +303,31 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
       ...fields.map((field) => {
         const value = unescapeHtml(field.value);
         const rows = value.length > 160 ? 5 : value.length > 70 ? 3 : 1;
+        const merge = soleMergeField(value);
+        const auto = merge && merge in MERGE_FIELD_LABEL
+          ? `<small class="auto-note">Küldéskor automatikusan kitöltődik: ${esc(MERGE_FIELD_LABEL[merge].replace(/ \(.*\)$/, '').toLowerCase())}. Saját szöveget is írhat helyette.</small>`
+          : '';
         return `
         <label class="set-field" data-key="${esc(field.key)}" data-kind="text"><span class="lbl">${esc(field.label)}<em class="todo-badge">kitöltendő</em></span>
-          <textarea rows="${rows}">${esc(value)}</textarea>
+          <textarea rows="${rows}">${esc(value)}</textarea>${auto}
         </label>`;
       }),
     ].join('');
+    fieldsBox.querySelectorAll('textarea').forEach(fitHeight);
     renderTodo();
   }
+
+  /** Text boxes grow with their content: a one-word label stays one line, a paragraph shows whole. */
+  function fitHeight(area: HTMLTextAreaElement) {
+    if (!area.offsetParent) return; // hidden (code view): measured when shown again
+    area.style.height = 'auto';
+    area.style.height = `${area.scrollHeight + 2}px`;
+  }
+  let refit = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(refit);
+    refit = requestAnimationFrame(() => fieldsBox.querySelectorAll('textarea').forEach(fitHeight));
+  });
 
   function markDirty() {
     dirty = true;
@@ -285,7 +339,10 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
     const holder = target.closest<HTMLElement>('[data-key]');
     if (!holder) return;
     const key = holder.dataset.key!;
-    if (holder.dataset.kind === 'text') source.value = applyEditableFieldUpdate(source.value, key, target.value);
+    if (holder.dataset.kind === 'text') {
+      source.value = applyEditableFieldUpdate(source.value, key, target.value);
+      fitHeight(target as HTMLTextAreaElement);
+    }
     if (holder.dataset.kind === 'link') source.value = applyEditableLinkUpdate(source.value, key, target.value);
     markDirty();
     renderPreview();
@@ -321,6 +378,16 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
   fieldsBox.addEventListener('click', (event) => {
     const browse = (event.target as HTMLElement).closest<HTMLElement>('[data-browse]');
     if (browse) fieldsBox.querySelector<HTMLInputElement>(`[data-key="${browse.dataset.browse}"] input[type="file"]`)?.click();
+    // Back from a fixed photo to "whichever listing the email is about".
+    const auto = (event.target as HTMLElement).closest<HTMLElement>('[data-auto-photo]');
+    if (auto) {
+      const key = auto.dataset.autoPhoto!;
+      delete imagePreviews[key];
+      source.value = applyEditableImageUpdate(source.value, key, '{{property_photo_url}}');
+      buildSimpleEditor();
+      markDirty();
+      renderPreview();
+    }
   });
   fieldsBox.addEventListener('change', (event) => {
     const input = event.target as HTMLInputElement;
@@ -394,7 +461,7 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
     const locale = (document.getElementById('locale') as HTMLSelectElement).value;
     const hint = document.getElementById('automation-hint') as HTMLElement;
     if (!kind) {
-      hint.textContent = 'Kijelölve ez megy ki a beépített visszaigazolás helyett, ha a látogató ezen a nyelven küldi az űrlapot.';
+      hint.textContent = 'Ha kiválasztja, ez a sablon megy ki a beépített visszaigazolás helyett, amikor a látogató a sablon nyelvén küldi el az űrlapot.';
       return;
     }
     const owner = slotOwners[`${kind}:${locale}`];
@@ -462,14 +529,17 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
   .simple :global(.is-todo .todo-badge) { display: inline-block; }
   .simple :global(.is-todo textarea) { border-color: #f79009 !important; background: #fffaeb !important; }
   .simple :global(textarea) { resize: vertical; }
+  .simple :global(.set-field textarea) { min-height: 50px; overflow: hidden; }
   .simple :global(.img-field) { padding: 14px; border-radius: var(--r-md); border: 1.5px dashed var(--border); transition: border-color 0.2s, background-color 0.2s; }
   .simple :global(.img-field.is-todo) { border-color: #f79009; background: #fffaeb; }
   .simple :global(.img-field.drag) { border-color: var(--ink); background: var(--cream); }
   .simple :global(.img-row) { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
   .simple :global(.img-row img) { width: 72px; height: 72px; object-fit: cover; border-radius: var(--r-sm); box-shadow: 0 0 0 1px var(--border); }
   .simple :global(.img-row small) { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-quiet); }
-  .link-btn { border: 0; background: none; padding: 0; font: inherit; font-size: 14px; color: var(--ink-quiet); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-  .link-btn:hover { color: var(--ink); }
+  .simple :global(.auto-note) { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-quiet); }
+  .link-btn, .simple :global(.link-btn) { border: 0; background: none; padding: 0; font: inherit; font-size: 14px; color: var(--ink-quiet); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .link-btn:hover, .simple :global(.link-btn:hover) { color: var(--ink); }
+  .simple :global(.img-row .link-btn) { display: block; margin-top: 8px; font-size: 13px; text-align: left; }
   .source #source-panel { margin-top: 12px; }
   .merge-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .merge-buttons button { border: 1px dashed var(--border); border-radius: var(--r-sm); background: var(--white); padding: 4px 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-quiet); cursor: pointer; }
@@ -480,7 +550,7 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
   .settings legend { padding: 0; margin-bottom: 4px; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-quiet); }
   .settings small { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-quiet); }
   .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-  .savebar { position: sticky; bottom: 12px; display: flex; justify-content: flex-end; align-items: center; gap: 16px; padding: 12px 0 0; }
+  .savebar { position: sticky; bottom: 0; z-index: 2; display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin: 0 -12px; padding: 22px 12px 12px; background: linear-gradient(to top, var(--white) 68%, color-mix(in srgb, var(--white) 0%, transparent)); }
   .test small { display: block; margin-top: 10px; font-size: 13px; color: var(--ink-quiet); }
   .test-row { display: flex; gap: 10px; flex-wrap: wrap; }
   .test-row input { flex: 1 1 220px; }
