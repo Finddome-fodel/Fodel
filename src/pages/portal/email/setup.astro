@@ -16,11 +16,11 @@ if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 if (await mailSchemaReady(supabase)) return Astro.redirect('/portal/email');
 ---
 
-<Portal title="E-mail automatizáció">
+<Portal title="E-mail">
   <header class="ph">
     <div>
-      <p class="eyebrow">Tartalom</p>
-      <h1>E-mail <em>automatizáció</em></h1>
+      <p class="eyebrow">E-mail</p>
+      <h1>Saját <em>sablonok</em></h1>
       <p class="lede">Saját tervezésű levelek, automatikus válaszok, tömeges és ütemezett küldés — egy lépés választja el a bekapcsolástól.</p>
     </div>
   </header>

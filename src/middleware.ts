@@ -14,6 +14,7 @@ import { defineMiddleware } from 'astro/middleware';
 import type { MiddlewareHandler } from 'astro';
 import type { User } from '@supabase/supabase-js';
 import { createSupabaseServerClient } from '~/lib/supabase-server';
+import { primeSystemTexts } from '~/lib/email/system-texts';
 
 const PUBLIC_PORTAL_PATHS = [
   '/portal/login',
@@ -149,7 +150,13 @@ const guard: MiddlewareHandler = async (context, next) => {
  * signing out, replayed the dashboard from cache (Vercel's default for a
  * dynamic page is "public, max-age=0, must-revalidate").
  */
+/** Routes that can send or preview a system email: they read the admin's edited wording (src/lib/email/system-texts.ts). */
+function sendsSystemMail(pathname: string): boolean {
+  return pathname.startsWith('/api/') || pathname.startsWith('/portal') || pathname.startsWith('/listing/') || pathname.startsWith('/dev/');
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  if (sendsSystemMail(context.url.pathname)) await primeSystemTexts();
   const response = (await guard(context, next)) as Response;
   const { pathname } = context.url;
   if (pathname.startsWith('/portal') || pathname.startsWith('/api/portal')) {

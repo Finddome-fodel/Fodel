@@ -1,6 +1,6 @@
 ---
 /**
- * E-mail automatizáció — the templates, which of them answer the forms by
+ * E-mail › Sablonok — the templates, which of them answer the forms by
  * themselves, and the latest template emails sent. Bulk and scheduled sends,
  * the signature and the suppression list are the section's other tabs.
  * Admin only (middleware).
@@ -49,15 +49,16 @@ const STATUS_LABEL: Record<string, string> = { SENT: 'Elküldve', DELIVERED: 'K�
 const STATUS_PILL: Record<string, string> = { SENT: 'pill-queued', DELIVERED: 'pill-ok', BOUNCED: 'pill-bad', COMPLAINED: 'pill-bad' };
 ---
 
-<Portal title="E-mail automatizáció">
+<Portal title="E-mail">
   <header class="ph">
     <div>
-      <p class="eyebrow">Tartalom</p>
-      <h1>E-mail <em>automatizáció</em></h1>
+      <p class="eyebrow">E-mail</p>
+      <h1>Saját <em>sablonok</em></h1>
       <p class="lede">
         Saját tervezésű, FINDDOME-arculatú levelek: automatikus válasz az érdeklődőknek, tömeges és
         ütemezett küldés tulajdonosoknak, érdeklődőknek és hírlevél-feliratkozóknak, megnyitás- és
-        kattintáskövetéssel. A rendszerlevelek (regisztráció, számla, hirdetés állapota) ettől függetlenül mennek.
+        kattintáskövetéssel. A regisztráció, jelszó, számla és hirdetés-állapot levelei a
+        <a href="/portal/email/system">Rendszerlevelek</a> fülön vannak.
       </p>
     </div>
     <div class="ph-side">

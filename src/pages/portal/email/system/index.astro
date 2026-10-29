@@ -1,0 +1,191 @@
+---
+/**
+ * E-mail › Rendszerlevelek — every email the site sends by itself (sign-up,
+ * password, a listing's progress, invoices, valuations, expiry, the office
+ * notices), in one list, each with when it goes out, who gets it, and whether
+ * its wording has been changed. Opening one edits its words per language
+ * (/portal/email/system/[key]). Admin only (middleware).
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import { icon } from '~/lib/portal/icons';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
+import { isMissingMailSchema } from '~/lib/mail/schema';
+import { AUDIENCE_LABEL, SYSTEM_GROUPS, ALL_MESSAGES } from '~/lib/email/system-messages';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: saved, error } = await supabase.from('mail_system_texts').select('key, locale');
+const needsMigration = isMissingMailSchema(error);
+const edited = new Map<string, string[]>();
+for (const row of saved ?? []) edited.set(row.key, [...(edited.get(row.key) ?? []), row.locale]);
+
+const total = ALL_MESSAGES.length;
+const changed = ALL_MESSAGES.filter((message) => edited.has(message.key)).length;
+const short = (codes: string[]) => codes.map((code) => code.toUpperCase()).join(' · ');
+---
+
+<Portal title="E-mail · Rendszerlevelek">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">E-mail</p>
+      <h1>Rendszer<em>levelek</em></h1>
+      <p class="lede">
+        Azok a levelek, amelyeket a honlap magától küld: regisztráció, jelszó, a hirdetés útja, számla,
+        értékbecslés. Itt mind egy helyen van. Nyissa meg bármelyiket, és átírhatja a szavait nyelvenként,
+        élő előnézettel. A levél felépítése (gombok, táblázatok, aláírás) rögzített, így egy átírás sem
+        tudja elrontani.
+      </p>
+    </div>
+  </header>
+
+  <MailNav current="system" />
+
+  {needsMigration && (
+    <p class="notice warn">
+      A szerkesztés bekapcsolásához egyszer le kell futtatni a <code>0040_system_mail_texts.sql</code> migrációt
+      a Supabase SQL Editorban. Addig a levelek a beépített szöveggel mennek, és itt megnézheti őket.
+    </p>
+  )}
+
+  <div class="bar">
+    <label class="search">
+      <Fragment set:html={icon('search', 17)} />
+      <input type="search" id="find" placeholder="Keresés a levelek között…" aria-label="Keresés a rendszerlevelek között" autocomplete="off" />
+    </label>
+    <div class="seg" role="group" aria-label="Kinek szól">
+      <button type="button" data-aud="" aria-pressed="true">Mind</button>
+      <button type="button" data-aud="owner" aria-pressed="false">Hirdetőnek</button>
+      <button type="button" data-aud="visitor" aria-pressed="false">Érdeklődőnek</button>
+      <button type="button" data-aud="office" aria-pressed="false">Irodának</button>
+    </div>
+    <p class="count"><b>{total}</b> rendszerlevél{changed > 0 ? <> · <b>{changed}</b> módosítva</> : <> · mind a beépített szöveggel megy</>}</p>
+  </div>
+
+  <div id="groups">
+    {SYSTEM_GROUPS.map((group) => (
+      <section class="group" data-group>
+        <div class="group-head">
+          <h2>{group.label}</h2>
+          <p>{group.blurb}</p>
+        </div>
+        <ul class="rows">
+          {group.messages.map((message) => {
+            const langs = edited.get(message.key) ?? [];
+            return (
+              <li data-row data-aud={message.to} data-text={`${message.label} ${message.when}`.toLowerCase()}>
+                <a class="row" href={message.href ?? `/portal/email/system/${message.key}`}>
+                  <span class="main">
+                    <b>{message.label}</b>
+                    <span class="when">{message.when}</span>
+                  </span>
+                  <span class="meta">
+                    <span class={`aud aud-${message.to}`}>{AUDIENCE_LABEL[message.to]}</span>
+                    {message.href
+                      ? <span class="state state-special">Jóváhagyással</span>
+                      : langs.length
+                        ? <span class="state state-edited" title={langs.map((l) => LOCALE_LABEL[l] ?? l).join(', ')}>Módosítva · {short(langs)}</span>
+                        : <span class="state">Beépített szöveg</span>}
+                  </span>
+                  <span class="go" aria-hidden="true"><Fragment set:html={icon('edit', 17)} /></span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <div class="none" id="none" hidden>
+    <Fragment set:html={icon('search', 28)} />
+    <b>Nincs ilyen levél</b>
+    <span>Próbáljon rövidebb kifejezést, vagy válassza a „Mind” szűrőt.</span>
+  </div>
+
+  <p class="foot">
+    A tömeges és ütemezett küldés, valamint a saját tervezésű sablonok a többi fülön vannak. A rendszerlevelek
+    ettől függetlenül, a megfelelő pillanatban mennek ki, bekapcsolni nem kell őket.
+  </p>
+</Portal>
+
+<script>
+  const find = document.getElementById('find') as HTMLInputElement;
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-row]')];
+  const groups = [...document.querySelectorAll<HTMLElement>('[data-group]')];
+  const none = document.getElementById('none')!;
+  let audience = '';
+
+  const apply = () => {
+    const needle = find.value.trim().toLowerCase();
+    for (const row of rows) {
+      const show = (!audience || row.dataset.aud === audience) && (!needle || (row.dataset.text ?? '').includes(needle));
+      row.hidden = !show;
+    }
+    for (const group of groups) group.hidden = !group.querySelector('[data-row]:not([hidden])');
+    none.hidden = groups.some((group) => !group.hidden);
+  };
+
+  find.addEventListener('input', apply);
+  document.querySelectorAll<HTMLButtonElement>('.seg button[data-aud]').forEach((button) => {
+    button.addEventListener('click', () => {
+      audience = button.dataset.aud ?? '';
+      document.querySelectorAll('.seg button[data-aud]').forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+      apply();
+    });
+  });
+</script>
+
+<style>
+  .ph { margin-bottom: 26px; }
+  .notice { margin-bottom: 20px; }
+  .notice code { font-size: 0.92em; padding: 1px 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.55); overflow-wrap: anywhere; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-bottom: 30px; }
+  .search { position: relative; flex: 1 1 260px; max-width: 380px; }
+  .search :global(svg) { position: absolute; left: 15px; top: 50%; translate: 0 -50%; color: var(--ink-quiet); pointer-events: none; }
+  .search input { width: 100%; min-height: 46px; padding: 0 16px 0 42px; }
+  .seg { display: inline-flex; flex-wrap: wrap; padding: 3px; border-radius: var(--r-pill); background: var(--linen); }
+  .seg button { border: 0; background: none; padding: 8px 16px; border-radius: var(--r-pill); font: inherit; font-size: 14px; color: var(--ink-quiet); cursor: pointer; transition: background-color 0.25s var(--ease-out), color 0.25s; }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed='true'] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-xs); }
+  .count { margin: 0 0 0 auto; font-size: 14px; color: var(--ink-quiet); }
+  .count b { color: var(--ink); font-weight: var(--fw-medium); font-variant-numeric: tabular-nums; }
+
+  .group { margin-bottom: 38px; }
+  .group-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; margin-bottom: 12px; }
+  .group-head h2 { margin: 0; font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; color: var(--ink); }
+  .group-head p { margin: 0; font-size: 14px; color: var(--ink-quiet); }
+
+  .rows { list-style: none; margin: 0; padding: 0; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); overflow: hidden; }
+  .rows li { box-shadow: 0 -1px 0 var(--pt-hair); } /* clipped above the first visible row by overflow:hidden */
+  .row { display: grid; grid-template-columns: minmax(0, 1fr) auto 28px; align-items: center; gap: 8px 22px; padding: 16px 22px; color: inherit; text-decoration: none; transition: background-color 0.2s var(--ease-out); }
+  .row:hover, .row:focus-visible { background: var(--paper); }
+  .row:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--ink); }
+  .main { display: grid; gap: 3px; min-width: 0; }
+  .main b { font-weight: var(--fw-medium); color: var(--ink); }
+  .when { font-size: 14px; line-height: 1.5; color: var(--ink-quiet); }
+  .meta { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
+  .aud, .state { padding: 3px 12px; border-radius: var(--r-pill); font-size: 13px; white-space: nowrap; }
+  .aud { background: var(--linen); color: var(--ink); }
+  .aud-office { background: var(--paper); color: var(--ink-quiet); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .state { color: var(--ink-quiet); }
+  .state-edited { background: var(--pt-green-bg); color: var(--pt-green); }
+  .state-special { background: var(--pt-amber-bg); color: var(--pt-amber); }
+  .go { display: grid; place-items: center; color: var(--ink-quiet); opacity: 0.55; transition: opacity 0.2s, color 0.2s, translate 0.25s var(--ease-out); }
+  .row:hover .go { opacity: 1; color: var(--ink); translate: 2px 0; }
+  .row :global(svg) { width: 17px; height: 17px; }
+  @media (max-width: 760px) {
+    .row { grid-template-columns: minmax(0, 1fr) 24px; padding: 15px 16px; }
+    .meta { grid-column: 1; grid-row: 2; justify-content: flex-start; }
+    .go { grid-column: 2; grid-row: 1 / span 2; }
+    .count { margin-left: 0; width: 100%; }
+  }
+
+  .none { display: grid; justify-items: center; gap: 8px; padding: 56px 24px; text-align: center; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); color: var(--ink-quiet); }
+  .none b { color: var(--ink); font-size: 18px; }
+  .foot { max-width: 640px; margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: var(--ink-quiet); }
+  [hidden] { display: none !important; }
+</style>
