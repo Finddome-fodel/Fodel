@@ -1,0 +1,172 @@
+---
+/**
+ * Unsubscribe from FINDDOME's bulk template mail (src/lib/mail/unsubscribe.ts).
+ *
+ *   GET   ?e=<address, base64url>&t=<signed token>&l=<locale> — asks to confirm
+ *   POST  the confirm button: adds the address to mail_suppressions and, if it
+ *         is on the newsletter list, unsubscribes it there too
+ *
+ * The GET never unsubscribes by itself: mail security scanners open every link.
+ */
+export const prerender = false;
+
+import Base from '~/layouts/Base.astro';
+import { localeFrom } from '~/i18n/ui';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { UNSUBSCRIBE_COPY, verifyUnsubscribe } from '~/lib/mail/unsubscribe';
+import { suppress } from '~/lib/mail/suppression';
+import { syncAudience } from '~/lib/newsletter';
+import { logEvent } from '~/lib/activity';
+
+Astro.response.headers.set('cache-control', 'no-store');
+Astro.response.headers.set('referrer-policy', 'no-referrer');
+
+let encoded = Astro.url.searchParams.get('e') ?? '';
+let token = Astro.url.searchParams.get('t') ?? '';
+let locale = localeFrom(Astro.url.searchParams.get('l'));
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  encoded = String(form.get('e') ?? encoded);
+  token = String(form.get('t') ?? token);
+  locale = localeFrom(String(form.get('l') ?? locale));
+}
+const T = UNSUBSCRIBE_COPY[locale];
+const address = verifyUnsubscribe(encoded, token);
+
+let state: 'confirm' | 'done' | 'invalid' = address ? 'confirm' : 'invalid';
+let failed = false;
+if (address && Astro.request.method === 'POST') {
+  try {
+    const admin = createSupabaseAdminClient();
+    await suppress(admin, { email: address, reason: 'UNSUBSCRIBED', note: 'Leiratkozó link' });
+    const { data: subscriber } = await admin.from('newsletter_subscribers').select('id, status').ilike('email', address.replace(/[\\%_]/g, '\\$&')).maybeSingle();
+    if (subscriber && subscriber.status !== 'unsubscribed') {
+      await admin.from('newsletter_subscribers').update({ status: 'unsubscribed', unsubscribed_at: new Date().toISOString() }).eq('id', subscriber.id);
+      await syncAudience(address, true).catch((error) => console.error('[mail] unsubscribe: audience sync failed', error));
+    }
+    await logEvent({ kind: 'mail.unsubscribed', subjectType: 'mail_suppression', locale, source: 'web' }).catch(() => {});
+    state = 'done';
+  } catch (error) {
+    // The suppression is what matters; if it could not be saved the visitor is
+    // told so and can press the button again, rather than seeing an error page.
+    console.error('[mail] unsubscribe could not be saved', error);
+    failed = true;
+  }
+}
+const title = state === 'done' ? T.doneTitle : state === 'invalid' ? T.invalidTitle : T.confirmTitle;
+---
+
+<Base locale={locale} title={title} description={title} noindex>
+  <section class="un-page">
+    <div class="un-card">
+      <span class:list={['un-mark', state === 'done' && 'ok']} aria-hidden="true">
+        {state === 'done'
+          ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          : <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7l8 6 8-6M4 6h16v12H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" /></svg>}
+      </span>
+      <h1>{title}</h1>
+      {state === 'confirm' && (
+        <>
+          {failed && <p class="un-fail" role="alert">{T.failBody}</p>}
+          <p>{T.confirmBody} <strong>{address}</strong></p>
+          <form method="post">
+            <input type="hidden" name="e" value={encoded} />
+            <input type="hidden" name="t" value={token} />
+            <input type="hidden" name="l" value={locale} />
+            <button type="submit" class="un-btn">{T.button}</button>
+          </form>
+        </>
+      )}
+      {state === 'done' && <p>{T.doneBody}</p>}
+      {state === 'invalid' && <p>{T.invalidBody}</p>}
+      <a class="un-home" href={`/${locale}/`}>{T.home}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .un-page {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    padding: calc(var(--nav-h, 88px) + 32px) var(--pad-x) 96px;
+  }
+  .un-card {
+    width: 100%;
+    max-width: 520px;
+    padding: clamp(28px, 5vw, 48px);
+    border-radius: var(--r-2xl);
+    background: var(--white);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(16, 42, 67, 0.06);
+  }
+  .un-mark {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    border-radius: 50%;
+    background: var(--linen);
+    color: var(--ink);
+  }
+  .un-mark.ok {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: var(--fw-display);
+    font-size: clamp(28px, 4vw, 36px);
+    letter-spacing: var(--ls-heading);
+    line-height: 1.12;
+    color: var(--ink);
+  }
+  p {
+    margin-top: 12px;
+    font-size: var(--fs-body-lg);
+    line-height: 1.65;
+    color: var(--taupe);
+    overflow-wrap: anywhere;
+  }
+  .un-btn,
+  .un-home {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    margin-top: 24px;
+    padding: 0 24px;
+    border-radius: var(--r-pill);
+    font: inherit;
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .un-btn {
+    border: 0;
+    background: var(--ink);
+    color: var(--cream);
+    margin-right: 12px;
+  }
+  .un-btn:hover {
+    background: var(--ink-soft);
+  }
+  .un-home {
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+    background: transparent;
+  }
+  .un-btn:focus-visible,
+  .un-home:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .un-fail {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(176, 58, 46, 0.08);
+    color: #8f2d22;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+</style>

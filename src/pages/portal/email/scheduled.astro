@@ -1,0 +1,83 @@
+---
+/**
+ * Every bulk send: scheduled ones first, then the history. Opening the page
+ * also nudges any send that is due — the same work the minute cron does —
+ * so a send never waits on the cron while an admin is looking at it.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
+import MailNav from '~/components/portal/MailNav.astro';
+import { icon } from '~/lib/portal/icons';
+import { JOB_STATUS_LABEL, JOB_STATUS_PILL, budapestDateTime, processDueJobs, type JobStatus } from '~/lib/mail/jobs';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
+
+try {
+  await processDueJobs(supabase, 4_000);
+} catch (error) {
+  console.error('[mail] opportunistic processing failed', error);
+}
+
+const { data: jobs } = await supabase
+  .from('mail_send_jobs')
+  .select('id, name, status, scheduled_at, total_recipients, sent_count, failed_count, skipped_count, created_at, mail_templates(name)')
+  .order('scheduled_at', { ascending: false })
+  .limit(200);
+const upcoming = (jobs ?? []).filter((j: any) => ['SCHEDULED', 'RUNNING', 'DRAFT'].includes(j.status));
+const past = (jobs ?? []).filter((j: any) => !['SCHEDULED', 'RUNNING', 'DRAFT'].includes(j.status));
+const p = Astro.url.searchParams;
+---
+
+<Portal title="Ütemezett küldések">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">E-mail automatizáció</p>
+      <h1>Ütemezett <em>küldések</em></h1>
+      <p class="lede">A még el nem indult küldés lemondható. Az időzítés budapesti idő szerint értendő.</p>
+    </div>
+    <div class="ph-side"><a class="btn" href="/portal/email/bulk"><Fragment set:html={icon('send', 16)} /> Új tömeges küldés</a></div>
+  </header>
+
+  <MailNav current="scheduled" />
+  {p.get('cancelled') && <p class="notice ok" data-toast="ok">A küldés lemondva — akinek még nem ment ki, nem kapja meg.</p>}
+
+  {[{ title: 'Várakozik / folyamatban', rows: upcoming, empty: 'Nincs ütemezett küldés.' }, { title: 'Korábbi küldések', rows: past, empty: 'Még nem volt tömeges küldés.' }].map((group) => (
+    <section class="block">
+      <h2>{group.title}</h2>
+      {group.rows.length === 0 ? <p class="soft">{group.empty}</p> : (
+        <table class="list mail-list">
+          <thead><tr><th>Küldés</th><th>Időpont</th><th>Állapot</th><th>Haladás</th></tr></thead>
+          <tbody>
+            {group.rows.map((j: any) => (
+              <tr>
+                <td><a href={`/portal/email/jobs/${j.id}`}>{j.name || j.mail_templates?.name || 'Névtelen küldés'}</a>{j.name && <span class="sub">{j.mail_templates?.name}</span>}</td>
+                <td class="when">{budapestDateTime(j.scheduled_at)}</td>
+                <td><span class:list={['pill', JOB_STATUS_PILL[j.status as JobStatus]]}>{JOB_STATUS_LABEL[j.status as JobStatus] ?? j.status}</span></td>
+                <td class="progress">
+                  <span>{j.sent_count} / {j.total_recipients} elküldve</span>
+                  {(j.failed_count > 0 || j.skipped_count > 0) && <span class="sub">{j.failed_count > 0 && `${j.failed_count} sikertelen`}{j.failed_count > 0 && j.skipped_count > 0 && ' · '}{j.skipped_count > 0 && `${j.skipped_count} kihagyva`}</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  ))}
+</Portal>
+
+<style>
+  .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 40px; margin-bottom: 26px; }
+  .btn :global(svg) { width: 16px; height: 16px; }
+  .block { margin-bottom: 34px; }
+  .block h2 { margin-bottom: 14px; font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; color: var(--ink); }
+  .soft { color: var(--ink-quiet); }
+  .sub { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-quiet); }
+  .when { white-space: nowrap; }
+  .progress { font-variant-numeric: tabular-nums; }
+</style>

@@ -1,0 +1,86 @@
+---
+/**
+ * The default signature, appended under every template email (above the
+ * FINDDOME footer in the base layouts). Previewed live as it will appear.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
+import MailNav from '~/components/portal/MailNav.astro';
+import { signatureHtml } from '~/lib/mail/send';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
+
+const { data: signature } = await supabase.from('mail_signatures').select('*').eq('is_default', true).maybeSingle();
+const s = signature ?? { name: profile?.full_name ?? '', title: '', phone: profile?.phone ?? '', email: 'info@finddome.com', website_url: 'https://finddome.com', facebook_url: '', instagram_url: '', linkedin_url: '' };
+const p = Astro.url.searchParams;
+const FIELDS: { name: string; label: string; value: string | null; required?: boolean; placeholder?: string; type?: 'text' | 'email' | 'url' }[] = [
+  { name: 'name', label: 'Név *', value: s.name, required: true, placeholder: 'pl. Födelmesi Gábor' },
+  { name: 'title', label: 'Beosztás', value: s.title, placeholder: 'pl. Ingatlanszakértő' },
+  { name: 'phone', label: 'Telefon', value: s.phone, placeholder: '+31 6 4400 5550' },
+  { name: 'email', label: 'E-mail', value: s.email, type: 'email' },
+  { name: 'websiteUrl', label: 'Weboldal', value: s.website_url, type: 'url', placeholder: 'https://finddome.com' },
+  { name: 'facebookUrl', label: 'Facebook', value: s.facebook_url, type: 'url', placeholder: 'https://www.facebook.com/…' },
+  { name: 'instagramUrl', label: 'Instagram', value: s.instagram_url, type: 'url', placeholder: 'https://www.instagram.com/…' },
+  { name: 'linkedinUrl', label: 'LinkedIn', value: s.linkedin_url, type: 'url', placeholder: 'https://www.linkedin.com/…' },
+];
+const previewHtml = signatureHtml({ ...s, name: s.name || 'Név' } as any);
+---
+
+<Portal title="Aláírás">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">E-mail automatizáció</p>
+      <h1>Alá<em>írás</em></h1>
+      <p class="lede">Minden sablonlevél alján megjelenik, a FINDDOME lábléc fölött. Az {'{{agent_name}}'}, {'{{agent_phone}}'} és {'{{agent_email}}'} mezők is innen töltődnek.</p>
+    </div>
+  </header>
+
+  <MailNav current="signature" />
+  {p.get('saved') && <p class="notice ok" data-toast="ok">Aláírás mentve.</p>}
+  {p.get('error') && <p class="notice error">{p.get('error')}</p>}
+
+  <div class="grid">
+    <form method="post" action="/api/portal/email/signature" class="set-card" id="sig">
+      <div class="set-grid">
+        {FIELDS.map((f) => (
+          <label>{f.label}<input name={f.name} type={f.type ?? 'text'} value={f.value ?? ''} required={f.required} placeholder={f.placeholder} /></label>
+        ))}
+      </div>
+      <div class="actions"><button class="btn" type="submit">Mentés</button></div>
+    </form>
+    <div class="preview">
+      <p class="label">Előnézet</p>
+      <div class="frame" id="sig-preview" set:html={previewHtml}></div>
+    </div>
+  </div>
+</Portal>
+
+<script>
+  // Live preview: mirrors signatureHtml() closely enough to judge the look; the saved version is rendered by the server.
+  const form = document.getElementById('sig') as HTMLFormElement;
+  const box = document.getElementById('sig-preview') as HTMLElement;
+  const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  form.addEventListener('input', () => {
+    const v = (name: string) => (form.elements.namedItem(name) as HTMLInputElement).value.trim();
+    const cell = box.querySelector('td');
+    if (!cell) return;
+    const socials = [['Facebook', v('facebookUrl')], ['Instagram', v('instagramUrl')], ['LinkedIn', v('linkedinUrl')]].filter(([, u]) => u);
+    cell.innerHTML = `<strong style="font-size:16px;color:#102a43;">${esc(v('name') || 'Név')}</strong>${v('title') ? `<br>${esc(v('title'))}` : ''}<br>`
+      + [v('phone'), v('email'), v('websiteUrl').replace(/^https?:\/\//, '')].filter(Boolean).map((x) => `${esc(x)}<br>`).join('')
+      + socials.map(([label]) => `<span style="text-decoration:underline;margin-right:12px;">${label}</span>`).join('');
+  });
+</script>
+
+<style>
+  .ph { margin-bottom: 26px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; max-width: 1100px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .actions { display: flex; justify-content: flex-end; margin-top: 18px; }
+  .label { margin: 0 0 10px; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-quiet); }
+  .frame { border-radius: var(--r-lg); background: #fdfdfc; box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); overflow: hidden; }
+</style>

@@ -1,0 +1,572 @@
+---
+/**
+ * The template editor. One form, one save: name, subject, the simple editor's
+ * texts, links and images, the HTML source and the settings all go together
+ * (src/pages/api/portal/email/templates/[id].ts).
+ *
+ * The simple editor is built in the browser from the HTML's markers
+ * (src/lib/mail/editable.ts) and writes straight back into the HTML, so the
+ * live preview — rendered with sample data by the same merge code the real
+ * send uses — is exactly what will be saved. Chosen images are shrunk in the
+ * browser, previewed locally, and uploaded (as JPEG) only on save.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
+import { LOCALES } from '~/i18n/ui';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
+import { icon } from '~/lib/portal/icons';
+import { MERGE_FIELD_KEYS, MERGE_FIELD_LABEL } from '~/lib/mail/merge';
+import { AUTOMATION_LABEL } from '~/lib/mail/automation';
+import { fixedListingParts, unfinishedParts } from '~/lib/mail/editable';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
+
+const { id } = Astro.params;
+const { data: template } = await supabase.from('mail_templates').select('*').eq('id', id).maybeSingle();
+if (!template) return new Response('A sablon nem található.', { status: 404 });
+
+const [{ data: signatures }, { data: listings }, { data: slots }, { count: jobCount }] = await Promise.all([
+  supabase.from('mail_signatures').select('id, name, is_default').order('is_default', { ascending: false }),
+  supabase.from('properties').select('id, ref, settlement, status').in('status', ['published', 'awaiting_payment', 'submitted', 'draft', 'sold']).order('created_at', { ascending: false }).limit(500),
+  supabase.from('mail_templates').select('id, name, automation, locale').not('automation', 'is', null).neq('id', id),
+  supabase.from('mail_send_jobs').select('id', { count: 'exact', head: true }).eq('template_id', id),
+]);
+const slotOwners = Object.fromEntries((slots ?? []).map((s: any) => [`${s.automation}:${s.locale}`, s.name]));
+const linkedListed = !template.linked_property_id || (listings ?? []).some((l: any) => l.id === template.linked_property_id);
+
+const p = Astro.url.searchParams;
+const startsUnfinished = unfinishedParts(template.body_html).length > 0;
+const fillsFromListing = template.body_html.includes('{{property_');
+// The automatic enquiry reply answers about every listing: fixed listing text in it would reach the wrong people.
+const fixedInReply = template.automation === 'enquiry' ? fixedListingParts(template.body_html) : [];
+const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LABEL[key] }));
+---
+
+<Portal title={template.name}>
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/email">← E-mail automatizáció</a></p>
+      <div class="title-row">
+        <h1>{template.name}</h1>
+        <span class:list={['pill', template.active ? 'pill-ok' : 'pill-off']}>{template.active ? 'Aktív' : 'Inaktív'}</span>
+      </div>
+    </div>
+    <div class="ph-side">
+      <button type="button" class="btn ghost" data-open="duplicate"><Fragment set:html={icon('copy', 16)} /> Másolat</button>
+      <form method="post" action={`/api/portal/email/templates/${template.id}`} data-confirm-delete>
+        <input type="hidden" name="action" value="delete" />
+        <button type="submit" class="btn ghost danger" disabled={(jobCount ?? 0) > 0} title={(jobCount ?? 0) > 0 ? 'Tömeges küldés használta — kapcsolja ki helyette' : undefined}><Fragment set:html={icon('trash', 16)} /> Törlés</button>
+      </form>
+    </div>
+  </header>
+
+  {p.get('created') && (
+    <p class="notice ok">
+      {startsUnfinished
+        ? 'Sablon létrehozva. Írja át a sárgával jelölt részeket, cserélje le a képeket, mentsen — utána kapcsolja be (Aktív), ha használni szeretné.'
+        : fillsFromListing
+          ? 'Sablon létrehozva. A hirdetés adatai — cím, fotó, leírás, alapterület, ár és link — küldéskor automatikusan abból a hirdetésből töltődnek ki, amelyről a levél szól. Nézze át a szövegeket, mentsen, majd kapcsolja be (Aktív).'
+          : 'Sablon létrehozva. Nézze át a szövegeket, mentsen, majd kapcsolja be (Aktív), ha használni szeretné.'}
+    </p>
+  )}
+  {fixedInReply.length > 0 && (
+    <p class="notice warn">
+      Figyelem: ez a sablon az automatikus válasz <b>minden</b> ingatlan-érdeklődésre, de ezek a részei egyetlen hirdetés rögzített adatait mutatják: <b>{fixedInReply.join(', ')}</b>. Így minden érdeklődő ugyanezt kapná, bármelyik hirdetésről kérdez. Írja vissza ezekbe a mezőkbe a megfelelő mezőkódot (például {'{{property_description}}'}, {'{{property_area}}'}, {'{{property_bedrooms}}'}), a fotónál pedig válassza a „Helyette mindig a hirdetés saját fotója” lehetőséget.
+    </p>
+  )}
+  {p.get('copied') && <p class="notice ok">Másolat létrehozva, inaktívként.</p>}
+  {p.get('saved') && <p class="notice ok" data-toast="ok">Mentve.</p>}
+  {p.get('testSent') && <p class="notice ok">Tesztlevél elküldve ide: {p.get('testSent')}</p>}
+  {p.get('error') && <p class="notice error">{p.get('error')}</p>}
+
+  <dialog class="pt-dialog dup" id="duplicate">
+    <form method="post" action={`/api/portal/email/templates/${template.id}`}>
+      <input type="hidden" name="action" value="duplicate" />
+      <h2>Másolat készítése</h2>
+      <p>A másolat saját nevet kap, és inaktívként jön létre.</p>
+      <label class="set-field">Az új sablon neve<input name="name" required maxlength="120" value={`${template.name} (másolat)`} /></label>
+      <div class="dlg-actions">
+        <button type="button" class="btn ghost" data-close>Mégse</button>
+        <button type="submit" class="btn">Másolat létrehozása</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="composer">
+    <div class="col">
+      <form id="tpl" class="set-card ed" method="post" action={`/api/portal/email/templates/${template.id}`} enctype="multipart/form-data">
+        <input type="hidden" name="action" value="save" />
+        <label class="set-field">Sablon neve<input name="name" required maxlength="120" value={template.name} /></label>
+        <label class="set-field">Tárgy<input name="subject" id="subject" required maxlength="200" value={template.subject} /></label>
+
+        <div class="todo" id="todo" hidden>
+          <p><b id="todo-count"></b> — sárgával jelölve itt és az előnézetben. Küldés és bekapcsolás előtt írja át őket:</p>
+          <div class="todo-list" id="todo-list"></div>
+        </div>
+
+        <div id="simple" class="simple">
+          <p class="section-label">Szövegek, linkek és képek (kód nélkül)</p>
+          <div id="simple-fields"></div>
+        </div>
+        <p id="no-simple" class="soft" hidden>Ez a sablon nincs megjelölve a kód nélküli szerkesztőhöz — a tartalmát a HTML-forrásban módosíthatja.</p>
+
+        <div class="source">
+          <button type="button" class="link-btn" id="toggle-source">HTML-forrás megjelenítése (haladó)</button>
+          <div id="source-panel" hidden>
+            <p class="section-label">Mező beszúrása a kurzor helyére</p>
+            <div class="merge-buttons">
+              {mergeButtons.map((b) => <button type="button" data-merge={b.key} title={b.label}>{`{{${b.key}}}`}</button>)}
+            </div>
+            <textarea name="bodyHtml" id="body-html" rows="16" spellcheck="false">{template.body_html}</textarea>
+          </div>
+          <p class="error-line" id="unresolved" hidden></p>
+        </div>
+
+        <fieldset class="settings">
+          <legend>Beállítások</legend>
+          <div class="row">
+            <label class="set-field">A levél nyelve
+              <select name="locale" id="locale">
+                {LOCALES.map((l) => <option value={l} selected={l === template.locale}>{LOCALE_LABEL[l]}</option>)}
+              </select>
+            </label>
+            <label class="set-field">Aláírás
+              <select name="signatureId">
+                <option value="">Az alapértelmezett{(signatures ?? []).length === 0 ? ' (még nincs)' : ''}</option>
+                {(signatures ?? []).filter((s: any) => !s.is_default).map((s: any) => <option value={s.id} selected={s.id === template.signature_id}>{s.name}</option>)}
+              </select>
+              <small><a href="/portal/email/signature">Aláírás szerkesztése →</a></small>
+            </label>
+          </div>
+          <label class="set-field">Kapcsolt hirdetés
+            <select name="linkedPropertyId">
+              <option value="">Nincs — érdeklődőnél az a hirdetés, amelyről érdeklődött</option>
+              {!linkedListed && <option value={template.linked_property_id} selected>Jelenlegi (archivált) hirdetés</option>}
+              {(listings ?? []).map((l: any) => <option value={l.id} selected={l.id === template.linked_property_id}>#{l.ref} — {l.settlement}</option>)}
+            </select>
+            <small>A {'{{property_…}}'} mezők ebből a hirdetésből töltődnek, ha a címzetthez nem tartozik saját.</small>
+          </label>
+          <label class="set-field">Automatikus válasz
+            <select name="automation" id="automation">
+              <option value="">Nem automatikus</option>
+              {Object.entries(AUTOMATION_LABEL).map(([key, label]) => <option value={key} selected={template.automation === key}>{label}</option>)}
+            </select>
+            <small id="automation-hint"></small>
+          </label>
+          <label class="check"><input type="checkbox" name="active" checked={template.active} /> Aktív — kiválasztható tömeges küldéshez, és ha fent automatikus válasznak jelölte, az űrlapokra is ez megy ki</label>
+        </fieldset>
+
+        <div class="savebar">
+          <span id="dirty" class="soft" hidden>Nem mentett módosítások</span>
+          <button type="submit" class="btn">Mentés</button>
+        </div>
+      </form>
+
+      <form class="set-card test" method="post" action={`/api/portal/email/templates/${template.id}`}>
+        <input type="hidden" name="action" value="test" />
+        <p class="section-label">Tesztlevél</p>
+        <div class="test-row">
+          <input type="email" name="to" required value={profile?.email ?? ''} aria-label="Tesztlevél címzettje" />
+          <button type="submit" class="btn ghost"><Fragment set:html={icon('send', 16)} /> Teszt küldése</button>
+        </div>
+        <small>A legutóbb <b>mentett</b> változat megy ki mintaadatokkal, „[TESZT]” tárggyal — nem valódi ügyfélnek, követés nélkül.</small>
+      </form>
+    </div>
+
+    <aside class="preview">
+      <div class="preview-head">
+        <span class="section-label">Élő előnézet — mintaadatokkal</span>
+        <div class="seg" role="group" aria-label="Nézet">
+          <button type="button" data-width="680" aria-pressed="true">Asztali</button>
+          <button type="button" data-width="390" aria-pressed="false">Mobil</button>
+        </div>
+      </div>
+      <div class="frame">
+        <p class="subject" id="preview-subject"></p>
+        <div class="stage"><iframe id="preview" title="Levél előnézet" sandbox=""></iframe></div>
+      </div>
+    </aside>
+  </div>
+</Portal>
+
+<script is:inline define:vars={{ slotOwners, localeLabels: LOCALE_LABEL }}>
+  window.__mailEditor = { slotOwners, localeLabels };
+</script>
+
+<script>
+  import { MERGE_FIELD_LABEL, SAMPLE_MERGE_FIELDS, SAMPLE_PROPERTY_PHOTO_PATH, findUnresolvedMergeFields, renderTemplate, type MergeFieldKey } from '~/lib/mail/merge';
+  import {
+    applyEditableFieldUpdate,
+    applyEditableImageUpdate,
+    applyEditableLinkUpdate,
+    highlightPlaceholdersForPreview,
+    isPlaceholderImage,
+    isPlaceholderText,
+    parseEditableFields,
+    parseEditableImages,
+    parseEditableLinks,
+    unescapeHtml,
+  } from '~/lib/mail/editable';
+
+  const { slotOwners, localeLabels } = (window as any).__mailEditor as { slotOwners: Record<string, string>; localeLabels: Record<string, string> };
+  const form = document.getElementById('tpl') as HTMLFormElement;
+  const source = document.getElementById('body-html') as HTMLTextAreaElement;
+  const subject = document.getElementById('subject') as HTMLInputElement;
+  const fieldsBox = document.getElementById('simple-fields') as HTMLDivElement;
+  const iframe = document.getElementById('preview') as HTMLIFrameElement;
+  const imagePreviews: Record<string, string> = {};
+  let dirty = false;
+
+  const esc = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  // The preview loads the sample photo and the "photo goes here" images from
+  // this very site, so they show on a preview deployment or localhost too,
+  // not only once the live domain serves them.
+  const SAMPLE = { ...SAMPLE_MERGE_FIELDS, property_photo_url: `${location.origin}${SAMPLE_PROPERTY_PHOTO_PATH}` };
+  const localAssets = (html: string) => html.replace(/https?:\/\/[^"'\s]+?(\/email\/(?:placeholder|sample)-[a-z]+\.jpg)/g, `${location.origin}$1`);
+  const imageShown = (src: string) => localAssets(renderTemplate(src, SAMPLE, { html: true }));
+  /** `{{property_description}}` alone in a field: filled per recipient. */
+  const soleMergeField = (value: string) => value.trim().match(/^{{\s*(\w+)\s*}}$/)?.[1] as MergeFieldKey | undefined;
+
+  /* ── Preview ── */
+  let frame = 0;
+  function renderPreview() {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      let html = source.value;
+      for (const [key, src] of Object.entries(imagePreviews)) html = applyEditableImageUpdate(html, key, src);
+      iframe.srcdoc = highlightPlaceholdersForPreview(localAssets(renderTemplate(html, SAMPLE, { html: true })));
+      (document.getElementById('preview-subject') as HTMLElement).textContent = renderTemplate(subject.value, SAMPLE) || '(nincs tárgy)';
+      const unresolved = [...new Set([...findUnresolvedMergeFields(subject.value), ...findUnresolvedMergeFields(source.value)])];
+      const line = document.getElementById('unresolved') as HTMLElement;
+      line.hidden = unresolved.length === 0;
+      line.textContent = `Ismeretlen mező, küldéskor blokkolva lesz: ${unresolved.map((u) => `{{${u}}}`).join(', ')}`;
+      renderTodo();
+    });
+  }
+
+  /* ── To-do list (unfinished parts) ── */
+  function renderTodo() {
+    const html = source.value;
+    const items = [
+      ...parseEditableImages(html).filter((i) => !imagePreviews[i.key] && isPlaceholderImage(i.src)).map((i) => ({ key: i.key, label: i.label })),
+      ...parseEditableFields(html).filter((f) => isPlaceholderText(f.value)).map((f) => ({ key: f.key, label: f.label })),
+    ];
+    const box = document.getElementById('todo') as HTMLElement;
+    box.hidden = items.length === 0;
+    (document.getElementById('todo-count') as HTMLElement).textContent = `Még ${items.length} kitöltendő rész`;
+    (document.getElementById('todo-list') as HTMLElement).innerHTML = items.map((i) => `<button type="button" data-goto="${esc(i.key)}">${esc(i.label)}</button>`).join('');
+    const todoKeys = new Set(items.map((i) => i.key));
+    fieldsBox.querySelectorAll<HTMLElement>('[data-key]').forEach((el) => el.classList.toggle('is-todo', todoKeys.has(el.dataset.key!)));
+  }
+
+  /* ── Simple editor, built from the HTML's markers ── */
+  function buildSimpleEditor() {
+    const html = source.value;
+    const images = parseEditableImages(html);
+    const links = parseEditableLinks(html);
+    const fields = parseEditableFields(html);
+    const any = images.length + links.length + fields.length > 0;
+    (document.getElementById('simple') as HTMLElement).hidden = !any;
+    (document.getElementById('no-simple') as HTMLElement).hidden = any;
+    if (!any) (document.getElementById('source-panel') as HTMLElement).hidden = false;
+
+    fieldsBox.innerHTML = [
+      ...images.map((image) => {
+        const automatic = !imagePreviews[image.key] && image.src.includes('{{property_photo_url}}');
+        const canGoAutomatic = image.key === 'main_photo' && !automatic;
+        return `
+        <div class="img-field" data-key="${esc(image.key)}" data-kind="image">
+          <span class="lbl">${esc(image.label)}<em class="todo-badge">kitöltendő</em></span>
+          <div class="img-row">
+            <img src="${esc(imagePreviews[image.key] ?? imageShown(image.src))}" alt="" />
+            <div>
+              <button type="button" class="btn ghost small" data-browse="${esc(image.key)}">${automatic ? 'Saját kép…' : 'Tallózás…'}</button>
+              <small>${automatic
+                ? 'Küldéskor automatikusan a hirdetés fő fotója kerül ide (az előnézetben mintakép). Saját képet is választhat — akkor mindig az jelenik meg.'
+                : 'vagy húzza ide a képet (JPG, PNG, WebP)'}</small>
+              ${canGoAutomatic ? `<button type="button" class="link-btn" data-auto-photo="${esc(image.key)}">Helyette mindig a hirdetés saját fotója</button>` : ''}
+            </div>
+            <input type="file" name="image:${esc(image.key)}" accept="image/jpeg,image/png,image/webp" hidden />
+          </div>
+        </div>`;
+      }),
+      ...links.map((link) => `
+        <label class="set-field" data-key="${esc(link.key)}" data-kind="link">${esc(link.label)}
+          <input type="url" value="${esc(link.href)}" placeholder="https://…" />
+        </label>`),
+      ...fields.map((field) => {
+        const value = unescapeHtml(field.value);
+        const rows = value.length > 160 ? 5 : value.length > 70 ? 3 : 1;
+        const merge = soleMergeField(value);
+        const auto = merge && merge in MERGE_FIELD_LABEL
+          ? `<small class="auto-note">Küldéskor automatikusan kitöltődik: ${esc(MERGE_FIELD_LABEL[merge].replace(/ \(.*\)$/, '').toLowerCase())}. Saját szöveget is írhat helyette.</small>`
+          : '';
+        return `
+        <label class="set-field" data-key="${esc(field.key)}" data-kind="text"><span class="lbl">${esc(field.label)}<em class="todo-badge">kitöltendő</em></span>
+          <textarea rows="${rows}">${esc(value)}</textarea>${auto}
+        </label>`;
+      }),
+    ].join('');
+    fieldsBox.querySelectorAll('textarea').forEach(fitHeight);
+    renderTodo();
+  }
+
+  /** Text boxes grow with their content: a one-word label stays one line, a paragraph shows whole. */
+  function fitHeight(area: HTMLTextAreaElement) {
+    if (!area.offsetParent) return; // hidden (code view): measured when shown again
+    area.style.height = 'auto';
+    area.style.height = `${area.scrollHeight + 2}px`;
+  }
+  let refit = 0;
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(refit);
+    refit = requestAnimationFrame(() => fieldsBox.querySelectorAll('textarea').forEach(fitHeight));
+  });
+
+  function markDirty() {
+    dirty = true;
+    (document.getElementById('dirty') as HTMLElement).hidden = false;
+  }
+
+  fieldsBox.addEventListener('input', (event) => {
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+    const holder = target.closest<HTMLElement>('[data-key]');
+    if (!holder) return;
+    const key = holder.dataset.key!;
+    if (holder.dataset.kind === 'text') {
+      source.value = applyEditableFieldUpdate(source.value, key, target.value);
+      fitHeight(target as HTMLTextAreaElement);
+    }
+    if (holder.dataset.kind === 'link') source.value = applyEditableLinkUpdate(source.value, key, target.value);
+    markDirty();
+    renderPreview();
+  });
+
+  /* ── Images: shrink in the browser, preview locally, upload on save ── */
+  async function shrink(file: File, maxWidth = 1400): Promise<File> {
+    const bitmap = await createImageBitmap(file);
+    if (bitmap.width <= maxWidth && file.size <= 900_000) return file;
+    const scale = Math.min(1, maxWidth / bitmap.width);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.86));
+    return blob ? new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }) : file;
+  }
+
+  async function chooseImage(key: string, file: File | undefined) {
+    const holder = fieldsBox.querySelector<HTMLElement>(`[data-kind="image"][data-key="${key}"]`);
+    const input = holder?.querySelector<HTMLInputElement>('input[type="file"]');
+    if (!file || !input || !file.type.startsWith('image/')) return;
+    const small = await shrink(file);
+    const transfer = new DataTransfer();
+    transfer.items.add(small);
+    input.files = transfer.files;
+    imagePreviews[key] = URL.createObjectURL(small);
+    holder!.querySelector('img')!.src = imagePreviews[key];
+    markDirty();
+    renderPreview();
+  }
+
+  fieldsBox.addEventListener('click', (event) => {
+    const browse = (event.target as HTMLElement).closest<HTMLElement>('[data-browse]');
+    if (browse) fieldsBox.querySelector<HTMLInputElement>(`[data-key="${browse.dataset.browse}"] input[type="file"]`)?.click();
+    // Back from a fixed photo to "whichever listing the email is about".
+    const auto = (event.target as HTMLElement).closest<HTMLElement>('[data-auto-photo]');
+    if (auto) {
+      const key = auto.dataset.autoPhoto!;
+      delete imagePreviews[key];
+      source.value = applyEditableImageUpdate(source.value, key, '{{property_photo_url}}');
+      buildSimpleEditor();
+      markDirty();
+      renderPreview();
+    }
+  });
+  fieldsBox.addEventListener('change', (event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.type === 'file') void chooseImage(input.closest<HTMLElement>('[data-key]')!.dataset.key!, input.files?.[0]);
+  });
+  fieldsBox.addEventListener('dragover', (event) => {
+    const holder = (event.target as HTMLElement).closest<HTMLElement>('[data-kind="image"]');
+    if (!holder) return;
+    event.preventDefault();
+    holder.classList.add('drag');
+  });
+  fieldsBox.addEventListener('dragleave', (event) => (event.target as HTMLElement).closest('[data-kind="image"]')?.classList.remove('drag'));
+  fieldsBox.addEventListener('drop', (event) => {
+    const holder = (event.target as HTMLElement).closest<HTMLElement>('[data-kind="image"]');
+    if (!holder) return;
+    event.preventDefault();
+    holder.classList.remove('drag');
+    void chooseImage(holder.dataset.key!, event.dataTransfer?.files?.[0]);
+  });
+
+  /* ── To-do buttons jump to the field ── */
+  document.getElementById('todo-list')!.addEventListener('click', (event) => {
+    const key = (event.target as HTMLElement).closest<HTMLElement>('[data-goto]')?.dataset.goto;
+    const el = key ? fieldsBox.querySelector<HTMLElement>(`[data-key="${key}"]`) : null;
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el?.querySelector<HTMLElement>('textarea, input:not([type="file"]), button')?.focus({ preventScroll: true });
+  });
+
+  /* ── HTML source ── */
+  const toggle = document.getElementById('toggle-source') as HTMLButtonElement;
+  toggle.addEventListener('click', () => {
+    const panel = document.getElementById('source-panel') as HTMLElement;
+    panel.hidden = !panel.hidden;
+    toggle.textContent = panel.hidden ? 'HTML-forrás megjelenítése (haladó)' : 'HTML-forrás elrejtése';
+  });
+  source.addEventListener('input', () => {
+    markDirty();
+    renderPreview();
+  });
+  // Markers may have been added or removed by hand: rebuild the simple editor once the edit is done.
+  source.addEventListener('change', buildSimpleEditor);
+  subject.addEventListener('input', () => {
+    markDirty();
+    renderPreview();
+  });
+  form.addEventListener('input', (event) => {
+    if ((event.target as HTMLElement).closest('.settings')) markDirty();
+  });
+
+  // Merge buttons: into the HTML source at the cursor, or into the subject when that has focus.
+  let lastFocus: HTMLInputElement | HTMLTextAreaElement = source;
+  subject.addEventListener('focus', () => (lastFocus = subject));
+  source.addEventListener('focus', () => (lastFocus = source));
+  document.querySelectorAll<HTMLButtonElement>('[data-merge]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const token = `{{${button.dataset.merge}}}`;
+      const el = lastFocus;
+      const start = el.selectionStart ?? el.value.length;
+      const end = el.selectionEnd ?? el.value.length;
+      el.value = el.value.slice(0, start) + token + el.value.slice(end);
+      el.focus();
+      el.setSelectionRange(start + token.length, start + token.length);
+      markDirty();
+      renderPreview();
+    });
+  });
+
+  /* ── Automation hint: who holds the slot for this language now ── */
+  function automationHint() {
+    const kind = (document.getElementById('automation') as HTMLSelectElement).value;
+    const locale = (document.getElementById('locale') as HTMLSelectElement).value;
+    const hint = document.getElementById('automation-hint') as HTMLElement;
+    if (!kind) {
+      hint.textContent = 'Ha kiválasztja, ez a sablon megy ki a beépített visszaigazolás helyett, amikor a látogató a sablon nyelvén küldi el az űrlapot.';
+      return;
+    }
+    const owner = slotOwners[`${kind}:${locale}`];
+    hint.textContent = owner
+      ? `Most „${owner}” látja el ezt ${localeLabels[locale]?.toLowerCase() ?? locale} nyelven — mentéskor ez a sablon veszi át.`
+      : `${localeLabels[locale] ?? locale} nyelvű látogatóknak megy ki, ha a sablon aktív.`;
+  }
+  document.getElementById('automation')!.addEventListener('change', automationHint);
+  document.getElementById('locale')!.addEventListener('change', automationHint);
+
+  /* ── Preview width ── */
+  document.querySelectorAll<HTMLButtonElement>('[data-width]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-width]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+      iframe.style.width = `${button.dataset.width}px`;
+    });
+  });
+
+  /* ── Dialogs, delete confirm, unsaved-changes guard ── */
+  document.querySelector<HTMLButtonElement>('[data-open="duplicate"]')?.addEventListener('click', () => (document.getElementById('duplicate') as HTMLDialogElement).showModal());
+  document.querySelectorAll<HTMLButtonElement>('[data-close]').forEach((b) => b.addEventListener('click', () => b.closest('dialog')?.close()));
+  document.querySelector<HTMLFormElement>('[data-confirm-delete]')?.addEventListener('submit', async (event) => {
+    const formEl = event.currentTarget as HTMLFormElement;
+    if (formEl.dataset.confirmed) return;
+    event.preventDefault();
+    const pf = (window as any).pf;
+    const ok = pf?.confirm
+      ? await pf.confirm({ title: 'Törli ezt a sablont?', body: 'A törlés végleges. A már kiküldött levelek a Kiküldött listában megmaradnak.', confirmLabel: 'Törlés', danger: true })
+      : window.confirm('Törli ezt a sablont?');
+    if (ok) {
+      formEl.dataset.confirmed = '1';
+      formEl.requestSubmit();
+    }
+  });
+  form.addEventListener('submit', () => (dirty = false));
+  window.addEventListener('beforeunload', (event) => {
+    if (dirty) event.preventDefault();
+  });
+
+  buildSimpleEditor();
+  automationHint();
+  renderPreview();
+</script>
+
+<style>
+  .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 40px; margin-bottom: 24px; }
+  .title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  .ph-side { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ph-side form { margin: 0; }
+  .btn :global(svg) { width: 16px; height: 16px; }
+  .notice { margin-bottom: 18px; }
+  .composer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 24px; align-items: start; }
+  @media (max-width: 1100px) { .composer { grid-template-columns: 1fr; } }
+  .col { display: grid; gap: 18px; min-width: 0; }
+  .ed { display: grid; gap: 18px; }
+  .section-label { margin: 0 0 10px; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-quiet); }
+  .soft { color: var(--ink-quiet); font-size: 14px; }
+  .todo { padding: 14px 16px; border-radius: var(--r-md); background: var(--pt-amber-bg); color: var(--pt-amber); font-size: 14px; }
+  .todo p { margin: 0 0 8px; }
+  .todo-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .todo-list :global(button) { border: 1px solid currentColor; border-radius: var(--r-pill); background: var(--white); color: inherit; padding: 3px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+  .simple :global(#simple-fields) { display: grid; gap: 14px; }
+  .simple :global(.lbl) { display: flex; align-items: center; gap: 8px; }
+  .simple :global(.todo-badge) { display: none; font-style: normal; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 8px; border-radius: var(--r-pill); background: #fedf89; color: #7a2e0e; }
+  .simple :global(.is-todo .todo-badge) { display: inline-block; }
+  .simple :global(.is-todo textarea) { border-color: #f79009 !important; background: #fffaeb !important; }
+  .simple :global(textarea) { resize: vertical; }
+  .simple :global(.set-field textarea) { min-height: 50px; overflow: hidden; }
+  .simple :global(.img-field) { padding: 14px; border-radius: var(--r-md); border: 1.5px dashed var(--border); transition: border-color 0.2s, background-color 0.2s; }
+  .simple :global(.img-field.is-todo) { border-color: #f79009; background: #fffaeb; }
+  .simple :global(.img-field.drag) { border-color: var(--ink); background: var(--cream); }
+  .simple :global(.img-row) { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+  .simple :global(.img-row img) { width: 72px; height: 72px; object-fit: cover; border-radius: var(--r-sm); box-shadow: 0 0 0 1px var(--border); }
+  .simple :global(.img-row small) { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-quiet); }
+  .simple :global(.auto-note) { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-quiet); }
+  .link-btn, .simple :global(.link-btn) { border: 0; background: none; padding: 0; font: inherit; font-size: 14px; color: var(--ink-quiet); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .link-btn:hover, .simple :global(.link-btn:hover) { color: var(--ink); }
+  .simple :global(.img-row .link-btn) { display: block; margin-top: 8px; font-size: 13px; text-align: left; }
+  .source #source-panel { margin-top: 12px; }
+  .merge-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .merge-buttons button { border: 1px dashed var(--border); border-radius: var(--r-sm); background: var(--white); padding: 4px 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-quiet); cursor: pointer; }
+  .merge-buttons button:hover { border-color: var(--ink); color: var(--ink); }
+  #body-html { width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.5; }
+  .error-line { margin: 8px 0 0; color: var(--pt-red); font-size: 14px; }
+  .settings { border: 0; margin: 0; padding: 18px 0 0; border-top: 1px solid var(--pt-hair); display: grid; gap: 14px; }
+  .settings legend { padding: 0; margin-bottom: 4px; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-quiet); }
+  .settings small { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-quiet); }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .savebar { position: sticky; bottom: 0; z-index: 2; display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin: 0 -12px; padding: 22px 12px 12px; background: linear-gradient(to top, var(--white) 68%, color-mix(in srgb, var(--white) 0%, transparent)); }
+  .test small { display: block; margin-top: 10px; font-size: 13px; color: var(--ink-quiet); }
+  .test-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .test-row input { flex: 1 1 220px; }
+  .preview { position: sticky; top: 20px; display: grid; gap: 10px; min-width: 0; }
+  .preview-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .preview-head .section-label { margin: 0; }
+  .seg { display: inline-flex; padding: 3px; border-radius: var(--r-pill); background: var(--linen); }
+  .seg button { border: 0; background: none; padding: 5px 14px; border-radius: var(--r-pill); font: inherit; font-size: 13px; color: var(--ink-quiet); cursor: pointer; }
+  .seg button[aria-pressed='true'] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-xs); }
+  .frame { border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); overflow: hidden; }
+  .subject { margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--pt-hair); font-weight: var(--fw-medium); color: var(--ink); }
+  .stage { display: flex; justify-content: center; background: #f4f4f2; height: calc(100vh - 150px); min-height: 520px; overflow: auto; }
+  .stage iframe { width: 680px; max-width: 100%; height: 100%; border: 0; background: #f4f4f2; transition: width 0.25s var(--ease-out); }
+  .dup form { display: grid; gap: 14px; }
+  .dup h2 { font-family: var(--serif); font-weight: var(--fw-display); color: var(--ink); }
+  .dup p { margin: 0; color: var(--ink-quiet); }
+  .dlg-actions { display: flex; justify-content: flex-end; gap: 10px; }
+  [hidden] { display: none !important; }
+</style>

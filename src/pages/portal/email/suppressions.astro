@@ -1,0 +1,116 @@
+---
+/**
+ * Addresses no bulk or automatic template email may go to: bounced, marked as
+ * spam, unsubscribed, or blocked by hand. Lifting a block is possible but
+ * deliberate — an unsubscribe should only be lifted when the person asks.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
+import MailNav from '~/components/portal/MailNav.astro';
+import Ago from '~/components/portal/Ago.astro';
+import { icon } from '~/lib/portal/icons';
+import { SUPPRESSION_REASON_LABEL, type SuppressionReason } from '~/lib/mail/suppression';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
+
+const q = Astro.url.searchParams.get('q')?.trim() ?? '';
+let query = supabase.from('mail_suppressions').select('id, email, reason, note, created_at').order('created_at', { ascending: false }).limit(500);
+if (q) query = query.ilike('email', `%${q.replace(/[%,]/g, '')}%`);
+const { data: rows } = await query;
+const p = Astro.url.searchParams;
+const PILL: Record<SuppressionReason, string> = { BOUNCED: 'pill-bad', COMPLAINED: 'pill-bad', UNSUBSCRIBED: 'pill-off', MANUAL: 'pill-warn' };
+---
+
+<Portal title="Letiltott címek">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">E-mail automatizáció</p>
+      <h1>Letiltott <em>címek</em></h1>
+      <p class="lede">Ezekre a címekre tömeges vagy automatikus sablonlevél nem megy ki. A visszapattanó és spamnek jelölő címek a Resend webhookból, a leiratkozók a levél alján lévő linkről kerülnek ide. A rendszerlevelek (számla, hirdetés állapota) továbbra is mennek.</p>
+    </div>
+  </header>
+
+  <MailNav current="suppressions" />
+  {p.get('added') && <p class="notice ok" data-toast="ok">Cím letiltva.</p>}
+  {p.get('removed') && <p class="notice ok" data-toast="ok">Tiltás feloldva.</p>}
+  {p.get('error') && <p class="notice error">{p.get('error')}</p>}
+
+  <div class="bar">
+    <form method="get" class="search">
+      <Fragment set:html={icon('search', 17)} />
+      <input type="search" name="q" value={q} placeholder="E-mail-cím…" aria-label="Keresés" />
+    </form>
+    <form method="post" action="/api/portal/email/suppressions" class="add">
+      <input type="email" name="email" required placeholder="cím@pelda.hu" aria-label="Letiltandó cím" />
+      <input type="text" name="note" maxlength="300" placeholder="Megjegyzés (nem kötelező)" aria-label="Megjegyzés" />
+      <button class="btn" type="submit">Letiltás</button>
+    </form>
+  </div>
+
+  {(rows ?? []).length === 0 ? <p class="soft">{q ? 'Nincs találat.' : 'Nincs letiltott cím.'}</p> : (
+    <table class="list mail-list">
+      <thead><tr><th>E-mail</th><th>Ok</th><th>Megjegyzés</th><th>Mióta</th><th class="actions-col"><span class="sr-only">Művelet</span></th></tr></thead>
+      <tbody>
+        {(rows ?? []).map((row: any) => (
+          <tr>
+            <td class="mail">{row.email}</td>
+            <td><span class:list={['pill', PILL[row.reason as SuppressionReason]]}>{SUPPRESSION_REASON_LABEL[row.reason as SuppressionReason] ?? row.reason}</span></td>
+            <td class="soft">{row.note ?? '—'}</td>
+            <td class="when"><Ago iso={row.created_at} /></td>
+            <td class="actions-col">
+              <form method="post" action="/api/portal/email/suppressions" data-lift={row.email} data-reason={row.reason}>
+                <input type="hidden" name="action" value="remove" />
+                <input type="hidden" name="id" value={row.id} />
+                <button type="submit" class="pt-icon-btn" aria-label={`Tiltás feloldása: ${row.email}`} title="Tiltás feloldása"><Fragment set:html={icon('close', 17)} /></button>
+              </form>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Portal>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-lift]').forEach((form) => {
+    form.addEventListener('submit', async (event) => {
+      if (form.dataset.confirmed) return;
+      event.preventDefault();
+      const unsubscribed = form.dataset.reason === 'UNSUBSCRIBED';
+      const ok = await (window as any).pf.confirm({
+        title: 'Feloldja a tiltást?',
+        body: unsubscribed
+          ? `${form.dataset.lift} maga iratkozott le. Csak akkor oldja fel, ha a címzett kifejezetten kéri.`
+          : `${form.dataset.lift} újra kaphat tömeges és automatikus leveleket.`,
+        confirmLabel: 'Feloldás',
+        danger: unsubscribed,
+      });
+      if (ok) {
+        form.dataset.confirmed = '1';
+        form.requestSubmit();
+      }
+    });
+  });
+</script>
+
+<style>
+  .ph { margin-bottom: 26px; }
+  .bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .search { position: relative; display: flex; align-items: center; flex: 1 1 240px; max-width: 340px; }
+  .search :global(svg) { position: absolute; left: 14px; color: var(--ink-quiet); pointer-events: none; }
+  .search input { width: 100%; min-height: 46px; border-radius: var(--r-pill); font: inherit; font-size: 14.5px; padding: 10px 16px 10px 42px !important; }
+  .add { display: flex; flex-wrap: wrap; gap: 8px; }
+  .add input { min-height: 46px; border-radius: var(--r-pill); font: inherit; font-size: 14.5px; padding: 10px 16px; flex: 1 1 200px; min-width: 0; }
+  .add input[type='email'] { flex-basis: 220px; }
+  @media (max-width: 720px) { .search { max-width: none; } .add, .add .btn { width: 100%; } }
+  .mail { overflow-wrap: anywhere; }
+  .soft { color: var(--ink-quiet); }
+  .when { white-space: nowrap; color: var(--ink-quiet); }
+  .actions-col { width: 1%; text-align: right; }
+  .actions-col form { margin: 0; }
+</style>

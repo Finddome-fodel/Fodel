@@ -468,4 +468,75 @@ test('PUBLIC_SITE_URL sets the origin; junk falls back to finddome.com', () => {
   assert.equal(origin(''), 'https://finddome.com');
 });
 
+
+console.log('E-mail automation');
+const merge = await import('../src/lib/mail/merge.ts');
+const editable = await import('../src/lib/mail/editable.ts');
+const { baseTemplate, BASE_LOCALES } = await import('../src/lib/mail/base-templates.ts');
+const { verifySvix, mapEventType } = await import('../src/lib/mail/tracking.ts');
+const { isMissingMailSchema } = await import('../src/lib/mail/schema.ts');
+const { COMPANY } = await import('../src/config/company.ts');
+const { createHmac } = await import('node:crypto');
+const company = { ...COMPANY, phones: COMPANY.phones.map((p) => ({ ...p, public: true })), whatsapp: null, services: {} };
+test('merge values are escaped in the body, never in the subject', () => {
+  const fields = { full_name: '<b>Ann</b> & "Co"' };
+  assert.equal(merge.renderTemplate('Hi {{full_name}}', fields, { html: true }), 'Hi &lt;b&gt;Ann&lt;/b&gt; &amp; &quot;Co&quot;');
+  assert.equal(merge.renderTemplate('Hi {{full_name}}', fields), 'Hi <b>Ann</b> & "Co"');
+  assert.equal(merge.renderTemplate('{{not_a_field}}', fields, { html: true }), '{{not_a_field}}', 'unknown tokens stay visible');
+});
+test('a listing reply needs the listing, but not every optional detail of it', () => {
+  const body = '{{property_title}} {{property_area}} {{property_bedrooms}} {{property_description}}';
+  assert.deepEqual(merge.findMissingRequiredFields(body, {}), ['property_title', 'property_area', 'property_bedrooms', 'property_description']);
+  assert.deepEqual(merge.findMissingRequiredFields(body, { property_title: 'Tanya' }), [], 'a listing without a floor area still gets its reply');
+});
+test('every enquiry starter reads its listing from merge fields, in all four languages', () => {
+  for (const locale of BASE_LOCALES) {
+    const { html, subject } = baseTemplate('property', locale, company, 'https://www.finddome.com');
+    for (const token of ['{{property_title}}', '{{property_photo_url}}', '{{property_description}}', '{{property_area}}', '{{property_bedrooms}}', '{{property_url}}']) {
+      assert.ok(html.includes(token), `${locale}: ${token}`);
+    }
+    assert.ok(subject.includes('{{property_title}}'), `${locale}: subject`);
+    assert.deepEqual(merge.findUnresolvedMergeFields(subject + html), [], `${locale}: unknown tokens`);
+    assert.deepEqual(editable.fixedListingParts(html), [], `${locale}: nothing about one listing is fixed`);
+    assert.deepEqual(editable.unfinishedParts(html), [], `${locale}: ready to switch on as it is`);
+  }
+});
+test('a reply with one listing typed in is flagged before it goes to every enquirer', () => {
+  const { html } = baseTemplate('property', 'hu', company, 'https://www.finddome.com');
+  const key = editable.parseEditableFields(html).find((f) => f.value === '{{property_description}}')?.key;
+  assert.ok(key, 'description is an editable field');
+  const fixed = editable.applyEditableFieldUpdate(html, key, 'Felújított parasztház Pécs mellett');
+  assert.equal(editable.fixedListingParts(fixed).length, 1);
+});
+test('Resend webhook signatures (Svix)', () => {
+  const secret = 'whsec_' + Buffer.from('test-secret-key-0123456789').toString('base64');
+  const body = '{"type":"email.delivered"}';
+  const ts = 1_800_000_000;
+  const sig = createHmac('sha256', Buffer.from('test-secret-key-0123456789')).update(`msg_1.${ts}.${body}`).digest('base64');
+  const headers = { id: 'msg_1', timestamp: String(ts), signature: `v1,${sig}` };
+  assert.equal(verifySvix(body, headers, secret, ts), true);
+  assert.equal(verifySvix(body + ' ', headers, secret, ts), false, 'tampered body');
+  assert.equal(verifySvix(body, headers, secret, ts + 3600), false, 'replayed an hour later');
+  assert.equal(verifySvix(body, { ...headers, signature: 'v1,AAAA' }, secret, ts), false);
+  assert.equal(verifySvix(body, headers, '', ts), false, 'no secret, no trust');
+  assert.equal(mapEventType('email.bounced'), 'BOUNCED');
+  assert.equal(mapEventType('email.sent'), null);
+});
+test('a listing without a photo gets no picture row, not a broken image', () => {
+  const { html } = baseTemplate('property', 'hu', company, 'https://www.finddome.com');
+  const without = merge.dropMissingPhoto(html, { property_title: 'Tanya', property_photo_url: null });
+  assert.ok(!without.includes('{{property_photo_url}}'), 'photo row removed');
+  assert.equal((without.match(/<tr\b/g) ?? []).length, (html.match(/<tr\b/g) ?? []).length - 1, 'exactly one row less');
+  assert.equal((without.match(/<\/tr>/g) ?? []).length, (html.match(/<\/tr>/g) ?? []).length - 1, 'rows stay balanced');
+  assert.equal(merge.dropMissingPhoto(html, { property_photo_url: 'https://x/y.jpg' }), html, 'kept when there is a photo');
+  assert.equal(merge.dropMissingPhoto('<p><img src="{{property_photo_url}}" alt=""></p>', {}), '<p></p>');
+});
+test('"migration 0038 not run yet" is told apart from other database errors', () => {
+  assert.equal(isMissingMailSchema({ code: 'PGRST205', message: "Could not find the table 'public.mail_templates' in the schema cache" }), true);
+  assert.equal(isMissingMailSchema({ code: '42P01', message: 'relation "mail_templates" does not exist' }), true);
+  assert.equal(isMissingMailSchema({ message: 'relation "public.mail_send_jobs" does not exist' }), true);
+  assert.equal(isMissingMailSchema({ code: '08006', message: 'fetch failed' }), false);
+  assert.equal(isMissingMailSchema(null), false);
+});
+
 console.log(process.exitCode ? '\nFAILED' : `\nAll ${passed} checks passed.`);

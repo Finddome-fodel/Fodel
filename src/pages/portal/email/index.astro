@@ -1,0 +1,196 @@
+---
+/**
+ * E-mail automatizáció — the templates, which of them answer the forms by
+ * themselves, and the latest template emails sent. Bulk and scheduled sends,
+ * the signature and the suppression list are the section's other tabs.
+ * Admin only (middleware).
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { mailSchemaReady } from '~/lib/mail/schema';
+import MailNav from '~/components/portal/MailNav.astro';
+import Ago from '~/components/portal/Ago.astro';
+import { icon } from '~/lib/portal/icons';
+import { LOCALE_LABEL, friendlyError } from '~/lib/portal/labels';
+import { unfinishedParts } from '~/lib/mail/editable';
+import { AUTOMATION_LABEL, type AutomationKind } from '~/lib/mail/automation';
+import { engagementFor, engagementBadge } from '~/lib/mail/tracking';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+// Deployed before migration 0038 ran: one friendly page instead of errors (src/lib/mail/schema.ts).
+if (!(await mailSchemaReady(supabase))) return Astro.rewrite('/portal/email/setup');
+
+const params = Astro.url.searchParams;
+const { data: templates, error } = await supabase
+  .from('mail_templates')
+  .select('id, name, subject, locale, active, automation, body_html, updated_at')
+  .order('updated_at', { ascending: false });
+const migrated = !error;
+const rows = (templates ?? []).map((t: any) => ({ ...t, todo: unfinishedParts(t.body_html).length }));
+
+const { data: recent } = migrated
+  ? await supabase.from('mail_messages').select('id, subject, to_email, to_name, source, status, created_at').order('created_at', { ascending: false }).limit(8)
+  : { data: [] };
+const engagement = await engagementFor(supabase, (recent ?? []).map((m: any) => m.id));
+
+/** "magyar, holland" — language names run mid-sentence, so lower case. */
+const langs = (codes: string[]) => codes.map((l) => (LOCALE_LABEL[l] ?? l).toLowerCase()).join(', ');
+const automations = (Object.keys(AUTOMATION_LABEL) as AutomationKind[]).map((kind) => ({
+  kind,
+  label: AUTOMATION_LABEL[kind],
+  live: rows.filter((t) => t.automation === kind && t.active).map((t) => t.locale),
+  idle: rows.filter((t) => t.automation === kind && !t.active).map((t) => t.locale),
+}));
+
+const SOURCE_LABEL: Record<string, string> = { MANUAL: 'Egyedi', AUTOMATION: 'Automatikus', BULK_JOB: 'Tömeges' };
+const STATUS_LABEL: Record<string, string> = { SENT: 'Elküldve', DELIVERED: 'Kézbesítve', BOUNCED: 'Visszapattant', COMPLAINED: 'Spamnek jelölte' };
+const STATUS_PILL: Record<string, string> = { SENT: 'pill-queued', DELIVERED: 'pill-ok', BOUNCED: 'pill-bad', COMPLAINED: 'pill-bad' };
+---
+
+<Portal title="E-mail automatizáció">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">Tartalom</p>
+      <h1>E-mail <em>automatizáció</em></h1>
+      <p class="lede">
+        Saját tervezésű, FINDDOME-arculatú levelek: automatikus válasz az érdeklődőknek, tömeges és
+        ütemezett küldés tulajdonosoknak, érdeklődőknek és hírlevél-feliratkozóknak, megnyitás- és
+        kattintáskövetéssel. A rendszerlevelek (regisztráció, számla, hirdetés állapota) ettől függetlenül mennek.
+      </p>
+    </div>
+    <div class="ph-side">
+      <a class="btn" href="/portal/email/templates/new"><Fragment set:html={icon('plus', 16)} /> Új sablon</a>
+    </div>
+  </header>
+
+  <MailNav current="overview" />
+
+  {!migrated && <p class="notice error">A sablonok most nem tölthetők be: {friendlyError(error?.message)}</p>}
+  {params.get('error') && <p class="notice error">{params.get('error')}</p>}
+  {params.get('deleted') && <p class="notice ok" data-toast="ok">Sablon törölve.</p>}
+  {params.get('starters') && <p class="notice ok" data-toast="ok">{params.get('starters') === '0' ? 'Az alapsablonok már mind megvannak.' : `${params.get('starters')} alapsablon létrehozva. Az érdeklődésre válaszolók már automatikus válasznak vannak jelölve — nézze át őket, és kapcsolja be azokat, amelyeket használni szeretne.`}</p>}
+
+  {migrated && (
+    <section class="autos" aria-label="Automatikus válaszok">
+      {automations.map((auto) => (
+        <div class="auto">
+          <span class="auto-ic"><Fragment set:html={icon('send', 18)} /></span>
+          <div>
+            <b>{auto.label}</b>
+            <span>
+              {auto.live.length
+                ? <>Bekapcsolva: {langs(auto.live)}. Más nyelven a beépített visszaigazolás megy ki.</>
+                : <>Nincs bekapcsolva — most minden nyelven a beépített visszaigazolás megy ki.</>}
+              {auto.idle.length > 0
+                ? <> Elkészült, de még kikapcsolt sablon: {langs(auto.idle)} — nyissa meg, nézze át, és kapcsolja be.</>
+                : auto.live.length === 0 && <> Egy sablon beállításainál jelölheti ki.</>}
+            </span>
+          </div>
+        </div>
+      ))}
+    </section>
+  )}
+
+  <section class="block">
+    <div class="block-head">
+      <h2>Sablonok</h2>
+      {rows.length > 0 && <span class="muted">{rows.length} sablon</span>}
+    </div>
+    {migrated && rows.length === 0 ? (
+      <div class="empty">
+        <Fragment set:html={icon('mail', 30)} />
+        <b>Még nincs sablon</b>
+        <span>Kezdje a FINDDOME alapsablonokkal: válasz érdeklődésre magyarul, hollandul, angolul és németül, plusz egy általános levél.</span>
+        <form method="post" action="/api/portal/email/starters"><button class="btn" type="submit">Alapsablonok létrehozása</button></form>
+      </div>
+    ) : rows.length > 0 && (
+      <table class="list mail-list">
+        <thead><tr><th>Sablon</th><th>Nyelv</th><th>Állapot</th><th>Módosítva</th></tr></thead>
+        <tbody>
+          {rows.map((t) => (
+            <tr>
+              <td>
+                <a href={`/portal/email/templates/${t.id}`}>{t.name}</a>
+                <span class="sub">{t.subject}</span>
+                {t.automation && <span class="tag">{AUTOMATION_LABEL[t.automation as AutomationKind]}</span>}
+              </td>
+              <td>{LOCALE_LABEL[t.locale] ?? t.locale}</td>
+              <td>
+                {t.active
+                  ? <span class="pill pill-ok">Aktív</span>
+                  : t.todo > 0
+                    ? <span class="pill pill-warn">{t.todo} kitöltendő</span>
+                    : <span class="pill pill-off">Inaktív</span>}
+              </td>
+              <td class="when"><Ago iso={t.updated_at} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )}
+    {rows.length > 0 && (
+      <form method="post" action="/api/portal/email/starters" class="starter-again">
+        <button type="submit" class="link-btn">Hiányzó alapsablonok pótlása</button>
+      </form>
+    )}
+  </section>
+
+  {migrated && (
+    <section class="block">
+      <div class="block-head">
+        <h2>Legutóbb kiküldött</h2>
+        <a href="/portal/email/sent" class="muted">Mind →</a>
+      </div>
+      {(recent ?? []).length === 0 ? (
+        <p class="muted">Még nem ment ki sablonlevél.</p>
+      ) : (
+        <table class="list mail-list">
+          <thead><tr><th>Tárgy</th><th>Címzett</th><th>Típus</th><th>Állapot</th><th>Küldve</th></tr></thead>
+          <tbody>
+            {(recent ?? []).map((m: any) => (
+              <tr>
+                <td><a href={`/portal/email/sent/${m.id}`}>{m.subject}</a></td>
+                <td>{m.to_name ? <>{m.to_name}<span class="sub">{m.to_email}</span></> : m.to_email}</td>
+                <td>{SOURCE_LABEL[m.source] ?? m.source}</td>
+                <td>
+                  <span class:list={['pill', STATUS_PILL[m.status]]}>{STATUS_LABEL[m.status] ?? m.status}</span>
+                  {engagementBadge(engagement.get(m.id)) && <span class="sub">{engagementBadge(engagement.get(m.id))}</span>}
+                </td>
+                <td class="when"><Ago iso={m.created_at} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  )}
+</Portal>
+
+<style>
+  .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 40px; margin-bottom: 26px; }
+  .ph-side { display: flex; gap: 12px; }
+  .btn :global(svg) { width: 16px; height: 16px; }
+  .autos { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 30px; }
+  .auto { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .auto-ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--linen); color: var(--ink); }
+  .auto b { display: block; color: var(--ink); font-weight: var(--fw-medium); margin-bottom: 4px; }
+  .auto span { font-size: 14px; line-height: 1.55; color: var(--ink-quiet); }
+  .block { margin-bottom: 36px; }
+  .block-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+  .block-head h2 { font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; color: var(--ink); }
+  .muted { color: var(--ink-quiet); font-size: 14px; }
+  a.muted { text-decoration: none; }
+  a.muted:hover { color: var(--ink); }
+  .sub { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-quiet); }
+  .tag { display: inline-block; margin-top: 6px; padding: 2px 10px; border-radius: var(--r-pill); background: var(--linen); font-size: 12.5px; color: var(--ink); }
+  .when { white-space: nowrap; color: var(--ink-quiet); }
+  .empty { display: grid; justify-items: center; gap: 10px; padding: 48px 24px; text-align: center; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); color: var(--ink-quiet); }
+  .empty b { color: var(--ink); font-size: 18px; }
+  .empty span { max-width: 460px; }
+  .empty form { margin-top: 8px; }
+  .starter-again { margin-top: 12px; }
+  .link-btn { border: 0; background: none; padding: 0; font: inherit; font-size: 14px; color: var(--ink-quiet); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .link-btn:hover { color: var(--ink); }
+</style>
