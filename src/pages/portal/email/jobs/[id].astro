@@ -1,0 +1,126 @@
+---
+/**
+ * One bulk send: progress, every recipient with its outcome, and the buttons —
+ * continue now, resend the failed ones, cancel before it starts. A due send
+ * is nudged on page load; while it is still going the page refreshes itself.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
+import { AUDIENCE_LABEL } from '~/lib/mail/audience';
+import { JOB_STATUS_LABEL, JOB_STATUS_PILL, RECIPIENT_STATUS_LABEL, budapestDateTime, processJob, type JobStatus } from '~/lib/mail/jobs';
+import { engagementFor, engagementBadge } from '~/lib/mail/tracking';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { id } = Astro.params;
+try {
+  await processJob(supabase, id!, 4_000);
+} catch (error) {
+  console.error('[mail] job page processing failed', error);
+}
+
+const { data: job } = await supabase.from('mail_send_jobs').select('*, mail_templates(id, name, locale)').eq('id', id).maybeSingle();
+if (!job) return new Response('A küldés nem található.', { status: 404 });
+const filter = Astro.url.searchParams.get('status') ?? '';
+let query = supabase.from('mail_send_recipients').select('id, email, name, locale, status, error_message, sent_at, message_id').eq('job_id', id).order('created_at').limit(1000);
+if (filter) query = query.eq('status', filter);
+const { data: recipients } = await query;
+const engagement = await engagementFor(supabase, (recipients ?? []).map((r: any) => r.message_id).filter(Boolean));
+
+const status = job.status as JobStatus;
+const due = !job.scheduled_at || new Date(job.scheduled_at) <= new Date();
+const pending = job.total_recipients - job.sent_count - job.failed_count - job.skipped_count;
+const live = ['RUNNING'].includes(status) || (status === 'SCHEDULED' && due);
+const snapshot = job.filter_snapshot ?? {};
+const p = Astro.url.searchParams;
+---
+
+<Portal title={job.name || 'Tömeges küldés'}>
+  {live && <script is:inline>setTimeout(() => location.replace(location.pathname + location.search.replace(/[?&]created=1/, '')), 8000);</script>}
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/email/scheduled">← Ütemezett küldések</a></p>
+      <div class="title-row">
+        <h1>{job.name || job.mail_templates?.name || 'Tömeges küldés'}</h1>
+        <span class:list={['pill', JOB_STATUS_PILL[status]]}>{JOB_STATUS_LABEL[status] ?? status}</span>
+      </div>
+      <p class="lede">
+        Sablon: <a href={`/portal/email/templates/${job.mail_templates?.id}`}>{job.mail_templates?.name}</a>
+        · Címzettek: {AUDIENCE_LABEL[snapshot.audience as keyof typeof AUDIENCE_LABEL] ?? '—'}{snapshot.locale && `, ${LOCALE_LABEL[snapshot.locale] ?? snapshot.locale}`}
+        · Időpont: {budapestDateTime(job.scheduled_at)}
+      </p>
+    </div>
+    <div class="ph-side">
+      {status === 'SCHEDULED' && !due && (
+        <form method="post" action={`/api/portal/email/jobs/${job.id}`}><input type="hidden" name="action" value="cancel" /><button class="btn ghost danger" type="submit">Lemondás</button></form>
+      )}
+      {(status === 'RUNNING' || (status === 'SCHEDULED' && due)) && (
+        <form method="post" action={`/api/portal/email/jobs/${job.id}`}><input type="hidden" name="action" value="continue" /><button class="btn" type="submit">Folytatás most</button></form>
+      )}
+      {job.failed_count > 0 && ['PARTIAL', 'FAILED', 'COMPLETED'].includes(status) && (
+        <form method="post" action={`/api/portal/email/jobs/${job.id}`}><input type="hidden" name="action" value="retry" /><button class="btn ghost" type="submit">Sikertelenek újraküldése ({job.failed_count})</button></form>
+      )}
+    </div>
+  </header>
+
+  <MailNav current="scheduled" />
+  {p.get('created') && <p class="notice ok">{status === 'SCHEDULED' && !due ? 'A küldés ütemezve.' : 'A küldés elindult.'} {live && 'Az oldal magától frissül, amíg tart.'}</p>}
+  {p.get('error') && <p class="notice error">{p.get('error')}</p>}
+
+  <ul class="stats">
+    <li><b>{job.total_recipients}</b><span>címzett</span></li>
+    <li class="ok"><b>{job.sent_count}</b><span>elküldve</span></li>
+    {pending > 0 && <li><b>{pending}</b><span>hátra van</span></li>}
+    <li class:list={{ bad: job.failed_count > 0 }}><b>{job.failed_count}</b><span>sikertelen</span></li>
+    {job.skipped_count > 0 && <li><b>{job.skipped_count}</b><span>letiltott — kihagyva</span></li>}
+  </ul>
+
+  <nav class="tabs" aria-label="Szűrés állapotra">
+    <a href="?" aria-current={!filter ? 'page' : undefined}>Mind</a>
+    {Object.entries(RECIPIENT_STATUS_LABEL).map(([key, label]) => <a href={`?status=${key}`} aria-current={filter === key ? 'page' : undefined}>{label}</a>)}
+  </nav>
+
+  {(recipients ?? []).length === 0 ? <p class="soft">Nincs ilyen címzett.</p> : (
+    <table class="list">
+      <thead><tr><th>Címzett</th><th>Nyelv</th><th>Állapot</th><th>Küldve</th></tr></thead>
+      <tbody>
+        {(recipients ?? []).map((r: any) => (
+          <tr>
+            <td>{r.name ? <>{r.name}<span class="sub">{r.email}</span></> : r.email}</td>
+            <td>{(r.locale ?? '').toUpperCase()}</td>
+            <td>
+              {r.message_id ? <a href={`/portal/email/sent/${r.message_id}`}>{RECIPIENT_STATUS_LABEL[r.status] ?? r.status}</a> : (RECIPIENT_STATUS_LABEL[r.status] ?? r.status)}
+              {r.error_message && <span class="sub err">{r.error_message}</span>}
+              {r.message_id && engagementBadge(engagement.get(r.message_id)) && <span class="sub">{engagementBadge(engagement.get(r.message_id))}</span>}
+            </td>
+            <td class="when">{r.sent_at ? budapestDateTime(r.sent_at) : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Portal>
+
+<style>
+  .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 40px; margin-bottom: 24px; }
+  .title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  .ph-side { display: flex; flex-wrap: wrap; gap: 10px; }
+  .ph-side form { margin: 0; }
+  .stats { list-style: none; margin: 0 0 24px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .stats li { display: grid; gap: 4px; padding: 16px 20px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .stats li.ok { background: var(--pt-green-bg); }
+  .stats li.bad { background: var(--pt-red-bg); }
+  .stats b { font-family: var(--serif); font-weight: var(--fw-display); font-size: 26px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stats span { font-size: 13px; color: var(--ink-quiet); }
+  .tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; margin-bottom: 16px; border-radius: var(--r-pill); background: var(--linen); }
+  .tabs a { padding: 7px 14px; border-radius: var(--r-pill); font-size: 14px; color: var(--ink-quiet); text-decoration: none; }
+  .tabs a[aria-current='page'] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-xs); }
+  .sub { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-quiet); }
+  .err { color: var(--pt-red); }
+  .soft { color: var(--ink-quiet); }
+  .when { white-space: nowrap; }
+</style>

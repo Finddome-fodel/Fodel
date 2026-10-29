@@ -20,6 +20,7 @@ export const prerender = false;
 export const POST: APIRoute = (context) =>
   handleForm(context, {
     id: 'search-request',
+    automation: 'search_request',
     activityKind: 'search_request.created',
     subject: 'KERESTETŐ / Nieuwe zoekopdracht',
     fields: [

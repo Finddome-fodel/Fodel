@@ -18,7 +18,7 @@ export function validValuationActionToken(id: string, token: string): boolean {
 // The pure core takes the secret as an argument so scripts/test-rules.mjs can
 // exercise it without Astro's env.
 
-export type ActionPurpose = 'still-available' | 'price' | 'sold' | 'renew' | 'newsletter-confirm' | 'newsletter-unsubscribe';
+export type ActionPurpose = 'still-available' | 'price' | 'sold' | 'renew' | 'newsletter-confirm' | 'newsletter-unsubscribe' | 'mail-unsubscribe';
 
 export function signWith(key: string, purpose: string, id: string, expiresAtSec: number): string {
   if (!key) throw new Error('action-secret-missing');

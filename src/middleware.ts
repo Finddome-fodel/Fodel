@@ -45,6 +45,7 @@ const ADMIN_ONLY_PREFIXES = [
   '/portal/settings/invoicing',
   '/portal/invoices/new',
   '/portal/newsletter',
+  '/portal/email',
   // Each of these API prefixes is distinct from its /portal/... counterpart
   // above and would NOT be covered by it — the same easy-to-forget gap the
   // plan calls out for the database export route.
@@ -62,6 +63,7 @@ const ADMIN_ONLY_PREFIXES = [
   '/api/portal/settings/invoicing',
   '/api/portal/invoices',
   '/api/portal/newsletter',
+  '/api/portal/email',
 ];
 
 /**

@@ -1,0 +1,233 @@
+---
+/**
+ * Tömeges küldés: pick who (filters, GET — the page recomputes the list on
+ * every change), see the preflight ("120 selected · 114 sendable · 4
+ * unsubscribed · 2 invalid", and by language), then pick an active template
+ * and when. The server recomputes the list again on submit
+ * (src/pages/api/portal/email/bulk.ts).
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import { LOCALES } from '~/i18n/ui';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
+import { AUDIENCE_LABEL, LISTING_STATUS_LABEL, filtersFrom, filterEntries, findRecipients, preflight } from '~/lib/mail/audience';
+import { SUPPRESSION_REASON_LABEL, type SuppressionReason } from '~/lib/mail/suppression';
+import { unfinishedParts } from '~/lib/mail/editable';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const params = Astro.url.searchParams;
+const filters = filtersFrom((key) => params.get(key));
+const [check, { data: templates }, { data: listings }] = await Promise.all([
+  findRecipients(supabase, filters).then((list) => preflight(supabase, list)),
+  supabase.from('mail_templates').select('id, name, locale, body_html').eq('active', true).order('name'),
+  supabase.from('properties').select('id, ref, settlement, status').in('status', ['published', 'awaiting_payment', 'sold']).order('created_at', { ascending: false }).limit(500),
+]);
+const usable = (templates ?? []).filter((t: any) => unfinishedParts(t.body_html).length === 0);
+const sample = check.sendable.slice(0, 8);
+const localeRows = Object.entries(check.byLocale).sort((a, b) => b[1] - a[1]);
+const listingOption = (l: any) => `#${l.ref} — ${l.settlement}`;
+const isSet = (key: string) => Boolean(params.get(key));
+---
+
+<Portal title="Tömeges küldés">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">E-mail automatizáció</p>
+      <h1>Tömeges <em>küldés</em></h1>
+      <p class="lede">Válassza ki, kiknek menjen a levél, ellenőrizze a listát, majd válasszon sablont és időpontot. Letiltott és hibás címre semmi nem megy ki; minden levél alján ott a leiratkozó link.</p>
+    </div>
+  </header>
+
+  <MailNav current="bulk" />
+
+  {params.get('error') && <p class="notice error">{params.get('error')}</p>}
+
+  <div class="steps">
+    <section class="set-card">
+      <h2><span class="n">1</span> Címzettek</h2>
+      <form method="get" class="filters" id="filters">
+        <label class="set-field wide">Kiknek?
+          <select name="audience" onchange="this.form.submit()">
+            {Object.entries(AUDIENCE_LABEL).map(([key, label]) => <option value={key} selected={filters.audience === key}>{label}</option>)}
+          </select>
+        </label>
+        <label class="set-field">Nyelv
+          <select name="locale">
+            <option value="">Minden nyelv</option>
+            {LOCALES.map((l) => <option value={l} selected={filters.locale === l}>{LOCALE_LABEL[l]}</option>)}
+          </select>
+        </label>
+        <label class="set-field">Keresés
+          <input type="search" name="search" value={filters.search ?? ''} placeholder={filters.audience === 'newsletter' ? 'E-mail-cím…' : 'Név vagy e-mail…'} />
+        </label>
+        {filters.audience === 'owner' && (
+          <label class="set-field">Hirdetése
+            <select name="listingStatus">
+              <option value="">Mindegy</option>
+              {Object.entries(LISTING_STATUS_LABEL).map(([key, label]) => <option value={key} selected={filters.listingStatus === key}>{label}</option>)}
+            </select>
+          </label>
+        )}
+        {filters.audience === 'enquiry' && (
+          <>
+            <label class="set-field">Erről a hirdetésről érdeklődött
+              <select name="propertyId">
+                <option value="">Bármelyikről</option>
+                {(listings ?? []).map((l: any) => <option value={l.id} selected={filters.propertyId === l.id}>{listingOption(l)}</option>)}
+              </select>
+            </label>
+            <label class="set-field">Kezelve
+              <select name="handled">
+                <option value="">Mindegy</option>
+                <option value="no" selected={filters.handled === 'no'}>Még nem</option>
+                <option value="yes" selected={filters.handled === 'yes'}>Igen</option>
+              </select>
+            </label>
+          </>
+        )}
+        {(filters.audience === 'enquiry' || filters.audience === 'search_request') && (
+          <label class="set-field">Az elmúlt … napban
+            <input type="number" name="sinceDays" min="1" max="3650" value={filters.sinceDays ?? ''} placeholder="pl. 90" />
+          </label>
+        )}
+        <label class="set-field wide">Ingatlan a levél {'{{property_…}}'} mezőihez (nem kötelező)
+          <select name="propertyContextId">
+            <option value="">{filters.audience === 'enquiry' ? 'Az, amelyről a címzett érdeklődött' : 'A sablonhoz kapcsolt hirdetés'}</option>
+            {(listings ?? []).map((l: any) => <option value={l.id} selected={filters.propertyContextId === l.id}>{listingOption(l)}</option>)}
+          </select>
+          <small>Pl. árcsökkenés: minden címzett ugyanezt a hirdetést kapja, a {'{{old_price}}'} / {'{{new_price}}'} mezőkkel.</small>
+        </label>
+        <div class="filter-actions">
+          {(isSet('locale') || isSet('search') || isSet('listingStatus') || isSet('propertyId') || isSet('handled') || isSet('sinceDays') || isSet('propertyContextId')) && (
+            <a href={`/portal/email/bulk?audience=${filters.audience}`} class="link">Szűrők törlése</a>
+          )}
+          <button type="submit" class="btn ghost">Szűrés</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="set-card">
+      <h2><span class="n">2</span> Ellenőrzés</h2>
+      <ul class="stats">
+        <li><b>{check.total}</b><span>kiválasztva</span></li>
+        <li class="main"><b>{check.sendable.length}</b><span>küldhető</span></li>
+        {check.invalid > 0 && <li class="bad"><b>{check.invalid}</b><span>hibás cím</span></li>}
+        {(Object.entries(check.suppressed) as [SuppressionReason, number][]).map(([reason, count]) => (
+          <li class="bad"><b>{count}</b><span>{SUPPRESSION_REASON_LABEL[reason]}</span></li>
+        ))}
+      </ul>
+      {localeRows.length > 0 && (
+        <p class="langs">Nyelv szerint: {localeRows.map(([l, n]) => `${LOCALE_LABEL[l] ?? l} ${n}`).join(' · ')}</p>
+      )}
+      {sample.length > 0 && (
+        <ul class="sample">
+          {sample.map((r) => <li><span>{r.name ?? '—'}</span><span class="mail">{r.email}</span><span class="lang">{r.locale.toUpperCase()}</span></li>)}
+          {check.sendable.length > sample.length && <li class="more">… és még {check.sendable.length - sample.length}</li>}
+        </ul>
+      )}
+    </section>
+
+    <section class="set-card">
+      <h2><span class="n">3</span> Sablon és időpont</h2>
+      {usable.length === 0 ? (
+        <p class="soft">Nincs bekapcsolt, kész sablon. <a href="/portal/email">Sablonok →</a></p>
+      ) : (
+        <form method="post" action="/api/portal/email/bulk" class="send" id="send">
+          {filterEntries(filters).map(([key, value]) => <input type="hidden" name={`filter_${key}`} value={value} />)}
+          <label class="set-field">Sablon
+            <select name="templateId" required id="template">
+              <option value="">Válasszon…</option>
+              {usable.map((t: any) => <option value={t.id} data-locale={t.locale}>{t.name} ({LOCALE_LABEL[t.locale] ?? t.locale})</option>)}
+            </select>
+            <small id="lang-warn" class="warn" hidden></small>
+          </label>
+          <label class="set-field">A küldés neve (csak önnek)
+            <input name="name" maxlength="120" placeholder="pl. Novemberi hírek — tulajdonosok" />
+          </label>
+          <fieldset class="when">
+            <legend>Mikor?</legend>
+            <label class="check"><input type="radio" name="scheduleMode" value="NOW" checked /> Most</label>
+            <label class="check"><input type="radio" name="scheduleMode" value="SPECIFIC" /> Időzítve (budapesti idő):</label>
+            <input type="datetime-local" name="scheduledAt" aria-label="Küldés időpontja" />
+          </fieldset>
+          <button type="submit" class="btn" disabled={check.sendable.length === 0}>{check.sendable.length} levél küldése</button>
+        </form>
+      )}
+    </section>
+  </div>
+</Portal>
+
+<script is:inline define:vars={{ byLocale: check.byLocale, labels: LOCALE_LABEL }}>
+  window.__bulk = { byLocale, labels };
+</script>
+
+<script>
+  const { byLocale, labels } = (window as any).__bulk as { byLocale: Record<string, number>; labels: Record<string, string> };
+  // A template is written in one language: say how many recipients read another.
+  const select = document.getElementById('template') as HTMLSelectElement | null;
+  const warn = document.getElementById('lang-warn');
+  select?.addEventListener('change', () => {
+    const locale = select.selectedOptions[0]?.dataset.locale;
+    const other = Object.entries(byLocale).filter(([l]) => l !== locale).reduce((sum, [, n]) => sum + n, 0);
+    if (!warn) return;
+    warn.hidden = !locale || other === 0;
+    warn.textContent = `${other} címzett nyelve nem ${labels[locale ?? '']?.toLowerCase() ?? ''}. Szűrjön nyelvre, ha mindenkinek a saját nyelvén írna.`;
+  });
+  // Choosing a time switches to "timed".
+  document.querySelector<HTMLInputElement>('input[name="scheduledAt"]')?.addEventListener('input', () => {
+    const timed = document.querySelector<HTMLInputElement>('input[name="scheduleMode"][value="SPECIFIC"]');
+    if (timed) timed.checked = true;
+  });
+  document.getElementById('send')?.addEventListener('submit', async (event) => {
+    const form = event.currentTarget as HTMLFormElement;
+    if (form.dataset.confirmed) return;
+    event.preventDefault();
+    const count = form.querySelector('button[type="submit"]')?.textContent ?? '';
+    const timed = (form.querySelector<HTMLInputElement>('input[name="scheduleMode"]:checked')?.value ?? 'NOW') === 'SPECIFIC';
+    const ok = await (window as any).pf.confirm({
+      title: timed ? 'Ütemezi a küldést?' : 'Elküldi most?',
+      body: `${count.replace(' küldése', '')} megy ki a kiválasztott sablonnal. ${timed ? 'Az Ütemezett fülön lemondhatja, amíg el nem indul.' : 'Elküldés után nem vonható vissza.'}`,
+      confirmLabel: timed ? 'Ütemezés' : 'Küldés',
+    });
+    if (ok) {
+      form.dataset.confirmed = '1';
+      form.requestSubmit();
+    }
+  });
+</script>
+
+<style>
+  .ph { margin-bottom: 26px; }
+  .steps { display: grid; gap: 18px; max-width: 980px; }
+  .set-card h2 { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 13px; font-family: var(--sans); }
+  .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; align-items: end; }
+  .filters .wide { grid-column: 1 / -1; }
+  .filters small { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-quiet); }
+  .filter-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 16px; }
+  .link { color: var(--ink-quiet); font-size: 14px; }
+  .stats { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .stats li { display: grid; gap: 2px; min-width: 120px; padding: 12px 16px; border-radius: var(--r-md); background: var(--cream); }
+  .stats li.main { background: var(--pt-green-bg); }
+  .stats li.bad { background: var(--pt-red-bg); }
+  .stats b { font-family: var(--serif); font-weight: var(--fw-display); font-size: 24px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stats span { font-size: 13px; color: var(--ink-quiet); }
+  .langs { margin: 14px 0 0; font-size: 14px; color: var(--ink-quiet); }
+  .sample { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 2px; font-size: 14px; }
+  .sample li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 40px; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--pt-hair); color: var(--ink); }
+  .sample .mail { color: var(--ink-quiet); overflow: hidden; text-overflow: ellipsis; }
+  .sample .lang { color: var(--ink-quiet); text-align: right; }
+  .sample .more { display: block; color: var(--ink-quiet); border: 0; }
+  .send { display: grid; gap: 16px; max-width: 560px; }
+  .send small { display: block; margin-top: 6px; font-size: 13px; }
+  .warn { color: var(--pt-amber); }
+  .when { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+  .when legend { width: 100%; margin-bottom: 6px; font-size: 14px; color: var(--ink-quiet); }
+  .send .btn { justify-self: start; }
+  .soft { color: var(--ink-quiet); }
+  [hidden] { display: none !important; }
+</style>

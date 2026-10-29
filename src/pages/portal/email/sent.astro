@@ -1,0 +1,109 @@
+---
+/**
+ * Every template email that left — single, automatic and bulk — with what
+ * Resend reported back: delivered, bounced, opened, clicked. Search by
+ * recipient or subject; filter by status, kind and template.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import Ago from '~/components/portal/Ago.astro';
+import { icon } from '~/lib/portal/icons';
+import { engagementFor, engagementBadge } from '~/lib/mail/tracking';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const SOURCE_LABEL: Record<string, string> = { MANUAL: 'Egyedi', AUTOMATION: 'Automatikus', BULK_JOB: 'Tömeges' };
+const STATUS_LABEL: Record<string, string> = { SENT: 'Elküldve', DELIVERED: 'Kézbesítve', BOUNCED: 'Visszapattant', COMPLAINED: 'Spamnek jelölte' };
+const STATUS_PILL: Record<string, string> = { SENT: 'pill-queued', DELIVERED: 'pill-ok', BOUNCED: 'pill-bad', COMPLAINED: 'pill-bad' };
+
+const params = Astro.url.searchParams;
+const f = { q: params.get('q')?.trim() ?? '', status: params.get('status') ?? '', source: params.get('source') ?? '', template: params.get('template') ?? '' };
+let query = supabase
+  .from('mail_messages')
+  .select('id, subject, to_email, to_name, source, status, created_at, mail_templates(name)')
+  .order('created_at', { ascending: false })
+  .limit(200);
+if (f.status && f.status in STATUS_LABEL) query = query.eq('status', f.status);
+if (f.source && f.source in SOURCE_LABEL) query = query.eq('source', f.source);
+if (f.template) query = query.eq('template_id', f.template);
+if (f.q) {
+  const term = f.q.replace(/[%,()]/g, '');
+  query = query.or(`subject.ilike.%${term}%,to_email.ilike.%${term}%,to_name.ilike.%${term}%`);
+}
+const [{ data: messages }, { data: templates }] = await Promise.all([query, supabase.from('mail_templates').select('id, name').order('name')]);
+const engagement = await engagementFor(supabase, (messages ?? []).map((m: any) => m.id));
+const filtered = Boolean(f.q || f.status || f.source || f.template);
+---
+
+<Portal title="Kiküldött levelek">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">E-mail automatizáció</p>
+      <h1>Kiküldött <em>levelek</em></h1>
+      <p class="lede">A megnyitások és kattintások akkor jelennek meg, ha a Resendben be van kapcsolva a követés, és a webhook be van állítva.</p>
+    </div>
+  </header>
+
+  <MailNav current="sent" />
+
+  <form class="tools" method="get">
+    <label class="search">
+      <Fragment set:html={icon('search', 17)} />
+      <input type="search" name="q" value={f.q} placeholder="Címzett vagy tárgy…" aria-label="Keresés" />
+    </label>
+    <select name="status" onchange="this.form.submit()" aria-label="Állapot">
+      <option value="">Minden állapot</option>
+      {Object.entries(STATUS_LABEL).map(([k, l]) => <option value={k} selected={f.status === k}>{l}</option>)}
+    </select>
+    <select name="source" onchange="this.form.submit()" aria-label="Típus">
+      <option value="">Minden típus</option>
+      {Object.entries(SOURCE_LABEL).map(([k, l]) => <option value={k} selected={f.source === k}>{l}</option>)}
+    </select>
+    <select name="template" onchange="this.form.submit()" aria-label="Sablon">
+      <option value="">Minden sablon</option>
+      {(templates ?? []).map((t: any) => <option value={t.id} selected={f.template === t.id}>{t.name}</option>)}
+    </select>
+    {filtered && <a href="/portal/email/sent" class="clear">Szűrők törlése</a>}
+  </form>
+
+  {(messages ?? []).length === 0 ? (
+    <div class="empty">
+      <Fragment set:html={icon('mail', 30)} />
+      <b>{filtered ? 'Nincs találat' : 'Még nem ment ki sablonlevél'}</b>
+    </div>
+  ) : (
+    <table class="list">
+      <thead><tr><th>Tárgy</th><th>Címzett</th><th>Típus</th><th>Állapot</th><th>Küldve</th></tr></thead>
+      <tbody>
+        {(messages ?? []).map((m: any) => (
+          <tr>
+            <td><a href={`/portal/email/sent/${m.id}`}>{m.subject}</a>{m.mail_templates?.name && <span class="sub">{m.mail_templates.name}</span>}</td>
+            <td>{m.to_name ? <>{m.to_name}<span class="sub">{m.to_email}</span></> : m.to_email}</td>
+            <td>{SOURCE_LABEL[m.source] ?? m.source}</td>
+            <td>
+              <span class:list={['pill', STATUS_PILL[m.status]]}>{STATUS_LABEL[m.status] ?? m.status}</span>
+              {engagementBadge(engagement.get(m.id)) && <span class="sub">{engagementBadge(engagement.get(m.id))}</span>}
+            </td>
+            <td class="when"><Ago iso={m.created_at} /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Portal>
+
+<style>
+  .ph { margin-bottom: 26px; }
+  .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .search { position: relative; display: flex; align-items: center; flex: 1 1 260px; max-width: 360px; }
+  .search :global(svg) { position: absolute; left: 14px; color: var(--ink-quiet); pointer-events: none; }
+  .search input { width: 100%; padding-left: 40px !important; }
+  .clear { font-size: 14px; color: var(--ink-quiet); }
+  .sub { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-quiet); }
+  .when { white-space: nowrap; color: var(--ink-quiet); }
+  .empty { display: grid; justify-items: center; gap: 10px; padding: 48px 24px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); color: var(--ink-quiet); }
+  .empty b { color: var(--ink); }
+</style>

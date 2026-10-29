@@ -1,0 +1,49 @@
+---
+/** The E-mail automatizáció section's own tabs, under the page header. */
+interface Props {
+  current: 'overview' | 'sent' | 'bulk' | 'scheduled' | 'signature' | 'suppressions';
+}
+const { current } = Astro.props;
+const TABS = [
+  { key: 'overview', href: '/portal/email', label: 'Sablonok' },
+  { key: 'sent', href: '/portal/email/sent', label: 'Kiküldött' },
+  { key: 'bulk', href: '/portal/email/bulk', label: 'Tömeges küldés' },
+  { key: 'scheduled', href: '/portal/email/scheduled', label: 'Ütemezett' },
+  { key: 'signature', href: '/portal/email/signature', label: 'Aláírás' },
+  { key: 'suppressions', href: '/portal/email/suppressions', label: 'Letiltott címek' },
+] as const;
+---
+
+<nav class="mail-tabs" aria-label="E-mail automatizáció">
+  {TABS.map((tab) => <a href={tab.href} aria-current={tab.key === current ? 'page' : undefined}>{tab.label}</a>)}
+</nav>
+
+<style>
+  .mail-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 26px;
+    padding: 4px;
+    border-radius: var(--r-pill);
+    background: var(--linen);
+  }
+  .mail-tabs a {
+    padding: 8px 16px;
+    border-radius: var(--r-pill);
+    font-size: 14.5px;
+    color: var(--ink-quiet);
+    text-decoration: none;
+    transition: background-color 0.25s var(--ease-out), color 0.25s;
+  }
+  .mail-tabs a:hover {
+    color: var(--ink);
+  }
+  .mail-tabs a[aria-current='page'] {
+    background: var(--white);
+    color: var(--ink);
+    box-shadow: var(--shadow-xs);
+  }
+</style>

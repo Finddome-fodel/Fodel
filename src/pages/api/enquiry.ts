@@ -20,6 +20,7 @@ export const POST: APIRoute = (context) =>
   handleForm(context, {
     id: 'enquiry',
     activityKind: 'enquiry.created',
+    automation: 'enquiry',
     subject: 'Ingatlan iránti érdeklődés / Interesse in woning',
     fields: [
       { name: 'name', label: 'Név / Naam', required: true, maxLength: 120 },

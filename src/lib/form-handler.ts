@@ -15,6 +15,7 @@ import { logEvent } from '~/lib/activity';
 import { SITE_HOST } from '~/config/site.mjs';
 import { senderAddress, officeInbox, replyToAddress } from '~/lib/email/routing';
 import { sendEmail } from '~/lib/email/send';
+import { sendAutomationReply, type AutomationKind } from '~/lib/mail/automation';
 import { shell, textShell, p as paragraph } from '~/lib/email/layout';
 import {
   validateField,
@@ -82,6 +83,13 @@ export interface FormDefinition {
    * request repeats back what was asked for). Needs a visitor e-mail address.
    */
   ack?: (locale: Locale, values: Record<string, string>) => { subject: string; html: string; text: string };
+  /**
+   * The E-mail automatizáció reply that may stand in for the acknowledgement:
+   * an active template an admin marked for this form in the visitor's
+   * language (src/lib/mail/automation.ts). Without one, `ack` or the generic
+   * acknowledgement goes out exactly as before — never both.
+   */
+  automation?: AutomationKind;
   /**
    * Recorded to activity_events once the submission is accepted — see
    * src/lib/activity.ts. One call site for all four public forms rather than
@@ -563,7 +571,16 @@ export async function handleForm(
 
     // Acknowledge to the sender so they know it arrived.
     let ackDelivered: boolean | null = null; // null: no acknowledgement was due
-    if (result.values.email && !def.skipAck) {
+    const automated = result.values.email && !def.skipAck && def.automation
+      ? await sendAutomationReply(def.automation, {
+          email: result.values.email,
+          name: result.values.name || null,
+          locale,
+          propertyRef: extras.propertyRef ?? null,
+        })
+      : false;
+    if (automated) ackDelivered = true;
+    if (result.values.email && !def.skipAck && !automated) {
       let ack: { subject: string; html: string; text: string };
       if (def.ack) {
         ack = def.ack(locale, result.values);

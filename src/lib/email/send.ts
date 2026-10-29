@@ -47,7 +47,7 @@ async function capture(message: Record<string, unknown>): Promise<boolean> {
   return true;
 }
 
-export async function sendEmail(opts: {
+export type SendOptions = {
   to: string;
   subject: string;
   html: string;
@@ -58,26 +58,41 @@ export async function sendEmail(opts: {
   attachments?: { filename: string; content: Buffer }[];
   /** Defaults to the portal sender; the public forms pass `senderAddress('website')`. */
   from?: string;
-}): Promise<boolean> {
+  /** Extra message headers — the bulk mails' List-Unsubscribe (src/lib/mail/send.ts). */
+  headers?: Record<string, string>;
+};
+
+export async function sendEmail(opts: SendOptions): Promise<boolean> {
+  return (await sendEmailTracked(opts)).sent;
+}
+
+/**
+ * sendEmail plus Resend's id for the message, which is what its webhook
+ * reports delivery, opens and clicks against. The template mails
+ * (src/lib/mail/) keep it; the lifecycle mails have no use for it.
+ */
+export async function sendEmailTracked(opts: SendOptions): Promise<{ sent: boolean; id: string | null; error?: string }> {
   const apiKey = import.meta.env.RESEND_API_KEY;
   const from = opts.from ?? senderAddress('portal');
 
   if (import.meta.env.EMAIL_TRANSPORT === 'capture') {
-    return capture({
+    const sent = await capture({
       from,
       to: opts.to,
       replyTo: opts.replyTo ?? replyToAddress(),
       subject: opts.subject,
       html: opts.html,
       text: opts.text,
+      headers: opts.headers,
       attachments: (opts.attachments ?? []).map((a) => a.filename),
       at: new Date().toISOString(),
     });
+    return { sent, id: null };
   }
 
   if (!apiKey) {
     console.warn(`[email] RESEND_API_KEY unset — would send "${opts.subject}" to ${opts.to}`);
-    return false;
+    return { sent: false, id: null, error: 'RESEND_API_KEY nincs beállítva' };
   }
 
   const resend = new Resend(apiKey);
@@ -93,6 +108,7 @@ export async function sendEmail(opts: {
         text: opts.text,
         replyTo: opts.replyTo ?? replyToAddress(),
         ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
+        ...(opts.headers ? { headers: opts.headers } : {}),
       })
     );
     messageId = data?.id;
@@ -108,7 +124,8 @@ export async function sendEmail(opts: {
       result.error
     );
   }
-  return result.sent;
+  const error = result.sent ? undefined : String((result.error as { message?: string } | undefined)?.message ?? result.error ?? 'ismeretlen hiba');
+  return { sent: result.sent, id: messageId ?? null, error };
 }
 
 /** Sends a template's output. The one call site shape every trigger should use. */

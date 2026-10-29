@@ -1,0 +1,80 @@
+---
+/** One sent template email: exactly the HTML that went out, and everything Resend reported about it. */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
+import { AUDIENCE_LABEL } from '~/lib/mail/audience';
+import { LINK_TYPE_LABEL, type LinkType } from '~/lib/mail/tracking';
+import { budapestDateTime } from '~/lib/mail/jobs';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { id } = Astro.params;
+const { data: message } = await supabase.from('mail_messages').select('*, mail_templates(id, name)').eq('id', id).maybeSingle();
+if (!message) return new Response('A levél nem található.', { status: 404 });
+const { data: events } = await supabase.from('mail_events').select('type, url, link_type, occurred_at').eq('message_id', id).order('occurred_at');
+
+const SOURCE_LABEL: Record<string, string> = { MANUAL: 'Egyedi küldés', AUTOMATION: 'Automatikus válasz', BULK_JOB: 'Tömeges küldés' };
+const EVENT_LABEL: Record<string, string> = { DELIVERED: 'Kézbesítve', OPENED: 'Megnyitva', CLICKED: 'Kattintás', BOUNCED: 'Visszapattant', COMPLAINED: 'Spamnek jelölte' };
+const opens = (events ?? []).filter((e: any) => e.type === 'OPENED').length;
+const clicks = (events ?? []).filter((e: any) => e.type === 'CLICKED').length;
+---
+
+<Portal title={message.subject}>
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/email/sent">← Kiküldött levelek</a></p>
+      <h1>{message.subject}</h1>
+    </div>
+  </header>
+
+  <MailNav current="sent" />
+
+  <div class="grid">
+    <aside class="set-card meta">
+      <dl>
+        <dt>Címzett</dt><dd>{message.to_name && <>{message.to_name}<br /></>}{message.to_email}</dd>
+        <dt>Küldve</dt><dd>{budapestDateTime(message.created_at)}</dd>
+        <dt>Típus</dt><dd>{SOURCE_LABEL[message.source] ?? message.source}{message.job_id && <> · <a href={`/portal/email/jobs/${message.job_id}`}>a küldés</a></>}</dd>
+        {message.audience && <><dt>Forrás</dt><dd>{AUDIENCE_LABEL[message.audience as keyof typeof AUDIENCE_LABEL] ?? message.audience}</dd></>}
+        {message.mail_templates && <><dt>Sablon</dt><dd><a href={`/portal/email/templates/${message.mail_templates.id}`}>{message.mail_templates.name}</a></dd></>}
+        {message.locale && <><dt>Nyelv</dt><dd>{LOCALE_LABEL[message.locale] ?? message.locale}</dd></>}
+        <dt>Megnyitás / kattintás</dt><dd>{opens}× / {clicks}×</dd>
+      </dl>
+      <h2>Események</h2>
+      {(events ?? []).length === 0 ? <p class="soft">Még nincs visszajelzés a Resendtől.</p> : (
+        <ol class="events">
+          {(events ?? []).map((e: any) => (
+            <li>
+              <b>{EVENT_LABEL[e.type] ?? e.type}</b>
+              <span>{budapestDateTime(e.occurred_at)}</span>
+              {e.url && <span class="url">{LINK_TYPE_LABEL[e.link_type as LinkType] ?? 'link'}: {e.url}</span>}
+            </li>
+          ))}
+        </ol>
+      )}
+    </aside>
+    <div class="frame"><iframe title="A kiküldött levél" sandbox="" srcdoc={message.body_html}></iframe></div>
+  </div>
+</Portal>
+
+<style>
+  .ph { margin-bottom: 24px; }
+  .ph h1 { overflow-wrap: anywhere; }
+  .grid { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .meta dl { display: grid; gap: 4px 0; margin: 0; }
+  .meta dt { margin-top: 10px; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-quiet); }
+  .meta dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+  .meta h2 { margin: 24px 0 10px; font-size: 18px; }
+  .events { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .events li { display: grid; gap: 2px; font-size: 14px; padding-left: 12px; border-left: 2px solid var(--linen); }
+  .events span { color: var(--ink-quiet); }
+  .events .url { overflow-wrap: anywhere; font-size: 13px; }
+  .soft { color: var(--ink-quiet); }
+  .frame { border-radius: var(--r-lg); overflow: hidden; background: #f4f4f2; box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .frame iframe { display: block; width: 100%; height: calc(100vh - 180px); min-height: 560px; border: 0; }
+</style>
