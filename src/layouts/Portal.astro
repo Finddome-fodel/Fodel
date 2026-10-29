@@ -83,8 +83,7 @@ const GROUPS: Group[] = isAdmin
         label: 'Tartalom és pénz',
         items: [
           { href: '/portal/content/blog', label: 'Blog', icon: 'pen' },
-          { href: '/portal/newsletter', label: 'Hírlevél', icon: 'mail' },
-          { href: '/portal/email', label: 'E-mail automatizáció', icon: 'send' },
+          { href: '/portal/email', label: 'E-mail', icon: 'mail', match: ['/portal/newsletter'] },
           { href: '/portal/payments', label: 'Fizetések', icon: 'card' },
           { href: '/portal/invoices', label: 'Számlák', icon: 'invoice', count: waiting.invoices },
         ],

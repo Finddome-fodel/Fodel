@@ -32,7 +32,7 @@ test.describe('European listing editor',()=>{
  test('the full admin navigation remains available',async({page},testInfo)=>{
   await page.goto('/portal/dashboard');
   const nav=page.locator('nav[aria-label="Portál navigáció"]');
-  for(const href of ['/portal/inbox','/portal/enquiries','/portal/valuations','/portal/services','/portal/properties','/portal/database','/portal/users','/portal/content/blog','/portal/newsletter','/portal/payments','/portal/invoices','/portal/settings']){
+  for(const href of ['/portal/inbox','/portal/enquiries','/portal/valuations','/portal/services','/portal/properties','/portal/database','/portal/users','/portal/content/blog','/portal/email','/portal/payments','/portal/invoices','/portal/settings']){
    await expect(nav.locator(`a[href="${href}"]`)).toBeAttached();
   }
   await expect(nav.locator('a[href="/portal/top10"]')).toHaveCount(0);

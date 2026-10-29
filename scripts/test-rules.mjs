@@ -539,4 +539,114 @@ test('"migration 0038 not run yet" is told apart from other database errors', ()
   assert.equal(isMissingMailSchema(null), false);
 });
 
+console.log('\nSystem emails (Rendszerlevelek)');
+const texts = await import('../src/lib/email/system-texts.ts');
+const sysMsg = await import('../src/lib/email/system-messages.ts');
+const { CASES } = await import('../src/lib/email/samples.ts');
+const { LIFECYCLE_COPY } = await import('../src/lib/email/lifecycle.ts');
+const { builtInCopy, COPY_KEYS } = await import('../src/lib/email/templates.ts');
+const editableMessages = sysMsg.ALL_MESSAGES.filter((m) => !m.href);
+const render = (m, l) => CASES[m.sample](l);
+const everyBuiltIn = () =>
+  editableMessages.flatMap((m) => sysMsg.localesOf(m).map((l) => ({
+    key: m.key, locale: l,
+    fields: Object.fromEntries(sysMsg.editableFields(m, l).map((f) => [f.field, f.builtIn])),
+  })));
+
+test('every function field of the built-in copy is either editable or deliberately fixed', () => {
+  const functionFields = [];
+  for (const l of LOCALES) {
+    for (const key of COPY_KEYS) for (const [f, v] of Object.entries(builtInCopy(l)[key] ?? {})) if (typeof v === 'function') functionFields.push([`${key}.${f}`, v.length, l]);
+    for (const [key, byLocale] of Object.entries(LIFECYCLE_COPY)) for (const [f, v] of Object.entries(byLocale[l])) if (typeof v === 'function') functionFields.push([`${key}.${f}`, v.length, l]);
+  }
+  for (const [id, arity, l] of functionFields) {
+    if (texts.FIXED_FUNCTIONS.has(id)) continue;
+    assert.ok(texts.PARAMS[id], `${id} (${l}) takes arguments but has no placeholders declared in PARAMS`);
+    assert.equal(texts.PARAMS[id].length, arity, `${id} (${l}) takes ${arity} arguments, PARAMS declares ${texts.PARAMS[id].length}`);
+  }
+  const existing = new Set(functionFields.map(([id]) => id));
+  for (const id of Object.keys(texts.PARAMS)) assert.ok(existing.has(id), `PARAMS lists ${id}, which is not a function field`);
+});
+test('every system email in the catalogue renders in each of its languages', () => {
+  for (const m of editableMessages) for (const l of sysMsg.localesOf(m)) {
+    const email = render(m, l);
+    assert.ok(email && email.subject && email.html.length > 400, `${m.key} ${l}`);
+  }
+});
+test('saving every field exactly as built changes no email, in any language', () => {
+  const cases = editableMessages.flatMap((m) => sysMsg.localesOf(m).map((l) => [m, l]));
+  const before = cases.map(([m, l]) => JSON.stringify(render(m, l)));
+  texts.setSystemTexts(everyBuiltIn());
+  try {
+    cases.forEach(([m, l], i) => {
+      const after = JSON.stringify(render(m, l));
+      if (after === before[i]) return;
+      const at = [...after].findIndex((ch, n) => ch !== before[i][n]);
+      assert.fail(`${m.key} ${l} differs near: …${before[i].slice(Math.max(0, at - 60), at + 60)}…  became  …${after.slice(Math.max(0, at - 60), at + 60)}…`);
+    });
+  } finally {
+    texts.setSystemTexts([]);
+  }
+});
+test('an edit changes that email in that language only, and restoring brings the original back', () => {
+  const m = sysMsg.findMessage('passwordReset');
+  const hu = render(m, 'hu').subject, nl = render(m, 'nl').subject;
+  texts.setSystemTexts([{ key: 'passwordReset', locale: 'hu', fields: { subject: 'Új jelszó kérése | FINDDOME' } }]);
+  try {
+    assert.equal(render(m, 'hu').subject, 'Új jelszó kérése | FINDDOME');
+    assert.equal(render(m, 'nl').subject, nl, 'other languages untouched');
+    assert.equal(render(sysMsg.findMessage('welcome'), 'hu').subject, render(sysMsg.findMessage('welcome'), 'hu').subject);
+    assert.ok(render(m, 'hu').html.includes('Új jelszó beállítása'), 'fields not edited keep the built-in words');
+  } finally {
+    texts.setSystemTexts([]);
+  }
+  assert.equal(render(m, 'hu').subject, hu);
+});
+test('placeholders are filled with the listing data, in a field that is a function of it', () => {
+  const m = sysMsg.findMessage('published');
+  texts.setSystemTexts([{ key: 'published', locale: 'en', fields: { subject: 'Live: #{{ref}}', body: 'Your home {{title}} is up.' } }]);
+  try {
+    const email = render(m, 'en');
+    assert.equal(email.subject, 'Live: #7213');
+    assert.ok(email.html.includes('Your home Renovated farmhouse in the Balaton Uplands is up.'));
+  } finally {
+    texts.setSystemTexts([]);
+  }
+});
+test('an admin cannot save a hole, a stray placeholder or an overlong field', () => {
+  const m = sysMsg.findMessage('published');
+  assert.equal(sysMsg.overlayFrom(m, 'hu', { heading: '   ' }).ok, false, 'empty');
+  const stray = sysMsg.overlayFrom(m, 'hu', { subject: 'Kész {{password}}' });
+  assert.equal(stray.ok, false);
+  assert.match(stray.error, /ismeretlen beszúrható rész: \{\{password\}\}/);
+  assert.equal(sysMsg.overlayFrom(m, 'hu', { heading: 'Szia {{title}}' }).ok, false, 'a plain field takes no placeholders');
+  assert.equal(sysMsg.overlayFrom(m, 'hu', { heading: 'x'.repeat(401) }).ok, false, 'too long');
+  assert.equal(sysMsg.overlayFrom(m, 'hu', { subject: 'Élő: {{title}}' }).ok, false, 'the subject only knows the reference');
+  const fine = sysMsg.overlayFrom(m, 'hu', { subject: 'Élő (#{{ref}})', body: '„{{title}}” élő.' });
+  assert.deepEqual(fine, { ok: true, overlay: { subject: 'Élő (#{{ref}})', body: '„{{title}}” élő.' } });
+});
+test('a field saved exactly as built is not stored, so "restore" and "unchanged" are the same thing', () => {
+  const m = sysMsg.findMessage('welcome');
+  const all = Object.fromEntries(sysMsg.editableFields(m, 'hu').map((f) => [f.field, f.builtIn]));
+  assert.deepEqual(sysMsg.overlayFrom(m, 'hu', all), { ok: true, overlay: {} });
+  assert.deepEqual(sysMsg.overlayFrom(m, 'hu', { ...all, cta: 'Tovább a portálra' }), { ok: true, overlay: { cta: 'Tovább a portálra' } });
+});
+test('a list field (the welcome steps) is edited one item per line', () => {
+  const m = sysMsg.findMessage('welcome');
+  texts.setSystemTexts([{ key: 'welcome', locale: 'hu', fields: { steps: 'Első\n\n  Második  \nHarmadik' } }]);
+  try {
+    const html = render(m, 'hu').html;
+    for (const item of ['Első', 'Második', 'Harmadik']) assert.ok(html.includes(item), item);
+  } finally {
+    texts.setSystemTexts([]);
+  }
+});
+test('the live preview shows unsaved words without saving them', () => {
+  const m = sysMsg.findMessage('rejected');
+  const original = render(m, 'hu').subject;
+  const shown = texts.withDraft('rejected', 'hu', { subject: 'Piszkozat {{ref}}' }, () => render(m, 'hu').subject);
+  assert.equal(shown, 'Piszkozat 7213');
+  assert.equal(render(m, 'hu').subject, original, 'nothing left behind');
+});
+
 console.log(process.exitCode ? '\nFAILED' : `\nAll ${passed} checks passed.`);

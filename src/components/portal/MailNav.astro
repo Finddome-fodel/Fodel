@@ -1,20 +1,22 @@
 ---
-/** The E-mail automatizáció section's own tabs, under the page header. */
+/** The E-mail section's tabs, under the page header: what goes out by itself, what an admin sends, and who can be reached. */
 interface Props {
-  current: 'overview' | 'sent' | 'bulk' | 'scheduled' | 'signature' | 'suppressions';
+  current: 'overview' | 'system' | 'sent' | 'bulk' | 'scheduled' | 'subscribers' | 'signature' | 'suppressions';
 }
 const { current } = Astro.props;
 const TABS = [
   { key: 'overview', href: '/portal/email', label: 'Sablonok' },
-  { key: 'sent', href: '/portal/email/sent', label: 'Kiküldött' },
+  { key: 'system', href: '/portal/email/system', label: 'Rendszerlevelek' },
   { key: 'bulk', href: '/portal/email/bulk', label: 'Tömeges küldés' },
   { key: 'scheduled', href: '/portal/email/scheduled', label: 'Ütemezett' },
+  { key: 'sent', href: '/portal/email/sent', label: 'Kiküldött' },
+  { key: 'subscribers', href: '/portal/email/subscribers', label: 'Feliratkozók' },
   { key: 'signature', href: '/portal/email/signature', label: 'Aláírás' },
   { key: 'suppressions', href: '/portal/email/suppressions', label: 'Letiltott címek' },
 ] as const;
 ---
 
-<nav class="mail-tabs" aria-label="E-mail automatizáció">
+<nav class="mail-tabs" aria-label="E-mail">
   {TABS.map((tab) => <a href={tab.href} aria-current={tab.key === current ? 'page' : undefined}>{tab.label}</a>)}
 </nav>
 
@@ -29,6 +31,11 @@ const TABS = [
     padding: 4px;
     border-radius: var(--r-pill);
     background: var(--linen);
+  }
+  @media (max-width: 760px) {
+    .mail-tabs { flex-wrap: nowrap; width: auto; overflow-x: auto; scrollbar-width: none; }
+    .mail-tabs::-webkit-scrollbar { display: none; }
+    .mail-tabs a { flex: none; white-space: nowrap; }
   }
   .mail-tabs a {
     padding: 8px 16px;

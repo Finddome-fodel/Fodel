@@ -12,6 +12,7 @@
  * is a measurable spam-score penalty.
  */
 import { COMPANY } from '~/config/company';
+import { applyTexts } from './system-texts';
 import { HU } from './copy/hu';
 import { NL } from './copy/nl';
 import { EN } from './copy/en';
@@ -65,12 +66,31 @@ export type OrderLine = { label: string; amount: string };
  */
 const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK, it: IT, pt: PT, el: EL, cs: CS, sl: SL, sv: SV, da: DA, no: NO, fi: FI, et: ET, lv: LV, lt: LT };
 
+/** The emails whose wording an admin can edit (everything but the shared `common` block). */
+export const COPY_KEYS = Object.keys(HU).filter((key) => key !== 'common');
+
+/** Every email's wording in `locale`: the built-in copy with the admin's edits (system-texts.ts) laid over it. */
 function copyFor(locale: EmailLocale) {
+  const base = COPY[locale] as Record<string, any>;
+  let next: Record<string, any> | null = null;
+  for (const key of COPY_KEYS) {
+    if (!base[key]) continue;
+    const edited = applyTexts(key, locale, base[key]);
+    if (edited === base[key]) continue;
+    next ??= { ...base };
+    next[key] = edited;
+  }
+  // Almost always nothing is edited: hand back the built-in object itself.
+  return (next ?? base) as typeof HU;
+}
+
+/** The built-in wording, unedited — the editor shows it as the thing to go back to. */
+export function builtInCopy(locale: EmailLocale) {
   return COPY[locale];
 }
 
 /** The office's copy: Hungarian, in every case. */
-const OFFICE = HU;
+const office = () => copyFor('hu');
 
 /** The signature block, identical in every email. */
 function signOff(locale: EmailLocale): string {
@@ -375,7 +395,7 @@ export function adminNewSubmission(
     reviewUrl: string;
   }
 ): BuiltEmail {
-  const c = OFFICE.adminNewSubmission;
+  const c = office().adminNewSubmission;
   const L = c.labels;
 
   return {
@@ -743,7 +763,7 @@ export function adminServiceRequested(
   locale: EmailLocale,
   opts: { service: string; name: string; email: string; phone: string; source: string; note: string; url: string }
 ): BuiltEmail {
-  const c = OFFICE.adminServiceRequested;
+  const c = office().adminServiceRequested;
   const L = c.labels;
   const where = c.sources[opts.source] ?? opts.source;
   const rows: [string, string][] = [
@@ -885,7 +905,7 @@ export function referralAdminNotice(
   locale: EmailLocale,
   opts: { referrerName: string; referrerEmail: string; referredName: string; referredEmail: string }
 ): BuiltEmail {
-  const c = OFFICE.referralAdminNotice;
+  const c = office().referralAdminNotice;
   const L = c.labels;
 
   return {

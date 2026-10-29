@@ -13,6 +13,7 @@ import { shell, textShell, h1, p, lead, small, button, facts, textLink, esc, typ
 import type { BuiltEmail } from './templates';
 import { COMPANY } from '~/config/company';
 import { nOf } from '~/i18n/plural';
+import { applyTexts } from './system-texts';
 
 const sign: Record<EmailLocale, string> = {
   hu: 'Üdvözlettel,\nFINDDOME Ingatlan',
@@ -303,7 +304,7 @@ const EXPIRY = {
 };
 
 function expiryReminder(locale: EmailLocale, a: ExpiryArgs): BuiltEmail {
-  const c = EXPIRY[locale];
+  const c = applyTexts('expiry', locale, EXPIRY[locale]);
   return {
     subject: c.subject(a.days),
     html: shell({
@@ -495,7 +496,7 @@ const EXPIRED = {
 };
 
 function listingExpired(locale: EmailLocale, a: ExpiredArgs): BuiltEmail {
-  const c = EXPIRED[locale];
+  const c = applyTexts('expired', locale, EXPIRED[locale]);
   return {
     subject: c.subject,
     html: shell({ locale, preheader: c.preheader, body: h1(c.heading) + lead(c.intro(a.title)) + p(c.body(a.price)) + button(c.cta, a.renewUrl) + signOff(locale) }),
@@ -656,7 +657,7 @@ const RENEWED = {
 };
 
 function renewed(locale: EmailLocale, a: { ref: string; title: string; url: string; expiresOn: string }): BuiltEmail {
-  const c = RENEWED[locale];
+  const c = applyTexts('renewed', locale, RENEWED[locale]);
   return {
     subject: c.subject,
     html: shell({ locale, preheader: c.preheader, body: h1(c.heading) + lead(c.intro(a.title, a.expiresOn)) + button(c.cta, a.url) + signOff(locale) }),
@@ -861,7 +862,7 @@ const TRANSFER = {
 };
 
 function renewalTransfer(locale: EmailLocale, a: TransferArgs): BuiltEmail {
-  const c = TRANSFER[locale];
+  const c = applyTexts('transfer', locale, TRANSFER[locale]);
   const rows: [string, string][] = [[c.labels.amount, a.amount], [c.labels.account, a.account], [c.labels.reference, a.reference]];
   return {
     subject: c.subject(a.ref),
@@ -1130,7 +1131,7 @@ const REFRESH = {
 };
 
 function ownerRefresh(locale: EmailLocale, a: RefreshArgs): BuiltEmail {
-  const c = REFRESH[locale];
+  const c = applyTexts('refresh', locale, REFRESH[locale]);
   return {
     subject: c.subject(a.title, Boolean(a.reminder)),
     html: shell({
@@ -1380,7 +1381,7 @@ const NEWSLETTER: Record<ShellLocale, { subject: string; preheader: string; head
 
 /** The footer line every newsletter email carries: why, plus a one-click unsubscribe link. */
 export function newsletterFooter(locale: ShellLocale, unsubscribeUrl: string): { html: string; text: string } {
-  const c = NEWSLETTER[locale];
+  const c = applyTexts('newsletter', locale, NEWSLETTER[locale]);
   return {
     html: `${esc(c.why)} <a href="${esc(unsubscribeUrl)}" style="color:inherit;text-decoration:underline;">${esc(c.unsubscribe)}</a>`,
     text: `${c.why}\n${c.unsubscribe}: ${unsubscribeUrl}`,
@@ -1388,7 +1389,7 @@ export function newsletterFooter(locale: ShellLocale, unsubscribeUrl: string): {
 }
 
 function newsletterConfirm(locale: ShellLocale, a: { confirmUrl: string; unsubscribeUrl: string }): BuiltEmail {
-  const c = NEWSLETTER[locale];
+  const c = applyTexts('newsletter', locale, NEWSLETTER[locale]);
   const footer = newsletterFooter(locale, a.unsubscribeUrl);
   return {
     subject: c.subject,
@@ -1396,5 +1397,8 @@ function newsletterConfirm(locale: ShellLocale, a: { confirmUrl: string; unsubsc
     text: textShell({ locale, body: `${c.heading}\n\n${c.intro}\n\n${cta(c.cta, a.confirmUrl)}\n\n${c.ignore}`, why: footer.text }),
   };
 }
+
+/** The built-in wording of the lifecycle emails, per language — what the editor starts from (system-messages.ts). */
+export const LIFECYCLE_COPY = { expiry: EXPIRY, expired: EXPIRED, renewed: RENEWED, transfer: TRANSFER, refresh: REFRESH, newsletter: NEWSLETTER };
 
 export const lifecycleEmails = { expiryReminder, listingExpired, renewed, renewalTransfer, ownerRefresh, adminOwnerUpdate, newsletterConfirm };

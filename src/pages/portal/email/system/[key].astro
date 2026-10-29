@@ -1,0 +1,395 @@
+---
+/**
+ * E-mail › Rendszerlevelek › one email. The words of a system email in one
+ * language, as plain fields: change them, watch the real email redraw beside
+ * them (on sample data, through the same builder the site sends with), save.
+ * Only what differs from the built-in wording is stored (migration 0040), so
+ * every field can be put back with one click. Admin only (middleware).
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import { isLocale, type Locale } from '~/i18n/ui';
+import { LOCALE_LABEL } from '~/lib/portal/labels';
+import { isMissingMailSchema } from '~/lib/mail/schema';
+import { AUDIENCE_LABEL, ALL_MESSAGES, editableFields, findMessage, localesOf, previewMessage } from '~/lib/email/system-messages';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const message = findMessage(Astro.params.key ?? '');
+if (!message) return new Response('A levél nem található.', { status: 404 });
+if (message.href) return Astro.redirect(message.href);
+
+const locales = localesOf(message);
+const asked = Astro.url.searchParams.get('locale') ?? '';
+const locale: Locale = isLocale(asked) && locales.includes(asked) ? asked : locales.includes('hu') ? 'hu' : locales[0]!;
+
+const { data: rows, error } = await supabase.from('mail_system_texts').select('locale, fields').eq('key', message.key);
+const needsMigration = isMissingMailSchema(error);
+const savedBy = new Map<string, Record<string, string>>((rows ?? []).map((row: any) => [row.locale, row.fields ?? {}]));
+const saved = savedBy.get(locale) ?? {};
+
+const fields = editableFields(message, locale).map((field) => ({
+  ...field,
+  value: typeof saved[field.field] === 'string' ? saved[field.field]! : field.builtIn,
+  changed: typeof saved[field.field] === 'string',
+}));
+const preview = await previewMessage(message, locale, null);
+
+const index = ALL_MESSAGES.filter((m) => !m.href);
+const at = index.findIndex((m) => m.key === message.key);
+const next = index[at + 1];
+const href = (code: string) => `/portal/email/system/${message.key}?locale=${code}`;
+---
+
+<Portal title={`${message.label} · Rendszerlevelek`}>
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/email/system">← Rendszerlevelek</a></p>
+      <h1>{message.label}</h1>
+      <p class="lede">{message.when}</p>
+      <p class="to"><span class={`aud aud-${message.to}`}>{AUDIENCE_LABEL[message.to]}</span>{locales.length > 1 && <span> · {locales.length} nyelven készül el</span>}</p>
+    </div>
+  </header>
+
+  <MailNav current="system" />
+
+  {needsMigration && (
+    <p class="notice warn">
+      A mentés bekapcsolásához egyszer le kell futtatni a <code>0040_system_mail_texts.sql</code> migrációt a Supabase
+      SQL Editorban. Addig az előnézet működik, de a módosítás nem menthető.
+    </p>
+  )}
+
+  {locales.length > 1 && (
+    <nav class="langs" aria-label="Nyelv">
+      {locales.map((code) => (
+        <a href={href(code)} title={LOCALE_LABEL[code] ?? code} aria-current={code === locale ? 'page' : undefined} data-lang>
+          {code.toUpperCase()}
+          {savedBy.has(code) && <i class="dot" aria-label="módosítva"></i>}
+        </a>
+      ))}
+    </nav>
+  )}
+
+  <div class="composer">
+    <div class="col">
+      <form id="texts" class="set-card ed" novalidate data-key={message.key} data-locale={locale} data-ready={String(!needsMigration)}>
+        <div class="ed-head">
+          <h2>{LOCALE_LABEL[locale] ?? locale}</h2>
+          <p>A szöveg, amit a címzett olvas. Amit nem ír át, az a beépített szöveggel megy.</p>
+        </div>
+
+        {fields.length === 0 && <p class="soft">Ennek a levélnek ebben a nyelvben nincs szerkeszthető szövege.</p>}
+
+        {fields.map((field) => (
+          <div class="fld" data-field={field.field} data-default={field.builtIn} data-kind={field.kind}>
+            <div class="fld-top">
+              <label for={`f-${field.field}`}>{field.label}</label>
+              <span class="badge" hidden>módosítva</span>
+              <button type="button" class="link-btn undo" hidden>Eredeti szöveg</button>
+            </div>
+            {field.kind === 'line'
+              ? <input id={`f-${field.field}`} name={field.field} value={field.value} maxlength="400" autocomplete="off" />
+              : <textarea id={`f-${field.field}`} name={field.field} rows={field.kind === 'list' ? Math.max(3, field.value.split('\n').length + 1) : 4} maxlength="3000">{field.value}</textarea>}
+            {field.hint && <p class="hint">{field.hint}</p>}
+            {field.params.length > 0 && (
+              <p class="chips" aria-label="Beszúrható részek">
+                <span>Beszúrás:</span>
+                {field.params.map((param) => (
+                  <button type="button" class="chip" data-token={param.name} title={`Küldéskor ide kerül: ${param.help}`}>{param.help}</button>
+                ))}
+              </p>
+            )}
+            <p class="err" role="alert" hidden></p>
+          </div>
+        ))}
+
+        {fields.length > 0 && (
+          <div class="savebar">
+            <span id="state" class="soft">Nincs mentetlen módosítás</span>
+            <button type="button" class="reset" id="reset-all" hidden>Mind vissza az eredetire</button>
+            <button type="submit" class="btn" id="save" disabled>Mentés</button>
+          </div>
+        )}
+      </form>
+
+      <p class="fixed">
+        A gombok, linkek, táblázatok és az aláírás nem szerkeszthetők: a levél felépítése mindig ugyanaz marad.
+        {next && <> Következő levél: <a href={`/portal/email/system/${next.key}`}>{next.label} →</a></>}
+      </p>
+    </div>
+
+    <aside class="preview">
+      <div class="preview-head">
+        <span class="section-label">Élő előnézet, mintaadatokkal</span>
+        <div class="seg" role="group" aria-label="Nézet">
+          <button type="button" data-width="680" aria-pressed="true">Asztali</button>
+          <button type="button" data-width="390" aria-pressed="false">Mobil</button>
+        </div>
+      </div>
+      <div class="frame">
+        <p class="subject" id="preview-subject">{preview?.subject ?? ''}</p>
+        <div class="stage"><iframe id="preview" title="Levél előnézet" sandbox="" srcdoc={preview?.html ?? ''}></iframe></div>
+      </div>
+    </aside>
+  </div>
+</Portal>
+
+<script>
+  const form = document.getElementById('texts') as HTMLFormElement | null;
+  if (form) {
+    const key = form.dataset.key!;
+    const locale = form.dataset.locale!;
+    const ready = form.dataset.ready === 'true';
+    const save = document.getElementById('save') as HTMLButtonElement;
+    const resetAll = document.getElementById('reset-all') as HTMLButtonElement;
+    const state = document.getElementById('state')!;
+    const iframe = document.getElementById('preview') as HTMLIFrameElement;
+    const subject = document.getElementById('preview-subject')!;
+    const toast = (message: string, tone: 'ok' | 'error' = 'ok') => (window as any).pf?.toast?.(message, tone);
+
+    type Row = { root: HTMLElement; input: HTMLInputElement | HTMLTextAreaElement; initial: string; builtIn: string; kind: string };
+    const norm = (kind: string, text: string) =>
+      kind === 'list' ? text.split('\n').map((l) => l.trim()).filter(Boolean).join('\n') : kind === 'line' ? text.replace(/\s*\n\s*/g, ' ').trim() : text.replace(/\r\n/g, '\n').trim();
+    const rows: Row[] = [...form.querySelectorAll<HTMLElement>('[data-field]')].map((root) => {
+      const input = root.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')!;
+      return { root, input, initial: input.value, builtIn: root.dataset.default ?? '', kind: root.dataset.kind ?? 'line' };
+    });
+    let savedIsEdited = rows.some((row) => norm(row.kind, row.initial) !== norm(row.kind, row.builtIn));
+    const values = () => Object.fromEntries(rows.map((row) => [row.root.dataset.field!, row.input.value]));
+    const differs = (row: Row) => norm(row.kind, row.input.value) !== norm(row.kind, row.builtIn);
+    const dirty = () => rows.some((row) => norm(row.kind, row.input.value) !== norm(row.kind, row.initial));
+
+    const grow = (el: HTMLInputElement | HTMLTextAreaElement) => {
+      if (el instanceof HTMLTextAreaElement) {
+        el.style.height = 'auto';
+        el.style.height = `${el.scrollHeight + 2}px`;
+      }
+    };
+
+    const refresh = () => {
+      for (const row of rows) {
+        const changed = differs(row);
+        row.root.classList.toggle('is-changed', changed);
+        row.root.querySelector<HTMLElement>('.badge')!.hidden = !changed;
+        row.root.querySelector<HTMLElement>('.undo')!.hidden = !changed;
+      }
+      const isDirty = dirty();
+      save.disabled = !ready || !isDirty;
+      resetAll.hidden = !(savedIsEdited && !isDirty) && !rows.some(differs);
+      state.textContent = !ready ? 'A mentéshez előbb a 0040 migráció kell' : isDirty ? 'Mentetlen módosítások' : savedIsEdited ? 'Mentve — ez megy ki' : 'Nincs mentetlen módosítás';
+      state.classList.toggle('is-dirty', isDirty);
+    };
+
+    /* Live preview: debounced, and the newest answer wins. */
+    let timer: number | undefined;
+    let ticket = 0;
+    const redraw = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(async () => {
+        const mine = ++ticket;
+        try {
+          const res = await fetch('/api/portal/email/system/preview', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ key, locale, fields: values() }),
+          });
+          if (!res.ok || mine !== ticket) return;
+          const data = await res.json();
+          if (data.ok) {
+            iframe.srcdoc = data.html;
+            subject.textContent = data.subject;
+          }
+        } catch {
+          /* the previous preview stays */
+        }
+      }, 350);
+    };
+
+    const clearError = (row: Row) => {
+      const err = row.root.querySelector<HTMLElement>('.err')!;
+      err.hidden = true;
+      err.textContent = '';
+      row.input.removeAttribute('aria-invalid');
+    };
+    const showError = (field: string | undefined, message: string) => {
+      const row = rows.find((r) => r.root.dataset.field === field);
+      if (!row) return toast(message, 'error');
+      const err = row.root.querySelector<HTMLElement>('.err')!;
+      err.textContent = message;
+      err.hidden = false;
+      row.input.setAttribute('aria-invalid', 'true');
+      row.input.focus();
+      row.root.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    };
+
+    for (const row of rows) {
+      grow(row.input);
+      let touched = false;
+      row.input.addEventListener('focus', () => (touched = true));
+      row.input.addEventListener('input', () => {
+        grow(row.input);
+        clearError(row);
+        refresh();
+        redraw();
+      });
+      row.root.querySelector('.undo')!.addEventListener('click', () => {
+        row.input.value = row.builtIn;
+        grow(row.input);
+        clearError(row);
+        refresh();
+        redraw();
+        row.input.focus();
+      });
+      row.root.querySelectorAll<HTMLButtonElement>('[data-token]').forEach((chip) =>
+        chip.addEventListener('click', () => {
+          const token = `{{${chip.dataset.token}}}`;
+          const el = row.input;
+          // Where the cursor last was; in a field nobody has clicked into yet, the end.
+          const from = touched ? (el.selectionStart ?? el.value.length) : el.value.length;
+          const to = touched ? (el.selectionEnd ?? from) : from;
+          el.value = el.value.slice(0, from) + token + el.value.slice(to);
+          el.focus();
+          el.setSelectionRange(from + token.length, from + token.length);
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        })
+      );
+    }
+
+    const send = async (body: Record<string, unknown>) => {
+      const res = await fetch(`/api/portal/email/system/${key}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ locale, ...body }),
+      });
+      return { res, data: await res.json().catch(() => ({ ok: false, error: 'Nem sikerült a mentés.' })) };
+    };
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (save.disabled) return;
+      rows.forEach(clearError);
+      save.disabled = true;
+      state.textContent = 'Mentés…';
+      const { data } = await send({ fields: values() });
+      if (data.ok) {
+        for (const row of rows) row.initial = row.input.value;
+        savedIsEdited = Boolean(data.edited);
+        toast(data.edited ? 'Mentve. A következő levél már ezzel a szöveggel megy ki.' : 'Visszaállítva a beépített szövegre.');
+        document.querySelectorAll('[data-lang][aria-current="page"] .dot').forEach((dot) => dot.remove());
+        const current = document.querySelector('[data-lang][aria-current="page"]');
+        if (current && data.edited && !current.querySelector('.dot')) current.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="módosítva"></i>');
+      } else {
+        showError(data.field, data.error ?? 'Nem sikerült a mentés.');
+      }
+      refresh();
+    });
+
+    resetAll.addEventListener('click', async () => {
+      const ok = await (window as any).pf?.confirm?.({
+        title: 'Visszaállítja az eredeti szövegre?',
+        body: 'Ebben a nyelvben az összes módosítás törlődik, és a levél újra a beépített szöveggel megy ki.',
+        confirmLabel: 'Visszaállítás',
+      });
+      if (!ok) return;
+      const { data } = await send({ action: 'reset' });
+      if (data.ok) {
+        for (const row of rows) {
+          row.input.value = row.builtIn;
+          row.initial = row.builtIn;
+          grow(row.input);
+          clearError(row);
+        }
+        savedIsEdited = false;
+        document.querySelector('[data-lang][aria-current="page"] .dot')?.remove();
+        toast('Visszaállítva a beépített szövegre.');
+        refresh();
+        redraw();
+      } else {
+        toast(data.error ?? 'Nem sikerült.', 'error');
+      }
+    });
+
+    /* Changing language or leaving with unsaved words asks first. */
+    window.addEventListener('beforeunload', (event) => {
+      if (dirty()) event.preventDefault();
+    });
+
+    refresh();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-width]').forEach((button) =>
+    button.addEventListener('click', () => {
+      const iframe = document.getElementById('preview') as HTMLIFrameElement;
+      iframe.style.width = `${button.dataset.width}px`;
+      document.querySelectorAll('[data-width]').forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+    })
+  );
+</script>
+
+<style>
+  .ph { margin-bottom: 22px; }
+  .to { margin: 12px 0 0; font-size: 14px; color: var(--ink-quiet); }
+  .aud { display: inline-block; padding: 3px 12px; border-radius: var(--r-pill); background: var(--linen); color: var(--ink); font-size: 13px; }
+  .aud-office { background: var(--paper); color: var(--ink-quiet); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .notice { margin-bottom: 20px; }
+  .notice code { font-size: 0.92em; padding: 1px 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.55); overflow-wrap: anywhere; }
+
+  .langs { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 22px; }
+  @media (max-width: 760px) { .langs { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding: 2px 16px 6px; scrollbar-width: none; } .langs::-webkit-scrollbar { display: none; } .langs a { flex: none; } }
+  .langs a { position: relative; display: inline-grid; place-items: center; min-width: 40px; height: 36px; padding: 0 9px; border-radius: var(--r-pill); font-size: 13px; letter-spacing: 0.05em; color: var(--ink-quiet); text-decoration: none; box-shadow: inset 0 0 0 1px var(--pt-hair); background: var(--white); transition: background-color 0.2s var(--ease-out), color 0.2s, box-shadow 0.2s; }
+  .langs a:hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink-quiet); }
+  .langs a[aria-current='page'] { background: var(--ink); color: var(--white); box-shadow: none; }
+  .langs :global(.dot), .dot { position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--pt-green); }
+  .langs a[aria-current='page'] :global(.dot) { background: #8fe0b0; }
+
+  .composer { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 24px; align-items: start; }
+  @media (max-width: 1100px) { .composer { grid-template-columns: 1fr; } }
+  .col { display: grid; gap: 14px; min-width: 0; }
+  .ed { display: grid; gap: 22px; }
+  .ed-head h2 { margin: 0 0 4px; font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; color: var(--ink); }
+  .ed-head p { margin: 0; font-size: 14px; color: var(--ink-quiet); }
+  .soft { color: var(--ink-quiet); font-size: 14px; }
+
+  .fld { display: grid; gap: 8px; }
+  .fld-top { display: flex; align-items: center; gap: 10px; min-height: 22px; }
+  .fld-top label { font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
+  .badge { padding: 1px 9px; border-radius: var(--r-pill); background: var(--pt-green-bg); color: var(--pt-green); font-size: 12px; }
+  .undo { margin-left: auto; border: 0; background: none; padding: 0; font: inherit; font-size: 13px; color: var(--ink-quiet); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .undo:hover { color: var(--ink); }
+  .fld input, .fld textarea { width: 100%; min-height: 50px; padding: 12px 16px; font-family: inherit; font-weight: var(--fw-body); font-size: var(--fs-body); color: var(--ink); }
+  .fld textarea { resize: vertical; line-height: 1.65; overflow: hidden; }
+  .fld.is-changed input, .fld.is-changed textarea { box-shadow: inset 3px 0 0 var(--pt-green); }
+  .fld [aria-invalid='true'] { border-color: var(--pt-red) !important; }
+  .hint { margin: 0; font-size: 13px; color: var(--ink-quiet); }
+  .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--ink-quiet); }
+  .chip { border: 1px dashed var(--border); border-radius: var(--r-pill); background: var(--white); padding: 3px 11px; font: inherit; font-size: 13px; color: var(--ink); cursor: pointer; transition: border-color 0.2s, background-color 0.2s; }
+  .chip:hover { border-color: var(--ink); background: var(--paper); }
+  .err { margin: 0; font-size: 14px; color: var(--pt-red); }
+
+  .savebar .btn, .savebar .reset { white-space: nowrap; }
+  .savebar .reset { border: 0; background: none; padding: 0; font: inherit; font-size: 14px; color: var(--ink-quiet); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .savebar .reset:hover { color: var(--ink); }
+  .savebar { position: sticky; bottom: 0; z-index: 2; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px 16px; margin: 0 -12px; padding: 22px 12px 12px; background: linear-gradient(to top, var(--white) 68%, color-mix(in srgb, var(--white) 0%, transparent)); }
+  .savebar #state { margin-right: auto; }
+  .savebar .is-dirty { color: var(--pt-amber); }
+  .fixed { margin: 0; padding: 0 4px; font-size: 13.5px; line-height: 1.65; color: var(--ink-quiet); }
+  .fixed a { color: var(--ink); }
+
+  .section-label { margin: 0; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-quiet); }
+  .preview { position: sticky; top: 20px; display: grid; gap: 10px; min-width: 0; }
+  @media (max-width: 1100px) { .preview { position: static; } }
+  .preview-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; }
+  .seg { display: inline-flex; padding: 3px; border-radius: var(--r-pill); background: var(--linen); }
+  .seg button { border: 0; background: none; padding: 5px 14px; border-radius: var(--r-pill); font: inherit; font-size: 13px; color: var(--ink-quiet); cursor: pointer; }
+  .seg button[aria-pressed='true'] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-xs); }
+  .frame { border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); overflow: hidden; }
+  .subject { margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--pt-hair); font-weight: var(--fw-medium); color: var(--ink); overflow-wrap: anywhere; }
+  .stage { display: flex; justify-content: center; background: #f4f4f2; height: calc(100vh - 170px); min-height: 520px; overflow: auto; }
+  .stage iframe { width: 680px; max-width: 100%; height: 100%; border: 0; background: #f4f4f2; transition: width 0.25s var(--ease-out); }
+  @media (max-width: 1100px) { .stage { height: 70vh; } }
+  [hidden] { display: none !important; }
+</style>

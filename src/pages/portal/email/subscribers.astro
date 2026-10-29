@@ -1,0 +1,173 @@
+---
+/**
+ * E-mail › Feliratkozók — everyone who signed up for the newsletter in the
+ * footer or on the homepage, with their status (double opt-in), language and
+ * consent time. Filter, export to Excel, delete. These are the people a bulk
+ * send ("Tömeges küldés") can reach. Admin only (middleware).
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import Ago from '~/components/portal/Ago.astro';
+import MailNav from '~/components/portal/MailNav.astro';
+import { icon } from '~/lib/portal/icons';
+import { loadSubscribers, newsletterFilters, NEWSLETTER_STATUS_LABEL, NEWSLETTER_LOCALE_LABEL } from '~/lib/portal/newsletter';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const filters = newsletterFilters(Astro.url.searchParams);
+const [{ rows, error }, all] = await Promise.all([
+  loadSubscribers(supabase, filters),
+  loadSubscribers(supabase, { status: '', locale: '', q: '' }),
+]);
+const migrated = !error;
+const count = (status: string) => all.rows.filter((row: any) => row.status === status).length;
+const audience = Boolean(import.meta.env.RESEND_AUDIENCE_ID || process.env.RESEND_AUDIENCE_ID);
+
+const href = (patch: Partial<typeof filters>) => {
+  const next = { ...filters, ...patch };
+  const u = new URLSearchParams();
+  if (next.status) u.set('status', next.status);
+  if (next.locale) u.set('locale', next.locale);
+  if (next.q) u.set('q', next.q);
+  const s = u.toString();
+  return s ? `?${s}` : '';
+};
+const exportHref = `/api/portal/newsletter/export${href({})}`;
+---
+
+<Portal title="E-mail · Feliratkozók">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">E-mail</p>
+      <h1>Hírlevél-<em>feliratkozók</em></h1>
+      <p class="lede">Kétlépcsős feliratkozás: csak a megerősített címekre szabad hírlevelet küldeni. {audience ? 'A megerősített címek a Resend közönségbe is bekerülnek.' : 'Resend közönség nincs beállítva — a lista itt, az adatbázisban él.'}</p>
+    </div>
+    <div class="ph-side">
+      <a class="btn ghost" href={exportHref}><Fragment set:html={icon('download', 16)} /> Excel export</a>
+    </div>
+  </header>
+
+  <MailNav current="subscribers" />
+
+  {!migrated && <p class="notice error">A hírlevél táblája a <code>0019_quote_completion.sql</code> migrációval jön létre. Futtassa le, utána frissítse az oldalt.</p>}
+
+  <ul class="stats" aria-label="Összesítés">
+    <li><b>{count('confirmed')}</b><span>Feliratkozott</span></li>
+    <li><b>{count('pending')}</b><span>Megerősítésre vár</span></li>
+    <li><b>{count('unsubscribed')}</b><span>Leiratkozott</span></li>
+  </ul>
+
+  <div class="bar">
+    <nav class="tabs" aria-label="Állapot">
+      <a href={href({ status: '' })} aria-current={!filters.status ? 'page' : undefined}>Mind<span>{all.rows.length}</span></a>
+      {Object.entries(NEWSLETTER_STATUS_LABEL).map(([key, label]) => (
+        <a href={href({ status: key })} aria-current={filters.status === key ? 'page' : undefined}>{label}<span>{count(key)}</span></a>
+      ))}
+    </nav>
+    <form class="tools" method="get">
+      {filters.status && <input type="hidden" name="status" value={filters.status} />}
+      <label class="sr-only" for="nl-locale">Nyelv</label>
+      <select id="nl-locale" name="locale" onchange="this.form.submit()">
+        <option value="">Minden nyelv</option>
+        {Object.entries(NEWSLETTER_LOCALE_LABEL).map(([key, label]) => <option value={key} selected={filters.locale === key}>{label}</option>)}
+      </select>
+      <label class="search">
+        <Fragment set:html={icon('search', 17)} />
+        <input type="search" name="q" value={filters.q} placeholder="E-mail-cím…" aria-label="Keresés e-mail-címre" />
+      </label>
+    </form>
+  </div>
+
+  {rows.length === 0 ? (
+    <div class="empty">
+      <Fragment set:html={icon('mail', 30)} />
+      <b>{filters.q || filters.status || filters.locale ? 'Nincs találat' : 'Még nincs feliratkozó'}</b>
+      <span>A feliratkozó űrlap minden nyilvános oldal láblécében és a főoldalon érhető el.</span>
+    </div>
+  ) : (
+    <table class="list">
+      <thead>
+        <tr>
+          <th>E-mail</th>
+          <th>Állapot</th>
+          <th>Nyelv</th>
+          <th>Hozzájárulás</th>
+          <th>Forrás</th>
+          <th class="actions-col"><span class="sr-only">Műveletek</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row: any) => (
+          <tr>
+            <td class="mail">{row.email}</td>
+            <td><span class:list={['pill', `pill-${row.status}`]}>{NEWSLETTER_STATUS_LABEL[row.status] ?? row.status}</span></td>
+            <td>{NEWSLETTER_LOCALE_LABEL[row.locale] ?? row.locale}</td>
+            <td class="when">{row.status === 'unsubscribed' ? <>Leiratkozott: <Ago iso={row.unsubscribed_at} /></> : <Ago iso={row.consent_at} />}</td>
+            <td class="when">{row.source ?? '—'}</td>
+            <td class="actions-col">
+              <button type="button" class="pt-icon-btn danger" data-delete={row.id} data-email={row.email} aria-label={`Törlés: ${row.email}`}>
+                <Fragment set:html={icon('trash', 17)} />
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Portal>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-delete]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const email = button.dataset.email ?? '';
+      const ok = await (window as any).pf.confirmType({
+        title: 'Végleg törli ezt a feliratkozót?',
+        body: 'A cím és a hozzájárulás adatai törlődnek. Ha csak a küldést akarja leállítani, a leiratkozás elég — azt a feliratkozó maga is megteheti.',
+        expected: email,
+        confirmLabel: 'Törlés',
+      });
+      if (!ok) return;
+      const res = await fetch(`/api/portal/newsletter/${button.dataset.delete}`, { method: 'DELETE' });
+      if (res.ok) {
+        button.closest('tr')?.remove();
+        (window as any).pf.toast?.('Törölve.');
+      } else {
+        (window as any).pf.toast?.('Nem sikerült törölni.', 'error');
+      }
+    });
+  });
+</script>
+
+<style>
+  .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 40px; margin-bottom: 30px; }
+  .ph-side { display: flex; gap: 12px; }
+  .btn :global(svg) { width: 16px; height: 16px; }
+  .stats { list-style: none; margin: 0 0 28px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .stats li { display: grid; gap: 4px; padding: 16px 20px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .stats b { font-family: var(--serif); font-weight: var(--fw-display); font-size: 26px; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stats span { font-size: 13px; color: var(--ink-quiet); }
+  .bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 20px; margin-bottom: 18px; }
+  .tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--r-pill); background: var(--linen); flex-wrap: wrap; }
+  .tabs a { padding: 8px 16px; border-radius: var(--r-pill); font-size: 14.5px; color: var(--ink-quiet); text-decoration: none; transition: background-color 0.25s var(--ease-out), color 0.25s; }
+  .tabs a[aria-current='page'] { background: var(--white); color: var(--ink); box-shadow: var(--shadow-xs); }
+  .tabs span { margin-left: 6px; padding: 1px 8px; border-radius: var(--r-pill); background: rgba(16, 42, 67, 0.07); font-size: 12.5px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .tools select { min-height: 46px; padding: 8px 40px 8px 16px; border-radius: var(--r-pill); font: inherit; font-size: 14.5px; }
+  .search { position: relative; display: flex; align-items: center; }
+  .search :global(svg) { position: absolute; left: 15px; color: var(--ink-quiet); pointer-events: none; }
+  .search input { width: 240px; max-width: 100%; min-height: 46px; padding: 10px 16px 10px 42px; border-radius: var(--r-pill); font: inherit; font-size: 14.5px; }
+  .mail { font-weight: var(--fw-medium); color: var(--ink); overflow-wrap: anywhere; }
+  .when { font-size: 14px; color: var(--ink-quiet); white-space: nowrap; }
+  .empty { display: grid; justify-items: center; gap: 8px; padding: 56px 24px; border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); text-align: center; color: var(--ink-quiet); }
+  .empty b { color: var(--ink); font-size: 17px; }
+  @media (max-width: 720px) {
+    .list thead { display: none; }
+    .list tr { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 14px 0; }
+    .list td { padding: 0; border: 0; }
+    .list td.mail { grid-column: 1; }
+    .list td.actions-col { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+    .search input { width: 100%; }
+  }
+</style>
