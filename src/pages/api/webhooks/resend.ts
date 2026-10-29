@@ -45,7 +45,14 @@ export const POST: APIRoute = async ({ request }) => {
     .select('id')
     .single();
   // Already seen (unique external_id): Resend retried a delivery we processed.
-  if (insertError || !inserted) return ok();
+  if (insertError?.code === '23505') return ok();
+  // Anything else (database unreachable, migration 0038 not run yet): answer
+  // with an error so Resend keeps the event and delivers it again later,
+  // instead of it being acknowledged and lost.
+  if (insertError || !inserted) {
+    console.error('[mail] webhook event not stored', svixId, insertError?.message);
+    return new Response('Event could not be stored, please retry', { status: 503 });
+  }
 
   try {
     const type = mapEventType(event.type);
@@ -66,11 +73,14 @@ export const POST: APIRoute = async ({ request }) => {
         if (type === 'BOUNCED' || type === 'COMPLAINED') await admin.from('mail_messages').update({ status: type }).eq('id', message.id);
       }
 
-      // A soft bounce (mailbox full, temporary) is not a dead address.
-      const permanent = type === 'COMPLAINED' || (type === 'BOUNCED' && (event.data.bounce?.type ?? 'Permanent').toLowerCase() !== 'transient');
+      // Only a hard bounce means a dead address. A soft one (mailbox full,
+      // server busy) or one the receiving server could not classify
+      // ("Undetermined") is recorded on the message but does not block the
+      // address for good; a real hard bounce on the next send will.
+      const permanent = type === 'COMPLAINED' || (type === 'BOUNCED' && (event.data.bounce?.type ?? 'Permanent').toLowerCase() === 'permanent');
       if (permanent) {
         for (const address of message ? [message.to_email] : event.data.to ?? []) {
-          await suppress(admin, { email: address, reason: type === 'COMPLAINED' ? 'COMPLAINED' : 'BOUNCED', note: `Resend: ${event.type}` });
+          await suppress(admin, { email: address, reason: type === 'COMPLAINED' ? 'COMPLAINED' : 'BOUNCED', note: type === 'COMPLAINED' ? 'Resend: a címzett spamnek jelölte' : 'Resend: végleges visszapattanás' });
         }
       }
     }

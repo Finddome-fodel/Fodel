@@ -14,6 +14,7 @@ import { storeMailImage } from '~/lib/mail/images';
 import { sendTestEmail } from '~/lib/mail/send';
 import { AUTOMATION_LABEL, type AutomationKind } from '~/lib/mail/automation';
 import { logEvent } from '~/lib/activity';
+import { mailSchemaReady, SETUP_PATH } from '~/lib/mail/schema';
 
 export const prerender = false;
 
@@ -22,6 +23,7 @@ const LIMITS = { name: 120, subject: 200, bodyHtml: 400_000 };
 export const POST: APIRoute = async ({ params, request, locals, redirect }) => {
   if (locals.profile?.role !== 'admin') return new Response('Ehhez nincs jogosultsága.', { status: 403 });
   const { supabase } = locals;
+  if (!(await mailSchemaReady(supabase))) return redirect(SETUP_PATH);
   const id = params.id!;
   const form = await request.formData();
   const action = String(form.get('action') ?? 'save');

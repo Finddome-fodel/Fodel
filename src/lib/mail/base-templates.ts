@@ -10,8 +10,11 @@
  * Written once per language (hu, nl, en, de — the languages FINDDOME's buyers
  * and sellers actually write in); any other language starts from English and
  * is translated in the editor. Every piece of copy sits in a simple-editor
- * marker, so nothing here needs HTML to change. Listing-specific text is a
- * merge field or an "[Írja át: …]" placeholder, never a real listing's data.
+ * marker, so nothing here needs HTML to change. Everything about the listing
+ * — title, place, description, floor area, bedrooms, price, link and the main
+ * photo — is a merge field, filled at send time from the listing the email is
+ * about. That is what lets one template answer enquiries about every listing
+ * (the automatic reply), and a price change reach the email by itself.
  *
  * The HTML follows the same rules as the lifecycle mails (src/lib/email/layout.ts):
  * tables, inline styles, the wordmark set in text, sans fallbacks only, no pure
@@ -20,7 +23,7 @@
  * document, so a later edit of the settings does not rewrite sent history.
  */
 import type { Company } from '~/lib/runtime-config';
-import { TEMPLATE_PLACEHOLDER_PREFIX, PLACEHOLDER_PHOTO_PATH } from './editable';
+import { TEMPLATE_PLACEHOLDER_PREFIX } from './editable';
 
 export type BaseKind = 'property' | 'general';
 export const BASE_LOCALES = ['hu', 'nl', 'en', 'de'] as const;
@@ -49,11 +52,8 @@ type Copy = {
   greeting: string;
   intro: string;
   locationEyebrow: string;
-  description: string;
   stat1Label: string;
-  stat1Value: string;
   stat2Label: string;
-  stat2Value: string;
   stat3Label: string;
   cta: string;
   aboutEyebrow: string;
@@ -77,29 +77,26 @@ type Copy = {
 
 const COPY: Record<BaseLocale, Copy> = {
   hu: {
-    propertySubject: '{{property_title}} – a kért részletek',
+    propertySubject: '{{property_title}} – az ingatlan részletei',
     generalSubject: 'Hírek a FINDDOME-tól',
-    preheader: 'Megkaptuk az érdeklődését – itt vannak az ingatlan részletei.',
-    eyebrow: 'Érdeklődés visszaigazolva',
+    preheader: 'Megkaptuk érdeklődését – íme az ingatlan legfontosabb adatai.',
+    eyebrow: 'Megkaptuk érdeklődését',
     greeting: 'Kedves {{first_name}}!',
-    intro: 'Köszönjük, hogy érdeklődik a(z) „{{property_title}}” iránt. Megkaptuk az üzenetét, munkatársunk hamarosan személyesen is jelentkezik. Addig is összegyűjtöttük az ingatlan legfontosabb adatait.',
+    intro: 'Köszönjük érdeklődését a következő ingatlan iránt: „{{property_title}}”. Megkaptuk üzenetét, kollégánk hamarosan személyesen is felveszi Önnel a kapcsolatot. Addig is összegyűjtöttük az ingatlan legfontosabb adatait.',
     locationEyebrow: '{{property_location}}',
-    description: `${P} rövid, figyelemfelkeltő leírás az ingatlanról]`,
     stat1Label: 'Alapterület',
-    stat1Value: `${P} pl. 120 m²]`,
     stat2Label: 'Hálószobák',
-    stat2Value: `${P} pl. 3]`,
     stat3Label: 'Irányár',
     cta: 'Hirdetés megtekintése',
     aboutEyebrow: 'Miért a FINDDOME?',
     aboutTitle: 'Holland–magyar ingatlanközvetítés',
-    aboutText: 'Magyarországi ingatlanokat mutatunk be holland és nyugat-európai vevőknek. Segítünk a kérdésekben, a megtekintés megszervezésében és a vásárlás lépéseiben – problémamentesen és diszkréten.',
+    aboutText: 'Magyarországi ingatlanokat mutatunk be holland és nyugat-európai vevőknek. Válaszolunk a kérdéseire, megszervezzük a megtekintést, és a vásárlás minden lépésében Ön mellett állunk – problémamentesen és diszkréten.',
     contactEyebrow: 'Beszéljünk',
     contactTitle: 'Kérdése van az ingatlannal kapcsolatban?',
     contactText: 'Nem kell megvárnia, amíg jelentkezünk: telefonon vagy e-mailben közvetlenül is elér minket.',
     callButton: 'Hívjon minket',
-    mailButton: 'Válasz e-mailben',
-    disclaimer: 'Ezt az e-mailt azért kapja, mert érdeklődést küldött egy ingatlanról a FINDDOME weboldalán. Az ingatlan adatai tájékoztató jellegűek; az aktuális elérhetőség és a feltételek egyeztetés tárgyát képezik.',
+    mailButton: 'Írjon nekünk',
+    disclaimer: 'Ezt az e-mailt azért kapja, mert a FINDDOME weboldalán érdeklődött egy ingatlan iránt. Az ingatlan adatai tájékoztató jellegűek; az aktuális elérhetőségről és a feltételekről egyeztetünk Önnel.',
     generalPreheader: `${P} egy mondat, ami a postafiók listájában a tárgy mellett látszik]`,
     generalEyebrow: 'FINDDOME hírek',
     generalTitle: `${P} a levél címe]`,
@@ -113,25 +110,22 @@ const COPY: Record<BaseLocale, Copy> = {
     propertySubject: '{{property_title}} – de gevraagde details',
     generalSubject: 'Nieuws van FINDDOME',
     preheader: 'Wij hebben uw interesse ontvangen – hier zijn de details van de woning.',
-    eyebrow: 'Interesse bevestigd',
+    eyebrow: 'Interesse ontvangen',
     greeting: 'Beste {{first_name}},',
     intro: 'Dank u voor uw interesse in „{{property_title}}”. Wij hebben uw bericht ontvangen en een collega neemt binnenkort persoonlijk contact met u op. Alvast de belangrijkste gegevens op een rij.',
     locationEyebrow: '{{property_location}}',
-    description: `${P} korte, pakkende beschrijving van de woning]`,
     stat1Label: 'Woonoppervlak',
-    stat1Value: `${P} bijv. 120 m²]`,
     stat2Label: 'Slaapkamers',
-    stat2Value: `${P} bijv. 3]`,
     stat3Label: 'Vraagprijs',
     cta: 'Bekijk de advertentie',
     aboutEyebrow: 'Waarom FINDDOME?',
     aboutTitle: 'Nederlands-Hongaarse vastgoedbemiddeling',
-    aboutText: 'Wij brengen Hongaarse woningen onder de aandacht van kopers in Nederland en de rest van Europa. Wij helpen met uw vragen, met het plannen van een bezichtiging en met elke stap van de aankoop – probleemloos en discreet.',
-    contactEyebrow: 'Laten we praten',
+    aboutText: 'Wij brengen Hongaarse woningen onder de aandacht van kopers in Nederland en de rest van Europa. Wij beantwoorden uw vragen, plannen de bezichtiging en begeleiden u bij elke stap van de aankoop – probleemloos en discreet.',
+    contactEyebrow: 'Contact',
     contactTitle: 'Heeft u een vraag over deze woning?',
-    contactText: 'U hoeft niet te wachten tot wij bellen: u bereikt ons direct per telefoon of e-mail.',
+    contactText: 'U hoeft niet te wachten tot wij contact opnemen: u bereikt ons ook direct per telefoon of e-mail.',
     callButton: 'Bel ons',
-    mailButton: 'Antwoord per e-mail',
+    mailButton: 'Mail ons',
     disclaimer: 'U ontvangt deze e-mail omdat u via de FINDDOME-website interesse in een woning heeft getoond. De gegevens van de woning zijn indicatief; actuele beschikbaarheid en voorwaarden in overleg.',
     generalPreheader: `${P} één zin die in de inbox naast het onderwerp verschijnt]`,
     generalEyebrow: 'Nieuws van FINDDOME',
@@ -150,21 +144,18 @@ const COPY: Record<BaseLocale, Copy> = {
     greeting: 'Dear {{first_name}},',
     intro: 'Thank you for your interest in “{{property_title}}”. We have received your message and a colleague will be in touch with you personally soon. In the meantime, here are the key facts.',
     locationEyebrow: '{{property_location}}',
-    description: `${P} a short, engaging description of the property]`,
     stat1Label: 'Floor area',
-    stat1Value: `${P} e.g. 120 m²]`,
     stat2Label: 'Bedrooms',
-    stat2Value: `${P} e.g. 3]`,
     stat3Label: 'Asking price',
     cta: 'View the listing',
     aboutEyebrow: 'Why FINDDOME?',
-    aboutTitle: 'Dutch–Hungarian property sales',
-    aboutText: 'We present properties in Hungary to buyers in the Netherlands and across Europe. We help with your questions, with arranging a viewing and with every step of the purchase – hassle-free and discreet.',
-    contactEyebrow: 'Let’s talk',
+    aboutTitle: 'Dutch–Hungarian property agency',
+    aboutText: 'We present properties in Hungary to buyers in the Netherlands and across Europe. We answer your questions, arrange viewings and guide you through every step of the purchase – hassle-free and discreet.',
+    contactEyebrow: 'Get in touch',
     contactTitle: 'A question about this property?',
-    contactText: 'There is no need to wait for us to call: you can reach us directly by phone or email.',
+    contactText: 'No need to wait for us to get in touch: you can reach us directly by phone or email.',
     callButton: 'Call us',
-    mailButton: 'Reply by email',
+    mailButton: 'Email us',
     disclaimer: 'You are receiving this email because you enquired about a property on the FINDDOME website. Property details are indicative; current availability and terms are subject to confirmation.',
     generalPreheader: `${P} one sentence shown next to the subject in the inbox]`,
     generalEyebrow: 'News from FINDDOME',
@@ -180,24 +171,21 @@ const COPY: Record<BaseLocale, Copy> = {
     generalSubject: 'Neuigkeiten von FINDDOME',
     preheader: 'Wir haben Ihre Anfrage erhalten – hier sind die Details der Immobilie.',
     eyebrow: 'Anfrage erhalten',
-    greeting: 'Hallo {{first_name}},',
-    intro: 'Vielen Dank für Ihr Interesse an „{{property_title}}“. Wir haben Ihre Nachricht erhalten, ein Mitarbeiter meldet sich in Kürze persönlich bei Ihnen. Hier vorab die wichtigsten Daten.',
+    greeting: 'Guten Tag {{full_name}},',
+    intro: 'Vielen Dank für Ihr Interesse an „{{property_title}}“. Wir haben Ihre Nachricht erhalten, und ein Mitarbeiter meldet sich in Kürze persönlich bei Ihnen. Vorab finden Sie hier die wichtigsten Angaben.',
     locationEyebrow: '{{property_location}}',
-    description: `${P} kurze, ansprechende Beschreibung der Immobilie]`,
     stat1Label: 'Wohnfläche',
-    stat1Value: `${P} z. B. 120 m²]`,
     stat2Label: 'Schlafzimmer',
-    stat2Value: `${P} z. B. 3]`,
     stat3Label: 'Kaufpreis',
     cta: 'Inserat ansehen',
     aboutEyebrow: 'Warum FINDDOME?',
     aboutTitle: 'Niederländisch-ungarische Immobilienvermittlung',
-    aboutText: 'Wir präsentieren Immobilien in Ungarn Käufern in den Niederlanden und ganz Europa. Wir helfen bei Fragen, bei der Besichtigung und bei jedem Schritt des Kaufs – problemlos und diskret.',
-    contactEyebrow: 'Sprechen wir',
+    aboutText: 'Wir bringen Immobilien in Ungarn mit Käufern aus den Niederlanden und ganz Europa zusammen. Wir beantworten Ihre Fragen, organisieren Besichtigungen und begleiten Sie bei jedem Schritt des Kaufs – unkompliziert und diskret.',
+    contactEyebrow: 'Kontakt',
     contactTitle: 'Eine Frage zu dieser Immobilie?',
-    contactText: 'Sie müssen nicht auf unseren Anruf warten: Sie erreichen uns direkt per Telefon oder E-Mail.',
+    contactText: 'Sie müssen nicht warten, bis wir uns melden: Sie erreichen uns direkt per Telefon oder E-Mail.',
     callButton: 'Rufen Sie uns an',
-    mailButton: 'Per E-Mail antworten',
+    mailButton: 'E-Mail schreiben',
     disclaimer: 'Sie erhalten diese E-Mail, weil Sie über die FINDDOME-Website eine Immobilie angefragt haben. Die Angaben zur Immobilie sind unverbindlich; Verfügbarkeit und Konditionen nach Absprache.',
     generalPreheader: `${P} ein Satz, der im Posteingang neben dem Betreff erscheint]`,
     generalEyebrow: 'Neuigkeiten von FINDDOME',
@@ -329,14 +317,14 @@ function propertyTemplate(company: Company, locale: BaseLocale, siteUrl: string)
     <div style="font-family:${DISPLAY};font-size:24px;line-height:1.25;font-weight:600;color:${INK};margin-bottom:16px;">${edit('greeting', c.greeting)}</div>
     <div style="font-family:${SANS};font-size:16px;line-height:1.75;color:${TAUPE};">${edit('intro', c.intro)}</div>
   </td></tr>
-  <tr><td style="padding:0 24px;"><img data-editable-image="main_photo" data-editable-label="${esc(LABEL.main_photo)}" src="${siteUrl}${PLACEHOLDER_PHOTO_PATH}" width="592" alt="{{property_title}}" style="width:592px;border-radius:20px;"></td></tr>
+  <tr><td style="padding:0 24px;"><img data-editable-image="main_photo" data-editable-label="${esc(LABEL.main_photo)}" src="{{property_photo_url}}" width="592" alt="{{property_title}}" style="width:592px;border-radius:20px;"></td></tr>
   <tr><td class="px" style="padding:30px 44px 38px;">
     <div style="${eyebrowStyle}margin-bottom:10px;">${edit('location_eyebrow', c.locationEyebrow)}</div>
     <div class="title" style="font-family:${DISPLAY};font-size:34px;line-height:1.12;font-weight:600;color:${INK};">${edit('hero_title', '{{property_title}}')}</div>
-    <div style="font-family:${SANS};font-size:15px;line-height:1.75;color:${TAUPE};margin-top:16px;">${edit('description', c.description)}</div>
+    <div style="font-family:${SANS};font-size:15px;line-height:1.75;color:${TAUPE};margin-top:16px;">${edit('description', '{{property_description}}')}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;border-top:1px solid ${BORDER};border-bottom:1px solid ${BORDER};"><tr>
-      ${stat('stat1_label', 'stat1_value', c.stat1Label, c.stat1Value)}
-      ${stat('stat2_label', 'stat2_value', c.stat2Label, c.stat2Value)}
+      ${stat('stat1_label', 'stat1_value', c.stat1Label, '{{property_area}}')}
+      ${stat('stat2_label', 'stat2_value', c.stat2Label, '{{property_bedrooms}}')}
       ${stat('stat3_label', 'stat3_value', c.stat3Label, '{{property_price}}', true)}
     </tr></table>
     <div style="margin-top:28px;">${button(c.cta, '{{property_url}}', { key: 'cta_text' })}</div>

@@ -10,13 +10,14 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { localeFrom } from '~/i18n/ui';
-import { eur, placeLabel } from '~/lib/format';
+import { eur, floorArea, placeLabel } from '~/lib/format';
 import { getCompany } from '~/lib/runtime-config';
 import { listingTitle, publicUrl } from '~/lib/portal/publish';
 import { sendEmailTracked } from '~/lib/email/send';
 import { senderAddress, replyToAddress } from '~/lib/email/routing';
 import {
   buildMergeFields,
+  dropMissingPhoto,
   findMissingRequiredFields,
   findUnresolvedMergeFields,
   renderTemplate,
@@ -27,6 +28,8 @@ import {
 import { unfinishedParts } from './editable';
 import { isValidEmailAddress, suppressionReason } from './suppression';
 import { appendBeforeBodyEnd, unsubscribeFooter, unsubscribeUrl } from './unsubscribe';
+import { listingPhotoForMail } from './images';
+import { descriptionExcerpt } from './prefill';
 
 type Client = SupabaseClient<any, any, any>;
 
@@ -59,32 +62,59 @@ type Resolved =
 
 /* ── Listing facts, in the template's language ───────────────────────────── */
 
-export type PropertyContext = { title: string; url: string; price: string; location: string; ref: string; oldPrice: string | null };
+export type PropertyContext = {
+  title: string;
+  url: string;
+  price: string;
+  location: string;
+  ref: string;
+  oldPrice: string | null;
+  description: string | null;
+  area: string | null;
+  bedrooms: string | null;
+  photoUrl: string | null;
+};
+
+
+/** The site's own fallback order for listing text: the language itself, then Dutch, then Hungarian. */
+const descriptionOrder = (lang: string) => (lang === 'hu' || lang === 'nl' ? [lang, 'hu'] : [lang, 'nl', 'hu']);
 
 export async function loadPropertyContext(client: Client, propertyId: string, locale: string): Promise<PropertyContext | null> {
   const lang = localeFrom(locale);
   const { data: property } = await client
     .from('properties')
-    .select('id, ref, category, settlement, county, price_eur')
+    .select('id, ref, category, settlement, county, price_eur, floor_m2, bedrooms')
     .eq('id', propertyId)
     .maybeSingle();
   if (!property) return null;
-  // The last price change, when it was a reduction: what {{old_price}} / {{new_price}} report.
-  const { data: change } = await client
-    .from('property_price_history')
-    .select('old_eur, new_eur')
-    .eq('property_id', propertyId)
-    .order('changed_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  const order = descriptionOrder(lang);
+  const [{ data: change }, { data: translations }, title, url, photo] = await Promise.all([
+    // The last price change, when it was a reduction: what {{old_price}} / {{new_price}} report.
+    client
+      .from('property_price_history')
+      .select('old_eur, new_eur')
+      .eq('property_id', propertyId)
+      .order('changed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    client.from('property_translations').select('locale, description').eq('property_id', propertyId).in('locale', order),
+    listingTitle(client, property.id, lang, property.ref),
+    publicUrl(property, lang),
+    listingPhotoForMail(client, property.id),
+  ]);
   const reduced = change && change.old_eur && change.new_eur === property.price_eur && change.old_eur > change.new_eur;
+  const description = order.map((code) => (translations ?? []).find((row: any) => row.locale === code)?.description).find(Boolean);
   return {
-    title: await listingTitle(client, property.id, lang, property.ref),
-    url: await publicUrl(property, lang),
+    title,
+    url,
     price: eur(property.price_eur, lang),
     location: placeLabel(property.settlement, property.county),
     ref: String(property.ref),
     oldPrice: reduced ? eur(change.old_eur, lang) : null,
+    description: descriptionExcerpt(description),
+    area: property.floor_m2 ? floorArea(Number(property.floor_m2), lang) : null,
+    bedrooms: property.bedrooms != null ? String(property.bedrooms) : null,
+    photoUrl: photo, // null: no mailable photo, the picture row is left out (dropMissingPhoto)
   };
 }
 
@@ -189,7 +219,7 @@ export async function resolveTemplateEmail(
   }
 
   const subject = renderTemplate(template.subject, fields);
-  let html = renderTemplate(template.body_html, fields, { html: true });
+  let html = renderTemplate(dropMissingPhoto(template.body_html, fields), fields, { html: true });
   if (signatureRow) html = placeSignature(html, signatureHtml(signatureRow));
 
   let headers: Record<string, string> | undefined;
@@ -217,7 +247,7 @@ export type SendResult = { messageId: string } | { error: string; code: SendBloc
 
 export async function sendTemplateEmail(
   client: Client,
-  params: { templateId: string; recipient: Recipient; source: Source; sentBy?: string | null; jobId?: string | null }
+  params: { templateId: string; recipient: Recipient; source: Source; sentBy?: string | null; jobId?: string | null; idempotencyKey?: string }
 ): Promise<SendResult> {
   const resolved = await resolveTemplateEmail(client, params);
   if (!resolved.ok) return { error: resolved.error, code: resolved.code };
@@ -230,7 +260,10 @@ export async function sendTemplateEmail(
     html: resolved.html,
     text: resolved.text,
     headers: resolved.headers,
+    idempotencyKey: params.idempotencyKey,
   });
+  // Already delivered by an earlier, interrupted run: count it as sent, log nothing new.
+  if (result.alreadySent) return { messageId: '' };
   // Nothing is recorded for a send the provider refused, so a retry cannot duplicate it.
   if (!result.sent) return { error: `A levelet a küldőszolgáltatás nem fogadta el: ${result.error ?? 'ismeretlen hiba'}`, code: 'PROVIDER_ERROR' };
 

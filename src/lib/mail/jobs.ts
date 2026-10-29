@@ -17,6 +17,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { logEvent } from '~/lib/activity';
 import type { BulkFilters } from './audience';
 import { sendTemplateEmail, type Recipient } from './send';
+import { isMissingMailSchema } from './schema';
 
 type Client = SupabaseClient<any, any, any>;
 
@@ -48,6 +49,7 @@ export const RECIPIENT_STATUS_LABEL: Record<string, string> = {
   SENT: 'Elküldve',
   FAILED: 'Sikertelen',
   SKIPPED_SUPPRESSED: 'Letiltott cím — kihagyva',
+  CANCELLED: 'Nem ment ki (leállítva)',
 };
 
 /** One run's time budget. Short enough for any Vercel plan's function limit; the cron runs every minute. */
@@ -158,6 +160,10 @@ export async function processJob(client: Client, jobId: string, budgetMs = DEFAU
 
   let processed = 0;
   while (Date.now() - startedAt < budgetMs) {
+    // Re-read every batch: the job may have been cancelled (or, between the read
+    // above and the switch to RUNNING, cancelled before it started). The claim
+    // itself also hands out nothing unless the job is RUNNING.
+    if (!(await isRunning(client, jobId))) break;
     const { data: batch, error } = await client.rpc('claim_mail_send_recipients', { p_job_id: jobId, p_batch_size: BATCH_SIZE });
     if (error) throw new Error(error.message);
     if (!batch || batch.length === 0) break;
@@ -169,6 +175,10 @@ export async function processJob(client: Client, jobId: string, budgetMs = DEFAU
         source: 'BULK_JOB',
         sentBy: job.created_by,
         jobId,
+        // Stable across a run that dies mid-send and is picked up again (Resend
+        // then answers with the first send instead of mailing twice); a
+        // deliberate "send the failed ones again" gets a fresh key.
+        idempotencyKey: `mail-job/${jobId}/${row.id}/${row.retried_at ? Date.parse(row.retried_at) : 0}`,
       });
       processed += 1;
       const update = 'error' in result
@@ -186,7 +196,7 @@ export async function processJob(client: Client, jobId: string, budgetMs = DEFAU
     .eq('job_id', jobId)
     .in('status', ['PENDING', 'PROCESSING']);
   const done = (remaining ?? 0) === 0;
-  if (done) {
+  if (done && (await isRunning(client, jobId))) {
     const counts = await syncCounts(client, jobId);
     const status = finalStatus(counts);
     const { data: closed } = await client
@@ -206,15 +216,23 @@ export async function processJob(client: Client, jobId: string, budgetMs = DEFAU
   return { processed, done };
 }
 
+async function isRunning(client: Client, jobId: string): Promise<boolean> {
+  const { data } = await client.from('mail_send_jobs').select('status').eq('id', jobId).maybeSingle();
+  return data?.status === 'RUNNING';
+}
+
 /** Every due job, within one overall budget — the cron's entry point. */
 export async function processDueJobs(client: Client, totalBudgetMs = DEFAULT_BUDGET_MS): Promise<{ jobs: number; processed: number }> {
   const startedAt = Date.now();
-  const { data: due } = await client
+  const { data: due, error } = await client
     .from('mail_send_jobs')
     .select('id')
     .in('status', ['SCHEDULED', 'RUNNING'])
     .lte('scheduled_at', new Date().toISOString())
     .order('scheduled_at');
+  // Before migration 0038 there is nothing to send; any other failure is real.
+  if (error && isMissingMailSchema(error)) return { jobs: 0, processed: 0 };
+  if (error) throw new Error(error.message);
   let jobs = 0;
   let processed = 0;
   for (const job of due ?? []) {
@@ -231,17 +249,35 @@ export async function processDueJobs(client: Client, totalBudgetMs = DEFAULT_BUD
  * mail_messages row exists for a failed send, so the retry cannot duplicate.
  */
 export async function retryFailed(client: Client, jobId: string): Promise<void> {
-  await client.from('mail_send_recipients').update({ status: 'PENDING', error_message: null, claimed_at: null }).eq('job_id', jobId).eq('status', 'FAILED');
+  // Only a finished send: a cancelled one stays cancelled.
+  const { data: job } = await client.from('mail_send_jobs').select('status').eq('id', jobId).maybeSingle();
+  if (!job || !['COMPLETED', 'PARTIAL', 'FAILED'].includes(job.status)) return;
+  const { error } = await client
+    .from('mail_send_recipients')
+    .update({ status: 'PENDING', error_message: null, claimed_at: null, retried_at: new Date().toISOString() })
+    .eq('job_id', jobId)
+    .eq('status', 'FAILED');
+  if (error) throw new Error(error.message);
   await client.from('mail_send_jobs').update({ status: 'RUNNING', completed_at: null }).eq('id', jobId).in('status', ['COMPLETED', 'PARTIAL', 'FAILED']);
 }
 
-/** Only before it starts: a running send cannot be half-cancelled into an unknown state. */
+/**
+ * Before it starts, or while it is going out. Stopping a running send lets
+ * the batch in hand (at most 10 emails) finish; everyone still waiting is
+ * marked CANCELLED and never gets it. What already went out stays counted.
+ */
 export async function cancelJob(client: Client, jobId: string): Promise<boolean> {
   const { data } = await client
     .from('mail_send_jobs')
     .update({ status: 'CANCELLED', completed_at: new Date().toISOString() })
     .eq('id', jobId)
-    .in('status', ['DRAFT', 'SCHEDULED'])
+    .in('status', ['DRAFT', 'SCHEDULED', 'RUNNING'])
     .select('id');
-  return (data ?? []).length === 1;
+  if ((data ?? []).length !== 1) return false;
+  await client.from('mail_send_recipients').update({ status: 'CANCELLED', claimed_at: null }).eq('job_id', jobId).eq('status', 'PENDING');
+  // A row a killed run left in PROCESSING would otherwise read "Küldés alatt" forever.
+  const stale = new Date(Date.now() - 5 * 60_000).toISOString();
+  await client.from('mail_send_recipients').update({ status: 'CANCELLED', claimed_at: null }).eq('job_id', jobId).eq('status', 'PROCESSING').lt('claimed_at', stale);
+  await syncCounts(client, jobId);
+  return true;
 }

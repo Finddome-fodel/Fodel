@@ -1,6 +1,7 @@
 /** Saves the default signature (one per site, appended under every template email that does not pick another). */
 import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
+import { mailSchemaReady, SETUP_PATH } from '~/lib/mail/schema';
 
 export const prerender = false;
 
@@ -9,6 +10,7 @@ const URL_FIELDS = ['websiteUrl', 'facebookUrl', 'instagramUrl', 'linkedinUrl'] 
 export const POST: APIRoute = async ({ request, locals, redirect }) => {
   if (locals.profile?.role !== 'admin') return new Response('Ehhez nincs jogosultsága.', { status: 403 });
   const { supabase } = locals;
+  if (!(await mailSchemaReady(supabase))) return redirect(SETUP_PATH);
   const form = await request.formData();
   const fail = (message: string) => redirect(`/portal/email/signature?error=${encodeURIComponent(message)}`);
   const text = (key: string, max = 160) => {

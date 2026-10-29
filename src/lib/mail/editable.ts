@@ -130,11 +130,31 @@ export function markPropertySpecificParts(html: string, siteUrl: string): string
     result = applyEditableFieldUpdate(result, field.key, `${TEMPLATE_PLACEHOLDER_PREFIX} ${text}]`);
   }
   for (const image of parseEditableImages(result)) {
-    if ((PROPERTY_SPECIFIC_IMAGE_KEYS as readonly string[]).includes(image.key) && !isPlaceholderImage(image.src)) {
+    // {{property_photo_url}} is filled per recipient, like the text merge fields.
+    if ((PROPERTY_SPECIFIC_IMAGE_KEYS as readonly string[]).includes(image.key) && !isPlaceholderImage(image.src) && !image.src.includes('{{')) {
       result = applyEditableImageUpdate(result, image.key, `${siteUrl}${PLACEHOLDER_PHOTO_PATH}`);
     }
   }
   return result;
+}
+
+/**
+ * Listing-specific spots that hold fixed text or a fixed photo instead of a
+ * merge field. Harmless in a template written about one listing; in the
+ * automatic enquiry reply — which answers enquiries about *every* listing —
+ * each of these would show one listing's facts to people asking about
+ * another, so the editor warns about them.
+ */
+export function fixedListingParts(html: string): string[] {
+  const keys = new Set<string>(PROPERTY_SPECIFIC_FIELD_KEYS);
+  return [
+    ...parseEditableImages(html)
+      .filter((image) => (PROPERTY_SPECIFIC_IMAGE_KEYS as readonly string[]).includes(image.key) && !image.src.includes('{{') && !isPlaceholderImage(image.src))
+      .map((image) => image.label),
+    ...parseEditableFields(html)
+      .filter((field) => keys.has(field.key) && field.value.trim() !== '' && !field.value.includes('{{') && !isPlaceholderText(field.value))
+      .map((field) => field.label),
+  ];
 }
 
 /**

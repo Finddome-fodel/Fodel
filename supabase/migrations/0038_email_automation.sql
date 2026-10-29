@@ -116,8 +116,13 @@ create table if not exists mail_send_recipients (
   audience_id uuid,
   property_id uuid references properties (id) on delete set null,
   status text not null default 'PENDING'
-    check (status in ('PENDING', 'PROCESSING', 'SENT', 'FAILED', 'SKIPPED_SUPPRESSED')),
+    check (status in ('PENDING', 'PROCESSING', 'SENT', 'FAILED', 'SKIPPED_SUPPRESSED', 'CANCELLED')),
   claimed_at timestamptz,
+  -- Set when the admin sends a failed recipient again. Part of the Resend
+  -- idempotency key (src/lib/mail/jobs.ts): a run killed mid-send and picked
+  -- up again reuses the key, so Resend never sends twice; a deliberate retry
+  -- gets a fresh one.
+  retried_at timestamptz,
   message_id uuid,
   error_message text,
   sent_at timestamptz,
@@ -130,7 +135,8 @@ create index if not exists mail_send_recipients_pending_idx on mail_send_recipie
 -- The atomic claim: `for update skip locked` means two runs working the same
 -- job (the minute cron and an admin's "send now") never get the same row.
 -- A row stuck in PROCESSING for 5 minutes belonged to a run that was killed
--- mid-batch (function time limit) and is handed out again.
+-- mid-batch (function time limit) and is handed out again. Nothing is handed
+-- out unless the job is RUNNING, so a send cancelled a moment ago stops here.
 create or replace function claim_mail_send_recipients(p_job_id uuid, p_batch_size integer)
 returns setof mail_send_recipients
 language sql
@@ -140,6 +146,7 @@ as $$
   where id in (
     select id from mail_send_recipients
     where job_id = p_job_id
+      and exists (select 1 from mail_send_jobs j where j.id = p_job_id and j.status = 'RUNNING')
       and (status = 'PENDING' or (status = 'PROCESSING' and claimed_at < now() - interval '5 minutes'))
     order by created_at
     limit p_batch_size
@@ -247,16 +254,18 @@ create policy "mail_media_objects_delete" on storage.objects
 -- Vercel's own cron runs /api/cron/mail once a day as a safety net. For a send
 -- scheduled at 14:30 to go at 14:30, Supabase calls the same endpoint every
 -- minute (pg_cron + pg_net). The address and the secret live in Supabase Vault,
--- never in git; until both are set the job does nothing. Set them once:
+-- never in git; until both are set the job does nothing. Set them once, with
+-- the www address (finddome.com answers with a redirect, which pg_net does
+-- not follow):
 --
---   select vault.create_secret('https://finddome.com/api/cron/mail', 'mail_cron_url');
+--   select vault.create_secret('https://www.finddome.com/api/cron/mail', 'mail_cron_url');
 --   select vault.create_secret('<the CRON_SECRET value from Vercel>', 'cron_secret');
 --
--- If pg_cron / pg_net cannot be enabled on the project, skip this block: the
--- daily cron and the "Folytatás most" button on a job still send everything.
-
-create extension if not exists pg_cron with schema extensions;
-create extension if not exists pg_net with schema extensions;
+-- Enabling the two extensions and scheduling the job is wrapped so that it can
+-- never take the rest of this migration down with it: if the project cannot
+-- enable pg_cron or pg_net, everything above is still created, a warning says
+-- so, and the daily cron plus the "Folytatás most" button on a job still send
+-- everything. Check afterwards with:  select jobname, schedule from cron.job;
 
 create or replace function dispatch_mail_jobs() returns void
 language plpgsql
@@ -288,5 +297,20 @@ end;
 $$;
 revoke all on function dispatch_mail_jobs() from public, anon, authenticated;
 
-select cron.unschedule(jobid) from cron.job where jobname = 'dispatch-mail-jobs';
-select cron.schedule('dispatch-mail-jobs', '* * * * *', 'select public.dispatch_mail_jobs()');
+do $dispatcher$
+begin
+  begin
+    -- pg_cron's own control file pins it to pg_catalog (Supabase's documented
+    -- form); asking for any other schema is an error.
+    execute 'create extension if not exists pg_cron with schema pg_catalog';
+    execute 'create extension if not exists pg_net with schema extensions';
+  exception when others then
+    raise warning 'E-mail: pg_cron / pg_net could not be enabled (%). Scheduled sends will go out with the daily cron or the "Folytatás most" button instead.', sqlerrm;
+    return;
+  end;
+  execute $sql$select cron.unschedule(jobid) from cron.job where jobname = 'dispatch-mail-jobs'$sql$;
+  execute $sql$select cron.schedule('dispatch-mail-jobs', '* * * * *', 'select public.dispatch_mail_jobs()')$sql$;
+exception when others then
+  raise warning 'E-mail: the minute dispatcher could not be scheduled (%).', sqlerrm;
+end
+$dispatcher$;

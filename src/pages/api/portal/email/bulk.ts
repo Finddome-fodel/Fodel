@@ -11,12 +11,14 @@ import { filtersFrom, filterEntries, findRecipients, preflight } from '~/lib/mai
 import { createJob, processJob, resolveScheduledAt } from '~/lib/mail/jobs';
 import { unfinishedParts } from '~/lib/mail/editable';
 import { logEvent } from '~/lib/activity';
+import { mailSchemaReady, SETUP_PATH } from '~/lib/mail/schema';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals, redirect }) => {
   if (locals.profile?.role !== 'admin') return new Response('Ehhez nincs jogosultsága.', { status: 403 });
   const { supabase } = locals;
+  if (!(await mailSchemaReady(supabase))) return redirect(SETUP_PATH);
   const form = await request.formData();
   const filters = filtersFrom((key) => {
     const value = form.get(`filter_${key}`);

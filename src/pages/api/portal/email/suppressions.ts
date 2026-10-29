@@ -3,12 +3,14 @@ import type { APIRoute } from 'astro';
 import { friendlyError } from '~/lib/portal/labels';
 import { isValidEmailAddress, normalizeEmailAddress, suppress } from '~/lib/mail/suppression';
 import { logEvent } from '~/lib/activity';
+import { mailSchemaReady, SETUP_PATH } from '~/lib/mail/schema';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals, redirect }) => {
   if (locals.profile?.role !== 'admin') return new Response('Ehhez nincs jogosultsága.', { status: 403 });
   const { supabase } = locals;
+  if (!(await mailSchemaReady(supabase))) return redirect(SETUP_PATH);
   const form = await request.formData();
   const back = (query: string) => redirect(`/portal/email/suppressions?${query}`);
 

@@ -15,12 +15,14 @@ import { friendlyError } from '~/lib/portal/labels';
 import { baseTemplate, type BaseKind } from '~/lib/mail/base-templates';
 import { markPropertySpecificParts } from '~/lib/mail/editable';
 import { prefillFromListing } from '~/lib/mail/prefill';
+import { mailSchemaReady, SETUP_PATH } from '~/lib/mail/schema';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, locals, redirect }) => {
   if (locals.profile?.role !== 'admin') return new Response('Ehhez nincs jogosultsága.', { status: 403 });
   const { supabase } = locals;
+  if (!(await mailSchemaReady(supabase))) return redirect(SETUP_PATH);
   const form = await request.formData();
   const fail = (message: string) => redirect(`/portal/email/templates/new?error=${encodeURIComponent(message)}`);
 

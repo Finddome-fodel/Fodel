@@ -60,7 +60,15 @@ export type SendOptions = {
   from?: string;
   /** Extra message headers — the bulk mails' List-Unsubscribe (src/lib/mail/send.ts). */
   headers?: Record<string, string>;
+  /**
+   * Resend idempotency key (kept by Resend for 24 h): the same key never sends
+   * twice. The bulk sends pass one per recipient (src/lib/mail/jobs.ts).
+   */
+  idempotencyKey?: string;
 };
+
+/** Resend's answer when this idempotency key was already used: the mail went (or is going) out before. */
+const ALREADY_SENT = new Set(['invalid_idempotent_request', 'concurrent_idempotent_requests']);
 
 export async function sendEmail(opts: SendOptions): Promise<boolean> {
   return (await sendEmailTracked(opts)).sent;
@@ -71,7 +79,7 @@ export async function sendEmail(opts: SendOptions): Promise<boolean> {
  * reports delivery, opens and clicks against. The template mails
  * (src/lib/mail/) keep it; the lifecycle mails have no use for it.
  */
-export async function sendEmailTracked(opts: SendOptions): Promise<{ sent: boolean; id: string | null; error?: string }> {
+export async function sendEmailTracked(opts: SendOptions): Promise<{ sent: boolean; id: string | null; error?: string; alreadySent?: boolean }> {
   const apiKey = import.meta.env.RESEND_API_KEY;
   const from = opts.from ?? senderAddress('portal');
 
@@ -84,6 +92,7 @@ export async function sendEmailTracked(opts: SendOptions): Promise<{ sent: boole
       html: opts.html,
       text: opts.text,
       headers: opts.headers,
+      idempotencyKey: opts.idempotencyKey,
       attachments: (opts.attachments ?? []).map((a) => a.filename),
       at: new Date().toISOString(),
     });
@@ -109,7 +118,7 @@ export async function sendEmailTracked(opts: SendOptions): Promise<{ sent: boole
         replyTo: opts.replyTo ?? replyToAddress(),
         ...(opts.attachments?.length ? { attachments: opts.attachments } : {}),
         ...(opts.headers ? { headers: opts.headers } : {}),
-      })
+      }, opts.idempotencyKey ? { idempotencyKey: opts.idempotencyKey } : undefined)
     );
     messageId = data?.id;
     return error;
@@ -123,6 +132,13 @@ export async function sendEmailTracked(opts: SendOptions): Promise<{ sent: boole
       `[email] giving up on "${opts.subject}" to ${opts.to} after ${result.attempts} attempt(s)`,
       result.error
     );
+  }
+  const errorName = (result.error as { name?: string } | undefined)?.name;
+  if (!result.sent && opts.idempotencyKey && errorName && ALREADY_SENT.has(errorName)) {
+    // A run that died mid-send was picked up again, and Resend says this exact
+    // mail was already handed to it. Sending it "again" is what must not happen.
+    console.warn(`[email] "${opts.subject}" to ${opts.to} was already sent under key ${opts.idempotencyKey}`);
+    return { sent: false, id: null, alreadySent: true };
   }
   const error = result.sent ? undefined : String((result.error as { message?: string } | undefined)?.message ?? result.error ?? 'ismeretlen hiba');
   return { sent: result.sent, id: messageId ?? null, error };

@@ -11,6 +11,7 @@
  * out" enforceable: findUnresolvedMergeFields() finds it before sending and the
  * send is refused.
  */
+import { SITE_URL } from '~/config/site.mjs';
 
 export const MERGE_FIELD_KEYS = [
   'first_name',
@@ -21,6 +22,10 @@ export const MERGE_FIELD_KEYS = [
   'property_price',
   'property_location',
   'property_ref',
+  'property_description',
+  'property_area',
+  'property_bedrooms',
+  'property_photo_url',
   'old_price',
   'new_price',
   'agent_name',
@@ -41,6 +46,10 @@ export const MERGE_FIELD_LABEL: Record<MergeFieldKey, string> = {
   property_price: 'Irányár (EUR)',
   property_location: 'Település, megye',
   property_ref: 'Hirdetés azonosító',
+  property_description: 'Ingatlan leírása (rövid kivonat, a sablon nyelvén)',
+  property_area: 'Alapterület',
+  property_bedrooms: 'Hálószobák száma',
+  property_photo_url: 'Ingatlan fő fotója (kép címe)',
   old_price: 'Előző ár (árcsökkenés)',
   new_price: 'Új ár (árcsökkenés)',
   agent_name: 'Aláíró neve',
@@ -67,13 +76,42 @@ export function findUnresolvedMergeFields(content: string): string[] {
 }
 
 /**
+ * Listing facts not every listing has (a plot has no bedrooms, a fresh listing
+ * may have no description yet). With a listing attached they may be empty —
+ * buildMergeFields() already put a neutral "—" or the brand photo in their
+ * place — so they never block a send on their own. Without any listing they
+ * are as missing as {{property_title}}.
+ */
+const SOFT_PROPERTY_FIELDS: readonly MergeFieldKey[] = ['property_description', 'property_area', 'property_bedrooms', 'property_photo_url'];
+
+/**
  * Known tokens with no value for this recipient — `{{property_title}}` in a
  * template sent with no listing attached. Also refused: "Dear , the  you asked
  * about" is worse than not sending.
  */
 export function findMissingRequiredFields(content: string, fields: MergeFields): string[] {
-  return extractMergeFieldTokens(content).filter((key) => isKnownMergeFieldKey(key) && !fields[key]);
+  const hasListing = Boolean(fields.property_title);
+  return extractMergeFieldTokens(content).filter(
+    (key) => isKnownMergeFieldKey(key) && !fields[key] && !(hasListing && SOFT_PROPERTY_FIELDS.includes(key))
+  );
 }
+
+/**
+ * A listing with no mailable photo: the picture row leaves the e-mail instead
+ * of showing a broken image or an unrelated stock photo. Removes the table row
+ * that holds an `<img src="{{property_photo_url}}">` (the starters' layout), or
+ * the bare image when it is not in a row of its own.
+ */
+export function dropMissingPhoto(html: string, fields: MergeFields): string {
+  if (fields.property_photo_url) return html;
+  const photo = /<img\b[^>]*\bsrc\s*=\s*["']\s*\{\{\s*property_photo_url\s*\}\}\s*["'][^>]*>/i;
+  if (!photo.test(html)) return html;
+  const row = /<tr\b[^>]*>(?:(?!<\/?tr\b)[\s\S])*?<img\b[^>]*\bsrc\s*=\s*["']\s*\{\{\s*property_photo_url\s*\}\}\s*["'][^>]*>(?:(?!<\/?tr\b)[\s\S])*?<\/tr>/gi;
+  return html.replace(row, '').replace(new RegExp(photo.source, 'gi'), '');
+}
+
+/** The sample listing photo the editor's preview and the test send show for {{property_photo_url}}. */
+export const SAMPLE_PROPERTY_PHOTO_PATH = '/email/sample-property.jpg';
 
 /** Invented but realistic values: the editor's live preview and the test send both use them. */
 export const SAMPLE_MERGE_FIELDS: Record<MergeFieldKey, string> = {
@@ -85,6 +123,11 @@ export const SAMPLE_MERGE_FIELDS: Record<MergeFieldKey, string> = {
   property_price: '€ 129.000',
   property_location: 'Szigliget, Veszprém vármegye',
   property_ref: '1042',
+  property_description:
+    'Gondosan felújított, napfényes parasztház csendes utcában, a Balaton-felvidék szívében. Tágas, termőfás kert, fedett terasz és külön vendégház – nyaralónak és állandó otthonnak egyaránt ideális.',
+  property_area: '120 m²',
+  property_bedrooms: '3',
+  property_photo_url: `${SITE_URL}${SAMPLE_PROPERTY_PHOTO_PATH}`,
   old_price: '€ 139.000',
   new_price: '€ 129.000',
   agent_name: 'FINDDOME',
@@ -135,6 +178,10 @@ export function buildMergeFields(params: {
     location: string;
     ref: string;
     oldPrice?: string | null;
+    description?: string | null;
+    area?: string | null;
+    bedrooms?: string | null;
+    photoUrl?: string | null;
   } | null;
   signature?: { name: string; phone: string | null; email: string | null } | null;
   company: { name: string; phone: string | null; email: string };
@@ -149,6 +196,10 @@ export function buildMergeFields(params: {
     property_price: property?.price ?? null,
     property_location: property?.location ?? null,
     property_ref: property?.ref ?? null,
+    property_description: property?.description ?? null,
+    property_area: property ? property.area || '—' : null,
+    property_bedrooms: property ? property.bedrooms || '—' : null,
+    property_photo_url: property?.photoUrl ?? null,
     old_price: property?.oldPrice ?? null,
     new_price: property?.oldPrice ? property.price : null,
     agent_name: signature?.name ?? company.name,
