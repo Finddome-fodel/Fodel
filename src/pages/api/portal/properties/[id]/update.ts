@@ -22,6 +22,7 @@ import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/
 import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { logEvent } from '~/lib/activity';
 import { normalizePhone, isPhoneCountry } from '~/lib/validation';
+import { contactDisplayPatch } from '~/lib/contact-display';
 import { friendlyError } from '~/lib/portal/labels';
 import { getTaxonomy, getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
@@ -100,7 +101,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     seller_phone:sellerPhone(form),seller_speaks:contactLanguages(form),
     ...(existing.status==='published'?{reserved:form.get('reserved')==='yes'}:{}),
     topic_highlight_requested:form.get('topic_highlight_requested')==='yes',
-    ...(isAdmin?{featured:form.get('featured')==='yes',homepage_featured:form.get('homepage_featured')==='yes',topic_featured:form.get('topic_featured')==='yes'}:{}),
+    ...(isAdmin?{featured:form.get('featured')==='yes',homepage_featured:form.get('homepage_featured')==='yes',topic_featured:form.get('topic_featured')==='yes',...contactDisplayPatch(form)}:{}),
   };
   if(!isAdmin && values.patch.video_url && packageOf(listingCatalog((await getCompany()).services),existing.package).video==='none') return back('error='+encodeURIComponent('A választott csomag nem tartalmaz videót.'));
   const translations=[];

@@ -460,7 +460,7 @@ console.log('\nLinks and images');
 
 /* ── 6. Assets ───────────────────────────────────────────────────────── */
 console.log('\nAssets');
-for (const asset of ['robots.txt', 'sitemap-index.xml', 'favicon.svg', 'llms.txt', 'og/finddome-default.jpg']) {
+for (const asset of ['robots.txt', 'sitemap-index.xml', 'favicon.ico', 'llms.txt', 'og/finddome-default.jpg']) {
   try {
     await fs.access(path.join(dist, asset));
     pass(asset);

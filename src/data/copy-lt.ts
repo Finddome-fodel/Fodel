@@ -26,9 +26,9 @@ export const LT = {
     },
     hero: {
       eyebrow: `Nuo 2013 m. · ${foundedInLabel(L)}`,
-      title: ['Nekilnojamasis turtas', 'Vengrijoje', 'tiesiai iš savininko'],
+      title: ['Skelbkite', 'savo nekilnojamąjį turtą', 'visoje Europoje'],
       emphasis: 1,
-      body: 'Daugelyje mūsų skelbimų nurodytas savininkas. Galite derėtis tiesiogiai su juo arba visą procesą patikėti mums.',
+      body: 'Įkelkite skelbimą keliais žingsniais. Mes jį peržiūrime, o apmokėjus internetu jis paskelbiamas mūsų svetainėje 21 kalba, be išskirtinumo sutarties. Besidomintys susisiekia tiesiogiai su jumis arba per mus.',
       primary: 'Peržiūrėti objektus',
       secondary: 'Nemokama objekto paieška',
       featuredLabel: 'Rekomenduojami',

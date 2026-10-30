@@ -35,9 +35,9 @@ export const FR = {
     },
     hero: {
       eyebrow: `Depuis 2013 · ${foundedInLabel(L)}`,
-      title: ['Immobilier', 'en Hongrie', 'directement du propriétaire'],
+      title: ['Annoncez', 'votre bien', 'en Europe'],
       emphasis: 1,
-      body: 'Pour une grande partie de nos biens, le propriétaire est indiqué. Vous négociez directement avec lui ou nous confiez toute la procédure.',
+      body: 'Déposez votre annonce en quelques étapes. Nous la relisons et, après paiement en ligne, elle est publiée sur notre site en 21 langues, sans contrat d’exclusivité. Les acheteurs vous contactent directement ou passent par nous.',
       primary: 'Voir les biens',
       secondary: 'Recherche gratuite',
       featuredLabel: 'À la une',

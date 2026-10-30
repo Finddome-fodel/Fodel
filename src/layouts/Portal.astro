@@ -82,6 +82,7 @@ const GROUPS: Group[] = isAdmin
       {
         label: 'Tartalom és pénz',
         items: [
+          { href: '/portal/top10', label: 'Top 10', icon: 'star' },
           { href: '/portal/content/blog', label: 'Blog', icon: 'pen' },
           { href: '/portal/email', label: 'E-mail', icon: 'mail', match: ['/portal/newsletter'] },
           { href: '/portal/payments', label: 'Fizetések', icon: 'card' },
@@ -128,7 +129,10 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | {lang === 'hu' ? 'FINDDOME portál' : 'FINDDOME'}</title>
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <FontPreload />
   </head>
   <body class:list={['portal', { bare }]} data-drawer="closed">

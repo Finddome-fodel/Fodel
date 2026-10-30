@@ -152,4 +152,19 @@ assert.equal(mails[0].body_html,'<span data-editable="stat2_label">Bedrooms of n
 const found=async a=>(await get(`select count(*)::int n from search_european_properties(${a})`))[0].n;
 assert.equal(await found(`p_bedrooms_min=>5`),1);assert.equal(await found(`p_bedrooms_min=>6`),0,'rooms, not the old bedroom count');assert.equal(await found(`p_exclude_adobe=>true`),0);
 console.log('✓ 0041 moves details, parking features and energy answers over, keeps admin edits, and is repeatable');
+// 0042: who the buyer is shown as the contact. Existing listings keep the old rule; only an admin can change it.
+const sql42=fs.readFileSync(root+'/supabase/migrations/0042_contact_display.sql','utf8');
+try{await db.exec(sql42);}catch(e){console.error('MIGRATION 0042 FAILED',e.message,e.detail);process.exit(1);}
+await db.exec(sql42);
+assert.equal((await get(`select public_contact from properties where id='${id}'`))[0].public_contact,'owner','existing listings start on the old rule');
+await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';update properties set public_contact='staff',public_contact_name='X',public_contact_phone='1' where id='${id}';`);
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+assert.deepEqual((await get(`select public_contact,public_contact_name from properties where id='${id}'`))[0],{public_contact:'owner',public_contact_name:null},'an owner cannot choose');
+await db.exec(`update properties set public_contact='staff',public_contact_name='Födelmesi Gábor',public_contact_phone='+31644005550' where id='${id}';`);
+assert.equal((await get(`select public_contact from properties where id='${id}'`))[0].public_contact,'staff','an admin can');
+let refused=false;try{await db.exec(`update properties set public_contact='everyone' where id='${id}'`);}catch{refused=true;}
+assert.ok(refused,'an unknown mode is refused');
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';select save_listing_editor('${id}'::uuid,'{"public_contact":"company","public_contact_name":null}'::jsonb);reset role;set test.uid='';set test.admin='true';`).catch(e=>{throw new Error('save_listing_editor as admin failed: '+e.message);});
+assert.equal((await get(`select public_contact from properties where id='${id}'`))[0].public_contact,'company','the editor RPC saves the admin choice');
+console.log('✓ 0042 is repeatable; existing listings keep the old rule; only an admin can choose the contact');
 await db.close();

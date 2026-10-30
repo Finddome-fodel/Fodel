@@ -29,7 +29,7 @@ export const EVENT_LABEL: Record<string, string> = {
   'listing.delete': 'Hirdetés törölve',
   'listing.edited': 'Hirdetés szerkesztve',
   'listing.published': 'Hirdetés élesítve',
-  'listing.curation': 'Korábbi szerkesztői válogatás módosítva',
+  'listing.curation': 'Top 10 válogatás módosítva',
   'media.uploaded': 'Fénykép feltöltve',
   'ai_suggestion.accepted': 'AI szövegjavaslat elfogadva',
   'payment.manual': 'Átutalás rögzítve',

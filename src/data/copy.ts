@@ -65,9 +65,9 @@ const BASE = {
       },
       hero: {
         eyebrow: `Alapítva 2013 · ${foundedInLabel('hu')}`,
-        title: ['Magyar', 'ingatlanok', 'Nyugat-Európában'],
+        title: ['Hirdesse', 'ingatlanát', 'Európában'],
         emphasis: 1,
-        body: `Egyedülálló hirdetési modell: ${REACH_LANGUAGES} nyelven, ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Komoly, készpénzes külföldi vevők.`,
+        body: 'Töltse fel hirdetését néhány lépésben. Átnézzük, és online fizetés után megjelenik 21 nyelvű oldalunkon, kizárólagossági szerződés nélkül. Az érdeklődők közvetlenül Önhöz vagy hozzánk fordulhatnak.',
         primary: 'Ingatlanok',
         secondary: 'Hirdessen nálunk',
         featuredLabel: 'Kiemelt ingatlan',
@@ -328,9 +328,9 @@ const BASE = {
       },
       hero: {
         eyebrow: `Sinds 2013 · ${foundedInLabel('nl')}`,
-        title: ['Vastgoed', 'in Hongarije', 'direct van de eigenaar'],
+        title: ['Adverteer', 'uw vastgoed', 'in Europa'],
         emphasis: 1,
-        body: 'Bij een groot deel van ons aanbod staat de eigenaar er zelf bij vermeld. U onderhandelt rechtstreeks of laat de hele afwikkeling aan ons over.',
+        body: 'Plaats uw advertentie in enkele stappen. Wij controleren haar en na online betaling staat ze op onze site in 21 talen, zonder exclusiviteitscontract. Geïnteresseerden nemen rechtstreeks contact op met u of via ons.',
         primary: 'Woningen bekijken',
         secondary: 'Gratis zoekopdracht',
         featuredLabel: 'Uitgelicht',

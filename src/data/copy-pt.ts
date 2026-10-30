@@ -26,9 +26,9 @@ export const PT = {
     },
     hero: {
       eyebrow: `Desde 2013 · ${foundedInLabel(L)}`,
-      title: ['Imóveis', 'na Hungria', 'diretamente ao proprietário'],
+      title: ['Anuncie', 'o seu imóvel', 'na Europa'],
       emphasis: 1,
-      body: 'Muitos dos nossos anúncios indicam o proprietário. Pode negociar diretamente com ele ou deixar todo o processo connosco.',
+      body: 'Carregue o seu anúncio em poucos passos. Nós revemo-lo e, após o pagamento online, é publicado no nosso site em 21 idiomas, sem contrato de exclusividade. Os interessados contactam-no diretamente ou através de nós.',
       primary: 'Ver imóveis',
       secondary: 'Pesquisa de imóvel gratuita',
       featuredLabel: 'Em destaque',

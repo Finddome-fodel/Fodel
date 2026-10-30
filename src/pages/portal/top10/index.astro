@@ -1,4 +1,326 @@
 ---
-export const prerender=false;
-return Astro.redirect('/portal/properties',301);
+/**
+ * FODEL Top 10 — the one place the editorial selection is made.
+ *
+ * Up to ten listings, in order. What the homepage shows is exactly this list,
+ * minus anything that is no longer live (sold, archived, withdrawn, reserved):
+ * those stay here, marked, so the admin decides whether to replace them — the
+ * site never quietly back-fills a slot with a paid or random listing.
+ *
+ * The reorder happens in the browser; "Mentés" sends the whole order at once
+ * (see /api/portal/top10). Without JavaScript the page still shows the
+ * current selection and its public status.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { STATUS_LABEL } from '~/lib/portal/properties';
+import { icon } from '~/lib/portal/icons';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const MAX = 10;
+
+const { data: rows } = await supabase
+  .from('properties')
+  .select('id, ref, status, reserved, settlement, price_eur, editors_pick, editors_pick_order, featured, homepage_featured, property_translations(locale, title)')
+  .order('created_at', { ascending: false })
+  .order('id', { ascending: false });
+
+type Row = NonNullable<typeof rows>[number];
+const titleOf = (row: Row) =>
+  (row.property_translations as { locale: string; title: string }[] | null)?.find((t) => t.locale === 'hu')?.title || 'Névtelen hirdetés';
+const isLive = (row: Row) => row.status === 'published' && !row.reserved;
+const hiddenReason = (row: Row) =>
+  row.status === 'published' && row.reserved ? 'Foglalt' : STATUS_LABEL[row.status] ?? row.status;
+
+// Deliberate exception: the Top 10 itself keeps the editors' order.
+const selected = (rows ?? [])
+  .filter((row) => row.editors_pick)
+  .sort((a, b) => a.editors_pick_order - b.editors_pick_order);
+const candidates = (rows ?? []).filter((row) => !row.editors_pick && isLive(row));
+const liveCount = selected.filter(isLive).length;
+const price = (n: number) => `€${n.toLocaleString('de-DE')}`;
 ---
+
+<Portal title="Top 10">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">Főoldal</p>
+      <h1>FODEL <em>Top 10</em></h1>
+      <p class="lede">
+        Szerkesztői válogatás: legfeljebb {MAX} ingatlan, az itt beállított sorrendben. A fizetős
+        kiemelések ettől függetlenek — fizetés önmagában nem ad helyet a listán.
+      </p>
+    </div>
+    <div class="meter" aria-live="polite">
+      <div class="meter-n"><b id="meter-n">{selected.length}</b><span>/ {MAX}</span></div>
+      <ol class="meter-dots" id="meter-dots" aria-hidden="true">
+        {Array.from({ length: MAX }, (_, i) => <li data-on={i < selected.length ? 'true' : undefined}></li>)}
+      </ol>
+      <p id="summary">
+        {liveCount} jelenik meg a főoldalon{selected.length > liveCount && ' · a nem élő tételek rejtve maradnak'}
+      </p>
+    </div>
+  </header>
+
+  <ol class="picks" id="picks">
+    {selected.map((row) => (
+      <li class="pick" draggable="true" data-id={row.id} data-live={isLive(row) ? 'yes' : 'no'}>
+        <span class="grip" aria-hidden="true" title="Húzza a sorrend módosításához"><Fragment set:html={icon('grip', 18)} /></span>
+        <span class="rank num"></span>
+        <div class="pick-main">
+          <a href={`/portal/properties/${row.id}`}>#{row.ref} · {titleOf(row)}</a>
+          <span class="sub">{row.settlement} · {price(row.price_eur)}</span>
+        </div>
+        {isLive(row)
+          ? <span class="pill pill-live">Megjelenik</span>
+          : <span class="pill pill-hidden" title="A főoldalon nem jelenik meg">Rejtve: {hiddenReason(row)}</span>}
+        <div class="pick-actions">
+          <button type="button" data-move="-1" aria-label="Feljebb"><Fragment set:html={icon('up', 17)} /></button>
+          <button type="button" data-move="1" aria-label="Lejjebb"><Fragment set:html={icon('down', 17)} /></button>
+          <button type="button" data-remove aria-label="Eltávolítás a válogatásból" class="rm"><Fragment set:html={icon('close', 17)} /></button>
+        </div>
+      </li>
+    ))}
+  </ol>
+  <div class="empty" id="empty" hidden={selected.length > 0}>
+    <span class="empty-ic" set:html={icon('star', 26)} />
+    <p>A válogatás üres. Amíg így marad, a főoldalon nem jelenik meg Top 10 blokk.</p>
+  </div>
+
+  <div class="add">
+    <div class="add-head">
+      <span class="add-ic" set:html={icon('plus', 18)} />
+      <div>
+        <label for="candidate">Élő hirdetés hozzáadása</label>
+        <p class="hint">Csak élő, nem foglalt hirdetés vehető fel.</p>
+      </div>
+    </div>
+    <div class="add-row">
+      <select id="candidate">
+        <option value="">Válasszon…</option>
+        {candidates.map((row) => (
+          <option
+            value={row.id}
+            data-label={`#${row.ref} · ${titleOf(row)}`}
+            data-sub={`${row.settlement} · ${price(row.price_eur)}`}
+          >
+            #{row.ref} · {titleOf(row)} — {row.settlement}{row.featured || row.homepage_featured ? ' (fizetős kiemelés)' : ''}
+          </option>
+        ))}
+      </select>
+      <button type="button" class="btn ghost" id="add-btn">Hozzáadás</button>
+    </div>
+  </div>
+
+  <div class="pt-savebar" id="savebar" data-state="clean">
+    <div class="pt-savebar-in">
+      <p class="pt-savebar-msg" role="status"><span class="dot"></span><span id="status">Minden módosítás mentve</span></p>
+      <button type="button" class="btn" id="save-btn">Mentés</button>
+    </div>
+  </div>
+  <p class="hint tail">Mentés után a főoldal legfeljebb néhány percen belül frissül.</p>
+</Portal>
+
+<script define:vars={{ max: MAX }}>
+  const list = document.getElementById('picks');
+  const select = document.getElementById('candidate');
+  const addBtn = document.getElementById('add-btn');
+  const status = document.getElementById('status');
+  const bar = document.getElementById('savebar');
+  const summary = document.getElementById('summary');
+  const empty = document.getElementById('empty');
+  const meterN = document.getElementById('meter-n');
+  const dots = [...document.querySelectorAll('#meter-dots li')];
+  const svg = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="17" height="17">${d}</svg>`;
+  const UP = svg('<path d="M12 19V6M6.5 11.5 12 6l5.5 5.5"/>');
+  const DOWN = svg('<path d="M12 5v13M6.5 12.5 12 18l5.5-5.5"/>');
+  const CLOSE = svg('<path d="M6 6l12 12M18 6 6 18"/>');
+  const GRIP = svg('<circle cx="9" cy="6" r="1.2" fill="currentColor"/><circle cx="15" cy="6" r="1.2" fill="currentColor"/><circle cx="9" cy="12" r="1.2" fill="currentColor"/><circle cx="15" cy="12" r="1.2" fill="currentColor"/><circle cx="9" cy="18" r="1.2" fill="currentColor"/><circle cx="15" cy="18" r="1.2" fill="currentColor"/>');
+  let dirty = false;
+
+  function setState(next, text) {
+    bar.dataset.state = next;
+    status.textContent = text;
+  }
+  function touch() {
+    dirty = true;
+    setState('dirty', 'Nem mentett változtatások');
+  }
+
+  function refresh() {
+    const items = [...list.querySelectorAll('.pick')];
+    items.forEach((item, i) => {
+      item.querySelector('.rank').textContent = String(i + 1);
+      item.dataset.podium = i < 3 ? 'true' : '';
+      item.querySelector('[data-move="-1"]').disabled = i === 0;
+      item.querySelector('[data-move="1"]').disabled = i === items.length - 1;
+    });
+    const live = items.filter((item) => item.dataset.live === 'yes').length;
+    summary.textContent = `${live} jelenik meg a főoldalon` + (items.length > live ? ' · a nem élő tételek rejtve maradnak' : '');
+    meterN.textContent = String(items.length);
+    dots.forEach((dot, i) => (i < items.length ? dot.setAttribute('data-on', 'true') : dot.removeAttribute('data-on')));
+    empty.hidden = items.length > 0;
+    addBtn.disabled = items.length >= max;
+  }
+
+  list.addEventListener('click', (event) => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    const item = button.closest('.pick');
+    if (button.dataset.move) {
+      const sibling = button.dataset.move === '-1' ? item.previousElementSibling : item.nextElementSibling;
+      if (!sibling) return;
+      if (button.dataset.move === '-1') list.insertBefore(item, sibling);
+      else list.insertBefore(sibling, item);
+      button.focus();
+    } else if (button.hasAttribute('data-remove')) {
+      const option = document.createElement('option');
+      option.value = item.dataset.id;
+      option.textContent = item.querySelector('a').textContent;
+      if (item.dataset.live === 'yes') select.append(option);
+      item.remove();
+    }
+    touch();
+    refresh();
+  });
+
+  /* Drag to reorder: the row follows the pointer's position in the list. */
+  let dragging = null;
+  list.addEventListener('dragstart', (event) => {
+    dragging = event.target.closest('.pick');
+    if (!dragging) return;
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', dragging.dataset.id);
+    requestAnimationFrame(() => dragging.classList.add('dragging'));
+  });
+  list.addEventListener('dragover', (event) => {
+    if (!dragging) return;
+    event.preventDefault();
+    const over = [...list.querySelectorAll('.pick:not(.dragging)')].find((row) => {
+      const box = row.getBoundingClientRect();
+      return event.clientY < box.top + box.height / 2;
+    });
+    if (over) list.insertBefore(dragging, over);
+    else list.append(dragging);
+  });
+  list.addEventListener('dragend', () => {
+    if (!dragging) return;
+    dragging.classList.remove('dragging');
+    dragging = null;
+    touch();
+    refresh();
+  });
+
+  addBtn.addEventListener('click', () => {
+    const option = select.selectedOptions[0];
+    if (!option || !option.value) return;
+    if (list.children.length >= max) return;
+    const item = document.createElement('li');
+    item.className = 'pick';
+    item.draggable = true;
+    item.dataset.id = option.value;
+    item.dataset.live = 'yes';
+    item.innerHTML = `<span class="grip" aria-hidden="true">${GRIP}</span><span class="rank num"></span><div class="pick-main"><a></a><span class="sub"></span></div>
+      <span class="pill pill-live">Megjelenik</span>
+      <div class="pick-actions"><button type="button" data-move="-1" aria-label="Feljebb">${UP}</button>
+      <button type="button" data-move="1" aria-label="Lejjebb">${DOWN}</button>
+      <button type="button" data-remove class="rm" aria-label="Eltávolítás a válogatásból">${CLOSE}</button></div>`;
+    const link = item.querySelector('a');
+    link.href = `/portal/properties/${option.value}`;
+    link.textContent = option.dataset.label || option.textContent;
+    item.querySelector('.sub').textContent = option.dataset.sub || '';
+    list.append(item);
+    option.remove();
+    select.value = '';
+    touch();
+    refresh();
+  });
+
+  document.getElementById('save-btn').addEventListener('click', async () => {
+    setState('saving', 'Mentés…');
+    const ids = [...list.querySelectorAll('.pick')].map((item) => item.dataset.id);
+    const res = await fetch('/api/portal/top10', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok && json.ok) {
+      dirty = false;
+      setState('clean', 'Minden módosítás mentve');
+      window.pf?.toast('Mentve — a főoldal hamarosan frissül.');
+    } else {
+      setState('dirty', json.error || 'Nem sikerült menteni.');
+      window.pf?.toast(json.error || 'Nem sikerült menteni.', 'error');
+    }
+  });
+  window.addEventListener('beforeunload', (event) => {
+    if (dirty) event.preventDefault();
+  });
+
+  refresh();
+</script>
+
+<style>
+  .ph { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 48px; margin-bottom: 34px; }
+  .eyebrow { margin-bottom: 14px; }
+  h1 em { font-style: normal; font-weight: inherit; color: var(--ink-quiet); }
+  .lede { max-width: 58ch; margin-top: 14px; font-size: var(--fs-body); line-height: 1.7; color: var(--ink-quiet); }
+
+  .meter { display: grid; gap: 10px; min-width: 240px; padding: 18px 22px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .meter-n { display: flex; align-items: baseline; gap: 8px; }
+  .meter-n b { font-family: var(--serif); font-weight: var(--fw-display); font-size: 38px; line-height: 1; color: var(--ink); }
+  .meter-n span { font-size: 16px; color: var(--ink-quiet); }
+  .meter-dots { list-style: none; display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+  .meter-dots li { height: 6px; border-radius: 3px; background: var(--linen); transition: background-color 0.4s var(--ease-out); }
+  .meter-dots li[data-on] { background: var(--ink); }
+  .meter p { font-size: 13.5px; color: var(--ink-quiet); line-height: 1.5; }
+
+  .picks { list-style: none; display: grid; gap: 10px; margin-bottom: 24px; }
+  .pick { display: grid; grid-template-columns: 22px 46px minmax(0, 1fr) auto auto; gap: 16px; align-items: center; padding: 14px 16px 14px 14px; border-radius: var(--r-lg); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); cursor: grab; transition: box-shadow 0.3s var(--ease-out), transform 0.3s var(--ease-out), opacity 0.2s var(--ease-out); }
+  .pick:hover { box-shadow: var(--shadow-md), 0 0 0 1px rgba(16, 42, 67, 0.14); }
+  .pick:active { cursor: grabbing; }
+  .pick.dragging { opacity: 0.45; box-shadow: var(--shadow-lg), 0 0 0 2px var(--ink); transform: scale(1.01); }
+  .pick[data-live='no'] { background: var(--paper); }
+  .grip { display: grid; place-items: center; color: rgba(16, 42, 67, 0.3); }
+  .pick:hover .grip { color: var(--ink); }
+  .rank { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid rgba(16, 42, 67, 0.18); font-family: var(--serif); font-weight: var(--fw-display); font-size: 19px; color: var(--ink); transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out); }
+  .pick[data-podium='true'] .rank { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+  .pick-main { display: grid; gap: 3px; min-width: 0; }
+  .pick-main a { font-size: 16px; font-weight: var(--fw-medium); color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+  .pick-main a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .sub { font-size: 14px; color: var(--ink-quiet); }
+  .pill { padding: 4px 13px; border-radius: var(--r-pill); font-size: 13px; white-space: nowrap; }
+  .pill-live { background: var(--pt-green-bg); color: var(--pt-green); }
+  .pill-hidden { background: var(--pt-red-bg); color: var(--pt-red); }
+  .pick-actions { display: flex; gap: 4px; }
+  .pick-actions button { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--ink-quiet); transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out), transform 0.2s var(--ease-out); }
+  .pick-actions button:hover:not(:disabled) { background: var(--linen); color: var(--ink); }
+  .pick-actions .rm:hover:not(:disabled) { background: var(--pt-red-bg); color: var(--pt-red); }
+  .pick-actions button:disabled { opacity: 0.28; cursor: default; }
+
+  .empty { display: grid; justify-items: center; gap: 14px; margin-bottom: 24px; padding: 48px 20px; border-radius: var(--r-xl); background: var(--paper); box-shadow: 0 0 0 1px var(--pt-hair); text-align: center; color: var(--ink-quiet); }
+  .empty[hidden] { display: none; }
+  .empty-ic { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%; background: var(--white); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+  .add { max-width: 720px; padding: 22px 24px; border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); margin-bottom: 70px; }
+  .add-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .add-ic { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--cream); }
+  .add-ic :global(svg) { width: 18px; height: 18px; }
+  .add label { display: block; font-size: var(--fs-body); font-weight: var(--fw-medium); color: var(--ink); }
+  .add-row { display: flex; gap: 10px; }
+  .add-row select { flex: 1; min-width: 0; }
+  .hint { font-size: 14px; color: var(--ink-quiet); margin-top: 2px; }
+  .tail { text-align: center; }
+
+  @media (max-width: 720px) {
+    .pick { grid-template-columns: 46px minmax(0, 1fr); row-gap: 10px; cursor: default; }
+    .grip { display: none; }
+    .pick .pill, .pick-actions { grid-column: 2; justify-self: start; }
+    .add-row { flex-direction: column; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pick { transition: none; } .pick.dragging { transform: none; } }
+</style>

@@ -15,6 +15,8 @@ import {
   listingRules, LISTING_RULES_DEFAULT, showSellerPhone, passesAdobeFilter, approximateCentre, compactEur,
 } from '../src/lib/listing-rules.ts';
 import { isOverdue } from '../src/lib/invoicing/model.ts';
+import { publicContact, contactDisplayPatch, contactModeOf } from '../src/lib/contact-display.ts';
+import { cleanTitle, parseFeed } from '../src/lib/youtube.ts';
 import { signWith, verifyWith } from '../src/lib/valuation/action-token.ts';
 import { cronAuthorised } from '../src/lib/cron-auth.ts';
 import {
@@ -150,6 +152,43 @@ test('Kiemelt without consent → hidden', () => assert.equal(showSellerPhone(li
 test('Standard + consent → hidden by default', () => assert.equal(showSellerPhone(listing('cheap-6m', true), rules), false));
 test('Standard allowed in settings + consent → shown', () => assert.equal(showSellerPhone(listing('cheap-6m', true), listingRules({ packagePhone: { 'cheap-6m': true } })), true));
 test('no phone number → hidden', () => assert.equal(showSellerPhone(listing('normal-12m', true, '  '), rules), false));
+
+
+console.log('Contact on the listing (admin choice)');
+const contactBase = { package: 'normal-12m', ownerVisible: true, ownerName: 'Kovács Béla', ownerPhone: '+36 30 123 4567', staffName: 'Födelmesi Gábor', staffPhone: '+31 6 4400 5550' };
+test('owner mode keeps the old rule: consent + package → owner shown', () => {
+  assert.deepEqual(publicContact({ ...contactBase, mode: 'owner' }, rules), { kind: 'owner', name: 'Kovács Béla', phone: '+36 30 123 4567' });
+});
+test('owner mode: no consent → nobody', () => assert.equal(publicContact({ ...contactBase, mode: 'owner', ownerVisible: false }, rules), null));
+test('company mode hides the owner even when they agreed', () => assert.equal(publicContact({ ...contactBase, mode: 'company' }, rules), null));
+test('staff mode shows the colleague whatever the package or consent', () => {
+  assert.deepEqual(publicContact({ ...contactBase, mode: 'staff', package: 'cheap-6m', ownerVisible: false }, rules), { kind: 'staff', name: 'Födelmesi Gábor', phone: '+31 6 4400 5550' });
+});
+test('staff mode without a number shows nobody', () => assert.equal(publicContact({ ...contactBase, mode: 'staff', staffPhone: ' ' }, rules), null));
+test('an unknown mode is the owner rule', () => assert.equal(contactModeOf('admin'), 'owner'));
+test('the owner form (no choice posted) saves nothing about the contact', () => assert.deepEqual(contactDisplayPatch(new FormData()), {}));
+test('picking a colleague saves name and a dialable number', () => {
+  const f = new FormData();
+  f.set('public_contact', 'staff'); f.set('public_contact_name', ' Födelmesi Gábor '); f.set('public_contact_phone', '+31 6 4400 5550');
+  assert.deepEqual(contactDisplayPatch(f), { public_contact: 'staff', public_contact_name: 'Födelmesi Gábor', public_contact_phone: '+31644005550' });
+});
+test('switching away from a colleague clears name and number', () => {
+  const f = new FormData();
+  f.set('public_contact', 'company'); f.set('public_contact_name', 'X'); f.set('public_contact_phone', '123');
+  assert.deepEqual(contactDisplayPatch(f), { public_contact: 'company', public_contact_name: null, public_contact_phone: null });
+});
+
+console.log('YouTube strip');
+test('upload titles lose the phone number, e-mail and old domain', () => {
+  assert.equal(cleanTitle('House for SALE  110.000 € 00316-4400-5550 FODEL@ELADOD.COM  FODEL.NL '), 'House for SALE 110.000 €');
+  assert.equal(cleanTitle('75.000 € FARM FOR SALE 20.000 m² +31-6-4400-5550 fodel@eladod.com '), '75.000 € FARM FOR SALE 20.000 m²');
+  assert.equal(cleanTitle('Dreamland  full FODEL.NL 23 ha +31-6-4400-5550 FODEL@ELADOD.COM FODEL.NL '), 'Dreamland full 23 ha');
+});
+test('the feed parses newest first and skips malformed entries', () => {
+  const entry = (id, title, at) => `<entry><yt:videoId>${id}</yt:videoId><title>${title}</title><published>${at}</published></entry>`;
+  const xml = `<feed><title>Channel</title>${entry('AAAAAAAAAAA', 'Old', '2026-01-01T00:00:00+00:00')}${entry('bad', 'Broken', '2026-02-01T00:00:00+00:00')}${entry('BBBBBBBBBBB', 'New &amp; shiny', '2026-03-01T00:00:00+00:00')}</feed>`;
+  assert.deepEqual(parseFeed(xml).map((v) => [v.id, v.title]), [['BBBBBBBBBBB', 'New & shiny'], ['AAAAAAAAAAA', 'Old']]);
+});
 
 console.log('Approximate location and price pill');
 test('offset is deterministic and 250–650 m away', () => {

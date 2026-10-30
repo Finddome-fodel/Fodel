@@ -36,7 +36,7 @@ const backLabel = { hu: 'Vissza a főoldalra', nl: 'Terug naar de homepage', en:
     {backLabel}
   </a>
   <div class="panel">
-    <div class="brand"><Logo locale={brandLocale} href={`/${lang}/`} /></div>
+    <div class="brand"><Logo locale={brandLocale} size="auth" href={`/${lang}/`} /></div>
     <slot name="top" />
     <h1>{heading}</h1>
     <slot />

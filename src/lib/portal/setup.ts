@@ -29,6 +29,7 @@ import { type FieldError } from '~/lib/validation';
 import { getProperty } from '~/lib/portal/properties';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
 import { HEARD_FROM_KEYS } from '~/lib/listing-details';
+import { contactDisplayPatch } from '~/lib/contact-display';
 
 export const SETUP_STEPS = ['package', 'property', 'description'] as const;
 export type SetupStep = (typeof SETUP_STEPS)[number];
@@ -51,7 +52,7 @@ export async function saveSetupStep(
 ): Promise<StepResult> {
   if (step === 'package') return savePackage(supabase, existing, form);
   if (step === 'property') return saveProperty(supabase, existing, form);
-  return saveDescription(supabase, existing, form, ctx.locale);
+  return saveDescription(supabase, existing, form, ctx.locale, ctx.isAdmin);
 }
 
 /* ── 1. Package, extras, on-site service ───────────────────────────────── */
@@ -157,7 +158,7 @@ async function saveProperty(supabase:SupabaseClient,existing:Existing,form:FormD
 
 /* ── 3. Description and contact ────────────────────────────────────────── */
 
-async function saveDescription(supabase:SupabaseClient,existing:Existing,form:FormData,locale:PortalLang):Promise<StepResult>{
+async function saveDescription(supabase:SupabaseClient,existing:Existing,form:FormData,locale:PortalLang,isAdmin=false):Promise<StepResult>{
   const title=str(form,'title'),description=str(form,'description'),body=str(form,'body');
   const errors:Record<string,FieldError>={};
   const partial=form.get('partial')==='yes';
@@ -169,7 +170,7 @@ async function saveDescription(supabase:SupabaseClient,existing:Existing,form:Fo
   const pkg=packageOf(listingCatalog((await getCompany()).services),existing.package);
   const translations=[{locale,title,description,body}];
   // The office still prepares paid translations. A non-Hungarian original can be submitted without pretending it is a Hungarian translation.
-  const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:pkg.phone&&form.get('contact')==='yes'},p_private:{internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations});
+  const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:pkg.phone&&form.get('contact')==='yes',...(isAdmin?contactDisplayPatch(form):{})},p_private:{internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations});
   if(error){console.error('[setup] save_listing_editor failed (description)',existing.id,error.message);return {ok:false,error:'save-failed'};}
   return {ok:true};
 }

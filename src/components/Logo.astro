@@ -1,68 +1,85 @@
 ---
-/** FODEL wordmark. Ported from the prototype; the sub-label localises. */
+/**
+ * The FINDDOME logo: the magnifier over Europe and the "Finddome.com" wordmark.
+ * Built from the one supplied master by scripts/build-brand.mjs (transparent
+ * background; `light` is the navy-background variant with a cream wordmark).
+ *
+ * `size` fixes the height the logo is drawn at; the image is generated at 1x/2x/3x
+ * of that, so it stays sharp on phones and retina screens without shipping the master.
+ */
+import { Image } from 'astro:assets';
 import { BRAND, type Locale } from '~/i18n/ui';
+import dark from '~/assets/brand/finddome-logo.png';
+import light from '~/assets/brand/finddome-logo-light.png';
 
 interface Props {
   locale: Locale;
   light?: boolean;
   href?: string;
+  /** Rendered height in px on desktop: nav 62, auth 84, setup 56, footer 112. */
+  size?: 'nav' | 'auth' | 'setup' | 'footer';
 }
 
-const { locale, light = false, href = `/${locale}/` } = Astro.props;
-
-/** "INGATLAN", "VASTGOED", "REAL ESTATES", "IMMOBILIEN", "IMMOBILIER": the brand name minus the wordmark. */
-const subLabel = BRAND[locale].name.replace('FINDDOME', '').trim();
+const { locale, light: onDark = false, href = `/${locale}/`, size = 'nav' } = Astro.props;
+const HEIGHT = { nav: 62, auth: 84, setup: 56, footer: 112 } as const;
+const height = HEIGHT[size];
+const source = onDark ? light : dark;
+const width = Math.round((height * source.width) / source.height);
 ---
 
-<a class="logo" class:list={{ light }} href={href} aria-label={BRAND[locale].name}>
-  <span class="word">FINDDOME</span>
-  <span class="rule" aria-hidden="true"></span>
-  <span class="sub">{subLabel}</span>
+<a class="logo" class:list={[size]} href={href} aria-label={BRAND[locale].name}>
+  <Image
+    src={source}
+    alt=""
+    width={width}
+    height={height}
+    densities={[1, 2, 3]}
+    format="webp"
+    quality={90}
+    loading="eager"
+    decoding="async"
+    draggable="false"
+  />
 </a>
 
 <style>
-  /* inline-block: the rule under the word is exactly as wide as the word,
-     wherever the logo sits. As a block inside a grid cell (the footer) it
-     stretched the rule across the whole column. */
   .logo {
-    display: inline-block;
+    display: inline-flex;
     vertical-align: top;
-    line-height: 1;
+    line-height: 0;
     user-select: none;
     border-radius: var(--r-xs);
   }
-  /* The tracking is cancelled after the last letter, so the rule ends
-     under the L rather than a letter-space beyond it. */
-  .word {
+  .logo :global(img) {
     display: block;
-    margin-right: -0.38em;
-    font-family: var(--serif);
-    font-weight: var(--fw-medium);
-    font-size: 20px;
-    letter-spacing: 0.38em;
-    color: var(--ink);
-    text-transform: uppercase;
+    height: var(--logo-h);
+    width: auto;
+    max-width: none;
   }
-  .rule {
-    display: block;
-    height: 1px;
-    background: var(--accent);
-    margin: 5px 0 4px;
+  .nav {
+    --logo-h: 62px;
   }
-  .sub {
-    display: block;
-    font-family: var(--sans);
-    font-weight: var(--fw-regular);
-    /* ADJUSTED: 7.5px in the prototype — below the threshold of legibility. */
-    font-size: 9px;
-    letter-spacing: 0.42em;
-    color: var(--taupe);
-    text-transform: uppercase;
+  .auth {
+    --logo-h: 84px;
   }
-  .light .word {
-    color: var(--cream);
+  .setup {
+    --logo-h: 56px;
   }
-  .light .sub {
-    color: var(--on-dark-muted);
+  .footer {
+    --logo-h: 112px;
+  }
+  /* The floating bar is 68 px tall on phones and 66 once scrolled: keep a breath above and below. */
+  @media (max-width: 1080px) {
+    .nav {
+      --logo-h: 48px;
+    }
+  }
+  @media (max-width: 700px) {
+    .auth {
+      --logo-h: 68px;
+    }
+    .footer {
+      --logo-h: 92px;
+    }
   }
 </style>

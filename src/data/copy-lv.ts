@@ -26,9 +26,9 @@ export const LV = {
     },
     hero: {
       eyebrow: `Kopš 2013. gada · ${foundedInLabel(L)}`,
-      title: ['Īpašumi', 'Ungārijā', 'tieši no īpašnieka'],
+      title: ['Sludiniet', 'savu īpašumu', 'Eiropā'],
       emphasis: 1,
-      body: 'Daudzos mūsu sludinājumos ir norādīts īpašnieks. Varat vienoties tieši ar viņu vai uzticēt visu procesu mums.',
+      body: 'Augšupielādējiet sludinājumu dažos soļos. Mēs to pārbaudām, un pēc maksājuma tiešsaistē tas tiek publicēts mūsu vietnē 21 valodā, bez ekskluzivitātes līguma. Interesenti sazinās ar jums tieši vai caur mums.',
       primary: 'Skatīt īpašumus',
       secondary: 'Bezmaksas īpašuma meklēšana',
       featuredLabel: 'Izceltie',

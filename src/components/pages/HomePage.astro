@@ -31,7 +31,6 @@ import PropertyCard from '~/components/PropertyCard.astro';
 import HomeSearch from '~/components/HomeSearch.astro';
 import NewsletterForm from '~/components/NewsletterForm.astro';
 import ParallaxCta from '~/components/ParallaxCta.astro';
-import StatsBand from '~/components/StatsBand.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
 import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
@@ -40,9 +39,10 @@ import { CHROME } from '~/i18n/chrome';
 import { copy } from '~/data/copy';
 import { fillShortHours } from '~/config/company';
 import { homeAlternates } from '~/lib/page';
-import { activeProperties, homepageFeatured, regionsOf, text, url } from '~/lib/properties';
+import { activeProperties, homepageFeatured, editorsPick, regionsOf, text, url } from '~/lib/properties';
 import { getTaxonomy, listingCategories, getCompany } from '~/lib/runtime-config';
 import PostCard from '~/components/PostCard.astro';
+import YouTubeStrip from '~/components/YouTubeStrip.astro';
 import { latestArticles } from '~/lib/blog';
 import { websiteSchema } from '~/lib/seo';
 import { valuationPackages, priceLabel } from '~/lib/valuation/packages';
@@ -63,10 +63,10 @@ const hu = locale === 'hu';
 const ui = UI[locale];
 const c = copy(locale).home;
 const steps = copy(locale).steps;
-const stats = copy(locale).stats;
 
 const all = await activeProperties();
 const featured = await homepageFeatured(3);
+const top = await editorsPick(10);
 const taxonomy = await getTaxonomy();
 const company = await getCompany();
 // Brief 2 (§1/A): the three newest articles in this language — never another
@@ -362,8 +362,6 @@ const quote = splitOpeningQuote(c.quote);
           {quote.mark && <span class="hang-quote">{quote.mark}</span>}{quote.rest}
         </blockquote>
       </div>
-
-      <StatsBand stats={stats} class="statement-stats" />
     </div>
   </section>
 
@@ -455,6 +453,50 @@ const quote = splitOpeningQuote(c.quote);
       }
     </ol>
   </section>
+
+  {/* ── TOP 10 ── */}
+  {
+    top.length > 0 && (
+      <section class="top-picks slab" aria-labelledby="top-picks-title">
+        <div class="rail-head">
+          <SectionHead
+            eyebrow="FODEL Top 10"
+            title={x('A FODEL ajánlásával', 'Aanbevolen door FODEL', 'Recommended by FODEL', 'Von FODEL empfohlen', 'Recommandé par FODEL', 'Recomendado por FODEL', 'Polecane przez FODEL', 'Recomandat de FODEL', 'Odporúča FODEL', 'Consigliati da FODEL', 'Recomendado pela FODEL', 'Προτείνεται από τη FODEL', 'Doporučuje FODEL', 'Priporoča FODEL', 'Rekommenderas av FODEL', 'Anbefalet af FODEL', 'Anbefalt av FODEL', 'FODELin suosittelemat', 'FODELi soovitatud', 'FODEL iesaka', 'FODEL rekomenduoja')}
+            size="large"
+            class="reveal"
+          />
+          <div class="rail-controls">
+            <Button variant="text" href={path(locale, 'top10')}>{x(`Mind a ${top.length}`, `Alle ${top.length}`, `View all ${top.length}`, `Alle ${top.length} ansehen`, `Voir les ${top.length}`, `Ver los ${top.length}`, `Zobacz wszystkie ${top.length}`, `Vezi toate cele ${top.length}`, `Zobraziť všetkých ${top.length}`, `Vedi tutti i ${top.length}`, `Ver os ${top.length}`, `Δείτε και τα ${top.length}`, `Zobrazit všech ${top.length}`, `Prikaži vseh ${top.length}`, `Visa alla ${top.length}`, `Se alle ${top.length}`, `Se alle ${top.length}`, `Näytä kaikki ${top.length}`, `Vaata kõiki ${top.length}`, `Skatīt visus ${top.length}`, `Rodyti visus ${top.length}`)}</Button>
+            <div class="rail-arrows">
+              <button type="button" class="rail-btn" data-rail="prev" aria-label={x('Előző', 'Vorige', 'Previous', 'Zurück', 'Précédent', 'Anterior', 'Poprzednie', 'Anterior', 'Predchádzajúce', 'Precedente', 'Anterior', 'Προηγούμενο', 'Předchozí', 'Prejšnje', 'Föregående', 'Forrige', 'Forrige', 'Edellinen', 'Eelmine', 'Iepriekšējais', 'Ankstesnis')}>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+                  <path d="M15 6H2M6.5 1.5 2 6l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <button type="button" class="rail-btn" data-rail="next" aria-label={x('Következő', 'Volgende', 'Next', 'Weiter', 'Suivant', 'Siguiente', 'Następne', 'Următorul', 'Nasledujúce', 'Successivo', 'Seguinte', 'Επόμενο', 'Další', 'Naslednje', 'Nästa', 'Næste', 'Neste', 'Seuraava', 'Järgmine', 'Nākamais', 'Kitas')}>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+                  <path d="M1 6h13M9.5 1.5 14 6l-4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="rail" id="top-rail" tabindex="0" role="region" aria-label="FODEL Top 10">
+          {top.map((p, index) => (
+            <PropertyCard property={p} locale={locale} rank={index + 1} ratio="4 / 5" class="rail-item" sizes="(max-width: 900px) 80vw, 28vw" />
+          ))}
+        </div>
+        <div class="rail-progress" aria-hidden="true">
+          <span id="rail-progress" />
+        </div>
+      </section>
+    )
+  }
+
+
+  {/* ── VIDEOS ── the channel's latest uploads; left out when YouTube cannot be read */}
+  <YouTubeStrip locale={locale} />
 
   {/* ── LATEST ARTICLES ── */}
   {
@@ -669,6 +711,85 @@ const quote = splitOpeningQuote(c.quote);
     update();
   }
 
+
+  /* ── Top 10 rail: arrow buttons, a progress line, and drag-to-scroll
+     for a mouse (touch and trackpads already scroll it natively). */
+  const rail = document.getElementById('top-rail');
+  const bar = document.getElementById('rail-progress');
+  if (rail) {
+    const step = () => (rail.querySelector<HTMLElement>('.rail-item')?.offsetWidth ?? 320) + 24;
+    document.querySelector('[data-rail="prev"]')?.addEventListener('click', () =>
+      rail.scrollBy({ left: -step(), behavior: reduced ? 'auto' : 'smooth' })
+    );
+    document.querySelector('[data-rail="next"]')?.addEventListener('click', () =>
+      rail.scrollBy({ left: step(), behavior: reduced ? 'auto' : 'smooth' })
+    );
+
+    // The arrows say when there is nothing further that way, and the
+    // controls step aside altogether when every pick already fits.
+    const section = rail.closest<HTMLElement>('.top-picks');
+    const prevBtn = document.querySelector<HTMLElement>('[data-rail="prev"]');
+    const nextBtn = document.querySelector<HTMLElement>('[data-rail="next"]');
+    const progress = () => {
+      const max = rail.scrollWidth - rail.clientWidth;
+      const visible = rail.clientWidth / rail.scrollWidth;
+      const p = max > 0 ? rail.scrollLeft / max : 1;
+      bar?.style.setProperty('--w', String(visible));
+      bar?.style.setProperty('--p', String(p));
+      prevBtn?.setAttribute('aria-disabled', String(rail.scrollLeft <= 1));
+      nextBtn?.setAttribute('aria-disabled', String(rail.scrollLeft >= max - 1));
+    };
+    // Measured on the rail's natural layout (static mode stretches the cards
+    // to fill the row, which would always "fit"); no paint happens between
+    // removing and restoring the attribute.
+    const measure = () => {
+      section?.removeAttribute('data-static');
+      const fits = rail.scrollWidth - rail.clientWidth <= 1;
+      section?.toggleAttribute('data-static', fits);
+      progress();
+    };
+    rail.addEventListener('scroll', progress, { passive: true });
+    window.addEventListener('resize', measure, { passive: true });
+    measure();
+
+    let down = false;
+    let moved = false;
+    let startX = 0;
+    let startLeft = 0;
+    rail.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startLeft = rail.scrollLeft;
+    });
+    window.addEventListener('pointermove', (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 6) {
+        moved = true;
+        rail.setAttribute('data-dragging', '');
+      }
+      if (moved) rail.scrollLeft = startLeft - dx;
+    });
+    window.addEventListener('pointerup', () => {
+      down = false;
+      rail.removeAttribute('data-dragging');
+    });
+    // A drag must not also open the card it ended on.
+    rail.addEventListener(
+      'click',
+      (e) => {
+        if (moved) {
+          e.preventDefault();
+          e.stopPropagation();
+          moved = false;
+        }
+      },
+      true
+    );
+    rail.addEventListener('dragstart', (e) => e.preventDefault());
+  }
 </script>
 
 <style>
@@ -1240,9 +1361,6 @@ const quote = splitOpeningQuote(c.quote);
     color: var(--cream);
     text-wrap: balance;
   }
-  .statement :global(.statement-stats) {
-    margin-top: clamp(80px, 8vw, 128px);
-  }
 
   /* ══ AUDIENCES ════════════════════════════════════════════════════════ */
   .audiences {
@@ -1464,6 +1582,113 @@ const quote = splitOpeningQuote(c.quote);
   .how-step[data-tone='dark'] p {
     color: var(--on-dark-body);
   }
+
+  /* ══ TOP 10 RAIL ══════════════════════════════════════════════════════ */
+  .top-picks {
+    padding: var(--section-y) 0 calc(var(--section-y) * 0.8);
+    background: var(--linen);
+  }
+  .rail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+    padding: 0 calc(var(--pad-x) - var(--slab-x));
+    margin-bottom: 56px;
+  }
+  .rail-head :global(.section-head-standard) {
+    margin-bottom: 0;
+  }
+  .rail-controls {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding-bottom: 6px;
+  }
+  .rail-arrows {
+    display: flex;
+    gap: 8px;
+  }
+  .rail-btn {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1px solid rgba(16, 42, 67, 0.1);
+    color: var(--ink);
+    transition:
+      background-color 0.4s var(--ease-out),
+      color 0.4s var(--ease-out),
+      opacity 0.4s ease,
+      transform 0.25s var(--ease-out);
+  }
+  .rail-btn:hover {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  .rail-btn:active {
+    transform: scale(0.94);
+  }
+  .rail-btn[aria-disabled='true'] {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  /* Every pick fits: no arrows, and the cards share the full measure. */
+  .top-picks[data-static] .rail-arrows,
+  .top-picks[data-static] .rail-progress {
+    display: none;
+  }
+  .top-picks[data-static] .rail {
+    grid-auto-columns: minmax(0, 1fr);
+    cursor: auto;
+  }
+  .rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: clamp(280px, 26vw, 400px);
+    gap: 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: calc(var(--pad-x) - var(--slab-x));
+    padding: 0 calc(var(--pad-x) - var(--slab-x)) 8px;
+    scrollbar-width: none;
+    cursor: grab;
+  }
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+  .rail[data-dragging] {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .rail[data-dragging] :global(a) {
+    pointer-events: none;
+  }
+  .rail > :global(.rail-item) {
+    scroll-snap-align: start;
+  }
+  .rail-progress {
+    position: relative;
+    height: 3px;
+    margin: 48px calc(var(--pad-x) - var(--slab-x)) 0;
+    overflow: hidden;
+    border-radius: 3px;
+    background: rgba(16, 42, 67, 0.1);
+  }
+  .rail-progress span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: calc(var(--w, 0.3) * 100%);
+    border-radius: 3px;
+    background: var(--ink);
+    transform: translateX(calc(var(--p, 0) * (1 / var(--w, 0.3) - 1) * 100%));
+    transition: transform 0.2s linear;
+  }
+
 
   /* ══ REFERRAL ═════════════════════════════════════════════════════════ */
   /* Latest articles — the same rounded cards as the blog index. */
@@ -1732,6 +1957,30 @@ const quote = splitOpeningQuote(c.quote);
       width: 52px;
       height: 52px;
     }
+
+    .top-picks {
+      padding: 72px 0 56px;
+    }
+    .rail-head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 0 calc(var(--pad-x-mob) - var(--slab-x) + 4px);
+      margin-bottom: 32px;
+    }
+    .rail-arrows {
+      display: none;
+    }
+    .rail {
+      grid-auto-columns: 80vw;
+      gap: 16px;
+      padding: 0 calc(var(--pad-x-mob) - var(--slab-x) + 4px) 8px;
+      scroll-padding-inline: calc(var(--pad-x-mob) - var(--slab-x) + 4px);
+    }
+    .rail-progress {
+      margin: 32px calc(var(--pad-x-mob) - var(--slab-x) + 4px) 0;
+    }
+
 
     .top-picks {
       padding: 72px 0 56px;

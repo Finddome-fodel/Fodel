@@ -26,9 +26,9 @@ export const CS = {
     },
     hero: {
       eyebrow: `Od roku 2013 · ${foundedInLabel(L)}`,
-      title: ['Nemovitosti', 'v Maďarsku', 'přímo od majitele'],
+      title: ['Inzerujte', 'svou nemovitost', 'v Evropě'],
       emphasis: 1,
-      body: 'Mnoho našich inzerátů uvádí majitele. Můžete s ním jednat přímo, nebo celý proces přenechat nám.',
+      body: 'Nahrajte inzerát v několika krocích. Zkontrolujeme jej a po online platbě se zobrazí na našem webu ve 21 jazycích, bez smlouvy o výhradním zastoupení. Zájemci vás kontaktují přímo, nebo přes nás.',
       primary: 'Prohlédnout nemovitosti',
       secondary: 'Bezplatné vyhledání nemovitosti',
       featuredLabel: 'Doporučujeme',
