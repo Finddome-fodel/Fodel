@@ -119,11 +119,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const placeholder = placeholderProblem(property, isAdmin ? 'admin' : 'owner');
     if (placeholder) return json(422, { ok: false, error: 'placeholder', message: placeholder });
 
-    // The facts the old upload form made compulsory for a home (rooms, floors, kitchens, address ...).
-    // An admin may submit on an owner's behalf with less; before migration 0025 there is nothing to check.
+    // The facts this type of property requires (src/lib/listing-details.ts fieldRules): the same rules the form
+    // marks and the wizard checks. An admin may submit on an owner's behalf with less.
     if (!isAdmin) {
       const [{ data: facts, error: factsError }, { data: priv }] = await Promise.all([
-        supabase.from('properties').select('floor_m2, bedrooms, bathrooms, heating_key, details').eq('id', id).maybeSingle(),
+        supabase.from('properties').select('floor_m2, building_m2, plot_m2, year_built, year_built_unknown, bathrooms, heating_key, wall_key, details').eq('id', id).maybeSingle(),
         supabase.from('property_private').select('street').eq('property_id', id).maybeSingle(),
       ]);
       if (!factsError && facts) {

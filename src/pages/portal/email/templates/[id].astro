@@ -44,7 +44,8 @@ const startsUnfinished = unfinishedParts(template.body_html).length > 0;
 const fillsFromListing = template.body_html.includes('{{property_');
 // The automatic enquiry reply answers about every listing: fixed listing text in it would reach the wrong people.
 const fixedInReply = template.automation === 'enquiry' ? fixedListingParts(template.body_html) : [];
-const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LABEL[key] }));
+// {{property_bedrooms}} still works in older templates but is no longer offered.
+const mergeButtons = MERGE_FIELD_KEYS.filter((key) => key !== 'property_bedrooms').map((key) => ({ key, label: MERGE_FIELD_LABEL[key] }));
 ---
 
 <Portal title={template.name}>
@@ -76,7 +77,7 @@ const mergeButtons = MERGE_FIELD_KEYS.map((key) => ({ key, label: MERGE_FIELD_LA
   )}
   {fixedInReply.length > 0 && (
     <p class="notice warn">
-      Figyelem: ez a sablon az automatikus válasz <b>minden</b> ingatlan-érdeklődésre, de ezek a részei egyetlen hirdetés rögzített adatait mutatják: <b>{fixedInReply.join(', ')}</b>. Így minden érdeklődő ugyanezt kapná, bármelyik hirdetésről kérdez. Írja vissza ezekbe a mezőkbe a megfelelő mezőkódot (például {'{{property_description}}'}, {'{{property_area}}'}, {'{{property_bedrooms}}'}), a fotónál pedig válassza a „Helyette mindig a hirdetés saját fotója” lehetőséget.
+      Figyelem: ez a sablon az automatikus válasz <b>minden</b> ingatlan-érdeklődésre, de ezek a részei egyetlen hirdetés rögzített adatait mutatják: <b>{fixedInReply.join(', ')}</b>. Így minden érdeklődő ugyanezt kapná, bármelyik hirdetésről kérdez. Írja vissza ezekbe a mezőkbe a megfelelő mezőkódot (például {'{{property_description}}'}, {'{{property_area}}'}, {'{{property_rooms}}'}), a fotónál pedig válassza a „Helyette mindig a hirdetés saját fotója” lehetőséget.
     </p>
   )}
   {p.get('copied') && <p class="notice ok">Másolat létrehozva, inaktívként.</p>}

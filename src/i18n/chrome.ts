@@ -36,7 +36,8 @@ export interface ChromeStrings {
   search: { placeholder: string; placeholderShort: string };
   whatsapp: string;
   playVideo: string;
-  card: { bedsShort: string; bargain: string };
+  /** After the room count on a listing card (half rooms not counted). */
+  card: { roomsShort: string; bargain: string };
   post: { minutes: string; caseStudy: string };
   map: {
     pin: string;
@@ -88,7 +89,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Település, megye, vagy hirdetésszám', placeholderShort: 'Település vagy azonosító' },
     whatsapp: 'Írjon nekünk WhatsAppon',
     playVideo: 'Videó lejátszása',
-    card: { bedsShort: 'szoba', bargain: 'Alkalmi vétel' },
+    card: { roomsShort: 'szoba', bargain: 'Alkalmi vétel' },
     post: { minutes: 'perc', caseStudy: 'Esettanulmány' },
     map: {
       pin: 'Az ingatlan helye a térképen',
@@ -154,7 +155,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Plaats, provincie of referentienummer', placeholderShort: 'Plaats of referentie' },
     whatsapp: 'Stuur ons een WhatsApp-bericht',
     playVideo: 'Video afspelen',
-    card: { bedsShort: 'slk.', bargain: 'Buitenkans' },
+    card: { roomsShort: 'kmr.', bargain: 'Buitenkans' },
     post: { minutes: 'min.', caseStudy: 'Casestudy' },
     map: {
       pin: 'Ligging van de woning op de kaart',
@@ -220,7 +221,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Town, county or reference number', placeholderShort: 'Town or reference' },
     whatsapp: 'Message us on WhatsApp',
     playVideo: 'Play video',
-    card: { bedsShort: 'bed', bargain: 'Bargain' },
+    card: { roomsShort: 'rooms', bargain: 'Bargain' },
     post: { minutes: 'min read', caseStudy: 'Case study' },
     map: {
       pin: 'Location of the property on the map',
@@ -286,7 +287,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Ort, Komitat oder Referenznummer', placeholderShort: 'Ort oder Referenz' },
     whatsapp: 'Schreiben Sie uns per WhatsApp',
     playVideo: 'Video abspielen',
-    card: { bedsShort: 'Schlafz.', bargain: 'Gelegenheit' },
+    card: { roomsShort: 'Zi.', bargain: 'Gelegenheit' },
     post: { minutes: 'Min. Lesezeit', caseStudy: 'Fallstudie' },
     map: {
       pin: 'Lage der Immobilie auf der Karte',
@@ -358,7 +359,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Localité, comitat ou numéro de référence', placeholderShort: 'Localité ou référence' },
     whatsapp: 'Écrivez-nous sur WhatsApp',
     playVideo: 'Lire la vidéo',
-    card: { bedsShort: 'ch.', bargain: 'Bonne affaire' },
+    card: { roomsShort: 'p.', bargain: 'Bonne affaire' },
     post: { minutes: 'min de lecture', caseStudy: 'Étude de cas' },
     map: {
       pin: 'Situation du bien sur la carte',
@@ -429,7 +430,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Localidad, condado o número de referencia', placeholderShort: 'Localidad o referencia' },
     whatsapp: 'Escríbanos por WhatsApp',
     playVideo: 'Reproducir el vídeo',
-    card: { bedsShort: 'dorm.', bargain: 'Buena oportunidad' },
+    card: { roomsShort: 'hab.', bargain: 'Buena oportunidad' },
     post: { minutes: 'min de lectura', caseStudy: 'Caso práctico' },
     map: {
       pin: 'Ubicación del inmueble en el mapa',
@@ -500,7 +501,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Miejscowość, komitat lub numer referencyjny', placeholderShort: 'Miejscowość lub numer referencyjny' },
     whatsapp: 'Napisz do nas na WhatsAppie',
     playVideo: 'Odtwórz film',
-    card: { bedsShort: 'syp.', bargain: 'Okazja' },
+    card: { roomsShort: 'pok.', bargain: 'Okazja' },
     post: { minutes: 'min czytania', caseStudy: 'Studium przypadku' },
     map: {
       pin: 'Położenie nieruchomości na mapie',
@@ -571,7 +572,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Localitate, județ sau număr de referință', placeholderShort: 'Localitate sau referință' },
     whatsapp: 'Scrieți-ne pe WhatsApp',
     playVideo: 'Redați videoclipul',
-    card: { bedsShort: 'dorm.', bargain: 'Ofertă avantajoasă' },
+    card: { roomsShort: 'cam.', bargain: 'Ofertă avantajoasă' },
     post: { minutes: 'min de lectură', caseStudy: 'Studiu de caz' },
     map: {
       pin: 'Amplasarea proprietății pe hartă',
@@ -642,7 +643,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Obec, župa alebo referenčné číslo', placeholderShort: 'Obec alebo referenčné číslo' },
     whatsapp: 'Napíšte nám cez WhatsApp',
     playVideo: 'Prehrať video',
-    card: { bedsShort: 'spál.', bargain: 'Výhodná ponuka' },
+    card: { roomsShort: 'izb.', bargain: 'Výhodná ponuka' },
     post: { minutes: 'min čítania', caseStudy: 'Prípadová štúdia' },
     map: {
       pin: 'Poloha nehnuteľnosti na mape',
@@ -713,7 +714,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Comune, contea o numero di riferimento', placeholderShort: 'Comune o riferimento' },
     whatsapp: 'Ci scriva su WhatsApp',
     playVideo: 'Riproduci video',
-    card: { bedsShort: 'cam.', bargain: 'Occasione' },
+    card: { roomsShort: 'loc.', bargain: 'Occasione' },
     post: { minutes: 'min di lettura', caseStudy: 'Caso di studio' },
     map: {
       pin: 'Posizione dell’immobile sulla mappa',
@@ -784,7 +785,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Localidade, condado ou número de referência', placeholderShort: 'Localidade ou referência' },
     whatsapp: 'Escreva-nos no WhatsApp',
     playVideo: 'Reproduzir vídeo',
-    card: { bedsShort: 'quartos', bargain: 'Oportunidade' },
+    card: { roomsShort: 'div.', bargain: 'Oportunidade' },
     post: { minutes: 'min de leitura', caseStudy: 'Estudo de caso' },
     map: {
       pin: 'Localização do imóvel no mapa',
@@ -855,7 +856,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Οικισμός, νομός ή κωδικός αναφοράς', placeholderShort: 'Οικισμός ή κωδικός' },
     whatsapp: 'Γράψτε μας στο WhatsApp',
     playVideo: 'Αναπαραγωγή βίντεο',
-    card: { bedsShort: 'υπν.', bargain: 'Ευκαιρία' },
+    card: { roomsShort: 'δωμ.', bargain: 'Ευκαιρία' },
     post: { minutes: 'λεπτά ανάγνωσης', caseStudy: 'Μελέτη περίπτωσης' },
     map: {
       pin: 'Θέση του ακινήτου στον χάρτη',
@@ -926,7 +927,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Obec, župa nebo referenční číslo', placeholderShort: 'Obec nebo reference' },
     whatsapp: 'Napište nám na WhatsApp',
     playVideo: 'Přehrát video',
-    card: { bedsShort: 'lož.', bargain: 'Výhodná nabídka' },
+    card: { roomsShort: 'pok.', bargain: 'Výhodná nabídka' },
     post: { minutes: 'min čtení', caseStudy: 'Případová studie' },
     map: {
       pin: 'Poloha nemovitosti na mapě',
@@ -997,7 +998,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Kraj, županija ali referenčna številka', placeholderShort: 'Kraj ali referenca' },
     whatsapp: 'Pišite nam na WhatsApp',
     playVideo: 'Predvajaj video',
-    card: { bedsShort: 'spal.', bargain: 'Ugodna ponudba' },
+    card: { roomsShort: 'sob.', bargain: 'Ugodna ponudba' },
     post: { minutes: 'min branja', caseStudy: 'Študija primera' },
     map: {
       pin: 'Lokacija nepremičnine na zemljevidu',
@@ -1068,7 +1069,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Ort, län eller referensnummer', placeholderShort: 'Ort eller referens' },
     whatsapp: 'Skriv till oss på WhatsApp',
     playVideo: 'Spela upp video',
-    card: { bedsShort: 'sovr.', bargain: 'Fynd' },
+    card: { roomsShort: 'rum', bargain: 'Fynd' },
     post: { minutes: 'min läsning', caseStudy: 'Fallstudie' },
     map: {
       pin: 'Fastighetens läge på kartan',
@@ -1139,7 +1140,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'By, amt eller referencenummer', placeholderShort: 'By eller reference' },
     whatsapp: 'Skriv til os på WhatsApp',
     playVideo: 'Afspil video',
-    card: { bedsShort: 'sov.', bargain: 'Godt køb' },
+    card: { roomsShort: 'vær.', bargain: 'Godt køb' },
     post: { minutes: 'min. læsning', caseStudy: 'Casestudie' },
     map: {
       pin: 'Ejendommens placering på kortet',
@@ -1210,7 +1211,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Sted, fylke eller referansenummer', placeholderShort: 'Sted eller referanse' },
     whatsapp: 'Skriv til oss på WhatsApp',
     playVideo: 'Spill av video',
-    card: { bedsShort: 'sov.', bargain: 'Godt kjøp' },
+    card: { roomsShort: 'rom', bargain: 'Godt kjøp' },
     post: { minutes: 'min lesetid', caseStudy: 'Casestudie' },
     map: {
       pin: 'Eiendommens beliggenhet på kartet',
@@ -1281,7 +1282,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Paikkakunta, lääni tai viitenumero', placeholderShort: 'Paikkakunta tai viite' },
     whatsapp: 'Lähetä meille viesti WhatsAppissa',
     playVideo: 'Toista video',
-    card: { bedsShort: 'mh', bargain: 'Löytö' },
+    card: { roomsShort: 'h', bargain: 'Löytö' },
     post: { minutes: 'min lukuaika', caseStudy: 'Tapaustutkimus' },
     map: {
       pin: 'Kiinteistön sijainti kartalla',
@@ -1352,7 +1353,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Asula, maakond või viitenumber', placeholderShort: 'Asula või viide' },
     whatsapp: 'Kirjutage meile WhatsAppis',
     playVideo: 'Esita video',
-    card: { bedsShort: 'mtb', bargain: 'Soodne pakkumine' },
+    card: { roomsShort: 'tuba', bargain: 'Soodne pakkumine' },
     post: { minutes: 'min lugemist', caseStudy: 'Juhtumiuuring' },
     map: {
       pin: 'Kinnisvara asukoht kaardil',
@@ -1423,7 +1424,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Apdzīvotā vieta, mede vai atsauces numurs', placeholderShort: 'Vieta vai atsauce' },
     whatsapp: 'Rakstiet mums WhatsApp',
     playVideo: 'Atskaņot video',
-    card: { bedsShort: 'guļ.', bargain: 'Izdevīgs piedāvājums' },
+    card: { roomsShort: 'ist.', bargain: 'Izdevīgs piedāvājums' },
     post: { minutes: 'min lasīšanai', caseStudy: 'Gadījuma izpēte' },
     map: {
       pin: 'Īpašuma atrašanās vieta kartē',
@@ -1494,7 +1495,7 @@ export const CHROME: L10n<ChromeStrings> = {
     search: { placeholder: 'Gyvenvietė, apskritis arba nuorodos numeris', placeholderShort: 'Vieta arba nuoroda' },
     whatsapp: 'Rašykite mums per WhatsApp',
     playVideo: 'Paleisti vaizdo įrašą',
-    card: { bedsShort: 'mieg.', bargain: 'Geras pasiūlymas' },
+    card: { roomsShort: 'kamb.', bargain: 'Geras pasiūlymas' },
     post: { minutes: 'min skaitymo', caseStudy: 'Atvejo analizė' },
     map: {
       pin: 'Turto vieta žemėlapyje',

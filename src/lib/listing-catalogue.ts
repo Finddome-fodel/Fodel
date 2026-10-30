@@ -33,19 +33,65 @@ export function languageName(code: string, locale: string): string {
   try { return new Intl.DisplayNames([locale], { type: 'language' }).of(code) || code; } catch { return code; }
 }
 
-export const FEATURE_ALIASES: Record<string, string> = { balcony: 'terrace', garage: 'parking', carport: 'parking', vineyard: 'orchard', 'storage-building': 'storage', 'barn-hall': 'warehouse-space', 'original-beams': 'historic-elements' };
+export const FEATURE_ALIASES: Record<string, string> = { balcony: 'terrace', vineyard: 'orchard', 'storage-building': 'storage', 'barn-hall': 'warehouse-space', 'original-beams': 'historic-elements' };
 export const canonicalFeature = (key: string) => FEATURE_ALIASES[key] || key;
 
-/** The country is the authority: these are suggestions, never a forced Hungarian scale. */
-export function energyOptions(country: string): string[] {
-  const common = ['unknown', 'not-applicable'];
-  if (country === 'HU') return ['A+++', 'A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', ...common];
-  if (country === 'NL') return ['A+++++', 'A++++', 'A+++', 'A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', ...common];
-  if (country === 'IT') return ['A4', 'A3', 'A2', 'A1', 'A', 'B', 'C', 'D', 'E', 'F', 'G', ...common];
-  if (['AT','PT'].includes(country)) return ['A++', 'A+', 'A', 'B', 'B-', 'C', 'D', 'E', 'F', 'G', ...common];
-  if (country === 'IE') return ['A1','A2','A3','B1','B2','B3','C1','C2','C3','D1','D2','E1','E2','F','G',...common];
-  if (['FR','ES','GB','CH','DK','SE','FI'].includes(country)) return ['A','B','C','D','E','F','G',...common];
-  if(country==='DE')return ['A+','A','B','C','D','E','F','G','H',...common];
-  if(country==='HR')return ['A+','A','B','C','D','E','F','G',...common];
-  return common;
+/**
+ * Features that became something else (migration 0041). Parking is answered once, in the
+ * "Parkolási lehetőség" multi-select (`details.parking`), not twice; an industrial site's
+ * storage is "Raktárterület", a shop's is "Raktárhelyiség"; a manor's garden is a
+ * "Díszkert vagy park". Applied on every save and when a listing is shown, so a listing
+ * that still carries an old key reads correctly before and after the migration runs.
+ */
+export const PARKING_FROM_FEATURE: Record<string, string> = { parking: 'own', garage: 'garage', carport: 'own', 'enclosed-parking': 'enclosed' };
+const GROUP_RENAMES: { from: string; to: string; groups: string[] }[] = [
+  { from: 'warehouse-space', to: 'storage-area', groups: ['industrial'] },
+  { from: 'park', to: 'ornamental-park', groups: ['mansion'] },
+];
+export const RETIRED_FEATURES: string[] = Object.keys(PARKING_FROM_FEATURE);
+/** The listing's features in today's vocabulary, plus the parking choices the retired ones stood for. */
+export function currentFeatures(features: string[], group: string): { features: string[]; parking: string[] } {
+  const parking: string[] = [];
+  const out: string[] = [];
+  for (const raw of features) {
+    if (PARKING_FROM_FEATURE[raw]) { parking.push(PARKING_FROM_FEATURE[raw]); continue; }
+    const key = canonicalFeature(raw);
+    out.push(GROUP_RENAMES.find((r) => r.from === key && r.groups.includes(group))?.to ?? key);
+  }
+  return { features: [...new Set(out)], parking: [...new Set(parking)] };
 }
+
+export { readEnergy, type EnergyAnswer } from './energy.ts';
+
+/**
+ * The classes each country actually prints, best first. Where a country has no letter
+ * scale (Poland prints a kWh figure) or we do not know it, the owner types what the
+ * certificate says. Sources: national EPC rules as of 2026 (HU: 9/2023. ÉKM, A+++–I;
+ * the old two-letter AA++–JJ certificates are no longer valid. NL: NTA 8800, A++++–G).
+ */
+const EU_AG = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+export const ENERGY_SCALES: Record<string, string[]> = {
+  HU: ['A+++', 'A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+  NL: ['A++++', 'A+++', 'A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  BE: ['A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  DE: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+  AT: ['A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  IT: ['A4', 'A3', 'A2', 'A1', 'B', 'C', 'D', 'E', 'F', 'G'],
+  PT: ['A+', 'A', 'B', 'B-', 'C', 'D', 'E', 'F'],
+  IE: ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'E1', 'E2', 'F', 'G'],
+  DK: ['A2020', 'A2015', 'A2010', 'B', 'C', 'D', 'E', 'F', 'G'],
+  SK: ['A0', 'A1', 'B', 'C', 'D', 'E', 'F', 'G'],
+  SI: ['A1', 'A2', 'B1', 'B2', 'C', 'D', 'E', 'F', 'G'],
+  GR: ['A+', 'A', 'B+', 'B', 'C', 'D', 'E', 'F', 'G'],
+  HR: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  RO: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  BG: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  LT: ['A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  LV: ['A+', 'A', 'B', 'C', 'D', 'E', 'F'],
+  EE: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+  ...Object.fromEntries(['FR', 'ES', 'GB', 'CH', 'SE', 'NO', 'FI', 'CZ', 'CY'].map((c) => [c, EU_AG])),
+};
+/** The country's scale, or null when the owner should type the class as printed. */
+export const energyScale = (country: string): string[] | null => ENERGY_SCALES[country] ?? null;
+/** @deprecated kept for callers that only want suggestions; use energyScale. */
+export const energyOptions = (country: string): string[] => energyScale(country) ?? [];

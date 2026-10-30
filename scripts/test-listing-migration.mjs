@@ -132,4 +132,24 @@ await db.exec(`set test.uid='${other}';update properties set dutch_agent_request
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 assert.equal((await get(`select dutch_agent_requested from properties where id='${id}'`))[0].dutch_agent_requested,true);
 console.log('✓ 0035 executes, is repeatable, and the owner can set the Dutch-agent request');
+// 0041: the listing-field wishlist. Old-shape details, retired parking features and old energy answers are
+// moved over; an admin's own dictionary edits survive; the rooms filter counts rooms; running it twice changes nothing.
+await db.exec(`create table if not exists mail_templates(id uuid primary key default gen_random_uuid(),locale text not null default 'hu',subject text not null,body_html text not null);
+ insert into mail_templates(locale,subject,body_html) values ('hu','{{property_bedrooms}} szoba','<span data-editable="stat2_label">Hálószobák</span>{{property_bedrooms}}'),('en','x','<span data-editable="stat2_label">Bedrooms of note</span>');
+ update taxonomy_terms set property_groups=array['agricultural','land','house'] where group_key='feature' and key='steep-land';
+ update properties set status='published',expires_at=null,property_group='house',property_subtype='house-villa',bedrooms=3,heating_key='gas',wall_key='valyog',epc_class='pending',features=array['parking','garage','terrace'],details='{"setting":"village","rooms":5}' where id='${id}';`);
+const sql41=fs.readFileSync(root+'/supabase/migrations/0041_listing_fields_wishlist.sql','utf8');
+try{await db.exec(sql41);}catch(e){console.error('MIGRATION 0041 FAILED',e.message,e.detail);process.exit(1);}
+const snapshot41=async()=>JSON.stringify([await get(`select features,details,epc_class,heating_key,wall_key from properties order by id`),await get(`select key,enabled,property_groups,subtype_keys,section_key,labels from taxonomy_terms where group_key='feature' order by key`),await get(`select subject,body_html from mail_templates order by locale`)]);
+const once=await snapshot41();await db.exec(sql41);assert.equal(await snapshot41(),once,'0041 is repeatable');
+row=(await get(`select features,details,epc_class,wall_key from properties where id='${id}'`))[0];
+assert.deepEqual(row.features,['terrace']);assert.deepEqual(row.details,{rooms:5,settings:['village'],heating:['gas'],walls:['valyog'],parking:['garage','own']});assert.equal(row.epc_class,'unknown');assert.equal(row.wall_key,'valyog');
+const term=async k=>(await get(`select enabled,property_groups,section_key,labels->>'hu' hu from taxonomy_terms where group_key='feature' and key='${k}'`))[0];
+assert.deepEqual((await term('steep-land')).property_groups,['agricultural','land','house'],'an admin edit survives');assert.equal((await term('steep-land')).section_key,'terrain');
+assert.equal((await term('parking')).enabled,false);assert.equal((await term('storage-area')).hu,'Raktárterület');assert.deepEqual((await term('stables')).property_groups,['agricultural','mansion']);
+const mails=await get(`select subject,body_html from mail_templates order by locale`);
+assert.equal(mails[0].body_html,'<span data-editable="stat2_label">Bedrooms of note</span>','a label someone rewrote is left alone');assert.equal(mails[1].subject,'{{property_rooms}} szoba');assert.equal(mails[1].body_html,'<span data-editable="stat2_label">Szobák</span>{{property_rooms}}');
+const found=async a=>(await get(`select count(*)::int n from search_european_properties(${a})`))[0].n;
+assert.equal(await found(`p_bedrooms_min=>5`),1);assert.equal(await found(`p_bedrooms_min=>6`),0,'rooms, not the old bedroom count');assert.equal(await found(`p_exclude_adobe=>true`),0);
+console.log('✓ 0041 moves details, parking features and energy answers over, keeps admin edits, and is repeatable');
 await db.close();

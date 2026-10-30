@@ -1,5 +1,6 @@
-import { PROPERTY_GROUPS, labelIn, isLandOnly, hasLivingArea, hasPlot, energyOptions } from '~/lib/listing-catalogue';
-import { hasUtilities } from '~/lib/listing-details';
+import { PROPERTY_GROUPS, labelIn, energyScale } from '~/lib/listing-catalogue';
+import { fieldRules, parkingFits, type ListingField } from '~/lib/listing-details';
+import { COUNTRIES } from '~/config/countries';
 import { regionsFor, regionLabel } from '~/config/countries';
 import { parseLocaleNumber } from '~/lib/validation';
 import type { RateSnapshot } from '~/lib/exchange-rates';
@@ -18,18 +19,26 @@ for(const form of forms){
   const group=()=>get('property_group')||roots.find(r=>r.closest('form')===form)?.dataset.group||'house';
   const subtype=()=>get('property_subtype')||roots.find(r=>r.closest('form')===form)?.dataset.subtype||'';
   const set=(n:string,v:string)=>{const c=control(n);if(c)c.value=v;};
+  const root=roots.find(r=>r.closest('form')===form);
+  const words={required:root?.dataset.wordRequired||'',optional:root?.dataset.wordOptional||''};
+  // The same rules the server and the submit check use (src/lib/listing-details.ts): which facts this type has,
+  // and which are required. A hidden fact keeps its value; the server ignores it for this type.
   const refresh=()=>{
-    for(const wrapper of form.querySelectorAll<HTMLElement>('[data-relevance]')){
-      const kind=wrapper.dataset.relevance;
-      wrapper.hidden=kind==='living'?!hasLivingArea(group(),subtype()):kind==='plot'?!hasPlot(group(),subtype()):kind==='utilities'?!hasUtilities(group()):isLandOnly(group(),subtype());
+    const rules=fieldRules(group(),subtype());
+    for(const wrapper of form.querySelectorAll<HTMLElement>('[data-field]')){
+      const rule=rules[wrapper.dataset.field as ListingField];
+      if(!rule)continue;
+      wrapper.hidden=rule==='hidden';
+      const tag=wrapper.querySelector<HTMLElement>('.req');
+      if(tag&&words.required)tag.textContent=rule==='required'?words.required:words.optional;
     }
-    // Street and setting exist for every type but are compulsory only for a home; their labels follow the type.
-    const wording=(name:string)=>control(name)?.closest('.fld')?.querySelector<HTMLElement>('.req')?.textContent;
-    const required=wording('rooms'),optional=wording('half_rooms');
-    for(const name of ['street','setting']){
-      const tag=control(name)?.closest('.fld')?.querySelector<HTMLElement>('.req');
-      if(tag&&required&&optional)tag.textContent=hasLivingArea(group(),subtype())?required:optional;
-    }
+    // Street has no wrapper of its own; it is always shown and required only for a home.
+    const street=control('street')?.closest('.fld')?.querySelector<HTMLElement>('.req');
+    if(street&&words.required)street.textContent=rules.street==='required'?words.required:words.optional;
+    for(const block of form.querySelectorAll<HTMLElement>('[data-field-block]'))block.hidden=![...block.querySelectorAll<HTMLElement>('[data-field]')].some(el=>!el.hidden);
+    // Garden parking only where there is a garden; a ticked option stays visible so it can be unticked.
+    for(const option of form.querySelectorAll<HTMLElement>('[data-parking-option]'))
+      option.hidden=!option.querySelector<HTMLInputElement>('input')?.checked&&!parkingFits(option.dataset.parkingOption!,group(),subtype());
     for(const wrapper of form.querySelectorAll<HTMLElement>('[data-feature-groups]')){
       const selected=wrapper.querySelector<HTMLInputElement>('input')?.checked;
       const groups=(wrapper.dataset.featureGroups||'').split(',').filter(Boolean);
@@ -101,8 +110,36 @@ for(const form of forms){
   control('original_currency')?.addEventListener('change',()=>void showPrice());
   // The first estimate is needed for the package tier; stored prices remain unchanged until the amount/currency changes.
   if(control('original_price')&&!form.dataset.priceHuf)form.dataset.priceHuf=roots.find(r=>r.closest('form')===form)?.dataset.initialPriceHuf||'0';
-  const syncEnergy=()=>{const field=form.querySelector<HTMLElement>('[data-energy-value]');if(field)field.hidden=get('epc_status')!=='rated';};
-  control('epc_status')?.addEventListener('change',syncEnergy);syncEnergy();
+  // Energy: the class is asked only when there is a certificate.
+  const syncEnergy=()=>{
+    const rating=form.querySelector<HTMLElement>('[data-energy-rating]');
+    const yes=form.querySelector<HTMLInputElement>('input[name="epc_has"][value="yes"]');
+    if(rating)rating.hidden=!yes?.checked;
+  };
+  for(const radio of form.querySelectorAll<HTMLInputElement>('input[name="epc_has"]'))radio.addEventListener('change',syncEnergy);
+  syncEnergy();
+  // "No heating" / "Not known" replace the other choices, and ticking anything else clears them.
+  for(const grid of form.querySelectorAll<HTMLElement>('[data-exclusive]')){
+    const exclusive=(grid.dataset.exclusive||'').split(',').filter(Boolean);
+    grid.addEventListener('change',event=>{
+      const box=event.target as HTMLInputElement;
+      if(!box.checked)return;
+      for(const other of grid.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'))
+        if(other!==box&&(exclusive.includes(box.value)||exclusive.includes(other.value)))other.checked=false;
+    });
+  }
+  // The rating follows the property's country: a list on its official scale, or free text where we have none.
+  function refreshEnergy(code:string){
+    const select=form.querySelector<HTMLSelectElement>('[data-energy-select]'),text=form.querySelector<HTMLInputElement>('[data-energy-text]');
+    if(!select||!text)return;
+    const scale=energyScale(code),current=select.disabled?text.value:select.value;
+    select.hidden=select.disabled=!scale;text.hidden=text.disabled=Boolean(scale);
+    if(scale){
+      select.replaceChildren(new Option(x('Nem adom meg','Niet opgeven','Not stated'),''),...scale.map(v=>new Option(v,v,false,v===current)));
+    } else text.value=current;
+    const hint=form.querySelector<HTMLElement>('[data-energy-hint]'),name=COUNTRIES[code]?.labels[locale as 'hu'|'nl'|'en']??code;
+    if(hint)hint.textContent=scale?`${x('A tanúsítványon szereplő osztály','De klasse op het certificaat','The class shown on the certificate')} (${name}: ${scale[0]}–${scale[scale.length-1]}).`:x('Írja be úgy, ahogy a tanúsítványon szerepel.','Neem de waarde over zoals die op het certificaat staat.','Enter it exactly as it appears on the certificate.');
+  }
   const locationRoot=form.querySelector<HTMLElement>('[data-location-map]');
   if(!locationRoot)continue;
   const status=form.querySelector<HTMLElement>('[data-location-status]')!;
@@ -125,7 +162,7 @@ for(const form of forms){
     const datalist=form.querySelector<HTMLDataListElement>('#listing-regions');
     datalist?.replaceChildren(...regionsFor(country.value).map(r=>new Option(r.name)));
     const label=form.querySelector<HTMLElement>('[data-region-label]');if(label)label.textContent=regionLabel(country.value,locale);
-    const energy=form.querySelector<HTMLDataListElement>('#listing-energy');energy?.replaceChildren(...energyOptions(country.value).map(v=>new Option(v)));
+    refreshEnergy(country.value);
     if(clear){set('county','');set('region','');set('settlement','');set('lat','');set('lng','');set('location_confirmed','');marker?.remove();void localPlaces();}
   }
   country.addEventListener('change',()=>{reverseSequence++;refreshCountry(true);});

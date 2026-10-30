@@ -136,6 +136,12 @@ test('on: unknown and unset stay', () => {
   assert.equal(passesAdobeFilter(undefined, true), true);
 });
 test('on: other materials stay', () => assert.equal(passesAdobeFilter('tegla', true), true));
+test('walls are a list: any adobe wall removes the listing', () => {
+  assert.equal(passesAdobeFilter(['tegla', 'valyog'], true), false);
+  assert.equal(passesAdobeFilter(['tegla', 'ko'], true), true);
+  assert.equal(passesAdobeFilter([], true), true);
+  assert.equal(passesAdobeFilter(['valyog'], false), true);
+});
 
 console.log('Phone visibility');
 const listing = (pkg, contactVisible, phone = '+36 30 123 4567') => ({ package: pkg, contactVisible, phone });
@@ -485,14 +491,20 @@ test('merge values are escaped in the body, never in the subject', () => {
   assert.equal(merge.renderTemplate('{{not_a_field}}', fields, { html: true }), '{{not_a_field}}', 'unknown tokens stay visible');
 });
 test('a listing reply needs the listing, but not every optional detail of it', () => {
-  const body = '{{property_title}} {{property_area}} {{property_bedrooms}} {{property_description}}';
-  assert.deepEqual(merge.findMissingRequiredFields(body, {}), ['property_title', 'property_area', 'property_bedrooms', 'property_description']);
+  const body = '{{property_title}} {{property_area}} {{property_rooms}} {{property_description}}';
+  assert.deepEqual(merge.findMissingRequiredFields(body, {}), ['property_title', 'property_area', 'property_rooms', 'property_description']);
   assert.deepEqual(merge.findMissingRequiredFields(body, { property_title: 'Tanya' }), [], 'a listing without a floor area still gets its reply');
+});
+test('older templates that still say {{property_bedrooms}} get the room count', () => {
+  const fields = merge.buildMergeFields({ recipient: { name: 'Anna Kovács', email: 'a@example.test', locale: 'hu' }, property: { title: 'Tanya', rooms: '4' }, company: { name: 'FINDDOME', phone: null, email: 'info@example.test' } });
+  assert.equal(merge.renderTemplate('{{property_rooms}} / {{property_bedrooms}}', fields), '4 / 4');
+  assert.deepEqual(merge.findUnresolvedMergeFields('{{property_bedrooms}}'), []);
 });
 test('every enquiry starter reads its listing from merge fields, in all four languages', () => {
   for (const locale of BASE_LOCALES) {
     const { html, subject } = baseTemplate('property', locale, company, 'https://www.finddome.com');
-    for (const token of ['{{property_title}}', '{{property_photo_url}}', '{{property_description}}', '{{property_area}}', '{{property_bedrooms}}', '{{property_url}}']) {
+    assert.ok(!html.includes('{{property_bedrooms}}'), `${locale}: the starter counts rooms, not bedrooms`);
+    for (const token of ['{{property_title}}', '{{property_photo_url}}', '{{property_description}}', '{{property_area}}', '{{property_rooms}}', '{{property_url}}']) {
       assert.ok(html.includes(token), `${locale}: ${token}`);
     }
     assert.ok(subject.includes('{{property_title}}'), `${locale}: subject`);

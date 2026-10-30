@@ -26,7 +26,7 @@ function counts(term: any) {
     return { total: matches.length, live: matches.filter((post: any) => post.published).length };
   }
   const labels = Object.values(term.labels ?? {});
-  const matches = (properties ?? []).filter((p: any) => term.group_key === 'category' ? p.category === term.key : term.group_key === 'feature' ? p.features?.includes(term.key) : term.group_key === 'condition' ? p.condition_key === term.key : term.group_key === 'heating' ? p.heating_key === term.key : term.group_key === 'wall' ? p.wall_key === term.key : term.group_key === 'county' ? labels.includes(p.county) : term.group_key === 'region' ? labels.includes(p.region) : false);
+  const matches = (properties ?? []).filter((p: any) => term.group_key === 'category' ? p.category === term.key : term.group_key === 'feature' ? p.features?.includes(term.key) : term.group_key === 'condition' ? p.condition_key === term.key : term.group_key === 'heating' ? (p.heating_key === term.key || p.details?.heating?.includes?.(term.key)) : term.group_key === 'wall' ? (p.wall_key === term.key || p.details?.walls?.includes?.(term.key)) : term.group_key === 'county' ? labels.includes(p.county) : term.group_key === 'region' ? labels.includes(p.region) : false);
   return { total: matches.length, live: matches.filter((p: any) => ['published','sold'].includes(p.status)).length };
 }
 ---

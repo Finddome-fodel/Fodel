@@ -114,12 +114,8 @@ export function propertySchema(p: Property, locale: Locale, pageUrl: string, ima
             },
           }
         : {}),
-      ...(d.rooms
-        ? {
-            numberOfRooms: d.rooms.bedrooms,
-            numberOfBathroomsTotal: d.rooms.bathrooms,
-          }
-        : {}),
+      ...(d.rooms?.rooms !== undefined ? { numberOfRooms: d.rooms.rooms } : {}),
+      ...(d.rooms?.bathrooms !== undefined ? { numberOfBathroomsTotal: d.rooms.bathrooms } : {}),
       ...(d.building.yearBuilt ? { yearBuilt: d.building.yearBuilt } : {}),
       address: {
         '@type': 'PostalAddress',

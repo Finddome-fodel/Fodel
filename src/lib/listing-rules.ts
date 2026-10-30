@@ -173,9 +173,10 @@ export function showSellerPhone(
 
 export const ADOBE_WALL_KEY = 'valyog';
 
-/** "Exclude adobe houses" removes only listings known to be adobe; unknown or unset stays in. */
-export function passesAdobeFilter(wallKey: string | null | undefined, excludeAdobe: boolean): boolean {
-  return !excludeAdobe || wallKey !== ADOBE_WALL_KEY;
+/** "Exclude adobe houses" removes only listings known to be adobe (any of their walls); unknown or unset stays in. */
+export function passesAdobeFilter(walls: string | readonly string[] | null | undefined, excludeAdobe: boolean): boolean {
+  const keys = Array.isArray(walls) ? walls : walls ? [walls] : [];
+  return !excludeAdobe || !keys.includes(ADOBE_WALL_KEY);
 }
 
 /* ── Approximate location ──────────────────────────────────────────────── */

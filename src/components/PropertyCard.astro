@@ -62,7 +62,7 @@ const heroAlt = text(d.media.heroAlt, locale);
 /** Each figure with its own small drawing, so floor and plot area can never
  *  be mistaken for each other; the label is there for screen readers. */
 const specs = [
-  d.rooms ? { icon: 'bed', label: ui.property.beds, value: `${d.rooms.bedrooms} ${CHROME[locale].card.bedsShort}` } : null,
+  d.rooms?.rooms !== undefined ? { icon: 'bed', label: ui.property.rooms, value: `${d.rooms.rooms} ${CHROME[locale].card.roomsShort}` } : null,
   d.areas.floorM2 ? { icon: 'floor', label: ui.property.area, value: floorArea(d.areas.floorM2, locale) } : null,
   d.areas.plotM2 ? { icon: 'plot', label: ui.property.land, value: area(d.areas.plotM2, locale) } : null,
 ].filter(Boolean) as { icon: 'bed' | 'floor' | 'plot'; label: string; value: string }[];
@@ -78,7 +78,7 @@ const specs = [
   data-price={d.price.eur}
   data-floor={d.areas.floorM2 ?? 0}
   data-plot={d.areas.plotM2}
-  data-beds={d.rooms?.bedrooms ?? 0}
+  data-rooms={d.rooms?.rooms ?? 0}
   data-featured={d.listing.featured ? '1' : '0'}
   data-published={d.listing.publishedAt.getTime()}
 >

@@ -70,7 +70,8 @@ const county = params.get('county') ?? '';
 const country = params.get('country') ?? '';
 const settlement = params.get('settlement') ?? '';
 const priceBandId = params.get('price') ?? '';
-const beds = params.get('beds') ?? '';
+// Minimum room count (half rooms not counted). `beds` is the old name, kept so saved links keep working.
+const rooms = params.get('rooms') ?? params.get('beds') ?? '';
 const floorMin = params.get('floor_min') ?? params.get('floor') ?? '';
 const floorMax = params.get('floor_max') ?? '';
 const plotMin = params.get('plot_min') ?? '';
@@ -102,7 +103,7 @@ const { properties, total, perPage } = await searchProperties({
   floorMax: floorMax ? Number(floorMax) : undefined,
   plotMin: plotMin ? Number(plotMin) : undefined,
   plotMax: plotMax ? Number(plotMax) : undefined,
-  bedroomsMin: beds ? Number(beds) : undefined,
+  roomsMin: rooms ? Number(rooms) : undefined,
   subtype: subtype || undefined,
   excludeAdobe: excludeAdobe || undefined,
   bbox,
@@ -159,6 +160,7 @@ const trail = crumbs(locale, [{ name: title, url: currentPath }]);
  *  category page leads to the general list; everything else stays put. */
 function withParam(key: string, value: string): string {
   const next = new URLSearchParams(params);
+  next.delete('beds'); // the old name of `rooms`
   if (value) next.set(key, value);
   else next.delete(key);
   if (key !== 'page') next.delete('page');
@@ -177,7 +179,7 @@ const active = [
   county && { key: 'county', label: county },
   settlement && { key: 'settlement', label: settlement },
   priceBand && { key: 'price', label: priceBandLabel(priceBand) },
-  beds && { key: 'beds', label: x(`${beds}+ szoba`, `${beds}+ slaapkamers`, `${beds}+ bedrooms`, `${beds}+ Schlafzimmer`, `${beds}+ chambres`, `${beds}+ dormitorios`, `min. ${nOf('pl', Number(beds), 'sypialnia', 'sypialnie', 'sypialni')}`, `${beds}+ dormitoare`, `min. ${nOf('sk', Number(beds), 'spálňa', 'spálne', 'spální')}`, `${beds}+ camere da letto`, `${beds}+ quartos`, `${beds}+ υπνοδωμάτια`, `min. ${nOf('cs', Number(beds), 'ložnice', 'ložnice', 'ložnic')}`, `vsaj ${nOf('sl', Number(beds), 'spalnica', 'spalnice', 'spalnic', 'spalnici')}`, `${beds}+ sovrum`, `${beds}+ soveværelser`, `${beds}+ soverom`, `vähintään ${nOf('fi', Number(beds), 'makuuhuone', 'makuuhuonetta')}`, `vähemalt ${beds} magamistuba`, `vismaz ${nOf('lv', Number(beds), 'guļamistaba', 'guļamistabas', 'guļamistabu')}`, `ne mažiau kaip ${nOf('lt', Number(beds), 'miegamasis', 'miegamieji', 'miegamųjų')}`) },
+  rooms && { key: 'rooms', label: x(`${rooms}+ szoba`, `${rooms}+ kamers`, `${rooms}+ rooms`, `${rooms}+ Zimmer`, `${rooms}+ pièces`, `${rooms}+ habitaciones`, `min. ${nOf('pl', Number(rooms), 'pokój', 'pokoje', 'pokoi')}`, `${rooms}+ camere`, `min. ${nOf('sk', Number(rooms), 'izba', 'izby', 'izieb')}`, `${rooms}+ locali`, `${rooms}+ divisões`, `${rooms}+ δωμάτια`, `min. ${nOf('cs', Number(rooms), 'pokoj', 'pokoje', 'pokojů')}`, `vsaj ${nOf('sl', Number(rooms), 'soba', 'sobe', 'sob', 'sobi')}`, `${rooms}+ rum`, `${rooms}+ værelser`, `${rooms}+ rom`, `vähintään ${nOf('fi', Number(rooms), 'huone', 'huonetta')}`, `vähemalt ${rooms} tuba`, `vismaz ${nOf('lv', Number(rooms), 'istaba', 'istabas', 'istabu')}`, `ne mažiau kaip ${nOf('lt', Number(rooms), 'kambarys', 'kambariai', 'kambarių')}`) },
   floorMin && { key: 'floor_min', label: `${ui.filters.area} ≥ ${floorMin} m²` },
   floorMax && { key: 'floor_max', label: `${ui.filters.area} ≤ ${floorMax} m²` },
   plotMin && { key: 'plot_min', label: `${ui.filters.land} ≥ ${plotMin} m²` },
@@ -332,18 +334,18 @@ const labels = {
             </div>
           </fieldset>
 
-          {/* Bedrooms — one row, one choice */}
+          {/* Rooms (half rooms not counted) — one row, one choice */}
           <fieldset class="group">
-            <legend class="group-title">{ui.filters.beds}</legend>
+            <legend class="group-title">{ui.filters.rooms}</legend>
             <div class="segmented">
               <label class="seg">
-                <input type="radio" name="beds" value="" checked={!beds} data-auto />
+                <input type="radio" name="rooms" value="" checked={!rooms} data-auto />
                 <span>{ui.filters.all}</span>
               </label>
               {
                 [2, 3, 4, 5].map((n) => (
                   <label class="seg">
-                    <input type="radio" name="beds" value={String(n)} checked={String(n) === beds} data-auto />
+                    <input type="radio" name="rooms" value={String(n)} checked={String(n) === rooms} data-auto />
                     <span class="num">{n}+</span>
                   </label>
                 ))
@@ -1062,7 +1064,7 @@ const labels = {
     outline-offset: 2px;
   }
 
-  /* Bedrooms — one segmented row. */
+  /* Rooms — one segmented row. */
   .segmented {
     display: grid;
     grid-template-columns: 1.3fr repeat(4, 1fr);

@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ url }) => {
     (!country||property.data.location.country===country)&&
     (!county||property.data.location.county===county)&&
     (!region||property.data.location.region===region)&&
-    passesAdobeFilter(property.data.building.wall?.key, excludeAdobe) &&
+    passesAdobeFilter(property.data.building.walls.map((w) => w.key), excludeAdobe) &&
     (!bbox || bbox.length !== 4 || (
       property.data.location.lng >= bbox[0] && property.data.location.lng <= bbox[2] &&
       property.data.location.lat >= bbox[1] && property.data.location.lat <= bbox[3]

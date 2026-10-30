@@ -3,7 +3,7 @@
  * another template, or written before the listing merge fields existed) and
  * is linked to a listing gets those spots filled from it: the description (in
  * the template's language, falling back like the site does), the floor area,
- * the bedrooms, and the listing's first photo as the main photo.
+ * the rooms, and the listing's first photo as the main photo.
  *
  * Only placeholders are filled. The FINDDOME base layout no longer has any
  * here: its description, facts and photo are merge fields
@@ -12,6 +12,7 @@
  * answer enquiries about every listing. Writing one listing's text into them
  * here would undo exactly that.
  */
+import { readDetails } from '~/lib/listing-details';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { localeFrom } from '~/i18n/ui';
 import { floorArea } from '~/lib/format';
@@ -44,7 +45,7 @@ export async function prefillFromListing(
   const photoTodo = parseEditableImages(html).some((image) => image.key === 'main_photo' && isPlaceholderImage(image.src));
   if (todo.size === 0 && !photoTodo) return html;
 
-  const { data: property } = await client.from('properties').select('id, floor_m2, bedrooms').eq('id', propertyId).maybeSingle();
+  const { data: property } = await client.from('properties').select('id, floor_m2, details').eq('id', propertyId).maybeSingle();
   if (!property) return html;
   const order = locale === 'hu' || locale === 'nl' ? [locale, 'hu'] : [locale, 'nl', 'hu'];
   const { data: translations } = await client.from('property_translations').select('locale, description').eq('property_id', propertyId).in('locale', order);
@@ -56,7 +57,8 @@ export async function prefillFromListing(
   };
   set('description', descriptionExcerpt(description));
   set('stat1_value', property.floor_m2 ? floorArea(Number(property.floor_m2), locale) : null);
-  set('stat2_value', property.bedrooms != null ? String(property.bedrooms) : null);
+  const rooms = readDetails(property.details).rooms;
+  set('stat2_value', rooms !== undefined ? String(rooms) : null);
 
   const cover = photoTodo ? await listingCoverForMail(client, propertyId, imageFolder) : null;
   if (cover) result = applyEditableImageUpdate(result, 'main_photo', cover);
