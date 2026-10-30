@@ -48,7 +48,12 @@ export function createFakeDb(seed = {}) {
           if (this.name === 'activity_events' && row.dedupe_key && rows.some((r) => r.dedupe_key === row.dedupe_key)) {
             return { data: null, error: { message: 'duplicate key value violates unique constraint "activity_events_dedupe_key"' } };
           }
-          rows.push(row);
+          // The partial unique index of migration 0043: one live job per listing and language.
+          if (this.name === 'translation_jobs' && ['requested', 'queued', 'running'].includes(row.status ?? 'queued')
+            && rows.some((r) => r.property_id === row.property_id && r.locale === row.locale && ['requested', 'queued', 'running'].includes(r.status))) {
+            return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint "translation_jobs_one_live_per_locale"' } };
+          }
+          rows.push({ status: this.name === 'translation_jobs' ? 'queued' : undefined, ...row });
           added.push(row);
         }
         return this.finish(this.returning ? added : null);

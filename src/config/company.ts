@@ -332,8 +332,15 @@ export function isOnsiteServiceId(value: unknown): value is OnsiteServiceId {
   return ONSITE_SERVICES.some((service) => service.id === value);
 }
 
-/** Recommended translation order, from FAQ Q7. */
-export const TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr'] as const;
+/** Recommended translation order, from FAQ Q7. Shown first, as one-tap choices. */
+export const RECOMMENDED_TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr'] as const;
+
+/**
+ * Every language a listing can be translated into: the site's 21 minus
+ * Hungarian, which is what sellers write. The translation is made by AI
+ * (src/lib/ai/translate.ts) at the same price per language.
+ */
+export const TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const;
 
 export const COMMISSION = {
   percent: 4,

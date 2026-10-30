@@ -809,6 +809,40 @@ console.log('AI translation: the rules around the model');
     assert.equal(core.summarizeJobs([job('de', 'requested')]).state, 'idle');
     assert.equal(core.summarizeJobs([job('de', 'requested')]).requested, 1);
   });
+  const orders = await import('../src/lib/orders.ts');
+  const paid = await import('../src/lib/ai/translation-orders.ts');
+  test('a translation line remembers its languages and is priced by their count', () => {
+    const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [{ id: 'translation', quantity: 99, locales: ['de', 'fr', 'de', 'lt'] }] }, 'hu');
+    const line = lines.find((l) => l.id === 'translation');
+    assert.deepEqual(line.locales, ['de', 'fr', 'lt']);
+    assert.equal(line.quantity, 3);
+    assert.equal(line.unitCents, 2500);
+    assert.deepEqual(paid.translationLocalesOf(lines), ['de', 'fr', 'lt']);
+  });
+  test('Hungarian, unknown languages and an empty list are refused on an order', () => {
+    for (const locales of [['hu'], ['xx'], [], ['de', 'hu']]) {
+      assert.throws(() => orders.buildOrderLines({ packageId: 'normal-12m', extras: [{ id: 'translation', quantity: 1, locales }] }, 'hu'), (e) => e.code === 'bad-locale');
+    }
+  });
+  test('an old-style translation line (a count, no languages) still builds and names no languages', () => {
+    const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [{ id: 'translation', quantity: 2 }] }, 'hu');
+    assert.equal(lines.find((l) => l.id === 'translation').quantity, 2);
+    assert.deepEqual(paid.translationLocalesOf(lines), []);
+  });
+  test('the suggested order charges the languages asked for that the listing does not have yet', () => {
+    const base = { package: 'normal-12m', price_huf: 50_000_000, video_url: null, homepage_featured: false, featured: false };
+    const pick = (locales, translations) => orders.suggestSelection({ ...base, locales, requested: { translations } }).extras.find((e) => e.id === 'translation');
+    assert.deepEqual(pick(['hu'], ['nl', 'de', 'lt']), { id: 'translation', quantity: 3, locales: ['nl', 'de', 'lt'] });
+    assert.deepEqual(pick(['hu', 'de'], ['nl', 'de']), { id: 'translation', quantity: 1, locales: ['nl'] }, 'a language already there is not sold again');
+    assert.equal(pick(['hu', 'nl'], []), undefined, 'text the owner wrote is not billed as a translation');
+    assert.equal(pick(['hu'], ['hu']), undefined);
+  });
+  test('only an order made of translations alone is a translation order', () => {
+    assert.equal(paid.isTranslationOrder([{ id: 'translation', kind: 'extra' }]), true);
+    assert.equal(paid.isTranslationOrder([{ id: 'normal-12m', kind: 'package' }, { id: 'translation', kind: 'extra' }]), false);
+    assert.equal(paid.isTranslationOrder([]), false);
+    assert.equal(paid.isTranslationOrder(null), false);
+  });
   const mock = (answer) => async ({ user }) => {
     const input = JSON.parse(user).translate;
     return { data: answer(input), usage: { model: 'gpt-4o-mini', tokensIn: 1000, tokensOut: 800 } };
