@@ -31,7 +31,37 @@
       "agricultural",
       "land"
     ],
-    "section": "outdoor"
+    "section": "terrain",
+    "subtypeKeys": [
+      "house-villa",
+      "terraced",
+      "residential-building",
+      "residential-other",
+      "holiday-house",
+      "waterfront-home",
+      "chalet",
+      "holiday-complex",
+      "holiday-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other",
+      "arable",
+      "farm",
+      "orchard-vineyard",
+      "forest-pasture",
+      "livestock",
+      "agricultural-estate",
+      "fish-farm",
+      "agricultural-other",
+      "residential-plot",
+      "commercial-plot",
+      "tourism-land",
+      "development-land",
+      "agricultural-land",
+      "land-other"
+    ]
   },
   {
     "key": "sloping-land",
@@ -65,7 +95,37 @@
       "agricultural",
       "land"
     ],
-    "section": "outdoor"
+    "section": "terrain",
+    "subtypeKeys": [
+      "house-villa",
+      "terraced",
+      "residential-building",
+      "residential-other",
+      "holiday-house",
+      "waterfront-home",
+      "chalet",
+      "holiday-complex",
+      "holiday-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other",
+      "arable",
+      "farm",
+      "orchard-vineyard",
+      "forest-pasture",
+      "livestock",
+      "agricultural-estate",
+      "fish-farm",
+      "agricultural-other",
+      "residential-plot",
+      "commercial-plot",
+      "tourism-land",
+      "development-land",
+      "agricultural-land",
+      "land-other"
+    ]
   },
   {
     "key": "forest-adjacent",
@@ -97,7 +157,23 @@
       "holiday",
       "mansion"
     ],
-    "section": "outdoor"
+    "section": "outdoor",
+    "subtypeKeys": [
+      "house-villa",
+      "terraced",
+      "residential-building",
+      "residential-other",
+      "holiday-house",
+      "waterfront-home",
+      "chalet",
+      "holiday-complex",
+      "holiday-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other"
+    ]
   },
   {
     "key": "panoramic-view",
@@ -195,40 +271,6 @@
       "holiday",
       "mansion",
       "commercial"
-    ],
-    "section": "outdoor"
-  },
-  {
-    "key": "parking",
-    "labels": {
-      "hu": "Garázs vagy parkoló",
-      "en": "Garage or parking",
-      "nl": "Garage of parkeerplaats",
-      "de": "Garage oder Stellplatz",
-      "fr": "Garage ou parking",
-      "es": "Garaje o aparcamiento",
-      "pl": "Garaż lub miejsce parkingowe",
-      "ro": "Garaj sau loc de parcare",
-      "sk": "Garáž alebo parkovanie",
-      "it": "Garage o parcheggio",
-      "pt": "Garagem ou estacionamento",
-      "el": "Γκαράζ ή στάθμευση",
-      "cs": "Garáž nebo parkování",
-      "sl": "Garaža ali parkirišče",
-      "sv": "Garage eller parkering",
-      "da": "Garage eller parkering",
-      "no": "Garasje eller parkering",
-      "fi": "Autotalli tai pysäköinti",
-      "et": "Garaaž või parkimine",
-      "lv": "Garāža vai autostāvvieta",
-      "lt": "Garažas ar automobilių stovėjimo vieta"
-    },
-    "propertyGroups": [
-      "house",
-      "holiday",
-      "mansion",
-      "commercial",
-      "other"
     ],
     "section": "outdoor"
   },
@@ -420,7 +462,47 @@
     },
     "propertyGroups": [
       "house",
-      "holiday",
+      "holiday"
+    ],
+    "section": "outdoor",
+    "subtypeKeys": [
+      "house-villa",
+      "terraced",
+      "residential-building",
+      "residential-other",
+      "holiday-house",
+      "waterfront-home",
+      "chalet",
+      "holiday-complex",
+      "holiday-other"
+    ]
+  },
+  {
+    "key": "ornamental-park",
+    "labels": {
+      "hu": "Díszkert vagy park",
+      "en": "Ornamental garden or park",
+      "nl": "Siertuin of park",
+      "de": "Ziergarten oder Park",
+      "fr": "Jardin d’agrément ou parc",
+      "es": "Jardín ornamental o parque",
+      "pl": "Ogród ozdobny lub park",
+      "ro": "Grădină ornamentală sau parc",
+      "sk": "Okrasná záhrada alebo park",
+      "it": "Giardino ornamentale o parco",
+      "pt": "Jardim ornamental ou parque",
+      "el": "Διακοσμητικός κήπος ή πάρκο",
+      "cs": "Okrasná zahrada nebo park",
+      "sl": "Okrasni vrt ali park",
+      "sv": "Prydnadsträdgård eller park",
+      "da": "Prydhave eller park",
+      "no": "Prydhage eller park",
+      "fi": "Koristepuutarha tai puisto",
+      "et": "Iluaed või park",
+      "lv": "Dekoratīvais dārzs vai parks",
+      "lt": "Dekoratyvinis sodas arba parkas"
+    },
+    "propertyGroups": [
       "mansion"
     ],
     "section": "outdoor"
@@ -456,7 +538,31 @@
       "mansion",
       "agricultural"
     ],
-    "section": "outdoor"
+    "section": "outdoor",
+    "subtypeKeys": [
+      "house-villa",
+      "terraced",
+      "residential-building",
+      "residential-other",
+      "holiday-house",
+      "waterfront-home",
+      "chalet",
+      "holiday-complex",
+      "holiday-other",
+      "castle-manor",
+      "historic-villa",
+      "historic-building",
+      "listed-building",
+      "historic-other",
+      "arable",
+      "farm",
+      "orchard-vineyard",
+      "forest-pasture",
+      "livestock",
+      "agricultural-estate",
+      "fish-farm",
+      "agricultural-other"
+    ]
   },
   {
     "key": "private-shore",
@@ -794,23 +900,42 @@
       "agricultural",
       "mansion"
     ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "farm",
-      "agricultural-estate",
-      "livestock",
-      "agricultural-other",
-      "castle-manor",
-      "historic-villa",
-      "historic-building",
-      "listed-building",
-      "historic-other"
-    ]
+    "section": "facilities"
+  },
+  {
+    "key": "ancillary-buildings",
+    "labels": {
+      "hu": "Melléképületek",
+      "en": "Ancillary buildings",
+      "nl": "Bijgebouwen",
+      "de": "Nebengebäude",
+      "fr": "Dépendances",
+      "es": "Edificios anexos",
+      "pl": "Budynki pomocnicze",
+      "ro": "Anexe",
+      "sk": "Vedľajšie budovy",
+      "it": "Edifici annessi",
+      "pt": "Anexos",
+      "el": "Βοηθητικά κτίσματα",
+      "cs": "Vedlejší budovy",
+      "sl": "Pomožni objekti",
+      "sv": "Komplementbyggnader",
+      "da": "Udhuse",
+      "no": "Uthus",
+      "fi": "Sivurakennukset",
+      "et": "Kõrvalhooned",
+      "lv": "Palīgēkas",
+      "lt": "Pagalbiniai pastatai"
+    },
+    "propertyGroups": [
+      "mansion"
+    ],
+    "section": "facilities"
   },
   {
     "key": "animal-housing",
     "labels": {
-      "hu": "Állattartásra alkalmas ólak",
+      "hu": "Állattartó épületek",
       "en": "Animal housing",
       "nl": "Dierenverblijven",
       "de": "Tierställe",
@@ -835,18 +960,7 @@
     "propertyGroups": [
       "agricultural"
     ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "farm",
-      "agricultural-estate",
-      "livestock",
-      "agricultural-other",
-      "castle-manor",
-      "historic-villa",
-      "historic-building",
-      "listed-building",
-      "historic-other"
-    ]
+    "section": "facilities"
   },
   {
     "key": "stables",
@@ -874,20 +988,10 @@
       "lt": "Arklidė ar aptvaras"
     },
     "propertyGroups": [
-      "agricultural"
+      "agricultural",
+      "mansion"
     ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "farm",
-      "agricultural-estate",
-      "livestock",
-      "agricultural-other",
-      "castle-manor",
-      "historic-villa",
-      "historic-building",
-      "listed-building",
-      "historic-other"
-    ]
+    "section": "facilities"
   },
   {
     "key": "riding-arena",
@@ -915,20 +1019,10 @@
       "lt": "Jojimo maniežas"
     },
     "propertyGroups": [
-      "agricultural"
+      "agricultural",
+      "mansion"
     ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "farm",
-      "agricultural-estate",
-      "livestock",
-      "agricultural-other",
-      "castle-manor",
-      "historic-villa",
-      "historic-building",
-      "listed-building",
-      "historic-other"
-    ]
+    "section": "facilities"
   },
   {
     "key": "machinery-storage",
@@ -958,18 +1052,7 @@
     "propertyGroups": [
       "agricultural"
     ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "farm",
-      "agricultural-estate",
-      "livestock",
-      "agricultural-other",
-      "castle-manor",
-      "historic-villa",
-      "historic-building",
-      "listed-building",
-      "historic-other"
-    ]
+    "section": "facilities"
   },
   {
     "key": "feed-storage",
@@ -999,18 +1082,7 @@
     "propertyGroups": [
       "agricultural"
     ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "farm",
-      "agricultural-estate",
-      "livestock",
-      "agricultural-other",
-      "castle-manor",
-      "historic-villa",
-      "historic-building",
-      "listed-building",
-      "historic-other"
-    ]
+    "section": "facilities"
   },
   {
     "key": "irrigation",
@@ -1101,18 +1173,7 @@
       "agricultural",
       "mansion"
     ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "farm",
-      "agricultural-estate",
-      "livestock",
-      "agricultural-other",
-      "castle-manor",
-      "historic-villa",
-      "historic-building",
-      "listed-building",
-      "historic-other"
-    ]
+    "section": "facilities"
   },
   {
     "key": "cellar",
@@ -1352,8 +1413,7 @@
       "lt": "Sandėliavimo patalpa"
     },
     "propertyGroups": [
-      "commercial",
-      "industrial"
+      "commercial"
     ],
     "section": "facilities"
   },
@@ -1561,6 +1621,36 @@
       "et": "Suure kandevõimega põrand",
       "lv": "Grīda lielām slodzēm",
       "lt": "Didelės apkrovos grindys"
+    },
+    "propertyGroups": [
+      "industrial"
+    ],
+    "section": "technical"
+  },
+  {
+    "key": "storage-area",
+    "labels": {
+      "hu": "Raktárterület",
+      "en": "Warehouse area",
+      "nl": "Magazijnoppervlak",
+      "de": "Lagerfläche",
+      "fr": "Surface d’entreposage",
+      "es": "Superficie de almacén",
+      "pl": "Powierzchnia składowa",
+      "ro": "Suprafață de depozitare",
+      "sk": "Skladová plocha",
+      "it": "Area di magazzino",
+      "pt": "Área de armazém",
+      "el": "Επιφάνεια αποθήκης",
+      "cs": "Skladová plocha",
+      "sl": "Skladiščna površina",
+      "sv": "Lageryta",
+      "da": "Lagerareal",
+      "no": "Lagerareal",
+      "fi": "Varastopinta-ala",
+      "et": "Laopind",
+      "lv": "Noliktavas platība",
+      "lt": "Sandėlio plotas"
     },
     "propertyGroups": [
       "industrial"
@@ -1833,9 +1923,10 @@
       "lt": "Statūs šlaitai"
     },
     "propertyGroups": [
+      "agricultural",
       "land"
     ],
-    "section": "access"
+    "section": "terrain"
   },
   {
     "key": "grassland",
@@ -1865,7 +1956,7 @@
     "propertyGroups": [
       "land"
     ],
-    "section": "access"
+    "section": "terrain"
   },
   {
     "key": "road-access",
@@ -2318,40 +2409,5 @@
       "investment"
     ],
     "section": "investment"
-  },
-  {
-    "key": "enclosed-parking",
-    "labels": {
-      "hu": "Zárt parkoló",
-      "en": "Enclosed parking",
-      "nl": "Afgesloten parkeerplaats",
-      "de": "Abgeschlossener Parkplatz",
-      "fr": "Parking fermé",
-      "es": "Aparcamiento cerrado",
-      "pl": "Zamknięty parking",
-      "ro": "Parcare închisă",
-      "sk": "Uzavreté parkovanie",
-      "it": "Parcheggio coperto",
-      "pt": "Estacionamento coberto",
-      "el": "Κλειστή θέση στάθμευσης",
-      "cs": "Krytá parkovací místa",
-      "sl": "Pokrito parkirišče",
-      "sv": "Inbyggd parkering",
-      "da": "Overdækket parkering",
-      "no": "Innendørs parkering",
-      "fi": "Katettu pysäköinti",
-      "et": "Kinnine parkla",
-      "lv": "Slēgta autostāvvieta",
-      "lt": "Uždara automobilių stovėjimo vieta"
-    },
-    "propertyGroups": [
-      "other"
-    ],
-    "section": "facilities",
-    "subtypeKeys": [
-      "garage-parking",
-      "special-purpose",
-      "other-property"
-    ]
   }
 ]

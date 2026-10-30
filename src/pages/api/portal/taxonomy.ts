@@ -17,12 +17,21 @@ async function usage(supabase: any, term: any) {
     const { data, count } = await supabase.from('blog_posts').select('id, published', { count: 'exact' }).in('category', labels);
     return { total: count ?? 0, live: (data ?? []).filter((row: any) => row.published).length };
   }
+  // Heating and walls are multi-choice (migration 0041): count a listing when any of its answers is this term,
+  // in the list or (older rows) in the single column.
+  if (term.group_key === 'heating' || term.group_key === 'wall') {
+    const [list, column] = term.group_key === 'heating' ? ['heating', 'heating_key'] : ['walls', 'wall_key'];
+    const [a, b] = await Promise.all([
+      supabase.from('properties').select('id, status').contains('details', { [list]: [term.key] }),
+      supabase.from('properties').select('id, status').eq(column, term.key),
+    ]);
+    const rows = new Map([...(a.data ?? []), ...(b.data ?? [])].map((row: any) => [row.id, row.status]));
+    return { total: rows.size, live: [...rows.values()].filter((status) => ['published', 'sold'].includes(status)).length };
+  }
   let query = supabase.from('properties').select('id, status', { count: 'exact' });
   if (term.group_key === 'category') query = query.eq('category', term.key);
   else if (term.group_key === 'feature') query = query.contains('features', [term.key]);
   else if (term.group_key === 'condition') query = query.eq('condition_key', term.key);
-  else if (term.group_key === 'heating') query = query.eq('heating_key', term.key);
-  else if (term.group_key === 'wall') query = query.eq('wall_key', term.key);
   else if (term.group_key === 'county') query = query.in('county', Object.values(term.labels ?? {}).filter(Boolean));
   else if (term.group_key === 'region') query = query.in('region', Object.values(term.labels ?? {}).filter(Boolean));
   else return { total: 0, live: 0 };

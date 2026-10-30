@@ -14,7 +14,7 @@
  * The prototype formatted prices inline and stored the forint figure as a
  * string; here HUF is a real number, so the page can say when it was checked.
  */
-
+import { readEnergy } from './energy.ts';
 import type { Locale } from '~/i18n/ui';
 
 const NBSP = '\u00a0';
@@ -171,12 +171,13 @@ export function isoDate(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
-/** Hungarian EPC classes render as-is; `pending`/`exempt` need a word. */
-export function epcLabel(
-  epc: string,
-  labels: { epcMissing: string }
-): { value: string; isPending: boolean } {
-  if (epc === 'pending' || epc==='unknown') return { value: labels.epcMissing, isPending: true };
-  if (epc === 'exempt' || epc==='not-applicable') return { value: '—', isPending: true };
-  return { value: epc, isPending: false };
+/**
+ * The energy certificate as a buyer reads it: the class from the certificate, "none", or "there is one"
+ * when the owner did not give the class. Null when the owner did not say (nothing worth a row).
+ */
+export function epcLabel(epc: string, labels: { none: string; certified: string }): string | null {
+  const { has, rating } = readEnergy(epc);
+  if (has === 'unknown') return null;
+  if (has === 'no') return labels.none;
+  return rating || labels.certified;
 }

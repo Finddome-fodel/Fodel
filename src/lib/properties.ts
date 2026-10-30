@@ -24,9 +24,9 @@ import type { Locale } from '~/i18n/ui';
 import { LOCALES, propertyPath } from '~/i18n/ui';
 import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
 import type { ImageMetadata } from 'astro';
-import { PROPERTY_GROUPS, canonicalFeature, groupOf, subtypeOf, hasLivingArea, isLandOnly, hasPlot } from '~/lib/listing-catalogue';
+import { PROPERTY_GROUPS, currentFeatures, groupOf, subtypeOf } from '~/lib/listing-catalogue';
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
-import { readDetails, COUNT_FIELDS, hasUtilities, hasParking, hasExtraBuildings, type ListingDetails } from '~/lib/listing-details';
+import { readDetails, fieldRules, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
 
 type LocalisedText = { hu: string } & Partial<Record<Exclude<Locale, 'hu'>, string>>;
 
@@ -56,8 +56,9 @@ export type Property = {
       country: string;
     };
     areas: { floorM2?: number; buildingM2?: number; plotM2: number };
-    rooms?: { bedrooms: number; bathrooms: number };
-    /** Rooms, floors, cellar, utilities, parking, setting, extra buildings (migration 0025); only what applies to this kind of property. */
+    /** Rooms (not counting half rooms), half rooms and bathrooms of a home; undefined when none of them is given. */
+    rooms?: { rooms?: number; halfRooms?: number; bathrooms?: number };
+    /** Rooms, floors, cellar, utilities, parking, surroundings, extra buildings (migrations 0025, 0041); only what applies to this kind of property. */
     details: ListingDetails;
     /** Present only when the owner chose to show the address in the listing. */
     address?: { street: string; postalCode?: string };
@@ -65,10 +66,11 @@ export type Property = {
       yearBuilt?: number;
       renovatedIn?: number;
       condition?: LocalisedText;
-      heating?: LocalisedText;
+      /** Every heating ticked (migration 0041); empty when not given or not known. */
+      heating: LocalisedText[];
       epcClass: string;
-      /** Wall material term (migration 0019); undefined when not given. */
-      wall?: { key: string; labels: TaxonomyTerm['labels'] };
+      /** Every wall material ticked (migration 0041); empty when not given or not known. */
+      walls: { key: string; labels: TaxonomyTerm['labels'] }[];
     };
     features: string[];
     media: {
@@ -204,21 +206,30 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
     .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
 
   const category: TaxonomyTerm | undefined = taxonomy.category.find((term) => term.key === row.category);
-  const wall = row.wall_key ? taxonomy.wall.find((term) => term.key === row.wall_key) : undefined;
   // An approximate listing never carries its real point into a page, the map
   // feed or structured data: everything public gets the offset centre.
   const point = row.precision === 'exact' || row.public_location_safe ? { lat: row.lat, lng: row.lng } : approximateCentre(row.id, row.lat, row.lng);
   const group=row.property_group||groupOf(row.category),subtype=subtypeOf(row.category,row.property_subtype);
-  const living=hasLivingArea(group,subtype),building=!isLandOnly(group,subtype);
-  const stored = readDetails(row.details);
+  // The page shows the facts this kind of property has (src/lib/listing-details.ts), nothing left over from another type.
+  const rules=fieldRules(group,subtype),shown=(k:keyof typeof rules)=>rules[k]!=='hidden';
+  const building=shown('year_built');
+  const stored = readDetails(row.details, row);
+  // Parking once ticked as a feature ("Garázs vagy parkoló") is shown with the parking options.
+  const folded = currentFeatures(row.features, group);
   const details: ListingDetails = {
-    ...(living ? Object.fromEntries(COUNT_FIELDS.filter((k) => stored[k] !== undefined).map((k) => [k, stored[k]])) : {}),
-    ...(building && stored.cellar_m2 ? { cellar_m2: stored.cellar_m2 } : {}),
-    ...(stored.setting ? { setting: stored.setting } : {}),
-    utilities: hasUtilities(group) ? stored.utilities : [],
-    parking: hasParking(group, subtype) ? stored.parking : [],
-    ...(hasExtraBuildings(group, subtype) && stored.extra_buildings ? { extra_buildings: stored.extra_buildings } : {}),
+    ...(shown('rooms') ? Object.fromEntries(COUNT_FIELDS.filter((k) => stored[k] !== undefined).map((k) => [k, stored[k]])) : {}),
+    ...(shown('cellar_m2') && stored.cellar_m2 ? { cellar_m2: stored.cellar_m2 } : {}),
+    settings: stored.settings,
+    heating: shown('heating') ? stored.heating : [],
+    walls: shown('walls') ? stored.walls : [],
+    utilities: shown('utilities') ? stored.utilities : [],
+    parking: shown('parking') ? [...new Set([...stored.parking, ...folded.parking])] : [],
+    ...(shown('extra_buildings') && stored.extra_buildings ? { extra_buildings: stored.extra_buildings } : {}),
   };
+  const term = (list: TaxonomyTerm[], key: string) => list.find((t) => t.key === key);
+  // "Not known" says nothing to a buyer; "no heating" does.
+  const heating = details.heating.filter((k) => k !== 'unknown').map((k) => term(taxonomy.heating, k)?.labels as LocalisedText).filter(Boolean);
+  const walls = details.walls.filter((k) => k !== 'nem-tudom').map((k) => term(taxonomy.wall, k)).filter((t): t is TaxonomyTerm => Boolean(t)).map((t) => ({ key: t.key, labels: t.labels }));
   const fallbackLabels = { hu: row.category, nl: row.category };
   return {
     id: row.id,
@@ -250,10 +261,10 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         precision: row.precision,
         country: row.country,
       },
-      areas: { floorM2: living?(row.floor_m2 ?? undefined):undefined, buildingM2:building?(row.building_m2??undefined):undefined, plotM2:hasPlot(group,subtype)?row.plot_m2:0 },
+      areas: { floorM2: shown('floor_m2')?(row.floor_m2 ?? undefined):undefined, buildingM2:shown('building_m2')?(row.building_m2??undefined):undefined, plotM2:shown('plot_m2')?row.plot_m2:0 },
       rooms:
-        living && row.bedrooms != null && row.bathrooms != null
-          ? { bedrooms: row.bedrooms, bathrooms: row.bathrooms }
+        shown('rooms') && (details.rooms !== undefined || row.bathrooms != null)
+          ? { ...(details.rooms !== undefined ? { rooms: details.rooms } : {}), ...(details.half_rooms ? { halfRooms: details.half_rooms } : {}), ...(row.bathrooms != null ? { bathrooms: row.bathrooms } : {}) }
           : undefined,
       details,
       address: row.public_address ? { street: row.public_address, postalCode: row.public_postal_code ?? undefined } : undefined,
@@ -261,11 +272,11 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         yearBuilt: building?(row.year_built ?? undefined):undefined,
         renovatedIn: building?(row.renovated_in ?? undefined):undefined,
         condition: building ? (taxonomy.condition.find(t=>t.key===row.condition_key)?.labels as LocalisedText || localisedField(translations, 'condition')) : undefined,
-        heating: building ? (taxonomy.heating.find(t=>t.key===row.heating_key)?.labels as LocalisedText || localisedField(translations, 'heating')) : undefined,
-        epcClass: row.epc_class,
-        wall: building && wall ? { key: wall.key, labels: wall.labels } : undefined,
+        heating: building ? (heating.length ? heating : [localisedField(translations, 'heating')].filter((h): h is LocalisedText => Boolean(h))) : [],
+        epcClass: shown('energy') ? row.epc_class : 'unknown',
+        walls,
       },
-      features: [...new Set(row.features.map(canonicalFeature))],
+      features: folded.features,
       media: {
         hero: resolveMedia(hero.storage_path),
         heroAlt: (hero.alt as LocalisedText) ?? { hu: '' },
@@ -384,7 +395,8 @@ export type SearchParams = {
   floorMax?: number;
   plotMin?: number;
   plotMax?: number;
-  bedroomsMin?: number;
+  /** At least this many rooms (half rooms not counted). */
+  roomsMin?: number;
   subtype?: string;
   /** "Exclude adobe houses": drops only listings whose wall material is adobe. */
   excludeAdobe?: boolean;
@@ -426,7 +438,8 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
     p_floor_max: params.floorMax ?? null,
     p_plot_min: params.plotMin ?? null,
     p_plot_max: params.plotMax ?? null,
-    p_bedrooms_min: params.bedroomsMin ?? null,
+    // The parameter kept its old name; since migration 0041 it filters on the room count.
+    p_bedrooms_min: params.roomsMin ?? null,
     p_bbox: params.bbox ?? null,
     p_subtype: params.subtype || null,
     p_sort: params.sort ?? 'featured',
