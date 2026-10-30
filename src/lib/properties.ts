@@ -26,6 +26,7 @@ import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-con
 import type { ImageMetadata } from 'astro';
 import { PROPERTY_GROUPS, currentFeatures, groupOf, subtypeOf } from '~/lib/listing-catalogue';
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
+import { contactModeOf, type ContactMode } from '~/lib/contact-display';
 import { readDetails, fieldRules, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
 
 type LocalisedText = { hu: string } & Partial<Record<Exclude<Locale, 'hu'>, string>>;
@@ -95,7 +96,7 @@ export type Property = {
       expiresAt: Date;
       languages: Locale[];
     };
-    seller: { contactVisible: boolean; name?: string; phone?: string; speaks: string[] };
+    seller: { contactVisible: boolean; name?: string; phone?: string; speaks: string[]; contactMode: ContactMode; staffName?: string; staffPhone?: string };
     tag?: LocalisedText;
   };
 };
@@ -162,6 +163,9 @@ type PropertyRow = {
   seller_name: string | null;
   seller_phone: string | null;
   seller_speaks: string[];
+  public_contact?: string | null;
+  public_contact_name?: string | null;
+  public_contact_phone?: string | null;
   package: 'cheap-6m' | 'normal-12m';
   featured: boolean;
   homepage_featured: boolean;
@@ -305,6 +309,9 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         name: row.seller_name ?? undefined,
         phone: row.seller_phone ?? undefined,
         speaks: row.seller_speaks,
+        contactMode: contactModeOf(row.public_contact),
+        staffName: row.public_contact_name ?? undefined,
+        staffPhone: row.public_contact_phone ?? undefined,
       },
       tag: localisedField(translations, 'tag'),
     },

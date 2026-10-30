@@ -29,6 +29,8 @@ export function organisationSchema(locale: Locale, company: Company) {
     legalName: company.names.legal,
     description: brand.tagline,
     url: abs(`/${locale}/`),
+    logo: abs('/icon-512.png'),
+    image: abs('/brand/finddome-logo-1200.webp'),
     foundingDate: String(company.founded),
     email: company.email.primary,
     telephone: company.phones.filter((phone) => phone.public).map((phone) => phone.display),

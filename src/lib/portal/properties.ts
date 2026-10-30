@@ -91,6 +91,9 @@ export type PortalProperty = {
   seller_name: string | null;
   seller_phone: string | null;
   seller_speaks: string[];
+  public_contact?: string | null;
+  public_contact_name?: string | null;
+  public_contact_phone?: string | null;
   package: string;
   featured: boolean;
   homepage_featured: boolean;

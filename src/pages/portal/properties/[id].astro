@@ -16,6 +16,7 @@ import Portal from '~/layouts/Portal.astro';
 import ListingFields from '~/components/portal/ListingFields.astro';
 import { HEARD_FROM, GAP_LABELS } from '~/lib/listing-details';
 import PromotionChoices from '~/components/portal/PromotionChoices.astro';
+import ContactChoice from '~/components/portal/ContactChoice.astro';
 import ContactLanguages from '~/components/portal/ContactLanguages.astro';
 import Field from '~/components/forms/Field.astro';
 import PhotoUploader from '~/components/portal/PhotoUploader.astro';
@@ -249,7 +250,9 @@ const photoLimit = listingPackage.maxImages;
       <div class="ed-card"><PromotionChoices property={property} isAdmin={isAdmin}/></div>
 
       <section id="seller" class="ed-card">
-        <header class="card-head"><div><h2>Eladó elérhetősége</h2><p>Ha engedi, a vevő közvetlenül is felveheti Önnel a kapcsolatot.</p></div></header>
+        <header class="card-head"><div><h2>{isAdmin ? 'Kapcsolattartó a hirdetésen' : 'Eladó elérhetősége'}</h2><p>{isAdmin ? 'Kit lásson a vevő kapcsolattartóként, és mik a tulajdonos saját adatai.' : 'Ha engedi, a vevő közvetlenül is felveheti Önnel a kapcsolatot.'}</p></div></header>
+        {isAdmin && <ContactChoice mode={property.public_contact} staffName={property.public_contact_name} staffPhone={property.public_contact_phone} ownerAgreed={property.seller_contact_visible} ownerHasPhone={Boolean(property.seller_phone?.trim())} packageAllowsPhone={listingRules(company.services).packagePhone[property.package as 'cheap-6m' | 'normal-12m'] ?? false} />}
+        {isAdmin && <h3>A tulajdonos adatai</h3>}
         <p class="hint">
           A FINDDOME egyedi modellje: ha ehhez hozzájárul, a neve és telefonszáma megjelenik a
           hirdetésen, hogy a vevő közvetlenül is felvehesse Önnel a kapcsolatot.

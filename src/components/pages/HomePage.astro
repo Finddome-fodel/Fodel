@@ -43,6 +43,7 @@ import { homeAlternates } from '~/lib/page';
 import { activeProperties, homepageFeatured, editorsPick, regionsOf, text, url } from '~/lib/properties';
 import { getTaxonomy, listingCategories, getCompany } from '~/lib/runtime-config';
 import PostCard from '~/components/PostCard.astro';
+import YouTubeStrip from '~/components/YouTubeStrip.astro';
 import { latestArticles } from '~/lib/blog';
 import { websiteSchema } from '~/lib/seo';
 import { valuationPackages, priceLabel } from '~/lib/valuation/packages';
@@ -497,6 +498,9 @@ const quote = splitOpeningQuote(c.quote);
     )
   }
 
+
+  {/* ── VIDEOS ── the channel's latest uploads; left out when YouTube cannot be read */}
+  <YouTubeStrip locale={locale} />
 
   {/* ── LATEST ARTICLES ── */}
   {

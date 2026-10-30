@@ -1,0 +1,281 @@
+---
+/**
+ * Admin only: who the buyer is shown as the contact on this listing.
+ *
+ * Three calm cards (one choice, no jargon), and the details of a FINDDOME colleague
+ * open only when that card is picked. Nothing here changes the seller's own name,
+ * phone or consent: those stay on the record, so the choice can always be reversed.
+ * Saved with the rest of the form (public_contact, public_contact_name,
+ * public_contact_phone) and honoured by save_listing_editor for admins only (0042).
+ */
+import { icon } from '~/lib/portal/icons';
+import { contactModeOf } from '~/lib/contact-display';
+import { getCompany } from '~/lib/runtime-config';
+
+interface Props {
+  mode?: string | null;
+  staffName?: string | null;
+  staffPhone?: string | null;
+  /** The seller's own consent and number, to say honestly what "the owner" will do. */
+  ownerAgreed: boolean;
+  ownerHasPhone: boolean;
+  packageAllowsPhone: boolean;
+  /** An id prefix so the component can sit twice on a page. */
+  idPrefix?: string;
+}
+
+const { mode: rawMode, staffName, staffPhone, ownerAgreed, ownerHasPhone, packageAllowsPhone, idPrefix = 'cc' } = Astro.props;
+const mode = contactModeOf(rawMode);
+const company = await getCompany();
+const presets = [
+  { label: company.principal, name: company.principal, phone: company.phones[0]?.display ?? '' },
+  { label: 'FINDDOME ingatlanos munkatárs', name: 'FINDDOME', phone: company.phones[1]?.display ?? '' },
+].filter((preset) => preset.phone);
+
+const ownerNote = !ownerHasPhone
+  ? 'A tulajdonos nem adott meg telefonszámot, ezért jelenleg nem jelenne meg senki.'
+  : !ownerAgreed
+    ? 'A tulajdonos nem járult hozzá, hogy megjelenjen a neve és a száma, ezért jelenleg nem jelenne meg senki.'
+    : !packageAllowsPhone
+      ? 'A tulajdonos hozzájárult, de a csomagja nem tartalmaz nyilvános telefonszámot, ezért jelenleg nem jelenne meg.'
+      : 'A tulajdonos hozzájárult, és a csomagja is engedi: a neve és a száma megjelenik.';
+---
+
+<fieldset class="cc" data-contact-display>
+  <legend>Ki legyen a kapcsolattartó a hirdetésen?</legend>
+  <p class="cc-lede">A vevők ezt látják az ingatlan oldalán. A tulajdonos adatai a háttérben mindenképp megmaradnak, a választás bármikor megváltoztatható.</p>
+
+  <div class="cc-cards">
+    <label class="cc-card">
+      <input type="radio" name="public_contact" value="company" checked={mode === 'company'} />
+      <span class="cc-icon" set:html={icon('building', 22)} aria-hidden="true"></span>
+      <span class="cc-text">
+        <strong>FINDDOME</strong>
+        <small>Senki személyesen. A vevők az érdeklődő űrlapon és a FINDDOME szokásos elérhetőségein keresztül írnak.</small>
+      </span>
+    </label>
+
+    <label class="cc-card">
+      <input type="radio" name="public_contact" value="staff" checked={mode === 'staff'} />
+      <span class="cc-icon" set:html={icon('users', 22)} aria-hidden="true"></span>
+      <span class="cc-text">
+        <strong>FINDDOME munkatárs</strong>
+        <small>Név és telefonszám a hirdetésen, például Födelmesi Gábor.</small>
+      </span>
+    </label>
+
+    <label class="cc-card">
+      <input type="radio" name="public_contact" value="owner" checked={mode === 'owner'} />
+      <span class="cc-icon" set:html={icon('phone', 22)} aria-hidden="true"></span>
+      <span class="cc-text">
+        <strong>A tulajdonos</strong>
+        <small>{ownerNote}</small>
+      </span>
+    </label>
+  </div>
+
+  <div class="cc-staff" data-contact-staff>
+    <p class="cc-staff-title">Melyik munkatárs jelenjen meg?</p>
+    <div class="cc-chips" role="group" aria-label="Gyors kitöltés">
+      {presets.map((preset) => (
+        <button type="button" class="cc-chip" data-preset-name={preset.name} data-preset-phone={preset.phone}>
+          {preset.label}<span>{preset.phone}</span>
+        </button>
+      ))}
+    </div>
+    <div class="cc-fields">
+      <div class="field fld">
+        <label for={`${idPrefix}-name`}>Név</label>
+        <input id={`${idPrefix}-name`} name="public_contact_name" value={staffName ?? ''} maxlength="160" autocomplete="off" />
+      </div>
+      <div class="field fld">
+        <label for={`${idPrefix}-phone`}>Telefonszám</label>
+        <input id={`${idPrefix}-phone`} name="public_contact_phone" type="tel" value={staffPhone ?? ''} maxlength="40" autocomplete="off" placeholder="+31 6 …" />
+      </div>
+    </div>
+    <p class="cc-hint">A név és a szám nyilvános lesz ezen a hirdetésen. Telefonszám nélkül senki nem jelenik meg.</p>
+  </div>
+</fieldset>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-contact-display]').forEach((root) => {
+    const name = root.querySelector<HTMLInputElement>('input[name="public_contact_name"]');
+    const phone = root.querySelector<HTMLInputElement>('input[name="public_contact_phone"]');
+    const staff = root.querySelector<HTMLInputElement>('input[name="public_contact"][value="staff"]');
+    root.querySelectorAll<HTMLButtonElement>('[data-preset-name]').forEach((chip) =>
+      chip.addEventListener('click', () => {
+        if (name) name.value = chip.dataset.presetName ?? '';
+        if (phone) phone.value = chip.dataset.presetPhone ?? '';
+        if (staff) staff.checked = true;
+        name?.dispatchEvent(new Event('input', { bubbles: true }));
+        phone?.dispatchEvent(new Event('input', { bubbles: true }));
+        staff?.dispatchEvent(new Event('change', { bubbles: true }));
+      })
+    );
+  });
+</script>
+
+<style>
+  .cc {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .cc legend {
+    padding: 0;
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: var(--fw-medium);
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .cc-lede {
+    margin: 6px 0 16px;
+    max-width: 62ch;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-quiet);
+  }
+  .cc-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .cc-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border: 1px solid var(--pt-hair);
+    border-radius: 14px;
+    background: var(--white);
+    cursor: pointer;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+  }
+  .cc-card:hover {
+    border-color: rgba(16, 42, 67, 0.3);
+  }
+  .cc-card input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .cc-card:has(input:checked) {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 1px var(--ink);
+    background: var(--paper);
+  }
+  .cc-card:has(input:focus-visible) {
+    box-shadow: var(--focus-ring);
+  }
+  .cc-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(16, 42, 67, 0.06);
+    color: var(--ink);
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  .cc-card:has(input:checked) .cc-icon {
+    background: var(--ink);
+    color: var(--cream);
+  }
+  .cc-text strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .cc-text small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink-quiet);
+  }
+
+  .cc-staff {
+    display: none;
+    margin-top: 12px;
+    padding: 18px;
+    border: 1px solid var(--pt-hair);
+    border-radius: 14px;
+    background: var(--paper);
+  }
+  .cc:has(input[value='staff']:checked) .cc-staff {
+    display: block;
+    animation: cc-in 0.3s var(--ease-out);
+  }
+  .cc-staff-title {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .cc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .cc-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 9px 14px;
+    border: 1px solid var(--pt-hair);
+    border-radius: 12px;
+    background: var(--white);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: left;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .cc-chip span {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--ink-quiet);
+  }
+  .cc-chip:hover {
+    border-color: var(--ink);
+  }
+  .cc-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .cc-hint {
+    margin: 12px 0 0;
+    font-size: 12.5px;
+    color: var(--ink-quiet);
+  }
+  @keyframes cc-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  @media (max-width: 760px) {
+    .cc-cards,
+    .cc-fields {
+      grid-template-columns: 1fr;
+    }
+    .cc-card {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cc-staff {
+      animation: none !important;
+    }
+  }
+</style>

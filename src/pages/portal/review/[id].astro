@@ -199,6 +199,7 @@ const { data: creditableReferral } = property.owner_id
         const heard = HEARD_FROM.find((o) => o.key === property.heard_from)?.labels.hu;
         const rows: [string, string][] = [
           ['Területek', areas.join(' · ') || '—'],
+          ['Kapcsolattartó a hirdetésen', property.public_contact === 'staff' ? `FINDDOME munkatárs: ${property.public_contact_name || '—'}, ${property.public_contact_phone || 'nincs szám'}` : property.public_contact === 'company' ? 'FINDDOME (senki személyesen)' : property.seller_contact_visible ? 'A tulajdonos (hozzájárult)' : 'A tulajdonos (nem járult hozzá, ezért nem jelenik meg)'] as [string, string],
           ...(property.street || property.postal_code ? [['Cím', [property.street, [property.postal_code, property.settlement].filter(Boolean).join(' ')].filter(Boolean).join(', ') + (property.public_address ? ' · megjelenik a hirdetésben' : ' · nem nyilvános')] as [string, string]] : []),
           ...(d.settings.length ? [['Környezet', d.settings.map((k) => settingLabel(k, 'hu')).join(', ')] as [string, string]] : []),
           ...(shown('year_built') && (property.year_built || property.year_built_unknown) ? [['Építés éve', property.year_built_unknown ? 'Nem ismert' : String(property.year_built)] as [string, string]] : []),
