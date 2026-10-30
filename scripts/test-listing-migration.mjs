@@ -208,6 +208,11 @@ await db.exec(`set role authenticated;set test.admin='true';set test.uid='${othe
 await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{},null,[{locale:'de',title:'Titel',description:'Kurz',body:'Lang'}]]);
 row=(await get(`select machine,translated_from,source_hash from property_translations where property_id='${id}' and locale='de'`))[0];
 assert.deepEqual(row,{machine:true,translated_from:'hu',source_hash:'abc'});
+// A browser posts line breaks as CRLF; the same words are not an edit.
+await db.exec(`reset role;set test.uid='';set test.admin='true';update property_translations set body=E'Erster Absatz\n\nZweiter Absatz' where property_id='${id}' and locale='de'`);
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';`);
+await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{},null,[{locale:'de',title:'Titel',description:'Kurz',body:'Erster Absatz\r\n\r\nZweiter Absatz'}]]);
+assert.equal((await get(`select machine from property_translations where property_id='${id}' and locale='de'`))[0].machine,true,'CRLF alone is not an edit');
 await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{},null,[{locale:'de',title:'Titel',description:'Kurz',body:'Lang, geändert'}]]);
 row=(await get(`select machine,translated_from,source_hash from property_translations where property_id='${id}' and locale='de'`))[0];
 assert.deepEqual(row,{machine:false,translated_from:null,source_hash:null});

@@ -164,6 +164,14 @@ grant select, insert, update, delete on public.translation_jobs to authenticated
 grant select, insert, update, delete on public.translation_jobs to service_role;
 
 /* ── The editor's save: a person's edit takes the text back from the AI ──── */
+-- A browser sends a textarea's line breaks as CRLF; the AI's text has plain LF. The same words
+-- are not an edit, so the comparison below ignores the difference.
+create or replace function translation_same_text(a text, b text) returns boolean
+language sql immutable as $$
+  select replace(replace(coalesce(a, ''), E'\r\n', E'\n'), E'\r', E'\n') = replace(replace(coalesce(b, ''), E'\r\n', E'\n'), E'\r', E'\n')
+$$;
+grant execute on function translation_same_text(text, text) to authenticated, service_role;
+
 -- Same body as 0042. The one difference is the translations loop at the end.
 
 create or replace function save_listing_editor(p_id uuid,p_patch jsonb,p_private jsonb default null,p_translations jsonb default null)
@@ -203,10 +211,10 @@ begin
   insert into property_translations(property_id,locale,title,description,body) values(p_id,(tr->>'locale')::locale_code,tr->>'title',tr->>'description',coalesce(tr->>'body',''))
   on conflict(property_id,locale) do update set title=excluded.title,description=excluded.description,body=excluded.body,
    -- The editor posts every language it shows, AI rows included. Only a real change hands the text to a person.
-   machine=case when property_translations.title is distinct from excluded.title or property_translations.description is distinct from excluded.description or property_translations.body is distinct from excluded.body then false else property_translations.machine end,
-   translated_from=case when property_translations.title is distinct from excluded.title or property_translations.description is distinct from excluded.description or property_translations.body is distinct from excluded.body then null else property_translations.translated_from end,
-   translated_at=case when property_translations.title is distinct from excluded.title or property_translations.description is distinct from excluded.description or property_translations.body is distinct from excluded.body then null else property_translations.translated_at end,
-   source_hash=case when property_translations.title is distinct from excluded.title or property_translations.description is distinct from excluded.description or property_translations.body is distinct from excluded.body then null else property_translations.source_hash end;
+   machine=case when not (translation_same_text(property_translations.title,excluded.title) and translation_same_text(property_translations.description,excluded.description) and translation_same_text(property_translations.body,excluded.body)) then false else property_translations.machine end,
+   translated_from=case when not (translation_same_text(property_translations.title,excluded.title) and translation_same_text(property_translations.description,excluded.description) and translation_same_text(property_translations.body,excluded.body)) then null else property_translations.translated_from end,
+   translated_at=case when not (translation_same_text(property_translations.title,excluded.title) and translation_same_text(property_translations.description,excluded.description) and translation_same_text(property_translations.body,excluded.body)) then null else property_translations.translated_at end,
+   source_hash=case when not (translation_same_text(property_translations.title,excluded.title) and translation_same_text(property_translations.description,excluded.description) and translation_same_text(property_translations.body,excluded.body)) then null else property_translations.source_hash end;
  end loop;
 end;
 $$;
