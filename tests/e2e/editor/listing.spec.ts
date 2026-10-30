@@ -25,9 +25,11 @@ test.describe('European listing editor',()=>{
   await page.locator('#f-property_group').selectOption('land');
   await expect(page.locator('#f-property_subtype option')).toHaveCount(7);
   await page.locator('#f-property_subtype').selectOption('residential-plot');
-  await expect(page.locator('#f-bedrooms')).toBeHidden();await expect(page.locator('#f-floor_m2')).toBeHidden();await expect(page.locator('#f-year_built')).toBeHidden();await expect(page.locator('#f-plot_m2')).toBeVisible();
+  await expect(page.locator('#f-bedrooms')).toHaveCount(0);await expect(page.locator('#f-floor_m2')).toBeHidden();await expect(page.locator('#f-year_built')).toBeHidden();await expect(page.locator('#f-plot_m2')).toBeVisible();
   await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');
-  await expect(page.locator('#f-floor_m2')).toBeVisible();await expect(page.locator('#f-plot_m2')).toBeHidden();
+  await expect(page.locator('#f-floor_m2')).toBeVisible();await expect(page.locator('#f-plot_m2')).toBeHidden();await expect(page.locator('#f-building_m2')).toBeHidden();
+  await expect(page.locator('label:has([name="features"][value="flat-land"])')).toBeHidden();
+  await page.locator('#f-property_subtype').selectOption('house-villa');await expect(page.locator('#f-building_m2')).toBeVisible();await expect(page.locator('#f-plot_m2')).toBeVisible();
  });
  test('the full admin navigation remains available',async({page},testInfo)=>{
   await page.goto('/portal/dashboard');
@@ -57,7 +59,10 @@ test.describe('European listing editor',()=>{
  });
  test('unknown energy/build year and four text fields',async({page})=>{
   await page.goto(path);await expect(page.locator('#f-epc_class')).toBeHidden();
-  await page.locator('#f-epc_status').selectOption('rated');await expect(page.locator('#f-epc_class')).toBeVisible();
+  await page.locator('[name="epc_has"][value="yes"]').check();await expect(page.locator('#f-epc_class')).toBeVisible();
+  await expect(page.locator('#f-epc_class option[value="A+++"]')).toHaveCount(1);await expect(page.locator('#f-epc_class option[value="I"]')).toHaveCount(1);
+  await page.locator('#f-country').selectOption('NL');await expect(page.locator('#f-epc_class option[value="A++++"]')).toHaveCount(1);
+  await page.locator('[name="epc_has"][value="no"]').check();await expect(page.locator('#f-epc_class')).toBeHidden();
   await page.locator('[name="year_built_unknown"]').check();await expect(page.locator('#f-year_built')).toBeDisabled();
   await expect(page.locator('[name="subtitle_hu"], [name="tag_hu"], [name="condition_hu"], [name="heating_hu"]')).toHaveCount(0);
   for(const name of ['title_hu','description_hu','body_hu','internal_note'])await expect(page.locator(`[name="${name}"]`)).toBeAttached();
@@ -123,10 +128,12 @@ test.describe('European listing editor',()=>{
   expect(payTop).toBeLessThan(formTop);
   await first.click();await expect(page).toHaveURL(/#pay$/);
  });
- test('a home asks for the old form\'s facts; land does not',async({page})=>{
+ test('a home asks for its rooms, surroundings, walls and heating; land does not',async({page})=>{
   await page.goto(path);
   await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');
-  for(const name of ['rooms','half_rooms','floors','kitchens','toilets','bedrooms','bathrooms','cellar_m2','setting','street','postal_code'])await expect(page.locator(`#f-${name}`),name).toBeVisible();
+  for(const name of ['rooms','half_rooms','floors','kitchens','toilets','bathrooms','cellar_m2','street','postal_code'])await expect(page.locator(`#f-${name}`),name).toBeVisible();
+  await expect(page.locator('#f-bedrooms')).toHaveCount(0);await expect(page.locator('[name="settings"]').first()).toBeVisible();await expect(page.locator('[name="walls"]').first()).toBeVisible();await expect(page.locator('[name="heating"]').first()).toBeVisible();
+  await expect(page.locator('[name="parking"][value="street"]')).toBeVisible();await expect(page.locator('[name="parking"][value="garden-building"]')).toBeHidden();await expect(page.locator('[name="parking"][value="garden"]')).toBeChecked();
   await expect(page.locator('[name="utilities"]').first()).toBeVisible();await expect(page.locator('[name="parking"]').first()).toBeVisible();
   await expect(page.locator('label[for="f-street"] .req')).toHaveText(/kötelező\)/);await expect(page.locator('label[for="f-street"] .req')).not.toHaveText(/nem/);
   await expect(page.locator('label[for="f-rooms"] .req')).not.toHaveText(/nem/);await expect(page.locator('#f-rooms')).not.toHaveAttribute('required','');
@@ -140,13 +147,13 @@ test.describe('European listing editor',()=>{
   await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');
   const fill:Record<string,string>={rooms:'4',half_rooms:'1',floors:'2',kitchens:'1',toilets:'2',cellar_m2:'35'};
   for(const [name,value] of Object.entries(fill))await page.locator(`#f-${name}`).fill(value);
-  await page.locator('#f-setting').selectOption('city');await page.locator('#f-street').fill('Kossuth u. 12.');await page.locator('#f-postal_code').fill('8254');
+  await page.locator('[name="settings"][value="city"]').check();await page.locator('[name="heating"][value="gas"]').check();await page.locator('[name="heating"][value="none"]').check();await expect(page.locator('[name="heating"][value="gas"]')).not.toBeChecked();await page.locator('#f-street').fill('Kossuth u. 12.');await page.locator('#f-postal_code').fill('8254');
   await page.locator('[name="utilities"][value="water"]').check();await page.locator('[name="parking"][value="garage"]').check();
   await page.locator('#f-heard_from').selectOption('search');
   await page.locator('#save-btn').click();await expect(page).toHaveURL(/saved=1/);
   const rows=async(table:string)=>(await (await request.get(`${fixture}/rest/v1/${table}`)).json())[0];
   let row=await rows('properties'),secret=await rows('property_private');
-  expect(row.details).toMatchObject({rooms:4,half_rooms:1,floors:2,kitchens:1,toilets:2,cellar_m2:35,setting:'city',utilities:['water','electricity'],parking:['garage','garden']});
+  expect(row.details).toMatchObject({rooms:4,half_rooms:1,floors:2,kitchens:1,toilets:2,cellar_m2:35,settings:['city','village'],heating:['none'],walls:['ko'],utilities:['water','electricity'],parking:['garage','garden']});expect(row.details).not.toHaveProperty('setting');expect(row.heating_key).toBe('none');
   expect(row.public_address).toBeNull();expect(row.public_postal_code).toBeNull();
   expect(secret).toMatchObject({street:'Kossuth u. 12.',postal_code:'8254',heard_from:'search'});
   await expect(page.locator('#f-rooms')).toHaveValue('4');await expect(page.locator('#f-street')).toHaveValue('Kossuth u. 12.');await expect(page.locator('[name="address_public"]')).not.toBeChecked();
@@ -161,11 +168,10 @@ test.describe('European listing editor',()=>{
   await setSession(page,'owner');
   await page.goto(`${path}/setup#review`);
   const item=page.locator('[data-missing] a',{hasText:'az ingatlan adatai'});await expect(item).toBeVisible();
-  await expect(item).toContainText('a szintek száma');await expect(item).toContainText('a fűtés');await expect(item).not.toContainText('a cím');
+  await expect(item).toContainText('a szobák száma');await expect(item).toContainText('a félszobák száma');await expect(item).not.toContainText('a fűtés');await expect(item).not.toContainText('a cím');
   await item.click();
-  await expect(page).toHaveURL(/#property$/);await expect(page.locator('#f-floors')).toBeFocused();await expect(page.locator('#f-floors')).toHaveClass(/su-flash/);
-  for(const [name,value] of Object.entries({rooms:'3',floors:'1',kitchens:'1',toilets:'1'}))await page.locator(`#f-${name}`).fill(value);
-  await page.locator('#f-heating_key').selectOption('none');
+  await expect(page).toHaveURL(/#property$/);await expect(page.locator('#f-rooms')).toBeFocused();await expect(page.locator('#f-rooms')).toHaveClass(/su-flash/);
+  for(const [name,value] of Object.entries({rooms:'3',half_rooms:'0',floors:'1',kitchens:'1',toilets:'0'}))await page.locator(`#f-${name}`).fill(value);
   await page.goto(`${path}/setup#review`);await expect(page.locator('[data-missing] a',{hasText:'az ingatlan adatai'})).toHaveCount(0);
  });
  test('responsive layout, with no client exceptions',async({page},testInfo)=>{

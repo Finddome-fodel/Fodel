@@ -14,7 +14,7 @@ export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
 import ListingFields from '~/components/portal/ListingFields.astro';
-import { HEARD_FROM } from '~/lib/listing-details';
+import { HEARD_FROM, GAP_LABELS } from '~/lib/listing-details';
 import PromotionChoices from '~/components/portal/PromotionChoices.astro';
 import ContactLanguages from '~/components/portal/ContactLanguages.astro';
 import Field from '~/components/forms/Field.astro';
@@ -599,7 +599,7 @@ const photoLimit = listingPackage.maxImages;
   }
 </script>
 
-<script define:vars={{ propertyId: property.id }}>
+<script define:vars={{ propertyId: property.id, gapLabels: GAP_LABELS.hu }}>
   // Locale tabs — plain show/hide, no framework.
   document.querySelectorAll('[data-locale-tab]').forEach((tab) => {
     tab.addEventListener('click', () => {
@@ -682,9 +682,8 @@ const photoLimit = listingPackage.maxImages;
         'no-photos': 'Legalább egy fényképet fel kell tölteni a beküldés előtt.',
         'incomplete-listing': 'A beküldéshez töltse ki az országot, a pontos helyet, az árat, a címet és a leírást, és mentse a hirdetést.',
       };
-      const labels = { street: 'a cím', setting: 'a környezet', floor_m2: 'a lakóterület', floors: 'a szintek száma', rooms: 'a szobák száma', kitchens: 'a konyhák száma', toilets: 'a különálló WC-k száma', bedrooms: 'a hálószobák száma', bathrooms: 'a fürdőszobák száma', heating: 'a fűtés' };
       workflowStatus.textContent = json.error === 'incomplete-details' && json.fields?.length
-        ? `A beküldéshez még hiányzik: ${json.fields.map((name) => labels[name] || name).join(', ')}. Töltse ki, és mentse a hirdetést.`
+        ? `A beküldéshez még hiányzik: ${json.fields.map((name) => gapLabels[name] || name).join(', ')}. Töltse ki, és mentse a hirdetést.`
         : messages[json.error] || 'Nem sikerült végrehajtani.';
       return;
     }
