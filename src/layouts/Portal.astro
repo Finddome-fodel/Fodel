@@ -41,9 +41,9 @@ async function count(query: PromiseLike<{ count: number | null }>): Promise<numb
 }
 const head = { count: 'exact', head: true } as const;
 
-let waiting = { inbox: 0, enquiries: 0, valuations: 0, services: 0, payment: 0, invoices: 0 };
+let waiting = { inbox: 0, enquiries: 0, valuations: 0, services: 0, payment: 0, invoices: 0, translations: 0 };
 if (!bare && profile && supabase) {
-  const [enquiries, inbox, valuations, services, payment, invoiceDrafts] = await Promise.all([
+  const [enquiries, inbox, valuations, services, payment, invoiceDrafts, translations] = await Promise.all([
     count(supabase.from('enquiries').select('id', head).eq('handled', false)),
     isAdmin ? count(supabase.from('properties').select('id', head).eq('status', 'submitted')) : 0,
     isAdmin
@@ -52,8 +52,10 @@ if (!bare && profile && supabase) {
     isAdmin ? count(supabase.from('service_requests').select('id', head).eq('status', 'requested')) : 0,
     !isAdmin ? count(supabase.from('properties').select('id', head).eq('status', 'awaiting_payment')) : 0,
     isAdmin ? count(supabase.from('invoices').select('id', head).eq('status', 'draft')) : 0,
+    // Free-link owners' translation requests waiting for a decision (0 before migration 0043).
+    isAdmin ? count(supabase.from('translation_jobs').select('id', head).eq('status', 'requested')) : 0,
   ]);
-  waiting = { inbox, enquiries, valuations, services, payment, invoices: invoiceDrafts };
+  waiting = { inbox, enquiries, valuations, services, payment, invoices: invoiceDrafts, translations };
 }
 
 type Item = { href: string; label: string; icon: IconName; count?: number; match?: string[] };
@@ -69,6 +71,7 @@ const GROUPS: Group[] = isAdmin
           { href: '/portal/enquiries', label: 'Érdeklődők', icon: 'phone', count: waiting.enquiries },
           { href: '/portal/valuations', label: 'Értékbecslések', icon: 'calc', count: waiting.valuations },
           { href: '/portal/services', label: 'Helyszíni szolgáltatások', icon: 'camera', count: waiting.services },
+          { href: '/portal/translations', label: 'Fordítások', icon: 'globe', count: waiting.translations },
         ],
       },
       {
@@ -107,7 +110,7 @@ const current = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (item: Item) =>
   [item.href, ...(item.match ?? [])].some((p) => current === p || current.startsWith(`${p}/`));
 
-const urgent = waiting.inbox + waiting.enquiries + waiting.valuations + waiting.services + waiting.payment;
+const urgent = waiting.inbox + waiting.enquiries + waiting.valuations + waiting.services + waiting.payment + waiting.translations;
 const displayName = profile?.full_name || profile?.email || '';
 const initials =
   displayName

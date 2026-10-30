@@ -235,7 +235,7 @@ export type ProcessResult = {
 
 type Outcome = 'done' | 'failed' | 'requeued' | 'cancelled';
 
-async function spentTodayMicroEur(client: Client): Promise<number> {
+export async function spentTodayMicroEur(client: Client): Promise<number> {
   const since = new Date();
   since.setUTCHours(0, 0, 0, 0);
   const { data } = await client.from('translation_jobs').select('cost_micro_eur').gte('finished_at', since.toISOString()).not('cost_micro_eur', 'is', null);
