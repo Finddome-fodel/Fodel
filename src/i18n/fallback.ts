@@ -83,3 +83,12 @@ export function sourceNote(locale: Locale, from: Locale, kind: Kind): string | n
       return kind === 'description' ? `Aprašymas ${language}` : `Straipsnis ${language}`;
   }
 }
+
+/** "Automatically translated", for a listing text the AI wrote. Shown only when showMachineTranslationNote() is on. Never claims a person checked it. */
+const MACHINE_NOTE: Record<Locale, string> = {
+  hu: 'Automatikus fordítás', nl: 'Automatisch vertaald', en: 'Automatically translated', de: 'Automatisch übersetzt', fr: 'Traduction automatique',
+  es: 'Traducción automática', pl: 'Tłumaczenie automatyczne', ro: 'Traducere automată', sk: 'Automatický preklad', it: 'Traduzione automatica',
+  pt: 'Tradução automática', el: 'Αυτόματη μετάφραση', cs: 'Automatický překlad', sl: 'Samodejni prevod', sv: 'Automatiskt översatt',
+  da: 'Automatisk oversat', no: 'Automatisk oversatt', fi: 'Automaattinen käännös', et: 'Automaattne tõlge', lv: 'Automātisks tulkojums', lt: 'Automatinis vertimas',
+};
+export const machineNote = (locale: Locale): string => MACHINE_NOTE[locale];

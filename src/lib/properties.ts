@@ -95,6 +95,8 @@ export type Property = {
       publishedAt: Date;
       expiresAt: Date;
       languages: Locale[];
+      /** Languages whose text the AI wrote (migration 0043). Used for the optional "automatically translated" note. */
+      machineLanguages: Locale[];
     };
     seller: { contactVisible: boolean; name?: string; phone?: string; speaks: string[]; contactMode: ContactMode; staffName?: string; staffPhone?: string };
     tag?: LocalisedText;
@@ -211,6 +213,11 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
     .map((t) => t.locale)
     .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
 
+  const machineLanguages = translations
+    .filter((t) => (t as { machine?: boolean }).machine === true)
+    .map((t) => t.locale)
+    .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
+
   const category: TaxonomyTerm | undefined = taxonomy.category.find((term) => term.key === row.category);
   // An approximate listing never carries its real point into a page, the map
   // feed or structured data: everything public gets the offset centre.
@@ -303,6 +310,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         publishedAt: new Date(row.published_at ?? row.price_asof),
         expiresAt: new Date(row.expires_at ?? row.price_asof),
         languages,
+        machineLanguages,
       },
       seller: {
         contactVisible: row.seller_contact_visible,
