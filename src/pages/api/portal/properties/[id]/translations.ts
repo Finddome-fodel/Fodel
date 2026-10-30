@@ -55,9 +55,19 @@ export const GET: APIRoute = async ({ params, locals, request }) => {
   if (isAiEnabled() && jobs.some((job) => job.status === 'queued') && !jobs.some((job) => job.status === 'running')) {
     await kickTranslation(new URL(request.url).origin);
   }
+  // The editor fills a language's fields when its job is done: it asks for the finished text with ?texts=1 (admins only).
+  let texts: Record<string, { title: string; description: string; body: string }> | undefined;
+  if (got.isAdmin && new URL(request.url).searchParams.get('texts')) {
+    const done = jobs.filter((job) => job.status === 'done').map((job) => job.locale);
+    if (done.length) {
+      const { data } = await admin.from('property_translations').select('locale, title, description, body').eq('property_id', got.property.id).in('locale', done);
+      texts = Object.fromEntries((data ?? []).map((row: { locale: string; title: string; description: string; body: string }) => [row.locale, { title: row.title, description: row.description, body: row.body }]));
+    }
+  }
   return json(200, {
     ok: true,
     aiEnabled: isAiEnabled(),
+    texts,
     summary,
     // The owner sees a reason in plain words only for a failure; the admin sees everything.
     jobs: jobs.map((job) => ({ id: job.id, locale: job.locale, status: job.status, origin: job.origin, error: got.isAdmin ? job.last_error : job.status === 'failed' ? 'processing' : null })),

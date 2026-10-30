@@ -28,6 +28,11 @@ import { formatCents, type OrderLine } from '~/lib/orders';
 import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
 import { isAiEnabled } from '~/lib/ai/client';
+import { translationModel } from '~/lib/ai/translate';
+import { ALL_LOCALES, HU_NAME, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
+import { jobsForProperty, latestPerLocale } from '~/lib/ai/translation-jobs';
+import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import { TRANSLATION_COPY, type PortalCopyLang } from '~/lib/ai/translation-copy';
 import { COMPANY } from '~/config/company';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import BillingForm from '~/components/BillingForm.astro';
@@ -156,6 +161,24 @@ const unresponsive = property.status === 'published' && isUnresponsive(property,
 // The package's photo limit (admin-set in Szolgáltatások). Admins may exceed it.
 const listingPackage = packageOf(listingCatalog(company.services), property.package);
 const photoLimit = listingPackage.maxImages;
+
+/* ── AI translation ─────────────────────────────────────────────────────── */
+const aiOn = isAiEnabled();
+const trSource = pickSource(property.translations);
+const trSourceLocale = trSource?.locale ?? 'hu';
+const trSourceHash = trSource ? sourceHash(listingText(trSource)) : '';
+const trPerLanguage = estimateCostMicroEur(trSource ? listingChars(listingText(trSource)) : 0, translationModel());
+const trHas = (code: string) => Boolean(trByLocale[code]?.title?.trim() || trByLocale[code]?.description?.trim());
+const trMissing = ALL_LOCALES.filter((code) => code !== trSourceLocale && !trHas(code));
+const trJobs = (isAdmin || isOwnProperty) ? latestPerLocale(await jobsForProperty(supabase, property.id)) : [];
+const trJobFor = (code: string) => trJobs.find((job) => job.locale === code);
+const portalLocale: PortalCopyLang = ((['hu', 'nl', 'en'] as const).find((code) => code === profile?.locale) ?? 'hu');
+const tc = TRANSLATION_COPY[portalLocale];
+const listingLive = property.status === 'published';
+const trOwnerPanel = isOwnProperty && !isAdmin && listingLive;
+const trBusy = Object.fromEntries(trJobs.filter((job) => ['requested', 'queued', 'running'].includes(job.status)).map((job) => [job.locale, tc.statusLabels[job.status]]));
+const trCatalogPrice = listingCatalog(company.services).extras.find((e) => e.id === 'translation')?.priceEur ?? 0;
+const trPaid = Astro.url.searchParams.get('translations');
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
@@ -271,6 +294,19 @@ const photoLimit = listingPackage.maxImages;
 
       <section id="translations" class="ed-card">
         <header class="card-head"><div><h2>Szövegek</h2><p>Minden nyelven külön szöveg. A magyar kötelező, a többi bővíti az elérést.</p></div></header>
+        {isAdmin && (
+          <div class="tr-bar" id="tr-bar">
+            <button type="button" class="btn small" id="tr-missing" disabled={!aiOn || trMissing.length === 0}>Hiányzó nyelvek fordítása ({trMissing.length})</button>
+            <p class="tr-bar-note">
+              {aiOn
+                ? trMissing.length
+                  ? `Ingyenes admin fordítás az AI-val. Becsült költség: ${formatCostHu(trMissing.length * trPerLanguage)} (nyelvenként ${formatCostHu(trPerLanguage)}).`
+                  : 'Minden nyelven van szöveg.'
+                : 'Az AI fordítás nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben).'}
+            </p>
+            <p class="tr-progress" id="tr-progress" role="status" aria-live="polite"></p>
+          </div>
+        )}
         <div class="locale-tabs" role="tablist">
           {LOCALE_OPTIONS.map((l, i) => (
             <button type="button" class="locale-tab" data-locale-tab={l.value} aria-selected={i === 0}>
@@ -288,6 +324,27 @@ const photoLimit = listingPackage.maxImages;
               <Field locale="hu" name={`description_${l.value}`} label="Rövid leírás" type="textarea" rows={3} required={required} value={t?.description ?? ''} />
               <Field locale="hu" name={`body_${l.value}`} label="Részletes leírás" type="textarea" rows={8} value={t?.body ?? ''}
                 hint="Bekezdéseket üres sorral válasszon el." />
+              {isAdmin && l.value !== trSourceLocale && (
+                <div class="tr-box" data-tr-locale={l.value}>
+                  {t?.machine && (
+                    <p class="tr-machine">
+                      <span class="ai-badge">AI fordítás</span>
+                      <span>Forrás: {HU_NAME[t.translated_from ?? trSourceLocale] ?? t.translated_from}{t.translated_at ? `, ${hd(t.translated_at)}` : ''}</span>
+                      {trSourceHash && t.source_hash && t.source_hash !== trSourceHash && <strong class="tr-stale">A forrásszöveg azóta változott.</strong>}
+                    </p>
+                  )}
+                  <div class="tr-row">
+                    <button type="button" class="btn ghost small" data-tr-run={l.value} data-has={t?.machine ? 'machine' : trHas(l.value) ? 'human' : 'none'} disabled={!aiOn || !trSource}>
+                      {t?.machine ? 'Újrafordítás AI-val' : trHas(l.value) ? 'Átírás AI fordítással' : 'Fordítás AI-val'}
+                    </button>
+                    <span class="tr-inline-cost">becsült AI-költség: {formatCostHu(trPerLanguage)}</span>
+                  </div>
+                  <p class="tr-state" data-tr-state={l.value} role="status">{trJobFor(l.value) && ['requested', 'queued', 'running', 'failed'].includes(trJobFor(l.value)!.status) ? `${JOB_STATUS_HU[trJobFor(l.value)!.status]}${trJobFor(l.value)!.status === 'failed' && trJobFor(l.value)!.last_error ? `: ${trJobFor(l.value)!.last_error}` : ''}` : ''}</p>
+                </div>
+              )}
+              {!isAdmin && t?.machine && (
+                <p class="tr-machine"><span class="ai-badge">AI fordítás</span></p>
+              )}
               {isAiEnabled() && t && (
                 <div class="ai-box" data-ai-locale={l.value}>
                   {suggestion ? (
@@ -327,6 +384,24 @@ const photoLimit = listingPackage.maxImages;
       )}
     </fieldset>
   </form>
+
+  {trOwnerPanel && (
+    <section class="tr-panel ed-card" id="translations-panel" data-free={property.free_listing ? 'yes' : undefined}>
+      <header class="card-head"><div><h2>{tc.panelTitle}</h2><p>{property.free_listing ? tc.panelLeadFree : tc.panelLead}</p></div></header>
+      {trPaid === 'paid' && <p class="notice ok">{tc.thanksPaid}</p>}
+      {property.free_listing && !aiOn && <p class="notice warn">{tc.aiOffNote}</p>}
+      <div class="tr-owner-progress" id="tr-owner-progress" aria-live="polite"></div>
+      {trMissing.length === 0 && trJobs.every((job) => !['requested', 'queued', 'running'].includes(job.status))
+        ? <p class="hint">{tc.nothingToAdd}</p>
+        : (
+          <>
+            <TranslationPicker lang={portalLocale} bare name="locales" present={ALL_LOCALES.filter(trHas)} busy={trBusy} priceEur={property.free_listing ? null : trCatalogPrice} free={Boolean(property.free_listing)} />
+            <p class="tr-owner-msg" id="tr-owner-msg" role="status"></p>
+            <button type="button" class="btn" id="tr-buy" disabled>{property.free_listing ? tc.request : tc.pay}</button>
+          </>
+        )}
+    </section>
+  )}
 
   {awaitingPayment && order && (
     <section class="pay ed-card" id="pay">
@@ -751,6 +826,141 @@ const photoLimit = listingPackage.maxImages;
 
 </script>
 
+<script define:vars={{ tcStrings: { ...tc, progress: undefined, more: undefined, all: undefined, summary: undefined, summaryFree: undefined, perLanguage: undefined }, tcProgressOne: tc.progress(111, 1), tcProgressMany: tc.progress(111, 222), propertyIdForTranslations: property.id, isAdminView: isAdmin, isFree: Boolean(property.free_listing), trJobsInitial: trJobs.map((j) => ({ locale: j.locale, status: j.status, error: j.last_error })), perLanguageHu: formatCostHu(trPerLanguage), missingCount: trMissing.length, missingCostHu: formatCostHu(trMissing.length * trPerLanguage), jobStatusHu: JOB_STATUS_HU, huNames: HU_NAME }}>
+  (() => {
+    const url = `/api/portal/properties/${propertyIdForTranslations}/translations`;
+    const toast = (message, kind = 'ok') => window.pf?.toast(message, kind);
+    const post = async (payload) => {
+      const res = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      const json = await res.json().catch(() => ({}));
+      return { ok: res.ok && json.ok, json };
+    };
+    const live = (status) => ['requested', 'queued', 'running'].includes(status);
+    const progressEl = document.getElementById('tr-progress');
+    const ownerEl = document.getElementById('tr-owner-progress');
+    const applied = new Set();
+    let jobs = trJobsInitial;
+    let timer = null;
+
+    /** Fills a language's fields with what the AI wrote, unless the person has typed in them since the page opened. */
+    function fill(locale, text) {
+      if (!text) return;
+      for (const key of ['title', 'description', 'body']) {
+        const field = document.querySelector(`[name="${key}_${locale}"]`);
+        if (field && field.value === field.defaultValue && field.value !== (text[key] ?? '')) {
+          field.value = text[key] ?? '';
+          field.defaultValue = text[key] ?? '';
+        }
+      }
+    }
+
+    function render(next, texts) {
+      jobs = next;
+      const total = jobs.filter((j) => !['cancelled', 'declined'].includes(j.status));
+      const done = total.filter((j) => j.status === 'done').length;
+      const active = total.filter((j) => live(j.status) && j.status !== 'requested').length;
+      const failed = total.filter((j) => j.status === 'failed').length;
+      const waiting = total.filter((j) => j.status === 'requested').length;
+      if (isAdminView) {
+        document.querySelectorAll('[data-tr-state]').forEach((el) => {
+          const job = jobs.find((j) => j.locale === el.dataset.trState);
+          el.textContent = job && ['requested', 'queued', 'running', 'failed'].includes(job.status)
+            ? `${jobStatusHu[job.status]}${job.status === 'failed' && job.error ? `: ${job.error}` : ''}`
+            : '';
+          el.dataset.state = job?.status ?? '';
+        });
+        for (const job of jobs) {
+          if (job.status === 'done' && !applied.has(job.locale) && texts?.[job.locale]) {
+            applied.add(job.locale);
+            fill(job.locale, texts[job.locale]);
+            toast(`${huNames[job.locale] ?? job.locale}: a fordítás elkészült.`);
+            const run = document.querySelector(`[data-tr-run="${job.locale}"]`);
+            if (run) { run.dataset.has = 'machine'; run.textContent = 'Újrafordítás AI-val'; }
+          }
+        }
+        if (progressEl) {
+          progressEl.textContent = active ? `${done} / ${done + active + failed} nyelv kész` + (failed ? `, ${failed} elakadt` : '') : failed ? `${failed} nyelv elakadt` : '';
+        }
+      }
+      if (ownerEl) {
+        ownerEl.innerHTML = '';
+        const n = done + active + failed;
+        if (n > 0) {
+          const line = document.createElement('p');
+          line.className = 'tr-progress-line';
+          line.textContent = (n === 1 ? tcProgressOne : tcProgressMany).replace('111', String(done)).replace('222', String(n));
+          ownerEl.append(line);
+          if (active) { const note = document.createElement('p'); note.className = 'hint'; note.textContent = tcStrings.working; ownerEl.append(note); }
+          else if (failed) { const note = document.createElement('p'); note.className = 'hint'; note.textContent = tcStrings.failed; ownerEl.append(note); }
+          else { const note = document.createElement('p'); note.className = 'hint'; note.textContent = tcStrings.ready; ownerEl.append(note); }
+        }
+        if (waiting) { const note = document.createElement('p'); note.className = 'hint'; note.textContent = tcStrings.waitingForOffice + ': ' + jobs.filter((j) => j.status === 'requested').map((j) => j.locale.toUpperCase()).join(', '); ownerEl.append(note); }
+      }
+      const working = jobs.some((j) => j.status === 'queued' || j.status === 'running');
+      if (working && !timer) timer = setInterval(poll, 5000);
+      if (!working && timer) { clearInterval(timer); timer = null; }
+    }
+
+    async function poll() {
+      try {
+        const res = await fetch(url + (isAdminView ? '?texts=1' : ''), { headers: { accept: 'application/json' } });
+        const json = await res.json();
+        if (json.ok) render(json.jobs, json.texts);
+      } catch { /* try again on the next tick */ }
+    }
+
+    /* Admin: translate one language, or every missing one. */
+    async function run(locales, overwrite) {
+      const { ok, json } = await post({ action: 'run', locales, overwrite });
+      if (!ok) { toast(json.message || 'Nem sikerült elindítani a fordítást.', 'error'); return; }
+      const skipped = (json.skipped ?? []).map((s) => `${huNames[s.locale] ?? s.locale}: ${s.message}`).join('; ');
+      toast(json.created.length ? `Elindult: ${json.created.length} nyelv.${skipped ? ' Kihagyva: ' + skipped : ''}` : `Nem indult el semmi. ${skipped}`, json.created.length ? 'ok' : 'warn');
+      await poll();
+      if (!timer && jobs.some((j) => live(j.status))) timer = setInterval(poll, 5000);
+    }
+    document.getElementById('tr-missing')?.addEventListener('click', async () => {
+      const ok = await window.pf.confirm({ title: 'Hiányzó nyelvek fordítása', body: `${missingCount} nyelv készül el az AI-val, ingyen a hirdetőnek. Becsült AI-költség: ${missingCostHu}.`, confirmLabel: 'Fordítás indítása' });
+      if (ok) run('missing', false);
+    });
+    document.querySelectorAll('[data-tr-run]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const locale = button.dataset.trRun;
+        const has = button.dataset.has;
+        const name = huNames[locale] ?? locale;
+        if (has === 'human') {
+          const ok = await window.pf.confirm({ title: `${name} szöveg felülírása?`, body: 'Ehhez a nyelvhez már van kézzel írt szöveg. Ha folytatja, a gépi fordítás lecseréli.', confirmLabel: 'Felülírás', danger: true });
+          if (!ok) return;
+          return run([locale], true);
+        }
+        if (has === 'machine') {
+          const ok = await window.pf.confirm({ title: `${name} újrafordítása`, body: `A jelenlegi gépi fordítás helyére új kerül. Becsült AI-költség: ${perLanguageHu}.`, confirmLabel: 'Újrafordítás' });
+          if (!ok) return;
+        }
+        run([locale], false);
+      });
+    });
+
+    /* Owner: buy or request. */
+    const buy = document.getElementById('tr-buy');
+    const msg = document.getElementById('tr-owner-msg');
+    const panel = document.getElementById('translations-panel');
+    const chosen = () => [...(panel?.querySelectorAll('input[name="locales"]:checked:not(:disabled)') ?? [])].map((box) => box.value);
+    panel?.addEventListener('tp:change', () => { if (buy) buy.disabled = chosen().length === 0; });
+    buy?.addEventListener('click', async () => {
+      buy.disabled = true;
+      msg.textContent = isFree ? '' : tcStrings.paying;
+      const { ok, json } = await post({ action: isFree ? 'request' : 'order', locales: chosen() });
+      if (ok && json.url) { location.href = json.url; return; }
+      if (ok) { msg.textContent = tcStrings.requested; await poll(); setTimeout(() => location.reload(), 1200); return; }
+      msg.textContent = json.error === 'card-unavailable' ? tcStrings.cardUnavailable : json.error === 'nothing-to-order' ? tcStrings.nothingToAdd : tcStrings.errorGeneric;
+      buy.disabled = chosen().length === 0;
+    });
+
+    render(jobs, null);
+    if (jobs.some((j) => live(j.status) && j.status !== 'requested')) poll();
+  })();
+</script>
+
 <style>
   /* ── Page head ───────────────────────────────────────────────────────── */
   .hero { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 28px; }
@@ -823,6 +1033,28 @@ const photoLimit = listingPackage.maxImages;
   .checkbox-grid .checkbox { padding: 10px 14px; margin: 0; border-radius: var(--r-md); background: var(--paper); transition: background-color 0.2s var(--ease-out); }
   .checkbox-grid .checkbox:hover { background: var(--linen); }
   .checkbox-grid .checkbox:has(input:checked) { background: rgba(16, 42, 67, 0.07); }
+
+  /* ── AI translation ─────────────────────────────────────────────────── */
+  .tr-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin: 0 0 20px; padding: 14px 16px; border-radius: var(--r-lg); background: var(--paper); box-shadow: 0 0 0 1px var(--pt-hair); }
+  .tr-bar-note { margin: 0; flex: 1 1 260px; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .tr-progress { margin: 0; flex-basis: 100%; font-size: var(--fs-small); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tr-progress:empty { display: none; }
+  .tr-box { margin: 4px 0 18px; padding: 14px 16px; border-radius: var(--r-lg); background: var(--paper); box-shadow: 0 0 0 1px var(--pt-hair); }
+  .tr-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .tr-inline-cost { font-size: 13px; color: var(--ink-quiet); }
+  .tr-machine { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 10px; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .tr-machine .ai-badge { margin-left: 0; }
+  .tr-stale { color: var(--pt-red); font-weight: var(--fw-medium); }
+  .tr-state { margin: 8px 0 0; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .tr-state:empty { display: none; }
+  .tr-state[data-state='failed'] { color: var(--pt-red); }
+  .ai-badge { display: inline-block; margin-left: 8px; padding: 3px 10px; border-radius: var(--r-pill); background: var(--ink); color: var(--cream); font-size: 12px; font-weight: var(--fw-medium); letter-spacing: 0.04em; }
+  .tr-panel .tp { margin-top: 8px; }
+  .tr-owner-progress:empty { display: none; }
+  .tr-progress-line { margin: 0 0 6px; font-family: var(--serif); font-size: 20px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tr-owner-msg { margin: 12px 0 0; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .tr-owner-msg:empty { display: none; }
+  @media (max-width: 640px) { .tr-bar, .tr-box { padding: 12px; } }
 
   /* ── Language tabs ───────────────────────────────────────────────────── */
   .locale-tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; margin-bottom: 24px; border-radius: var(--r-pill); background: var(--linen); }

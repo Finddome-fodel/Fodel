@@ -28,12 +28,14 @@ interface Props {
   bare?: boolean;
   /** Intro for a free-link listing instead of the paid one. */
   free?: boolean;
+  /** Languages being made right now: locale -> the word to show. Shown like "present", not selectable. */
+  busy?: Record<string, string>;
 }
-const { lang, selected = [], present = [], priceEur = null, name = 'translations', bare = false, free = false } = Astro.props;
+const { lang, selected = [], present = [], priceEur = null, name = 'translations', bare = false, free = false, busy = {} } = Astro.props as Props;
 const t = TRANSLATION_COPY[lang];
 const recommended = RECOMMENDED_TRANSLATION_LANGUAGES as readonly string[];
 const others = (TRANSLATION_LANGUAGES as readonly string[]).filter((code) => !recommended.includes(code));
-const available = (TRANSLATION_LANGUAGES as readonly string[]).filter((code) => !present.includes(code));
+const available = (TRANSLATION_LANGUAGES as readonly string[]).filter((code) => !present.includes(code) && !(code in busy));
 const nameOf = (code: string) => languageName(code, lang).replace(/^./, (c) => c.toLocaleUpperCase(lang));
 const money = (eur: number) => `€ ${eur.toLocaleString(lang === 'hu' ? 'hu-HU' : lang === 'nl' ? 'nl-NL' : 'en-GB')}`;
 const strings = {
@@ -44,7 +46,10 @@ const strings = {
   summary: [t.summary(1, '{total}').replace('1', '{n}'), t.summary(2, '{total}').replace('2', '{n}')],
   summaryFree: [t.summaryFree(1).replace('1', '{n}'), t.summaryFree(2).replace('2', '{n}')],
 };
-const chip = (code: string) => ({ code, have: present.includes(code), on: !present.includes(code) && selected.includes(code) });
+const chip = (code: string) => {
+  const have = present.includes(code) || code in busy;
+  return { code, have, on: !have && selected.includes(code), label: busy[code] ?? (present.includes(code) ? t.have : code.toUpperCase()) };
+};
 ---
 
 <div class="tp" data-tp data-strings={JSON.stringify(strings)} data-lang={lang}>
@@ -63,13 +68,13 @@ const chip = (code: string) => ({ code, have: present.includes(code), on: !prese
           <input type="checkbox" name={name} value={code} checked={c.on} disabled={c.have} />
           <span class="tp-box" aria-hidden="true"></span>
           <span class="tp-name">{nameOf(code)}</span>
-          <span class="tp-code">{c.have ? t.have : code.toUpperCase()}</span>
+          <span class="tp-code">{c.label}</span>
         </label>
       );
     })}
   </div>
 
-  <details class="tp-more" open={others.some((code) => selected.includes(code) || present.includes(code))}>
+  <details class="tp-more" open={others.some((code) => selected.includes(code) || present.includes(code) || code in busy)}>
     <summary>{t.more(others.length)}</summary>
     <div class="tp-chips">
       {others.map((code) => {
@@ -79,7 +84,7 @@ const chip = (code: string) => ({ code, have: present.includes(code), on: !prese
             <input type="checkbox" name={name} value={code} checked={c.on} disabled={c.have} />
             <span class="tp-box" aria-hidden="true"></span>
             <span class="tp-name">{nameOf(code)}</span>
-            <span class="tp-code">{c.have ? t.have : code.toUpperCase()}</span>
+            <span class="tp-code">{c.label}</span>
           </label>
         );
       })}
