@@ -24,6 +24,7 @@ import { propertyAlternates, crumbs } from '~/lib/page';
 import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
 import { eur, huf, area, floorArea, epcLabel, formatDate, placeLabel } from '~/lib/format';
 import { copy } from '~/data/copy';
+import { readEnergy } from '~/lib/energy';
 import { extractYouTubeId } from '~/lib/video';
 import WhatsApp from '~/components/WhatsApp.astro';
 import { getTaxonomy, termLabel, getCompany } from '~/lib/runtime-config';
@@ -87,14 +88,13 @@ const shareImage = await getImage({
 });
 
 const pageUrl = propUrl(property, locale);
-const epc = epcLabel(d.building.epcClass, { epcMissing: ui.property.epcMissing });
+const epc = epcLabel(d.building.epcClass, { none: detailLabel('energy_none', locale), certified: detailLabel('energy_certified', locale) });
 
 const specs = [
-  d.rooms && { label: ui.property.beds, value: String(d.rooms.bedrooms) },
-  d.rooms && { label: ui.property.baths, value: String(d.rooms.bathrooms) },
   d.details.rooms !== undefined && { label: detailLabel('rooms', locale), value: String(d.details.rooms) },
   d.details.half_rooms && { label: detailLabel('half_rooms', locale), value: String(d.details.half_rooms) },
   d.details.floors !== undefined && { label: detailLabel('floors', locale), value: String(d.details.floors) },
+  d.rooms?.bathrooms !== undefined && { label: ui.property.baths, value: String(d.rooms.bathrooms) },
   d.details.kitchens !== undefined && { label: detailLabel('kitchens', locale), value: String(d.details.kitchens) },
   d.details.toilets !== undefined && { label: detailLabel('toilets', locale), value: String(d.details.toilets) },
   d.areas.floorM2 && { label: ui.property.area, value: floorArea(d.areas.floorM2, locale) },
@@ -102,16 +102,17 @@ const specs = [
   d.details.cellar_m2 && { label: detailLabel('cellar_m2', locale), value: floorArea(d.details.cellar_m2, locale) },
   d.areas.buildingM2 && {label:x('Teljes épületterület','Totale gebouwoppervlakte','Total building area','Gesamte Gebäudefläche','Surface totale du bâtiment', 'Superficie total construida', 'Całkowita powierzchnia budynku', 'Suprafața totală a clădirii', 'Celková plocha budovy', 'Superficie edificata totale', 'Área total de construção', 'Συνολική δομημένη επιφάνεια', 'Celková zastavěná plocha', 'Skupna površina stavbe', 'Total byggnadsyta', 'Samlet bebygget areal', 'Totalt bebygd areal', 'Kokonaisrakennusala', 'Hoone kogupind', 'Kopējā apbūves platība', 'Bendras pastato plotas'),value:floorArea(d.areas.buildingM2,locale)},
   d.propertySubtype && {label:x('Altípus','Subtype','Subtype','Untertyp','Sous-type', 'Subtipo', 'Podtyp', 'Subtip', 'Podtyp', 'Sottotipo', 'Subtipo', 'Υποκατηγορία', 'Podtyp', 'Podvrsta', 'Undertyp', 'Undertype', 'Undertype', 'Alatyyppi', 'Alamtüüp', 'Apakštips', 'Potipis'),value:subtypeLabel(d.propertyGroup||d.category,d.propertySubtype,locale)},
-  { label: ui.property.epc, value: epc.value },
+  // A stated class reads "Energy rating: B"; a yes/no answer reads "Energy certificate: None".
+  epc && { label: readEnergy(d.building.epcClass).rating ? ui.property.epc : detailLabel('energy', locale), value: epc },
   d.building.condition && {label:x('Állapot','Staat','Condition','Zustand','État', 'Estado', 'Stan', 'Stare', 'Stav', 'Stato', 'Estado', 'Κατάσταση', 'Stav', 'Stanje', 'Skick', 'Stand', 'Tilstand', 'Kunto', 'Seisukord', 'Stāvoklis', 'Būklė'),value:text(d.building.condition,locale)},
-  d.building.heating && {label:x('Fűtés','Verwarming','Heating','Heizung','Chauffage', 'Calefacción', 'Ogrzewanie', 'Încălzire', 'Vykurovanie', 'Riscaldamento', 'Aquecimento', 'Θέρμανση', 'Vytápění', 'Ogrevanje', 'Uppvärmning', 'Opvarmning', 'Oppvarming', 'Lämmitys', 'Küte', 'Apkure', 'Šildymas'),value:text(d.building.heating,locale)},
+  d.building.heating.length > 0 && {label:x('Fűtés','Verwarming','Heating','Heizung','Chauffage', 'Calefacción', 'Ogrzewanie', 'Încălzire', 'Vykurovanie', 'Riscaldamento', 'Aquecimento', 'Θέρμανση', 'Vytápění', 'Ogrevanje', 'Uppvärmning', 'Opvarmning', 'Oppvarming', 'Lämmitys', 'Küte', 'Apkure', 'Šildymas'),value:d.building.heating.map((h)=>text(h,locale)).join(', ')},
   d.building.yearBuilt && { label: ui.property.yearBuilt, value: String(d.building.yearBuilt) },
-  d.building.wall && d.building.wall.key !== 'nem-tudom' && { label: x('Falazat', 'Muurwerk', 'Wall material', 'Wandmaterial', 'Matériau des murs', 'Material de los muros', 'Materiał ścian', 'Materialul pereților', 'Materiál múrov', 'Materiale delle pareti', 'Material das paredes', 'Υλικό τοιχοποιίας', 'Materiál zdí', 'Material sten', 'Väggmaterial', 'Vægmateriale', 'Veggmateriale', 'Seinämateriaali', 'Seinamaterjal', 'Sienu materiāls', 'Sienų medžiaga'), value: d.building.wall.labels[locale] ?? d.building.wall.labels.nl ?? d.building.wall.labels.hu },
+  d.building.walls.length > 0 && { label: x('Falazat', 'Muurwerk', 'Wall material', 'Wandmaterial', 'Matériau des murs', 'Material de los muros', 'Materiał ścian', 'Materialul pereților', 'Materiál múrov', 'Materiale delle pareti', 'Material das paredes', 'Υλικό τοιχοποιίας', 'Materiál zdí', 'Material sten', 'Väggmaterial', 'Vægmateriale', 'Veggmateriale', 'Seinämateriaali', 'Seinamaterjal', 'Sienu materiāls', 'Sienų medžiaga'), value: d.building.walls.map((w) => w.labels[locale] ?? w.labels.nl ?? w.labels.hu).join(', ') },
 ].filter(Boolean) as { label: string; value: string }[];
 
 // Text facts, utilities and parking: below the description, beside the features.
 const factRows = [
-  d.details.setting && { label: detailLabel('setting', locale), value: settingLabel(d.details.setting, locale) },
+  d.details.settings.length > 0 && { label: detailLabel('setting', locale), value: d.details.settings.map((k) => settingLabel(k, locale)).join(', ') },
   d.address && { label: detailLabel('address', locale), value: [d.address.street, [d.address.postalCode, d.location.settlement].filter(Boolean).join(' ')].filter(Boolean).join(', ') },
   d.details.extra_buildings && { label: detailLabel('extra_buildings', locale), value: d.details.extra_buildings },
 ].filter(Boolean) as { label: string; value: string }[];
