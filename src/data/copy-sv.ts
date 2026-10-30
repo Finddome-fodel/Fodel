@@ -26,9 +26,9 @@ export const SV = {
     },
     hero: {
       eyebrow: `Sedan 2013 · ${foundedInLabel(L)}`,
-      title: ['Bostäder', 'i Ungern', 'direkt av ägaren'],
+      title: ['Annonsera', 'din fastighet', 'i Europa'],
       emphasis: 1,
-      body: 'Många av våra annonser anger ägaren. Du kan förhandla direkt med hen eller överlåta hela processen åt oss.',
+      body: 'Ladda upp din annons i några steg. Vi granskar den, och efter onlinebetalning publiceras den på vår webbplats på 21 språk, utan exklusivitetsavtal. Intressenter kontaktar dig direkt eller via oss.',
       primary: 'Bläddra bland objekt',
       secondary: 'Kostnadsfri objektsökning',
       featuredLabel: 'Utvalda',

@@ -31,9 +31,9 @@ export const RO = {
     },
     hero: {
       eyebrow: `Din 2013 · ${foundedInLabel(L)}`,
-      title: ['Proprietăți', 'în Ungaria', 'direct de la proprietar'],
+      title: ['Promovați', 'proprietatea dvs.', 'în Europa'],
       emphasis: 1,
-      body: 'Pentru o mare parte dintre proprietățile noastre, proprietarul este indicat. Puteți negocia direct cu el sau ne puteți încredința întregul proces.',
+      body: 'Încărcați anunțul în câțiva pași. Îl verificăm, iar după plata online apare pe site-ul nostru în 21 de limbi, fără contract de exclusivitate. Interesații vă contactează direct sau prin noi.',
       primary: 'Vedeți proprietățile',
       secondary: 'Căutare gratuită',
       featuredLabel: 'Recomandat',

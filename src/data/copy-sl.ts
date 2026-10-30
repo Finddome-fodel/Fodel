@@ -26,9 +26,9 @@ export const SL = {
     },
     hero: {
       eyebrow: `Od leta 2013 · ${foundedInLabel(L)}`,
-      title: ['Nepremičnine', 'na Madžarskem', 'neposredno od lastnika'],
+      title: ['Oglašujte', 'svojo nepremičnino', 'v Evropi'],
       emphasis: 1,
-      body: 'Pri številnih naših oglasih je naveden lastnik. Z njim se lahko dogovarjate neposredno ali pa celoten postopek prepustite nam.',
+      body: 'Oglas naložite v nekaj korakih. Pregledamo ga in po spletnem plačilu se objavi na naši strani v 21 jezikih, brez pogodbe o ekskluzivnosti. Zainteresirani vas kontaktirajo neposredno ali prek nas.',
       primary: 'Prebrskaj nepremičnine',
       secondary: 'Brezplačno iskanje nepremičnine',
       featuredLabel: 'Izpostavljeno',

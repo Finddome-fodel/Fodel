@@ -26,9 +26,9 @@ export const IT = {
     },
     hero: {
       eyebrow: `Dal 2013 · ${foundedInLabel(L)}`,
-      title: ['Immobili', 'in Ungheria', 'direttamente dal proprietario'],
+      title: ['Pubblichi', 'il suo immobile', 'in Europa'],
       emphasis: 1,
-      body: 'In molti dei nostri annunci è indicato il proprietario. Può trattare direttamente con lui o affidare a noi l’intero processo.',
+      body: 'Carichi il suo annuncio in pochi passaggi. Lo verifichiamo e, dopo il pagamento online, viene pubblicato sul nostro sito in 21 lingue, senza contratto di esclusiva. Gli interessati la contattano direttamente o tramite noi.',
       primary: 'Sfoglia gli immobili',
       secondary: 'Ricerca immobile gratuita',
       featuredLabel: 'In evidenza',

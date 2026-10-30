@@ -45,7 +45,7 @@ const silent = (p: (typeof all)[number]) => p.status === 'published' && isUnresp
 const properties =
   view === 'curation'
     ? // Deliberate exception: the editors' pick keeps its curated order.
-      scoped.filter((p) => p.featured || p.homepage_featured || p.topic_featured)
+      scoped.filter((p) => p.editors_pick || p.featured || p.homepage_featured || p.topic_featured).sort((a, b) => Number(b.editors_pick) - Number(a.editors_pick) || a.editors_pick_order - b.editors_pick_order)
     : view === 'expiring'
       ? // Deliberate exception: a deadline list, soonest expiry first.
         scoped.filter(expiringSoon).sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)))
@@ -73,6 +73,7 @@ await Promise.all(
 const heroOf = (p: (typeof properties)[number]) => (p.media.find((m) => m.is_hero) ?? p.media[0])?.storage_path;
 const flags = (p: (typeof properties)[number]) =>
   [
+    p.editors_pick && `Top ${p.editors_pick_order}`,
     p.featured && 'Kategória',
     p.homepage_featured && 'Főoldal',
     p.topic_featured && 'Témakör',
@@ -100,7 +101,7 @@ const chips: [string, string][] = isAdmin
 
   <div class="bar">
     <div class="filters">
-      {isAdmin && <a href="/portal/properties?view=curation" aria-current={view === 'curation' ? 'page' : undefined}>Kiemelt megjelenések</a>}
+      {isAdmin && <a href="/portal/properties?view=curation" aria-current={view === 'curation' ? 'page' : undefined}>Top 10 és kiemelések</a>}
       {isAdmin && <a href="/portal/properties?view=expiring" aria-current={view === 'expiring' ? 'page' : undefined}>Hamarosan lejár</a>}
       {isAdmin && <a href="/portal/properties?view=silent" aria-current={view === 'silent' ? 'page' : undefined}>Nem válaszolt</a>}
       {isAdmin && <a href="/portal/properties?view=dutch" aria-current={view === 'dutch' ? 'page' : undefined}>Holland ingatlanost kér</a>}

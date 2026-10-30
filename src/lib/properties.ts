@@ -89,6 +89,8 @@ export type Property = {
       featured: boolean;
       topicFeatured?: boolean;
       homepageFeatured: boolean;
+      editorsPick: boolean;
+      editorsPickOrder: number;
       publishedAt: Date;
       expiresAt: Date;
       languages: Locale[];
@@ -292,6 +294,8 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         featured: row.featured,
         topicFeatured: row.topic_featured,
         homepageFeatured: row.homepage_featured,
+        editorsPick: row.editors_pick,
+        editorsPickOrder: row.editors_pick_order,
         publishedAt: new Date(row.published_at ?? row.price_asof),
         expiresAt: new Date(row.expires_at ?? row.price_asof),
         languages,
@@ -478,6 +482,14 @@ export async function activeProperties(): Promise<Property[]> {
 
 export async function soldProperties(): Promise<Property[]> {
   return (await fetchAll()).filter((p) => p.data.status === 'sold');
+}
+
+/** Editorial recommendations never fall back to paid or newest inventory. */
+export async function editorsPick(limit = 10): Promise<Property[]> {
+  return (await activeProperties())
+    .filter((property) => property.data.listing.editorsPick)
+    .sort((a, b) => a.data.listing.editorsPickOrder - b.data.listing.editorsPickOrder)
+    .slice(0, limit);
 }
 
 /** Active homepage placements, ordered by publication date. */

@@ -31,9 +31,9 @@ export const PL = {
     },
     hero: {
       eyebrow: `Od 2013 roku · ${foundedInLabel(L)}`,
-      title: ['Nieruchomości', 'na Węgrzech', 'bezpośrednio od właściciela'],
+      title: ['Ogłoś', 'swoją nieruchomość', 'w Europie'],
       emphasis: 1,
-      body: 'Przy dużej części naszych nieruchomości podajemy właściciela. Mogą Państwo negocjować bezpośrednio z nim albo powierzyć nam cały proces.',
+      body: 'Ogłoszenie dodaje się w kilku krokach. Sprawdzamy je, a po płatności online pojawia się na naszej stronie w 21 językach, bez umowy na wyłączność. Zainteresowani kontaktują się bezpośrednio z właścicielem lub z nami.',
       primary: 'Zobacz nieruchomości',
       secondary: 'Bezpłatne poszukiwanie',
       featuredLabel: 'Wyróżnione',

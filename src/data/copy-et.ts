@@ -26,9 +26,9 @@ export const ET = {
     },
     hero: {
       eyebrow: `Alates 2013 · ${foundedInLabel(L)}`,
-      title: ['Kinnisvara', 'Ungaris', 'otse omanikult'],
+      title: ['Kuulutage', 'oma kinnisvara', 'Euroopas'],
       emphasis: 1,
-      body: 'Paljudes meie kuulutustes on märgitud omanik. Võite pidada läbirääkimisi otse temaga või jätta kogu protsessi meie hooleks.',
+      body: 'Laadige kuulutus üles mõne sammuga. Vaatame selle üle ja pärast veebimakset ilmub see meie saidil 21 keeles, ilma ainuõiguse lepinguta. Huvilised võtavad ühendust otse teiega või meie kaudu.',
       primary: 'Sirvi kinnisvara',
       secondary: 'Tasuta kinnisvaraotsing',
       featuredLabel: 'Esiletõstetud',

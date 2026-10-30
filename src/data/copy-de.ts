@@ -29,9 +29,9 @@ export const DE = {
     },
     hero: {
       eyebrow: `Seit 2013 · ${foundedInLabel(L)}`,
-      title: ['Immobilien', 'in Ungarn', 'direkt vom Eigentümer'],
+      title: ['Inserieren Sie', 'Ihre Immobilie', 'in Europa'],
       emphasis: 1,
-      body: 'Bei einem großen Teil unseres Angebots ist der Eigentümer selbst genannt. Sie verhandeln direkt oder überlassen uns die gesamte Abwicklung.',
+      body: 'Laden Sie Ihr Inserat in wenigen Schritten hoch. Wir prüfen es, und nach der Online-Zahlung erscheint es auf unserer Website in 21 Sprachen, ohne Exklusivvertrag. Interessenten wenden sich direkt an Sie oder an uns.',
       primary: 'Immobilien ansehen',
       secondary: 'Kostenloser Suchauftrag',
       featuredLabel: 'Empfohlen',

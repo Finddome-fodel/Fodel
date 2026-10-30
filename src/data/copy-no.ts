@@ -26,9 +26,9 @@ export const NO = {
     },
     hero: {
       eyebrow: `Siden 2013 · ${foundedInLabel(L)}`,
-      title: ['Eiendommer', 'i Ungarn', 'direkte fra eieren'],
+      title: ['Annonser', 'eiendommen din', 'i Europa'],
       emphasis: 1,
-      body: 'Mange av annonsene våre oppgir eieren. Du kan forhandle direkte med eieren eller overlate hele prosessen til oss.',
+      body: 'Last opp annonsen din i noen få steg. Vi gjennomgår den, og etter nettbetaling vises den på nettstedet vårt på 21 språk, uten eksklusivitetsavtale. Interesserte kontakter deg direkte eller via oss.',
       primary: 'Se eiendommer',
       secondary: 'Gratis eiendomssøk',
       featuredLabel: 'Utvalgte',

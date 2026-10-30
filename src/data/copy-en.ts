@@ -26,9 +26,9 @@ export const EN = {
     },
     hero: {
       eyebrow: `Since 2013 · ${foundedInLabel(L)}`,
-      title: ['Property', 'in Hungary', 'direct from the owner'],
+      title: ['Advertise', 'your property', 'in Europe'],
       emphasis: 1,
-      body: 'Many of our listings name the owner. You can negotiate directly with them, or leave the whole process to us.',
+      body: 'Upload your listing in a few steps. We review it, and after online payment it goes live on our site in 21 languages, with no exclusivity contract. Enquiries reach you directly or through us.',
       primary: 'Browse properties',
       secondary: 'Free property search',
       featuredLabel: 'Featured',

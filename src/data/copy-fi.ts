@@ -26,9 +26,9 @@ export const FI = {
     },
     hero: {
       eyebrow: `Vuodesta 2013 · ${foundedInLabel(L)}`,
-      title: ['Kiinteistöjä', 'Unkarissa', 'suoraan omistajalta'],
+      title: ['Ilmoita', 'kiinteistösi', 'Euroopassa'],
       emphasis: 1,
-      body: 'Monissa ilmoituksissamme on mainittu omistaja. Voit neuvotella suoraan omistajan kanssa tai jättää koko prosessin meille.',
+      body: 'Lataa ilmoituksesi muutamassa vaiheessa. Tarkistamme sen, ja verkkomaksun jälkeen se julkaistaan sivustollamme 21 kielellä ilman yksinoikeussopimusta. Kiinnostuneet ottavat yhteyttä suoraan sinuun tai meidän kauttamme.',
       primary: 'Selaa kohteita',
       secondary: 'Maksuton kohdehaku',
       featuredLabel: 'Nostot',
