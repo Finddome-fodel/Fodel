@@ -15,6 +15,8 @@
 --                       can say "the Hungarian text has changed since" later
 --   claim_translation_jobs(n)   hands out queued jobs to one worker at a time
 --                       (`for update skip locked`), like claim_mail_send_recipients.
+--   save_machine_translation    the only way the server writes an AI translation: one statement,
+--                       and it refuses to replace a person's text unless told to.
 --   save_listing_editor         restated from 0042 with ONE change: saving a translation
 --                       whose text actually changed clears the machine flag (a person
 --                       now owns that text); saving it unchanged leaves the flag alone.
@@ -103,7 +105,11 @@ begin
       attempts = attempts + 1
   where id in (
     select id from translation_jobs
-    where (status = 'queued' or (status = 'running' and claimed_at < now() - interval '6 minutes'))
+    where (
+        -- A queued job that just failed waits 20 seconds before its next attempt.
+        (status = 'queued' and (claimed_at is null or claimed_at < now() - interval '20 seconds'))
+        or (status = 'running' and claimed_at < now() - interval '6 minutes')
+      )
       and attempts < 3
     order by created_at
     limit greatest(p_limit, 0)
@@ -114,6 +120,34 @@ end;
 $$;
 revoke all on function claim_translation_jobs(integer) from public, anon, authenticated;
 grant execute on function claim_translation_jobs(integer) to service_role;
+
+/* ── Writing a machine translation ──────────────────────────────────────── */
+-- Insert or replace, in ONE statement, a translation the AI produced. If a person
+-- has written text for that language in the meantime (machine = false) nothing is
+-- written and false comes back, unless the admin asked to overwrite.
+
+create or replace function save_machine_translation(
+  p_property uuid, p_locale locale_code, p_from locale_code,
+  p_title text, p_description text, p_body text, p_hash text, p_overwrite boolean default false
+) returns boolean
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare written integer;
+begin
+  insert into property_translations (property_id, locale, title, description, body, machine, translated_from, translated_at, source_hash)
+  values (p_property, p_locale, p_title, p_description, coalesce(p_body, ''), true, p_from, now(), p_hash)
+  on conflict (property_id, locale) do update
+    set title = excluded.title, description = excluded.description, body = excluded.body,
+        machine = true, translated_from = excluded.translated_from, translated_at = excluded.translated_at, source_hash = excluded.source_hash
+    where property_translations.machine or p_overwrite;
+  get diagnostics written = row_count;
+  return written > 0;
+end;
+$$;
+revoke all on function save_machine_translation(uuid, locale_code, locale_code, text, text, text, text, boolean) from public, anon, authenticated;
+grant execute on function save_machine_translation(uuid, locale_code, locale_code, text, text, text, text, boolean) to service_role;
 
 /* ── Access: admins everything, an owner may read their own listing's jobs ── */
 

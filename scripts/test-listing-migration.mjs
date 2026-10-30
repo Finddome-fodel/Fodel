@@ -213,4 +213,22 @@ row=(await get(`select machine,translated_from,source_hash from property_transla
 assert.deepEqual(row,{machine:false,translated_from:null,source_hash:null});
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 console.log('✓ saving an AI translation unchanged keeps it marked; editing it hands it to a person');
+// The server's own write: new rows and machine rows are written; a person's text is not, unless told to.
+const save=(locale,title,overwrite=false)=>db.query(`select save_machine_translation('${id}'::uuid,$1::locale_code,'hu'::locale_code,$2,'Besch','Text','h1',$3) as ok`,[locale,title,overwrite]);
+assert.equal((await save('nl','Casa')).rows[0].ok,true,'a new language is written');
+assert.equal((await save('nl','Casa 2')).rows[0].ok,true,'an earlier machine translation is replaced');
+row=(await get(`select title,machine,translated_from,source_hash from property_translations where property_id='${id}' and locale='nl'`))[0];
+assert.deepEqual(row,{title:'Casa 2',machine:true,translated_from:'hu',source_hash:'h1'});
+assert.equal((await save('de','AI Titel')).rows[0].ok,false,'a person\'s text is not replaced');
+assert.equal((await get(`select title from property_translations where property_id='${id}' and locale='de'`))[0].title,'Titel');
+assert.equal((await save('de','AI Titel',true)).rows[0].ok,true,'unless the admin chose to');
+assert.equal((await get(`select machine from property_translations where property_id='${id}' and locale='de'`))[0].machine,true);
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';`);
+await assert.rejects(()=>save('fr','x'));
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+await db.exec(`update translation_jobs set status='queued',attempts=1,claimed_at=now() where id=(select id from translation_jobs where locale='de' order by created_at desc limit 1)`);
+assert.equal((await get('select * from claim_translation_jobs(4)')).length,0,'a job that just failed waits before the next attempt');
+await db.exec(`update translation_jobs set claimed_at=now()-interval '30 seconds' where locale='de' and status='queued'`);
+assert.equal((await get('select * from claim_translation_jobs(4)')).length,1);
+console.log('✓ machine translations are written in one statement and never replace a person\'s text by accident; failed jobs back off');
 await db.close();

@@ -251,3 +251,61 @@ export function modelFromEnv(value: string | undefined | null): string {
 export function maxTokensFor(chars: number): number {
   return Math.min(16000, Math.max(1200, Math.ceil(chars / 1.6) + 400));
 }
+
+/* ── When a job goes wrong ─────────────────────────────────────────────── */
+
+export type Failure = {
+  /** Hungarian, safe to show an admin (and the owner of the listing, who may read the job row). Never the raw API body. */
+  message: string;
+  /** Another attempt can help (a hiccup, a slow answer, a bad draft). */
+  retry: boolean;
+  /** The key or the balance is the problem: every other job would fail the same way, so stop for now. */
+  stopAll: boolean;
+};
+
+export function classifyFailure(error: unknown): Failure {
+  const e = (error ?? {}) as { code?: string; name?: string; message?: string };
+  if (error instanceof TranslationCheckError) return { message: error.message, retry: true, stopAll: false };
+  const code = String(e.code ?? '');
+  if (code === 'openai-401' || code === 'openai-403') {
+    return { message: 'Az OpenAI kulcs érvénytelen vagy nincs jogosultsága.', retry: false, stopAll: true };
+  }
+  if (code === 'openai-429') {
+    return /insufficient_quota|billing/i.test(String(e.message ?? ''))
+      ? { message: 'Az OpenAI-egyenleg elfogyott.', retry: false, stopAll: true }
+      : { message: 'Az OpenAI most túlterhelt, később újrapróbáljuk.', retry: true, stopAll: false };
+  }
+  if (/^openai-5\d\d$/.test(code)) return { message: 'Az OpenAI most nem érhető el, később újrapróbáljuk.', retry: true, stopAll: false };
+  if (code === 'openai-truncated') return { message: 'A szöveg túl hosszú volt egyben, újrapróbáljuk.', retry: true, stopAll: false };
+  if (code === 'openai-empty-response') return { message: 'Az AI üres választ adott.', retry: true, stopAll: false };
+  if (e.name === 'AbortError' || e.name === 'TimeoutError') return { message: 'Időtúllépés, újrapróbáljuk.', retry: true, stopAll: false };
+  if (error instanceof SyntaxError) return { message: 'Az AI válasza nem volt értelmezhető.', retry: true, stopAll: false };
+  return { message: 'A fordítás nem sikerült.', retry: true, stopAll: false };
+}
+
+/* ── Progress ──────────────────────────────────────────────────────────── */
+
+export type JobLike = { locale: string; status: string };
+
+export type JobSummary = {
+  total: number;
+  done: number;
+  failed: number;
+  /** requested: waiting for an admin. active: queued or running. */
+  requested: number;
+  active: number;
+  /** idle: nothing; working: something still to do; done: everything finished; attention: a failure to look at. */
+  state: 'idle' | 'working' | 'done' | 'attention';
+};
+
+/** Only the jobs of the latest round count: finished ones from a cancelled or declined request are not progress. */
+export function summarizeJobs(jobs: JobLike[]): JobSummary {
+  const relevant = jobs.filter((job) => !['cancelled', 'declined'].includes(job.status));
+  const count = (...statuses: string[]) => relevant.filter((job) => statuses.includes(job.status)).length;
+  const done = count('done');
+  const failed = count('failed');
+  const requested = count('requested');
+  const active = count('queued', 'running');
+  const state = failed > 0 ? 'attention' : active > 0 ? 'working' : requested > 0 ? 'idle' : done > 0 ? 'done' : 'idle';
+  return { total: relevant.length, done, failed, requested, active, state };
+}

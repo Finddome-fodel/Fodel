@@ -787,6 +787,28 @@ console.log('AI translation: the rules around the model');
     assert.equal(plan[0].title, 'Cím');
     assert.ok(plan.slice(1).every((segment) => segment.title === ''));
   });
+  test('failures are explained in Hungarian, retried only when another try can help, and never leak the API body', () => {
+    const ai = (code, message = '') => Object.assign(new Error(message), { code });
+    assert.deepEqual(core.classifyFailure(ai('openai-429', '{"error":{"code":"insufficient_quota"}}')), { message: 'Az OpenAI-egyenleg elfogyott.', retry: false, stopAll: true });
+    assert.equal(core.classifyFailure(ai('openai-429', 'rate limit')).retry, true);
+    assert.equal(core.classifyFailure(ai('openai-401', 'sk-secret-key-leak')).stopAll, true);
+    assert.ok(!JSON.stringify(core.classifyFailure(ai('openai-401', 'sk-secret-key-leak'))).includes('secret'));
+    assert.equal(core.classifyFailure(ai('openai-503')).retry, true);
+    assert.equal(core.classifyFailure(Object.assign(new Error('x'), { name: 'AbortError' })).message, 'Időtúllépés, újrapróbáljuk.');
+    assert.equal(core.classifyFailure(new SyntaxError('bad json')).retry, true);
+    assert.equal(core.classifyFailure(new core.TranslationCheckError('numbers', 'Számeltérés: x.')).message, 'Számeltérés: x.');
+    assert.equal(core.classifyFailure(new Error('boom')).retry, true);
+  });
+  test('progress counts only live work: cancelled and declined requests are not progress', () => {
+    const job = (locale, status) => ({ locale, status });
+    assert.equal(core.summarizeJobs([]).state, 'idle');
+    assert.deepEqual(core.summarizeJobs([job('de', 'done'), job('fr', 'running'), job('nl', 'queued')]), { total: 3, done: 1, failed: 0, requested: 0, active: 2, state: 'working' });
+    assert.equal(core.summarizeJobs([job('de', 'done'), job('fr', 'done')]).state, 'done');
+    assert.equal(core.summarizeJobs([job('de', 'done'), job('fr', 'failed')]).state, 'attention');
+    assert.equal(core.summarizeJobs([job('de', 'cancelled'), job('fr', 'declined')]).state, 'idle');
+    assert.equal(core.summarizeJobs([job('de', 'requested')]).state, 'idle');
+    assert.equal(core.summarizeJobs([job('de', 'requested')]).requested, 1);
+  });
   const mock = (answer) => async ({ user }) => {
     const input = JSON.parse(user).translate;
     return { data: answer(input), usage: { model: 'gpt-4o-mini', tokensIn: 1000, tokensOut: 800 } };
