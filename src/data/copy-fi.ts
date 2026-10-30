@@ -20,9 +20,9 @@ const L = 'fi' as const;
 export const FI = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Osta kiinteistö Unkarista suoraan omistajalta',
+      title: 'FINDDOME Real Estates | Ilmoita kiinteistösi Euroopassa',
       description:
-        'Taloja, maatiloja ja maaseututiloja Unkarissa, usein suoraan omistajalta. Opastusta omalla kielelläsi ja kaksikieliset kauppakirjat.',
+        'Lataa ilmoituksesi muutamassa vaiheessa. Verkkomaksun jälkeen se julkaistaan 21 kielellä ilman yksinoikeussopimusta.',
     },
     hero: {
       eyebrow: `Vuodesta 2013 · ${foundedInLabel(L)}`,

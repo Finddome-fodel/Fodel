@@ -23,9 +23,9 @@ const pct = (n: number) => `${n} %`;
 export const DE = {
   home: {
     meta: {
-      title: 'FINDDOME Immobilien | Immobilien in Ungarn direkt vom Eigentümer kaufen',
+      title: 'FINDDOME Immobilien | Inserieren Sie Ihre Immobilie in Europa',
       description:
-        'Häuser, Höfe und Landgüter in Ungarn, oft direkt vom Eigentümer. Betreuung in Ihrer Sprache und zweisprachige Kaufverträge.',
+        'Laden Sie Ihr Inserat in wenigen Schritten hoch. Nach der Online-Zahlung erscheint es in 21 Sprachen, ohne Exklusivvertrag.',
     },
     hero: {
       eyebrow: `Seit 2013 · ${foundedInLabel(L)}`,

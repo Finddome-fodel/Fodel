@@ -25,9 +25,9 @@ const hour = (hhmm: string) => {
 export const SK = {
   home: {
     meta: {
-      title: 'FINDDOME Nehnuteľnosti | Kúpte si nehnuteľnosť v Maďarsku priamo od majiteľa',
+      title: 'FINDDOME Nehnuteľnosti | Inzerujte svoju nehnuteľnosť v Európe',
       description:
-        'Domy, farmy a kaštiele v Maďarsku, často priamo od majiteľa. Osobný prístup a dvojjazyčné kúpne zmluvy.',
+        'Nahrajte inzerát v niekoľkých krokoch. Po online platbe sa zobrazí v 21 jazykoch, bez zmluvy o výhradnom zastúpení.',
     },
     hero: {
       eyebrow: `Od roku 2013 · ${foundedInLabel(L)}`,

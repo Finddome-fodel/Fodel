@@ -20,9 +20,9 @@ const L = 'no' as const;
 export const NO = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Kjøp eiendom i Ungarn direkte fra eieren',
+      title: 'FINDDOME Real Estates | Annonser eiendommen din i Europa',
       description:
-        'Hus, gårder og landeiendommer i Ungarn, ofte direkte fra eieren. Veiledning på ditt eget språk og tospråklige kjøpekontrakter.',
+        'Last opp annonsen din i noen få steg. Etter nettbetaling vises den på 21 språk, uten eksklusivitetsavtale.',
     },
     hero: {
       eyebrow: `Siden 2013 · ${foundedInLabel(L)}`,

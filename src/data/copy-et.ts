@@ -20,9 +20,9 @@ const L = 'et' as const;
 export const ET = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Ostke kinnisvara Ungaris otse omanikult',
+      title: 'FINDDOME Real Estates | Kuulutage oma kinnisvara Euroopas',
       description:
-        'Majad, talud ja maavaldused Ungaris, sageli otse omanikult. Nõustamine teie emakeeles ja kakskeelsed ostu-müügilepingud.',
+        'Laadige kuulutus üles mõne sammuga. Pärast veebimakset ilmub see 21 keeles, ilma ainuõiguse lepinguta.',
     },
     hero: {
       eyebrow: `Alates 2013 · ${foundedInLabel(L)}`,

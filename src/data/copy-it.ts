@@ -20,9 +20,9 @@ const L = 'it' as const;
 export const IT = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Acquisti un immobile in Ungheria direttamente dal proprietario',
+      title: 'FINDDOME Real Estates | Pubblichi il suo immobile in Europa',
       description:
-        'Case, aziende agricole e tenute in Ungheria, spesso direttamente dal proprietario. Assistenza nella Sua lingua e contratti di compravendita bilingui.',
+        'Carichi il suo annuncio in pochi passaggi. Dopo il pagamento online è pubblicato in 21 lingue, senza contratto di esclusiva.',
     },
     hero: {
       eyebrow: `Dal 2013 · ${foundedInLabel(L)}`,

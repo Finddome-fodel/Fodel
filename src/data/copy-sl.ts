@@ -20,9 +20,9 @@ const L = 'sl' as const;
 export const SL = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Kupite nepremičnino na Madžarskem neposredno od lastnika',
+      title: 'FINDDOME Real Estates | Oglašujte svojo nepremičnino v Evropi',
       description:
-        'Hiše, kmetije in podeželska posestva na Madžarskem, pogosto neposredno od lastnika. Svetovanje v vašem jeziku in dvojezične prodajne pogodbe.',
+        'Oglas naložite v nekaj korakih. Po spletnem plačilu se objavi v 21 jezikih, brez pogodbe o ekskluzivnosti.',
     },
     hero: {
       eyebrow: `Od leta 2013 · ${foundedInLabel(L)}`,

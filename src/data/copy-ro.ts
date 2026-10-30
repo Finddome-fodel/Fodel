@@ -25,9 +25,9 @@ const hour = (hhmm: string) => {
 export const RO = {
   home: {
     meta: {
-      title: 'FINDDOME Imobiliare | Cumpărați o proprietate în Ungaria direct de la proprietar',
+      title: 'FINDDOME Imobiliare | Promovați-vă proprietatea în Europa',
       description:
-        'Case, ferme și conace în Ungaria, adesea direct de la proprietar. Asistență personală și contracte de vânzare-cumpărare bilingve.',
+        'Încărcați anunțul în câțiva pași. După plata online apare în 21 de limbi, fără contract de exclusivitate.',
     },
     hero: {
       eyebrow: `Din 2013 · ${foundedInLabel(L)}`,

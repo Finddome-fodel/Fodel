@@ -23,7 +23,7 @@ const overlay = Buffer.from(`
     <rect x="80" y="330" width="565" height="2" opacity="0.9"/>
     <text x="80" y="380" font-size="21" letter-spacing="9" opacity="0.85">VASTGOED · INGATLAN</text>
     <text x="80" y="470" font-size="30" opacity="0.95">Onroerend goed kopen direct van de eigenaar</text>
-    <text x="80" y="516" font-size="26" opacity="0.78">Magyar ingatlanok hirdetése Nyugat-Európában</text>
+    <text x="80" y="516" font-size="26" opacity="0.78">Hirdesse ingatlanát Európában</text>
   </g>
 </svg>`);
 

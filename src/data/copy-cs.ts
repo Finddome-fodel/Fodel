@@ -20,9 +20,9 @@ const L = 'cs' as const;
 export const CS = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Kupte nemovitost v Maďarsku přímo od majitele',
+      title: 'FINDDOME Real Estates | Inzerujte svou nemovitost v Evropě',
       description:
-        'Domy, statky a venkovská sídla v Maďarsku, často přímo od majitele. Poradenství ve vašem jazyce a dvojjazyčné kupní smlouvy.',
+        'Nahrajte inzerát v několika krocích. Po online platbě se zobrazí ve 21 jazycích, bez smlouvy o výhradním zastoupení.',
     },
     hero: {
       eyebrow: `Od roku 2013 · ${foundedInLabel(L)}`,

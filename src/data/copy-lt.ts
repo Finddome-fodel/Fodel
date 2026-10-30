@@ -20,9 +20,9 @@ const L = 'lt' as const;
 export const LT = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Įsigykite nekilnojamąjį turtą Vengrijoje tiesiai iš savininko',
+      title: 'FINDDOME Real Estates | Skelbkite savo nekilnojamąjį turtą Europoje',
       description:
-        'Namai, ūkiai ir kaimo valdos Vengrijoje, dažnai tiesiai iš savininko. Konsultacijos jūsų kalba ir dvikalbės pirkimo–pardavimo sutartys.',
+        'Įkelkite skelbimą keliais žingsniais. Apmokėjus internetu jis paskelbiamas 21 kalba, be išskirtinumo sutarties.',
     },
     hero: {
       eyebrow: `Nuo 2013 m. · ${foundedInLabel(L)}`,

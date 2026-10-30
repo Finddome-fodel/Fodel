@@ -20,9 +20,9 @@ const L = 'pt' as const;
 export const PT = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Compre um imóvel na Hungria diretamente ao proprietário',
+      title: 'FINDDOME Real Estates | Anuncie o seu imóvel na Europa',
       description:
-        'Casas, quintas e propriedades rurais na Hungria, muitas vezes diretamente ao proprietário. Acompanhamento na sua língua e contratos de compra e venda bilingues.',
+        'Carregue o seu anúncio em poucos passos. Após o pagamento online, é publicado em 21 idiomas, sem contrato de exclusividade.',
     },
     hero: {
       eyebrow: `Desde 2013 · ${foundedInLabel(L)}`,

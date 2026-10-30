@@ -25,9 +25,9 @@ const hour = (hhmm: string) => {
 export const PL = {
   home: {
     meta: {
-      title: 'FINDDOME Nieruchomości | Kup nieruchomość na Węgrzech bezpośrednio od właściciela',
+      title: 'FINDDOME Nieruchomości | Ogłoś swoją nieruchomość w Europie',
       description:
-        'Domy, gospodarstwa i dwory na Węgrzech, często bezpośrednio od właściciela. Osobista opieka i dwujęzyczne umowy kupna-sprzedaży.',
+        'Dodaj ogłoszenie w kilku krokach. Po płatności online pojawia się w 21 językach, bez umowy na wyłączność.',
     },
     hero: {
       eyebrow: `Od 2013 roku · ${foundedInLabel(L)}`,

@@ -25,9 +25,9 @@ const hour = (hhmm: string) => {
 export const ES = {
   home: {
     meta: {
-      title: 'FINDDOME Inmobiliaria | Comprar un inmueble en Hungría directamente al propietario',
+      title: 'FINDDOME Inmobiliaria | Anuncie su inmueble en Europa',
       description:
-        'Casas, fincas y casas señoriales en Hungría, a menudo directamente al propietario. Acompañamiento personal y contratos de compraventa bilingües.',
+        'Suba su anuncio en pocos pasos. Tras el pago en línea se publica en 21 idiomas, sin contrato de exclusividad.',
     },
     hero: {
       eyebrow: `Desde 2013 · ${foundedInLabel(L)}`,

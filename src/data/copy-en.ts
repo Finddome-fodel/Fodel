@@ -20,9 +20,9 @@ const L = 'en' as const;
 export const EN = {
   home: {
     meta: {
-      title: 'FINDDOME Real Estates | Buy property in Hungary direct from the owner',
+      title: 'FINDDOME Real Estates | Advertise your property in Europe',
       description:
-        'Houses, farms and country estates in Hungary, often direct from the owner. Guidance in your own language and bilingual sale contracts.',
+        'Upload your listing in a few steps. After online payment it goes live on our site in 21 languages, with no exclusivity contract.',
     },
     hero: {
       eyebrow: `Since 2013 · ${foundedInLabel(L)}`,

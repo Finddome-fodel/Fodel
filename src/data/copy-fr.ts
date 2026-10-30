@@ -29,9 +29,9 @@ const hour = (hhmm: string) => {
 export const FR = {
   home: {
     meta: {
-      title: 'FINDDOME Immobilier | Acheter un bien en Hongrie, directement auprès du propriétaire',
+      title: 'FINDDOME Immobilier | Annoncez votre bien en Europe',
       description:
-        'Maisons, fermes et domaines en Hongrie, souvent directement auprès du propriétaire. Accompagnement dans votre langue et contrats de vente bilingues.',
+        'Déposez votre annonce en quelques étapes. Après paiement en ligne, elle est publiée en 21 langues, sans contrat d’exclusivité.',
     },
     hero: {
       eyebrow: `Depuis 2013 · ${foundedInLabel(L)}`,

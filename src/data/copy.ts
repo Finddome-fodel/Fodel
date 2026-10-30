@@ -59,9 +59,9 @@ const BASE = {
   hu: {
     home: {
       meta: {
-        title: 'FINDDOME Ingatlan | Magyar ingatlanok hirdetése Nyugat-Európában',
+        title: 'FINDDOME Ingatlan | Hirdesse ingatlanát Európában',
         description:
-          `Hirdesse magyar ingatlanát ${REACH_LANGUAGES} nyelven, ${REACH_COUNTRIES} országban, kizárólagossági szerződés nélkül. Készpénzes holland, belga és német vevők. Jutalék csak sikeres eladás esetén.`,
+          'Töltse fel hirdetését néhány lépésben. Online fizetés után 21 nyelvű oldalunkon jelenik meg, kizárólagossági szerződés nélkül.',
       },
       hero: {
         eyebrow: `Alapítva 2013 · ${foundedInLabel('hu')}`,
@@ -322,9 +322,9 @@ const BASE = {
   nl: {
     home: {
       meta: {
-        title: 'FINDDOME Vastgoed | Onroerend goed kopen direct van de eigenaar',
+        title: 'FINDDOME Vastgoed | Adverteer uw vastgoed in Europa',
         description:
-          'Huizen, boerderijen en landgoederen in Hongarije, vaak rechtstreeks van de eigenaar. Nederlandse begeleiding en tweetalige contracten.',
+          'Plaats uw advertentie in enkele stappen. Na online betaling staat ze op onze site in 21 talen, zonder exclusiviteitscontract.',
       },
       hero: {
         eyebrow: `Sinds 2013 · ${foundedInLabel('nl')}`,
