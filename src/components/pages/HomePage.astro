@@ -31,7 +31,6 @@ import PropertyCard from '~/components/PropertyCard.astro';
 import HomeSearch from '~/components/HomeSearch.astro';
 import NewsletterForm from '~/components/NewsletterForm.astro';
 import ParallaxCta from '~/components/ParallaxCta.astro';
-import StatsBand from '~/components/StatsBand.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
 import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
@@ -64,7 +63,6 @@ const hu = locale === 'hu';
 const ui = UI[locale];
 const c = copy(locale).home;
 const steps = copy(locale).steps;
-const stats = copy(locale).stats;
 
 const all = await activeProperties();
 const featured = await homepageFeatured(3);
@@ -364,8 +362,6 @@ const quote = splitOpeningQuote(c.quote);
           {quote.mark && <span class="hang-quote">{quote.mark}</span>}{quote.rest}
         </blockquote>
       </div>
-
-      <StatsBand stats={stats} class="statement-stats" />
     </div>
   </section>
 
@@ -1364,9 +1360,6 @@ const quote = splitOpeningQuote(c.quote);
     letter-spacing: var(--ls-display);
     color: var(--cream);
     text-wrap: balance;
-  }
-  .statement :global(.statement-stats) {
-    margin-top: clamp(80px, 8vw, 128px);
   }
 
   /* ══ AUDIENCES ════════════════════════════════════════════════════════ */
