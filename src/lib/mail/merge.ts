@@ -24,6 +24,8 @@ export const MERGE_FIELD_KEYS = [
   'property_ref',
   'property_description',
   'property_area',
+  'property_rooms',
+  /** @deprecated the old name of {{property_rooms}}; still filled so older templates keep working. */
   'property_bedrooms',
   'property_photo_url',
   'old_price',
@@ -48,7 +50,8 @@ export const MERGE_FIELD_LABEL: Record<MergeFieldKey, string> = {
   property_ref: 'Hirdetés azonosító',
   property_description: 'Ingatlan leírása (rövid kivonat, a sablon nyelvén)',
   property_area: 'Alapterület',
-  property_bedrooms: 'Hálószobák száma',
+  property_rooms: 'Szobák száma (félszobák nélkül)',
+  property_bedrooms: 'Szobák száma (régi mezőkód)',
   property_photo_url: 'Ingatlan fő fotója (kép címe)',
   old_price: 'Előző ár (árcsökkenés)',
   new_price: 'Új ár (árcsökkenés)',
@@ -76,13 +79,13 @@ export function findUnresolvedMergeFields(content: string): string[] {
 }
 
 /**
- * Listing facts not every listing has (a plot has no bedrooms, a fresh listing
+ * Listing facts not every listing has (a plot has no rooms, a fresh listing
  * may have no description yet). With a listing attached they may be empty —
  * buildMergeFields() already put a neutral "—" or the brand photo in their
  * place — so they never block a send on their own. Without any listing they
  * are as missing as {{property_title}}.
  */
-const SOFT_PROPERTY_FIELDS: readonly MergeFieldKey[] = ['property_description', 'property_area', 'property_bedrooms', 'property_photo_url'];
+const SOFT_PROPERTY_FIELDS: readonly MergeFieldKey[] = ['property_description', 'property_area', 'property_rooms', 'property_bedrooms', 'property_photo_url'];
 
 /**
  * Known tokens with no value for this recipient — `{{property_title}}` in a
@@ -126,6 +129,7 @@ export const SAMPLE_MERGE_FIELDS: Record<MergeFieldKey, string> = {
   property_description:
     'Gondosan felújított, napfényes parasztház csendes utcában, a Balaton-felvidék szívében. Tágas, termőfás kert, fedett terasz és külön vendégház – nyaralónak és állandó otthonnak egyaránt ideális.',
   property_area: '120 m²',
+  property_rooms: '3',
   property_bedrooms: '3',
   property_photo_url: `${SITE_URL}${SAMPLE_PROPERTY_PHOTO_PATH}`,
   old_price: '€ 139.000',
@@ -180,7 +184,7 @@ export function buildMergeFields(params: {
     oldPrice?: string | null;
     description?: string | null;
     area?: string | null;
-    bedrooms?: string | null;
+    rooms?: string | null;
     photoUrl?: string | null;
   } | null;
   signature?: { name: string; phone: string | null; email: string | null } | null;
@@ -198,7 +202,8 @@ export function buildMergeFields(params: {
     property_ref: property?.ref ?? null,
     property_description: property?.description ?? null,
     property_area: property ? property.area || '—' : null,
-    property_bedrooms: property ? property.bedrooms || '—' : null,
+    property_rooms: property ? property.rooms || '—' : null,
+    property_bedrooms: property ? property.rooms || '—' : null,
     property_photo_url: property?.photoUrl ?? null,
     old_price: property?.oldPrice ?? null,
     new_price: property?.oldPrice ? property.price : null,

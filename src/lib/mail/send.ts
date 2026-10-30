@@ -8,6 +8,7 @@
  * calls it too: what the admin previews for a recipient is byte for byte what
  * that recipient would get.
  */
+import { readDetails } from '~/lib/listing-details';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { localeFrom } from '~/i18n/ui';
 import { eur, floorArea, placeLabel } from '~/lib/format';
@@ -71,7 +72,8 @@ export type PropertyContext = {
   oldPrice: string | null;
   description: string | null;
   area: string | null;
-  bedrooms: string | null;
+  /** Rooms, half rooms not counted. */
+  rooms: string | null;
   photoUrl: string | null;
 };
 
@@ -83,7 +85,7 @@ export async function loadPropertyContext(client: Client, propertyId: string, lo
   const lang = localeFrom(locale);
   const { data: property } = await client
     .from('properties')
-    .select('id, ref, category, settlement, county, price_eur, floor_m2, bedrooms')
+    .select('id, ref, category, settlement, county, price_eur, floor_m2, details')
     .eq('id', propertyId)
     .maybeSingle();
   if (!property) return null;
@@ -113,7 +115,7 @@ export async function loadPropertyContext(client: Client, propertyId: string, lo
     oldPrice: reduced ? eur(change.old_eur, lang) : null,
     description: descriptionExcerpt(description),
     area: property.floor_m2 ? floorArea(Number(property.floor_m2), lang) : null,
-    bedrooms: property.bedrooms != null ? String(property.bedrooms) : null,
+    rooms: (() => { const rooms = readDetails(property.details).rooms; return rooms !== undefined ? String(rooms) : null; })(),
     photoUrl: photo, // null: no mailable photo, the picture row is left out (dropMissingPhoto)
   };
 }

@@ -11,7 +11,7 @@
  * and sellers actually write in); any other language starts from English and
  * is translated in the editor. Every piece of copy sits in a simple-editor
  * marker, so nothing here needs HTML to change. Everything about the listing
- * — title, place, description, floor area, bedrooms, price, link and the main
+ * — title, place, description, floor area, rooms, price, link and the main
  * photo — is a merge field, filled at send time from the listing the email is
  * about. That is what lets one template answer enquiries about every listing
  * (the automatic reply), and a price change reach the email by itself.
@@ -85,7 +85,7 @@ const COPY: Record<BaseLocale, Copy> = {
     intro: 'Köszönjük érdeklődését a következő ingatlan iránt: „{{property_title}}”. Megkaptuk üzenetét, kollégánk hamarosan személyesen is felveszi Önnel a kapcsolatot. Addig is összegyűjtöttük az ingatlan legfontosabb adatait.',
     locationEyebrow: '{{property_location}}',
     stat1Label: 'Alapterület',
-    stat2Label: 'Hálószobák',
+    stat2Label: 'Szobák',
     stat3Label: 'Irányár',
     cta: 'Hirdetés megtekintése',
     aboutEyebrow: 'Miért a FINDDOME?',
@@ -115,7 +115,7 @@ const COPY: Record<BaseLocale, Copy> = {
     intro: 'Dank u voor uw interesse in „{{property_title}}”. Wij hebben uw bericht ontvangen en een collega neemt binnenkort persoonlijk contact met u op. Alvast de belangrijkste gegevens op een rij.',
     locationEyebrow: '{{property_location}}',
     stat1Label: 'Woonoppervlak',
-    stat2Label: 'Slaapkamers',
+    stat2Label: 'Kamers',
     stat3Label: 'Vraagprijs',
     cta: 'Bekijk de advertentie',
     aboutEyebrow: 'Waarom FINDDOME?',
@@ -145,7 +145,7 @@ const COPY: Record<BaseLocale, Copy> = {
     intro: 'Thank you for your interest in “{{property_title}}”. We have received your message and a colleague will be in touch with you personally soon. In the meantime, here are the key facts.',
     locationEyebrow: '{{property_location}}',
     stat1Label: 'Floor area',
-    stat2Label: 'Bedrooms',
+    stat2Label: 'Rooms',
     stat3Label: 'Asking price',
     cta: 'View the listing',
     aboutEyebrow: 'Why FINDDOME?',
@@ -175,7 +175,7 @@ const COPY: Record<BaseLocale, Copy> = {
     intro: 'Vielen Dank für Ihr Interesse an „{{property_title}}“. Wir haben Ihre Nachricht erhalten, und ein Mitarbeiter meldet sich in Kürze persönlich bei Ihnen. Vorab finden Sie hier die wichtigsten Angaben.',
     locationEyebrow: '{{property_location}}',
     stat1Label: 'Wohnfläche',
-    stat2Label: 'Schlafzimmer',
+    stat2Label: 'Zimmer',
     stat3Label: 'Kaufpreis',
     cta: 'Inserat ansehen',
     aboutEyebrow: 'Warum FINDDOME?',
@@ -324,7 +324,7 @@ function propertyTemplate(company: Company, locale: BaseLocale, siteUrl: string)
     <div style="font-family:${SANS};font-size:15px;line-height:1.75;color:${TAUPE};margin-top:16px;">${edit('description', '{{property_description}}')}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;border-top:1px solid ${BORDER};border-bottom:1px solid ${BORDER};"><tr>
       ${stat('stat1_label', 'stat1_value', c.stat1Label, '{{property_area}}')}
-      ${stat('stat2_label', 'stat2_value', c.stat2Label, '{{property_bedrooms}}')}
+      ${stat('stat2_label', 'stat2_value', c.stat2Label, '{{property_rooms}}')}
       ${stat('stat3_label', 'stat3_value', c.stat3Label, '{{property_price}}', true)}
     </tr></table>
     <div style="margin-top:28px;">${button(c.cta, '{{property_url}}', { key: 'cta_text' })}</div>
