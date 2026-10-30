@@ -579,7 +579,10 @@ const { data: creditableReferral } = property.owner_id
     const picked = document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)').length;
     sum += picked * translationPrice;
     const costEl = document.querySelector('[data-tr-cost]');
-    if (costEl) costEl.textContent = picked ? `${picked} nyelv: kb. ${(picked * perLanguageMicro / 1e6 < 0.01 ? '< 0,01' : (picked * perLanguageMicro / 1e6).toFixed(2).replace('.', ','))} €` : 'nincs nyelv kiválasztva';
+    if (costEl) {
+      const euros = (picked * perLanguageMicro) / 1e6;
+      costEl.textContent = !picked ? 'nincs nyelv kiválasztva' : euros < 0.01 ? `${picked} nyelv: kevesebb mint 1 cent` : `${picked} nyelv: kb. ${euros.toFixed(2).replace('.', ',')} €`;
+    }
 
     const discountApplied = Boolean(discountBox?.checked) || Boolean(creditBox?.checked);
     if (discountApplied) {

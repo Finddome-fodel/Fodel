@@ -843,6 +843,15 @@ console.log('AI translation: the rules around the model');
     assert.equal(paid.isTranslationOrder([]), false);
     assert.equal(paid.isTranslationOrder(null), false);
   });
+  const requestedLib = await import('../src/lib/portal/requested-extras.ts');
+  test('a request can name any of the twenty languages, and nothing else', () => {
+    const all = core.OWNER_TARGETS.join(' ');
+    assert.equal(requestedLib.extrasFromForm({ translations: `${all} hu xx DE` }).translations.length, 20);
+    assert.deepEqual(requestedLib.extrasFromForm({ translations: 'lt, hu, nl, nl, zz' }).translations, ['lt', 'nl']);
+    assert.deepEqual(requestedLib.readRequestedExtras({ translations: ['de', 'hu', 'zz', 7, 'lt'] }).translations, ['de', 'lt']);
+    assert.ok(core.RECOMMENDED_TARGETS.every((code) => core.OWNER_TARGETS.includes(code)), 'the recommended four are among them');
+    assert.equal(core.OWNER_TARGETS.length, 20);
+  });
   const mock = (answer) => async ({ user }) => {
     const input = JSON.parse(user).translate;
     return { data: answer(input), usage: { model: 'gpt-4o-mini', tokensIn: 1000, tokensOut: 800 } };
