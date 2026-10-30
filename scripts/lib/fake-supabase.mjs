@@ -7,7 +7,7 @@
  */
 let seq = 0;
 
-export function createFakeDb(seed = {}) {
+export function createFakeDb(seed = {}, options = {}) {
   const tables = {};
   for (const [name, rows] of Object.entries(seed)) tables[name] = rows.map((row) => ({ ...row }));
   const table = (name) => (tables[name] ??= []);
@@ -22,7 +22,11 @@ export function createFakeDb(seed = {}) {
       this.wantOne = null;
       this.returning = false;
     }
-    select() { if (this.op !== 'select') this.returning = true; return this; }
+    select(_cols, opts) {
+      if (this.op !== 'select') this.returning = true;
+      if (opts?.count) { this.wantCount = true; this.head = Boolean(opts.head); }
+      return this;
+    }
     insert(rows) { this.op = 'insert'; this.rows = Array.isArray(rows) ? rows : [rows]; return this; }
     update(patch) { this.op = 'update'; this.patch = patch; return this; }
     delete() { this.op = 'delete'; return this; }
@@ -32,6 +36,7 @@ export function createFakeDb(seed = {}) {
     is(col, value) { this.tests.push((row) => (row[col] ?? null) === value); return this; }
     lt(col, value) { this.tests.push((row) => row[col] < value); return this; }
     gte(col, value) { this.tests.push((row) => row[col] >= value); return this; }
+    not(col, op, value) { if (op === 'is') this.tests.push((row) => (row[col] ?? null) !== value); return this; }
     order(col, { ascending = true } = {}) { this.sort.push([col, ascending]); return this; }
     limit(n) { this.limitTo = n; return this; }
     range() { return this; }
@@ -48,7 +53,12 @@ export function createFakeDb(seed = {}) {
           if (this.name === 'activity_events' && row.dedupe_key && rows.some((r) => r.dedupe_key === row.dedupe_key)) {
             return { data: null, error: { message: 'duplicate key value violates unique constraint "activity_events_dedupe_key"' } };
           }
-          rows.push(row);
+          // The partial unique index of migration 0043: one live job per listing and language.
+          if (this.name === 'translation_jobs' && ['requested', 'queued', 'running'].includes(row.status ?? 'queued')
+            && rows.some((r) => r.property_id === row.property_id && r.locale === row.locale && ['requested', 'queued', 'running'].includes(r.status))) {
+            return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint "translation_jobs_one_live_per_locale"' } };
+          }
+          rows.push(this.name === 'translation_jobs' ? { status: 'queued', attempts: 0, overwrite: false, created_at: new Date().toISOString(), ...row } : row);
           added.push(row);
         }
         return this.finish(this.returning ? added : null);
@@ -68,6 +78,7 @@ export function createFakeDb(seed = {}) {
     }
 
     finish(data) {
+      if (this.wantCount) return { data: this.head ? null : data, error: null, count: (data ?? []).length };
       if (!this.wantOne) return { data, error: null };
       const list = data ?? [];
       if (this.wantOne === 'single' && list.length !== 1) return { data: null, error: { message: 'expected one row' } };
@@ -75,5 +86,5 @@ export function createFakeDb(seed = {}) {
     }
   }
 
-  return { tables, table, client: { from: (name) => new Query(name), rpc: async () => ({ data: null, error: null }) } };
+  return { tables, table, client: { from: (name) => new Query(name), rpc: async (name, args) => (options.rpc?.[name] ? options.rpc[name](args, tables) : { data: null, error: null }) } };
 }

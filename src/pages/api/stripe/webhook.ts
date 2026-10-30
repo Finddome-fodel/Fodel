@@ -30,6 +30,7 @@ import { localeFrom } from '~/i18n/ui';
 import { officeInbox } from '~/lib/email/routing';
 import { SITE_URL } from '~/config/site.mjs';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
+import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 
 export const prerender = false;
 
@@ -131,6 +132,8 @@ export const POST: APIRoute = async ({ request }) => {
       ? await admin.from('properties').select('status').eq('id', order.property_id).maybeSingle()
       : { data: null };
 
+    // Whether the listing is online now: it was, or this payment just put it there.
+    let live = property?.status === 'published';
     if (property?.status === 'awaiting_payment') {
       const result = await publishProperty(admin, order.property_id, { dedupeKey: event.id });
       if (!result.ok) {
@@ -139,10 +142,15 @@ export const POST: APIRoute = async ({ request }) => {
         console.error(`[stripe] payment recorded but publish failed for ${order.property_id}`, result.error);
         return new Response('publish failed', { status: 500 });
       }
+      live = true;
     } else if (!alreadySettled && property?.status !== 'published') {
       console.warn(`[stripe] payment for ${order.property_id} arrived while the listing is ${property?.status ?? 'missing'} — not published, flagged for refund review`);
       await admin.from('payments').update({ refund_required: true }).eq('id', order.id).then(() => {}, () => {});
     }
+
+    // Paid-for translations start now that the listing is online. Safe to run again on a
+    // retried delivery: a language this payment already ordered is never ordered twice.
+    if (live) await enqueuePaidTranslations(admin, order, new URL(request.url).origin);
 
     if (!alreadySettled) {
       await sendReceipt(admin, order, paidAt);

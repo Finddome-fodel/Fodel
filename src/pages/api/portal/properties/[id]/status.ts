@@ -35,6 +35,7 @@ import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send'
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
 import { publishProperty, listingTitle, publicUrl, renewProperty } from '~/lib/portal/publish';
+import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 import { placeholderProblem } from '~/lib/portal/placeholder';
 import { deleteImage } from '~/lib/media';
 import { logEvent } from '~/lib/activity';
@@ -223,6 +224,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
             ? body.order.extras.map((e: any) => ({
                 id: String(e.id),
                 quantity: Number(e.quantity ?? 1),
+                ...(Array.isArray(e.locales) ? { locales: e.locales.map(String) } : {}),
               }))
             : [],
         }
@@ -240,6 +242,13 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         }, listing);
     // The higher tier is decided from the listing's own price, never the browser.
     selection.aboveThreshold = isAboveThreshold(packageOf(listing, selection.packageId), property.price_huf);
+    // A language the listing already has text in is never sold: the AI would not touch it, and the owner would pay for nothing.
+    const haveText = new Set((property.property_translations ?? []).filter((t: { title: string; description: string }) => t.title?.trim() || t.description?.trim()).map((t: { locale: string }) => t.locale));
+    selection.extras = selection.extras.flatMap((extra) => {
+      if (extra.id !== 'translation' || !extra.locales) return [extra];
+      const rest = extra.locales.filter((code) => !haveText.has(code));
+      return rest.length ? [{ ...extra, locales: rest, quantity: rest.length }] : [];
+    });
 
     let lines;
     try {
@@ -441,7 +450,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const admin = createSupabaseAdminClient();
     const { data: order } = await admin
       .from('payments')
-      .select('id')
+      .select('id, property_id, owner_id, line_items')
       .eq('property_id', id)
       .eq('status', 'pending')
       .order('created_at', { ascending: false })
@@ -469,6 +478,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // Stripe webhook call, and logging in both would double-count the event.
     const result = await publishProperty(supabase, id!);
     if (!result.ok) return json(500, { ok: false, error: result.error });
+    // The transfer is confirmed and the listing is online: the translations that were paid for start.
+    if (order) await enqueuePaidTranslations(admin, order, new URL(request.url).origin);
     return json(200, { ok: true });
   }
 

@@ -24,7 +24,7 @@ import PhotoTips from '~/components/PhotoTips.astro';
 import RegisterForm from '~/components/forms/RegisterForm.astro';
 import { LOCALE_META, path, localizer, type Locale } from '~/i18n/ui';
 import { getCompany } from '~/lib/runtime-config';
-import { TRANSLATION_LANGUAGES } from '~/config/company';
+import { RECOMMENDED_TRANSLATION_LANGUAGES } from '~/config/company';
 import { listingCatalog, packageCard, priceFacts } from '~/lib/listing-packages';
 import { alternatesFor } from '~/lib/page';
 import { approvedWording } from '~/lib/approved-text';
@@ -836,7 +836,7 @@ const videoSold = catalog.packages.some((pkg) => pkg.video === 'extra');
 const extrasInfo = [
   {
     name: t.extraTranslation,
-    detail: TRANSLATION_LANGUAGES.map((lang) => LOCALE_META[lang].label).join(', '),
+    detail: RECOMMENDED_TRANSLATION_LANGUAGES.map((lang) => LOCALE_META[lang].label).join(', '),
     price: `${money(translationExtra.priceEur * 100)} ${t.extraTranslationUnit}`,
   },
   {

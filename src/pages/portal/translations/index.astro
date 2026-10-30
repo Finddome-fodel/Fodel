@@ -1,0 +1,181 @@
+---
+/**
+ * Admin — translations at a glance: requests from free-link owners waiting for
+ * a decision, what is being made, what got stuck, what is done. Approve or
+ * decline a request, run a stuck job again, or push the queue along ("Folytatás
+ * most"). The work itself is src/lib/ai/translation-jobs.ts.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { icon } from '~/lib/portal/icons';
+import { timeAgo } from '~/lib/portal/time';
+import { isAiEnabled } from '~/lib/ai/client';
+import { HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL, ORIGIN_HU, formatCostHu } from '~/lib/ai/translate-core';
+import { dailyCapMicroEur, spentTodayMicroEur, isMissingTranslationSchema } from '~/lib/ai/translation-jobs';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const filter = Astro.url.searchParams.get('status') ?? 'requested';
+const FILTERS: [string, string, string[] | null][] = [
+  ['requested', 'Jóváhagyásra vár', ['requested']],
+  ['active', 'Folyamatban', ['queued', 'running']],
+  ['failed', 'Elakadt', ['failed']],
+  ['done', 'Kész', ['done']],
+  ['all', 'Mind', null],
+];
+const statuses = FILTERS.find(([key]) => key === filter)?.[2] ?? null;
+
+let query = supabase
+  .from('translation_jobs')
+  .select('id, property_id, locale, source_locale, origin, status, last_error, attempts, estimated_cost_micro_eur, cost_micro_eur, created_at, finished_at, properties(ref, settlement, property_translations(locale, title))')
+  .order('created_at', { ascending: false })
+  .limit(400);
+if (statuses) query = query.in('status', statuses);
+const { data: rows, error } = await query;
+const migrated = !(error && isMissingTranslationSchema(error));
+
+// Counts for the tabs, in one query.
+const { data: all } = migrated ? await supabase.from('translation_jobs').select('status').limit(5000) : { data: [] };
+const tally = (list: string[]) => (all ?? []).filter((row: { status: string }) => list.includes(row.status)).length;
+const counts: Record<string, number> = { requested: tally(['requested']), active: tally(['queued', 'running']), failed: tally(['failed']), done: tally(['done']), all: (all ?? []).length };
+
+// Group by listing, newest listing activity first.
+type Row = NonNullable<typeof rows>[number];
+const groups = new Map<string, Row[]>();
+for (const row of rows ?? []) groups.set(row.property_id, [...(groups.get(row.property_id) ?? []), row]);
+
+const aiOn = isAiEnabled();
+const spent = migrated ? await spentTodayMicroEur(createSupabaseAdminClient()).catch(() => 0) : 0;
+const cap = dailyCapMicroEur();
+const prop = (row: any) => (Array.isArray(row.properties) ? row.properties[0] : row.properties) ?? {};
+const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: { locale: string }) => t.locale === 'hu')?.title ?? (prop(row).property_translations ?? [])[0]?.title ?? 'Névtelen hirdetés';
+---
+
+<Portal title="Fordítások">
+  <header class="ph">
+    <div>
+      <p class="eyebrow">Fordítások</p>
+      <h1>Mi készül <em>éppen?</em></h1>
+      <p class="lede">
+        Az ingyenes feltöltők kéréseit itt hagyja jóvá; a fizetett fordítások maguktól elindulnak a befizetés után.
+        Bármelyik hirdetést ingyen lefordíthatja a szerkesztőben, a Szövegek résznél.
+      </p>
+    </div>
+    <p class="count"><b>{counts.requested}</b><span>jóváhagyásra vár</span></p>
+  </header>
+
+  {!migrated && <p class="notice error">Ehhez az oldalhoz futtassa le a 0043-as migrációt (a Supabase SQL Editorban).</p>}
+  {migrated && !aiOn && (
+    <p class="notice warn">Az AI fordítás nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben). A kérések és a fizetett nyelvek sorban várnak, bekapcsoláskor elkészülnek.</p>
+  )}
+
+  {migrated && (
+    <div class="spend">
+      <p>Ma elköltve: <b>{formatCostHu(spent)}</b> <span>(napi keret: €{(cap / 1_000_000).toLocaleString('hu-HU')}; a keret elérése után a fordítások másnapig várnak)</span></p>
+      {counts.active > 0 && aiOn && <button type="button" class="btn ghost small" id="continue-now">Folytatás most</button>}
+    </div>
+  )}
+
+  <div class="filters">
+    {FILTERS.map(([value, label]) => (
+      <a href={`/portal/translations?status=${value}`} aria-current={filter === value ? 'page' : undefined}>{label}{counts[value] ? <span class="n">{counts[value]}</span> : null}</a>
+    ))}
+  </div>
+
+  {groups.size > 0 ? (
+    <ul class="tq">
+      {[...groups.entries()].map(([propertyId, list]) => (
+        <li class="tq-card" data-property={propertyId}>
+          <div class="tq-head">
+            <h2><a href={`/portal/properties/${propertyId}#translations`}>{titleOf(list[0])}</a></h2>
+            <p class="tq-meta">#{prop(list[0]).ref} · {prop(list[0]).settlement}</p>
+            {filter === 'requested' && list.length > 1 && (
+              <button type="button" class="btn small" data-act="approve" data-jobs={list.map((j: any) => j.id).join(',')}>Mind jóváhagyása ({list.length})</button>
+            )}
+          </div>
+          <ul class="tq-rows">
+            {list.map((job: any) => (
+              <li data-job={job.id}>
+                <span class="tq-lang">{HU_NAME[job.locale] ?? job.locale}</span>
+                <span class:list={['pill', JOB_STATUS_PILL[job.status]]}>{JOB_STATUS_HU[job.status] ?? job.status}</span>
+                <span class="tq-origin">{ORIGIN_HU[job.origin] ?? job.origin}</span>
+                <span class="tq-when" title={job.created_at}>{timeAgo(job.finished_at ?? job.created_at)}</span>
+                <span class="tq-cost">{job.cost_micro_eur != null ? `AI: ${formatCostHu(job.cost_micro_eur)}` : job.estimated_cost_micro_eur != null ? `becsült: ${formatCostHu(job.estimated_cost_micro_eur)}` : ''}</span>
+                <span class="tq-actions">
+                  {job.status === 'requested' && (
+                    <>
+                      <button type="button" class="btn small" data-act="approve" data-jobs={job.id}>Jóváhagyom</button>
+                      <button type="button" class="btn ghost small" data-act="decline" data-jobs={job.id}>Elutasítom</button>
+                    </>
+                  )}
+                  {job.status === 'failed' && <button type="button" class="btn ghost small" data-act="retry" data-jobs={job.id}>Újra</button>}
+                  {job.status === 'queued' && <button type="button" class="btn ghost small" data-act="cancel" data-jobs={job.id}>Visszavonás</button>}
+                </span>
+                {job.last_error && job.status !== 'done' && <span class="tq-err">{job.last_error}</span>}
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    migrated && (
+      <div class="empty">
+        <span class="empty-ic" set:html={icon('globe', 26)} />
+        <p>{filter === 'requested' ? 'Nincs jóváhagyásra váró kérés.' : 'Ehhez a szűréshez nincs tétel.'}</p>
+      </div>
+    )
+  )}
+</Portal>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-act]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const card = button.closest<HTMLElement>('[data-property]');
+      if (!card) return;
+      button.disabled = true;
+      const res = await fetch(`/api/portal/properties/${card.dataset.property}/translations`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: button.dataset.act, jobIds: String(button.dataset.jobs).split(',') }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) { button.disabled = false; window.pf!.toast(json.message || 'Nem sikerült.', 'error'); return; }
+      location.reload();
+    });
+  });
+  document.getElementById('continue-now')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget as HTMLButtonElement;
+    button.disabled = true;
+    const res = await fetch('/api/portal/translations/continue', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+    const json = await res.json().catch(() => ({}));
+    window.pf!.toast(res.ok ? 'A fordítás folytatódik.' : json.message || 'Nem sikerült.', res.ok ? 'ok' : 'error');
+    setTimeout(() => location.reload(), 1500);
+  });
+</script>
+
+<style>
+  .count b { margin-right: 6px; }
+  .spend { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 20px; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .spend p { margin: 0; }
+  .spend b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tq { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .tq-card { padding: 20px 22px; border-radius: var(--r-lg); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); }
+  .tq-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
+  .tq-head h2 { margin: 0; font-family: var(--serif); font-size: 20px; font-weight: var(--fw-display); }
+  .tq-head h2 a { color: var(--ink); text-decoration: none; }
+  .tq-head h2 a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .tq-meta { margin: 0; font-size: var(--fs-small); color: var(--ink-quiet); flex: 1; }
+  .tq-rows { list-style: none; margin: 12px 0 0; padding: 0; }
+  .tq-rows > li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 11px 0; border-top: 1px solid var(--pt-hair); font-size: var(--fs-small); }
+  .tq-lang { min-width: 84px; font-weight: var(--fw-medium); color: var(--ink); text-transform: capitalize; }
+  .tq-origin, .tq-when, .tq-cost { color: var(--ink-quiet); }
+  .tq-cost { font-variant-numeric: tabular-nums; }
+  .tq-actions { margin-left: auto; display: inline-flex; gap: 8px; }
+  .tq-err { flex-basis: 100%; color: var(--pt-red); }
+  .filters .n { margin-left: 6px; font-variant-numeric: tabular-nums; opacity: 0.7; }
+  @media (max-width: 640px) { .tq-card { padding: 16px; } .tq-actions { margin-left: 0; flex-basis: 100%; } }
+</style>

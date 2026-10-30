@@ -28,6 +28,11 @@ import { eur, huf, placeLabel } from '~/lib/format';
 import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM, fieldRules, detailGaps, gapLabel } from '~/lib/listing-details';
 import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS } from '~/lib/listing-catalogue';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
+import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import { isAiEnabled } from '~/lib/ai/client';
+import { translationModel } from '~/lib/ai/translate';
+import { estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL } from '~/lib/ai/translate-core';
+import { jobsForProperty } from '~/lib/ai/translation-jobs';
 import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/requested-extras';
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { paymentGatesPublishing } from '~/config/flags';
@@ -97,6 +102,17 @@ const suggested = suggestSelection({
   locales: property.translations.map((t) => t.locale),
 }, listing);
 const suggestedExtras = new Map(suggested.extras.map((e) => [e.id, e.quantity]));
+
+// AI translation: what is asked for, what is already there, and roughly what the AI will cost.
+const aiOn = isAiEnabled();
+const trSource = pickSource(property.translations);
+const trPerLanguage = estimateCostMicroEur(trSource ? listingChars(listingText(trSource)) : 0, translationModel());
+const trPresent = property.translations.filter((row) => row.title?.trim() || row.description?.trim()).map((row) => row.locale);
+const trPrice = cat.extras.find((e) => e.id === 'translation')?.priceEur ?? 0;
+const trSuggested = suggested.extras.find((e) => e.id === 'translation')?.locales ?? [];
+// A free-link owner's requests wait here for the admin's decision.
+const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
+const trOpen = trJobs.filter((job) => job.status === 'requested');
 const aboveThreshold = isAboveThreshold(property.price_huf, listing, suggested.packageId);
 const tieredPackage = listing.packages.find((pkg) => tierApplies(pkg, property.price_huf));
 
@@ -306,6 +322,35 @@ const { data: creditableReferral } = property.owner_id
     </p>
   )}
 
+  {property.free_listing && trJobs.some((job) => !['cancelled'].includes(job.status)) && (
+    <section class="card-block tr-requests" id="tr-requests">
+      <h2>Fordítási kérések <span class="ai-badge">AI fordítás</span></h2>
+      <p class="hint">
+        A hirdető ingyenes feltöltő meghívóval érkezett, ezért a fordítás nem indul el magától. Amit jóváhagy, azt az AI
+        ingyen lefordítja (nyelvenként {formatCostHu(trPerLanguage)} AI-költség).
+        {!aiOn && ' Az AI fordítás most nincs bekapcsolva: a jóváhagyott nyelvek sorba állnak, és később elkészülnek.'}
+      </p>
+      <ul class="tr-list">
+        {trJobs.filter((job) => job.status !== 'cancelled').map((job) => (
+          <li>
+            <span class="tr-lang">{HU_NAME[job.locale] ?? job.locale}</span>
+            <span class={`pill ${JOB_STATUS_PILL[job.status] ?? ''}`}>{JOB_STATUS_HU[job.status] ?? job.status}</span>
+            {job.status === 'requested' && (
+              <span class="tr-actions">
+                <button type="button" class="btn small" data-tr-act="approve" data-job={job.id}>Jóváhagyom</button>
+                <button type="button" class="btn ghost small" data-tr-act="decline" data-job={job.id}>Elutasítom</button>
+              </span>
+            )}
+            {job.status === 'failed' && job.last_error && <span class="tr-err">{job.last_error}</span>}
+          </li>
+        ))}
+      </ul>
+      {trOpen.length > 1 && (
+        <p><button type="button" class="btn ghost small" data-tr-act="approve" data-job={trOpen.map((job) => job.id).join(',')}>Mind jóváhagyása ({trOpen.length})</button></p>
+      )}
+    </section>
+  )}
+
   {reviewable && !property.free_listing && (
     <section class="order card-block" id="order">
       <h2>Fizetendő díj</h2>
@@ -338,9 +383,20 @@ const { data: creditableReferral } = property.owner_id
         )}
       </fieldset>
 
+      <fieldset class="extras tr-extra" id="tr-extra">
+        <legend>Fordítás <span class="ai-badge">AI fordítás</span></legend>
+        <p class="hint">
+          {aiOn
+            ? 'A fordításokat a rendszer automatikusan, OpenAI-val készíti el, miután a hirdető kifizette a díjat. Gép készíti, ember nem nézi át.'
+            : 'Az AI fordítás jelenleg nincs bekapcsolva. A nyelvek a fizetés után sorba állnak, és amint bekapcsolja, elkészülnek; addig a szerkesztőben kézzel is fordíthat.'}
+        </p>
+        <TranslationPicker lang="hu" bare name="translation_locale" selected={trSuggested} present={trPresent} priceEur={trPrice} />
+        <p class="tr-cost">Becsült AI-költség: <strong data-tr-cost>—</strong> <span>(a szöveg hosszából; nyelvenként {formatCostHu(trPerLanguage)})</span></p>
+      </fieldset>
+
       <fieldset class="extras">
         <legend>Kiegészítők</legend>
-        {cat.extras.map((extra) => (
+        {cat.extras.filter((extra) => extra.id !== 'translation').map((extra) => (
           <div class="extra-row">
             <label class="checkbox">
               <input
@@ -481,7 +537,7 @@ const { data: creditableReferral } = property.owner_id
   })();
 </script>
 
-<script define:vars={{ propertyId: property.id, aboveThreshold, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT }}>
+<script define:vars={{ propertyId: property.id, aboveThreshold, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, translationPrice: trPrice, perLanguageMicro: trPerLanguage }}>
   const statusEl = document.getElementById('action-status');
   const totalEl = document.getElementById('order-total');
   const discountNoteEl = document.getElementById('discount-note');
@@ -496,6 +552,9 @@ const { data: creditableReferral } = property.owner_id
       const qtyInput = document.querySelector(`[data-qty-for="${box.value}"]`);
       return { id: box.value, quantity: qtyInput ? Number(qtyInput.value) || 1 : 1 };
     });
+    // The AI translation languages: one line that names them. The server prices it and keeps the list.
+    const languages = [...document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)')].map((box) => box.value);
+    if (languages.length) extras.unshift({ id: 'translation', quantity: languages.length, locales: languages });
     return {
       packageId: pkg.value,
       aboveThreshold,
@@ -517,6 +576,14 @@ const { data: creditableReferral } = property.owner_id
       sum += Number(box.dataset.price) * qty;
     });
 
+    const picked = document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)').length;
+    sum += picked * translationPrice;
+    const costEl = document.querySelector('[data-tr-cost]');
+    if (costEl) {
+      const euros = (picked * perLanguageMicro) / 1e6;
+      costEl.textContent = !picked ? 'nincs nyelv kiválasztva' : euros < 0.01 ? `${picked} nyelv: kevesebb mint 1 cent` : `${picked} nyelv: kb. ${euros.toFixed(2).replace('.', ',')} €`;
+    }
+
     const discountApplied = Boolean(discountBox?.checked) || Boolean(creditBox?.checked);
     if (discountApplied) {
       sum -= Math.round((pkgPrice * referralDiscountPercent) / 100);
@@ -527,6 +594,7 @@ const { data: creditableReferral } = property.owner_id
   }
 
   document.getElementById('order')?.addEventListener('input', renderTotal);
+  document.getElementById('order')?.addEventListener('tp:change', renderTotal);
   renderTotal();
 
   async function doAction(action, payload) {
@@ -545,6 +613,7 @@ const { data: creditableReferral } = property.owner_id
         'not-reviewable': 'Ez a hirdetés ebben az állapotban nem bírálható el — frissítse az oldalt.',
         'unknown-extra': 'Ismeretlen kiegészítő — frissítse az oldalt.',
         'bad-quantity': 'A mennyiség 1 és 60 között lehet.',
+        'bad-locale': 'Ismeretlen vagy nem fordítható nyelv — frissítse az oldalt.',
         exclusive: 'A két helyszíni szolgáltatás közül csak az egyik választható.',
       };
       statusEl.textContent = messages[json.error] || json.message || 'Nem sikerült végrehajtani.';
@@ -556,6 +625,21 @@ const { data: creditableReferral } = property.owner_id
     }
     location.href = '/portal/inbox';
   }
+
+  // A free-link owner's translation requests: approve or decline, then show the new state.
+  document.querySelectorAll('[data-tr-act]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      const res = await fetch(`/api/portal/properties/${propertyId}/translations`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: button.dataset.trAct, jobIds: String(button.dataset.job).split(',') }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) { button.disabled = false; window.pf?.toast(json.message || 'Nem sikerült.', 'error'); return; }
+      location.reload();
+    });
+  });
 
   // The two on-site services exclude each other — ticking one clears the other.
   document.querySelectorAll('input[data-exclusive]').forEach((box) => {
@@ -662,6 +746,15 @@ const { data: creditableReferral } = property.owner_id
   .threshold { font-size: 13px; color: var(--pt-amber); margin: -2px 0 10px 4px; }
   .extra-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
   .extra-row .checkbox { flex: 1; margin-bottom: 0; }
+  .ai-badge { display: inline-block; margin-left: 8px; padding: 3px 10px; border-radius: var(--r-pill); background: var(--ink); color: var(--cream); font-family: var(--sans); font-size: 12px; font-weight: var(--fw-medium); letter-spacing: 0.04em; vertical-align: middle; }
+  .tr-extra { margin-bottom: 24px; }
+  .tr-cost { margin: 12px 0 0; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .tr-cost strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tr-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 0; }
+  .tr-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 0; border-top: 1px solid var(--pt-hair); font-size: var(--fs-small); }
+  .tr-lang { min-width: 90px; font-weight: var(--fw-medium); color: var(--ink); text-transform: capitalize; }
+  .tr-actions { margin-left: auto; display: inline-flex; gap: 8px; }
+  .tr-err { flex-basis: 100%; color: var(--pt-red); }
   .qty { width: 76px; padding: 10px 12px; font-size: var(--fs-small); color: var(--ink); font-variant-numeric: tabular-nums; }
   .referral { padding: 14px 16px; border-radius: var(--r-md); background: rgba(16, 42, 67, 0.05); margin-bottom: 20px; }
   .referral .checkbox { margin-bottom: 8px; background: transparent; padding: 6px 0; }

@@ -23,6 +23,7 @@ import { ONSITE_SERVICES } from '~/config/company';
 import type { Locale } from '~/i18n/ui';
 import { eurCents, intlTag } from '~/lib/format';
 import type { RequestedExtras } from '~/lib/portal/requested-extras';
+import { OWNER_TARGETS } from '~/lib/ai/translate-core';
 import { listingCatalog, packageOf, isAboveThreshold as tierApplies, type ListingCatalog } from '~/lib/listing-packages';
 
 /**
@@ -53,6 +54,8 @@ export type OrderLine = {
   quantity: number;
   unitCents: number;
   label: string;
+  /** Translation lines only: the languages bought, so paying is enough to know what to translate. */
+  locales?: string[];
 };
 
 /** What the admin's review form sends: ids and counts, never money. */
@@ -60,7 +63,7 @@ export type OrderSelection = {
   packageId: string;
   /** The €179 tier applies above 150M HUF — decided from the listing, not typed in. */
   aboveThreshold?: boolean;
-  extras: { id: string; quantity: number }[];
+  extras: { id: string; quantity: number; /** Translation: the languages. The quantity is then their count. */ locales?: string[] }[];
 };
 
 /* ── Labels ──────────────────────────────────────────────────────────────── */
@@ -236,8 +239,10 @@ export function catalogue(locale: OrderLocale, cat: ListingCatalog = listingCata
 }
 
 export class OrderError extends Error {
-  constructor(public code: 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive') {
+  code: 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive' | 'bad-locale';
+  constructor(code: 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive' | 'bad-locale') {
     super(code);
+    this.code = code;
   }
 }
 
@@ -272,7 +277,15 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
     const extra = orderExtras(cat).find((e) => e.id === chosen.id);
     if (!extra) throw new OrderError('unknown-extra');
 
-    const quantity = Math.floor(chosen.quantity);
+    // A translation line that names its languages is priced by their count and
+    // remembers them: that list, read back from the stored order, is what the
+    // AI translates after payment (never anything in a later request).
+    let locales: string[] | undefined;
+    if (extra.id === 'translation' && chosen.locales !== undefined) {
+      locales = [...new Set(chosen.locales)];
+      if (locales.length === 0 || locales.some((code) => !(OWNER_TARGETS as readonly string[]).includes(code))) throw new OrderError('bad-locale');
+    }
+    const quantity = locales ? locales.length : Math.floor(chosen.quantity);
     if (!Number.isFinite(quantity) || quantity < 1 || quantity > 60) {
       throw new OrderError('bad-quantity');
     }
@@ -289,6 +302,7 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
       quantity,
       unitCents: extra.priceEur * 100,
       label: quantity > 1 && unit ? `${base}${locale === 'hu' || locale === 'nl' ? ' — ' : ': '}${quantity} ${unit}` : base,
+      ...(locales ? { locales } : {}),
     });
   }
 
@@ -339,7 +353,7 @@ export function isAboveThreshold(priceHuf: number, cat: ListingCatalog = listing
  * A default order for a listing that has just been approved.
  *
  * Pre-ticks what the listing itself already tells us — the package the owner
- * chose, one translation per non-Hungarian language they wrote, the video
+ * chose, the languages they asked to have translated, the video
  * extra if they supplied a URL, homepage highlighting if it is switched on.
  * The admin adjusts and confirms; this only saves them the typing, it never
  * charges anything on its own.
@@ -358,15 +372,13 @@ export type SuggestInput = {
 
 export function suggestSelection(property: SuggestInput, cat: ListingCatalog = listingCatalog()): OrderSelection {
   const requested = property.requested ?? {};
-  // Languages written, or asked to be translated — whichever is more; a
-  // language counts once even when both apply.
-  const languages = new Set([
-    ...property.locales.filter((locale) => locale !== 'hu'),
-    ...(requested.translations ?? []),
-  ]);
-  const extras: { id: string; quantity: number }[] = [];
+  // The languages the owner asked to have translated. A language the listing
+  // already has text in (written by the owner, or translated before) is not
+  // sold again; the AI translates only what is missing.
+  const languages = [...new Set(requested.translations ?? [])].filter((locale) => locale !== 'hu' && !property.locales.includes(locale));
+  const extras: { id: string; quantity: number; locales?: string[] }[] = [];
 
-  if (languages.size > 0) extras.push({ id: 'translation', quantity: languages.size });
+  if (languages.length > 0) extras.push({ id: 'translation', quantity: languages.length, locales: languages });
   // A package with video included charges nothing for it; one without video offers none.
   if ((property.video_url || requested.video) && packageOf(cat, property.package).video === 'extra') extras.push({ id: 'video', quantity: 1 });
   // FODEL's own minimum for highlighting is three months.

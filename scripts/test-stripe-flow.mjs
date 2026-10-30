@@ -25,6 +25,7 @@ const { createFakeDb } = await import('./lib/fake-supabase.mjs');
 const { world } = await import('./lib/stubs/world.ts');
 const webhook = await import('../src/pages/api/stripe/webhook.ts');
 const checkout = await import('../src/pages/api/stripe/checkout.ts');
+const translations = await import('../src/pages/api/portal/properties/[id]/translations.ts');
 
 const signer = new Stripe('sk_test_offline');
 console.error = () => {}; // runtime-config reports its (expected) fallback to the checked-in defaults
@@ -46,7 +47,8 @@ function freshWorld(overrides = {}) {
   world.db = createFakeDb({
     properties: [{ id: 'p1', ref: '1001', status: 'awaiting_payment', owner_id: 'u1', category: 'house', package: 'normal-12m', price_eur: 150000, floor_m2: 90, plot_m2: 400, ...overrides.property }],
     profiles: [{ id: 'u1', email: 'owner@example.test', locale: 'nl', role: 'owner' }, { id: 'u2', email: 'other@example.test', locale: 'hu', role: 'owner' }, { id: 'a1', email: 'admin@example.test', locale: 'hu', role: 'admin' }],
-    property_translations: [{ property_id: 'p1', locale: 'hu', title: 'Teszt ház' }],
+    property_translations: overrides.translations ?? [{ property_id: 'p1', locale: 'hu', title: 'Teszt ház', description: 'Szép ház 120 m².', body: '' }],
+    translation_jobs: [],
     payments: [{ id: 'o1', property_id: 'p1', owner_id: 'u1', status: 'pending', amount_cents: 12900, discount_cents: 0, line_items: LINES, stripe_session_id: 'cs_1', ...overrides.payment }],
     activity_events: [],
   });
@@ -162,6 +164,70 @@ test('a renewal paid twice extends the listing once', async () => {
   assert.equal(row('properties', 'p1').expires_at, extended, 'second delivery must not add another six months');
 });
 
+/* ── Paid translations ───────────────────────────────────────────────── */
+
+const WITH_TRANSLATIONS = [...LINES, { kind: 'extra', id: 'translation', label: 'Fordítás: 2 nyelv', quantity: 2, unitCents: 2500, locales: ['de', 'fr'] }];
+const jobs = () => world.db.table('translation_jobs');
+
+test('paying an order with translations publishes the listing and queues exactly those languages, once', async () => {
+  freshWorld({ payment: { line_items: WITH_TRANSLATIONS, amount_cents: 17900 } });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(row('properties', 'p1').status, 'published');
+  assert.deepEqual(jobs().map((j) => j.locale).sort(), ['de', 'fr']);
+  assert.ok(jobs().every((j) => j.status === 'queued' && j.origin === 'upload_paid' && j.payment_id === 'o1' && j.source_locale === 'hu' && j.estimated_cost_micro_eur > 0));
+});
+
+test('a repeated delivery of the same payment queues nothing more', async () => {
+  freshWorld({ payment: { line_items: WITH_TRANSLATIONS, amount_cents: 17900 } });
+  await deliverEvent('checkout.session.completed', paidSession());
+  await deliverEvent('checkout.session.completed', paidSession());
+  await deliverEvent('checkout.session.completed', paidSession(), 'evt_again');
+  assert.equal(jobs().length, 2);
+});
+
+test('even when the jobs are already done, a late repeat does not order them again', async () => {
+  freshWorld({ payment: { line_items: WITH_TRANSLATIONS, amount_cents: 17900 } });
+  await deliverEvent('checkout.session.completed', paidSession());
+  jobs().forEach((j) => { j.status = 'done'; });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(jobs().length, 2);
+  assert.ok(jobs().every((j) => j.status === 'done'));
+});
+
+test('a language the listing already has in a person\'s words is not translated over it', async () => {
+  freshWorld({
+    payment: { line_items: WITH_TRANSLATIONS, amount_cents: 17900 },
+    translations: [{ property_id: 'p1', locale: 'hu', title: 'Ház', description: 'Szép.' }, { property_id: 'p1', locale: 'de', title: 'Haus', description: 'Schön.' }],
+  });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.deepEqual(jobs().map((j) => j.locale), ['fr']);
+});
+
+test('money for a listing that was sent back queues no translations', async () => {
+  freshWorld({ property: { status: 'changes_requested' }, payment: { line_items: WITH_TRANSLATIONS, amount_cents: 17900 } });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(jobs().length, 0);
+});
+
+test('translations bought later from a live listing queue only their languages and publish nothing', async () => {
+  const later = [{ kind: 'extra', id: 'translation', label: 'Fordítás', quantity: 1, unitCents: 2500, locales: ['es'] }];
+  const expiry = new Date(Date.now() + 90 * 86400000).toISOString();
+  freshWorld({ property: { status: 'published', expires_at: expiry, published_at: '2026-01-01T00:00:00Z' }, payment: { line_items: later, amount_cents: 2500 } });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(row('payments', 'o1').status, 'paid');
+  assert.deepEqual(jobs().map((j) => [j.locale, j.origin]), [['es', 'after_publish_paid']]);
+  assert.equal(row('properties', 'p1').expires_at, expiry, 'a translation order never touches the expiry');
+  assert.equal(events('listing.published').length, 0);
+});
+
+test('an order from before translations named their languages queues nothing (the office handles it by hand)', async () => {
+  const old = [...LINES, { kind: 'extra', id: 'translation', label: 'Fordítás', quantity: 2, unitCents: 2500 }];
+  freshWorld({ payment: { line_items: old, amount_cents: 17900 } });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(row('properties', 'p1').status, 'published');
+  assert.equal(jobs().length, 0);
+});
+
 test('an unsigned or wrongly signed request is refused', async () => {
   freshWorld();
   const payload = JSON.stringify({ id: 'evt_x', object: 'event', type: 'checkout.session.completed', data: { object: paidSession() } });
@@ -245,6 +311,100 @@ test('a referral discount reaches Stripe as a coupon, not a negative line', asyn
   assert.ok(create.line_items.every((l) => l.price_data.unit_amount > 0));
   assert.equal(create.discounts.length, 1);
   assert.equal(world.stripeCalls.find((c) => c.coupon).coupon.amount_off, 1000);
+});
+
+/* ── Buying translations for a live listing ──────────────────────────── */
+
+const buy = (user, body, role = 'owner') =>
+  translations.POST({
+    params: { id: 'p1' },
+    request: new Request('http://site.test/api/portal/properties/p1/translations', { method: 'POST', body: JSON.stringify(body), headers: { 'content-type': 'application/json' } }),
+    locals: { supabase: world.db.client, user, profile: user ? { role, locale: 'nl', email: 'x@example.test' } : null },
+  });
+const live = { status: 'published', expires_at: new Date(Date.now() + 90 * 86400000).toISOString(), published_at: '2026-01-01T00:00:00Z' };
+const noOrders = { payments: [] };
+
+test('an owner buys languages for their live listing: one order from the catalogue, then Stripe', async () => {
+  freshWorld({ property: live });
+  world.db.table('payments').length = 0;
+  const res = await buy({ id: 'u1' }, { action: 'order', locales: ['de', 'fr', 'de', 'hu', 'xx'], amount: 1, price: 1 });
+  assert.equal(res.status, 200);
+  const out = await body(res);
+  assert.deepEqual(out.locales, ['de', 'fr']);
+  assert.equal(out.amountCents, 5000);
+  const order = world.db.table('payments')[0];
+  assert.equal(order.status, 'pending');
+  assert.equal(order.amount_cents, 5000);
+  assert.deepEqual(order.line_items.map((l) => [l.id, l.quantity, l.unitCents, l.locales]), [['translation', 2, 2500, ['de', 'fr']]]);
+  const { create } = world.stripeCalls.find((c) => c.create);
+  assert.equal(create.line_items[0].price_data.unit_amount, 2500);
+  assert.equal(create.line_items[0].quantity, 2);
+  assert.equal(create.metadata.orderId, order.id);
+  assert.equal(jobs().length, 0, 'nothing is translated before the money is in');
+  // …and paying it queues exactly those two.
+  await deliverEvent('checkout.session.completed', paidSession({ id: order.stripe_session_id, metadata: { orderId: order.id, propertyId: 'p1' } }));
+  assert.deepEqual(jobs().map((j) => [j.locale, j.origin]).sort(), [['de', 'after_publish_paid'], ['fr', 'after_publish_paid']]);
+  assert.equal(events('listing.published').length, 0);
+});
+
+test('languages the listing already has, or is already getting, are not sold again; nothing left means no order', async () => {
+  freshWorld({
+    property: live,
+    translations: [{ property_id: 'p1', locale: 'hu', title: 'Ház', description: 'Szép.' }, { property_id: 'p1', locale: 'de', title: 'Haus', description: 'Schön.' }],
+  });
+  world.db.table('payments').length = 0;
+  jobs().push({ id: 'j1', property_id: 'p1', locale: 'fr', status: 'running' });
+  const res = await buy({ id: 'u1' }, { action: 'order', locales: ['de', 'fr'] });
+  assert.equal(res.status, 422);
+  assert.equal((await body(res)).error, 'nothing-to-order');
+  assert.equal(world.db.table('payments').length, 0);
+});
+
+test('changing your mind replaces the open translation order and closes its payment link', async () => {
+  freshWorld({ property: live });
+  world.db.table('payments').length = 0;
+  await buy({ id: 'u1' }, { action: 'order', locales: ['de'] });
+  const first = world.db.table('payments')[0];
+  await buy({ id: 'u1' }, { action: 'order', locales: ['de', 'es'] });
+  assert.equal(first.status, 'cancelled');
+  assert.ok(world.stripeCalls.some((c) => c.expire === first.stripe_session_id));
+  assert.deepEqual(world.db.table('payments').filter((p) => p.status === 'pending').map((p) => p.amount_cents), [5000]);
+});
+
+test('only the owner or an admin can buy; a free-link listing requests instead; a listing that is not live cannot', async () => {
+  freshWorld({ property: live });
+  assert.equal((await buy(null, { action: 'order', locales: ['de'] })).status, 401);
+  assert.equal((await buy({ id: 'u2' }, { action: 'order', locales: ['de'] })).status, 403);
+  assert.equal((await buy({ id: 'u1' }, { action: 'run', locales: ['de'] })).status, 403, 'running is for admins');
+  assert.equal((await buy({ id: 'u1' }, { action: 'approve', jobIds: ['x'] })).status, 403);
+  freshWorld({ property: { ...live, free_listing: true } });
+  assert.equal((await buy({ id: 'u1' }, { action: 'order', locales: ['de'] })).status, 409);
+  freshWorld({ property: { status: 'draft' } });
+  assert.equal((await buy({ id: 'u1' }, { action: 'order', locales: ['de'] })).status, 409);
+  assert.equal(world.db.table('payments').filter((p) => p.id !== 'o1').length, 0);
+});
+
+test('a free-link owner\'s request waits for an admin; the admin approves one language and declines another', async () => {
+  freshWorld({ property: { ...live, free_listing: true } });
+  const res = await buy({ id: 'u1' }, { action: 'request', locales: ['de', 'es', 'hu'] });
+  assert.deepEqual((await body(res)).created, ['de', 'es']);
+  assert.ok(jobs().every((j) => j.status === 'requested' && j.origin === 'free'));
+  assert.equal(world.db.table('payments').filter((p) => p.id !== 'o1').length, 0, 'free means no order');
+  const de = jobs().find((j) => j.locale === 'de').id;
+  const es = jobs().find((j) => j.locale === 'es').id;
+  assert.equal((await buy({ id: 'u1' }, { action: 'approve', jobIds: [de] })).status, 403, 'the owner cannot approve their own request');
+  assert.equal((await body(await buy({ id: 'a1' }, { action: 'approve', jobIds: [de] }, 'admin'))).changed, 1);
+  assert.equal((await body(await buy({ id: 'a1' }, { action: 'decline', jobIds: [es, 'not-mine'] }, 'admin'))).changed, 1);
+  assert.deepEqual(jobs().map((j) => [j.locale, j.status]), [['de', 'queued'], ['es', 'declined']]);
+});
+
+test('a paying owner cannot use the free request, and an admin\'s free run needs the AI switched on', async () => {
+  freshWorld({ property: live });
+  assert.equal((await buy({ id: 'u1' }, { action: 'request', locales: ['de'] })).status, 409);
+  const res = await buy({ id: 'a1' }, { action: 'run', locales: ['de'] }, 'admin');
+  assert.equal(res.status, 409);
+  assert.equal((await body(res)).error, 'ai-disabled');
+  assert.equal(jobs().length, 0);
 });
 
 /* ── The wiring ──────────────────────────────────────────────────────── */

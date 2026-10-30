@@ -27,6 +27,13 @@ export function getStripe(): any {
           world.stripeCalls.push({ create: params, key });
           return session;
         },
+        expire: async (id: string) => {
+          const session = world.sessions[id];
+          if (!session) throw new Error('No such checkout.session');
+          session.status = 'expired';
+          world.stripeCalls.push({ expire: id });
+          return session;
+        },
         retrieve: async (id: string) => {
           const session = world.sessions[id];
           if (!session) throw new Error('No such checkout.session');

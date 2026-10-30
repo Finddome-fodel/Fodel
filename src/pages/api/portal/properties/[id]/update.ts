@@ -41,6 +41,8 @@ function sellerPhone(form: FormData): string | null {
 }
 
 const str = (form: FormData, key: string): string => String(form.get(key) ?? '').trim();
+/** A listing text as stored: a browser sends a textarea's line breaks as CRLF, the site keeps plain LF. */
+const prose = (form: FormData, key: string): string => str(form, key).replace(/\r\n?/g, '\n');
 
 export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   const { id } = params;
@@ -52,7 +54,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
 
   const { data: existing, error: fetchError } = await supabase
     .from('properties')
-    .select('id, owner_id, status, package')
+    .select('id, owner_id, status, package, free_listing')
     .eq('id', id)
     .maybeSingle();
   if (fetchError || !existing) return back('error=not-found');
@@ -106,10 +108,10 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   if(!isAdmin && values.patch.video_url && packageOf(listingCatalog((await getCompany()).services),existing.package).video==='none') return back('error='+encodeURIComponent('A választott csomag nem tartalmaz videót.'));
   const translations=[];
   for(const {value:locale} of LOCALE_OPTIONS){
-    const title=str(form,`title_${locale}`),description=str(form,`description_${locale}`);
+    const title=prose(form,`title_${locale}`),description=prose(form,`description_${locale}`);
     if(locale==='hu'&&(!title||!description))return back('error='+encodeURIComponent('A magyar cím és rövid leírás kötelező.'));
     // Existing translations and legacy optional copy survive an empty/unoffered locale.
-    if(title||description)translations.push({locale,title:title.slice(0,160)||description.slice(0,60),description:description.slice(0,6000),body:str(form,`body_${locale}`).slice(0,30000)});
+    if(title||description)translations.push({locale,title:title.slice(0,160)||description.slice(0,60),description:description.slice(0,6000),body:prose(form,`body_${locale}`).slice(0,30000)});
   }
   const {error:updateError}=await supabase.rpc('save_listing_editor',{
     p_id:id,p_patch:patch,p_private:{...values.privateData,internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations,

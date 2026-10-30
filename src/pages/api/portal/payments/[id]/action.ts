@@ -15,6 +15,7 @@ import { createDraftFromPayment } from '~/lib/invoicing/store';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { intlTag } from '~/lib/format';
 import { listingTitle, publishProperty, publicUrl, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
+import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 import { logEvent } from '~/lib/activity';
 import { SITE_URL } from '~/config/site.mjs';
 
@@ -107,6 +108,10 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       } else if (property?.status === 'awaiting_payment') {
         const published = await publishProperty(admin, order.property_id);
         if (!published.ok) return json(500, { ok: false, error: published.error });
+        await enqueuePaidTranslations(admin, order, new URL(request.url).origin);
+      } else if (property?.status === 'published') {
+        // Translations bought later from the live listing.
+        await enqueuePaidTranslations(admin, order, new URL(request.url).origin);
       }
       if (property && order.owner_id) {
         const { data: owner } = await admin.from('profiles').select('email, locale').eq('id', order.owner_id).maybeSingle();

@@ -16,7 +16,8 @@ import VideoEmbed from '~/components/VideoEmbed.astro';
 import FormShell from '~/components/forms/FormShell.astro';
 import Field from '~/components/forms/Field.astro';
 import { UI, path, localizer, type Locale } from '~/i18n/ui';
-import { sourceNote } from '~/i18n/fallback';
+import { sourceNote, machineNote } from '~/i18n/fallback';
+import { showMachineTranslationNote } from '~/config/flags';
 import { COMPANY } from '~/config/company';
 import { featureLabel } from '~/data/features';
 import { activeProperties, similarTo, text, resolveText, url as propUrl, type Property } from '~/lib/properties';
@@ -55,7 +56,8 @@ const resolvedDescription = resolveText(d.description, locale);
 // the text under it are never in two different languages.
 const title = d.title[locale] || d.title[resolvedDescription.from] || text(d.title, locale);
 const description = resolvedDescription.text;
-const languageNote = sourceNote(locale, resolvedDescription.from, 'description');
+const languageNote = sourceNote(locale, resolvedDescription.from, 'description')
+  ?? (showMachineTranslationNote() && d.listing.machineLanguages?.includes(resolvedDescription.from) ? machineNote(resolvedDescription.from) : null);
 const category = d.categoryLabels[locale] ?? d.categoryLabels.nl ?? d.categoryLabels.hu;
 // The same "featured" mark the homepage card carries, from the listing's own flag rather than free text.
 const featuredBadge = d.listing.featured || d.listing.homepageFeatured ? copy(locale).home.hero.featuredLabel : null;

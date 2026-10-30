@@ -41,7 +41,8 @@ import { getProperty, OWNER_EDITABLE } from '~/lib/portal/properties';
 import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { listingCatalog, packageCard, packageOf } from '~/lib/listing-packages';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
-import { TRANSLATION_LANGUAGES, ONSITE_SERVICES } from '~/config/company';
+import { ONSITE_SERVICES } from '~/config/company';
+import TranslationPicker from '~/components/portal/TranslationPicker.astro';
 import { LOCALE_META } from '~/i18n/ui';
 import { DESCRIPTION_MAX } from '~/lib/portal/setup';
 import { SETUP_COPY } from '~/lib/portal/setup-copy';
@@ -90,6 +91,11 @@ const x=(hu:string,nl:string,en:string)=>lang==='hu'?hu:lang==='nl'?nl:en;
 
 // An admin-granted free listing has no package to choose and no invoice to address, so those two steps are left out.
 const free = Boolean(property.free_listing);
+// Languages the listing already has text in: shown as "already there" in the translation picker.
+const askedLocales: string[] = free
+  ? ((await supabase.from('translation_jobs').select('locale').eq('property_id', property.id).eq('origin', 'free').in('status', ['requested', 'queued', 'running'])).data ?? []).map((job: { locale: string }) => job.locale)
+  : [];
+const presentLocales = property.translations.filter((row) => row.title?.trim() && row.title !== 'Új hirdetés').map((row) => row.locale);
 const ALL_STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
 const STEPS = ALL_STEPS.filter((step) => !free || (step !== 'package' && step !== 'billing'));
 const at = (step: (typeof ALL_STEPS)[number]) => ALL_STEPS.indexOf(step);
@@ -184,15 +190,8 @@ const strings = {
         <fieldset class="su-extras">
           <legend>{t.extrasHead}</legend>
           <p class="su-note">{t.extrasNote}</p>
+          <TranslationPicker lang={lang} selected={requested.translations ?? []} present={presentLocales} priceEur={extra('translation').priceEur} />
           <div class="chips">
-            {TRANSLATION_LANGUAGES.map((code) => (
-              <label class="chip">
-                <input type="checkbox" name="translations" value={code} checked={requested.translations?.includes(code)} />
-                <span class="box" aria-hidden="true"></span>
-                <span class="chip-name">{t.translation}: {languageName(code,lang)}</span>
-                <span class="chip-price">€ {extra('translation').priceEur} {t.perLanguage}</span>
-              </label>
-            ))}
             <label class="chip">
               <input type="checkbox" name="categoryHighlight" value="yes" checked={requested.categoryHighlight} />
               <span class="box" aria-hidden="true"></span>
@@ -258,6 +257,12 @@ const strings = {
           <p class="su-note">{t.speaksHint}</p>
           <ContactLanguages selected={property.seller_speaks} locale={lang}/>
         </fieldset>
+        {free && (
+          <div class="su-fieldset">
+            <input type="hidden" name="translations_present" value="yes" />
+            <TranslationPicker lang={lang} free selected={askedLocales} present={presentLocales} priceEur={null} />
+          </div>
+        )}
 
         {isAdmin && (
           <ContactChoice mode={property.public_contact} staffName={property.public_contact_name} staffPhone={property.public_contact_phone} ownerAgreed={property.seller_contact_visible} ownerHasPhone={Boolean(property.seller_phone?.trim())} packageAllowsPhone={pkgAllowsPhone} idPrefix="su-cc" />

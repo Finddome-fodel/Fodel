@@ -12,13 +12,22 @@ export function isAiEnabled(): boolean {
 }
 
 export class AiError extends Error {
-  constructor(public code: string, message?: string) {
+  code: string;
+  constructor(code: string, message?: string) {
     super(message ?? code);
+    this.code = code;
   }
 }
 
 const MODEL = 'gpt-4o-mini';
 const DEFAULT_TIMEOUT_MS = 25_000;
+
+/** Tests and local runs point this at a stub server; production uses OpenAI. */
+function baseUrl(): string {
+  return String(import.meta.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
+}
+
+export type AiUsage = { model: string; tokensIn: number; tokensOut: number };
 
 /**
  * One strict-JSON-schema call, one retry, a hard timeout and a token cap.
@@ -26,7 +35,12 @@ const DEFAULT_TIMEOUT_MS = 25_000;
  * public form's POST handler — the caller (an admin action, never the
  * public submission endpoint) is what makes a 25s worst case acceptable.
  */
-export async function callOpenAiJson<T>(opts: {
+export async function callOpenAiJson<T>(opts: Parameters<typeof callOpenAiJsonWithUsage>[0]): Promise<T> {
+  return (await callOpenAiJsonWithUsage<T>(opts)).data;
+}
+
+/** Same call, also returning the model and the token counts OpenAI reports (for the cost record). */
+export async function callOpenAiJsonWithUsage<T>(opts: {
   system: string;
   user: string;
   schema: Record<string, unknown>;
@@ -37,24 +51,30 @@ export async function callOpenAiJson<T>(opts: {
   timeoutMs?: number;
   /** Heavier calls (images, PDFs) set false: a second 40s attempt would outlive the function. */
   retry?: boolean;
-}): Promise<T> {
+  /** Defaults to gpt-4o-mini. */
+  model?: string;
+}): Promise<{ data: T; usage: AiUsage }> {
   if (!isAiEnabled()) throw new AiError('ai-disabled');
   const key = import.meta.env.OPENAI_API_KEY;
 
-  const attempt = async (): Promise<T> => {
+  const model = opts.model || MODEL;
+  // The GPT-5 and o-series models take max_completion_tokens; older ones max_tokens.
+  const tokenKey = /^(gpt-5|o\d)/.test(model) ? 'max_completion_tokens' : 'max_tokens';
+
+  const attempt = async (): Promise<{ data: T; usage: AiUsage }> => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
     try {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      const res = await fetch(`${baseUrl()}/chat/completions`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${key}`, 'content-type': 'application/json' },
         body: JSON.stringify({
-          model: MODEL,
+          model,
           messages: [
             { role: 'system', content: opts.system },
             { role: 'user', content: opts.userParts?.length ? [{ type: 'text', text: opts.user }, ...opts.userParts] : opts.user },
           ],
-          max_tokens: opts.maxTokens ?? 900,
+          [tokenKey]: opts.maxTokens ?? 900,
           response_format: {
             type: 'json_schema',
             json_schema: { name: opts.schemaName, schema: opts.schema, strict: true },
@@ -66,7 +86,11 @@ export async function callOpenAiJson<T>(opts: {
       const data = await res.json();
       const content = data.choices?.[0]?.message?.content;
       if (typeof content !== 'string') throw new AiError('openai-empty-response');
-      return JSON.parse(content) as T;
+      if (data.choices?.[0]?.finish_reason === 'length') throw new AiError('openai-truncated');
+      return {
+        data: JSON.parse(content) as T,
+        usage: { model: String(data.model || model), tokensIn: Number(data.usage?.prompt_tokens) || 0, tokensOut: Number(data.usage?.completion_tokens) || 0 },
+      };
     } finally {
       clearTimeout(timeout);
     }
