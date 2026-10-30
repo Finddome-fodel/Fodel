@@ -309,3 +309,15 @@ export function summarizeJobs(jobs: JobLike[]): JobSummary {
   const state = failed > 0 ? 'attention' : active > 0 ? 'working' : requested > 0 ? 'idle' : done > 0 ? 'done' : 'idle';
   return { total: relevant.length, done, failed, requested, active, state };
 }
+
+/* ── Words for the admin screens ───────────────────────────────────────── */
+
+export const JOB_STATUS_HU: Record<string, string> = {
+  requested: 'Jóváhagyásra vár', queued: 'Sorban áll', running: 'Készül', done: 'Kész', failed: 'Elakadt', declined: 'Elutasítva', cancelled: 'Visszavonva',
+};
+export const JOB_STATUS_PILL: Record<string, string> = {
+  requested: 'pill-warn', queued: 'pill-queued', running: 'pill-pending', done: 'pill-ok', failed: 'pill-bad', declined: 'pill-off', cancelled: 'pill-off',
+};
+export const ORIGIN_HU: Record<string, string> = {
+  upload_paid: 'Fizetett (feltöltéskor)', after_publish_paid: 'Fizetett (utólag)', admin: 'Admin, ingyen', free: 'Ingyenes feltöltő kérése',
+};

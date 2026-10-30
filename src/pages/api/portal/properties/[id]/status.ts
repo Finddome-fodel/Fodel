@@ -242,6 +242,13 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         }, listing);
     // The higher tier is decided from the listing's own price, never the browser.
     selection.aboveThreshold = isAboveThreshold(packageOf(listing, selection.packageId), property.price_huf);
+    // A language the listing already has text in is never sold: the AI would not touch it, and the owner would pay for nothing.
+    const haveText = new Set((property.property_translations ?? []).filter((t: { title: string; description: string }) => t.title?.trim() || t.description?.trim()).map((t: { locale: string }) => t.locale));
+    selection.extras = selection.extras.flatMap((extra) => {
+      if (extra.id !== 'translation' || !extra.locales) return [extra];
+      const rest = extra.locales.filter((code) => !haveText.has(code));
+      return rest.length ? [{ ...extra, locales: rest, quantity: rest.length }] : [];
+    });
 
     let lines;
     try {

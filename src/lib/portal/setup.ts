@@ -30,13 +30,14 @@ import { getProperty } from '~/lib/portal/properties';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
 import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { contactDisplayPatch } from '~/lib/contact-display';
+import { syncFreeRequests } from '~/lib/ai/translation-jobs';
 
 export const SETUP_STEPS = ['package', 'property', 'description'] as const;
 export type SetupStep = (typeof SETUP_STEPS)[number];
 
 export type StepResult = { ok: true } | { ok: false; error: string; errors?: Record<string, FieldError> };
 
-type Existing = { id: string; owner_id: string | null; status: string; package: string };
+type Existing = { id: string; owner_id: string | null; status: string; package: string; free_listing?: boolean | null };
 
 /** The longest description the setup accepts — the same ceiling the 1.x form had. */
 export const DESCRIPTION_MAX = 6000;
@@ -172,5 +173,11 @@ async function saveDescription(supabase:SupabaseClient,existing:Existing,form:Fo
   // The office still prepares paid translations. A non-Hungarian original can be submitted without pretending it is a Hungarian translation.
   const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:pkg.phone&&form.get('contact')==='yes',...(isAdmin?contactDisplayPatch(form):{})},p_private:{internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations});
   if(error){console.error('[setup] save_listing_editor failed (description)',existing.id,error.message);return {ok:false,error:'save-failed'};}
+  // A free-link owner's translation wish list: kept as requests for the office to approve, never run by itself.
+  // The text is saved first (a request needs something to translate), and a problem here never fails the save.
+  if(existing.free_listing&&existing.owner_id&&form.get('translations_present')==='yes'){
+    try{await syncFreeRequests(createSupabaseAdminClient(),existing.id,form.getAll('translations').map(String),existing.owner_id);}
+    catch(e){console.error('[setup] translation requests not kept',existing.id,e instanceof Error?e.message:e);}
+  }
   return {ok:true};
 }

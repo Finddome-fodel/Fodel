@@ -21,6 +21,11 @@ export type PortalTranslation = {
   condition: string | null;
   heating: string | null;
   tag: string | null;
+  /** Migration 0043: written by the AI, and from what, when and out of which text. Absent before it ran. */
+  machine?: boolean;
+  translated_from?: string | null;
+  translated_at?: string | null;
+  source_hash?: string | null;
 };
 
 export type PortalMedia = {

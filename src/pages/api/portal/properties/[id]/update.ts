@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
 
   const { data: existing, error: fetchError } = await supabase
     .from('properties')
-    .select('id, owner_id, status, package')
+    .select('id, owner_id, status, package, free_listing')
     .eq('id', id)
     .maybeSingle();
   if (fetchError || !existing) return back('error=not-found');

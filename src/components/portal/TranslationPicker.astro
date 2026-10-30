@@ -1,0 +1,164 @@
+---
+/**
+ * The language picker for AI translation: the four recommended languages as
+ * one-tap chips, the other sixteen behind "More languages", an "All" shortcut
+ * and a live line that says how many and what it costs.
+ *
+ * It is only a set of checkboxes called `name` (default "translations"), so it
+ * works inside a form that is saved as a whole (the setup wizard) and beside
+ * one that is not (the live listing's panel, the review screen) the same way.
+ * Prices are display only; the server prices every order from the catalogue.
+ * Whenever the choice changes it dispatches `tp:change` ({ locales, cents })
+ * on its root element.
+ */
+import { TRANSLATION_LANGUAGES, RECOMMENDED_TRANSLATION_LANGUAGES } from '~/config/company';
+import { languageName } from '~/lib/listing-catalogue';
+import { TRANSLATION_COPY, type PortalCopyLang } from '~/lib/ai/translation-copy';
+
+interface Props {
+  lang: PortalCopyLang;
+  /** Already chosen. */
+  selected?: string[];
+  /** Languages the listing already has: shown, ticked in grey, not selectable. */
+  present?: string[];
+  /** Euro per language. Omit for a free listing: no price is shown. */
+  priceEur?: number | null;
+  name?: string;
+  /** Hide the legend and intro (the host page has its own heading). */
+  bare?: boolean;
+  /** Intro for a free-link listing instead of the paid one. */
+  free?: boolean;
+}
+const { lang, selected = [], present = [], priceEur = null, name = 'translations', bare = false, free = false } = Astro.props;
+const t = TRANSLATION_COPY[lang];
+const recommended = RECOMMENDED_TRANSLATION_LANGUAGES as readonly string[];
+const others = (TRANSLATION_LANGUAGES as readonly string[]).filter((code) => !recommended.includes(code));
+const available = (TRANSLATION_LANGUAGES as readonly string[]).filter((code) => !present.includes(code));
+const nameOf = (code: string) => languageName(code, lang).replace(/^./, (c) => c.toLocaleUpperCase(lang));
+const money = (eur: number) => `€ ${eur.toLocaleString(lang === 'hu' ? 'hu-HU' : lang === 'nl' ? 'nl-NL' : 'en-GB')}`;
+const strings = {
+  none: t.summaryNone,
+  free: free || priceEur === null,
+  price: priceEur ?? 0,
+  // The sentence for one and for several, with {n} and {total} left for the script to fill in.
+  summary: [t.summary(1, '{total}').replace('1', '{n}'), t.summary(2, '{total}').replace('2', '{n}')],
+  summaryFree: [t.summaryFree(1).replace('1', '{n}'), t.summaryFree(2).replace('2', '{n}')],
+};
+const chip = (code: string) => ({ code, have: present.includes(code), on: !present.includes(code) && selected.includes(code) });
+---
+
+<div class="tp" data-tp data-strings={JSON.stringify(strings)} data-lang={lang}>
+  {!bare && (
+    <>
+      <p class="tp-legend">{t.legend}</p>
+      <p class="tp-intro">{free ? t.introFree : t.intro}</p>
+    </>
+  )}
+  <p class="tp-label">{t.recommended}{priceEur !== null && !free && <span class="tp-rate"> · {t.perLanguage(money(priceEur))}</span>}</p>
+  <div class="tp-chips">
+    {recommended.map((code) => {
+      const c = chip(code);
+      return (
+        <label class="tp-chip" data-have={c.have ? '' : undefined}>
+          <input type="checkbox" name={name} value={code} checked={c.on} disabled={c.have} />
+          <span class="tp-box" aria-hidden="true"></span>
+          <span class="tp-name">{nameOf(code)}</span>
+          <span class="tp-code">{c.have ? t.have : code.toUpperCase()}</span>
+        </label>
+      );
+    })}
+  </div>
+
+  <details class="tp-more" open={others.some((code) => selected.includes(code) || present.includes(code))}>
+    <summary>{t.more(others.length)}</summary>
+    <div class="tp-chips">
+      {others.map((code) => {
+        const c = chip(code);
+        return (
+          <label class="tp-chip" data-have={c.have ? '' : undefined}>
+            <input type="checkbox" name={name} value={code} checked={c.on} disabled={c.have} />
+            <span class="tp-box" aria-hidden="true"></span>
+            <span class="tp-name">{nameOf(code)}</span>
+            <span class="tp-code">{c.have ? t.have : code.toUpperCase()}</span>
+          </label>
+        );
+      })}
+    </div>
+  </details>
+
+  <div class="tp-foot">
+    <p class="tp-summary" data-tp-summary role="status" aria-live="polite">{t.summaryNone}</p>
+    <span class="tp-tools">
+      <button type="button" class="link-btn" data-tp-all>{t.all(available.length)}</button>
+      <button type="button" class="link-btn" data-tp-clear>{t.clear}</button>
+    </span>
+  </div>
+</div>
+
+<script>
+  /** Each picker on the page is independent; scripts run once however many there are. */
+  function setUp(root: HTMLElement) {
+    if (root.dataset.ready) return;
+    root.dataset.ready = '1';
+    const strings = JSON.parse(root.dataset.strings || '{}');
+    const boxes = () => [...root.querySelectorAll<HTMLInputElement>('input[type="checkbox"]:not(:disabled)')];
+    const summary = root.querySelector<HTMLElement>('[data-tp-summary]')!;
+    const format = (n: number) => {
+      if (n === 0) return strings.none;
+      const shapes: string[] = strings.free ? strings.summaryFree : strings.summary;
+      const total = `€ ${(n * strings.price).toLocaleString(root.dataset.lang === 'hu' ? 'hu-HU' : root.dataset.lang === 'nl' ? 'nl-NL' : 'en-GB')}`;
+      return (n === 1 ? shapes[0] : shapes[1]).replace('{n}', String(n)).replace('{total}', total);
+    };
+    const update = () => {
+      const locales = boxes().filter((box) => box.checked).map((box) => box.value);
+      summary.textContent = format(locales.length);
+      root.dispatchEvent(new CustomEvent('tp:change', { bubbles: true, detail: { locales, cents: locales.length * strings.price * 100 } }));
+    };
+    root.addEventListener('change', update);
+    root.querySelector('[data-tp-all]')?.addEventListener('click', () => {
+      boxes().forEach((box) => (box.checked = true));
+      root.querySelector('details')?.setAttribute('open', '');
+      update();
+    });
+    root.querySelector('[data-tp-clear]')?.addEventListener('click', () => {
+      boxes().forEach((box) => (box.checked = false));
+      update();
+    });
+    update();
+  }
+  document.querySelectorAll<HTMLElement>('[data-tp]').forEach(setUp);
+</script>
+
+<style>
+  .tp { margin: 0 0 24px; }
+  .tp-legend { font-family: var(--serif); font-weight: var(--fw-medium); font-size: 20px; color: var(--ink); margin: 0 0 6px; }
+  .tp-intro { margin: 0 0 16px; max-width: 62ch; font-size: var(--fs-small); line-height: 1.6; color: var(--ink-quiet); }
+  .tp-label { margin: 0 0 10px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-quiet); }
+  .tp-rate { text-transform: none; letter-spacing: 0; }
+  .tp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tp-chip { position: relative; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 8px 16px 8px 10px; border-radius: var(--r-pill); background: var(--white); border: 1px solid rgba(16, 42, 67, 0.12); cursor: pointer; transition: border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out); }
+  @media (hover: hover) { .tp-chip:hover { border-color: rgba(16, 42, 67, 0.34); } }
+  .tp-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .tp-box { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid rgba(16, 42, 67, 0.3); display: grid; place-items: center; transition: background-color 0.3s var(--ease-out), border-color 0.3s var(--ease-out); }
+  .tp-box::after { content: ''; width: 9px; height: 5px; border-left: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(-45deg) scale(0); margin-top: -2px; transition: transform 0.25s var(--ease-out); }
+  .tp-chip:has(input:checked) { background: var(--ink); border-color: var(--ink); }
+  .tp-chip:has(input:checked) .tp-box { background: var(--cream); border-color: var(--cream); }
+  .tp-chip:has(input:checked) .tp-box::after { transform: rotate(-45deg) scale(1); }
+  .tp-chip:has(input:checked) :is(.tp-name, .tp-code) { color: var(--cream); }
+  .tp-chip:has(input:focus-visible) { outline: var(--focus-ring); outline-offset: 3px; }
+  .tp-chip[data-have] { cursor: default; background: transparent; border-style: dashed; }
+  .tp-chip[data-have] .tp-box { background: var(--linen); border-color: transparent; }
+  .tp-chip[data-have] .tp-box::after { transform: rotate(-45deg) scale(1); border-color: var(--ink-quiet); }
+  .tp-chip[data-have] .tp-name { color: var(--ink-quiet); }
+  .tp-name { font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
+  .tp-code { font-size: 12px; letter-spacing: 0.06em; color: var(--ink-quiet); white-space: nowrap; }
+  .tp-more { margin-top: 14px; }
+  .tp-more > summary { cursor: pointer; display: inline-block; padding: 8px 0; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(16, 42, 67, 0.3); list-style: none; }
+  .tp-more > summary::-webkit-details-marker { display: none; }
+  .tp-more > summary:focus-visible { outline: var(--focus-ring); outline-offset: 3px; border-radius: 4px; }
+  .tp-more[open] > summary { margin-bottom: 8px; }
+  .tp-foot { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--pt-hair); }
+  .tp-summary { margin: 0; font-family: var(--serif); font-size: 18px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tp-tools { display: inline-flex; gap: 18px; }
+  @media (prefers-reduced-motion: reduce) { .tp-chip, .tp-box, .tp-box::after { transition: none; } }
+</style>
