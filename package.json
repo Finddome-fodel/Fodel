@@ -23,6 +23,7 @@
     "test:rules": "node scripts/test-rules.mjs",
     "test:stripe": "node --no-warnings scripts/test-stripe-flow.mjs",
     "test:translation": "node --no-warnings scripts/test-translation-flow.mjs",
+    "test:own-listing": "node --no-warnings scripts/test-admin-own-listing.mjs",
     "test:upload": "node --no-warnings scripts/test-upload-link.mjs",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "test:e2e": "playwright test",

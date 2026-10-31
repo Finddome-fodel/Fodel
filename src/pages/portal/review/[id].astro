@@ -124,9 +124,13 @@ const awaitingPayment = property.status === 'awaiting_payment';
 // The owner's language decides the language of the change request (the
 // email goes to them in it). Admins may read every profile.
 const { data: ownerProfile } = property.owner_id
-  ? await supabase.from('profiles').select('locale').eq('id', property.owner_id).maybeSingle()
+  ? await supabase.from('profiles').select('locale, role').eq('id', property.owner_id).maybeSingle()
   : { data: null };
 const ownerLocale = portalLang(ownerProfile?.locale);
+// A listing an admin owns themselves: nobody pays or is asked to pay, and
+// nobody is sent a change request. Same rule as the approve branch in status.ts.
+const adminOwned = ownerProfile?.role === 'admin';
+const isFree = Boolean(property.free_listing) || adminOwned;
 
 // Automatic hints (brief 3 §G.2) — pre-tick what can be measured; everything
 // else (people in photos, darkness, sharpness) stays a human judgement.
@@ -314,7 +318,12 @@ const { data: creditableReferral } = property.owner_id
 
   </div>
   <aside class="rv-side">
-  {reviewable && property.free_listing && (
+  {reviewable && adminOwned && (
+    <p class="notice ok">
+      Ez az Ön saját hirdetése: nem készül díjbekérő. A Közzététel után azonnal megjelenik a weboldalon.
+    </p>
+  )}
+  {reviewable && property.free_listing && !adminOwned && (
     <p class="notice ok">
       Ingyenes hirdetés — a hirdető admin által küldött, ingyenes feltöltésre jogosító meghívóval
       regisztrált. Jóváhagyáskor nem készül díjbekérő, a hirdetés azonnal élesedik.
@@ -351,7 +360,7 @@ const { data: creditableReferral } = property.owner_id
     </section>
   )}
 
-  {reviewable && !property.free_listing && (
+  {reviewable && !isFree && (
     <section class="order card-block" id="order">
       <h2>Fizetendő díj</h2>
       <p class="hint">
@@ -457,14 +466,16 @@ const { data: creditableReferral } = property.owner_id
   {(reviewable || awaitingPayment) && (
     <section class="actions card-block">
       {reviewable && (
-        <button type="button" class="btn" id="approve-btn" data-free={property.free_listing ? 'yes' : undefined} data-gated={gated ? 'yes' : undefined}>
-          {property.free_listing ? 'Jóváhagyás és élesítés (ingyenes)' : gated ? 'Jóváhagyás és díjbekérő küldése' : 'Jóváhagyás és élesítés (díjkérővel)'}
+        <button type="button" class="btn" id="approve-btn" data-free={isFree ? 'yes' : undefined} data-own={adminOwned ? 'yes' : undefined} data-gated={gated ? 'yes' : undefined}>
+          {adminOwned ? 'Közzététel' : property.free_listing ? 'Jóváhagyás és élesítés (ingyenes)' : gated ? 'Jóváhagyás és díjbekérő küldése' : 'Jóváhagyás és élesítés (díjkérővel)'}
         </button>
       )}
       {awaitingPayment && (
         <button type="button" class="btn" id="publish-btn">Átutalás megérkezett — élesítés</button>
       )}
 
+      {adminOwned && <p class="hint own-hint">Ha még javítani szeretne rajta, a <a href={`/portal/properties/${property.id}`}>szerkesztőben</a> megteheti.</p>}
+      {!adminOwned && (<>
       <fieldset class="checklist" id="checklist">
         <legend>Ellenőrzőlista</legend>
         <p class="hint">
@@ -503,6 +514,7 @@ const { data: creditableReferral } = property.owner_id
         <button type="button" class="btn danger" id="final-reject-btn">Elutasítás</button>
         <p class="hint">Az elutasítás végleges: a hirdető értesítést kap az indoklással, a hirdetés nem küldhető be újra.</p>
       </div>
+      </>)}
 
       <p class="action-status" id="action-status" role="status"></p>
     </section>
@@ -656,6 +668,10 @@ const { data: creditableReferral } = property.owner_id
 
   document.getElementById('approve-btn')?.addEventListener('click', async (event) => {
     const free = event.currentTarget.dataset.free === 'yes';
+    if (free && event.currentTarget.dataset.own === 'yes') {
+      if (await window.pf.confirm({ title: 'Közzéteszi a hirdetést?', body: 'A hirdetés azonnal megjelenik a weboldalon. Díjbekérő nem készül.', confirmLabel: 'Közzététel' })) doAction('approve', {});
+      return;
+    }
     if (free) {
       if (await window.pf.confirm({ title: 'Jóváhagyja és élesíti?', body: 'Ez az ingyenes hirdetés azonnal megjelenik a weboldalon.', confirmLabel: 'Jóváhagyás és élesítés' })) doAction('approve', {});
       return;

@@ -70,17 +70,17 @@ async function safely<T>(what: string, task: () => Promise<T>): Promise<T | null
   }
 }
 
-type OwnerContact = { email: string; locale: Locale; full_name: string | null };
+type OwnerContact = { email: string; locale: Locale; full_name: string | null; role: string | null };
 
 async function ownerContact(supabase: any, ownerId: string | null): Promise<OwnerContact | null> {
   if (!ownerId) return null;
   const { data } = await supabase
     .from('profiles')
-    .select('email, locale, full_name')
+    .select('email, locale, full_name, role')
     .eq('id', ownerId)
     .maybeSingle();
   if (!data?.email) return null;
-  return { email: data.email, locale: localeOf(data), full_name: data.full_name };
+  return { email: data.email, locale: localeOf(data), full_name: data.full_name, role: data.role ?? null };
 }
 
 export const POST: APIRoute = async ({ params, request, locals }) => {
@@ -146,8 +146,10 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // had gone through (and a second click then met a 409). The mails go out
     // together so one slow recipient cannot hold the others up.
     const owner = await safely('owner lookup', () => ownerContact(supabase, property.owner_id));
+    // An admin's own listing: nobody needs a receipt or an alert about what they just did themselves.
+    const adminOwned = owner?.role === 'admin';
     await Promise.all([
-      owner
+      owner && !adminOwned
         ? safely('submission receipt', async () => {
             const title = await listingTitle(supabase, property.id, owner.locale, property.ref);
             return deliver(owner.email, templates.submissionReceived(owner.locale, { ref: property.ref, title }));
@@ -156,7 +158,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       // Closes a real 1.0 gap: the owner was told "we received it" and nobody at
       // FODEL was told anything at all, so a submission was only ever noticed by
       // an admin who happened to open the dashboard.
-      safely('admin alert', () => notifyAdmins(supabase, property, owner ?? null, mediaCount ?? 0)),
+      adminOwned ? null : safely('admin alert', () => notifyAdmins(supabase, property, owner ?? null, mediaCount ?? 0)),
       logEvent({
         kind: 'listing.submit',
         actorId: user!.id,
@@ -186,7 +188,10 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
     // An admin-granted free listing: approved and published with no order at
     // all, whatever PAYMENT_GATES_PUBLISHING says — there is nothing to pay.
-    if (property.free_listing) {
+    // The same goes for a listing an admin owns themselves: nobody sends
+    // themselves a payment request.
+    const adminOwned = owner?.role === 'admin';
+    if (property.free_listing || adminOwned) {
       const requested = String(body.order?.packageId ?? property.package);
       const packageId = listingCatalog().packages.some((pkg) => pkg.id === requested) ? requested : property.package;
       const { error } = await supabase
@@ -195,7 +200,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         .eq('id', id);
       if (error) return json(500, { ok: false, error: error.message });
 
-      const published = await publishProperty(supabase, id!, { notifyOwner: true });
+      const published = await publishProperty(supabase, id!, { notifyOwner: !adminOwned });
       if (!published.ok) return json(500, { ok: false, error: published.error });
 
       await logEvent({
@@ -206,7 +211,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         subjectId: id,
         propertyId: id,
         source: 'portal',
-        payload: { free: true, totalCents: 0 },
+        payload: { free: true, totalCents: 0, ...(adminOwned ? { adminOwned: true } : {}) },
       }).catch(() => {});
 
       return json(200, { ok: true, totalCents: 0, free: true });

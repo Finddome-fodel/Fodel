@@ -130,5 +130,6 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     source: 'portal',
   }).catch(() => {});
 
-  return back('saved=1');
+  // "Continue to the review page" saves first; the editor then moves on by itself.
+  return back(form.get('next') === 'review' ? 'saved=1&next=review' : 'saved=1');
 };
