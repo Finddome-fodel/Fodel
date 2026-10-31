@@ -236,4 +236,26 @@ assert.equal((await get('select * from claim_translation_jobs(4)')).length,0,'a 
 await db.exec(`update translation_jobs set claimed_at=now()-interval '30 seconds' where locale='de' and status='queued'`);
 assert.equal((await get('select * from claim_translation_jobs(4)')).length,1);
 console.log('✓ machine translations are written in one statement and never replace a person\'s text by accident; failed jobs back off');
+// 0044: the fixed free upload link. One row; admins only; nobody else, and no anonymous reader, can see the secret.
+const sql44=fs.readFileSync(root+'/supabase/migrations/0044_free_upload_link.sql','utf8');
+try{await db.exec(sql44);await db.exec(sql44);}catch(e){console.error('MIGRATION 0044 FAILED',e.message,e.detail);process.exit(1);}
+await db.exec(`reset role;set test.uid='';set test.admin='true';delete from free_upload_link;insert into free_upload_link(token)values('abcdefghijklmnopqrstuvwxyz012345')`);
+await assert.rejects(()=>db.exec(`insert into free_upload_link(id,token)values(2,'abcdefghijklmnopqrstuvwxyz012345')`),'only one row');
+await assert.rejects(()=>db.exec(`insert into free_upload_link(id,token)values(1,'short')`),'a token must be long');
+assert.equal((await get('select enabled from free_upload_link'))[0].enabled,true,'on by default');
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';`);
+assert.equal((await get('select token from free_upload_link')).length,1,'an admin reads it');
+await db.exec(`update free_upload_link set enabled=false,rotated_at=now()`);
+assert.equal((await get('select enabled from free_upload_link'))[0].enabled,false,'an admin changes it');
+await db.exec(`set test.admin='false';set test.uid='${owner}';`);
+assert.equal((await get('select * from free_upload_link')).length,0,'a seller sees nothing');
+await db.exec(`update free_upload_link set enabled=true`);
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+assert.equal((await get('select enabled from free_upload_link'))[0].enabled,false,'and changes nothing');
+await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';`);
+await assert.rejects(()=>db.exec(`insert into free_upload_link(id,token)values(1,'abcdefghijklmnopqrstuvwxyz012345') on conflict (id) do update set token=excluded.token`),'a seller cannot replace the secret');
+await db.exec(`reset role;set role anon;`);
+await assert.rejects(()=>get('select * from free_upload_link'),'anonymous has no access at all');
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+console.log('✓ free_upload_link: repeatable, one row, admins only, never readable by sellers or anonymous');
 await db.close();
