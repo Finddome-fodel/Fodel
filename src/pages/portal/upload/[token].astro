@@ -1,0 +1,363 @@
+---
+/**
+ * The free upload link every admin can copy (the "Ingyenes feltöltő link"
+ * button on the Ingatlanok page). Public by necessity: the secret in the
+ * address is the key (see src/middleware.ts's PUBLIC_PORTAL_PATHS), checked
+ * against the one stored row (src/lib/portal/upload-link.ts).
+ *
+ * The visitor leaves a name, an e-mail address and a phone number, is signed
+ * in at once and lands in the listing wizard on a free listing that waits for
+ * an admin's approval. No password to choose, no e-mail to confirm, no role to
+ * pick (src/lib/portal/upload-signup.ts). Opened while signed in, it just
+ * goes to the dashboard, like the other signed-out screens.
+ *
+ * The screen speaks Hungarian, Dutch or English (the wizard it leads into does
+ * too); any other language the visitor's site was in reads Dutch, as elsewhere
+ * in the seller portal (portalLang).
+ */
+export const prerender = false;
+
+import AuthPanel from '~/components/portal/AuthPanel.astro';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { checkUploadToken } from '~/lib/portal/upload-link';
+import { authLang, portalLang } from '~/lib/portal/auth-copy';
+import { UI, path } from '~/i18n/ui';
+
+if (Astro.locals.user) return Astro.redirect('/portal/dashboard');
+
+const { token } = Astro.params;
+const state = await checkUploadToken(createSupabaseAdminClient(), token);
+
+const lang = authLang(Astro.url, Astro.cookies);
+const copyLang = portalLang(lang);
+const failed = Astro.url.searchParams.get('error');
+
+const COPY = {
+  hu: {
+    title: 'Ingyenes hirdetésfeladás',
+    heading: 'Adja fel ingyen az ingatlanát',
+    intro: 'Adja meg az elérhetőségét, és rögtön folytathatja a hirdetés összeállítását. Jelszót sem kell beállítani, e-mailt sem kell megerősíteni. A hirdetés csak munkatársaink jóváhagyása után jelenik meg az oldalon.',
+    name: 'Teljes név',
+    email: 'E-mail-cím',
+    phone: 'Telefonszám',
+    phoneHint: 'Külföldi számnál az országhívóval együtt, pl. +31 6 1234 5678.',
+    submit: 'Tovább a hirdetéshez',
+    consent: 'Hozzájárulok, hogy a FINDDOME a megadott adataimat a hirdetésem kezelése céljából kezelje.',
+    working: 'Egy pillanat…',
+    later: 'Később ugyanezzel az e-mail-címmel léphet vissza: a bejelentkezésnél az „Elfelejtett jelszó” linkkel állíthat be jelszót.',
+    login: 'Bejelentkezés',
+    forgot: 'Elfelejtett jelszó',
+    errors: {
+      name: 'Adja meg a nevét.',
+      email: 'Adjon meg érvényes e-mail-címet.',
+      phone: 'Adjon meg érvényes telefonszámot.',
+      consent: 'A folytatáshoz el kell fogadnia az adatvédelmi tájékoztatót.',
+      exists: 'Ezzel az e-mail-címmel már van fiók. Lépjen be, vagy kérjen új jelszót:',
+      invited: 'Erre a címre már küldtünk meghívót. Kérjük, a meghívó e-mailben kapott linket használja.',
+      failed: 'Most nem sikerült. Kérjük, próbálja újra egy perc múlva.',
+      'rate-limited': 'Túl sok próbálkozás. Kérjük, várjon néhány percet.',
+      fields: 'Kérjük, ellenőrizze a jelölt adatokat.',
+    },
+    gone: {
+      invalid: ['Ez a link nem érvényes', 'Kérje el a FINDDOME munkatársaitól a mostani feltöltő linket.'],
+      off: ['Ez a link jelenleg nincs használatban', 'Kérje a FINDDOME munkatársaitól, hogy küldjék el újra, ha ismét nyitva van.'],
+      unavailable: ['Az oldal most nem érhető el', 'Kérjük, próbálja újra később.'],
+    },
+  },
+  nl: {
+    title: 'Gratis adverteren',
+    heading: 'Plaats uw woning gratis',
+    intro: 'Laat uw gegevens achter en stel meteen uw advertentie samen. U hoeft geen wachtwoord te kiezen en geen e-mail te bevestigen. De advertentie verschijnt pas op de site nadat onze medewerkers hem hebben goedgekeurd.',
+    name: 'Volledige naam',
+    email: 'E-mailadres',
+    phone: 'Telefoonnummer',
+    phoneHint: 'Bij een buitenlands nummer met landcode, bijvoorbeeld +36 30 123 4567.',
+    submit: 'Verder naar de advertentie',
+    consent: 'Ik geef FINDDOME toestemming mijn gegevens te verwerken voor het beheer van mijn advertentie.',
+    working: 'Een moment…',
+    later: 'Later kunt u met hetzelfde e-mailadres weer inloggen: kies bij het inloggen ‘Wachtwoord vergeten’ om een wachtwoord in te stellen.',
+    login: 'Inloggen',
+    forgot: 'Wachtwoord vergeten',
+    errors: {
+      name: 'Vul uw naam in.',
+      email: 'Vul een geldig e-mailadres in.',
+      phone: 'Vul een geldig telefoonnummer in.',
+      consent: 'U moet de privacyverklaring accepteren om verder te gaan.',
+      exists: 'Er bestaat al een account met dit e-mailadres. Log in of vraag een nieuw wachtwoord aan:',
+      invited: 'Naar dit adres hebben we al een uitnodiging gestuurd. Gebruik de link uit die e-mail.',
+      failed: 'Dat lukte nu niet. Probeer het over een minuut opnieuw.',
+      'rate-limited': 'Te veel pogingen. Wacht een paar minuten.',
+      fields: 'Controleer de gemarkeerde gegevens.',
+    },
+    gone: {
+      invalid: ['Deze link is niet geldig', 'Vraag de medewerkers van FINDDOME om de huidige uploadlink.'],
+      off: ['Deze link is op dit moment niet in gebruik', 'Vraag de medewerkers van FINDDOME om hem opnieuw te sturen zodra hij weer open is.'],
+      unavailable: ['De pagina is nu niet beschikbaar', 'Probeer het later opnieuw.'],
+    },
+  },
+  en: {
+    title: 'List for free',
+    heading: 'List your property for free',
+    intro: 'Leave your details and carry straight on with your listing. There is no password to choose and no e-mail to confirm. The listing only appears on the site once our team has approved it.',
+    name: 'Full name',
+    email: 'E-mail address',
+    phone: 'Phone number',
+    phoneHint: 'For a foreign number, include the country code, for example +31 6 1234 5678.',
+    submit: 'Continue to the listing',
+    consent: 'I agree that FINDDOME may process my details to handle my listing.',
+    working: 'One moment…',
+    later: 'You can come back later with the same e-mail address: on the sign-in page, use “Forgot password” to set a password.',
+    login: 'Sign in',
+    forgot: 'Forgot password',
+    errors: {
+      name: 'Please enter your name.',
+      email: 'Please enter a valid e-mail address.',
+      phone: 'Please enter a valid phone number.',
+      consent: 'You need to accept the privacy notice to continue.',
+      exists: 'There is already an account with this e-mail address. Sign in, or ask for a new password:',
+      invited: 'We have already sent an invitation to this address. Please use the link in that e-mail.',
+      failed: 'That did not work just now. Please try again in a minute.',
+      'rate-limited': 'Too many attempts. Please wait a few minutes.',
+      fields: 'Please check the marked details.',
+    },
+    gone: {
+      invalid: ['This link is not valid', 'Ask the FINDDOME team for the current upload link.'],
+      off: ['This link is not in use right now', 'Ask the FINDDOME team to send it again once it is open.'],
+      unavailable: ['This page is not available right now', 'Please try again later.'],
+    },
+  },
+}[copyLang];
+
+const ui = UI[lang];
+const phonePlaceholder = copyLang === 'nl' ? '+31 6 1234 5678' : '+36 30 123 4567';
+const errorText = failed && failed in COPY.errors ? COPY.errors[failed as keyof typeof COPY.errors] : null;
+const gone = state === 'ok' ? null : COPY.gone[state];
+---
+
+<AuthPanel title={COPY.title} heading={gone ? gone[0] : COPY.heading} lang={lang}>
+  {
+    gone ? (
+      <p class="body">{gone[1]}</p>
+    ) : (
+      <>
+        <p class="body">{COPY.intro}</p>
+        <p class="notice error" role="alert" id="upload-error" hidden={!errorText}>
+          {errorText}
+          {failed === 'exists' && (
+            <>
+              {' '}
+              <a href={`/portal/login?lang=${lang}`}>{COPY.login}</a> · <a href={`/portal/forgot?lang=${lang}`}>{COPY.forgot}</a>
+            </>
+          )}
+        </p>
+
+        <form
+          method="POST"
+          action="/api/portal/upload/start"
+          id="upload-form"
+          novalidate
+          data-messages={JSON.stringify(COPY.errors)}
+          data-lang={lang}
+          data-login={COPY.login}
+          data-forgot={COPY.forgot}
+        >
+          <input type="hidden" name="token" value={token} />
+          <input type="hidden" name="lang" value={lang} />
+          <input type="text" name="company" class="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+          <div class="field">
+            <label for="up-name">{COPY.name}</label>
+            <input id="up-name" name="name" required maxlength="120" autocomplete="name" enterkeyhint="next" aria-describedby="up-name-err" />
+            <p class="ferr" id="up-name-err" hidden>{COPY.errors.name}</p>
+          </div>
+          <div class="field">
+            <label for="up-email">{COPY.email}</label>
+            <input id="up-email" name="email" type="email" required maxlength="160" autocomplete="email" inputmode="email" enterkeyhint="next" aria-describedby="up-email-err" />
+            <p class="ferr" id="up-email-err" hidden>{COPY.errors.email}</p>
+          </div>
+          <div class="field">
+            <label for="up-phone">{COPY.phone}</label>
+            <input id="up-phone" name="phone" type="tel" required maxlength="40" autocomplete="tel" inputmode="tel" enterkeyhint="done" placeholder={phonePlaceholder} aria-describedby="up-phone-hint up-phone-err" />
+            <p class="fhint" id="up-phone-hint">{COPY.phoneHint}</p>
+            <p class="ferr" id="up-phone-err" hidden>{COPY.errors.phone}</p>
+          </div>
+
+          <div class="consent">
+            <input type="checkbox" id="up-consent" name="consent" value="yes" required aria-describedby="up-consent-err" />
+            <label for="up-consent">
+              {COPY.consent}
+              <a href={path(lang, 'privacy')} target="_blank" rel="noopener">{ui.form.consentLink}</a>
+            </label>
+            <p class="ferr" id="up-consent-err" hidden>{COPY.errors.consent}</p>
+          </div>
+
+          <button type="submit" class="submit" data-working={COPY.working}>{COPY.submit}</button>
+        </form>
+        <p class="hint">{COPY.later}</p>
+      </>
+    )
+  }
+</AuthPanel>
+
+<script>
+  const form = document.getElementById('upload-form') as HTMLFormElement | null;
+  const banner = document.getElementById('upload-error');
+  if (form && banner) {
+    const button = form.querySelector<HTMLButtonElement>('.submit')!;
+    const label = button.textContent ?? '';
+    const messages = JSON.parse(form.dataset.messages ?? '{}');
+    const FIELDS = ['name', 'email', 'phone', 'consent'] as const;
+
+    const control = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
+    const show = (name: string, on: boolean) => {
+      const input = control(name);
+      const note = document.getElementById(`up-${name}-err`);
+      if (note) note.hidden = !on;
+      if (on) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+    };
+    const problems = (): string[] =>
+      FIELDS.filter((name) => {
+        const input = control(name);
+        if (name === 'consent') return !input.checked;
+        if (name === 'phone') return input.value.replace(/\D/g, '').length < 6;
+        return !input.checkValidity();
+      });
+
+    for (const name of FIELDS) control(name).addEventListener('input', () => show(name, false));
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const bad = problems();
+      for (const name of FIELDS) show(name, bad.includes(name));
+      if (bad.length) {
+        banner.textContent = messages.fields;
+        banner.hidden = false;
+        control(bad[0]).focus();
+        return;
+      }
+      banner.hidden = true;
+      button.disabled = true;
+      button.textContent = button.dataset.working ?? label;
+      try {
+        const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+        const data = await res.json().catch(() => ({}));
+        if (data.ok && data.redirect) {
+          window.location.assign(data.redirect);
+          return;
+        }
+        if (data.fields) {
+          for (const name of FIELDS) show(name, Boolean(data.fields[name]));
+          banner.textContent = messages.fields;
+        } else {
+          banner.textContent = messages[data.error] ?? messages.failed;
+          if (data.error === 'exists') {
+            const links = document.createElement('span');
+            links.innerHTML = ` <a href="/portal/login?lang=${form.dataset.lang}">${form.dataset.login}</a> · <a href="/portal/forgot?lang=${form.dataset.lang}">${form.dataset.forgot}</a>`;
+            banner.append(links);
+          }
+        }
+        banner.hidden = false;
+      } catch {
+        banner.textContent = messages.failed;
+        banner.hidden = false;
+      }
+      button.disabled = false;
+      button.textContent = label;
+    });
+  }
+</script>
+
+<style is:global>
+  .panel .trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .panel .field input[aria-invalid='true'] {
+    border-color: #b3261e;
+  }
+  .panel .fhint {
+    margin-top: 7px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-quiet);
+  }
+  .panel .ferr {
+    margin-top: 7px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #b3261e;
+  }
+  .panel [hidden] {
+    display: none;
+  }
+  .panel .notice a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .panel .consent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 14px;
+    align-items: start;
+    margin: 6px 0 22px;
+  }
+  .panel .consent input {
+    appearance: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    padding: 0;
+    border: 1px solid rgba(16, 42, 67, 0.3);
+    border-radius: 7px;
+    background: var(--white);
+    cursor: pointer;
+    transition:
+      background-color 0.3s var(--ease-out),
+      border-color 0.3s var(--ease-out);
+  }
+  .panel .consent input::after {
+    content: '';
+    width: 10px;
+    height: 6px;
+    margin-top: -3px;
+    border-left: 1.6px solid var(--cream);
+    border-bottom: 1.6px solid var(--cream);
+    transform: rotate(-45deg) scale(0);
+    transition: transform 0.3s var(--ease-out);
+  }
+  .panel .consent input:checked {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .panel .consent input:checked::after {
+    transform: rotate(-45deg) scale(1);
+  }
+  .panel .consent input[aria-invalid='true'] {
+    border-color: #b3261e;
+  }
+  .panel .consent label {
+    margin: 0;
+    font-size: var(--fs-small);
+    line-height: 1.65;
+    color: var(--taupe);
+  }
+  .panel .consent label a {
+    margin-left: 4px;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .panel .consent .ferr {
+    grid-column: 2;
+  }
+  .panel .submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+</style>

@@ -16,6 +16,7 @@ import Portal from '~/layouts/Portal.astro';
 import { portalLang } from '~/lib/portal/auth-copy';
 import Ago from '~/components/portal/Ago.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
+import FreeUploadLink from '~/components/portal/FreeUploadLink.astro';
 import { NO_OWNER, STATUS_LABEL } from '~/lib/portal/properties';
 import { formatCents } from '~/lib/orders';
 import { icon } from '~/lib/portal/icons';
@@ -177,6 +178,7 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
       </p>
     </div>
     <div class="top-actions">
+      {isAdmin && <FreeUploadLink />}
       <a class="btn" href="/portal/properties/new">
         Új ingatlan
         <ArrowChip />
@@ -423,6 +425,12 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
 </Portal>
 
 <style>
+  .top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
   .resume { align-items: center; }
   .resume > span:first-child { display: grid; gap: 4px; }
   .resume-body { font-size: 14.5px; line-height: 1.55; opacity: 0.85; }

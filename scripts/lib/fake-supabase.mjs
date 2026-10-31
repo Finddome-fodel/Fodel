@@ -28,6 +28,7 @@ export function createFakeDb(seed = {}, options = {}) {
       return this;
     }
     insert(rows) { this.op = 'insert'; this.rows = Array.isArray(rows) ? rows : [rows]; return this; }
+    upsert(rows, opts = {}) { this.op = 'upsert'; this.rows = Array.isArray(rows) ? rows : [rows]; this.conflict = opts.onConflict ?? 'id'; this.ignoreDuplicates = Boolean(opts.ignoreDuplicates); return this; }
     update(patch) { this.op = 'update'; this.patch = patch; return this; }
     delete() { this.op = 'delete'; return this; }
     eq(col, value) { this.tests.push((row) => row[col] === value); return this; }
@@ -62,6 +63,13 @@ export function createFakeDb(seed = {}, options = {}) {
           added.push(row);
         }
         return this.finish(this.returning ? added : null);
+      }
+      if (this.op === 'upsert') {
+        for (const input of this.rows) {
+          const found = rows.find((r) => r[this.conflict] === input[this.conflict]);
+          if (found) { if (!this.ignoreDuplicates) Object.assign(found, input); } else rows.push({ id: `${this.name}-${++seq}`, ...input });
+        }
+        return this.finish(null);
       }
       let hit = rows.filter((row) => this.tests.every((test) => test(row)));
       if (this.op === 'update') {

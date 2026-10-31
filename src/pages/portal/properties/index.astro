@@ -19,6 +19,7 @@ import { publicUrl } from '~/lib/portal/publish';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { icon } from '~/lib/portal/icons';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
+import FreeUploadLink from '~/components/portal/FreeUploadLink.astro';
 import { listingName } from '~/lib/portal/time';
 import { getCompany } from '~/lib/runtime-config';
 import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
@@ -96,7 +97,10 @@ const chips: [string, string][] = isAdmin
       <p class="eyebrow">{isAdmin ? 'Adatok' : 'Hirdetéseim'}</p>
       <h1><span id="shown">{properties.length}</span> hirdetés</h1>
     </div>
-    <a class="btn" href="/portal/properties/new">Új ingatlan</a>
+    <div class="head-actions">
+      {isAdmin && <FreeUploadLink />}
+      <a class="btn" href="/portal/properties/new">Új ingatlan</a>
+    </div>
   </header>
 
   <div class="bar">
@@ -433,6 +437,12 @@ const chips: [string, string][] = isAdmin
   }
   .head h1 {
     margin-top: 10px;
+  }
+  .head-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
   }
   .bar {
     display: flex;

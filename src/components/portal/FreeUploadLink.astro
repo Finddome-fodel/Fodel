@@ -1,0 +1,219 @@
+---
+/**
+ * "Ingyenes feltöltő link" — admin only, next to "Új ingatlan".
+ *
+ * One fixed link the office hands to anyone: copy it, or open the mail
+ * programme with it already in the message. Opening it asks the visitor for a
+ * name, an e-mail address and a phone number and goes straight into the
+ * listing wizard on a free listing; nothing goes live before an admin approves
+ * it (src/pages/portal/upload/[token].astro). No e-mail address, role or
+ * invitation is entered here.
+ *
+ * The link is read when the dialog opens (and made the first time), so a page
+ * load costs nothing. "Új link" replaces the secret and retires every copy
+ * already sent; "Kikapcsolás" closes the link without replacing it.
+ */
+import { icon } from '~/lib/portal/icons';
+
+interface Props {
+  /** Visual weight next to the primary button. */
+  class?: string;
+}
+const { class: className = '' } = Astro.props as Props;
+---
+
+<button type="button" class:list={['btn ghost', className]} data-ful-open>
+  <Fragment set:html={icon('link', 17)} />
+  Ingyenes feltöltő link
+</button>
+
+<dialog class="pt-dialog ful" aria-labelledby="ful-title" data-ful>
+  <form method="dialog">
+    <div class="ic"><Fragment set:html={icon('link', 22)} /></div>
+    <h2 id="ful-title">Ingyenes feltöltő link</h2>
+    <p class="lead">
+      Ezt az egy linket bárkinek elküldheti. Aki megnyitja, megadja a nevét, e-mail-címét és telefonszámát, és rögtön feltöltheti az ingatlanát. A hirdetés csak az Ön jóváhagyása után kerül ki.
+    </p>
+
+    <p class="ful-state" data-ful-loading role="status">Link betöltése…</p>
+    <p class="ful-error" data-ful-error role="alert" hidden></p>
+
+    <div data-ful-body hidden>
+      <label class="tlabel" for="ful-url">Link</label>
+      <input id="ful-url" type="text" readonly data-ful-url />
+      <p class="ful-note" data-ful-off hidden>A link jelenleg ki van kapcsolva: aki megnyitja, azt látja, hogy nem használható.</p>
+
+      <div class="row ful-actions">
+        <a class="btn ghost" data-ful-mail href="mailto:">E-mail írása</a>
+        <button type="button" class="btn go" data-ful-copy>Link másolása</button>
+      </div>
+
+      <div class="ful-manage">
+        <button type="button" class="ful-link" data-ful-toggle>Kikapcsolás</button>
+        <button type="button" class="ful-link" data-ful-rotate>Új link készítése</button>
+      </div>
+    </div>
+
+    <div class="row ful-close">
+      <button type="submit" class="btn ghost">Bezárás</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('dialog[data-ful]');
+  const opener = document.querySelectorAll<HTMLButtonElement>('[data-ful-open]');
+  if (dialog) {
+    const $ = <T extends HTMLElement>(selector: string) => dialog.querySelector<T>(selector)!;
+    const loading = $('[data-ful-loading]');
+    const errorBox = $('[data-ful-error]');
+    const body = $('[data-ful-body]');
+    const url = $<HTMLInputElement>('[data-ful-url]');
+    const off = $('[data-ful-off]');
+    const mail = $<HTMLAnchorElement>('[data-ful-mail]');
+    const copyBtn = $<HTMLButtonElement>('[data-ful-copy]');
+    const toggle = $<HTMLButtonElement>('[data-ful-toggle]');
+    const rotate = $<HTMLButtonElement>('[data-ful-rotate]');
+    let enabled = true;
+
+    const MAIL_SUBJECT = 'Ingyenes hirdetésfeladás a FINDDOME-on';
+    const mailBody = (link: string) =>
+      `Kedves Hirdető!\n\nIngatlanát ingyenesen feladhatja a FINDDOME-on az alábbi linken. Meg kell adnia a nevét, az e-mail-címét és a telefonszámát, utána rögtön összeállíthatja a hirdetést. Jelszót nem kell beállítani.\n\n${link}\n\nA hirdetés megjelenés előtt munkatársaink jóváhagyásán megy át.\n\nÜdvözlettel,\nFINDDOME`;
+
+    const fail = (message: string) => {
+      loading.hidden = true;
+      body.hidden = true;
+      errorBox.textContent = message;
+      errorBox.hidden = false;
+    };
+
+    const render = (data: { url: string; enabled: boolean }) => {
+      enabled = data.enabled;
+      url.value = data.url;
+      off.hidden = enabled;
+      toggle.textContent = enabled ? 'Kikapcsolás' : 'Bekapcsolás';
+      mail.href = `mailto:?subject=${encodeURIComponent(MAIL_SUBJECT)}&body=${encodeURIComponent(mailBody(data.url))}`;
+      copyBtn.disabled = !enabled;
+      mail.toggleAttribute('aria-disabled', !enabled);
+      mail.style.pointerEvents = enabled ? '' : 'none';
+      mail.style.opacity = enabled ? '' : '0.5';
+      loading.hidden = true;
+      errorBox.hidden = true;
+      body.hidden = false;
+    };
+
+    const call = async (action?: 'rotate' | 'enable' | 'disable') => {
+      try {
+        const res = await fetch('/api/portal/upload-link', action ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action }) } : undefined);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) {
+          fail(data.error || 'Nem sikerült betölteni a linket.');
+          return null;
+        }
+        render(data);
+        return data as { url: string; enabled: boolean };
+      } catch {
+        fail('Nem sikerült betölteni a linket.');
+        return null;
+      }
+    };
+
+    const copy = async () => {
+      try {
+        await navigator.clipboard.writeText(url.value);
+        return true;
+      } catch {
+        url.select();
+        return document.execCommand('copy');
+      }
+    };
+
+    opener.forEach((button) =>
+      button.addEventListener('click', () => {
+        loading.hidden = false;
+        body.hidden = true;
+        errorBox.hidden = true;
+        dialog.showModal();
+        void call();
+      })
+    );
+
+    copyBtn.addEventListener('click', async () => {
+      if (await copy()) window.pf!.toast('A link a vágólapra került.', 'ok');
+      else window.pf!.toast('Nem sikerült másolni. Jelölje ki a linket, és másolja kézzel.', 'warn');
+    });
+
+    toggle.addEventListener('click', async () => {
+      if (enabled) {
+        const answer = await window.pf!.confirm({
+          title: 'Kikapcsolja a linket?',
+          body: 'Amíg ki van kapcsolva, aki a linket megnyitja, nem tud ingatlant feltölteni. Bármikor visszakapcsolhatja, a link ugyanaz marad.',
+          confirmLabel: 'Kikapcsolás',
+        });
+        if (!answer) return;
+      }
+      if (await call(enabled ? 'disable' : 'enable')) window.pf!.toast(enabled ? 'A link be van kapcsolva.' : 'A link ki van kapcsolva.', 'ok');
+    });
+
+    rotate.addEventListener('click', async () => {
+      const answer = await window.pf!.confirm({
+        title: 'Új linket készít?',
+        body: 'A mostani link azonnal megszűnik működni mindenkinél, akinek már elküldte. Az eddig megkezdett hirdetések megmaradnak. Az új linket Önnek kell újra kiküldenie.',
+        confirmLabel: 'Új link készítése',
+      });
+      if (!answer) return;
+      if (await call('rotate')) window.pf!.toast('Az új link kész, a régi megszűnt.', 'ok');
+    });
+  }
+</script>
+
+<style is:global>
+  .pt-dialog.ful {
+    width: min(540px, calc(100vw - 32px));
+  }
+  .pt-dialog.ful .ful-state,
+  .pt-dialog.ful .ful-error,
+  .pt-dialog.ful .ful-note {
+    margin-top: 18px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink-quiet);
+  }
+  .pt-dialog.ful .ful-error {
+    color: var(--pt-red);
+  }
+  .pt-dialog.ful [hidden] {
+    display: none;
+  }
+  .pt-dialog.ful [data-ful-url] {
+    text-overflow: ellipsis;
+  }
+  .pt-dialog.ful .ful-actions {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .pt-dialog.ful .ful-manage {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--pt-hair);
+  }
+  .pt-dialog.ful .ful-link {
+    padding: 0;
+    background: none;
+    border: 0;
+    font-size: 13.5px;
+    color: var(--ink-quiet);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .pt-dialog.ful .ful-link:hover {
+    color: var(--ink);
+  }
+  .pt-dialog.ful .ful-close {
+    margin-top: 12px;
+  }
+</style>

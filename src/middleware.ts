@@ -20,6 +20,7 @@ const PUBLIC_PORTAL_PATHS = [
   '/portal/login',
   '/portal/register', // self-registration (launch round) — the same form as the public submit page
   '/portal/invite/', // /portal/invite/[token] — the token itself is the credential
+  '/portal/upload/', // /portal/upload/[token] — the admin's shared free-upload link; the secret in it is the key
   '/portal/forgot',
   '/portal/reset/', // /portal/reset/[token] — likewise
   // /portal/invoices/[number] — reachable signed out via ?t=<view_token> for
@@ -49,6 +50,7 @@ const ADMIN_ONLY_PREFIXES = [
   '/portal/email',
   '/portal/translations',
   '/api/portal/translations',
+  '/api/portal/upload-link',
   // Each of these API prefixes is distinct from its /portal/... counterpart
   // above and would NOT be covered by it — the same easy-to-forget gap the
   // plan calls out for the database export route.
@@ -122,6 +124,7 @@ const guard: MiddlewareHandler = async (context, next) => {
   // session, which is precisely why it cannot require one.
   const isPublicPortalApi =
     pathname.startsWith('/api/portal/invite') ||
+    pathname === '/api/portal/upload/start' || // the free upload link's form; it checks the link's secret itself
     pathname === '/api/portal/login' ||
     pathname === '/api/portal/forgot' ||
     pathname === '/api/portal/reset';
