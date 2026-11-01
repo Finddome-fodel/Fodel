@@ -31,6 +31,7 @@ import { officeInbox } from '~/lib/email/routing';
 import { SITE_URL } from '~/config/site.mjs';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
 import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
+import { logEvent } from '~/lib/activity';
 
 export const prerender = false;
 
@@ -91,6 +92,27 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     await keepStripeBilling(admin, order.id, session.customer_details);
+
+    // An order an admin waived ("Jóváhagyás ingyen") whose card page was paid in the
+    // very same moment: the money is real, so it is recorded, but it changes nothing
+    // about the listing (already live, free) and is flagged for a refund decision.
+    // Read on its own so that, before migration 0045, the column's absence cannot
+    // hide the order from the query above.
+    const { data: waiver } = await admin.from('payments').select('waived_at').eq('id', order.id).maybeSingle();
+    if (waiver?.waived_at) {
+      if (!['paid', 'manual', 'refunded'].includes(order.status)) {
+        console.warn(`[stripe] payment arrived for waived order ${order.id} — recorded and flagged for refund, listing untouched`);
+        await admin
+          .from('payments')
+          .update({ status: 'paid', paid_at: new Date().toISOString(), refund_required: true })
+          .eq('id', order.id);
+        await logEvent({
+          kind: 'payment.paid_after_waiver', subjectType: 'payment', subjectId: order.id, propertyId: order.property_id,
+          source: 'stripe-webhook', payload: { amountCents: order.amount_cents, sessionId: session.id }, dedupeKey: `${event.id}:waived`,
+        }).catch(() => {});
+      }
+      return new Response(null, { status: 200 });
+    }
 
     // Settling and publishing are separate steps, so a retried delivery can
     // finish a publish that failed the first time without paying twice.

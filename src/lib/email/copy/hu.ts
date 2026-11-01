@@ -161,6 +161,16 @@ export const HU = {
     cta: 'Hirdetés megtekintése',
     next: 'Ha valaki érdeklődik, azonnal e-mailt küldünk Önnek az érdeklődő adataival. A hirdetés állapotát bármikor megnézheti a portálon.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Hirdetését díjmentesen jóváhagytuk (#${ref})`,
+    preheader: `A hirdetés már látható a ${SITE_HOST} oldalon, és nem kell érte fizetnie.`,
+    heading: 'Hirdetése díjmentesen élesedett',
+    body: (title: string, ref: string) =>
+      `A(z) „${title}” (#${ref}) hirdetését jóváhagytuk, és mostantól látható a ${SITE_HOST} oldalon. A közzétételért ezúttal nem számítunk fel díjat, így Önnek ezzel kapcsolatban nincs teendője.`,
+    waived: 'A korábban küldött díjbekérőt ezzel érvénytelenítettük, így azt nem kell befizetnie.',
+    cta: 'Hirdetés megtekintése',
+    next: 'Ha valaki érdeklődik, azonnal e-mailt küldünk Önnek az érdeklődő adataival. A hirdetés állapotát bármikor megnézheti a portálon.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Új érdeklődő (#${ref})`,

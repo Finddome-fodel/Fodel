@@ -141,6 +141,16 @@ export const IT = {
     cta: 'Vedi l’annuncio',
     next: 'Non appena qualcuno mostra interesse, Le inviamo subito i suoi dati via e-mail. Nel portale può sempre vedere lo stato del Suo annuncio.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Il Suo annuncio è stato approvato gratuitamente (#${ref})`,
+    preheader: `L’annuncio è ora visibile su ${SITE_HOST} e non deve pagare nulla.`,
+    heading: 'Il Suo annuncio è online gratuitamente',
+    body: (title: string, ref: string) =>
+      `Abbiamo approvato il Suo annuncio “${title}” (#${ref}), che è ora visibile su ${SITE_HOST}. Questa volta non addebitiamo alcun costo per la pubblicazione, quindi non deve fare nulla.`,
+    waived: 'La richiesta di pagamento che Le avevamo inviato è quindi annullata. La preghiamo di non pagarla.',
+    cta: 'Vedi l’annuncio',
+    next: 'Non appena qualcuno mostra interesse, Le inviamo subito i suoi dati via e-mail. Nel portale può sempre vedere lo stato del Suo annuncio.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Nuova richiesta (#${ref})`,

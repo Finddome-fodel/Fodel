@@ -20,6 +20,8 @@ export const EVENT_LABEL: Record<string, string> = {
   'valuation.info_requested': 'Értékbecsléshez hiánypótlás kérve',
   'listing.submit': 'Hirdetés beküldve elbírálásra',
   'listing.approve': 'Hirdetés jóváhagyva',
+  'listing.approve_free': 'Hirdetés ingyenesen jóváhagyva',
+  'payment.paid_after_waiver': 'Fizetés érkezett egy elengedett díjra (visszatérítendő)',
   'listing.request_changes': 'Javítás kérve',
   'listing.reject': 'Hirdetés elutasítva',
   'listing.mark_sold': 'Eladottnak jelölve',
@@ -77,6 +79,15 @@ export const PAYMENT_STATUS_LABEL: Record<string, string> = {
   cancelled: 'Visszavonva',
   refunded: 'Visszatérítve',
 };
+
+/** A díjbekérő an admin let go with "Jóváhagyás ingyen": stored as 'cancelled', shown as what it is. */
+export const WAIVED_LABEL = 'Elengedve (ingyenes)';
+
+/** The status label of one order row, telling a waived fee apart from a plain cancellation. */
+export function paymentStatusLabel(order: { status: string; waived_at?: string | null }): string {
+  if (order.status === 'cancelled' && order.waived_at) return WAIVED_LABEL;
+  return PAYMENT_STATUS_LABEL[order.status] ?? order.status;
+}
 
 /** How the money moved, as distinct from where the order stands. */
 export const PAYMENT_METHOD_LABEL: Record<string, string> = {

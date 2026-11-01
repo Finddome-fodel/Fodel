@@ -644,11 +644,11 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
   (window as any).pf = {
     toast,
     /** A short single-line answer (a link, a caption); resolves to null when cancelled. */
-    prompt: async (o: { title: string; body: string; label: string; confirmLabel?: string; value?: string; placeholder?: string; required?: boolean; multiline?: boolean }) => {
+    prompt: async (o: { title: string; body: string; label: string; confirmLabel?: string; value?: string; placeholder?: string; required?: boolean; multiline?: boolean; icon?: IconName }) => {
       const answer = await ask({
         title: o.title,
         body: o.body,
-        icon: 'edit',
+        icon: o.icon ?? 'edit',
         field: { label: o.label, multiline: o.multiline ?? false, required: o.required ?? true, value: o.value, placeholder: o.placeholder },
         confirmLabel: o.confirmLabel ?? 'Rendben',
       });

@@ -8,6 +8,9 @@
  *
  *   legacy only: awaiting_payment ──[Stripe / manual / publish_unpaid]──▶ published
  *
+ *   submitted | awaiting_payment ──approve_free──▶ published, no fee (an admin's
+ *   deliberate decision; any open díjbekérő is voided — src/lib/portal/free-approval.ts)
+ *
  *   submitted | changes_requested | awaiting_payment ──reject──▶ rejected (terminal)
  *
  * 2.1 (brief §7): a listing whose owner was invited with a free listing
@@ -39,6 +42,9 @@ import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 import { placeholderProblem } from '~/lib/portal/placeholder';
 import { deleteImage } from '~/lib/media';
 import { logEvent } from '~/lib/activity';
+import {
+  cleanNote, closeCheckout, isMissingFreeApprovalSchema, openListingOrders, releaseReferrals, restoreOrders, waiveOrders,
+} from '~/lib/portal/free-approval';
 import {
   buildOrderLines,
   orderTotalCents,
@@ -381,6 +387,14 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       })
       .eq('id', id);
     if (error) return json(500, { ok: false, error: error.message });
+    // Let through free once, sent back since, and paid for this time: the old free mark no longer
+    // describes it. (Before migration 0045 the columns are missing and this quietly does nothing.)
+    await supabase
+      .from('properties')
+      .update({ free_approved_at: null, free_approved_by: null })
+      .eq('id', id)
+      .not('free_approved_at', 'is', null)
+      .then(() => {}, () => {});
 
     if (!gated) {
       const published = await publishProperty(supabase, id!, { notifyOwner: false });
@@ -439,6 +453,161 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     }).catch(() => {});
 
     return json(200, { ok: true, totalCents, emailDelivered });
+  }
+
+  /* ── approve free of charge ("Jóváhagyás ingyen") ───────────────────────
+     An admin lets a listing through without a fee, on purpose: from review
+     (submitted), from "Fizetésre vár" (the díjbekérő already went out), or —
+     when publication does not wait for money — for a listing that went live
+     with its fee still open. The steps and why they come in this order are in
+     src/lib/portal/free-approval.ts. */
+
+  if (action === 'approve_free') {
+    if (!isAdmin) return json(403, { ok: false, error: 'forbidden' });
+    const admin = createSupabaseAdminClient();
+
+    // Before migration 0045 the columns are missing: say so, change nothing.
+    const { data: state, error: stateError } = await admin
+      .from('properties')
+      .select('status, free_approved_at, free_approved_by')
+      .eq('id', id)
+      .maybeSingle();
+    if (stateError) {
+      return isMissingFreeApprovalSchema(stateError)
+        ? json(503, { ok: false, error: 'migration-needed', message: 'Az ingyenes jóváhagyáshoz előbb futtassa le a 0045-ös migrációt a Supabase SQL szerkesztőben.' })
+        : json(500, { ok: false, error: stateError.message });
+    }
+    if (!state) return json(404, { ok: false, error: 'not-found' });
+    const from = String(state.status);
+    // A double click, a second tab or a second admin: it is done, and nobody is e-mailed twice.
+    // (A listing let through free once and later sent back for changes is a new decision.)
+    if (state.free_approved_at && from === 'published') return json(200, { ok: true, free: true, already: true });
+    const previous = { free_approved_at: state.free_approved_at ?? null, free_approved_by: state.free_approved_by ?? null };
+    if (!['submitted', 'awaiting_payment', 'published'].includes(from)) return json(409, { ok: false, error: 'not-approvable' });
+
+    const owner = await ownerContact(supabase, property.owner_id);
+    // Nothing to let off: these never had a fee. The normal approve button publishes them.
+    if (property.free_listing || owner?.role === 'admin') return json(409, { ok: false, error: 'already-free', message: 'Ez a hirdetés eleve ingyenes. Használja a jóváhagyás gombot.' });
+
+    const placeholder = placeholderProblem(property);
+    if (placeholder && from !== 'published') return json(422, { ok: false, error: 'placeholder', message: placeholder });
+
+    const open = await openListingOrders(admin, id!);
+    if (open.error) return json(500, { ok: false, error: open.error });
+    // A live listing is only "approved free" by letting its open fee go. With no fee open there is nothing to do.
+    if (from === 'published' && open.orders.length === 0) return json(409, { ok: false, error: 'nothing-to-waive', message: 'Ennek az élő hirdetésnek nincs nyitott díjbekérője.' });
+
+    // The internal note lives only in the activity log (admin-only by RLS): a published
+    // listing's own row is publicly readable, so nothing private is stored on it.
+    const note = cleanNote(body.note);
+    const at = new Date().toISOString();
+
+    // 1. Claim it. Only one request can move free_approved_at off the value it read.
+    const claim = supabase
+      .from('properties')
+      .update({ free_approved_at: at, free_approved_by: user!.id })
+      .eq('id', id)
+      .eq('status', from);
+    const { data: claimed, error: claimError } = await (previous.free_approved_at
+      ? claim.eq('free_approved_at', previous.free_approved_at)
+      : claim.is('free_approved_at', null)
+    ).select('id');
+    if (claimError) {
+      return isMissingFreeApprovalSchema(claimError)
+        ? json(503, { ok: false, error: 'migration-needed', message: 'Az ingyenes jóváhagyáshoz előbb futtassa le a 0045-ös migrációt a Supabase SQL szerkesztőben.' })
+        : json(500, { ok: false, error: claimError.message });
+    }
+    if (!claimed?.length) {
+      const { data: now } = await admin.from('properties').select('status, free_approved_at').eq('id', id).maybeSingle();
+      if (now?.free_approved_at && now.free_approved_at !== previous.free_approved_at) return json(200, { ok: true, free: true, already: true });
+      return json(409, { ok: false, error: 'stale', message: 'A hirdetés állapota közben megváltozott. Frissítse az oldalt.' });
+    }
+    const unclaim = () =>
+      supabase
+        .from('properties')
+        .update(previous)
+        .eq('id', id)
+        .eq('free_approved_at', at)
+        .then(() => {}, () => {});
+
+    // 2. No open card page may take money any more; one being paid stops everything.
+    for (const order of open.orders) {
+      const refusal = await closeCheckout(order.stripe_session_id);
+      if (refusal) {
+        await unclaim();
+        return json(refusal.status, { ok: false, error: refusal.error, message: refusal.message });
+      }
+    }
+
+    // 3. The díjbekérő is void.
+    const waiver = await waiveOrders(admin, open.orders, user!.id, at);
+    if (waiver.refusal) {
+      await restoreOrders(admin, waiver.waived, at);
+      await unclaim();
+      return json(waiver.refusal.status, { ok: false, error: waiver.refusal.error, message: waiver.refusal.message });
+    }
+
+    // 4. Online. From review the package the admin picked decides how long it runs.
+    if (from === 'submitted') {
+      const requested = String(body.packageId ?? property.package);
+      const packageId = listingCatalog((await getCompany()).services).packages.some((pkg) => pkg.id === requested) ? requested : property.package;
+      const { error } = await supabase
+        .from('properties')
+        .update({ package: packageId, approved_at: at, approved_by: user!.id })
+        .eq('id', id);
+      if (error) {
+        await restoreOrders(admin, waiver.waived, at);
+        await unclaim();
+        return json(500, { ok: false, error: error.message });
+      }
+    }
+    if (from !== 'published') {
+      // notifyOwner: false — the owner gets the one e-mail written for this, not the generic "you are online" as well.
+      const published = await publishProperty(supabase, id!, { notifyOwner: false });
+      if (!published.ok) {
+        await restoreOrders(admin, waiver.waived, at);
+        await unclaim();
+        if (from === 'submitted') await supabase.from('properties').update({ approved_at: null, approved_by: null }).eq('id', id).then(() => {}, () => {});
+        return json(500, { ok: false, error: published.error });
+      }
+    }
+
+    await safely('referral release', () => releaseReferrals(admin, waiver.waived));
+    const waivedCents = open.orders.filter((order) => waiver.waived.includes(order.id)).reduce((sum, order) => sum + (order.amount_cents ?? 0), 0);
+
+    const emailDelivered = owner
+      ? ((await safely('free approval mail', async () => {
+          const title = await listingTitle(supabase, property.id, owner.locale, property.ref);
+          return deliver(owner.email, templates.approvedFree(owner.locale, {
+            ref: property.ref,
+            title,
+            url: await publicUrl(property, owner.locale),
+            // The owner had a díjbekérő in hand: tell them in so many words that it is void.
+            waived: waiver.waived.length > 0,
+          }));
+        })) ?? false)
+      : null;
+
+    await Promise.all([
+      emailDelivered === false
+        ? logEvent({
+            kind: 'email.failed', actorId: user!.id, actorEmail: profile?.email ?? null, subjectType: 'property', subjectId: id,
+            propertyId: id, source: 'portal', payload: { template: 'approvedFree', to: owner?.email },
+          }).catch(() => {})
+        : null,
+      logEvent({
+        kind: 'listing.approve_free',
+        actorId: user!.id,
+        actorEmail: profile?.email ?? null,
+        subjectType: 'property',
+        subjectId: id,
+        propertyId: id,
+        source: 'portal',
+        payload: { from, note, waivedOrderIds: waiver.waived, waivedCents, totalCents: 0 },
+      }).catch(() => {}),
+    ]);
+
+    return json(200, { ok: true, free: true, totalCents: 0, waivedOrderIds: waiver.waived, emailDelivered });
   }
 
   /* ── publish manually (bank transfer received) ──────────────────────── */

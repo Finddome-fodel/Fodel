@@ -92,8 +92,10 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   if (action === 'mark_paid') {
     if (order.status !== 'pending') return json(409, { ok: false, error: 'not-pending' });
     const paidAt = new Date();
-    const { error } = await admin.from('payments').update({ status: 'manual', paid_at: paidAt.toISOString() }).eq('id', id);
+    // Only while still pending: a fee waived ("Jóváhagyás ingyen") or cancelled a moment ago stays as it is.
+    const { data: settled, error } = await admin.from('payments').update({ status: 'manual', paid_at: paidAt.toISOString() }).eq('id', id).eq('status', 'pending').select('id');
     if (error) return json(500, { ok: false, error: error.message });
+    if (!settled?.length) return json(409, { ok: false, error: 'not-pending' });
 
     await createDraftFromPayment(admin, order.id, { id: user?.id }).catch(() => {});
     await logEvent({ kind: 'payment.manual', actorId: user?.id ?? null, actorEmail: profile?.email ?? null,
@@ -138,6 +140,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 
   /* ── resend the "approved, please pay" email ─────────────────────────── */
   if (action === 'resend_email') {
+    // A paid, cancelled or waived order is not something to ask the owner to pay again.
+    if (order.status !== 'pending') return json(409, { ok: false, error: 'not-pending' });
     if (!order.owner_id) return json(422, { ok: false, error: 'no-owner' });
     const { data: owner } = await admin.from('profiles').select('email, locale').eq('id', order.owner_id).maybeSingle();
     if (!owner?.email || !order.property_id) return json(422, { ok: false, error: 'no-owner' });

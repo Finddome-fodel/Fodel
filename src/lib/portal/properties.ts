@@ -106,6 +106,9 @@ export type PortalProperty = {
   editors_pick: boolean;
   editors_pick_order: number;
   free_listing?: boolean;
+  /** Migration 0045 ("Jóváhagyás ingyen"); absent before it runs. */
+  free_approved_at?: string | null;
+  free_approved_by?: string | null;
   refund_required?: boolean;
   rejected_at?: string | null;
   bargain: boolean;

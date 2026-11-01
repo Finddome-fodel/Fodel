@@ -13,6 +13,7 @@
 export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
+import FreeBadge from '~/components/portal/FreeBadge.astro';
 import ListingFields from '~/components/portal/ListingFields.astro';
 import { HEARD_FROM, GAP_LABELS } from '~/lib/listing-details';
 import PromotionChoices from '~/components/portal/PromotionChoices.astro';
@@ -191,11 +192,15 @@ const trPaid = Astro.url.searchParams.get('translations');
       <h1>{trByLocale.hu?.title || 'Névtelen hirdetés'}</h1>
       <p class="hero-meta">
         <span class="status-pill" data-status={property.status}>{STATUS_LABEL[property.status] ?? property.status}</span>
+        {isAdmin && <FreeBadge property={property} />}
         {property.settlement && <span>{property.settlement}{property.county ? `, ${property.county}` : ''}</span>}
         {property.price_eur > 1 && <span>{eur(property.price_eur)}</span>}
       </p>
       {isAdmin && property.status === 'submitted' && (
         <a class="btn review-link" href={`/portal/review/${property.id}`}>Elbírálás megnyitása</a>
+      )}
+      {isAdmin && property.status === 'awaiting_payment' && (
+        <a class="btn ghost review-link" href={`/portal/review/${property.id}`}>Fizetés kezelése (átutalás, ingyenes jóváhagyás)</a>
       )}
     </div>
     {OWNER_EDITABLE.includes(property.status) && (

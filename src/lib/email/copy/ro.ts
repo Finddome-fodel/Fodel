@@ -145,6 +145,16 @@ export const RO = {
     cta: 'Vedeți anunțul',
     next: 'Imediat ce cineva își manifestă interesul, vă trimitem un e-mail cu datele sale de contact. Puteți verifica oricând starea anunțului în portal.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Anunțul dumneavoastră a fost aprobat gratuit (#${ref})`,
+    preheader: `Anunțul este acum vizibil pe ${SITE_HOST} și nu trebuie să plătiți nimic.`,
+    heading: 'Anunțul dumneavoastră este online, gratuit',
+    body: (title: string, ref: string) =>
+      `Am aprobat anunțul dumneavoastră „${title}” (#${ref}), care este acum vizibil pe ${SITE_HOST}. De această dată nu percepem nicio taxă pentru publicare, așa că nu trebuie să faceți nimic.`,
+    waived: 'Cererea de plată trimisă anterior nu mai este valabilă. Vă rugăm să nu o mai achitați.',
+    cta: 'Vedeți anunțul',
+    next: 'Imediat ce cineva își manifestă interesul, vă trimitem un e-mail cu datele sale de contact. Puteți verifica oricând starea anunțului în portal.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Solicitare nouă (#${ref})`,

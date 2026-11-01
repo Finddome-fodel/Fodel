@@ -146,6 +146,16 @@ export const FR = {
     cta: 'Voir l’annonce',
     next: 'Dès que quelqu’un manifeste son intérêt, nous vous envoyons aussitôt un e-mail avec ses coordonnées. Vous pouvez à tout moment consulter l’état de votre annonce sur le portail.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Votre annonce a été validée gratuitement (#${ref})`,
+    preheader: `L’annonce est désormais visible sur ${SITE_HOST}, sans aucun frais pour vous.`,
+    heading: 'Votre annonce est en ligne gratuitement',
+    body: (title: string, ref: string) =>
+      `Nous avons validé votre annonce « ${title} » (#${ref}) : elle est désormais visible sur ${SITE_HOST}. Exceptionnellement, nous ne facturons pas sa publication ; vous n’avez donc rien à faire.`,
+    waived: 'La demande de paiement que nous vous avions envoyée est donc annulée. Merci de ne pas la régler.',
+    cta: 'Voir l’annonce',
+    next: 'Dès que quelqu’un manifeste son intérêt, nous vous envoyons aussitôt un e-mail avec ses coordonnées. Vous pouvez à tout moment consulter l’état de votre annonce sur le portail.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Nouvelle demande (#${ref})`,

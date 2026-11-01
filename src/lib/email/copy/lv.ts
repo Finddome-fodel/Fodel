@@ -141,6 +141,16 @@ export const LV = {
     cta: 'Skatīt sludinājumu',
     next: 'Tiklīdz kāds izrāda interesi, uzreiz nosūtām jums viņa datus pa e-pastu. Portālā vienmēr varat redzēt sava sludinājuma statusu.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Jūsu sludinājums apstiprināts bez maksas (#${ref})`,
+    preheader: `Sludinājums tagad ir redzams vietnē ${SITE_HOST}, un jums par to nekas nav jāmaksā.`,
+    heading: 'Jūsu sludinājums publicēts bez maksas',
+    body: (title: string, ref: string) =>
+      `Mēs apstiprinājām jūsu sludinājumu “${title}” (#${ref}), un tas tagad ir redzams vietnē ${SITE_HOST}. Šoreiz par publicēšanu maksu neiekasējam, tāpēc jums nekas nav jādara.`,
+    waived: 'Iepriekš nosūtītais maksājuma pieprasījums līdz ar to ir anulēts. Lūdzu, neapmaksājiet to.',
+    cta: 'Skatīt sludinājumu',
+    next: 'Tiklīdz kāds izrāda interesi, uzreiz nosūtām jums viņa datus pa e-pastu. Portālā vienmēr varat redzēt sava sludinājuma statusu.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Jauns pieprasījums (#${ref})`,

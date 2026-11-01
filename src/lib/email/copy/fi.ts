@@ -141,6 +141,16 @@ export const FI = {
     cta: 'Näytä ilmoitus',
     next: 'Heti kun joku kiinnostuu, lähetämme hänen tietonsa sinulle sähköpostitse. Portaalista näet aina ilmoituksesi tilan.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Ilmoituksesi on hyväksytty maksutta (#${ref})`,
+    preheader: `Ilmoitus näkyy nyt sivustolla ${SITE_HOST}, eikä sinun tarvitse maksaa siitä mitään.`,
+    heading: 'Ilmoituksesi on julkaistu maksutta',
+    body: (title: string, ref: string) =>
+      `Olemme hyväksyneet ilmoituksesi ”${title}” (#${ref}), ja se näkyy nyt sivustolla ${SITE_HOST}. Tällä kertaa emme veloita julkaisusta maksua, joten sinun ei tarvitse tehdä mitään.`,
+    waived: 'Aiemmin lähettämämme maksupyyntö on näin ollen mitätöity, joten älä maksa sitä.',
+    cta: 'Näytä ilmoitus',
+    next: 'Heti kun joku kiinnostuu, lähetämme hänen tietonsa sinulle sähköpostitse. Portaalista näet aina ilmoituksesi tilan.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Uusi yhteydenotto (#${ref})`,

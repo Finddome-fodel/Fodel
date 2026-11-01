@@ -141,6 +141,16 @@ export const EN = {
     cta: 'View listing',
     next: 'As soon as someone shows interest, we email you their details straight away. You can always see the status of your listing in the portal.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Your listing is approved free of charge (#${ref})`,
+    preheader: `The listing is now visible on ${SITE_HOST}, and there is nothing to pay.`,
+    heading: 'Your listing is online, free of charge',
+    body: (title: string, ref: string) =>
+      `We have approved your listing “${title}” (#${ref}) and it is now visible on ${SITE_HOST}. On this occasion we are not charging a fee for publishing it, so there is nothing you need to do.`,
+    waived: 'The payment request we sent you earlier is therefore cancelled; please do not pay it.',
+    cta: 'View listing',
+    next: 'As soon as someone shows interest, we email you their details straight away. You can always see the status of your listing in the portal.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `New enquiry (#${ref})`,

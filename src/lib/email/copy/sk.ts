@@ -145,6 +145,16 @@ export const SK = {
     cta: 'Zobraziť inzerát',
     next: 'Hneď ako niekto prejaví záujem, pošleme Vám e-mail s jeho kontaktnými údajmi. Stav inzerátu si môžete kedykoľvek pozrieť v portáli.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Váš inzerát bol schválený bezplatne (#${ref})`,
+    preheader: `Inzerát je teraz viditeľný na ${SITE_HOST} a nemusíte zaň nič platiť.`,
+    heading: 'Váš inzerát je online bezplatne',
+    body: (title: string, ref: string) =>
+      `Váš inzerát „${title}“ (#${ref}) sme schválili a je teraz viditeľný na ${SITE_HOST}. Za zverejnenie si tentoraz neúčtujeme žiadny poplatok, takže nemusíte nič robiť.`,
+    waived: 'Výzva na platbu, ktorú sme Vám poslali skôr, je tým neplatná. Prosíme, neuhrádzajte ju.',
+    cta: 'Zobraziť inzerát',
+    next: 'Hneď ako niekto prejaví záujem, pošleme Vám e-mail s jeho kontaktnými údajmi. Stav inzerátu si môžete kedykoľvek pozrieť v portáli.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Nový dopyt (#${ref})`,

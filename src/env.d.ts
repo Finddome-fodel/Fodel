@@ -58,7 +58,7 @@ declare namespace App {
 interface Window {
   pf?: {
     toast: (message: string, tone?: 'ok' | 'error' | 'warn') => void;
-    prompt: (o: { title: string; body: string; label: string; confirmLabel?: string; value?: string; placeholder?: string; required?: boolean; multiline?: boolean }) => Promise<string | null>;
+    prompt: (o: { title: string; body: string; label: string; confirmLabel?: string; value?: string; placeholder?: string; required?: boolean; multiline?: boolean; icon?: string }) => Promise<string | null>;
     alert: (o: { title: string; body: string }) => Promise<void>;
     confirm: (o: { title: string; body: string; confirmLabel?: string; danger?: boolean }) => Promise<boolean>;
     confirmType: (o: { title: string; body: string; expected: string; confirmLabel?: string }) => Promise<boolean>;

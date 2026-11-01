@@ -253,7 +253,7 @@ const nextMonth = new Date(Date.UTC(calYear, calMon, 1)).toISOString().slice(0, 
                 <td class="sub">{o.method}</td>
                 <td class="right amount">{money(o.amountCents, o.currency)}</td>
                 <td>
-                  <span class:list={['pill', `pill-${o.status}`]}>{o.statusLabel}</span>
+                  <span class:list={['pill', o.waived ? 'pill-waived' : `pill-${o.status}`]}>{o.statusLabel}</span>
                   {o.refundRequired && o.status !== 'refunded' && <><br /><span class="pill pill-refund">Visszatérítés szükséges</span></>}
                   <br /><a href={`/portal/payments/${o.id}`} class="detail-link">Részletek →</a>
                 </td>
