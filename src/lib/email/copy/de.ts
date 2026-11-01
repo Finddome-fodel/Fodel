@@ -141,6 +141,16 @@ export const DE = {
     cta: 'Inserat ansehen',
     next: 'Sobald sich jemand interessiert, schicken wir Ihnen sofort eine E-Mail mit dessen Angaben. Den Status Ihres Inserats sehen Sie jederzeit im Portal.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Ihr Inserat wurde kostenlos freigegeben (#${ref})`,
+    preheader: `Das Inserat ist jetzt auf ${SITE_HOST} sichtbar, und Sie müssen nichts dafür bezahlen.`,
+    heading: 'Ihr Inserat ist kostenlos online',
+    body: (title: string, ref: string) =>
+      `Wir haben Ihr Inserat „${title}“ (#${ref}) freigegeben; es ist ab sofort auf ${SITE_HOST} sichtbar. Für die Veröffentlichung berechnen wir diesmal keine Gebühr, Sie müssen also nichts weiter tun.`,
+    waived: 'Die Zahlungsaufforderung, die wir Ihnen zuvor geschickt haben, ist damit hinfällig. Bitte bezahlen Sie sie nicht mehr.',
+    cta: 'Inserat ansehen',
+    next: 'Sobald sich jemand interessiert, schicken wir Ihnen sofort eine E-Mail mit dessen Angaben. Den Status Ihres Inserats sehen Sie jederzeit im Portal.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Neue Anfrage (#${ref})`,

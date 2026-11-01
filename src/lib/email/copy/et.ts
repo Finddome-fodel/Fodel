@@ -141,6 +141,16 @@ export const ET = {
     cta: 'Vaata kuulutust',
     next: 'Niipea kui keegi huvi tunneb, saadame teile kohe tema andmed e-postiga. Portaalis näete alati oma kuulutuse olekut.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Teie kuulutus kinnitati tasuta (#${ref})`,
+    preheader: `Kuulutus on nüüd nähtav saidil ${SITE_HOST} ja te ei pea selle eest midagi maksma.`,
+    heading: 'Teie kuulutus on tasuta avaldatud',
+    body: (title: string, ref: string) =>
+      `Kinnitasime teie kuulutuse „${title}“ (#${ref}) ja see on nüüd nähtav saidil ${SITE_HOST}. Seekord me avaldamise eest tasu ei võta, nii et teil pole vaja midagi teha.`,
+    waived: 'Varem saadetud maksenõue on seega tühistatud. Palun ärge seda tasuge.',
+    cta: 'Vaata kuulutust',
+    next: 'Niipea kui keegi huvi tunneb, saadame teile kohe tema andmed e-postiga. Portaalis näete alati oma kuulutuse olekut.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Uus päring (#${ref})`,

@@ -4,6 +4,8 @@
  * order/limit, single/maybeSingle) for the payment routes to run against it.
  * Row-level security is NOT modelled; the routes' own checks are what is under test.
  * activity_events.dedupe_key is unique, like the real table.
+ * `options.missingColumns` ({ table: ['col', …] }) makes a column not exist yet,
+ * the way a database looks before a migration has run: naming it errors (42703).
  */
 let seq = 0;
 
@@ -22,22 +24,29 @@ export function createFakeDb(seed = {}, options = {}) {
       this.wantOne = null;
       this.returning = false;
     }
+    touch(cols) {
+      const missing = options.missingColumns?.[this.name] ?? [];
+      const hit = cols.find((col) => missing.includes(col));
+      if (hit && !this.missing) this.missing = hit;
+      return this;
+    }
     select(_cols, opts) {
+      if (typeof _cols === 'string') this.touch(_cols.split(',').map((c) => c.trim().split(/[\s:(]/)[0]));
       if (this.op !== 'select') this.returning = true;
       if (opts?.count) { this.wantCount = true; this.head = Boolean(opts.head); }
       return this;
     }
-    insert(rows) { this.op = 'insert'; this.rows = Array.isArray(rows) ? rows : [rows]; return this; }
+    insert(rows) { this.op = 'insert'; this.rows = Array.isArray(rows) ? rows : [rows]; this.rows.forEach((row) => this.touch(Object.keys(row))); return this; }
     upsert(rows, opts = {}) { this.op = 'upsert'; this.rows = Array.isArray(rows) ? rows : [rows]; this.conflict = opts.onConflict ?? 'id'; this.ignoreDuplicates = Boolean(opts.ignoreDuplicates); return this; }
-    update(patch) { this.op = 'update'; this.patch = patch; return this; }
+    update(patch) { this.op = 'update'; this.patch = patch; return this.touch(Object.keys(patch)); }
     delete() { this.op = 'delete'; return this; }
-    eq(col, value) { this.tests.push((row) => row[col] === value); return this; }
+    eq(col, value) { this.touch([col]); this.tests.push((row) => row[col] === value); return this; }
     neq(col, value) { this.tests.push((row) => row[col] !== value); return this; }
     in(col, values) { this.tests.push((row) => values.includes(row[col])); return this; }
-    is(col, value) { this.tests.push((row) => (row[col] ?? null) === value); return this; }
+    is(col, value) { this.touch([col]); this.tests.push((row) => (row[col] ?? null) === value); return this; }
     lt(col, value) { this.tests.push((row) => row[col] < value); return this; }
     gte(col, value) { this.tests.push((row) => row[col] >= value); return this; }
-    not(col, op, value) { if (op === 'is') this.tests.push((row) => (row[col] ?? null) !== value); return this; }
+    not(col, op, value) { this.touch([col]); if (op === 'is') this.tests.push((row) => (row[col] ?? null) !== value); return this; }
     order(col, { ascending = true } = {}) { this.sort.push([col, ascending]); return this; }
     limit(n) { this.limitTo = n; return this; }
     range() { return this; }
@@ -46,6 +55,7 @@ export function createFakeDb(seed = {}, options = {}) {
     then(resolve, reject) { return Promise.resolve(this.run()).then(resolve, reject); }
 
     run() {
+      if (this.missing) return { data: null, error: { code: '42703', message: `column ${this.name}.${this.missing} does not exist` } };
       const rows = table(this.name);
       if (this.op === 'insert') {
         const added = [];

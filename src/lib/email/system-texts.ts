@@ -58,6 +58,8 @@ export const PARAMS: Record<string, string[]> = {
   'paymentReceipt.subject': ['ref'],
   'paymentReceipt.body': ['title', 'ref'],
   'published.subject': ['ref'],
+  'approvedFree.subject': ['ref'],
+  'approvedFree.body': ['title', 'ref'],
   'published.body': ['title', 'ref'],
   'newEnquiry.subject': ['ref'],
   'newEnquiry.body': ['title', 'ref'],

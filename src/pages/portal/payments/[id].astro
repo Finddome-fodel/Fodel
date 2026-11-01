@@ -9,7 +9,8 @@ export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
 import { type OrderLine } from '~/lib/orders';
-import { eventLabel, PAYMENT_STATUS_LABEL as STATUS_LABEL, PAYMENT_METHOD_LABEL } from '~/lib/portal/labels';
+import { eventLabel, paymentStatusLabel, PAYMENT_METHOD_LABEL } from '~/lib/portal/labels';
+import { isListingFeeOrder } from '~/lib/portal/free-approval';
 import { money } from '~/lib/portal/payments';
 
 const { supabase, profile } = Astro.locals;
@@ -27,7 +28,7 @@ const { data: order } = await supabase
 if (!order) return new Response('Rendelés nem található.', { status: 404 });
 
 const { data: property } = order.property_id
-  ? await supabase.from('properties').select('id, ref, settlement, status').eq('id', order.property_id).maybeSingle()
+  ? await supabase.from('properties').select('id, ref, settlement, status, free_listing').eq('id', order.property_id).maybeSingle()
   : { data: null };
 const { data: owner } = order.owner_id
   ? await supabase.from('profiles').select('id, full_name, email').eq('id', order.owner_id).maybeSingle()
@@ -66,13 +67,28 @@ const dateTimeFmt = new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: '
 const currency = String(order.currency ?? 'eur').toUpperCase();
 const formatCents = (cents: number) => money(cents, currency);
 const lines = (Array.isArray(order.line_items) ? order.line_items : []) as OrderLine[];
+
+/* "Jóváhagyás ingyen" (migration 0045). A waived order is 'cancelled' with
+   waived_at set: the fee was let go when an admin approved the listing free. */
+const waived = order.status === 'cancelled' && Boolean(order.waived_at);
+const { data: waiver } = waived && order.waived_by
+  ? await supabase.from('profiles').select('full_name, email').eq('id', order.waived_by).maybeSingle()
+  : { data: null };
+// The open listing fee of a listing waiting for (or, without the payment gate, already live
+// before) its payment can be let go from here too — the same server action as the review page.
+const canWaive = order.status === 'pending'
+  && 'waived_at' in order
+  && Boolean(property)
+  && !property?.free_listing
+  && ['awaiting_payment', 'published'].includes(String(property?.status))
+  && isListingFeeOrder(lines);
 ---
 
 <Portal title={`Rendelés — #${property?.ref ?? '—'}`}>
   <header class="head">
     <p class="eyebrow"><a href="/portal/payments">← Fizetések</a></p>
     <h1>#{property?.ref ?? '—'} rendelése</h1>
-    <span class:list={['pill', `pill-${order.status}`]}>{STATUS_LABEL[order.status] ?? order.status}</span>
+    <span class:list={['pill', waived ? 'pill-waived' : `pill-${order.status}`]}>{paymentStatusLabel(order)}</span>
   </header>
 
   <section class="grid">
@@ -110,12 +126,15 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
         <div><dt>Létrehozva</dt><dd>{dateFmt.format(new Date(order.created_at))}</dd></div>
         <div><dt>Esedékes</dt><dd>{order.due_at ? dateFmt.format(new Date(order.due_at)) : '—'}</dd></div>
         <div><dt>Fizetve</dt><dd>{order.paid_at ? dateFmt.format(new Date(order.paid_at)) : '—'}</dd></div>
+        {waived && <div><dt>Díj elengedve</dt><dd>{dateTimeFmt.format(new Date(order.waived_at))}{(waiver?.full_name || waiver?.email) && ` — ${waiver?.full_name || waiver?.email}`} · ingyenes jóváhagyás</dd></div>}
         {order.refunded_at && <div><dt>Visszatérítve</dt><dd>{dateFmt.format(new Date(order.refunded_at))}{order.refund_note && ` — ${order.refund_note}`}</dd></div>}
       </dl>
 
       {order.refund_required && order.status !== 'refunded' && (
         <p class="refund-flag">
-          Visszatérítés szükséges (elutasításkor vagy késve érkezett fizetésnél rögzítve). A rendszer
+          Visszatérítés szükséges ({order.waived_at
+            ? 'a díjat ingyenes jóváhagyással elengedték, de közben bankkártyás fizetés érkezett rá'
+            : 'elutasításkor vagy késve érkezett fizetésnél rögzítve'}). A rendszer
           pénzt nem utal vissza — az átutalás után itt rögzítse.
         </p>
       )}
@@ -134,15 +153,22 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
           {invoiceList.filter((i) => i.status !== 'draft').map((i) => (
             <a class="inv-chip" href={`/portal/invoices/${i.id}`}>{i.number} <small>{i.kind === 'credit_note' ? 'jóváírás' : i.status === 'void' ? 'érvénytelen' : i.status === 'paid' ? 'kifizetve' : ''}</small></a>
           ))}
-          {!liveInvoice && (draftInvoice
+          {waived && !liveInvoice && !draftInvoice && <span class="waived-no-invoice">Elengedett díjról nem készül számla.</span>}
+          {!liveInvoice && !waived && (draftInvoice
             ? <a class="btn" href={`/portal/invoices/new?draft=${draftInvoice.id}`}>Számla-piszkozat folytatása</a>
             : <button type="button" class="btn" id="invoice-btn">Számla készítése</button>)}
           {liveInvoice && <a class="btn ghost small" href={`/portal/invoices/${liveInvoice.id}`}>Számla megnyitása (küldés, jóváírás)</a>}
         </div>
-        <button type="button" class="btn ghost" id="resend-btn">Díjbekérő e-mail újraküldése</button>
         {order.status === 'pending' && (
-          <><button type="button" class="btn" id="mark-paid-btn">Átutalás beérkezett</button>
+          <><button type="button" class="btn ghost" id="resend-btn">Díjbekérő e-mail újraküldése</button>
+          <button type="button" class="btn" id="mark-paid-btn">Átutalás beérkezett</button>
           <button type="button" class="btn ghost" id="cancel-btn">Rendelés visszavonása</button></>
+        )}
+        {canWaive && (
+          <div class="waive">
+            <button type="button" class="btn ghost" id="waive-btn" data-property={property!.id} data-live={property!.status === 'published' ? 'yes' : undefined}>Jóváhagyás ingyen — díj elengedése</button>
+            <p class="hint">A díjbekérő érvénytelenné válik, a bankkártyás fizetési oldala lezárul{property!.status === 'published' ? '' : ', a hirdetés élesedik'}. A hirdető e-mailt kap, hogy nem kell fizetnie.</p>
+          </div>
         )}
         {(order.status === 'paid' || order.status === 'manual') && (
           <div class="refund">
@@ -175,7 +201,7 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
   </section>
 </Portal>
 
-<script define:vars={{ orderId: order.id }}>
+<script define:vars={{ orderId: order.id, feeText: formatCents(order.amount_cents) }}>
   const actionStatus = document.getElementById('action-status');
   const billingStatus = document.getElementById('billing-status');
 
@@ -234,6 +260,44 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
     else actionStatus.textContent = 'Nem sikerült rögzíteni.';
   });
 
+  // "Jóváhagyás ingyen" from the order: the listing's own server action, so the rules are the review page's.
+  let waiving = false;
+  document.getElementById('waive-btn')?.addEventListener('click', async (event) => {
+    if (waiving) return;
+    const button = event.currentTarget;
+    const live = button.dataset.live === 'yes';
+    const note = await window.pf.prompt({
+      title: 'Elengedi a díjat?',
+      body: `A(z) ${feeText} összegű díjbekérő érvénytelenné válik, a nyitott bankkártyás fizetési oldal lezárul${live ? '' : ', a hirdetés azonnal élesedik'}. A hirdető e-mailt kap, hogy ingyenesen jóváhagytuk, és nem kell fizetnie. Csak erre a közzétételre szól: a későbbi hosszabbítás a szokásos díjjal jár.`,
+      label: 'Belső megjegyzés (nem kötelező, a hirdető nem látja)',
+      placeholder: 'pl. régi partner, a vezetőség döntése alapján',
+      required: false,
+      multiline: true,
+      icon: 'check',
+      confirmLabel: 'Jóváhagyás ingyen',
+    });
+    if (note === null) return;
+    waiving = true;
+    button.disabled = true;
+    actionStatus.textContent = 'Feldolgozás…';
+    const res = await fetch(`/api/portal/properties/${button.dataset.property}/status`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'approve_free', note }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) {
+      waiving = false;
+      button.disabled = false;
+      actionStatus.textContent = json.message || 'Nem sikerült elengedni a díjat.';
+      return;
+    }
+    if (json.emailDelivered === false) {
+      await window.pf.alert({ title: 'Elengedve, de a levél nem ment ki', body: 'A díj elengedése mentve, de a hirdetőnek szóló értesítő nem érkezett meg a levelezőhöz. Írjon neki közvetlenül, vagy ellenőrizze a Resend naplót.' });
+    }
+    location.reload();
+  });
+
   document.getElementById('mark-paid-btn')?.addEventListener('click', async () => {
     if (!(await window.pf.confirm({ title: 'Átutalás beérkezett', body: 'Biztosan beérkezett az átutalás? A rendelés fizetettre áll, és a hirdetés élesedhet.', confirmLabel: 'Igen, beérkezett' }))) return;
     actionStatus.textContent = 'Rögzítés…';
@@ -278,6 +342,7 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
   .actions h2 { flex-basis: 100%; margin-bottom: 6px; }
   .btn { margin: 0; }
   .btn.small { margin-left: 10px; }
+  .waived-no-invoice { color: var(--ink-quiet); }
   .invoice-line { flex-basis: 100%; font-size: var(--fs-small); display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
   .inv-chip { display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 14px; border-radius: var(--r-pill); background: var(--paper); font-weight: var(--fw-medium); text-decoration: none; }
   .inv-chip small { font-weight: var(--fw-regular); color: var(--ink-quiet); }
@@ -285,6 +350,9 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
   .refund label { display: grid; gap: 7px; font-size: 13.5px; color: var(--ink-quiet); }
   .refund input { width: 100%; padding: 11px 14px; font-size: var(--fs-small); color: var(--ink); }
   .refund .btn { justify-self: start; }
+  .waive { flex-basis: 100%; display: grid; gap: 6px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--pt-hair); max-width: 560px; }
+  .waive .btn { justify-self: start; }
+  .waive .hint { margin: 0; font-size: 13.5px; color: var(--ink-quiet); }
   .action-status { flex-basis: 100%; min-height: 0; font-size: 14px; color: var(--ink-quiet); }
 
   /* The order's history, as a quiet vertical line. */

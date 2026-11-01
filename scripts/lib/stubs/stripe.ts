@@ -35,6 +35,7 @@ export function getStripe(): any {
           return session;
         },
         retrieve: async (id: string) => {
+          if (world.stripeDown) throw new Error('An error occurred with our connection to Stripe.');
           const session = world.sessions[id];
           if (!session) throw new Error('No such checkout.session');
           return session;

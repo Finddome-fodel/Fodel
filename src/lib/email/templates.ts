@@ -1067,6 +1067,49 @@ ${common.signOff}`,
   };
 }
 
+/* ── 9b. Approved free of charge ─────────────────────────────────────────── */
+
+/**
+ * An admin let the listing through without a fee ("Jóváhagyás ingyen"). It
+ * replaces the "published" email for this case, so the owner gets one clear
+ * message: approved, online, nothing to pay — and, when a díjbekérő had
+ * already gone out, that it is void.
+ */
+export function approvedFree(
+  locale: EmailLocale,
+  opts: { ref: string; title: string; url: string; waived: boolean }
+): BuiltEmail {
+  const c = copyFor(locale).approvedFree;
+  const common = copyFor(locale).common;
+
+  return {
+    subject: c.subject(opts.ref),
+    html: shell({
+      locale,
+      preheader: c.preheader,
+      body:
+        h1(c.heading) +
+        lead(c.body(opts.title, opts.ref)) +
+        (opts.waived ? p(c.waived) : '') +
+        button(c.cta, opts.url) +
+        p(c.next) +
+        signOff(locale),
+    }),
+    text: textShell({
+      locale,
+      body: `${c.heading}
+
+${c.body(opts.title, opts.ref)}
+${opts.waived ? `\n${c.waived}\n` : ''}
+${textCta(c.cta, opts.url)}
+
+${c.next}
+
+${common.signOff}`,
+    }),
+  };
+}
+
 /**
  * Kept as a namespace so existing call sites read the same as they did in 1.0
  * (`templates.welcome(...)`), while every template now takes a locale first.
@@ -1084,6 +1127,7 @@ export const templates = {
   approvedPublished,
   paymentReceipt,
   published,
+  approvedFree,
   newEnquiry,
   passwordReset,
   referralRegistered,

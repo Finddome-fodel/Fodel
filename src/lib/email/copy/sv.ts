@@ -141,6 +141,16 @@ export const SV = {
     cta: 'Visa annonsen',
     next: 'Så snart någon visar intresse mejlar vi dig deras uppgifter direkt. I portalen ser du alltid status för din annons.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Din annons har godkänts kostnadsfritt (#${ref})`,
+    preheader: `Annonsen syns nu på ${SITE_HOST} och du behöver inte betala något.`,
+    heading: 'Din annons är publicerad kostnadsfritt',
+    body: (title: string, ref: string) =>
+      `Vi har godkänt din annons ”${title}” (#${ref}) och den syns nu på ${SITE_HOST}. Den här gången tar vi inte ut någon avgift för publiceringen, så du behöver inte göra något.`,
+    waived: 'Den betalningsbegäran vi skickade tidigare är därmed makulerad, så du ska inte betala den.',
+    cta: 'Visa annonsen',
+    next: 'Så snart någon visar intresse mejlar vi dig deras uppgifter direkt. I portalen ser du alltid status för din annons.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Ny förfrågan (#${ref})`,

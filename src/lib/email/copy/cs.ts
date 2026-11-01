@@ -141,6 +141,16 @@ export const CS = {
     cta: 'Zobrazit inzerát',
     next: 'Jakmile někdo projeví zájem, ihned vám pošleme jeho údaje e-mailem. Stav inzerátu vždy uvidíte v portálu.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Váš inzerát byl schválen zdarma (#${ref})`,
+    preheader: `Inzerát je nyní viditelný na ${SITE_HOST} a nemusíte za něj nic platit.`,
+    heading: 'Váš inzerát je zveřejněn zdarma',
+    body: (title: string, ref: string) =>
+      `Váš inzerát „${title}“ (#${ref}) jsme schválili a je nyní viditelný na ${SITE_HOST}. Za zveřejnění si tentokrát neúčtujeme žádný poplatek, takže nemusíte nic dělat.`,
+    waived: 'Výzva k platbě, kterou jsme vám dříve poslali, tím pozbyla platnosti. Prosíme, neplaťte ji.',
+    cta: 'Zobrazit inzerát',
+    next: 'Jakmile někdo projeví zájem, ihned vám pošleme jeho údaje e-mailem. Stav inzerátu vždy uvidíte v portálu.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Nový dotaz (#${ref})`,

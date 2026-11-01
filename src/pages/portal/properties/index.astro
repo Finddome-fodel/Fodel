@@ -19,6 +19,7 @@ import { publicUrl } from '~/lib/portal/publish';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { icon } from '~/lib/portal/icons';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
+import FreeBadge from '~/components/portal/FreeBadge.astro';
 import FreeUploadLink from '~/components/portal/FreeUploadLink.astro';
 import { listingName } from '~/lib/portal/time';
 import { getCompany } from '~/lib/runtime-config';
@@ -177,6 +178,7 @@ const chips: [string, string][] = isAdmin
                     <span class:list={['pill', `pill-${p.status}`]}>{p.status === 'archived' && p.expired_at ? 'Lejárt' : STATUS_LABEL[p.status] ?? p.status}</span>
                     {isAdmin && silent(p) && <span class="pill pill-bad">Nem válaszolt</span>}
                     {isAdmin && p.dutch_agent_requested && <DutchAgentBadge />}
+                    {isAdmin && <FreeBadge property={p} />}
                     {isAdmin && expiringSoon(p) && <span class="pill pill-warn">{Math.max(0, daysLeft(p.expires_at!))} nap</span>}
                   </td>
                   {isAdmin && <td class="owner">{flags(p).join(' · ') || '—'}</td>}
@@ -252,7 +254,7 @@ const chips: [string, string][] = isAdmin
                 <div class="info">
                   <b>{name}</b>
                   <p>{p.settlement} · {categoryLabel(p.category)}</p>
-                  {isAdmin && p.dutch_agent_requested && <p><DutchAgentBadge /></p>}
+                  {isAdmin && (p.dutch_agent_requested || p.free_listing || p.free_approved_at) && <p class="badges">{p.dutch_agent_requested && <DutchAgentBadge />}<FreeBadge property={p} /></p>}
                   <p class="row">
                     <span class="price">€{p.price_eur.toLocaleString('de-DE')}</span>
                     <span class="ref">#{p.ref}</span>
@@ -426,7 +428,8 @@ const chips: [string, string][] = isAdmin
 <style>
   .st { white-space: nowrap; }
   .st .pill + .pill { margin-left: 6px; }
-  .st :global(.dutch-badge) { margin-left: 6px; }
+  .st :global(.dutch-badge), .st :global(.free-badge) { margin-left: 6px; }
+  .info .badges { display: flex; flex-wrap: wrap; gap: 6px; }
   .head {
     display: flex;
     align-items: flex-end;

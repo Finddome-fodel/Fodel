@@ -141,6 +141,16 @@ export const NO = {
     cta: 'Se annonsen',
     next: 'Så snart noen viser interesse, sender vi deg opplysningene deres på e-post med en gang. I portalen ser du alltid statusen til annonsen din.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Annonsen din er godkjent gratis (#${ref})`,
+    preheader: `Annonsen er nå synlig på ${SITE_HOST}, og du trenger ikke betale noe.`,
+    heading: 'Annonsen din er publisert gratis',
+    body: (title: string, ref: string) =>
+      `Vi har godkjent annonsen din «${title}» (#${ref}), og den er nå synlig på ${SITE_HOST}. Denne gangen tar vi ikke betalt for publiseringen, så du trenger ikke gjøre noe.`,
+    waived: 'Betalingsanmodningen vi sendte deg tidligere, er dermed annullert, så du skal ikke betale den.',
+    cta: 'Se annonsen',
+    next: 'Så snart noen viser interesse, sender vi deg opplysningene deres på e-post med en gang. I portalen ser du alltid statusen til annonsen din.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Ny henvendelse (#${ref})`,

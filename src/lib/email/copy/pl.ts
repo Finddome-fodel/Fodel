@@ -145,6 +145,16 @@ export const PL = {
     cta: 'Zobacz ogłoszenie',
     next: 'Gdy tylko ktoś się zainteresuje, od razu wyślemy Państwu e-mail z jego danymi kontaktowymi. Status ogłoszenia można w każdej chwili sprawdzić w portalu.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Ogłoszenie zatwierdzone bezpłatnie (#${ref})`,
+    preheader: `Ogłoszenie jest już widoczne na ${SITE_HOST} i nie muszą Państwo za nie płacić.`,
+    heading: 'Ogłoszenie jest online bezpłatnie',
+    body: (title: string, ref: string) =>
+      `Zatwierdziliśmy Państwa ogłoszenie „${title}” (#${ref}) i jest ono już widoczne na ${SITE_HOST}. Tym razem nie pobieramy opłaty za publikację, więc nie muszą Państwo nic robić.`,
+    waived: 'Wysłane wcześniej wezwanie do zapłaty jest tym samym nieaktualne. Prosimy go nie opłacać.',
+    cta: 'Zobacz ogłoszenie',
+    next: 'Gdy tylko ktoś się zainteresuje, od razu wyślemy Państwu e-mail z jego danymi kontaktowymi. Status ogłoszenia można w każdej chwili sprawdzić w portalu.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Nowe zapytanie (#${ref})`,

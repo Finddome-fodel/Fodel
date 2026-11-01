@@ -256,6 +256,8 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
       paidAt: say(l)('2026. augusztus 26.', '26 augustus 2026', '26 August 2026', '26. August 2026', '26 août 2026', '26 de agosto de 2026', '26 sierpnia 2026', '26 august 2026', '26. augusta 2026'),
     }),
   published: (l) => templates.published(l, { ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l) }),
+  // Shown in its fullest form: a díjbekérő had already gone out, so the email also says it is void.
+  approvedFree: (l) => templates.approvedFree(l, { ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), waived: true }),
   newEnquiry: (l) =>
     templates.newEnquiry(l, {
       ref: SAMPLE_REF,

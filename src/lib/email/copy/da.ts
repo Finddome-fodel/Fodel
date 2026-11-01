@@ -141,6 +141,16 @@ export const DA = {
     cta: 'Se annoncen',
     next: 'Så snart nogen viser interesse, sender vi dig straks vedkommendes oplysninger på e-mail. I portalen kan du altid se status for din annonce.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Din annonce er godkendt gratis (#${ref})`,
+    preheader: `Annoncen er nu synlig på ${SITE_HOST}, og du skal ikke betale noget.`,
+    heading: 'Din annonce er online gratis',
+    body: (title: string, ref: string) =>
+      `Vi har godkendt din annonce ”${title}” (#${ref}), og den er nu synlig på ${SITE_HOST}. Denne gang opkræver vi ikke noget gebyr for offentliggørelsen, så du skal ikke foretage dig noget.`,
+    waived: 'Den betalingsanmodning, vi sendte dig tidligere, er dermed annulleret, så du skal ikke betale den.',
+    cta: 'Se annoncen',
+    next: 'Så snart nogen viser interesse, sender vi dig straks vedkommendes oplysninger på e-mail. I portalen kan du altid se status for din annonce.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Ny henvendelse (#${ref})`,

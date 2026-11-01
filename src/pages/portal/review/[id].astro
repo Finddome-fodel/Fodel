@@ -28,6 +28,7 @@ import { eur, huf, placeLabel } from '~/lib/format';
 import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM, fieldRules, detailGaps, gapLabel } from '~/lib/listing-details';
 import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS } from '~/lib/listing-catalogue';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
+import FreeBadge from '~/components/portal/FreeBadge.astro';
 import TranslationPicker from '~/components/portal/TranslationPicker.astro';
 import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
@@ -132,6 +133,38 @@ const ownerLocale = portalLang(ownerProfile?.locale);
 const adminOwned = ownerProfile?.role === 'admin';
 const isFree = Boolean(property.free_listing) || adminOwned;
 
+/* "Jóváhagyás ingyen" (migration 0045): the deliberate, secondary way through —
+   published without a fee, and from "Fizetésre vár" the díjbekérő is voided.
+   Until 0045 has run the columns are absent and the option is simply not offered. */
+const freeApprovalReady = 'free_approved_at' in property;
+const freeApprovedAt = property.free_approved_at ?? null;
+const { data: freeApprover } = freeApprovedAt && property.free_approved_by
+  ? await supabase.from('profiles').select('full_name, email').eq('id', property.free_approved_by).maybeSingle()
+  : { data: null };
+const freeApproverName = freeApprover?.full_name || freeApprover?.email || null;
+// The internal note is kept only in the admin-only activity log, never on the listing's own row.
+const { data: freeEvent } = freeApprovedAt
+  ? await supabase
+      .from('activity_events')
+      .select('payload')
+      .eq('property_id', property.id)
+      .eq('kind', 'listing.approve_free')
+      .order('occurred_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then((result) => result, () => ({ data: null }))
+  : { data: null };
+const freeNote = typeof freeEvent?.payload?.note === 'string' ? freeEvent.payload.note : null;
+const freeWaivedCents = Number(freeEvent?.payload?.waivedCents ?? 0);
+const freeFeeLine = freeWaivedCents > 0
+  ? ` A kiküldött ${(freeWaivedCents / 100).toLocaleString('de-DE')} €-s díjbekérőt érvénytelenítettük;`
+  : ' Díjbekérő nem készült hozzá;';
+const canApproveFree = freeApprovalReady && !isFree && (reviewable || awaitingPayment);
+const openFee = openOrder?.status === 'pending' ? openOrder.amount_cents : null;
+const freeWhen = freeApprovedAt
+  ? new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Budapest' }).format(new Date(freeApprovedAt))
+  : '';
+
 // Automatic hints (brief 3 §G.2) — pre-tick what can be measured; everything
 // else (people in photos, darkness, sharpness) stays a human judgement.
 const hints = photoHints(property.media);
@@ -179,13 +212,22 @@ const { data: creditableReferral } = property.owner_id
     <div>
       <p class="crumbs"><a href="/portal/inbox">← Beérkező hirdetések</a><span>#{property.ref}</span></p>
       <h1>{hu?.title ?? 'Névtelen hirdetés'}</h1>
-      <p class="hero-meta"><span class="status-pill" data-status={property.status}>{STATUS_LABEL[property.status]}</span>{property.dutch_agent_requested && <DutchAgentBadge />}<span>{placeLabel(property.settlement, property.county)}</span><span>{eur(property.price_eur)}</span></p>
+      <p class="hero-meta"><span class="status-pill" data-status={property.status}>{STATUS_LABEL[property.status]}</span><FreeBadge property={property} adminOwned={adminOwned} approverName={freeApproverName} />{property.dutch_agent_requested && <DutchAgentBadge />}<span>{placeLabel(property.settlement, property.county)}</span><span>{eur(property.price_eur)}</span></p>
     </div>
     <a href={`/portal/properties/${property.id}`} class="btn ghost">Szerkesztő megnyitása</a>
   </header>
 
   {!reviewable && !awaitingPayment && (
     <p class="notice warn">Ez a hirdetés jelenleg nem vár elbírálásra ({STATUS_LABEL[property.status]}).</p>
+  )}
+
+  {freeApprovedAt && !property.free_listing && !adminOwned && (
+    <p class="notice ok free-note">
+      <strong>{property.status === 'published' ? 'Ingyenesen jóváhagyva.' : 'Korábban ingyenesen jóváhagyva.'}</strong>{' '}
+      {[freeApproverName, freeWhen].filter(Boolean).join(', ')}.
+      {property.status === 'published' && `${freeFeeLine} a későbbi hosszabbítás a szokásos díjjal jár.`}
+      {freeNote && <span class="free-note-text">Belső megjegyzés: „{freeNote}”</span>}
+    </p>
   )}
 
   {awaitingPayment && (
@@ -473,6 +515,28 @@ const { data: creditableReferral } = property.owner_id
       {awaitingPayment && (
         <button type="button" class="btn" id="publish-btn">Átutalás megérkezett — élesítés</button>
       )}
+      {canApproveFree && (
+        <div class="free-approve">
+          <button
+            type="button"
+            class="btn ghost"
+            id="free-btn"
+            data-from={property.status}
+            data-fee={openFee != null ? `${(openFee / 100).toLocaleString('de-DE')} €` : undefined}
+            data-service={requested.service ? 'yes' : undefined}
+          >
+            {awaitingPayment ? 'Jóváhagyás ingyen — díj elengedése' : 'Jóváhagyás ingyen'}
+          </button>
+          <p class="hint">
+            {awaitingPayment
+              ? 'Ha mégsem kér díjat: a kiküldött díjbekérő érvénytelenné válik, a bankkártyás fizetési oldala lezárul, a hirdetés azonnal élesedik. A hirdető e-mailt kap, hogy nem kell fizetnie.'
+              : 'Díjbekérő nélkül, azonnal élesíti a hirdetést a kiválasztott csomaggal. A hirdető e-mailt kap, hogy ingyenesen jóváhagytuk.'}
+          </p>
+        </div>
+      )}
+      {!freeApprovalReady && !isFree && (reviewable || awaitingPayment) && (
+        <p class="hint free-missing">Az ingyenes jóváhagyás a 0045-ös migráció lefuttatása után jelenik meg itt.</p>
+      )}
 
       {adminOwned && <p class="hint own-hint">Ha még javítani szeretne rajta, a <a href={`/portal/properties/${property.id}`}>szerkesztőben</a> megteheti.</p>}
       {!adminOwned && (<>
@@ -609,7 +673,25 @@ const { data: creditableReferral } = property.owner_id
   document.getElementById('order')?.addEventListener('tp:change', renderTotal);
   renderTotal();
 
+  let busy = false;
   async function doAction(action, payload) {
+    // One request at a time: a second click while the first is on its way does nothing.
+    if (busy) return;
+    busy = true;
+    document.querySelectorAll('.actions button').forEach((button) => { button.disabled = true; });
+    let leaving = false;
+    try {
+      leaving = await runAction(action, payload);
+    } finally {
+      // Once the page is on its way out, the buttons stay off: nothing to click twice.
+      if (!leaving) {
+        busy = false;
+        document.querySelectorAll('.actions button').forEach((button) => { button.disabled = false; });
+      }
+    }
+  }
+
+  async function runAction(action, payload) {
     statusEl.textContent = 'Feldolgozás…';
     const res = await fetch(`/api/portal/properties/${propertyId}/status`, {
       method: 'POST',
@@ -627,15 +709,19 @@ const { data: creditableReferral } = property.owner_id
         'bad-quantity': 'A mennyiség 1 és 60 között lehet.',
         'bad-locale': 'Ismeretlen vagy nem fordítható nyelv — frissítse az oldalt.',
         exclusive: 'A két helyszíni szolgáltatás közül csak az egyik választható.',
+        forbidden: 'Ezt csak admin teheti meg.',
+        'not-approvable': 'Ez a hirdetés ebben az állapotban nem hagyható jóvá ingyen — frissítse az oldalt.',
       };
       statusEl.textContent = messages[json.error] || json.message || 'Nem sikerült végrehajtani.';
-      return;
+      return false;
     }
     // The decision is saved either way; only a mail that could not leave needs the admin's attention.
-    if (action === 'approve' && json.emailDelivered === false) {
+    if ((action === 'approve' || action === 'approve_free') && json.emailDelivered === false) {
       await window.pf.alert({ title: 'Jóváhagyva, de a levél nem ment ki', body: 'A hirdetés állapota mentve, de a hirdetőnek szóló értesítő nem érkezett meg a levelezőhöz. Írjon neki közvetlenül, vagy ellenőrizze a Resend naplót.' });
     }
+    if (action === 'approve_free') window.pf.toast(json.already ? 'Ezt a hirdetést már ingyenesen jóváhagyták.' : 'Ingyenesen jóváhagyva és élesítve.');
     location.href = '/portal/inbox';
+    return true;
   }
 
   // A free-link owner's translation requests: approve or decline, then show the new state.
@@ -686,6 +772,39 @@ const { data: creditableReferral } = property.owner_id
     if (await window.pf.confirm({ title: 'Jóváhagyja a hirdetést?', body, confirmLabel: gated ? 'Jóváhagyás és küldés' : 'Jóváhagyás és élesítés' })) {
       doAction('approve', { order });
     }
+  });
+
+  // "Jóváhagyás ingyen": a deliberate second way through, so it asks first and says exactly what happens.
+  document.getElementById('free-btn')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    const fromAwaiting = button.dataset.from === 'awaiting_payment';
+    const pkg = document.querySelector('input[name="package"]:checked');
+    const pkgName = pkg?.closest('label')?.querySelector('span')?.textContent?.split(' — ')[0]?.trim();
+    const languages = document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)').length;
+    const parts = fromAwaiting
+      ? [
+          `A hirdető nem fizet: ${button.dataset.fee ? `a ${button.dataset.fee} összegű` : 'a kiküldött'} díjbekérő érvénytelenné válik, a nyitott bankkártyás fizetési oldal lezárul.`,
+          'A hirdetés azonnal élesedik, és a hirdető e-mailt kap, hogy ingyenesen jóváhagytuk, a díjbekérőt nem kell befizetnie.',
+        ]
+      : [
+          `A hirdetés díjbekérő nélkül, azonnal megjelenik a weboldalon${pkgName ? ` (${pkgName})` : ''}.`,
+          'A hirdető e-mailt kap, hogy ingyenesen jóváhagytuk.',
+        ];
+    parts.push('Csak erre a közzétételre szól: a későbbi hosszabbítás a szokásos díjjal jár.');
+    if (!fromAwaiting && languages > 0) parts.push('A bejelölt AI fordítások nem indulnak el maguktól; a szerkesztőben ingyen elindíthatja őket.');
+    if (button.dataset.service === 'yes') parts.push('A kért helyszíni szolgáltatás díját külön kell egyeztetni.');
+    const note = await window.pf.prompt({
+      title: 'Jóváhagyja ingyen?',
+      body: parts.join(' '),
+      label: 'Belső megjegyzés (nem kötelező, a hirdető nem látja)',
+      placeholder: 'pl. régi partner, a vezetőség döntése alapján',
+      required: false,
+      multiline: true,
+      icon: 'check',
+      confirmLabel: 'Jóváhagyás ingyen',
+    });
+    if (note === null) return;
+    doAction('approve_free', { note, ...(pkg ? { packageId: pkg.value } : {}) });
   });
 
   document.getElementById('publish-btn')?.addEventListener('click', async () => {
@@ -793,6 +912,10 @@ const { data: creditableReferral } = property.owner_id
   .reject-form .inline-check { display: flex; gap: 12px; align-items: center; font-weight: var(--fw-regular); font-size: 14px; color: var(--ink); }
   .btn.danger { margin: 0; }
   .action-status { font-size: 14px; color: var(--ink-quiet); min-height: 0; }
+  .free-approve { display: grid; gap: 8px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .free-approve .btn { width: 100%; }
+  .free-approve .hint, .free-missing { margin: 0; font-size: 13.5px; }
+  .free-note-text { display: block; margin-top: 6px; white-space: pre-line; }
 
   @media (max-width: 1100px) { .rv { grid-template-columns: 1fr; } }
   @media (max-width: 600px) { .facts { grid-template-columns: 1fr; } }

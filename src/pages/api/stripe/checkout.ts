@@ -134,10 +134,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
     { idempotencyKey: `order-${order.id}-${replaced}` }
   );
 
-  await admin
+  // Only while the order is still open: an admin may have waived it ("Jóváhagyás
+  // ingyen") or cancelled it while this session was being made. Then the session
+  // is closed again at once and nobody is sent to a page that would take money.
+  const { data: stored } = await admin
     .from('payments')
     .update({ stripe_session_id: session.id })
-    .eq('id', order.id);
+    .eq('id', order.id)
+    .eq('status', 'pending')
+    .select('id');
+  if (!stored?.length) {
+    await stripe.checkout.sessions.expire(session.id).catch(() => {});
+    return json(409, { ok: false, error: 'no-open-order' });
+  }
 
   return json(200, { ok: true, url: session.url });
 };

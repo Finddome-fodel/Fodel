@@ -157,6 +157,16 @@ export const NL = {
     cta: 'Advertentie bekijken',
     next: 'Zodra iemand interesse toont, sturen wij u direct een e-mail met zijn gegevens. De status van uw advertentie ziet u altijd in het portaal.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Uw advertentie is kosteloos goedgekeurd (#${ref})`,
+    preheader: `De advertentie is nu zichtbaar op ${SITE_HOST} en u hoeft er niets voor te betalen.`,
+    heading: 'Uw advertentie staat kosteloos online',
+    body: (title: string, ref: string) =>
+      `Wij hebben uw advertentie „${title}” (#${ref}) goedgekeurd; deze is nu zichtbaar op ${SITE_HOST}. Voor de plaatsing brengen wij deze keer geen kosten in rekening, dus u hoeft niets te doen.`,
+    waived: 'Het betalingsverzoek dat wij u eerder stuurden, is daarmee vervallen. U hoeft het niet meer te betalen.',
+    cta: 'Advertentie bekijken',
+    next: 'Zodra iemand interesse toont, sturen wij u direct een e-mail met zijn gegevens. De status van uw advertentie ziet u altijd in het portaal.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Nieuwe geïnteresseerde (#${ref})`,

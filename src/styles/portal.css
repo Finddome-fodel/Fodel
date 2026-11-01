@@ -1588,7 +1588,7 @@ main.pm.pm .pill::before {
   background: currentColor;
   opacity: 0.85;
 }
-main.pm.pm :is(.pill-published, .pill-paid, .pill-manual, .pill-live, .pill-approved, .pill-ok, .pill-confirmed) {
+main.pm.pm :is(.pill-published, .pill-paid, .pill-manual, .pill-live, .pill-approved, .pill-ok, .pill-confirmed, .pill-waived) {
   background: var(--pt-green-bg);
   color: var(--pt-green);
   border: 0;

@@ -141,6 +141,16 @@ export const SL = {
     cta: 'Ogled oglasa',
     next: 'Ko nekdo pokaže zanimanje, vam njegove podatke takoj pošljemo po e-pošti. Stanje oglasa lahko vedno vidite na portalu.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Vaš oglas je bil brezplačno odobren (#${ref})`,
+    preheader: `Oglas je zdaj viden na ${SITE_HOST} in zanj vam ni treba plačati ničesar.`,
+    heading: 'Vaš oglas je objavljen brezplačno',
+    body: (title: string, ref: string) =>
+      `Vaš oglas »${title}« (#${ref}) smo odobrili in je zdaj viden na ${SITE_HOST}. Za objavo tokrat ne zaračunamo pristojbine, zato vam ni treba storiti ničesar.`,
+    waived: 'Poziv k plačilu, ki smo vam ga poslali prej, s tem ne velja več. Prosimo, da ga ne plačate.',
+    cta: 'Ogled oglasa',
+    next: 'Ko nekdo pokaže zanimanje, vam njegove podatke takoj pošljemo po e-pošti. Stanje oglasa lahko vedno vidite na portalu.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Novo povpraševanje (#${ref})`,

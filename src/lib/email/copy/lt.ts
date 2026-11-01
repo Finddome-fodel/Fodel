@@ -141,6 +141,16 @@ export const LT = {
     cta: 'Peržiūrėti skelbimą',
     next: 'Kai tik kas nors susidomi, iškart el. paštu atsiunčiame jums jo duomenis. Portale visada matote savo skelbimo būseną.',
   },
+  approvedFree: {
+    subject: (ref: string) => `Jūsų skelbimas patvirtintas nemokamai (#${ref})`,
+    preheader: `Skelbimas dabar matomas ${SITE_HOST}, ir už jį nieko mokėti nereikia.`,
+    heading: 'Jūsų skelbimas paskelbtas nemokamai',
+    body: (title: string, ref: string) =>
+      `Patvirtinome jūsų skelbimą „${title}“ (#${ref}), ir jis dabar matomas ${SITE_HOST}. Šį kartą už paskelbimą mokesčio neimame, todėl jums nieko daryti nereikia.`,
+    waived: 'Anksčiau išsiųstas mokėjimo prašymas todėl nebegalioja. Prašome jo neapmokėti.',
+    cta: 'Peržiūrėti skelbimą',
+    next: 'Kai tik kas nors susidomi, iškart el. paštu atsiunčiame jums jo duomenis. Portale visada matote savo skelbimo būseną.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Nauja užklausa (#${ref})`,

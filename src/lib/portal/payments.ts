@@ -10,7 +10,7 @@
  * and never invented: an old order with no stored lines says so.
  */
 import type { OrderLine } from '~/lib/orders';
-import { PAYMENT_METHOD_LABEL, PAYMENT_STATUS_LABEL } from '~/lib/portal/labels';
+import { PAYMENT_METHOD_LABEL, paymentStatusLabel } from '~/lib/portal/labels';
 
 export type LedgerFilters = {
   status: string;
@@ -39,6 +39,8 @@ export type LedgerRow = {
   refundedAt: string | null;
   status: string;
   statusLabel: string;
+  /** Cancelled because an admin approved the listing free (migration 0045, "Jóváhagyás ingyen"). */
+  waived: boolean;
   method: string;
   amountCents: number;
   discountCents: number;
@@ -110,7 +112,8 @@ export async function loadLedger(supabase: any, filters: LedgerFilters): Promise
         dueAt: o.due_at ?? null,
         refundedAt: o.refunded_at ?? null,
         status: o.status,
-        statusLabel: PAYMENT_STATUS_LABEL[o.status] ?? o.status,
+        statusLabel: paymentStatusLabel(o),
+        waived: o.status === 'cancelled' && Boolean(o.waived_at),
         method: PAYMENT_METHOD_LABEL[o.status] ?? '—',
         amountCents: o.amount_cents,
         discountCents: o.discount_cents ?? 0,

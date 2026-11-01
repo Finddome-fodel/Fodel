@@ -141,6 +141,16 @@ export const PT = {
     cta: 'Ver anúncio',
     next: 'Assim que alguém mostrar interesse, enviamos-lhe de imediato os seus dados por e-mail. No portal pode ver sempre o estado do seu anúncio.',
   },
+  approvedFree: {
+    subject: (ref: string) => `O seu anúncio foi aprovado gratuitamente (#${ref})`,
+    preheader: `O anúncio está agora visível em ${SITE_HOST} e não tem nada a pagar.`,
+    heading: 'O seu anúncio está online, sem custos',
+    body: (title: string, ref: string) =>
+      `Aprovámos o seu anúncio “${title}” (#${ref}), que está agora visível em ${SITE_HOST}. Desta vez não cobramos qualquer taxa pela publicação, pelo que não precisa de fazer nada.`,
+    waived: 'O pedido de pagamento que lhe enviámos anteriormente fica, assim, anulado. Pedimos-lhe que não o pague.',
+    cta: 'Ver anúncio',
+    next: 'Assim que alguém mostrar interesse, enviamos-lhe de imediato os seus dados por e-mail. No portal pode ver sempre o estado do seu anúncio.',
+  },
 
   newEnquiry: {
     subject: (ref: string) => `Novo pedido de informação (#${ref})`,
