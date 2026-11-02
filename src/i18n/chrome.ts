@@ -36,7 +36,7 @@ export interface ChromeStrings {
   search: { placeholder: string; placeholderShort: string };
   whatsapp: string;
   playVideo: string;
-  /** After the room count on a listing card (half rooms not counted). */
+  /** After the room count on a listing card. */
   card: { roomsShort: string; bargain: string };
   post: { minutes: string; caseStudy: string };
   map: {

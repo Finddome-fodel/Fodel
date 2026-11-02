@@ -120,6 +120,7 @@ const pricing = {
   services: Object.fromEntries(ONSITE_SERVICES.map((s) => [s.id, { name: s.names[lang], cents: s.priceEur * 100 }])),
 };
 const strings = {
+  gapsHint: lang === 'hu' ? 'Töltse ki a megjelölt kötelező mezőket.' : lang === 'nl' ? 'Vul de gemarkeerde verplichte velden in.' : 'Fill in the required fields marked below.',
   saving: t.saving, saved: t.saved, saveFailed: t.saveFailed, required: t.required, none: t.none,
   submitting: t.submitting, submitFailed: t.submitFailed, noPhotos: t.noPhotos,
   missing: t.missing, missingHead: t.missingHead, photosCount: t.photosCount(0).replace('0', '{n}'),
@@ -135,6 +136,7 @@ const strings = {
     data-lang={lang}
     data-steps={STEPS.join(',')}
     data-free={free ? 'yes' : undefined}
+    data-admin={isAdmin ? 'yes' : undefined}
     data-strings={JSON.stringify(strings)}
     data-pricing={JSON.stringify(pricing)}
   >
@@ -251,7 +253,7 @@ const strings = {
 
         <Field locale={lang} name="body" label={x('Részletes leírás','Uitgebreide beschrijving','Detailed description')} type="textarea" rows={8} value={tr?.body||''} maxlength={30000}/>
         <Field locale={lang} name="internal_note" label={x('Megjegyzés (belső használatra)','Opmerking (intern)','Note (private)')} type="textarea" rows={3} value={property.internal_note||''} maxlength={10000} hint={x('Csak Ön és a FINDDOME munkatársai láthatják. Soha nem jelenik meg a hirdetésben.','Alleen zichtbaar voor u en FINDDOME. Wordt nooit openbaar getoond.','Visible only to you and FINDDOME. Never displayed in the public listing.')}/>
-        <Field locale={lang} name="heard_from" label={x('Honnan értesült a FINDDOME-ről?','Hoe hoorde u van FINDDOME?','Where did you hear about FINDDOME?')} type="select" value={property.heard_from||''} options={[{value:'',label:x('Válasszon, ha szeretne','Kies, als u wilt','Choose if you like')},...HEARD_FROM.map(o=>({value:o.key,label:o.labels[lang]}))]} hint={x('Csak a FINDDOME munkatársai látják.','Alleen zichtbaar voor FINDDOME.','Only FINDDOME staff see this.')}/>
+        <Field locale={lang} name="heard_from" label={x('Honnan értesült a FINDDOME-ről?','Hoe hoorde u van FINDDOME?','Where did you hear about FINDDOME?')} type="select" value={property.heard_from||''} options={[{value:'',label:x('Válasszon!','Maak een keuze','Please select')},...HEARD_FROM.map(o=>({value:o.key,label:o.labels[lang]}))]} hint={x('Csak a FINDDOME munkatársai látják.','Alleen zichtbaar voor FINDDOME.','Only FINDDOME staff see this.')}/>
         <fieldset class="su-fieldset">
           <legend>{t.speaks}</legend>
           <p class="su-note">{t.speaksHint}</p>
@@ -366,7 +368,7 @@ const strings = {
 </Portal>
 
 <script>
-  import { formGaps } from '~/lib/listing-details';
+  import { formGaps, gapControl } from '~/lib/listing-details';
 
   type Pricing = {
     packages: Record<string, { name: string; cents: number; aboveCents: number | null; threshold: number | null; video: string; phone: boolean }>;
@@ -382,6 +384,8 @@ const strings = {
   const lang = (root.dataset.lang === 'nl' || root.dataset.lang === 'en' ? root.dataset.lang : 'hu') as 'hu' | 'nl' | 'en';
   const steps = root.dataset.steps!.split(',');
   const free = root.dataset.free === 'yes';
+  /** An admin may submit on an owner's behalf with less (the server's rule too), so the property step does not hold them back. */
+  const admin = root.dataset.admin === 'yes';
   const s = JSON.parse(root.dataset.strings!);
   const pricing = JSON.parse(root.dataset.pricing!) as Pricing;
   const saveStatus = root.querySelector<HTMLElement>('[data-save-status]')!;
@@ -575,6 +579,16 @@ const strings = {
         invalid.focus();
         return;
       }
+      // The property step also needs what this type of property makes compulsory (the submit check's own rules).
+      if (current === 'property' && !admin) {
+        const gaps = detailGapsNow();
+        if (gaps.length) {
+          await save(current, true);
+          showGaps(gaps);
+          saveStatus.textContent = s.gapsHint;
+          return;
+        }
+      }
       const ok = current === 'billing' ? await saveBilling() : await save(current);
       if (!ok) return;
       location.hash = steps[steps.indexOf(current) + 1];
@@ -657,6 +671,15 @@ const strings = {
   const photoCount = () => Number(root.querySelector<HTMLElement>('[data-photo-count]')?.dataset.photoCount ?? 0);
   const billingName = () => (root.querySelector<HTMLFormElement>('form[data-billing]')?.elements.namedItem('name') as HTMLInputElement | null)?.value.trim() ?? '';
 
+  /** The compulsory facts still empty on the property step (src/lib/listing-details.ts formGaps). */
+  function detailGapsNow(): string[] {
+    const facts = form('property');
+    const fields = facts?.querySelector<HTMLElement>('[data-listing-fields]')?.dataset;
+    return facts ? formGaps(new FormData(facts), { group: fields?.group ?? '', subtype: fields?.subtype ?? '' }) : [];
+  }
+  /** A message under each of them (src/scripts/listing-fields.ts), and the first one focused. */
+  const showGaps = (gaps: string[]) => form('property')?.dispatchEvent(new CustomEvent('listing:gaps', { detail: gaps }));
+
   /** [step, wording, the field to land on]. */
   function missing(): [string, string, string?][] {
     const list: [string, string, string?][] = [];
@@ -664,10 +687,8 @@ const strings = {
     if (!value('description','title')) list.push(['description',s.missing.description,'title']);
     if (!priceHuf()) list.push(['property', s.missing.price, 'original_price']);
     // The same check the server runs on submit (src/lib/listing-details.ts): what this type of property requires.
-    const facts = form('property');
-    const fields = facts?.querySelector<HTMLElement>('[data-listing-fields]')?.dataset;
-    const gaps = facts ? formGaps(new FormData(facts), { group: fields?.group ?? '', subtype: fields?.subtype ?? '' }) : [];
-    if (gaps.length) list.push(['property', `${s.missing.details}: ${gaps.map((name) => s.missing.fields[name] ?? name).join(', ')}`, gaps[0]]);
+    const gaps = detailGapsNow();
+    if (gaps.length) list.push(['property', `${s.missing.details}: ${gaps.map((name) => s.missing.fields[name] ?? name).join(', ')}`, gapControl(gaps[0])]);
     if (!value('description', 'description')) list.push(['description', s.missing.description, 'description']);
     if (photoCount() < 1) list.push(['photos', s.missing.photos]);
     if (!free && !billingName()) list.push(['billing', s.missing.billing]);
@@ -679,6 +700,9 @@ const strings = {
     if (location.hash.slice(1) === step) show(step, false);
     else location.hash = step;
     window.setTimeout(() => {
+      // The property facts: every empty compulsory one gets its message, and the first is focused.
+      const gaps = step === 'property' ? detailGapsNow() : [];
+      if (gaps.some((gap) => gapControl(gap) === name)) return showGaps(gaps);
       const found = form(step)?.elements.namedItem(name);
       // A group of checkboxes (surroundings, walls) lands on its first box.
       const control = (found instanceof RadioNodeList ? found[0] : found) as HTMLElement | null;

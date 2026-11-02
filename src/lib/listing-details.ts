@@ -16,7 +16,6 @@ import { isLandOnly, hasLivingArea, hasPlot, labelIn, type Labels } from '~/lib/
 
 export type ListingDetails = {
   rooms?: number;
-  half_rooms?: number;
   floors?: number;
   kitchens?: number;
   toilets?: number;
@@ -39,9 +38,19 @@ export type DetailLabelKey = keyof typeof data.labels;
 export const SETTING_KEYS: string[] = SETTINGS.map((s) => s.key);
 export const UTILITY_KEYS: string[] = UTILITIES.map((s) => s.key);
 export const PARKING_KEYS: string[] = PARKING.map((s) => s.key);
+/**
+ * Parking answers that are no longer offered (November 2026 list). "Kerti épületben" reads as
+ * "Garázsban"; "Saját parkolóban" says nothing about where, so it is dropped and the owner picks
+ * again the next time the listing is edited (parking is compulsory, so the submit gate asks).
+ */
+const PARKING_ALIASES: Record<string, string> = { 'garden-building': 'garage' };
 
-/** The counted facts kept in `details`, in the order a buyer reads them. Bathrooms have their own column. */
-export const COUNT_FIELDS = ['rooms', 'half_rooms', 'floors', 'kitchens', 'toilets'] as const;
+/**
+ * The counted facts kept in `details`, in the order a buyer reads them. Bathrooms have their own column.
+ * Half rooms (`half_rooms`) were dropped in November 2026: an old value is no longer read, so it is
+ * not shown anywhere and disappears from the row the next time the listing is saved.
+ */
+export const COUNT_FIELDS = ['rooms', 'floors', 'kitchens', 'toilets'] as const;
 export type CountField = (typeof COUNT_FIELDS)[number];
 
 /** "No heating" and "Not known" are answers on their own; ticking one clears the others, and the other way round. */
@@ -96,11 +105,11 @@ export const hasParking = (group: string, subtype: string) => !isLandOnly(group,
 export const hasCellar = (group: string, subtype: string) => !isLandOnly(group, subtype) && !NO_CELLAR.includes(subtype);
 /** Extra buildings need a plot to stand on. */
 export const hasExtraBuildings = hasPlot;
-/** Rooms, half rooms, floors, bathrooms, kitchens and toilets belong to anything with a living unit. */
+/** Rooms, floors, bathrooms, kitchens and toilets belong to anything with a living unit. */
 export const hasLayout = hasLivingArea;
 
 export type FieldRule = 'required' | 'optional' | 'hidden';
-export const LISTING_FIELDS = ['street', 'settings', 'floor_m2', 'building_m2', 'plot_m2', 'year_built', 'renovated_in', 'condition', 'energy', 'heating', 'walls', 'cellar_m2', 'rooms', 'half_rooms', 'floors', 'bathrooms', 'kitchens', 'toilets', 'utilities', 'parking', 'extra_buildings'] as const;
+export const LISTING_FIELDS = ['street', 'settings', 'floor_m2', 'building_m2', 'plot_m2', 'year_built', 'renovated_in', 'condition', 'energy', 'heating', 'walls', 'cellar_m2', 'rooms', 'floors', 'bathrooms', 'kitchens', 'toilets', 'utilities', 'parking', 'extra_buildings'] as const;
 export type ListingField = (typeof LISTING_FIELDS)[number];
 
 /**
@@ -126,28 +135,27 @@ export function fieldRules(group: string, subtype: string): Record<ListingField,
     plot_m2: is(plot, group === 'land' || group === 'agricultural' || !(loose || PLOT_OPTIONAL.includes(subtype))),
     year_built: is(building, !loose),
     renovated_in: is(building, false),
-    condition: is(building, false),
+    condition: is(building, !loose),
     energy: is(building, false),
-    heating: is(building, false),
+    heating: is(building, !loose),
     walls: is(building, !loose && subtype !== 'garage-parking'),
     cellar_m2: is(hasCellar(group, subtype), false),
     rooms: layout,
-    half_rooms: layout,
     floors: layout,
     bathrooms: layout,
     kitchens: layout,
     toilets: layout,
     utilities: is(building && hasUtilities(group), false),
-    parking: is(hasParking(group, subtype), false),
+    parking: is(hasParking(group, subtype), !loose),
     extra_buildings: is(hasExtraBuildings(group, subtype), false),
   };
 }
 export const shows = (group: string, subtype: string, field: ListingField) => fieldRules(group, subtype)[field] !== 'hidden';
 
-/** Parking choices that fit the kind of property: a garden or "around the house" only where there is one. */
+/** Parking choices that fit the kind of property: a carport, a garden or "around the house" only where there is one. */
 export function parkingFits(key: string, group: string, subtype: string): boolean {
-  if (['garden-building', 'garden', 'around-house'].includes(key)) return hasLayout(group, subtype) && hasPlot(group, subtype) && !FLAT_SUBTYPES.includes(subtype);
-  if (key === 'enclosed') return !['agricultural', 'mansion'].includes(group);
+  if (['carport', 'garden', 'around-house'].includes(key)) return hasLayout(group, subtype) && hasPlot(group, subtype) && !FLAT_SUBTYPES.includes(subtype);
+  if (key === 'underground' || key === 'enclosed') return !['agricultural', 'mansion'].includes(group);
   return true;
 }
 
@@ -157,15 +165,16 @@ const count = (v: unknown, max = 100000): number | undefined => {
   const n = typeof v === 'number' ? v : typeof v === 'string' && v.trim() !== '' ? Number(v) : NaN;
   return Number.isFinite(n) && n >= 0 && n <= max ? n : undefined;
 };
-const pick = (v: unknown, allowed: string[]): string[] =>
-  Array.isArray(v) ? [...new Set(v.map(String).filter((k) => allowed.includes(k)))] : [];
+const pick = (v: unknown, allowed: string[], aliases: Record<string, string> = {}): string[] =>
+  Array.isArray(v) ? [...new Set(v.map(String).map((k) => aliases[k] ?? k).filter((k) => allowed.includes(k)))] : [];
 /** Heating and wall keys come from the admin-editable taxonomy, so only their shape is checked here. */
 const termKeys = (v: unknown): string[] =>
   Array.isArray(v) ? [...new Set(v.map(String).filter((k) => /^[a-z0-9][a-z0-9-]{0,39}$/.test(k)))] : [];
 
 /**
  * Tolerant of anything the column may hold: null, `{}` on old rows, hand-edited JSON, and the
- * shapes from before migration 0041 (a single `setting`; heating and walls only in their columns).
+ * shapes from before migration 0041 (a single `setting`; heating and walls only in their columns),
+ * and the retired answers of November 2026 (half rooms, two parking choices).
  */
 export function readDetails(raw: unknown, columns: { heating_key?: string | null; wall_key?: string | null } = {}): ListingDetails {
   const o = raw && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
@@ -180,7 +189,7 @@ export function readDetails(raw: unknown, columns: { heating_key?: string | null
     heating,
     walls,
     utilities: pick(o.utilities, UTILITY_KEYS),
-    parking: pick(o.parking, PARKING_KEYS),
+    parking: pick(o.parking, PARKING_KEYS, PARKING_ALIASES),
     ...(typeof o.extra_buildings === 'string' && o.extra_buildings.trim() ? { extra_buildings: o.extra_buildings.trim() } : {}),
   };
 }
@@ -188,15 +197,73 @@ export function readDetails(raw: unknown, columns: { heating_key?: string | null
 /* ── The submit gate ────────────────────────────────────────────────────── */
 
 /** The facts that can block a submission, in the order the form asks for them. */
-export const GAP_FIELDS = ['street', 'settings', 'floor_m2', 'building_m2', 'plot_m2', 'year_built', 'walls', 'rooms', 'half_rooms', 'floors', 'bathrooms', 'kitchens', 'toilets'] as const;
+export const GAP_FIELDS = ['street', 'settings', 'floor_m2', 'building_m2', 'plot_m2', 'year_built', 'condition', 'walls', 'heating', 'rooms', 'floors', 'bathrooms', 'kitchens', 'toilets', 'parking'] as const;
 export type DetailGap = (typeof GAP_FIELDS)[number];
 
 /** How each gap reads inside "To submit, you still need: …" (portal languages). */
 export const GAP_LABELS: Record<'hu' | 'nl' | 'en', Record<DetailGap, string>> = {
-  hu: { street: 'a cím', settings: 'a környezet', floor_m2: 'a lakóegység területe', building_m2: 'a teljes épületterület', plot_m2: 'a telekterület', year_built: 'az építés éve (vagy a „nem ismert” jelölés)', walls: 'a falazat', rooms: 'a szobák száma', half_rooms: 'a félszobák száma', floors: 'a szintek száma', bathrooms: 'a fürdőszobák száma', kitchens: 'a konyhák száma', toilets: 'a különálló WC-k száma' },
-  nl: { street: 'het adres', settings: 'de omgeving', floor_m2: 'de woonoppervlakte', building_m2: 'de totale gebouwoppervlakte', plot_m2: 'de perceeloppervlakte', year_built: 'het bouwjaar (of „onbekend”)', walls: 'het bouwmateriaal', rooms: 'het aantal kamers', half_rooms: 'het aantal halve kamers', floors: 'het aantal woonlagen', bathrooms: 'het aantal badkamers', kitchens: 'het aantal keukens', toilets: 'het aantal aparte toiletten' },
-  en: { street: 'the address', settings: 'the surroundings', floor_m2: 'the living area', building_m2: 'the total building area', plot_m2: 'the plot area', year_built: 'the year built (or “not known”)', walls: 'the wall construction', rooms: 'the number of rooms', half_rooms: 'the number of half rooms', floors: 'the number of levels', bathrooms: 'the number of bathrooms', kitchens: 'the number of kitchens', toilets: 'the number of separate toilets' },
+  hu: { street: 'a cím', settings: 'a környezet', floor_m2: 'a lakóegység területe', building_m2: 'a teljes épületterület', plot_m2: 'a telekterület', year_built: 'az építés éve (vagy a „nem ismert” jelölés)', condition: 'az állapot', walls: 'a falazat', heating: 'a fűtés', rooms: 'a szobák száma', floors: 'a szintek száma', bathrooms: 'a fürdőszobák száma', kitchens: 'a konyhák száma', toilets: 'a különálló WC-k száma', parking: 'a parkolási lehetőség' },
+  nl: { street: 'het adres', settings: 'de omgeving', floor_m2: 'de woonoppervlakte', building_m2: 'de totale gebouwoppervlakte', plot_m2: 'de perceeloppervlakte', year_built: 'het bouwjaar (of „onbekend”)', condition: 'de staat', walls: 'het bouwmateriaal', heating: 'de verwarming', rooms: 'het aantal kamers', floors: 'het aantal woonlagen', bathrooms: 'het aantal badkamers', kitchens: 'het aantal keukens', toilets: 'het aantal aparte toiletten', parking: 'de parkeermogelijkheden' },
+  en: { street: 'the address', settings: 'the surroundings', floor_m2: 'the living area', building_m2: 'the total building area', plot_m2: 'the plot area', year_built: 'the year built (or “not known”)', condition: 'the condition', walls: 'the wall construction', heating: 'the heating', rooms: 'the number of rooms', floors: 'the number of levels', bathrooms: 'the number of bathrooms', kitchens: 'the number of kitchens', toilets: 'the number of separate toilets', parking: 'the parking' },
 };
+/** The message shown under a compulsory field that was left empty (wizard step and editor). */
+export const GAP_ERRORS: Record<'hu' | 'nl' | 'en', Record<DetailGap, string>> = {
+  hu: {
+    street: 'Adja meg az ingatlan címét.',
+    settings: 'Jelölje be, milyen környezetben van az ingatlan.',
+    floor_m2: 'Adja meg a lakóegység területét.',
+    building_m2: 'Adja meg a teljes épületterületet.',
+    plot_m2: 'Adja meg a telek területét.',
+    year_built: 'Adja meg az építés évét, vagy jelölje be, hogy nem ismert.',
+    condition: 'Válassza ki az ingatlan állapotát.',
+    walls: 'Jelölje be, miből épültek a falak.',
+    heating: 'Jelölje be, milyen fűtés van. Ha nincs, válassza a „Nincs fűtés” lehetőséget.',
+    rooms: 'Adja meg a szobák számát.',
+    floors: 'Adja meg a szintek számát.',
+    bathrooms: 'Adja meg a fürdőszobák számát. Ha nincs, írjon 0-t.',
+    kitchens: 'Adja meg a konyhák számát. Ha nincs, írjon 0-t.',
+    toilets: 'Adja meg a különálló WC-k számát. Ha nincs, írjon 0-t.',
+    parking: 'Jelölje be, hol lehet parkolni.',
+  },
+  nl: {
+    street: 'Vul het adres van de woning in.',
+    settings: 'Geef aan in welke omgeving de woning ligt.',
+    floor_m2: 'Vul de woonoppervlakte in.',
+    building_m2: 'Vul de totale gebouwoppervlakte in.',
+    plot_m2: 'Vul de perceeloppervlakte in.',
+    year_built: 'Vul het bouwjaar in, of vink aan dat het onbekend is.',
+    condition: 'Kies de staat van de woning.',
+    walls: 'Geef aan waarvan de muren zijn gebouwd.',
+    heating: 'Geef aan hoe de woning wordt verwarmd. Geen verwarming? Kies dan „Geen verwarming”.',
+    rooms: 'Vul het aantal kamers in.',
+    floors: 'Vul het aantal woonlagen in.',
+    bathrooms: 'Vul het aantal badkamers in. Geen? Vul 0 in.',
+    kitchens: 'Vul het aantal keukens in. Geen? Vul 0 in.',
+    toilets: 'Vul het aantal aparte toiletten in. Geen? Vul 0 in.',
+    parking: 'Geef aan waar u kunt parkeren.',
+  },
+  en: {
+    street: 'Enter the address of the property.',
+    settings: 'Tick the surroundings of the property.',
+    floor_m2: 'Enter the living area.',
+    building_m2: 'Enter the total building area.',
+    plot_m2: 'Enter the plot area.',
+    year_built: 'Enter the year built, or tick that it is not known.',
+    condition: 'Choose the condition of the property.',
+    walls: 'Tick what the walls are built of.',
+    heating: 'Tick how the property is heated. If there is none, tick “No heating”.',
+    rooms: 'Enter the number of rooms.',
+    floors: 'Enter the number of levels.',
+    bathrooms: 'Enter the number of bathrooms. None? Enter 0.',
+    kitchens: 'Enter the number of kitchens. None? Enter 0.',
+    toilets: 'Enter the number of separate toilets. None? Enter 0.',
+    parking: 'Tick where you can park.',
+  },
+};
+export const gapError = (gap: string, lang: string): string =>
+  GAP_ERRORS[lang === 'nl' || lang === 'en' ? lang : 'hu'][gap as DetailGap] ?? GAP_ERRORS.hu[gap as DetailGap] ?? '';
+/** The form control a gap belongs to (most share the gap's name). */
+export const gapControl = (gap: string): string => (gap === 'condition' ? 'condition_key' : gap);
 export const gapLabel = (gap: string, lang: string) => GAP_LABELS[lang === 'nl' || lang === 'en' ? lang : 'hu'][gap as DetailGap] ?? gap;
 
 export type GapInput = {
@@ -206,6 +273,7 @@ export type GapInput = {
   year_built?: number | null;
   year_built_unknown?: boolean | null;
   bathrooms?: number | null;
+  condition_key?: string | null;
   wall_key?: string | null;
   heating_key?: string | null;
   details?: unknown;
@@ -214,8 +282,8 @@ export type GapInput = {
 /**
  * What still has to be filled in before a listing can be submitted, from `fieldRules()`.
  * Counts may be 0 (a studio has no separate kitchen); only an empty box is a gap. The year
- * built is answered by a year or by ticking "not known"; "Nem ismert" is a wall answer too.
- * Heating is optional ("Nincs fűtés" and "Nem ismert" are offered, but nobody is made to choose).
+ * built is answered by a year or by ticking "not known"; "Nem ismert" is a wall, heating and
+ * condition answer too, and "Nincs fűtés" answers the heating.
  */
 export function detailGaps(p: GapInput, group: string, subtype: string, street: string | null | undefined): DetailGap[] {
   const rules = fieldRules(group, subtype);
@@ -228,13 +296,15 @@ export function detailGaps(p: GapInput, group: string, subtype: string, street: 
     building_m2: area(p.building_m2),
     plot_m2: area(p.plot_m2),
     year_built: Number(p.year_built) > 0 || Boolean(p.year_built_unknown),
+    condition: Boolean(p.condition_key?.trim()),
     walls: d.walls.length > 0,
+    heating: d.heating.length > 0,
     rooms: d.rooms !== undefined,
-    half_rooms: d.half_rooms !== undefined,
     floors: d.floors !== undefined,
     bathrooms: p.bathrooms != null,
     kitchens: d.kitchens !== undefined,
     toilets: d.toilets !== undefined,
+    parking: d.parking.length > 0,
   };
   return GAP_FIELDS.filter((k) => rules[k] === 'required' && !filled[k]);
 }
@@ -247,11 +317,13 @@ export function formGaps(form: FormData, fallback: { group: string; subtype: str
   const details = {
     settings: form.getAll('settings').map(String),
     walls: form.getAll('walls').map(String),
+    heating: form.getAll('heating').map(String),
+    parking: form.getAll('parking').map(String),
     ...Object.fromEntries(COUNT_FIELDS.map((k) => [k, num(k) ?? undefined])),
   };
   return detailGaps({
     floor_m2: num('floor_m2') ? 2 : null, building_m2: num('building_m2') ? 2 : null, plot_m2: num('plot_m2') ? 2 : null,
     year_built: num('year_built'), year_built_unknown: form.get('year_built_unknown') === 'yes',
-    bathrooms: num('bathrooms'), details,
+    bathrooms: num('bathrooms'), condition_key: text('condition_key'), details,
   }, group, subtype, text('street'));
 }

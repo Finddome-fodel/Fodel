@@ -130,7 +130,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // marks and the wizard checks. An admin may submit on an owner's behalf with less.
     if (!isAdmin) {
       const [{ data: facts, error: factsError }, { data: priv }] = await Promise.all([
-        supabase.from('properties').select('floor_m2, building_m2, plot_m2, year_built, year_built_unknown, bathrooms, heating_key, wall_key, details').eq('id', id).maybeSingle(),
+        supabase.from('properties').select('floor_m2, building_m2, plot_m2, year_built, year_built_unknown, bathrooms, condition_key, heating_key, wall_key, details').eq('id', id).maybeSingle(),
         supabase.from('property_private').select('street').eq('property_id', id).maybeSingle(),
       ]);
       if (!factsError && facts) {

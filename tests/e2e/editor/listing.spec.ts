@@ -60,9 +60,10 @@ test.describe('European listing editor',()=>{
  test('unknown energy/build year and four text fields',async({page})=>{
   await page.goto(path);await expect(page.locator('#f-epc_class')).toBeHidden();
   await page.locator('[name="epc_has"][value="yes"]').check();await expect(page.locator('#f-epc_class')).toBeVisible();
-  await expect(page.locator('#f-epc_class option[value="A+++"]')).toHaveCount(1);await expect(page.locator('#f-epc_class option[value="I"]')).toHaveCount(1);
-  await page.locator('#f-country').selectOption('NL');await expect(page.locator('#f-epc_class option[value="A++++"]')).toHaveCount(1);
-  await page.locator('[name="epc_has"][value="no"]').check();await expect(page.locator('#f-epc_class')).toBeHidden();
+  // Free text, as the advertiser's own country prints it; no per-country list.
+  await expect(page.locator('#f-epc_class')).toHaveJSProperty('tagName','INPUT');await expect(page.locator('#f-epc_class')).toBeEnabled();await expect(page.locator('[name="epc_class"]')).toHaveCount(1);
+  await page.locator('#f-epc_class').fill('A++++');await page.locator('#f-country').selectOption('AT');await expect(page.locator('#f-epc_class')).toHaveValue('A++++');
+  await page.locator('[name="epc_has"][value="no"]').check();await expect(page.locator('#f-epc_class')).toBeHidden();await expect(page.locator('#f-epc_class')).toBeDisabled();
   await page.locator('[name="year_built_unknown"]').check();await expect(page.locator('#f-year_built')).toBeDisabled();
   await expect(page.locator('[name="subtitle_hu"], [name="tag_hu"], [name="condition_hu"], [name="heating_hu"]')).toHaveCount(0);
   for(const name of ['title_hu','description_hu','body_hu','internal_note'])await expect(page.locator(`[name="${name}"]`)).toBeAttached();
@@ -131,9 +132,15 @@ test.describe('European listing editor',()=>{
  test('a home asks for its rooms, surroundings, walls and heating; land does not',async({page})=>{
   await page.goto(path);
   await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');
-  for(const name of ['rooms','half_rooms','floors','kitchens','toilets','bathrooms','cellar_m2','street','postal_code'])await expect(page.locator(`#f-${name}`),name).toBeVisible();
+  for(const name of ['rooms','floors','kitchens','toilets','bathrooms','cellar_m2','street','postal_code'])await expect(page.locator(`#f-${name}`),name).toBeVisible();
+  await expect(page.locator('#f-half_rooms')).toHaveCount(0);await expect(page.locator('label[for="f-rooms"]')).toContainText('Szobák száma');await expect(page.locator('label[for="f-rooms"]')).not.toContainText('fél');
   await expect(page.locator('#f-bedrooms')).toHaveCount(0);await expect(page.locator('[name="settings"]').first()).toBeVisible();await expect(page.locator('[name="walls"]').first()).toBeVisible();await expect(page.locator('[name="heating"]').first()).toBeVisible();
-  await expect(page.locator('[name="parking"][value="street"]')).toBeVisible();await expect(page.locator('[name="parking"][value="garden-building"]')).toBeHidden();await expect(page.locator('[name="parking"][value="garden"]')).toBeChecked();
+  await expect(page.locator('[name="parking"][value="street"]')).toBeVisible();await expect(page.locator('[name="parking"][value="carport"]')).toBeHidden();await expect(page.locator('[name="parking"][value="underground"]')).toBeVisible();await expect(page.locator('[name="parking"][value="garden"]')).toBeChecked();
+  await expect(page.locator('[name="parking"][value="own"], [name="parking"][value="garden-building"]')).toHaveCount(0);
+  await expect(page.locator('[data-parking-option]')).toHaveText(['Garázsban','Mélygarázsban','Zárt parkolóban','Fedett kocsibeállóban (kertben)','Kertben (szabadtéri parkolás)','A ház körül','Utcán, közterületen']);
+  for(const field of ['heating','parking'])await expect(page.locator(`[data-field="${field}"] legend .req`),field).toHaveText('(kötelező)');
+  await expect(page.locator('label[for="f-condition_key"] .req')).toHaveText('(kötelező)');await expect(page.locator('label[for="f-renovated_in"] .req')).toHaveText('(nem kötelező)');await expect(page.locator('label[for="f-cellar_m2"] .req')).toHaveText('(nem kötelező)');await expect(page.locator('[data-field="energy"] legend .req')).toHaveText('(nem kötelező)');
+  for(const select of ['#f-property_subtype','#f-condition_key','#f-heard_from'])await expect(page.locator(`${select} option[value=""]`),select).toHaveText('Válasszon!');
   await expect(page.locator('[name="utilities"]').first()).toBeVisible();await expect(page.locator('[name="parking"]').first()).toBeVisible();
   await expect(page.locator('label[for="f-street"] .req')).toHaveText(/kötelező\)/);await expect(page.locator('label[for="f-street"] .req')).not.toHaveText(/nem/);
   await expect(page.locator('label[for="f-rooms"] .req')).not.toHaveText(/nem/);await expect(page.locator('#f-rooms')).not.toHaveAttribute('required','');
@@ -145,7 +152,7 @@ test.describe('European listing editor',()=>{
  test('the new facts save, and the address stays private until it is shown',async({page,request})=>{
   await page.goto(path);
   await page.locator('#f-property_group').selectOption('house');await page.locator('#f-property_subtype').selectOption('apartment');
-  const fill:Record<string,string>={rooms:'4',half_rooms:'1',floors:'2',kitchens:'1',toilets:'2',cellar_m2:'35'};
+  const fill:Record<string,string>={rooms:'4',floors:'2',kitchens:'1',toilets:'2',cellar_m2:'35'};
   for(const [name,value] of Object.entries(fill))await page.locator(`#f-${name}`).fill(value);
   await page.locator('[name="settings"][value="city"]').check();await page.locator('[name="heating"][value="gas"]').check();await page.locator('[name="heating"][value="none"]').check();await expect(page.locator('[name="heating"][value="gas"]')).not.toBeChecked();await page.locator('#f-street').fill('Kossuth u. 12.');await page.locator('#f-postal_code').fill('8254');
   await page.locator('[name="utilities"][value="water"]').check();await page.locator('[name="parking"][value="garage"]').check();
@@ -153,7 +160,7 @@ test.describe('European listing editor',()=>{
   await page.locator('#save-btn').click();await expect(page).toHaveURL(/saved=1/);
   const rows=async(table:string)=>(await (await request.get(`${fixture}/rest/v1/${table}`)).json())[0];
   let row=await rows('properties'),secret=await rows('property_private');
-  expect(row.details).toMatchObject({rooms:4,half_rooms:1,floors:2,kitchens:1,toilets:2,cellar_m2:35,settings:['city','village'],heating:['none'],walls:['ko'],utilities:['water','electricity'],parking:['garage','garden']});expect(row.details).not.toHaveProperty('setting');expect(row.heating_key).toBe('none');
+  expect(row.details).toMatchObject({rooms:4,floors:2,kitchens:1,toilets:2,cellar_m2:35,settings:['city','village'],heating:['none'],walls:['ko'],utilities:['water','electricity'],parking:['garage','garden']});expect(row.details).not.toHaveProperty('setting');expect(row.details).not.toHaveProperty('half_rooms');expect(row.heating_key).toBe('none');
   expect(row.public_address).toBeNull();expect(row.public_postal_code).toBeNull();
   expect(secret).toMatchObject({street:'Kossuth u. 12.',postal_code:'8254',heard_from:'search'});
   await expect(page.locator('#f-rooms')).toHaveValue('4');await expect(page.locator('#f-street')).toHaveValue('Kossuth u. 12.');await expect(page.locator('[name="address_public"]')).not.toBeChecked();
@@ -168,11 +175,31 @@ test.describe('European listing editor',()=>{
   await setSession(page,'owner');
   await page.goto(`${path}/setup#review`);
   const item=page.locator('[data-missing] a',{hasText:'az ingatlan adatai'});await expect(item).toBeVisible();
-  await expect(item).toContainText('a szobák száma');await expect(item).toContainText('a félszobák száma');await expect(item).not.toContainText('a fűtés');await expect(item).not.toContainText('a cím');
+  await expect(item).toContainText('a szobák száma');await expect(item).not.toContainText('félszob');await expect(item).not.toContainText('a fűtés');await expect(item).not.toContainText('az állapot');await expect(item).not.toContainText('a cím');
   await item.click();
-  await expect(page).toHaveURL(/#property$/);await expect(page.locator('#f-rooms')).toBeFocused();await expect(page.locator('#f-rooms')).toHaveClass(/su-flash/);
-  for(const [name,value] of Object.entries({rooms:'3',half_rooms:'0',floors:'1',kitchens:'1',toilets:'0'}))await page.locator(`#f-${name}`).fill(value);
+  await expect(page).toHaveURL(/#property$/);await expect(page.locator('#f-rooms')).toBeFocused();
+  await expect(page.locator('[data-gap-error="rooms"]')).toHaveText('Adja meg a szobák számát.');await expect(page.locator('[data-gap-error="toilets"]')).toHaveText('Adja meg a különálló WC-k számát. Ha nincs, írjon 0-t.');
+  for(const [name,value] of Object.entries({rooms:'3',floors:'1',kitchens:'1',toilets:'0'}))await page.locator(`#f-${name}`).fill(value);
   await page.goto(`${path}/setup#review`);await expect(page.locator('[data-missing] a',{hasText:'az ingatlan adatai'})).toHaveCount(0);
+ });
+ test('the property step holds an owner back until the compulsory facts are given, with a message under each',async({page})=>{
+  await setSession(page,'owner');
+  await page.goto(`${path}/setup#property`);
+  await page.locator('#f-condition_key').selectOption('');await page.locator('[name="heating"][value="wood"]').uncheck();await page.locator('[name="parking"][value="garden"]').uncheck();
+  await page.locator('[data-next]').click();
+  await expect(page).toHaveURL(/#property$/);
+  await expect(page.locator('[data-gap-error="condition"]')).toHaveText('Válassza ki az ingatlan állapotát.');
+  await expect(page.locator('[data-gap-error="heating"]')).toHaveText('Jelölje be, milyen fűtés van. Ha nincs, válassza a „Nincs fűtés” lehetőséget.');
+  await expect(page.locator('[data-gap-error="parking"]')).toHaveText('Jelölje be, hol lehet parkolni.');
+  await expect(page.locator('[data-gap-error="rooms"]')).toBeVisible();
+  await expect(page.locator('[data-save-status]')).toHaveText('Töltse ki a megjelölt kötelező mezőket.');
+  // The first one is focused; answering one clears its own message only.
+  await expect(page.locator('#f-condition_key')).toBeFocused();
+  await page.locator('#f-condition_key').selectOption('unknown');await expect(page.locator('[data-gap-error="condition"]')).toBeHidden();await expect(page.locator('[data-gap-error="heating"]')).toBeVisible();
+  await page.locator('[name="heating"][value="gas"]').check();await page.locator('[name="heating"][value="unknown"]').check();await expect(page.locator('[name="heating"][value="gas"]')).not.toBeChecked();
+  await expect(page.locator('[name="parking"][value="underground"]')).toBeHidden();await page.locator('[name="parking"][value="garage"]').check();
+  for(const [name,value] of Object.entries({rooms:'3',floors:'1',kitchens:'1',toilets:'0'}))await page.locator(`#f-${name}`).fill(value);
+  await page.locator('[data-next]').click();await expect(page).toHaveURL(/#description$/);
  });
  test('responsive layout, with no client exceptions',async({page},testInfo)=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(path);

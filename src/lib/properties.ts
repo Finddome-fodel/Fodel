@@ -57,8 +57,8 @@ export type Property = {
       country: string;
     };
     areas: { floorM2?: number; buildingM2?: number; plotM2: number };
-    /** Rooms (not counting half rooms), half rooms and bathrooms of a home; undefined when none of them is given. */
-    rooms?: { rooms?: number; halfRooms?: number; bathrooms?: number };
+    /** Rooms and bathrooms of a home; undefined when neither is given. */
+    rooms?: { rooms?: number; bathrooms?: number };
     /** Rooms, floors, cellar, utilities, parking, surroundings, extra buildings (migrations 0025, 0041); only what applies to this kind of property. */
     details: ListingDetails;
     /** Present only when the owner chose to show the address in the listing. */
@@ -277,7 +277,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
       areas: { floorM2: shown('floor_m2')?(row.floor_m2 ?? undefined):undefined, buildingM2:shown('building_m2')?(row.building_m2??undefined):undefined, plotM2:shown('plot_m2')?row.plot_m2:0 },
       rooms:
         shown('rooms') && (details.rooms !== undefined || row.bathrooms != null)
-          ? { ...(details.rooms !== undefined ? { rooms: details.rooms } : {}), ...(details.half_rooms ? { halfRooms: details.half_rooms } : {}), ...(row.bathrooms != null ? { bathrooms: row.bathrooms } : {}) }
+          ? { ...(details.rooms !== undefined ? { rooms: details.rooms } : {}), ...(row.bathrooms != null ? { bathrooms: row.bathrooms } : {}) }
           : undefined,
       details,
       address: row.public_address ? { street: row.public_address, postalCode: row.public_postal_code ?? undefined } : undefined,
@@ -414,7 +414,7 @@ export type SearchParams = {
   floorMax?: number;
   plotMin?: number;
   plotMax?: number;
-  /** At least this many rooms (half rooms not counted). */
+  /** At least this many rooms. */
   roomsMin?: number;
   subtype?: string;
   /** "Exclude adobe houses": drops only listings whose wall material is adobe. */

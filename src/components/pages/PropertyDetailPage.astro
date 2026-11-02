@@ -95,7 +95,6 @@ const epc = epcLabel(d.building.epcClass, { none: detailLabel('energy_none', loc
 
 const specs = [
   d.details.rooms !== undefined && { label: detailLabel('rooms', locale), value: String(d.details.rooms) },
-  d.details.half_rooms && { label: detailLabel('half_rooms', locale), value: String(d.details.half_rooms) },
   d.details.floors !== undefined && { label: detailLabel('floors', locale), value: String(d.details.floors) },
   d.rooms?.bathrooms !== undefined && { label: ui.property.baths, value: String(d.rooms.bathrooms) },
   d.details.kitchens !== undefined && { label: detailLabel('kitchens', locale), value: String(d.details.kitchens) },
