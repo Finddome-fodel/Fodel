@@ -1,6 +1,6 @@
 ---
 import Field from '~/components/forms/Field.astro';
-import { PROPERTY_GROUPS, groupOf, subtypeOf, labelIn, FEATURE_ALIASES, DETAIL_OPTIONS, FEATURE_DEFINITIONS, RETIRED_FEATURES, currentFeatures, readEnergy, energyScale } from '~/lib/listing-catalogue';
+import { PROPERTY_GROUPS, groupOf, subtypeOf, labelIn, FEATURE_ALIASES, DETAIL_OPTIONS, FEATURE_DEFINITIONS, RETIRED_FEATURES, currentFeatures, readEnergy } from '~/lib/listing-catalogue';
 import { COUNTRIES, regionsFor, regionLabel } from '~/config/countries';
 import { PRICE_CURRENCIES } from '~/lib/exchange-rates';
 import { readDetails, SETTINGS, UTILITIES, PARKING, detailLabel, fieldRules, parkingFits, HEATING_EXCLUSIVE, WALL_EXCLUSIVE, HEATING_RETIRED, WALL_RETIRED, type ListingField } from '~/lib/listing-details';
@@ -22,7 +22,9 @@ const on=(s:string)=>section==='all'||section===s;
 const number=(v:number|null|undefined)=>v!=null&&v>0?String(v):'';
 // Drafts made before the editor stopped seeding 1 m² still carry it; show those as empty.
 const area=(v:number|null|undefined)=>v!=null&&v>1?String(v):'';
-const options=(g:'condition',blank=x('Nem adom meg','Niet opgeven','Not specified'))=>[{value:'',label:blank},...taxonomy[g].filter(t=>t.enabled || t.key===p[`${g}_key`]).map(t=>({value:t.key,label:labelIn(DETAIL_OPTIONS[g].find(v=>v.key===t.key)?.labels||t.labels,locale)}))];
+// Every dropdown starts on the same prompt (client request, November 2026).
+const choose=x('Válasszon!','Maak een keuze','Please select');
+const options=(g:'condition',blank=choose)=>[{value:'',label:blank},...taxonomy[g].filter(t=>t.enabled || t.key===p[`${g}_key`]).map(t=>({value:t.key,label:labelIn(DETAIL_OPTIONS[g].find(v=>v.key===t.key)?.labels||t.labels,locale)}))];
 const d=readDetails(p.details,p);
 // Which facts this kind of property has, and which of them are required (src/lib/listing-details.ts).
 // The client script applies the same rules again when the type changes in the form.
@@ -38,19 +40,19 @@ const choices=(g:'heating'|'wall',ticked:string[])=>{
     .sort((a,b)=>Number(exclusive.includes(a.key))-Number(exclusive.includes(b.key)))
     .map(t=>({key:t.key,label:labelIn(DETAIL_OPTIONS[g].find(v=>v.key===t.key)?.labels||t.labels,locale)}));
 };
-const energy=readEnergy(p.epc_class),scale=energyScale(p.country);
+const energy=readEnergy(p.epc_class);
 const count=(v:number|null|undefined)=>v!=null?String(v):'';
 const selected=new Set(currentFeatures(p.features,group).features);
 const featureTerms=taxonomy.feature.filter(t=>(t.enabled||selected.has(t.key))&&!FEATURE_ALIASES[t.key]&&!RETIRED_FEATURES.includes(t.key)&&(selected.has(t.key)||Boolean(t.propertyGroups?.length)||FEATURE_DEFINITIONS.some(f=>f.key===t.key)));
 const featureSections=[...new Set(featureTerms.map(t=>t.sectionKey||'other'))];
 const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin en omgeving','Garden and surroundings'),water:x('Vízparti adottságok','Voorzieningen aan het water','Waterfront features'),terrain:group==='agricultural'?x('A terület jellege','Kenmerken van het terrein','Land characteristics'):x('A telek jellege','Kenmerken van het perceel','Plot characteristics'),facilities:x('Épületek és létesítmények','Gebouwen en voorzieningen','Buildings and facilities'),technical:x('Műszaki adottságok','Technische voorzieningen','Technical features'),heritage:x('Történelmi értékek','Historisch karakter','Historic features'),access:x('Megközelítés és közművek','Bereikbaarheid en nutsvoorzieningen','Access and utilities'),investment:x('Befektetési jellemzők','Beleggingskenmerken','Investment features'),other:x('További jellemzők','Overige kenmerken','Other features')};
 ---
-<div class="listing-fields" data-listing-fields data-section={section} data-lang={locale} data-group={group} data-subtype={subtype} data-initial-price-huf={p.price_huf} data-word-required={words.required} data-word-optional={words.optional}>
+<div class="listing-fields" data-listing-fields data-section={section} data-lang={locale} data-group={group} data-subtype={subtype} data-initial-price-huf={p.price_huf} data-word-required={words.required} data-word-optional={words.optional} data-choose={choose}>
 {on('classification') && <section class="lf-section" id="basics">
   <header class="lf-heading"><span class="lf-number">01</span><div><h2>{x('Az ingatlan típusa','Het type vastgoed','Property type')}</h2><p>{x('Először fő kategóriát, majd azon belül altípust válasszon.','Kies eerst een hoofdcategorie en daarna het bijbehorende subtype.','Choose a category, then the subtype that describes your property.')}</p></div></header>
   <div class="lf-grid">
     <Field span="half" locale={locale} name="property_group" label={x('Fő kategória','Hoofdcategorie','Category')} type="select" required value={group} options={PROPERTY_GROUPS.map(g=>({value:g.key,label:labelIn(g.labels,locale)}))}/>
-    <Field span="half" locale={locale} name="property_subtype" label={x('Altípus','Subtype','Subtype')} type="select" required value={subtype} options={[{value:'',label:x('Válasszon altípust','Kies een subtype','Choose a subtype')},...(PROPERTY_GROUPS.find(g=>g.key===group)?.subtypes||[]).map(s=>({value:s.key,label:labelIn(s.labels,locale)}))]}/>
+    <Field span="half" locale={locale} name="property_subtype" label={x('Altípus','Subtype','Subtype')} type="select" required value={subtype} options={[{value:'',label:choose},...(PROPERTY_GROUPS.find(g=>g.key===group)?.subtypes||[]).map(s=>({value:s.key,label:labelIn(s.labels,locale)}))]}/>
   </div>
 </section>}
 {on('location') && <section class="lf-section" id="location">
@@ -105,7 +107,7 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
       <div data-field="renovated_in" hidden={hide('renovated_in')}><Field span="half" locale={locale} name="renovated_in" label={x('Felújítás éve','Renovatiejaar','Year renovated')} type="number" value={number(p.renovated_in)} min={1} max={new Date().getFullYear()+5}/></div>
     </div>
     <div class="lf-grid">
-      <div data-field="condition" hidden={hide('condition')}><Field span="half" locale={locale} name="condition_key" label={x('Állapot','Staat','Condition')} type="select" value={p.condition_key||''} options={options('condition')}/></div>
+      <div data-field="condition" hidden={hide('condition')}><Field span="half" locale={locale} name="condition_key" softRequired={req('condition')} label={x('Állapot','Staat','Condition')} type="select" value={p.condition_key||''} options={options('condition')}/></div>
       <div data-field="cellar_m2" hidden={hide('cellar_m2')}><Field span="half" locale={locale} name="cellar_m2" label={x('Pince (m²)','Kelder (m²)','Cellar (m²)')} type="number" value={d.cellar_m2?String(d.cellar_m2):''} min={0} hint={x('Ha nincs pince, hagyja üresen.','Geen kelder? Laat dit leeg.','No cellar? Leave this blank.')}/></div>
     </div>
     <fieldset class="fld lf-choice" data-field="walls" hidden={hide('walls')}>
@@ -127,18 +129,16 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
       </div>
       <div class="lf-energy-rating" data-energy-rating hidden={energy.has!=='yes'}>
         <label for="f-epc_class" class="fld-label">{x('Energetikai besorolás','Energielabel','Energy rating')} <span class="req">({UI[locale].form.optional})</span></label>
-        <select id="f-epc_class" name="epc_class" data-energy-select hidden={!scale} disabled={!scale}><option value="">{x('Nem adom meg','Niet opgeven','Not stated')}</option>{(scale??[]).concat(energy.rating&&scale&&!scale.includes(energy.rating)?[energy.rating]:[]).map(v=><option value={v} selected={v===energy.rating}>{v}</option>)}</select>
-        <input id="f-epc_class-text" name="epc_class" data-energy-text value={energy.rating} maxlength="40" hidden={Boolean(scale)} disabled={Boolean(scale)} aria-label={x('Energetikai besorolás','Energielabel','Energy rating')}/>
-        <p class="hint" data-energy-hint>{scale ? `${x('A tanúsítványon szereplő osztály','De klasse op het certificaat','The class shown on the certificate')} (${COUNTRIES[p.country]?.labels[locale] ?? p.country}: ${scale[0]}–${scale[scale.length-1]}).` : x('Írja be úgy, ahogy a tanúsítványon szerepel.','Neem de waarde over zoals die op het certificaat staat.','Enter it exactly as it appears on the certificate.')}</p>
+        <p class="hint" id="f-epc_class-hint">{x('Úgy írja be, ahogyan az Ön országában a tanúsítványon szerepel, például „A+”, „BB” vagy „C”.','Vul het in zoals het in uw land op het certificaat staat, bijvoorbeeld „A+”, „B” of „C”.','Enter it as it appears on the certificate in your country, for example “A+”, “B” or “C”.')}</p>
+        <input id="f-epc_class" name="epc_class" data-energy-text value={energy.rating} maxlength="40" autocomplete="off" aria-describedby="f-epc_class-hint" disabled={energy.has!=='yes'}/>
       </div>
     </fieldset>
   </div>
 
-  <div class="lf-block" data-field-block hidden={(['rooms','half_rooms','floors','bathrooms','kitchens','toilets'] as ListingField[]).every(hide)}>
+  <div class="lf-block" data-field-block hidden={(['rooms','floors','bathrooms','kitchens','toilets'] as ListingField[]).every(hide)}>
     <h3 class="lf-sub">{x('Helyiségek','Indeling','Rooms')}</h3>
     <div class="lf-grid">
-      <div data-field="rooms" hidden={hide('rooms')}><Field span="half" locale={locale} name="rooms" softRequired={req('rooms')} label={x('Szobák száma (félszobák nélkül)','Aantal kamers (zonder halve kamers)','Rooms (not counting half rooms)')} type="number" value={count(d.rooms)} min={0}/></div>
-      <div data-field="half_rooms" hidden={hide('half_rooms')}><Field span="half" locale={locale} name="half_rooms" softRequired={req('half_rooms')} label={x('Félszobák száma','Aantal halve kamers','Half rooms')} type="number" value={count(d.half_rooms)} min={0} hint={x('12 m²-nél kisebb szoba. Ha nincs, írjon 0-t.','Kamer kleiner dan 12 m². Geen? Vul 0 in.','A room under 12 m². None? Enter 0.')}/></div>
+      <div data-field="rooms" hidden={hide('rooms')}><Field span="half" locale={locale} name="rooms" softRequired={req('rooms')} label={x('Szobák száma','Aantal kamers','Number of rooms')} type="number" value={count(d.rooms)} min={0}/></div>
       <div data-field="floors" hidden={hide('floors')}><Field span="half" locale={locale} name="floors" softRequired={req('floors')} label={x('Szintek száma','Aantal woonlagen','Number of levels')} type="number" value={count(d.floors)} min={0} hint={x('Lakásnál a lakás saját szintjei: egyszintes lakásnál 1.','Bij een appartement de eigen woonlagen: 1 als alles gelijkvloers is.','For a flat, its own levels: 1 if it is all on one floor.')}/></div>
       <div data-field="bathrooms" hidden={hide('bathrooms')}><Field span="half" locale={locale} name="bathrooms" softRequired={req('bathrooms')} label={x('Fürdőszobák száma','Aantal badkamers','Bathrooms')} type="number" value={p.bathrooms!=null?String(p.bathrooms):''} min={0}/></div>
       <div data-field="kitchens" hidden={hide('kitchens')}><Field span="half" locale={locale} name="kitchens" softRequired={req('kitchens')} label={x('Konyhák száma','Aantal keukens','Kitchens')} type="number" value={count(d.kitchens)} min={0}/></div>

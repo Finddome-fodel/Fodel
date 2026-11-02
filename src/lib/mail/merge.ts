@@ -50,7 +50,7 @@ export const MERGE_FIELD_LABEL: Record<MergeFieldKey, string> = {
   property_ref: 'Hirdetés azonosító',
   property_description: 'Ingatlan leírása (rövid kivonat, a sablon nyelvén)',
   property_area: 'Alapterület',
-  property_rooms: 'Szobák száma (félszobák nélkül)',
+  property_rooms: 'Szobák száma',
   property_bedrooms: 'Szobák száma (régi mezőkód)',
   property_photo_url: 'Ingatlan fő fotója (kép címe)',
   old_price: 'Előző ár (árcsökkenés)',

@@ -1,6 +1,5 @@
-import { PROPERTY_GROUPS, labelIn, energyScale } from '~/lib/listing-catalogue';
-import { fieldRules, parkingFits, type ListingField } from '~/lib/listing-details';
-import { COUNTRIES } from '~/config/countries';
+import { PROPERTY_GROUPS, labelIn } from '~/lib/listing-catalogue';
+import { fieldRules, parkingFits, gapError, gapControl, type ListingField } from '~/lib/listing-details';
 import { regionsFor, regionLabel } from '~/config/countries';
 import { parseLocaleNumber } from '~/lib/validation';
 import type { RateSnapshot } from '~/lib/exchange-rates';
@@ -49,12 +48,41 @@ for(const form of forms){
   };
   control('property_group')?.addEventListener('change',()=>{
     const select=control('property_subtype') as HTMLSelectElement;
-    select.replaceChildren(new Option(x('Válasszon altípust','Kies een subtype','Choose a subtype'),''),...(PROPERTY_GROUPS.find(g=>g.key===group())?.subtypes||[]).map(s=>new Option(labelIn(s.labels,locale),s.key)));
+    select.replaceChildren(new Option(root?.dataset.choose||x('Válasszon!','Maak een keuze','Please select'),''),...(PROPERTY_GROUPS.find(g=>g.key===group())?.subtypes||[]).map(s=>new Option(labelIn(s.labels,locale),s.key)));
     for(const root of roots.filter(r=>r.closest('form')===form)){root.dataset.group=group();root.dataset.subtype='';}
     refresh();
   });
   control('property_subtype')?.addEventListener('change',refresh);
   refresh();
+  // Compulsory facts left empty (the wizard's "Continue", the editor's "Submit"): a message under each one,
+  // gone as soon as that field is touched. Its own element, so the field-format checks never clear it.
+  form.addEventListener('listing:gaps',event=>{
+    const gaps=((event as CustomEvent<string[]>).detail||[]).map(String);
+    for(const old of form.querySelectorAll<HTMLElement>('[data-gap-error]'))old.hidden=true;
+    let first:HTMLElement|null=null;
+    for(const gap of gaps){
+      const named=form.querySelector<HTMLElement>(`[name="${gapControl(gap)}"]`);
+      const box=form.querySelector<HTMLElement>(`[data-field="${gap}"]`)??named?.closest<HTMLElement>('.fld')??null;
+      if(!box||box.closest('[hidden]'))continue;
+      const fld=box.matches('.fld')?box:box.querySelector<HTMLElement>('.fld')??box;
+      let note=fld.querySelector<HTMLElement>(':scope > [data-gap-error]');
+      if(!note){
+        note=document.createElement('p');note.className='error';note.dataset.gapError=gap;
+        note.id=`gap-${gap}-error`;
+        // Under the input for a single field, after the choices for a group of boxes.
+        const input=fld.querySelector(':scope > input, :scope > select, :scope > textarea');
+        if(input)input.after(note);else fld.append(note);
+        const clear=()=>{note!.hidden=true;};
+        box.addEventListener('input',clear);box.addEventListener('change',clear);
+      }
+      note.textContent=gapError(gap,locale);note.hidden=false;
+      first??=(box.querySelector<HTMLElement>('input:not([type="hidden"]):not(:disabled), select, textarea')??named);
+    }
+    if(first){
+      first.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+      first.focus({preventScroll:true});
+    }
+  });
   for(const unit of form.querySelectorAll<HTMLSelectElement>('[data-area-unit]')){
     const name=unit.dataset.areaUnit!;
     const input=control(name)!;
@@ -110,11 +138,13 @@ for(const form of forms){
   control('original_currency')?.addEventListener('change',()=>void showPrice());
   // The first estimate is needed for the package tier; stored prices remain unchanged until the amount/currency changes.
   if(control('original_price')&&!form.dataset.priceHuf)form.dataset.priceHuf=roots.find(r=>r.closest('form')===form)?.dataset.initialPriceHuf||'0';
-  // Energy: the class is asked only when there is a certificate.
+  // Energy: the class is asked only when there is a certificate. Free text, as the owner's country prints it.
   const syncEnergy=()=>{
     const rating=form.querySelector<HTMLElement>('[data-energy-rating]');
     const yes=form.querySelector<HTMLInputElement>('input[name="epc_has"][value="yes"]');
+    const text=form.querySelector<HTMLInputElement>('[data-energy-text]');
     if(rating)rating.hidden=!yes?.checked;
+    if(text)text.disabled=!yes?.checked;
   };
   for(const radio of form.querySelectorAll<HTMLInputElement>('input[name="epc_has"]'))radio.addEventListener('change',syncEnergy);
   syncEnergy();
@@ -127,18 +157,6 @@ for(const form of forms){
       for(const other of grid.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'))
         if(other!==box&&(exclusive.includes(box.value)||exclusive.includes(other.value)))other.checked=false;
     });
-  }
-  // The rating follows the property's country: a list on its official scale, or free text where we have none.
-  function refreshEnergy(code:string){
-    const select=form.querySelector<HTMLSelectElement>('[data-energy-select]'),text=form.querySelector<HTMLInputElement>('[data-energy-text]');
-    if(!select||!text)return;
-    const scale=energyScale(code),current=select.disabled?text.value:select.value;
-    select.hidden=select.disabled=!scale;text.hidden=text.disabled=Boolean(scale);
-    if(scale){
-      select.replaceChildren(new Option(x('Nem adom meg','Niet opgeven','Not stated'),''),...scale.map(v=>new Option(v,v,false,v===current)));
-    } else text.value=current;
-    const hint=form.querySelector<HTMLElement>('[data-energy-hint]'),name=COUNTRIES[code]?.labels[locale as 'hu'|'nl'|'en']??code;
-    if(hint)hint.textContent=scale?`${x('A tanúsítványon szereplő osztály','De klasse op het certificaat','The class shown on the certificate')} (${name}: ${scale[0]}–${scale[scale.length-1]}).`:x('Írja be úgy, ahogy a tanúsítványon szerepel.','Neem de waarde over zoals die op het certificaat staat.','Enter it exactly as it appears on the certificate.');
   }
   const locationRoot=form.querySelector<HTMLElement>('[data-location-map]');
   if(!locationRoot)continue;
@@ -162,7 +180,6 @@ for(const form of forms){
     const datalist=form.querySelector<HTMLDataListElement>('#listing-regions');
     datalist?.replaceChildren(...regionsFor(country.value).map(r=>new Option(r.name)));
     const label=form.querySelector<HTMLElement>('[data-region-label]');if(label)label.textContent=regionLabel(country.value,locale);
-    refreshEnergy(country.value);
     if(clear){set('county','');set('region','');set('settlement','');set('lat','');set('lng','');set('location_confirmed','');marker?.remove();void localPlaces();}
   }
   country.addEventListener('change',()=>{reverseSequence++;refreshCountry(true);});

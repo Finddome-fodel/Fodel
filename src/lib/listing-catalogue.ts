@@ -42,8 +42,12 @@ export const canonicalFeature = (key: string) => FEATURE_ALIASES[key] || key;
  * storage is "Raktárterület", a shop's is "Raktárhelyiség"; a manor's garden is a
  * "Díszkert vagy park". Applied on every save and when a listing is shown, so a listing
  * that still carries an old key reads correctly before and after the migration runs.
+ *
+ * "Garázs vagy parkoló" (`parking`) used to become "Saját parkolóban", which was retired in
+ * November 2026; it says nothing about where, so it now becomes no parking answer at all and the
+ * owner is asked again. A carport is "Fedett kocsibeállóban (kertben)" since then.
  */
-export const PARKING_FROM_FEATURE: Record<string, string> = { parking: 'own', garage: 'garage', carport: 'own', 'enclosed-parking': 'enclosed' };
+export const PARKING_FROM_FEATURE: Record<string, string | null> = { parking: null, garage: 'garage', carport: 'carport', 'enclosed-parking': 'enclosed' };
 const GROUP_RENAMES: { from: string; to: string; groups: string[] }[] = [
   { from: 'warehouse-space', to: 'storage-area', groups: ['industrial'] },
   { from: 'park', to: 'ornamental-park', groups: ['mansion'] },
@@ -54,7 +58,7 @@ export function currentFeatures(features: string[], group: string): { features: 
   const parking: string[] = [];
   const out: string[] = [];
   for (const raw of features) {
-    if (PARKING_FROM_FEATURE[raw]) { parking.push(PARKING_FROM_FEATURE[raw]); continue; }
+    if (Object.hasOwn(PARKING_FROM_FEATURE, raw)) { const to = PARKING_FROM_FEATURE[raw]; if (to) parking.push(to); continue; }
     const key = canonicalFeature(raw);
     out.push(GROUP_RENAMES.find((r) => r.from === key && r.groups.includes(group))?.to ?? key);
   }
@@ -62,36 +66,3 @@ export function currentFeatures(features: string[], group: string): { features: 
 }
 
 export { readEnergy, type EnergyAnswer } from './energy.ts';
-
-/**
- * The classes each country actually prints, best first. Where a country has no letter
- * scale (Poland prints a kWh figure) or we do not know it, the owner types what the
- * certificate says. Sources: national EPC rules as of 2026 (HU: 9/2023. ÉKM, A+++–I;
- * the old two-letter AA++–JJ certificates are no longer valid. NL: NTA 8800, A++++–G).
- */
-const EU_AG = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-export const ENERGY_SCALES: Record<string, string[]> = {
-  HU: ['A+++', 'A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
-  NL: ['A++++', 'A+++', 'A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
-  BE: ['A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
-  DE: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-  AT: ['A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
-  IT: ['A4', 'A3', 'A2', 'A1', 'B', 'C', 'D', 'E', 'F', 'G'],
-  PT: ['A+', 'A', 'B', 'B-', 'C', 'D', 'E', 'F'],
-  IE: ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'E1', 'E2', 'F', 'G'],
-  DK: ['A2020', 'A2015', 'A2010', 'B', 'C', 'D', 'E', 'F', 'G'],
-  SK: ['A0', 'A1', 'B', 'C', 'D', 'E', 'F', 'G'],
-  SI: ['A1', 'A2', 'B1', 'B2', 'C', 'D', 'E', 'F', 'G'],
-  GR: ['A+', 'A', 'B+', 'B', 'C', 'D', 'E', 'F', 'G'],
-  HR: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
-  RO: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
-  BG: ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
-  LT: ['A++', 'A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G'],
-  LV: ['A+', 'A', 'B', 'C', 'D', 'E', 'F'],
-  EE: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-  ...Object.fromEntries(['FR', 'ES', 'GB', 'CH', 'SE', 'NO', 'FI', 'CZ', 'CY'].map((c) => [c, EU_AG])),
-};
-/** The country's scale, or null when the owner should type the class as printed. */
-export const energyScale = (country: string): string[] | null => ENERGY_SCALES[country] ?? null;
-/** @deprecated kept for callers that only want suggestions; use energyScale. */
-export const energyOptions = (country: string): string[] => energyScale(country) ?? [];

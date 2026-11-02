@@ -70,7 +70,7 @@ const county = params.get('county') ?? '';
 const country = params.get('country') ?? '';
 const settlement = params.get('settlement') ?? '';
 const priceBandId = params.get('price') ?? '';
-// Minimum room count (half rooms not counted). `beds` is the old name, kept so saved links keep working.
+// Minimum room count. `beds` is the old name, kept so saved links keep working.
 const rooms = params.get('rooms') ?? params.get('beds') ?? '';
 const floorMin = params.get('floor_min') ?? params.get('floor') ?? '';
 const floorMax = params.get('floor_max') ?? '';
@@ -334,7 +334,7 @@ const labels = {
             </div>
           </fieldset>
 
-          {/* Rooms (half rooms not counted) — one row, one choice */}
+          {/* Rooms — one row, one choice */}
           <fieldset class="group">
             <legend class="group-title">{ui.filters.rooms}</legend>
             <div class="segmented">

@@ -1,6 +1,7 @@
 import { parseLocaleNumber, type FieldError } from '~/lib/validation';
 import { COUNTRIES } from '~/config/countries';
-import { validSubtype, canonicalFeature, currentFeatures, CONTACT_LANGUAGES, categoryFor, PROPERTY_GROUPS, readEnergy, energyScale } from '~/lib/listing-catalogue';
+import { validSubtype, canonicalFeature, currentFeatures, CONTACT_LANGUAGES, categoryFor, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
+import { energyRating } from '~/lib/energy';
 import { convertPrice, exchangeRates, PRICE_CURRENCIES } from '~/lib/exchange-rates';
 import { readDetails, fieldRules, parkingFits, exclusiveChoice, HEATING_EXCLUSIVE, WALL_EXCLUSIVE, SETTING_KEYS, UTILITY_KEYS, PARKING_KEYS, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
 import { extractYouTubeId } from '~/lib/video';
@@ -91,18 +92,15 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   } else if(folded.parking.length)details.parking=[...new Set([...details.parking,...folded.parking])];
   // The columns older readers use (search, exports) carry the first answer.
   const heatingKey=details.heating[0]??null,wallKey=details.walls[0]??null;
-  // Energy: "is there a certificate?" first; the class is optional and follows the country's scale.
+  // Energy: "is there a certificate?" first; the class is optional free text, written the way the
+  // owner's own country prints it (src/lib/energy.ts). A word the column reserves reads as "no class given".
   const energyInForm=form.get('energy_present')==='yes';
   let epc=current.epc_class||'unknown';
   if(building&&energyInForm){
-    const has=get('epc_has'),rating=get('epc_class').slice(0,40);
-    const scale=energyScale(country);
+    const has=get('epc_has');
     if(has==='no')epc='none';
-    else if(has==='yes'){
-      // A class outside the country's scale is accepted only if it is the one already saved (a hand-typed older value).
-      if(rating&&scale&&!scale.includes(rating)&&rating!==readEnergy(current.epc_class).rating)errors.epc_class={code:'required'};
-      epc=rating||'certified';
-    } else epc='unknown';
+    else if(has==='yes')epc=energyRating(get('epc_class'))??'certified';
+    else epc='unknown';
   }
   // The street address is private. Ticking "show the address" copies it to the public row, and a public
   // address must be pinned exactly, or the page would print one place and map another.

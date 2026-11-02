@@ -378,7 +378,7 @@ const trPaid = Astro.url.searchParams.get('translations');
             </div>
           );
         })}
-        <Field locale="hu" name="heard_from" label="Honnan értesült a FINDDOME-ről?" type="select" value={property.heard_from||''} options={[{value:'',label:'Nincs megadva'},...HEARD_FROM.map(o=>({value:o.key,label:o.labels.hu}))]} hint="Csak a FINDDOME munkatársai látják."/>
+        <Field locale="hu" name="heard_from" label="Honnan értesült a FINDDOME-ről?" type="select" value={property.heard_from||''} options={[{value:'',label:'Válasszon!'},...HEARD_FROM.map(o=>({value:o.key,label:o.labels.hu}))]} hint="Csak a FINDDOME munkatársai látják."/>
         <Field locale="hu" name="internal_note" label="Megjegyzés (belső használatra)" type="textarea" rows={3} value={property.internal_note||''} hint="Csak Ön és a FINDDOME munkatársai láthatják. A nyilvános hirdetésben soha nem jelenik meg." maxlength={10000}/>
       </section>
 
@@ -787,6 +787,9 @@ const trPaid = Astro.url.searchParams.get('translations');
       workflowStatus.textContent = json.error === 'incomplete-details' && json.fields?.length
         ? `A beküldéshez még hiányzik: ${json.fields.map((name) => gapLabels[name] || name).join(', ')}. Töltse ki, és mentse a hirdetést.`
         : messages[json.error] || json.message || 'Nem sikerült végrehajtani.';
+      // Each missing fact also gets its message in the form (src/scripts/listing-fields.ts).
+      if (json.error === 'incomplete-details' && json.fields?.length)
+        document.querySelector('[data-listing-fields]')?.closest('form')?.dispatchEvent(new CustomEvent('listing:gaps', { detail: json.fields }));
       // The person asked to move on and may be looking at another part of the page: say it where they can see it.
       if (then) window.pf.alert({ title: 'Még nem lehet továbbmenni', body: workflowStatus.textContent });
       return;

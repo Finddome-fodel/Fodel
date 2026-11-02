@@ -146,7 +146,7 @@ async function createListings(accounts) {
       price_negotiable: index % 3 === 0,
       floor_m2: category === 'land' ? null : 55 + index * 7,
       plot_m2: 420 + index * 830,
-      details: category === 'land' ? {} : { rooms: 2 + (index % 5), half_rooms: index % 2, floors: 1 + (index % 2), kitchens: 1, toilets: index % 2, settings: [['village', 'city', 'holiday-area', 'forest'][index % 4]], heating: [['gas', 'electric', 'wood', 'heat-pump'][index % 4]], walls: [['tegla', 'ko', 'fa', 'valyog'][index % 4]] },
+      details: category === 'land' ? {} : { rooms: 2 + (index % 5), floors: 1 + (index % 2), kitchens: 1, toilets: index % 2, settings: [['village', 'city', 'holiday-area', 'forest'][index % 4]], heating: [['gas', 'electric', 'wood', 'heat-pump'][index % 4]], walls: [['tegla', 'ko', 'fa', 'valyog'][index % 4]] },
       bathrooms: category === 'land' ? null : 1 + (index % 3),
       year_built: category === 'land' ? null : 1920 + (index % 10) * 10,
       epc_class: ['A+', 'B', 'C', 'none', 'unknown'][index % 5],

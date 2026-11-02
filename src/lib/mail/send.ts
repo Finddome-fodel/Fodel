@@ -72,7 +72,7 @@ export type PropertyContext = {
   oldPrice: string | null;
   description: string | null;
   area: string | null;
-  /** Rooms, half rooms not counted. */
+  /** Number of rooms. */
   rooms: string | null;
   photoUrl: string | null;
 };
