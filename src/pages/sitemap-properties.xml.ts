@@ -13,23 +13,24 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { activeProperties, url as propertyUrl } from '~/lib/properties';
-import { LOCALE_META } from '~/i18n/ui';
-import { LISTING_TRANSLATION_LOCALES } from '~/lib/ai/translate-core';
+import { activeProperties, publishedLocalesOf, translationConfig, url as propertyUrl } from '~/lib/properties';
+import { LOCALES, LOCALE_META } from '~/i18n/ui';
 import { SITE_URL as SITE } from '~/config/site.mjs';
 
 export const GET: APIRoute = async () => {
   const properties = await activeProperties();
+  const languages = await translationConfig();
 
   const urls = properties.map((p) => {
-    // Only the languages listing text is translated into: a listing page in a
-    // later site language is a noindex stand-in (src/lib/page.ts).
-    const links = LISTING_TRANSLATION_LOCALES.map(
+    // Only the languages the listing is published in (src/lib/listing-languages.ts); before migration 0052 every language, as it always was.
+    const locales = p.data.listing.languagePolicy.gated ? publishedLocalesOf(p, languages) : [...LOCALES];
+    const links = locales.map(
       (l) => `<xhtml:link rel="alternate" hreflang="${LOCALE_META[l].hreflang}" href="${SITE}${propertyUrl(p, l)}" />`
     ).join('');
-    // Hungarian is the canonical entry when both exist, matching the rest of
-    // the site's hreflang graph (see src/lib/page.ts alternatesFor).
-    return `<url><loc>${SITE}${propertyUrl(p, 'hu')}</loc><lastmod>${p.data.listing.publishedAt
+    // Hungarian is the canonical entry when it is published, matching the rest of the site's hreflang graph
+    // (see src/lib/page.ts alternatesFor); otherwise the first language the listing is published in.
+    const canonical = locales.includes('hu') ? 'hu' : locales[0] ?? 'en';
+    return `<url><loc>${SITE}${propertyUrl(p, canonical)}</loc><lastmod>${p.data.listing.publishedAt
       .toISOString()
       .slice(0, 10)}</lastmod>${links}</url>`;
   });

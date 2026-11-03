@@ -22,12 +22,16 @@ import { getSupabase } from '~/lib/supabase';
 import { resolveImage } from '~/lib/property-images';
 import type { Locale } from '~/i18n/ui';
 import { LOCALES, propertyPath } from '~/i18n/ui';
-import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
+import { getCompany, getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
 import type { ImageMetadata } from 'astro';
 import { PROPERTY_GROUPS, currentFeatures, groupOf, subtypeOf } from '~/lib/listing-catalogue';
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
 import { contactModeOf, type ContactMode } from '~/lib/contact-display';
 import { readDetails, fieldRules, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
+import { listedIn, servingOf, switcherLocales, publishedLocales, type ListingPolicy, type Serving } from '~/lib/listing-languages';
+import { listingCatalog } from '~/lib/listing-packages';
+import type { TranslationPricing } from '~/lib/translation-packages';
+import { unpurchasedListingLocales } from '~/config/flags';
 
 type LocalisedText = { hu: string } & Partial<Record<Exclude<Locale, 'hu'>, string>>;
 
@@ -97,6 +101,8 @@ export type Property = {
       languages: Locale[];
       /** Languages whose text the AI wrote (migration 0043). Used for the optional "automatically translated" note. */
       machineLanguages: Locale[];
+      /** In which languages this listing is published (src/lib/listing-languages.ts). */
+      languagePolicy: ListingPolicy;
     };
     seller: { contactVisible: boolean; name?: string; phone?: string; speaks: string[]; contactMode: ContactMode; staffName?: string; staffPhone?: string };
     tag?: LocalisedText;
@@ -180,6 +186,10 @@ type PropertyRow = {
   bargain_since: string | null;
   published_at: string | null;
   expires_at: string | null;
+  /** Migration 0052: the languages bought and switched off. Absent before it has been run. */
+  translation_package?: string | null;
+  extra_locales?: string[] | null;
+  excluded_locales?: string[] | null;
   property_translations: TranslationRow[];
   property_media: MediaRow[];
 };
@@ -220,6 +230,19 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
     .filter((t) => (t as { machine?: boolean }).machine === true)
     .map((t) => t.locale)
     .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
+
+  // Where the original is: Hungarian when a person wrote it, otherwise the first language a person wrote.
+  const written = translations.filter((t) => !(t as { machine?: boolean }).machine && (t.title?.trim() || t.description?.trim()));
+  const languagePolicy: ListingPolicy = {
+    gated: 'translation_package' in row,
+    sourceLocale: written.find((t) => t.locale === 'hu')?.locale ?? written[0]?.locale ?? 'hu',
+    languagesWithText: languages,
+    // A text a person typed in that language (an original, not a translation of the listing's text).
+    writtenLocales: written.filter((t) => !(t as { translated_from?: string | null }).translated_from && !(t as { manual_override?: boolean }).manual_override).map((t) => t.locale),
+    translationPackage: row.translation_package ?? 'go',
+    extraLocales: row.extra_locales ?? [],
+    excludedLocales: row.excluded_locales ?? [],
+  };
 
   const category: TaxonomyTerm | undefined = taxonomy.category.find((term) => term.key === row.category);
   // An approximate listing never carries its real point into a page, the map
@@ -314,6 +337,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         expiresAt: new Date(row.expires_at ?? row.price_asof),
         languages,
         machineLanguages,
+        languagePolicy,
       },
       seller: {
         contactVisible: row.seller_contact_visible,
@@ -486,16 +510,27 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
   const taxonomy = await getTaxonomy();
   const byId = new Map(((data ?? []) as PropertyRow[]).map((row) => [row.id, mapRow(row, taxonomy)]));
   const live = new Set(((data ?? []) as PropertyRow[]).filter((row) => isPubliclyListed(row)).map((row) => row.id));
-  const properties = ids
+  const found = ids
     .filter((id: string) => live.has(id))
     .map((id: string) => byId.get(id))
     .filter((p: Property | undefined): p is Property => Boolean(p));
-
-  return { properties, total: Number(total), page, perPage };
+  // A listing with no page in this language is not listed in it. The page the database cut is already
+  // fixed, so the total drops by what was left out here (a short page is possible, a wrong listing is not).
+  const languages = await translationConfig();
+  const properties = found.filter((p: Property) => listedInLocale(p, params.locale, languages));
+  return { properties, total: Math.max(0, Number(total) - (found.length - properties.length)), page, perPage };
 }
 
-export async function activeProperties(): Promise<Property[]> {
-  return (await fetchAll()).filter((p) => p.data.status === 'active');
+/**
+ * Every active listing; with a `locale`, only the ones that appear in that language's lists: a listing that has no
+ * page in a language (not bought, switched off, not translated yet) is not listed there either
+ * (src/lib/listing-languages.ts). Without it: all of them, which is what a listing's own route needs to find its page.
+ */
+export async function activeProperties(locale?: Locale): Promise<Property[]> {
+  const active = (await fetchAll()).filter((p) => p.data.status === 'active');
+  if (!locale) return active;
+  const languages = await translationConfig();
+  return active.filter((p) => listedInLocale(p, locale, languages));
 }
 
 export async function soldProperties(): Promise<Property[]> {
@@ -503,16 +538,16 @@ export async function soldProperties(): Promise<Property[]> {
 }
 
 /** Editorial recommendations never fall back to paid or newest inventory. */
-export async function editorsPick(limit = 10): Promise<Property[]> {
-  return (await activeProperties())
+export async function editorsPick(limit = 10, locale?: Locale): Promise<Property[]> {
+  return (await activeProperties(locale))
     .filter((property) => property.data.listing.editorsPick)
     .sort((a, b) => a.data.listing.editorsPickOrder - b.data.listing.editorsPickOrder)
     .slice(0, limit);
 }
 
 /** Active homepage placements, ordered by publication date. */
-export async function homepageFeatured(limit=3):Promise<Property[]>{
-  const active=await activeProperties();
+export async function homepageFeatured(limit=3,locale?:Locale):Promise<Property[]>{
+  const active=await activeProperties(locale);
   const featured=active.filter(p=>p.data.listing.homepageFeatured);
   return (featured.length?featured:active).sort((a,b)=>b.data.listing.publishedAt.getTime()-a.data.listing.publishedAt.getTime()).slice(0,limit);
 }
@@ -611,4 +646,43 @@ export function priceBandLabel(band: (typeof PRICE_BANDS)[number]): string {
   if (!band.min) return `< ${f(band.max!)}`;
   if (!band.max) return `> ${f(band.min)}`;
   return `${f(band.min)} – ${f(band.max)}`;
+}
+
+/* ── In which languages is a listing published? (src/lib/listing-languages.ts) ───────────── */
+
+/** The package and single-language configuration the admin last saved. */
+export async function translationConfig(): Promise<TranslationPricing> {
+  try {
+    return listingCatalog((await getCompany()).services).translation;
+  } catch {
+    // A listing page must not depend on the settings being readable: the defaults are the published packages.
+    return listingCatalog().translation;
+  }
+}
+
+const TARGETS: readonly string[] = LOCALES;
+
+/** What a listing page does in this language: render it, render the fallback text (noindex), or send the visitor to English. */
+export function servingFor(p: Property, locale: Locale, cfg: TranslationPricing): Serving {
+  return servingOf(p.data.listing.languagePolicy, locale, cfg, TARGETS, unpurchasedListingLocales());
+}
+
+/** Languages whose page carries the listing's own text: hreflang and the sitemap. */
+export function publishedLocalesOf(p: Property, cfg: TranslationPricing): Locale[] {
+  return publishedLocales(p.data.listing.languagePolicy, cfg, TARGETS) as Locale[];
+}
+
+/** Languages the switcher may offer on a listing page. */
+export function switcherLocalesOf(p: Property, cfg: TranslationPricing): Locale[] {
+  return switcherLocales(p.data.listing.languagePolicy, cfg, TARGETS) as Locale[];
+}
+
+/** A listing appears in a language's lists only when its page there is not a redirect. */
+export function listedInLocale(p: Property, locale: Locale, cfg: TranslationPricing): boolean {
+  return listedIn(p.data.listing.languagePolicy, locale, cfg, TARGETS, unpurchasedListingLocales());
+}
+
+/** The English page of a listing: where a language that is not published sends the visitor. */
+export function englishUrl(p: Property): string {
+  return url(p, 'en');
 }

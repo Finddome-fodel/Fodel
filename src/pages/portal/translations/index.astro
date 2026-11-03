@@ -135,9 +135,13 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
   {migrated && (
     <div class="spend">
       <p>Ma elköltve: <b>{formatCostHu(spent)}</b> <span>(napi keret: {fmtEur(cap / 1_000_000)}; a keret elérése után a fordítások másnapig várnak)</span></p>
-      {counts.active > 0 && aiOn && <button type="button" class="btn ghost small" id="continue-now">Folytatás most</button>}
+      <span class="spend-tools">
+        {aiOn && <button type="button" class="btn ghost small" id="go-fill" title="Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást, a napi keret erejéig.">Go nyelvek pótlása (EN, DE)</button>}
+        {counts.active > 0 && aiOn && <button type="button" class="btn ghost small" id="continue-now">Folytatás most</button>}
+      </span>
     </div>
   )}
+  <p class="pk-links">Csomagok és árak: <a href="/portal/packages/translations">Fordítási csomagok</a> · <a href="/portal/packages/languages">Egyedi nyelvek</a></p>
 
   <nav class="tabs" aria-label="Fordítások">
     <a href="/portal/translations" aria-current={tab === 'overview' ? 'page' : undefined}>Áttekintés</a>
@@ -251,6 +255,17 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
       location.reload();
     });
   });
+  document.getElementById('go-fill')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget as HTMLButtonElement;
+    const ok = await window.pf!.confirm({ title: 'Go nyelvek pótlása', body: 'Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást (régebbi hirdetésektől kezdve), a napi AI-keret erejéig. A keret elérése után a többi másnap pótolható.', confirmLabel: 'Pótlás indítása' });
+    if (!ok) return;
+    button.disabled = true;
+    const res = await fetch('/api/portal/translations/go-fill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) { window.pf!.toast(json.message || 'Nem sikerült.', 'error'); button.disabled = false; return; }
+    window.pf!.toast(json.languages === 0 ? 'Minden élő hirdetésnek megvan az angol és a német.' : `${json.listings} hirdetés, ${json.languages} nyelv sorba állítva.${json.budgetStopped ? ' A napi keret elfogyott, a többit holnap pótolhatja.' : ''}`, 'ok');
+    setTimeout(() => location.reload(), 1800);
+  });
   document.getElementById('continue-now')?.addEventListener('click', async (event) => {
     const button = event.currentTarget as HTMLButtonElement;
     button.disabled = true;
@@ -274,6 +289,9 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
   .count b { margin-right: 6px; }
   .spend { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 20px; font-size: var(--fs-small); color: var(--ink-quiet); }
   .spend p { margin: 0; }
+  .spend-tools { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+  .pk-links { margin: -8px 0 20px; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .pk-links a { color: var(--ink); }
   .spend b { color: var(--ink); font-variant-numeric: tabular-nums; }
   .tq { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
   .tq-card { padding: 20px 22px; border-radius: var(--r-lg); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); }

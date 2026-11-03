@@ -440,4 +440,51 @@ await db.exec(`reset role;set role anon;`);
 await assert.rejects(()=>get('select * from translation_matrix'),'anonymous has no access');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 console.log('✓ 0051: repeatable; the overview, hand-edit tracking, the verdict, admin-only overrides and access all hold');
+// 0052: translation packages. Repeatable; English can never be excluded; a seller cannot grant themselves a package or languages
+// (insert or update), the server and admins can; the backfill keeps every language a listing already has.
+await db.exec(`reset role;set test.uid='';set test.admin='true';delete from translation_jobs;delete from property_translations where property_id='${id}';insert into property_translations(property_id,locale,title,description,body,machine)values('${id}','hu','Cím','Rövid','Hosszú',false),('${id}','nl','Huis','Kort','',true),('${id}','de','Haus','Kurz','',true),('${id}','en','House','Short','',true),('${id}','fr','Maison','Court','',false);insert into translation_jobs(property_id,locale,origin,status)values('${id}','nl','upload_paid','done');update properties set excluded_locales='{}' where id='${id}';`);
+const sql52=fs.readFileSync(root+'/supabase/migrations/0052_translation_packages.sql','utf8');
+try{await db.exec(sql52);await db.exec(sql52);}catch(e){console.error('MIGRATION 0052 FAILED',e.message,e.detail);process.exit(1);}
+let tp=(await get(`select translation_package,extra_locales::text[] as extra_locales,excluded_locales::text[] as excluded_locales from properties where id='${id}'`))[0];
+assert.deepEqual(tp,{translation_package:'go',extra_locales:['nl','fr'],excluded_locales:[]},'the backfill keeps nl and fr, and leaves out the original (hu), English and German which Go covers');
+await db.exec(`update properties set extra_locales='{}' where id='${id}'`);
+await db.exec(`delete from property_translations where property_id='${id}' and locale='hu'`);
+await db.exec(sql52);
+tp=(await get(`select extra_locales::text[] as extra_locales from properties where id='${id}'`))[0];
+assert.deepEqual(tp.extra_locales,['nl'],'with no Hungarian text the first human-written language (fr) is the original, so it is not an extra');
+await db.exec(`insert into property_translations(property_id,locale,title,description,body,machine)values('${id}','hu','Cím','Rövid','Hosszú',false)`);
+await db.exec(`update properties set extra_locales='{fr}',translation_package='europe' where id='${id}'`);
+await db.exec(sql52);
+tp=(await get(`select translation_package,extra_locales::text[] as extra_locales from properties where id='${id}'`))[0];
+assert.deepEqual(tp,{translation_package:'europe',extra_locales:['fr']},'a listing that already has a package or extras is left alone');
+await assert.rejects(()=>db.exec(`update properties set translation_package='gold' where id='${id}'`),'only the three packages');
+await assert.rejects(()=>db.exec(`update properties set excluded_locales='{nl,en}' where id='${id}'`),'English can never be excluded (direct SQL)');
+await db.exec(`update properties set excluded_locales='{de}' where id='${id}'`);
+assert.deepEqual((await get(`select excluded_locales::text[] as excluded_locales from properties where id='${id}'`))[0].excluded_locales,['de'],'German can be');
+// A seller's own session: the guard keeps the stored package and extras; the exclusions are theirs to change.
+await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';`);
+await db.exec(`update properties set translation_package='world',extra_locales='{fr,nl}',excluded_locales='{nl}' where id='${id}'`);
+tp=(await get(`select translation_package,extra_locales::text[] as extra_locales,excluded_locales::text[] as excluded_locales from properties where id='${id}'`))[0];
+assert.deepEqual(tp,{translation_package:'europe',extra_locales:['fr'],excluded_locales:['nl']},'a seller cannot change the package or the single languages');
+await db.exec(`update properties set excluded_locales='{}' where id='${id}'`);
+assert.deepEqual((await get(`select excluded_locales::text[] as excluded_locales from properties where id='${id}'`))[0].excluded_locales,[],'but can switch a language back on');
+await assert.rejects(()=>db.exec(`update properties set excluded_locales='{en}' where id='${id}'`),'and never English');
+// An admin session and the server may write all three.
+await db.exec(`reset role;set test.uid='${other}';set test.admin='true';set role authenticated;`);
+await db.exec(`update properties set translation_package='world',extra_locales='{fr}' where id='${id}'`);
+assert.deepEqual((await get(`select translation_package,extra_locales::text[] as extra_locales from properties where id='${id}'`))[0],{translation_package:'world',extra_locales:['fr']});
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+await db.exec(`update properties set translation_package='go',extra_locales='{}' where id='${id}'`);
+// The editor's own save never touches them.
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';`);
+await db.exec(`update properties set translation_package='europe',extra_locales='{nl}' where id='${id}'`);
+await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{translation_package:'world',extra_locales:['fr'],excluded_locales:['nl']},null,null]);
+assert.deepEqual((await get(`select translation_package,extra_locales::text[] as extra_locales,excluded_locales::text[] as excluded_locales from properties where id='${id}'`))[0],{translation_package:'europe',extra_locales:['nl'],excluded_locales:[]},'save_listing_editor ignores these keys, for admins and sellers alike');
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+// A seller creating a listing cannot start on a package either.
+await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';`);
+const created=await db.query(`insert into properties(ref,owner_id,status,category,country,settlement,county,region,lat,lng,translation_package,extra_locales) values('9999','${owner}','draft','house','HU','X','Y','Z',47,19,'world','{fr}') returning translation_package,extra_locales::text[] as extra_locales`).catch(()=>null);
+if(created)assert.deepEqual(created.rows[0],{translation_package:'go',extra_locales:[]},'an insert by a seller starts on Go');
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+console.log('✓ 0052: repeatable; the backfill keeps every language; English cannot be excluded; sellers cannot grant themselves languages');
 await db.close();

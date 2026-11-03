@@ -22,7 +22,7 @@ const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 
 const id = Astro.params.propertyId!;
-const { data: property } = await supabase.from('properties').select('id, ref, status, settlement, free_listing').eq('id', id).maybeSingle();
+const { data: property } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
 if (!property) return Astro.redirect('/portal/translations');
 
 const { data: rows } = await supabase.from('property_translations').select('*').eq('property_id', id);
@@ -54,7 +54,12 @@ const warnings: string[] = [...(fact?.check_warnings ?? [])];
 const failure = info.status === 'failed' ? [failCodeHu(fact?.fail_code), fact?.last_error].filter(Boolean).join(': ') : '';
 const aiOn = isAiEnabled();
 const handMade = Boolean(row && !row.machine && (row.title?.trim() || row.description?.trim()));
-const excluded = info.status === 'excluded';
+// The languages switched off on this listing, so the button can send the complete list with this one added or removed.
+// Read from the listing itself (not from the statuses), so a list the status view cannot see is never shortened.
+const heldOff: string[] | null = Array.isArray(property.excluded_locales) ? property.excluded_locales : null;
+const excludedNow = heldOff ?? targets.filter((code) => infoFor(code).status === 'excluded');
+const excluded = info.status === 'excluded' || excludedNow.includes(locale);
+const sourceLocked = locale === 'en';
 const sourceTitle = sourceText.title || 'Névtelen hirdetés';
 const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakter`;
 ---
@@ -141,7 +146,11 @@ const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakt
           <button type="submit" class="btn" id="save-btn" disabled={!migrated || !source}>Mentés (kézi javítás)</button>
           <button type="button" class="btn ghost" id="retr-btn" disabled={!aiOn || !source}>Újrafordítás</button>
           <button type="button" class="btn ghost" id="short-btn" disabled={!aiOn}>Csak a cím rövidítése</button>
+          <button type="button" class="btn ghost" id="excl-btn" data-excluded={excluded ? 'yes' : 'no'} disabled={sourceLocked} title={sourceLocked ? 'Az angol kötelező – ez a tartalék nyelv.' : undefined}>
+            {excluded ? 'Nyelv visszavétele' : 'Nyelv kizárása'}
+          </button>
         </div>
+        {sourceLocked && <p class="hint">Az angol nem zárható ki: ez a hirdetés alapnyelve a többi nyelvhez.</p>}
         {!aiOn && <p class="hint">Az AI nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben): az újrafordítás és a rövidítés addig nem érhető el, a kézi mentés igen.</p>}
         <p class="status-line" id="status-line" role="status"></p>
       </form>
@@ -149,7 +158,7 @@ const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakt
   </div>
 </Portal>
 
-<script define:vars={{ propertyId: id, locale, handMade, aiOn, titleGoal: TITLE_GOAL }}>
+<script define:vars={{ propertyId: id, locale, handMade, aiOn, titleGoal: TITLE_GOAL, excludedNow }}>
   const form = document.getElementById('tr-form');
   const statusEl = document.getElementById('status-line');
   const fields = { title: form.elements.title, description: form.elements.description, body: form.elements.body };
@@ -193,6 +202,22 @@ const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakt
     if (!json.changed) { statusEl.textContent = 'Az AI nem tudta értelmesen lerövidíteni, a cím változatlan.'; return; }
     fields.title.value = json.title; counters();
     statusEl.textContent = 'A cím lerövidült. Nézze át, és mentse.';
+  });
+
+  document.getElementById('excl-btn').addEventListener('click', async () => {
+    const off = document.getElementById('excl-btn').dataset.excluded === 'yes';
+    if (!off) {
+      const ok = await window.pf.confirm({ title: 'Kizárja ezt a nyelvet?', body: 'A hirdetés ezen a nyelven nem jelenik meg többé (az oldal az angolra irányít). A szöveg megmarad, bármikor ingyen visszavehető. A csomag ára nem változik.', confirmLabel: 'Kizárás' });
+      if (!ok) return;
+    }
+    const next = off ? excludedNow.filter((code) => code !== locale) : [...new Set([...excludedNow, locale])];
+    busy(true); statusEl.textContent = 'Mentés…';
+    const res = await fetch(`/api/portal/properties/${propertyId}/languages`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ excluded: next }) });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) { busy(false); statusEl.textContent = json.message || 'Nem sikerült.'; return; }
+    if (!off && !json.excluded.includes(locale)) { busy(false); statusEl.textContent = 'Ez a nyelv nincs a hirdetés csomagjában, ezért nincs mit kizárni.'; return; }
+    window.pf.toast(off ? 'A nyelv visszavéve.' : 'A nyelv kizárva.', 'ok');
+    setTimeout(() => location.reload(), 600);
   });
 
   document.getElementById('retr-btn').addEventListener('click', async () => {

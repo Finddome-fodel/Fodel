@@ -38,7 +38,7 @@ const c = copy(locale).buyers;
 const x = localizer(locale);
 
 const buyerFaq = faqFor(locale, 'buyer').slice(0, 8);
-const featured = await homepageFeatured(3);
+const featured = await homepageFeatured(3, locale);
 
 // FAQ Q19 / Q21 — what FODEL say Dutch and Belgian buyers actually look for.
 const wantsByLocale = {

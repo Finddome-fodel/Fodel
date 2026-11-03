@@ -327,23 +327,24 @@ const noOrders = { payments: [] };
 test('an owner buys languages for their live listing: one order from the catalogue, then Stripe', async () => {
   freshWorld({ property: live });
   world.db.table('payments').length = 0;
-  const res = await buy({ id: 'u1' }, { action: 'order', locales: ['de', 'fr', 'de', 'hu', 'xx'], amount: 1, price: 1 });
+  // German is part of Go, so it is free and not on the order; Dutch and French are €1 each.
+  const res = await buy({ id: 'u1' }, { action: 'order', locales: ['nl', 'de', 'fr', 'nl', 'hu', 'xx'], amount: 1, price: 1 });
   assert.equal(res.status, 200);
   const out = await body(res);
-  assert.deepEqual(out.locales, ['de', 'fr']);
-  assert.equal(out.amountCents, 5000);
+  assert.deepEqual(out.locales, ['nl', 'fr']);
+  assert.equal(out.amountCents, 200);
   const order = world.db.table('payments')[0];
   assert.equal(order.status, 'pending');
-  assert.equal(order.amount_cents, 5000);
-  assert.deepEqual(order.line_items.map((l) => [l.id, l.quantity, l.unitCents, l.locales]), [['translation', 2, 2500, ['de', 'fr']]]);
+  assert.equal(order.amount_cents, 200);
+  assert.deepEqual(order.line_items.map((l) => [l.id, l.quantity, l.unitCents, l.locales]), [['translation', 2, 100, ['nl', 'fr']]]);
   const { create } = world.stripeCalls.find((c) => c.create);
-  assert.equal(create.line_items[0].price_data.unit_amount, 2500);
+  assert.equal(create.line_items[0].price_data.unit_amount, 100);
   assert.equal(create.line_items[0].quantity, 2);
   assert.equal(create.metadata.orderId, order.id);
   assert.equal(jobs().length, 0, 'nothing is translated before the money is in');
   // …and paying it queues exactly those two.
   await deliverEvent('checkout.session.completed', paidSession({ id: order.stripe_session_id, metadata: { orderId: order.id, propertyId: 'p1' } }));
-  assert.deepEqual(jobs().map((j) => [j.locale, j.origin]).sort(), [['de', 'after_publish_paid'], ['fr', 'after_publish_paid']]);
+  assert.deepEqual(jobs().map((j) => [j.locale, j.origin]).sort(), [['fr', 'after_publish_paid'], ['nl', 'after_publish_paid']]);
   assert.equal(events('listing.published').length, 0);
 });
 
@@ -363,12 +364,12 @@ test('languages the listing already has, or is already getting, are not sold aga
 test('changing your mind replaces the open translation order and closes its payment link', async () => {
   freshWorld({ property: live });
   world.db.table('payments').length = 0;
-  await buy({ id: 'u1' }, { action: 'order', locales: ['de'] });
+  await buy({ id: 'u1' }, { action: 'order', locales: ['nl'] });
   const first = world.db.table('payments')[0];
-  await buy({ id: 'u1' }, { action: 'order', locales: ['de', 'es'] });
+  await buy({ id: 'u1' }, { action: 'order', locales: ['nl', 'es'] });
   assert.equal(first.status, 'cancelled');
   assert.ok(world.stripeCalls.some((c) => c.expire === first.stripe_session_id));
-  assert.deepEqual(world.db.table('payments').filter((p) => p.status === 'pending').map((p) => p.amount_cents), [5000]);
+  assert.deepEqual(world.db.table('payments').filter((p) => p.status === 'pending').map((p) => p.amount_cents), [200]);
 });
 
 test('only the owner or an admin can buy; a free-link listing requests instead; a listing that is not live cannot', async () => {
@@ -386,16 +387,17 @@ test('only the owner or an admin can buy; a free-link listing requests instead; 
 
 test('a free-link owner\'s request waits for an admin; the admin approves one language and declines another', async () => {
   freshWorld({ property: { ...live, free_listing: true } });
-  const res = await buy({ id: 'u1' }, { action: 'request', locales: ['de', 'es', 'hu'] });
-  assert.deepEqual((await body(res)).created, ['de', 'es']);
+  // German is part of Go: it comes with the listing and is not a request.
+  const res = await buy({ id: 'u1' }, { action: 'request', locales: ['de', 'nl', 'es', 'hu'] });
+  assert.deepEqual((await body(res)).created, ['nl', 'es']);
   assert.ok(jobs().every((j) => j.status === 'requested' && j.origin === 'free'));
   assert.equal(world.db.table('payments').filter((p) => p.id !== 'o1').length, 0, 'free means no order');
-  const de = jobs().find((j) => j.locale === 'de').id;
+  const nl = jobs().find((j) => j.locale === 'nl').id;
   const es = jobs().find((j) => j.locale === 'es').id;
-  assert.equal((await buy({ id: 'u1' }, { action: 'approve', jobIds: [de] })).status, 403, 'the owner cannot approve their own request');
-  assert.equal((await body(await buy({ id: 'a1' }, { action: 'approve', jobIds: [de] }, 'admin'))).changed, 1);
+  assert.equal((await buy({ id: 'u1' }, { action: 'approve', jobIds: [nl] })).status, 403, 'the owner cannot approve their own request');
+  assert.equal((await body(await buy({ id: 'a1' }, { action: 'approve', jobIds: [nl] }, 'admin'))).changed, 1);
   assert.equal((await body(await buy({ id: 'a1' }, { action: 'decline', jobIds: [es, 'not-mine'] }, 'admin'))).changed, 1);
-  assert.deepEqual(jobs().map((j) => [j.locale, j.status]), [['de', 'queued'], ['es', 'declined']]);
+  assert.deepEqual(jobs().map((j) => [j.locale, j.status]), [['nl', 'queued'], ['es', 'declined']]);
 });
 
 test('a paying owner cannot use the free request, and an admin\'s free run needs the AI switched on', async () => {
@@ -405,6 +407,58 @@ test('a paying owner cannot use the free request, and an admin\'s free run needs
   assert.equal(res.status, 409);
   assert.equal((await body(res)).error, 'ai-disabled');
   assert.equal(jobs().length, 0);
+});
+
+test('a free-link owner can ask for a whole package: Go\'s languages and the ones they switched off are not asked for', async () => {
+  freshWorld({ property: { ...live, free_listing: true } });
+  const res = await buy({ id: 'u1' }, { action: 'request', packageId: 'europe', locales: [], excluded: ['pl', 'fr'] });
+  const created = (await body(res)).created;
+  assert.equal(created.includes('de') || created.includes('en'), false, 'Go comes with the listing');
+  assert.equal(created.includes('pl') || created.includes('fr'), false, 'switched off');
+  assert.equal(created.includes('nl') && created.includes('lt'), true);
+  assert.ok(jobs().every((j) => j.status === 'requested' && j.origin === 'free'), 'requests, never run by themselves');
+  assert.equal(world.db.table('payments').filter((p) => p.id !== 'o1').length, 0, 'no price, no order');
+});
+
+test('an owner buys the Európa package for a live listing: one order from the catalogue; paying it makes the entitlement and queues the languages', async () => {
+  freshWorld({ property: { ...live, translation_package: 'go', extra_locales: [], excluded_locales: [] } });
+  world.db.table('payments').length = 0;
+  const res = await buy({ id: 'u1' }, { action: 'order', packageId: 'europe', locales: [], excluded: ['pl'], amount: 1, price: 1 });
+  assert.equal(res.status, 200);
+  const out = await body(res);
+  assert.equal(out.amountCents, 1200);
+  const order = world.db.table('payments')[0];
+  assert.deepEqual(order.line_items.map((l) => [l.id, l.packageId, l.unitCents]), [['translation-package', 'europe', 1200]]);
+  assert.equal(order.line_items[0].locales.includes('pl'), false, 'switched off, and the price is the same');
+  assert.equal(order.line_items[0].locales.includes('hu'), false);
+  const { create } = world.stripeCalls.find((c) => c.create);
+  assert.equal(create.line_items[0].price_data.unit_amount, 1200);
+  assert.equal(jobs().length, 0, 'nothing is translated before the money is in');
+  await deliverEvent('checkout.session.completed', paidSession({ id: order.stripe_session_id, metadata: { orderId: order.id, propertyId: 'p1' } }));
+  const property = world.db.table('properties')[0];
+  assert.equal(property.translation_package, 'europe');
+  assert.deepEqual(property.excluded_locales, ['pl']);
+  assert.equal(jobs().some((j) => j.locale === 'pl'), false);
+  assert.equal(jobs().some((j) => j.locale === 'fr'), true);
+  assert.equal(events('listing.published').length, 0);
+});
+
+test('an upgrade costs the difference, a package already held costs nothing, and English can never be switched off in an order', async () => {
+  freshWorld({ property: { ...live, translation_package: 'europe', extra_locales: [], excluded_locales: [] } });
+  world.db.table('payments').length = 0;
+  const up = await buy({ id: 'u1' }, { action: 'order', packageId: 'world', locales: [] });
+  assert.equal((await body(up)).amountCents, 1300, 'World €25 minus the Európa €12 already paid');
+  assert.match(world.db.table('payments')[0].line_items[0].label, /bővítés|upgrade|uitbreiding/);
+  const same = await buy({ id: 'u1' }, { action: 'order', packageId: 'europe', locales: [] });
+  assert.equal(same.status, 422, 'nothing to buy');
+  assert.equal((await body(same)).error, 'nothing-to-order');
+  const forged = await buy({ id: 'u1' }, { action: 'order', packageId: 'world', locales: [], excluded: ['en'] });
+  assert.equal(forged.status, 422);
+  assert.equal((await body(forged)).error, 'exclude-en');
+  freshWorld({ property: { ...live, translation_package: 'go', extra_locales: [], excluded_locales: [] } });
+  world.db.table('payments').length = 0;
+  const ghost = await buy({ id: 'u1' }, { action: 'order', packageId: 'platinum', locales: ['nl'] });
+  assert.equal((await body(ghost)).amountCents, 100, 'an unknown package is Go; the single language is still a single language');
 });
 
 /* ── The wiring ──────────────────────────────────────────────────────── */

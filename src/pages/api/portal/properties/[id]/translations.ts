@@ -24,6 +24,11 @@ import {
   latestPerLocale, retryJob, SKIP_REASON_HU, type SkipReason,
 } from '~/lib/ai/translation-jobs';
 import { openTranslationOrder, translationCheckoutUrl } from '~/lib/ai/translation-checkout';
+import { translationLocalesOf } from '~/lib/ai/translation-orders';
+import { getCompany } from '~/lib/runtime-config';
+import { listingCatalog } from '~/lib/listing-packages';
+import { OrderError } from '~/lib/orders';
+import { packageById, packageLocales, type TranslationPricing } from '~/lib/translation-packages';
 
 export const prerender = false;
 
@@ -45,6 +50,12 @@ async function load(locals: App.Locals, id: string | undefined): Promise<
 }
 
 const clean = (value: unknown): string[] => (Array.isArray(value) ? [...new Set(value.map(String))] : []);
+
+/** The package and languages a person asked for: ids only. */
+function readChoice(body: Record<string, any>, cfg: TranslationPricing) {
+  const packageId = cfg.packages.some((p) => p.id === body.packageId && (p.active || p.id === 'go')) ? String(body.packageId) : 'go';
+  return { packageId, extraLocales: clean(body.locales), excludedLocales: clean(body.excluded) };
+}
 
 export const GET: APIRoute = async ({ params, locals, request }) => {
   const got = await load(locals, params.id);
@@ -144,7 +155,12 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
   if (action === 'request') {
     if (!property.free_listing) return json(409, { ok: false, error: 'not-free' });
     if (got.isOwner === false && !isAdmin) return json(403, { ok: false, error: 'forbidden' });
-    const wanted = clean(body.locales).filter((code) => OWNER_TARGETS.includes(code) && !have.has(code));
+    // The package's languages and the single ones, minus what Go gives anyway, what is switched off, and what is there.
+    const cfg = listingCatalog((await getCompany()).services).translation;
+    const choice = readChoice(body, cfg);
+    const goLocales = new Set(packageLocales(packageById(cfg, 'go'), ALL_LOCALES));
+    const wanted = [...new Set([...packageLocales(packageById(cfg, choice.packageId), ALL_LOCALES), ...choice.extraLocales])]
+      .filter((code) => OWNER_TARGETS.includes(code) && !goLocales.has(code) && !choice.excludedLocales.includes(code) && !have.has(code));
     if (wanted.length === 0) return json(422, { ok: false, error: 'nothing-to-order' });
     const result = await enqueueTranslations(admin, { propertyId: property.id, locales: wanted, origin: 'free', status: 'requested', requestedBy: user.id });
     if (result.created.length > 0) {
@@ -162,12 +178,21 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
     if (property.status !== 'published') return json(409, { ok: false, error: 'not-live' });
     if (!source) return json(409, { ok: false, error: 'no-source' });
     if (!isStripeEnabled()) return json(503, { ok: false, error: 'card-unavailable' });
-    // Languages the listing already has, or that are already being made, are not sold again.
+    // Languages the listing already has, or that are already being made, are not sold again (the order drops them).
     const { data: live } = await admin.from('translation_jobs').select('locale').eq('property_id', property.id).in('status', ['requested', 'queued', 'running']);
     const busy = new Set((live ?? []).map((job: { locale: string }) => job.locale));
-    const wanted = clean(body.locales).filter((code) => OWNER_TARGETS.includes(code) && !have.has(code) && !busy.has(code));
-    if (wanted.length === 0) return json(422, { ok: false, error: 'nothing-to-order' });
-    const order = await openTranslationOrder(admin, property, wanted, portalLang(profile?.locale));
+    const cfg = listingCatalog((await getCompany()).services).translation;
+    const choice = readChoice(body, cfg);
+    choice.extraLocales = choice.extraLocales.filter((code) => OWNER_TARGETS.includes(code) && !have.has(code) && !busy.has(code));
+    let order;
+    try {
+      order = await openTranslationOrder(admin, property, choice, portalLang(profile?.locale));
+    } catch (error) {
+      if (error instanceof OrderError) return json(422, { ok: false, error: error.code, message: error.code === 'exclude-en' ? 'Az angol nyelv nem zárható ki – ez a hirdetés alapnyelve a többi nyelvhez.' : undefined });
+      if (error instanceof Error && error.message === 'nothing-to-order') return json(422, { ok: false, error: 'nothing-to-order' });
+      throw error;
+    }
+    const wanted = translationLocalesOf(order.line_items);
     const url = await translationCheckoutUrl(admin, order, property, origin);
     await logEvent({
       kind: 'ai.translation_ordered', actorId: user.id, actorEmail: profile?.email ?? null, subjectType: 'payment', subjectId: order.id,

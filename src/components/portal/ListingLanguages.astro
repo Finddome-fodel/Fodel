@@ -1,0 +1,177 @@
+---
+/**
+ * The languages a listing is published in, as switches: the owner and any admin can turn a language off (and
+ * back on) at any time, on a draft or a live listing. English is locked on (it is the fallback text of every
+ * other language) and so is the original. The package price does not change. A language that is switched off
+ * keeps its text, so switching it on again is instant and free.
+ *
+ * Every switch saves at once (POST /api/portal/properties/[id]/languages with the complete list of languages that
+ * are off); if the server refuses, the switch goes back and says why.
+ */
+import { languageName } from '~/lib/listing-catalogue';
+import type { PortalCopyLang } from '~/lib/ai/translation-copy';
+
+interface Props {
+  propertyId: string;
+  lang: PortalCopyLang;
+  sourceLocale: string;
+  /** Everything the listing is entitled to (package and single languages), in display order. */
+  granted: string[];
+  excluded: string[];
+  /** Languages that already have a text. */
+  withText?: string[];
+  /** Languages being made right now (locale -> word). */
+  busy?: Record<string, string>;
+}
+const { propertyId, lang, sourceLocale, granted, excluded, withText = [], busy = {} } = Astro.props as Props;
+
+const COPY = {
+  hu: {
+    title: 'Megjelenés nyelvenként',
+    lead: 'Kapcsolja ki azokat a nyelveket, amelyeken nem szeretné megjeleníteni a hirdetést. A kikapcsolt nyelv szövege megmarad, így bármikor, ingyen visszakapcsolhatja.',
+    original: 'Eredeti nyelv',
+    required: 'kötelező',
+    off: 'Kizárva',
+    ready: 'Kész',
+    making: 'Készül',
+    waiting: 'Még nincs szöveg',
+    lockedTip: 'Az angol kötelező – ez a tartalék nyelv.',
+    unchanged: 'A csomag ára nem változik, ha egyes nyelveket kizár.',
+    saving: 'Mentés…',
+    saved: 'Elmentve.',
+    failed: 'A mentés most nem sikerült. Próbálja újra.',
+    summary: (on: number, off: number) => `${on} nyelven megjelenik${off ? `, ${off} kizárva` : ''}`,
+  },
+  nl: {
+    title: 'Weergave per taal',
+    lead: 'Zet de talen uit waarin u uw advertentie niet wilt tonen. De tekst van een uitgeschakelde taal blijft bewaard, dus u kunt hem altijd gratis weer aanzetten.',
+    original: 'Oorspronkelijke taal',
+    required: 'verplicht',
+    off: 'Uitgesloten',
+    ready: 'Klaar',
+    making: 'Wordt gemaakt',
+    waiting: 'Nog geen tekst',
+    lockedTip: 'Engels is verplicht – het is de terugvaltaal.',
+    unchanged: 'De prijs van het pakket blijft gelijk als u talen uitsluit.',
+    saving: 'Opslaan…',
+    saved: 'Opgeslagen.',
+    failed: 'Opslaan lukt nu niet. Probeer het opnieuw.',
+    summary: (on: number, off: number) => `Zichtbaar in ${on} talen${off ? `, ${off} uitgesloten` : ''}`,
+  },
+  en: {
+    title: 'Where it appears',
+    lead: 'Switch off any language you do not want your listing to appear in. The text of a language that is off is kept, so you can switch it back on at any time, free of charge.',
+    original: 'Original language',
+    required: 'required',
+    off: 'Excluded',
+    ready: 'Ready',
+    making: 'Being made',
+    waiting: 'No text yet',
+    lockedTip: 'English is required – it is the fallback language.',
+    unchanged: 'The package price stays the same if you exclude some languages.',
+    saving: 'Saving…',
+    saved: 'Saved.',
+    failed: 'Saving did not work just now. Please try again.',
+    summary: (on: number, off: number) => `Appears in ${on} languages${off ? `, ${off} excluded` : ''}`,
+  },
+}[lang];
+const nameOf = (code: string) => languageName(code, lang).replace(/^./, (c) => c.toLocaleUpperCase(lang));
+const list = [sourceLocale, ...granted.filter((code) => code !== sourceLocale)];
+const off = new Set(excluded);
+const stateOf = (code: string) => (code in busy ? busy[code] : withText.includes(code) || code === sourceLocale ? COPY.ready : COPY.waiting);
+const onCount = list.filter((code) => !off.has(code)).length;
+---
+
+<section class="ll" data-ll data-property={propertyId} data-source={sourceLocale} data-strings={JSON.stringify({ off: COPY.off, saving: COPY.saving, saved: COPY.saved, failed: COPY.failed, summaryOn: COPY.summary(777, 0), summaryOff: COPY.summary(777, 888) })}>
+  <h3 class="ll-title">{COPY.title}</h3>
+  <p class="ll-note">{COPY.lead}</p>
+  <div class="ll-list">
+    {list.map((code) => {
+      const locked = code === sourceLocale || code === 'en';
+      return (
+        <label class={`ll-row${locked ? ' is-locked' : ''}`} title={code === 'en' && code !== sourceLocale ? COPY.lockedTip : undefined}>
+          <input type="checkbox" data-ll-locale={code} checked={!off.has(code)} disabled={locked} />
+          <span class="ll-switch" aria-hidden="true"></span>
+          <span class="ll-name">{nameOf(code)}</span>
+          <span class="ll-tag" data-tag>
+            {code === sourceLocale ? COPY.original : off.has(code) ? COPY.off : stateOf(code)}{code === 'en' && code !== sourceLocale ? ` · ${COPY.required}` : ''}
+            {code === 'en' && code !== sourceLocale && <span class="ll-sr"> – {COPY.lockedTip}</span>}
+          </span>
+        </label>
+      );
+    })}
+  </div>
+  <p class="ll-count" data-count>{COPY.summary(onCount, list.length - onCount)}</p>
+  <p class="ll-note">{COPY.unchanged}</p>
+  <p class="ll-status" role="status" aria-live="polite" data-status></p>
+  <script type="application/json" data-states set:html={JSON.stringify(Object.fromEntries(list.map((code) => [code, stateOf(code)])))} />
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ll]').forEach((root) => {
+    if (root.dataset.ready) return;
+    root.dataset.ready = '1';
+    const strings = JSON.parse(root.dataset.strings || '{}');
+    const states = JSON.parse(root.querySelector('[data-states]')?.textContent || '{}') as Record<string, string>;
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const boxes = () => [...root.querySelectorAll<HTMLInputElement>('input[data-ll-locale]')];
+    const excluded = () => boxes().filter((box) => !box.checked).map((box) => box.dataset.llLocale!);
+    const paint = (box: HTMLInputElement) => {
+      const tag = box.closest('label')?.querySelector<HTMLElement>('[data-tag]');
+      if (tag && box.dataset.llLocale !== root.dataset.source && box.dataset.llLocale !== 'en') tag.textContent = box.checked ? states[box.dataset.llLocale!] : strings.off;
+    };
+    const total = () => boxes().length;
+    const words = (on: number, off: number) =>
+      (off ? strings.summaryOff : strings.summaryOn).replace('777', String(on)).replace('888', String(off));
+    // These switches save themselves: they must not tell the surrounding editor form it has unsaved changes.
+    root.addEventListener('input', (event) => event.stopPropagation());
+    root.addEventListener('change', async (event) => {
+      const box = event.target as HTMLInputElement;
+      if (!box.dataset.llLocale) return;
+      boxes().forEach((b) => (b.disabled = true));
+      status.textContent = strings.saving;
+      let ok = false;
+      let message = strings.failed;
+      try {
+        const res = await fetch(`/api/portal/properties/${root.dataset.property}/languages`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ excluded: excluded() }),
+        });
+        const json = await res.json().catch(() => ({}));
+        ok = res.ok && json.ok;
+        if (!ok && json.message) message = json.message;
+      } catch { /* the message above stands */ }
+      boxes().forEach((b) => (b.disabled = b.dataset.llLocale === root.dataset.source || b.dataset.llLocale === 'en'));
+      if (!ok) box.checked = !box.checked;
+      paint(box);
+      const off = excluded().length;
+      count.textContent = words(total() - off, off);
+      status.textContent = ok ? strings.saved : message;
+    });
+  });
+</script>
+
+<style is:global>
+  .ll { margin: 0 0 8px; padding: 20px 0 4px; border-top: 1px solid var(--pt-hair); }
+  .ll-title { margin: 0 0 4px; font-family: var(--serif); font-weight: var(--fw-medium); font-size: 18px; color: var(--ink); }
+  .ll-note { margin: 0 0 12px; max-width: 64ch; font-size: 13px; line-height: 1.55; color: var(--ink-quiet); }
+  .ll-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: 2px 24px; margin: 6px 0 10px; }
+  .ll-row { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; cursor: pointer; }
+  .ll-row input, main.pm.pm .ll-row input[type='checkbox'], main.pm.pm .ll-row input[type='checkbox']:is(:checked, :disabled, :hover, :focus-visible) { position: absolute; opacity: 0; width: 1px; height: 1px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; appearance: none; -webkit-appearance: none; pointer-events: none; }
+  main.pm.pm .ll-row input[type='checkbox']::after { content: none; }
+  .ll-switch { flex: none; position: relative; width: 36px; height: 20px; border-radius: 10px; background: rgba(16, 42, 67, 0.2); transition: background-color 0.3s var(--ease-out); }
+  .ll-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--white); transition: transform 0.25s var(--ease-out); }
+  .ll-row:has(input:checked) .ll-switch { background: var(--ink); }
+  .ll-row:has(input:checked) .ll-switch::after { transform: translateX(16px); }
+  .ll-row:has(input:focus-visible) .ll-switch { outline: var(--focus-ring); outline-offset: 3px; }
+  .ll-row.is-locked { cursor: default; }
+  .ll-row.is-locked .ll-switch { opacity: 0.55; }
+  .ll-name { font-size: var(--fs-small); color: var(--ink); }
+  .ll-tag { margin-inline-start: auto; font-size: 12px; color: var(--ink-quiet); }
+  .ll-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .ll-count { margin: 0 0 4px; font-family: var(--serif); font-size: 16px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .ll-status { min-height: 1.4em; margin: 4px 0 0; font-size: 13px; color: var(--ink-quiet); }
+  @media (prefers-reduced-motion: reduce) { .ll-switch, .ll-switch::after { transition: none; } }
+</style>

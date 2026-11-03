@@ -14,21 +14,11 @@ import { contactIn } from './translation-contact.ts';
 
 /* ── Languages ─────────────────────────────────────────────────────────── */
 
-/**
- * The languages listing text is translated into: the original twenty-one.
- * The site itself also speaks sr, uk, tr, he, ar, ru and zh (November 2026),
- * but listing translation into those is a separate job (CC-4 in
- * claude-code-translations.md): until then they are not offered, enqueued or
- * charged, and their pages show the English (or other fallback) listing text.
- * Widen this list there, not LOCALES.
- */
-export const LISTING_TRANSLATION_LOCALES = LOCALES.slice(0, 21) as readonly Locale[];
-
 /** Every language a listing can be translated into, Hungarian (the source of most listings) first. */
-export const ALL_LOCALES: readonly string[] = LISTING_TRANSLATION_LOCALES;
+export const ALL_LOCALES: readonly string[] = LOCALES;
 
 /** What an owner can order: everything except Hungarian, which is what they write. */
-export const OWNER_TARGETS: readonly string[] = LISTING_TRANSLATION_LOCALES.filter((code) => code !== 'hu');
+export const OWNER_TARGETS: readonly string[] = LOCALES.filter((code) => code !== 'hu');
 
 /** The four the price list recommends first (FAQ Q7). Shown as one-tap chips. */
 export const RECOMMENDED_TARGETS: readonly string[] = ['nl', 'de', 'en', 'fr'];

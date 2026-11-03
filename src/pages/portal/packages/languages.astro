@@ -1,21 +1,135 @@
 ---
 /**
- * Csomagok → Egyedi nyelvek: placeholder. The translation packages (CC-3 in
- * claude-code-translations.md) replace this page; the tab, the route, the
- * guard and the endpoint (/api/portal/packages/languages) already exist.
+ * Csomagok → Egyedi nyelvek: the price of one language bought on its own, and which languages are World-only.
+ * The live check under the prices says whether World is still the obvious deal. Saved by
+ * /api/portal/packages/languages; new prices apply to new orders only.
  */
 export const prerender = false;
 
-import PackagesShell from '~/components/portal/PackagesShell.astro';
+import Portal from '~/layouts/Portal.astro';
+import TranslationPackagesNav from '~/components/portal/TranslationPackagesNav.astro';
+import { listingCatalog } from '~/lib/listing-packages';
+import { ALL_LOCALES, HU_NAME } from '~/lib/ai/translate-core';
+import { packageById, worldDeal } from '~/lib/translation-packages';
 
-const { profile } = Astro.locals;
+const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const cfg = listingCatalog(row?.services).translation;
+const deal = worldDeal(cfg);
+// The languages that can be World-only: the site's own, plus any already listed that the site does not have yet.
+const NAMES: Record<string, string> = { tr: 'török', he: 'héber', ar: 'arab', zh: 'kínai', ru: 'orosz' };
+const candidates = [...new Set([...ALL_LOCALES.filter((code) => code !== 'hu' && code !== 'en'), ...cfg.worldOnly])];
+const europe = packageById(cfg, 'europe');
+const saved = Astro.url.searchParams.has('saved');
+const err = Astro.url.searchParams.get('error');
+const eur = (n: number) => `${n.toLocaleString('hu-HU', { maximumFractionDigits: 2 })} €`;
 ---
 
-<PackagesShell tab="languages">
-  <section class="set-card pk-soon">
-    <span class="pill">Hamarosan</span>
-    <h2>Egyedi nyelvek</h2>
-    <p>Itt adhatja meg majd az egyenként rendelhető nyelvek árát (európai nyelvek és a csak a World csomagban elérhető nyelvek), és hogy melyik nyelv melyik csoportba tartozik.</p>
-  </section>
-</PackagesShell>
+<Portal title="Egyedi nyelvek">
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/settings">← Beállítások</a></p>
+      <h1>Egyedi <em>nyelvek</em></h1>
+      <p class="lede">Mennyibe kerül egy nyelv, ha a hirdető nem csomagot választ, hanem egyenként választ. Mentés után az új hirdetésfeladás és az új rendelések ezt használják; a már elkészült rendelések nem változnak.</p>
+    </div>
+  </header>
+
+  <TranslationPackagesNav current="languages" />
+
+  {!migrated && <p class="notice error">Ehhez a beállításhoz futtassa le a 0014-es migrációt.</p>}
+  {saved && <p class="notice ok" data-toast="ok">Mentve. Az új árak az új rendelésekre érvényesek.</p>}
+  {err && <p class="notice error">{err}</p>}
+
+  <form method="POST" action="/api/portal/packages/languages" id="lang-form" class="tpa-form" data-europe={europe.priceEur} data-world={deal.world}>
+    <fieldset disabled={!migrated}>
+      <section class="tpa-card">
+        <h2>Egy nyelv ára</h2>
+        <p class="tpa-sub">A Go csomag minden hirdetésben benne van. Ami ezen túl kell, azt nyelvenként lehet megvenni.</p>
+        <div class="tpa-prices">
+          <label class="tpa-f"><span>Európai nyelv</span><span class="tpa-unit"><input type="number" name="single_european" min="0" max="10000" step="0.5" value={cfg.singleEur.european} data-price="european" required /><i>€ / nyelv</i></span></label>
+          <label class="tpa-f"><span>Európán kívüli nyelv</span><span class="tpa-unit"><input type="number" name="single_world" min="0" max="10000" step="0.5" value={cfg.singleEur.world} data-price="world" required /><i>€ / nyelv</i></span></label>
+        </div>
+      </section>
+
+      <section class="tpa-card">
+        <h2>Európán kívüli nyelvek</h2>
+        <p class="tpa-sub">Az Európa csomagban ezek nincsenek benne, csak a World csomagban. Az angol mindig benne van, ezért nem választható.</p>
+        <div class="tpa-chips" data-chips>
+          {candidates.map((code) => (
+            <label class="tpa-chip">
+              <input type="checkbox" name="world_only" value={code} checked={cfg.worldOnly.includes(code)} />
+              <span class="tpa-box" aria-hidden="true"></span>
+              <span>{HU_NAME[code] ?? NAMES[code] ?? code}</span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section class="tpa-card tpa-check" aria-live="polite">
+        <h2>Megéri-e a World?</h2>
+        <p class="tpa-line" data-check data-ok={deal.ok ? 'yes' : 'no'}>
+          Európa {eur(deal.europe)} + mind a(z) {cfg.worldOnly.length} Európán kívüli nyelv egyenként ({eur(deal.worldOnlySum)}) = <strong>{eur(deal.europePlusSingles)}</strong>
+          {deal.ok ? ' ≥ ' : ' < '} World {eur(deal.world)}.{deal.ok ? ' A World a nyilvánvaló választás.' : ''}
+        </p>
+        <p class="tpa-warn" data-warn hidden={deal.ok}>Figyelem: a World csomag drágább, mint az Európa csomag és az összes Európán kívüli nyelv egyenként. A hirdetők így nem a World csomagot fogják választani, és a szövege sem lesz igaz. Emelje az egyedi nyelv árát, vagy csökkentse a World árát.</p>
+        <p class="tpa-note">Az Európa és a World ára a „Fordítási csomagok” fülön állítható.</p>
+      </section>
+
+      <div class="tpa-actions"><button type="submit" class="btn">Mentés</button></div>
+    </fieldset>
+  </form>
+</Portal>
+
+<script>
+  const form = document.getElementById('lang-form') as HTMLFormElement | null;
+  if (form) {
+    const europe = Number(form.dataset.europe);
+    const world = Number(form.dataset.world);
+    const line = form.querySelector<HTMLElement>('[data-check]')!;
+    const warn = form.querySelector<HTMLElement>('[data-warn]')!;
+    const eur = (n: number) => `${(Math.round(n * 100) / 100).toLocaleString('hu-HU', { maximumFractionDigits: 2 })} €`;
+    const update = () => {
+      const single = Number(form.querySelector<HTMLInputElement>('[data-price="world"]')!.value) || 0;
+      const count = form.querySelectorAll('input[name="world_only"]:checked').length;
+      const sum = count * single;
+      const total = europe + sum;
+      const ok = world <= total;
+      line.dataset.ok = ok ? 'yes' : 'no';
+      line.innerHTML = `Európa ${eur(europe)} + mind a(z) ${count} Európán kívüli nyelv egyenként (${eur(sum)}) = <strong>${eur(total)}</strong> ${ok ? '≥' : '<'} World ${eur(world)}.${ok ? ' A World a nyilvánvaló választás.' : ''}`;
+      warn.hidden = ok;
+    };
+    form.addEventListener('input', update);
+    form.addEventListener('change', update);
+  }
+</script>
+
+<style is:global>
+  .tpa-form fieldset { display: grid; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
+  .tpa-card { padding: 24px; border-radius: var(--r-lg); background: var(--white); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .tpa-card h2 { margin: 0 0 4px; font-family: var(--serif); font-weight: var(--fw-medium); font-size: 20px; color: var(--ink); }
+  .tpa-sub, .tpa-note { margin: 0 0 16px; max-width: 66ch; font-size: 14px; line-height: 1.6; color: var(--ink-quiet); }
+  .tpa-prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 16px; max-width: 560px; }
+  .tpa-f { display: grid; gap: 6px; font-size: 13.5px; color: var(--ink-quiet); }
+  .tpa-unit { display: flex; align-items: center; gap: 10px; }
+  .tpa-unit input { width: 110px; min-height: 44px; padding: 0 12px; border: 1px solid var(--pt-hair); border-radius: var(--r-md); font: inherit; font-size: 16px; color: var(--ink); background: var(--paper); font-variant-numeric: tabular-nums; }
+  .tpa-unit input:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+  .tpa-unit i { font-style: normal; font-size: 13px; color: var(--ink-quiet); }
+  .tpa-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tpa-chip { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 16px 6px 10px; border-radius: var(--r-pill); border: 1px solid rgba(16, 42, 67, 0.14); background: var(--paper); font-size: 14.5px; color: var(--ink); cursor: pointer; transition: background-color 0.3s var(--ease-out), border-color 0.3s var(--ease-out); }
+  .tpa-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .tpa-box { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(16, 42, 67, 0.3); display: grid; place-items: center; }
+  .tpa-box::after { content: ''; width: 8px; height: 4px; border-left: 2px solid var(--cream); border-bottom: 2px solid var(--cream); transform: rotate(-45deg) scale(0); margin-top: -2px; transition: transform 0.25s var(--ease-out); }
+  .tpa-chip:has(input:checked) { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+  .tpa-chip:has(input:checked) .tpa-box { background: var(--ink); border-color: var(--cream); }
+  .tpa-chip:has(input:checked) .tpa-box::after { transform: rotate(-45deg) scale(1); }
+  .tpa-chip:has(input:focus-visible) { outline: var(--focus-ring); outline-offset: 3px; }
+  .tpa-line { margin: 0 0 12px; font-size: 16px; line-height: 1.6; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tpa-line[data-ok='no'] { color: var(--pt-red); }
+  .tpa-warn { margin: 0 0 12px; padding: 12px 16px; border-radius: var(--r-md); background: var(--pt-amber-bg); color: var(--pt-amber); font-size: 14px; line-height: 1.55; }
+  .tpa-warn[hidden] { display: none; }
+  .tpa-actions { display: flex; justify-content: flex-end; }
+  @media (prefers-reduced-motion: reduce) { .tpa-chip, .tpa-box::after { transition: none; } }
+</style>

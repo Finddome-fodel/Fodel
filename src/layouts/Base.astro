@@ -29,6 +29,8 @@ interface Props {
    * language). Defaults to `alternates`.
    */
   switcher?: Partial<Record<Locale, string>>;
+  /** A listing page: the only languages the language menu offers (the ones the listing is published in). */
+  switcherAvailable?: readonly Locale[];
   /** Canonical path when it is not this page: a stand-in page for text written in another language. */
   canonicalPath?: string;
   ogImage?: string;
@@ -52,6 +54,7 @@ const {
   description,
   alternates = {},
   switcher,
+  switcherAvailable,
   canonicalPath,
   ogImage,
   ogType = 'website',
@@ -124,7 +127,7 @@ const jsonLd = graph([organisationSchema(locale, company), ...schema]);
   <body>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
 
-    <Nav locale={locale} alternates={switcher ?? alternates} />
+    <Nav locale={locale} alternates={switcher ?? alternates} available={switcherAvailable} />
 
     <div class="site-body" data-flush={flush ? '' : undefined}>
       <LocalPreviewNotice />

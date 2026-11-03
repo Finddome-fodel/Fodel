@@ -29,10 +29,11 @@ import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM, fiel
 import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS } from '~/lib/listing-catalogue';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
 import FreeBadge from '~/components/portal/FreeBadge.astro';
-import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import { loadEntitlement } from '~/lib/ai/translation-entitlement';
 import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
-import { estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL } from '~/lib/ai/translate-core';
+import { ALL_LOCALES, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL } from '~/lib/ai/translate-core';
 import { jobsForProperty } from '~/lib/ai/translation-jobs';
 import { publishLanguageProblems } from '~/lib/ai/translation-overview';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
@@ -115,8 +116,9 @@ const trSource = pickSource(property.translations);
 const trPerLanguage = estimateCostMicroEur(trSource ? listingChars(listingText(trSource)) : 0, translationModel());
 const trPresent = property.translations.filter((row) => row.title?.trim() || row.description?.trim()).map((row) => row.locale);
 const priceAt = (item: { tiers: { upToHuf: number | null; priceEur: number }[] } | undefined) => (item ? priceEurFor(item, property.price_huf) : 0);
-const trPrice = priceAt(cat.extras.find((e) => e.id === 'translation'));
-const trSuggested = suggested.extras.find((e) => e.id === 'translation')?.locales ?? [];
+// What the listing already holds (migration 0052): an upgrade costs the difference. Null before the migration.
+const trHeld = await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null);
+const trChoice = suggested.translation ?? { packageId: 'go', extraLocales: [], excludedLocales: [] };
 // A free-link owner's requests wait here for the admin's decision.
 const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
 const trOpen = trJobs.filter((job) => job.status === 'requested');
@@ -451,7 +453,7 @@ const { data: creditableReferral } = property.owner_id
             ? 'A fordításokat a rendszer automatikusan, OpenAI-val készíti el, miután a hirdető kifizette a díjat. Gép készíti, ember nem nézi át.'
             : 'Az AI fordítás jelenleg nincs bekapcsolva. A nyelvek a fizetés után sorba állnak, és amint bekapcsolja, elkészülnek; addig a szerkesztőben kézzel is fordíthat.'}
         </p>
-        <TranslationPicker lang="hu" bare name="translation_locale" selected={trSuggested} present={trPresent} priceEur={trPrice} />
+        <TranslationPackagePicker lang="hu" bare cfg={listing.translation} targets={ALL_LOCALES} sourceLocale={trSource?.locale ?? 'hu'} packageId={trChoice.packageId} extras={trChoice.extraLocales ?? []} excluded={trChoice.excludedLocales ?? []} present={trPresent} currentPackageId={trHeld?.listing.translationPackage ?? null} />
         <p class="tr-cost">Becsült AI-költség: <strong data-tr-cost>—</strong> <span>(a szöveg hosszából; nyelvenként {formatCostHu(trPerLanguage)})</span></p>
       </fieldset>
 
@@ -645,7 +647,7 @@ const { data: creditableReferral } = property.owner_id
   })();
 </script>
 
-<script define:vars={{ propertyId: property.id, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, translationPrice: trPrice, perLanguageMicro: trPerLanguage }}>
+<script define:vars={{ propertyId: property.id, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, presentLocales: trPresent, perLanguageMicro: trPerLanguage }}>
   const statusEl = document.getElementById('action-status');
   const totalEl = document.getElementById('order-total');
   const discountNoteEl = document.getElementById('discount-note');
@@ -660,12 +662,19 @@ const { data: creditableReferral } = property.owner_id
       const qtyInput = document.querySelector(`[data-qty-for="${box.value}"]`);
       return { id: box.value, quantity: qtyInput ? Number(qtyInput.value) || 1 : 1 };
     });
-    // The AI translation languages: one line that names them. The server prices it and keeps the list.
-    const languages = [...document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)')].map((box) => box.value);
-    if (languages.length) extras.unshift({ id: 'translation', quantity: languages.length, locales: languages });
+    // The translation choice: ids only (the package, the single languages, what is switched off). The server prices it.
+    const picker = document.querySelector('[data-tpk]');
+    const translation = picker
+      ? {
+          packageId: picker.querySelector('input[name="translation_package"]:checked')?.value ?? 'go',
+          extraLocales: [...picker.querySelectorAll('input[name="translations"]:checked')].map((box) => box.value),
+          excludedLocales: (picker.querySelector('[data-tpk-excluded]')?.value ?? '').split(',').filter(Boolean),
+        }
+      : undefined;
     return {
       packageId: pkg.value,
       extras,
+      ...(translation ? { translation } : {}),
       referralDiscountId: discountBox?.checked ? discountBox.dataset.referralId : null,
       referralCreditId: creditBox?.checked ? creditBox.dataset.referralId : null,
     };
@@ -683,8 +692,11 @@ const { data: creditableReferral } = property.owner_id
       sum += Number(box.dataset.price) * qty;
     });
 
-    const picked = document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)').length;
-    sum += picked * translationPrice;
+    // The picker keeps its own total (package plus single languages) and the languages it will produce.
+    const picker = document.querySelector('[data-tpk]');
+    sum += Number(picker?.dataset.cents || 0) / 100;
+    const have = new Set(presentLocales);
+    const picked = (picker?.dataset.languages || '').split(',').filter((code) => code && !have.has(code)).length;
     const costEl = document.querySelector('[data-tr-cost]');
     if (costEl) {
       const euros = (picked * perLanguageMicro) / 1e6;
@@ -748,6 +760,8 @@ const { data: creditableReferral } = property.owner_id
         'not-sold-here': 'A videókészítés csak magyarországi ingatlanhoz rendelhető.',
         'bad-quantity': 'A mennyiség 1 és 60 között lehet.',
         'bad-locale': 'Ismeretlen vagy nem fordítható nyelv — frissítse az oldalt.',
+        'exclude-en': 'Az angol nyelv nem zárható ki – ez a hirdetés alapnyelve a többi nyelvhez.',
+        'unknown-package': 'Ez a csomag nem választható — frissítse az oldalt.',
         exclusive: 'A két helyszíni szolgáltatás közül csak az egyik választható.',
         forbidden: 'Ezt csak admin teheti meg.',
         'not-approvable': 'Ez a hirdetés ebben az állapotban nem hagyható jóvá ingyen — frissítse az oldalt.',
