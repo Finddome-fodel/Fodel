@@ -32,6 +32,7 @@
     "test:listing:migration": "node scripts/test-listing-migration.mjs",
     "test:listing": "node scripts/test-listing-input.mjs",
     "test:tiers": "node --no-warnings scripts/test-tiers.mjs",
+    "test:contacts": "node --no-warnings scripts/test-contact-detect.mjs",
     "local:prepare": "python3 scripts/local-workspace.py"
   },
   "dependencies": {

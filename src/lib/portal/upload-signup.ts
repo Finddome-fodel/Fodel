@@ -90,7 +90,14 @@ export async function startFreeUpload(
     const draftId = await createDraft(admin, userId);
     await admin
       .from('properties')
-      .update({ free_listing: true, seller_name: input.name.slice(0, 120), seller_phone: input.phone.slice(0, 40) })
+      .update({
+        free_listing: true,
+        seller_name: input.name.slice(0, 120),
+        seller_phone: input.phone.slice(0, 40),
+        // Free listings show FINDDOME's contact only (spec §5.1); the office keeps the seller's name and phone.
+        public_contact: 'company',
+        seller_contact_visible: false,
+      })
       .eq('id', draftId);
     return { ok: true, draftId };
   } catch (error) {

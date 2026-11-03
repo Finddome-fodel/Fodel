@@ -267,13 +267,28 @@ const strings = {
         {isAdmin && (
           <ContactChoice mode={property.public_contact} staffName={property.public_contact_name} staffPhone={property.public_contact_phone} ownerAgreed={property.seller_contact_visible} ownerHasPhone={Boolean(property.seller_phone?.trim())} packageAllowsPhone={pkgAllowsPhone} idPrefix="su-cc" />
         )}
-        <fieldset class="su-fieldset" data-contact-choice>
-          <legend>{t.contact}</legend>
-          <p class="su-note">{t.contactHint}</p>
-          <label class="su-radio"><input type="radio" name="contact" value="yes" checked={property.seller_contact_visible} /> {t.contactYes}</label>
-          <label class="su-radio"><input type="radio" name="contact" value="no" checked={!property.seller_contact_visible} /> {t.contactNo}</label>
-        </fieldset>
-        <p class="su-note su-contact-off" data-contact-off>{t.contactNotInPackage}</p>
+        {free ? (
+          <fieldset class="su-fieldset su-free-contact">
+            <legend>{t.contact}</legend>
+            <p class="su-note">{x('A hirdetésen a FINDDOME elérhetőségei jelennek meg; az érdeklődőket mi kapcsoljuk Önhöz. Ezért a címben és a leírásban ne szerepeljen e-mail-cím, telefonszám vagy weboldal.','Op de advertentie staan de contactgegevens van FINDDOME; wij brengen geïnteresseerden met u in contact. Vermeld daarom geen e-mailadres, telefoonnummer of website in de titel en de beschrijving.','The listing shows FINDDOME’s contact details, and we put interested buyers in touch with you. So please leave e-mail addresses, phone numbers and websites out of the title and the description.')}</p>
+            {isAdmin && (
+              <label class="su-radio su-override" data-contact-override hidden>
+                <input type="checkbox" name="contact_override" value="yes" />
+                {x('Tudatosan benne hagyom (naplózzuk)','Bewust laten staan (wordt gelogd)','Keep it deliberately (logged)')}
+              </label>
+            )}
+          </fieldset>
+        ) : (
+          <>
+            <fieldset class="su-fieldset" data-contact-choice>
+              <legend>{t.contact}</legend>
+              <p class="su-note">{t.contactHint}</p>
+              <label class="su-radio"><input type="radio" name="contact" value="yes" checked={property.seller_contact_visible} /> {t.contactYes}</label>
+              <label class="su-radio"><input type="radio" name="contact" value="no" checked={!property.seller_contact_visible} /> {t.contactNo}</label>
+            </fieldset>
+            <p class="su-note su-contact-off" data-contact-off>{t.contactNotInPackage}</p>
+          </>
+        )}
       </form>
     </section>
 
@@ -403,7 +418,16 @@ const strings = {
     return (error: never) => errorMessageIn(copy, error);
   };
 
-  /* ── Steps ─────────────────────────────────────────────────────────── */
+  /**
+   * Free listings: no contact details in the public text (spec §5.2). The same detector as the server
+   * (src/lib/contact-detect.ts), loaded only for free listings; paid listings are never checked.
+   */
+  const CONTACT_FIELDS = ['title', 'description', 'body', 'street', 'region'];
+  let contactLib: typeof import('~/lib/contact-detect') | null = null;
+  const loadContacts = async () => (free ? (contactLib ??= await import('~/lib/contact-detect')) : null);
+  const overrideBox = () => root.querySelector<HTMLElement>('[data-contact-override]');
+  const overridden = () => Boolean(overrideBox()?.querySelector<HTMLInputElement>('input')?.checked);
+
 
   const show = (step: string, focus = true) => {
     const at = Math.max(0, steps.indexOf(step));
@@ -438,6 +462,20 @@ const strings = {
       (control) => !control.disabled && !control.closest('[hidden]') && !['radio', 'checkbox', 'hidden'].includes(control.type)
     );
 
+  /** The first contact detail in a checked field, as a validation error („contact-phone” …), or null. */
+  const contactError = (control: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
+    if (!contactLib || !CONTACT_FIELDS.includes(control.name)) return null;
+    // The address fields are not checked for admins (the server agrees: setup.ts saveProperty).
+    if (admin && (control.name === 'street' || control.name === 'region')) return null;
+    const hit = contactLib.findContacts(control.value)[0];
+    if (!hit) return null;
+    // An admin may keep it deliberately; the box appears as soon as there is something to keep.
+    const box = overrideBox();
+    if (box) box.hidden = false;
+    if (overridden()) return null;
+    return { code: contactLib.contactCode(hit.kind), match: hit.match.length > 60 ? hit.match.slice(0, 57) + '…' : hit.match };
+  };
+
   /** Shows or clears one field's message from its current value; true when the value is acceptable. */
   const checkControl = (
     control: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
@@ -453,7 +491,7 @@ const strings = {
         maxLength: 'maxLength' in control && control.maxLength > 0 ? control.maxLength : undefined,
       },
       control.value
-    );
+    ) ?? contactError(control);
     const el = fieldError(control);
     if (error) {
       control.setAttribute('aria-invalid', 'true');
@@ -469,7 +507,7 @@ const strings = {
   };
 
   async function validate(scope: HTMLElement): Promise<HTMLElement | null> {
-    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording()]);
+    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
     let first: HTMLElement | null = null;
     for (const control of checkable(scope)) if (!checkControl(control, validateField, errorMessage)) first ??= control;
     return first;
@@ -484,7 +522,7 @@ const strings = {
   async function revalidateShown(scope: HTMLElement) {
     const shown = checkable(scope).filter((control) => control.getAttribute('aria-invalid') === 'true');
     if (!shown.length) return;
-    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording()]);
+    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
     for (const control of shown) checkControl(control, validateField, errorMessage);
   }
 
@@ -545,6 +583,25 @@ const strings = {
     });
     f.addEventListener('submit', (e) => e.preventDefault());
   });
+
+  // Free listings: contact details are pointed out while typing (300 ms after the last key), not only on „Tovább”.
+  if (free) {
+    let contactTimer: number | undefined;
+    root.addEventListener('input', (e) => {
+      const control = e.target as HTMLInputElement | HTMLTextAreaElement;
+      if (!CONTACT_FIELDS.includes(control?.name)) return;
+      window.clearTimeout(contactTimer);
+      contactTimer = window.setTimeout(async () => {
+        const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
+        checkControl(control, validateField, errorMessage);
+      }, 300);
+    });
+    overrideBox()?.addEventListener('change', async () => {
+      const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
+      const scope = overrideBox()!.closest<HTMLElement>('[data-step]');
+      if (scope) for (const control of checkable(scope)) if (CONTACT_FIELDS.includes(control.name)) checkControl(control, validateField, errorMessage);
+    });
+  }
 
   /** The billing step saves through its own form (BillingForm.astro). */
   const saveBilling = async () => {
@@ -658,8 +715,8 @@ const strings = {
     if (later) later.hidden = huf > 0;
     const contact = root.querySelector<HTMLElement>('[data-contact-choice]');
     const off = root.querySelector<HTMLElement>('[data-contact-off]');
-    // A free listing has no package; the seller's phone choice is always offered.
-    const phone = free || Boolean(pkg?.phone);
+    // A free listing has neither the question nor the note (FINDDOME's contact only, §5.1).
+    const phone = Boolean(pkg?.phone);
     if (contact) contact.hidden = !phone;
     if (off) off.hidden = phone;
     const total = money(estimate().cents);
