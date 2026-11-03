@@ -20,6 +20,7 @@
  */
 
 import type { Locale, L10n } from '~/i18n/ui';
+import { laterOf } from '~/data/valuation-questions-later';
 
 /** The page language. English, German and French sit beside Hungarian and Dutch. */
 export type ValuationLocale = Locale;
@@ -41,7 +42,11 @@ export interface ValuationQuestion {
 
 export const DONT_KNOW = 'nem-tudom';
 
-/** One text in all 21 languages, in the order hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt. */
+/**
+ * One text in all 28 languages: the first 21 in the order hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el,
+ * cs, sl, sv, da, no, fi, et, lv, lt; sr, uk, tr, he, ar, ru, zh come from valuation-questions-later.ts,
+ * keyed by the English text.
+ */
 const t5 = (
   hu: string,
   nl: string,
@@ -64,7 +69,7 @@ const t5 = (
   et: string,
   lv: string,
   lt: string,
-): L10n => ({ hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt, sr: en, uk: en, tr: en, he: en, ar: en, ru: en, zh: en });
+): L10n => ({ hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt, ...laterOf(en) });
 
 const dontKnow: ValuationOption = { value: DONT_KNOW, label: t5('Nem tudom', 'Weet ik niet', 'I don’t know', 'Weiß ich nicht', 'Je ne sais pas', 'No lo sé', 'Nie wiem', 'Nu știu', 'Neviem', 'Non lo so', 'Não sei', 'Δεν ξέρω', 'Nevím', 'Ne vem', 'Vet inte', 'Ved ikke', 'Vet ikke', 'En tiedä', 'Ei tea', 'Nezinu', 'Nežinau') };
 const yes: ValuationOption = { value: 'igen', label: t5('Igen', 'Ja', 'Yes', 'Ja', 'Oui', 'Sí', 'Tak', 'Da', 'Áno', 'Sì', 'Sim', 'Ναι', 'Ano', 'Da', 'Ja', 'Ja', 'Ja', 'Kyllä', 'Jah', 'Jā', 'Taip') };
