@@ -125,7 +125,7 @@ export async function translateListing(
       user: buildUserMessage(segment, segments.length > 1 && !segment.title ? { title: source.title } : undefined),
       schema: TRANSLATION_SCHEMA as unknown as Record<string, unknown>,
       schemaName: 'listing_translation',
-      maxTokens: maxTokensFor(listingChars(segment)),
+      maxTokens: maxTokensFor(listingChars(segment), targetLocale),
       timeoutMs: CALL_TIMEOUT_MS,
       // A second attempt would outlive a short function; the job runner retries instead.
       retry: false,
@@ -149,7 +149,7 @@ export async function translateListing(
     merged.title = settled.title;
     if (settled.how !== 'as-is') titleFix = settled.how;
   }
-  checkTranslation(source, merged, { freeListing: options.freeListing });
+  checkTranslation(source, merged, { freeListing: options.freeListing, target: targetLocale });
   const warnings = titleFix === 'cut'
     ? ['A cím túl hosszú volt, ezért szóhatárnál le lett vágva. Érdemes átírni.']
     : titleFix === 'shortened' ? ['A címet az AI lerövidítette, hogy beleférjen. Érdemes átnézni.'] : [];

@@ -28,10 +28,11 @@ import { PROPERTY_GROUPS, currentFeatures, groupOf, subtypeOf } from '~/lib/list
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
 import { contactModeOf, type ContactMode } from '~/lib/contact-display';
 import { readDetails, fieldRules, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
-import { listedIn, servingOf, switcherLocales, publishedLocales, type ListingPolicy, type Serving } from '~/lib/listing-languages';
+import { listedIn, servingOf, switcherLocales, publishedLocales, textOrder, type ListingPolicy, type Serving } from '~/lib/listing-languages';
 import { listingCatalog } from '~/lib/listing-packages';
 import type { TranslationPricing } from '~/lib/translation-packages';
 import { unpurchasedListingLocales } from '~/config/flags';
+import { asciiSlug, safeCategorySlugs } from '~/lib/listing-slug';
 
 type LocalisedText = { hu: string } & Partial<Record<Exclude<Locale, 'hu'>, string>>;
 
@@ -206,7 +207,9 @@ function localisedField(
   const hu = byLocale.hu;
   if(!Object.values(byLocale).some(Boolean))return undefined;
   const out: LocalisedText = { hu:hu||'' };
-  for (const locale of ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const) {
+  // Every language of the site, so a language added later is read without touching this.
+  for (const locale of LOCALES) {
+    if (locale === 'hu') continue;
     const value = byLocale[locale];
     if (value) out[locale] = value;
   }
@@ -275,7 +278,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
       propertyGroup: row.property_group || groupOf(row.category),
       propertySubtype: row.property_subtype,
       categoryLabels: (PROPERTY_GROUPS.find(g=>g.key===group)?.labels ?? category?.labels ?? fallbackLabels) as Property['data']['categoryLabels'],
-      categorySlugs: category?.slugs ?? { hu: row.category, nl: row.category },
+      categorySlugs: safeCategorySlugs(category?.slugs ?? { hu: row.category, nl: row.category }, row.category),
       categorySchema: category?.schemaType ?? 'Place',
       status: row.status === 'sold' ? 'sold' : row.reserved ? 'reserved' : 'active',
       title: localisedField(translations, 'title')!,
@@ -356,16 +359,16 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
  * Sellers write Hungarian, and pay for a Dutch version (and, as an extra, for
  * more languages). FODEL never translates seller text on the fly. So:
  *   hu, nl      the visitor's language, then Hungarian;
- *   en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt
+ *   every other language
  *               a translation the seller paid for, then English (the common
- *               second language — an English reader should not get Dutch
- *               while English exists), then the Dutch text, then Hungarian.
+ *               second language — a reader should not get Dutch while
+ *               English exists), then German, then the Dutch text, then Hungarian.
  *               `from` tells the page when it is not the visitor's own
  *               language, so it can say so.
  */
 export function resolveText(field: LocalisedText | undefined, locale: Locale): { text: string; from: Locale } {
   if (!field) return { text: '', from: locale };
-  const order: Locale[] = locale === 'hu' || locale === 'nl' ? [locale, 'hu'] : locale === 'en' ? [locale, 'nl', 'hu'] : [locale, 'en', 'nl', 'hu'];
+  const order = textOrder(locale);
   for (const candidate of order) {
     const value = field[candidate];
     if (value) return { text: value, from: candidate };
@@ -611,14 +614,9 @@ export function countriesOf(properties: Property[]): string[] {
   return [...new Set(properties.map((p) => p.data.location.country))].sort();
 }
 
-/** URL-safe slug for a region or county name (handles Hungarian diacritics). */
+/** URL-safe slug for a region or county name (handles Hungarian diacritics; Cyrillic is transliterated). */
 export function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+  return asciiSlug(value);
 }
 
 /** Price buckets used by the filter UI, in euro. */

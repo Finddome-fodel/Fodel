@@ -11,6 +11,7 @@
  * is ever read from here — prices come from the catalogue in company.ts.
  */
 import { isOnsiteServiceId, TRANSLATION_LANGUAGES, type OnsiteServiceId } from '~/config/company';
+import { ALL_LOCALES } from '~/lib/ai/translate-core';
 
 export type RequestedExtras = {
   source?: 'submit_form' | 'listing_editor';
@@ -32,7 +33,8 @@ export type RequestedExtras = {
   service?: OnsiteServiceId | null;
 };
 
-const LANGS: readonly string[] = TRANSLATION_LANGUAGES;
+// Only languages the site really has: a language added to the list ahead of the site is not a wish anyone can make yet.
+const LANGS: readonly string[] = TRANSLATION_LANGUAGES.filter((code) => ALL_LOCALES.includes(code));
 const PACKAGES: readonly string[] = ['go', 'europe', 'world'];
 
 /** A list of language codes from a form value or a stored array: known ones only, no repeats, and never English. */
@@ -95,7 +97,7 @@ export function hasRequests(extras: RequestedExtras): boolean {
 /** Hungarian summary lines for the admin (review screen, service list). */
 export function describeRequestedExtras(extras: RequestedExtras): string[] {
   const lines: string[] = [];
-  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván' };
+  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván', sr: 'szerb', uk: 'ukrán', tr: 'török', he: 'héber', ar: 'arab', ru: 'orosz', zh: 'kínai' };
   const PACKAGE_HU: Record<string, string> = { europe: 'Európa csomag', world: 'World csomag' };
   if (extras.translationPackage && PACKAGE_HU[extras.translationPackage]) lines.push(`Fordítási csomag: ${PACKAGE_HU[extras.translationPackage]}`);
   if (extras.translations?.length) lines.push(`Fordítás: ${extras.translations.map((code) => LANG_HU[code] ?? code).join(', ')}`);

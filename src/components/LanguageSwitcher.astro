@@ -13,6 +13,7 @@
  * `fodel_lang` cookie the root page reads.
  */
 import Flag from './Flag.astro';
+import { LISTING_UNAVAILABLE_NOTE, type AddedLocale } from '~/i18n/fallback';
 import { LOCALE_META, SWITCHER_LOCALES, UI, localizer, type Locale } from '~/i18n/ui';
 
 interface Props {
@@ -31,7 +32,7 @@ const { locale, alternates = {}, align = 'right', available } = Astro.props;
 const rows = available ? SWITCHER_LOCALES.filter(({ code }) => available.includes(code)) : SWITCHER_LOCALES;
 const hidden = available ? SWITCHER_LOCALES.length - rows.length : 0;
 const x = localizer(locale);
-const note = x(
+const note = LISTING_UNAVAILABLE_NOTE[locale as AddedLocale] ?? x(
   'A hirdetés további nyelveken nem érhető el.', 'Deze woning is niet in andere talen beschikbaar.', 'This listing is not available in other languages.',
   'Dieses Inserat ist in weiteren Sprachen nicht verfügbar.', "Cette annonce n'est pas disponible dans d'autres langues.", 'Este anuncio no está disponible en otros idiomas.',
   'To ogłoszenie nie jest dostępne w innych językach.', 'Acest anunț nu este disponibil în alte limbi.', 'Tento inzerát nie je dostupný v ďalších jazykoch.',

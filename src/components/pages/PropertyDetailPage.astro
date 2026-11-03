@@ -319,8 +319,8 @@ const whatsappMessage = x(
       </p>
 
       <div class="price-row">
-        <span class="price">{eur(d.price.eur, locale)}</span>
-        <span class="price-huf">{huf(d.price.huf, locale)}</span>
+        <span class="price"><bdi>{eur(d.price.eur, locale)}</bdi></span>
+        <span class="price-huf"><bdi>{huf(d.price.huf, locale)}</bdi></span>
         <span class="price-asof">
           {x('Árfolyam', 'Koers', 'Exchange rate', 'Wechselkurs', 'Taux de change', 'Tipo de cambio', 'Kurs wymiany', 'Curs de schimb', 'Výmenný kurz', 'Tasso di cambio', 'Taxa de câmbio', 'Συναλλαγματική ισοτιμία', 'Směnný kurz', 'Menjalni tečaj', 'Växelkurs', 'Valutakurs', 'Valutakurs', 'Valuuttakurssi', 'Vahetuskurss', 'Valūtas kurss', 'Valiutos kursas')}{colon} {formatDate(d.price.asOf, locale)}
         </span>
@@ -330,7 +330,7 @@ const whatsappMessage = x(
         {
           specs.map((s) => (
             <div class="spec">
-              <dd>{s.value}</dd>
+              <dd><bdi>{s.value}</bdi></dd>
               <dt>{s.label}</dt>
             </div>
           ))
@@ -338,7 +338,7 @@ const whatsappMessage = x(
       </dl>
 
       <div class="ref-row">
-        <span>{ui.property.reference} <strong>{d.ref}</strong></span>
+        <span>{ui.property.reference} <strong><bdi>{d.ref}</bdi></strong></span>
         <button type="button" class="print-btn no-print" id="print-btn">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M4 6V1.75h8V6M4 12H2.25A1.25 1.25 0 0 1 1 10.75v-3.5A1.25 1.25 0 0 1 2.25 6h11.5A1.25 1.25 0 0 1 15 7.25v3.5A1.25 1.25 0 0 1 13.75 12H12M4 9.5h8v4.75H4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
@@ -374,7 +374,7 @@ const whatsappMessage = x(
                 {factRows.map((row) => (
                   <div>
                     <dt>{row.label}</dt>
-                    <dd>{row.value}</dd>
+                    <dd><bdi>{row.value}</bdi></dd>
                   </div>
                 ))}
               </dl>
@@ -423,7 +423,7 @@ const whatsappMessage = x(
                       <path d="M6.2 2.5 7.9 6.4 5.9 7.8a10.6 10.6 0 0 0 6.3 6.3l1.4-2 3.9 1.7-.6 3a1.8 1.8 0 0 1-1.9 1.4C8.7 17.8 2.2 11.3 1.8 5a1.8 1.8 0 0 1 1.4-1.9l3-.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
                     </svg>
                   </span>
-                  <span class="num">{contactDialled.ok ? contactDialled.display : contact.phone}</span>
+                  <span class="num"><bdi>{contactDialled.ok ? contactDialled.display : contact.phone}</bdi></span>
                 </a>
               </p>
             )}
