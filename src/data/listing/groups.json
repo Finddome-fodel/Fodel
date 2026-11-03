@@ -22,7 +22,14 @@
       "fi": "Asuinkiinteistöt",
       "et": "Elukinnisvara",
       "lv": "Dzīvojamie īpašumi",
-      "lt": "Gyvenamasis nekilnojamasis turtas"
+      "lt": "Gyvenamasis nekilnojamasis turtas",
+      "sr": "Stambene nekretnine",
+      "uk": "Житлова нерухомість",
+      "tr": "Konut",
+      "he": "נכסי מגורים",
+      "ar": "عقارات سكنية",
+      "ru": "Жилая недвижимость",
+      "zh": "住宅物业"
     },
     "subtypes": [
       {
@@ -48,7 +55,14 @@
           "fi": "Kerrostaloasunto, yksiö",
           "et": "Korter, stuudio",
           "lv": "Dzīvoklis, studija",
-          "lt": "Butas, studija"
+          "lt": "Butas, studija",
+          "sr": "Stan, garsonjera",
+          "uk": "Квартира, студія",
+          "tr": "Daire, stüdyo",
+          "he": "דירה, סטודיו",
+          "ar": "شقة، استوديو",
+          "ru": "Квартира, студия",
+          "zh": "公寓、单间公寓"
         }
       },
       {
@@ -74,7 +88,14 @@
           "fi": "Omakotitalo, huvila",
           "et": "Eramu, villa",
           "lv": "Privātmāja, villa",
-          "lt": "Individualus namas, vila"
+          "lt": "Individualus namas, vila",
+          "sr": "Porodična kuća, vila",
+          "uk": "Окремий будинок, вілла",
+          "tr": "Müstakil ev, villa",
+          "he": "בית פרטי, וילה",
+          "ar": "منزل مستقل، فيلا",
+          "ru": "Отдельный дом, вилла",
+          "zh": "独栋住宅、别墅"
         }
       },
       {
@@ -100,7 +121,14 @@
           "fi": "Paritalo, rivitalo",
           "et": "Paarismaja, ridaelamu",
           "lv": "Dvīņu māja, rindu māja",
-          "lt": "Sublokuotas namas, kotedžas"
+          "lt": "Sublokuotas namas, kotedžas",
+          "sr": "Dvojna kuća, kuća u nizu",
+          "uk": "Дуплекс, таунхаус",
+          "tr": "İkiz ev, sıra ev",
+          "he": "דו־משפחתי, בית טורי",
+          "ar": "منزل توأم، منزل متلاصق",
+          "ru": "Дуплекс, таунхаус",
+          "zh": "双拼别墅、联排别墅"
         }
       },
       {
@@ -126,7 +154,14 @@
           "fi": "Kattohuoneisto",
           "et": "Katusekorter",
           "lv": "Penthauss",
-          "lt": "Penthauzas"
+          "lt": "Penthauzas",
+          "sr": "Penthaus",
+          "uk": "Пентхаус",
+          "tr": "Çatı katı dairesi",
+          "he": "פנטהאוז",
+          "ar": "بنتهاوس",
+          "ru": "Пентхаус",
+          "zh": "顶层豪华公寓"
         }
       },
       {
@@ -152,7 +187,14 @@
           "fi": "Kerrostalo",
           "et": "Kortermaja",
           "lv": "Daudzdzīvokļu māja",
-          "lt": "Daugiabutis namas"
+          "lt": "Daugiabutis namas",
+          "sr": "Stambena zgrada sa više stanova",
+          "uk": "Багатоквартирний житловий будинок",
+          "tr": "Çok daireli konut binası",
+          "he": "בניין מגורים רב־יחידתי",
+          "ar": "مبنى سكني متعدد الوحدات",
+          "ru": "Многоквартирный жилой дом",
+          "zh": "多户住宅楼"
         }
       },
       {
@@ -178,7 +220,14 @@
           "fi": "Muu asuinkiinteistö",
           "et": "Muu elukinnisvara",
           "lv": "Cits dzīvojamais īpašums",
-          "lt": "Kitas gyvenamasis turtas"
+          "lt": "Kitas gyvenamasis turtas",
+          "sr": "Ostale stambene nekretnine",
+          "uk": "Інша житлова нерухомість",
+          "tr": "Diğer konut",
+          "he": "נכס מגורים אחר",
+          "ar": "عقار سكني آخر",
+          "ru": "Другая жилая недвижимость",
+          "zh": "其他住宅物业"
         }
       }
     ],
@@ -207,7 +256,14 @@
       "fi": "Vapaa-ajan kiinteistöt",
       "et": "Puhkekinnisvara",
       "lv": "Brīvdienu īpašumi",
-      "lt": "Poilsio nekilnojamasis turtas"
+      "lt": "Poilsio nekilnojamasis turtas",
+      "sr": "Nekretnine za odmor",
+      "uk": "Нерухомість для відпочинку",
+      "tr": "Tatil amaçlı gayrimenkul",
+      "he": "נכסי נופש",
+      "ar": "عقارات العطلات",
+      "ru": "Недвижимость для отдыха",
+      "zh": "度假物业"
     },
     "subtypes": [
       {
@@ -233,7 +289,14 @@
           "fi": "Vapaa-ajan asunto, mökki",
           "et": "Puhkemaja, suvila",
           "lv": "Brīvdienu māja, vasarnīca",
-          "lt": "Poilsio namas, sodyba savaitgaliams"
+          "lt": "Poilsio namas, sodyba savaitgaliams",
+          "sr": "Vikendica, kuća za odmor",
+          "uk": "Дача, будинок для відпочинку",
+          "tr": "Yazlık, hafta sonu evi",
+          "he": "בית נופש, בית סופ״ש",
+          "ar": "بيت عطلات، منزل لعطلة نهاية الأسبوع",
+          "ru": "Дача, дом для отдыха",
+          "zh": "度假屋、周末别墅"
         }
       },
       {
@@ -259,7 +322,14 @@
           "fi": "Lomahuoneisto",
           "et": "Puhkekorter",
           "lv": "Brīvdienu dzīvoklis",
-          "lt": "Poilsio butas"
+          "lt": "Poilsio butas",
+          "sr": "Apartman za odmor",
+          "uk": "Апартаменти для відпочинку",
+          "tr": "Tatil dairesi",
+          "he": "דירת נופש",
+          "ar": "شقة عطلات",
+          "ru": "Апартаменты для отдыха",
+          "zh": "度假公寓"
         }
       },
       {
@@ -285,7 +355,14 @@
           "fi": "Ranta- tai merenrantakiinteistö",
           "et": "Kinnisvara vee ääres või mere ääres",
           "lv": "Īpašums pie ūdens vai jūras",
-          "lt": "Turtas prie vandens ar jūros"
+          "lt": "Turtas prie vandens ar jūros",
+          "sr": "Nekretnina na obali jezera ili mora",
+          "uk": "Нерухомість на березі водойми чи моря",
+          "tr": "Su kenarında veya deniz kıyısında gayrimenkul",
+          "he": "נכס על קו המים או חוף הים",
+          "ar": "عقار على الواجهة المائية أو شاطئ البحر",
+          "ru": "Недвижимость на берегу водоёма или моря",
+          "zh": "水岸或海滨物业"
         }
       },
       {
@@ -311,7 +388,14 @@
           "fi": "Tunturimökki, chalet",
           "et": "Mägimaja, šalee",
           "lv": "Kalnu māja, šalē",
-          "lt": "Kalnų namelis, šalė"
+          "lt": "Kalnų namelis, šalė",
+          "sr": "Planinska kuća, brvnara",
+          "uk": "Гірський будинок, шале",
+          "tr": "Dağ evi, dağ kulübesi",
+          "he": "בקתת הרים, שאלה",
+          "ar": "منزل جبلي، شاليه",
+          "ru": "Горный дом, шале",
+          "zh": "山间度假屋、小木屋"
         }
       },
       {
@@ -337,7 +421,14 @@
           "fi": "Lomakeskus",
           "et": "Puhkekompleks",
           "lv": "Atpūtas komplekss",
-          "lt": "Poilsio kompleksas"
+          "lt": "Poilsio kompleksas",
+          "sr": "Turistički kompleks",
+          "uk": "Туристичний комплекс",
+          "tr": "Tatil kompleksi",
+          "he": "מתחם נופש",
+          "ar": "مجمع سياحي",
+          "ru": "Туристический комплекс",
+          "zh": "度假村"
         }
       },
       {
@@ -363,7 +454,14 @@
           "fi": "Muu vapaa-ajan kiinteistö",
           "et": "Muu puhkekinnisvara",
           "lv": "Cits brīvdienu īpašums",
-          "lt": "Kitas poilsio turtas"
+          "lt": "Kitas poilsio turtas",
+          "sr": "Ostale nekretnine za odmor",
+          "uk": "Інша нерухомість для відпочинку",
+          "tr": "Diğer tatil amaçlı gayrimenkul",
+          "he": "נכס נופש אחר",
+          "ar": "عقار عطلات آخر",
+          "ru": "Другая недвижимость для отдыха",
+          "zh": "其他度假物业"
         }
       }
     ],
@@ -392,7 +490,14 @@
       "fi": "Maatilakiinteistöt",
       "et": "Põllumajanduskinnisvara",
       "lv": "Lauksaimniecības īpašumi",
-      "lt": "Žemės ūkio nekilnojamasis turtas"
+      "lt": "Žemės ūkio nekilnojamasis turtas",
+      "sr": "Poljoprivredne nekretnine",
+      "uk": "Сільськогосподарська нерухомість",
+      "tr": "Tarımsal gayrimenkul",
+      "he": "נכסים חקלאיים",
+      "ar": "عقارات زراعية",
+      "ru": "Сельскохозяйственная недвижимость",
+      "zh": "农业物业"
     },
     "subtypes": [
       {
@@ -418,7 +523,14 @@
           "fi": "Pelto, maatalousmaa",
           "et": "Põllumaa, haritav maa",
           "lv": "Aramzeme, lauksaimniecības zeme",
-          "lt": "Ariama žemė, žemės ūkio paskirties žemė"
+          "lt": "Ariama žemė, žemės ūkio paskirties žemė",
+          "sr": "Oranica, obradivo zemljište",
+          "uk": "Рілля, сільгоспугіддя",
+          "tr": "Tarla, tarım arazisi",
+          "he": "קרקע לעיבוד, אדמה חקלאית",
+          "ar": "أرض صالحة للزراعة، أرض زراعية",
+          "ru": "Пашня, сельхозугодья",
+          "zh": "耕地、农田"
         }
       },
       {
@@ -444,7 +556,14 @@
           "fi": "Maatila, tila",
           "et": "Talu, talukoht",
           "lv": "Lauku saimniecība, viensēta",
-          "lt": "Ūkis, sodyba"
+          "lt": "Ūkis, sodyba",
+          "sr": "Salaš, farma",
+          "uk": "Хутір, ферма",
+          "tr": "Çiftlik evi, çiftlik",
+          "he": "משק, חווה",
+          "ar": "مزرعة، بيت ريفي",
+          "ru": "Хутор, ферма",
+          "zh": "农场、农庄"
         }
       },
       {
@@ -470,7 +589,14 @@
           "fi": "Hedelmätarha, viinitarha",
           "et": "Viljapuuaed, viinamarjaistandus",
           "lv": "Augļu dārzs, vīna dārzs",
-          "lt": "Sodas, vynuogynas"
+          "lt": "Sodas, vynuogynas",
+          "sr": "Voćnjak, vinograd",
+          "uk": "Сад, виноградник",
+          "tr": "Meyve bahçesi, bağ",
+          "he": "מטע, כרם",
+          "ar": "بستان، كرم عنب",
+          "ru": "Фруктовый сад, виноградник",
+          "zh": "果园、葡萄园"
         }
       },
       {
@@ -496,7 +622,14 @@
           "fi": "Metsä, laidun",
           "et": "Mets, karjamaa",
           "lv": "Mežs, ganības",
-          "lt": "Miškas, ganykla"
+          "lt": "Miškas, ganykla",
+          "sr": "Šuma, pašnjak",
+          "uk": "Ліс, пасовище",
+          "tr": "Orman, mera",
+          "he": "יער, שטח מרעה",
+          "ar": "غابة، مرعى",
+          "ru": "Лес, пастбище",
+          "zh": "林地、牧场"
         }
       },
       {
@@ -522,7 +655,14 @@
           "fi": "Kotieläintuotantorakennus",
           "et": "Loomakasvatushoone",
           "lv": "Lopkopības ēka",
-          "lt": "Gyvulininkystės pastatas"
+          "lt": "Gyvulininkystės pastatas",
+          "sr": "Stočarska farma",
+          "uk": "Тваринницький комплекс",
+          "tr": "Hayvancılık tesisi",
+          "he": "משק לגידול בעלי חיים",
+          "ar": "منشأة لتربية الماشية",
+          "ru": "Животноводческий комплекс",
+          "zh": "畜牧场"
         }
       },
       {
@@ -548,7 +688,14 @@
           "fi": "Maatalousyritys, kartano",
           "et": "Põllumajandusettevõte, mõis",
           "lv": "Lauksaimniecības uzņēmums, muiža",
-          "lt": "Žemės ūkio įmonė, dvaras"
+          "lt": "Žemės ūkio įmonė, dvaras",
+          "sr": "Poljoprivredno gazdinstvo, imanje",
+          "uk": "Сільськогосподарське підприємство, маєток",
+          "tr": "Tarım işletmesi, arazi mülkü",
+          "he": "משק חקלאי, אחוזה",
+          "ar": "منشأة زراعية، ضيعة",
+          "ru": "Сельхозпредприятие, поместье",
+          "zh": "农业企业、庄园"
         }
       },
       {
@@ -574,7 +721,14 @@
           "fi": "Kalalammikko, kalankasvattamo",
           "et": "Kalatiik, kalakasvatus",
           "lv": "Zivju dīķis, zivjaudzētava",
-          "lt": "Žuvininkystės tvenkinys, žuvų ūkis"
+          "lt": "Žuvininkystės tvenkinys, žuvų ūkis",
+          "sr": "Ribnjak, ribogojilište",
+          "uk": "Ставок, рибне господарство",
+          "tr": "Balık göleti, balık çiftliği",
+          "he": "בריכת דגים, חוות דגים",
+          "ar": "بركة أسماك، مزرعة أسماك",
+          "ru": "Пруд, рыбное хозяйство",
+          "zh": "鱼塘、养鱼场"
         }
       },
       {
@@ -600,7 +754,14 @@
           "fi": "Muu maatilakiinteistö",
           "et": "Muu põllumajanduskinnisvara",
           "lv": "Cits lauksaimniecības īpašums",
-          "lt": "Kitas žemės ūkio turtas"
+          "lt": "Kitas žemės ūkio turtas",
+          "sr": "Ostale poljoprivredne nekretnine",
+          "uk": "Інша сільськогосподарська нерухомість",
+          "tr": "Diğer tarımsal gayrimenkul",
+          "he": "נכס חקלאי אחר",
+          "ar": "عقار زراعي آخر",
+          "ru": "Другая сельскохозяйственная недвижимость",
+          "zh": "其他农业物业"
         }
       }
     ],
@@ -629,7 +790,14 @@
       "fi": "Liikekiinteistöt",
       "et": "Ärikinnisvara",
       "lv": "Komercīpašumi",
-      "lt": "Komercinis nekilnojamasis turtas"
+      "lt": "Komercinis nekilnojamasis turtas",
+      "sr": "Poslovne nekretnine",
+      "uk": "Комерційна нерухомість",
+      "tr": "Ticari gayrimenkul",
+      "he": "נכסים מסחריים",
+      "ar": "عقارات تجارية",
+      "ru": "Коммерческая недвижимость",
+      "zh": "商业物业"
     },
     "subtypes": [
       {
@@ -655,7 +823,14 @@
           "fi": "Liiketila",
           "et": "Kaubandusruum",
           "lv": "Tirdzniecības telpa",
-          "lt": "Prekybos patalpa"
+          "lt": "Prekybos patalpa",
+          "sr": "Poslovni prostor, lokal",
+          "uk": "Торгове приміщення",
+          "tr": "Dükkân",
+          "he": "שטח מסחרי",
+          "ar": "محل تجاري",
+          "ru": "Торговое помещение",
+          "zh": "商铺"
         }
       },
       {
@@ -681,7 +856,14 @@
           "fi": "Toimisto, toimistorakennus",
           "et": "Kontor, büroohoone",
           "lv": "Birojs, biroju ēka",
-          "lt": "Biuras, biurų pastatas"
+          "lt": "Biuras, biurų pastatas",
+          "sr": "Kancelarija, poslovna zgrada",
+          "uk": "Офіс, офісна будівля",
+          "tr": "Ofis, ofis binası",
+          "he": "משרד, בניין משרדים",
+          "ar": "مكتب، مبنى مكاتب",
+          "ru": "Офис, офисное здание",
+          "zh": "办公室、写字楼"
         }
       },
       {
@@ -707,7 +889,14 @@
           "fi": "Ravintola, kahvila",
           "et": "Restoran, kohvik",
           "lv": "Restorāns, kafejnīca",
-          "lt": "Restoranas, kavinė"
+          "lt": "Restoranas, kavinė",
+          "sr": "Restoran, kafić",
+          "uk": "Ресторан, кафе",
+          "tr": "Restoran, kafe",
+          "he": "מסעדה, בית קפה",
+          "ar": "مطعم، مقهى",
+          "ru": "Ресторан, кафе",
+          "zh": "餐厅、咖啡馆"
         }
       },
       {
@@ -733,7 +922,14 @@
           "fi": "Hotelli, B&B, majatalo",
           "et": "Hotell, B&B, külalistemaja",
           "lv": "Viesnīca, B&B, viesu nams",
-          "lt": "Viešbutis, B&B, svečių namai"
+          "lt": "Viešbutis, B&B, svečių namai",
+          "sr": "Hotel, pansion, kuća za goste",
+          "uk": "Готель, пансіонат, гостьовий будинок",
+          "tr": "Otel, pansiyon, misafirhane",
+          "he": "מלון, צימר, בית הארחה",
+          "ar": "فندق، نُزل، بيت ضيافة",
+          "ru": "Гостиница, пансионат, гостевой дом",
+          "zh": "酒店、民宿、旅馆"
         }
       },
       {
@@ -759,7 +955,14 @@
           "fi": "Kauppakeskus",
           "et": "Kaubanduskeskus",
           "lv": "Tirdzniecības centrs",
-          "lt": "Prekybos centras"
+          "lt": "Prekybos centras",
+          "sr": "Tržni centar",
+          "uk": "Торговий центр",
+          "tr": "Alışveriş merkezi",
+          "he": "מרכז קניות",
+          "ar": "مركز تسوق",
+          "ru": "Торговый центр",
+          "zh": "购物中心"
         }
       },
       {
@@ -785,7 +988,14 @@
           "fi": "Terveys-, koulutus- tai urheilutila",
           "et": "Tervishoiu-, haridus- või spordirajatis",
           "lv": "Veselības, izglītības vai sporta objekts",
-          "lt": "Sveikatos, švietimo ar sporto objektas"
+          "lt": "Sveikatos, švietimo ar sporto objektas",
+          "sr": "Zdravstveni, obrazovni ili sportski objekat",
+          "uk": "Медичний, освітній або спортивний заклад",
+          "tr": "Sağlık, eğitim veya spor tesisi",
+          "he": "מתקן רפואי, חינוכי או ספורט",
+          "ar": "منشأة صحية أو تعليمية أو رياضية",
+          "ru": "Медицинское, образовательное или спортивное учреждение",
+          "zh": "医疗、教育或体育设施"
         }
       },
       {
@@ -811,7 +1021,14 @@
           "fi": "Muu liikekiinteistö",
           "et": "Muu ärikinnisvara",
           "lv": "Cits komercīpašums",
-          "lt": "Kitas komercinis turtas"
+          "lt": "Kitas komercinis turtas",
+          "sr": "Ostale poslovne nekretnine",
+          "uk": "Інша комерційна нерухомість",
+          "tr": "Diğer ticari gayrimenkul",
+          "he": "נכס מסחרי אחר",
+          "ar": "عقار تجاري آخر",
+          "ru": "Другая коммерческая недвижимость",
+          "zh": "其他商业物业"
         }
       }
     ],
@@ -840,7 +1057,14 @@
       "fi": "Teollisuus- ja logistiikkakiinteistöt",
       "et": "Tööstus- ja logistikakinnisvara",
       "lv": "Rūpniecības un loģistikas īpašumi",
-      "lt": "Pramonės ir logistikos nekilnojamasis turtas"
+      "lt": "Pramonės ir logistikos nekilnojamasis turtas",
+      "sr": "Industrijske i logističke nekretnine",
+      "uk": "Промислова та логістична нерухомість",
+      "tr": "Endüstriyel ve lojistik gayrimenkul",
+      "he": "נכסי תעשייה ולוגיסטיקה",
+      "ar": "عقارات صناعية ولوجستية",
+      "ru": "Промышленная и логистическая недвижимость",
+      "zh": "工业及物流物业"
     },
     "subtypes": [
       {
@@ -866,7 +1090,14 @@
           "fi": "Tehdas, tuotantolaitos",
           "et": "Tehas, tootmisüksus",
           "lv": "Rūpnīca, ražotne",
-          "lt": "Gamykla, įmonė"
+          "lt": "Gamykla, įmonė",
+          "sr": "Fabrika, pogon",
+          "uk": "Завод, виробництво",
+          "tr": "Fabrika, tesis",
+          "he": "מפעל",
+          "ar": "مصنع، منشأة إنتاج",
+          "ru": "Завод, производство",
+          "zh": "工厂、厂房"
         }
       },
       {
@@ -892,7 +1123,14 @@
           "fi": "Varasto, logistiikkakeskus",
           "et": "Ladu, logistikakeskus",
           "lv": "Noliktava, loģistikas centrs",
-          "lt": "Sandėlis, logistikos centras"
+          "lt": "Sandėlis, logistikos centras",
+          "sr": "Magacin, logistički centar",
+          "uk": "Склад, логістичний центр",
+          "tr": "Depo, lojistik merkezi",
+          "he": "מחסן, מרכז לוגיסטי",
+          "ar": "مستودع، مركز لوجستي",
+          "ru": "Склад, логистический центр",
+          "zh": "仓库、物流中心"
         }
       },
       {
@@ -918,7 +1156,14 @@
           "fi": "Teollisuushalli",
           "et": "Tööstushall",
           "lv": "Rūpnieciskā halle",
-          "lt": "Pramoninis angaras"
+          "lt": "Pramoninis angaras",
+          "sr": "Industrijska hala",
+          "uk": "Виробничий цех",
+          "tr": "Endüstriyel hangar",
+          "he": "אולם תעשייתי",
+          "ar": "صالة صناعية",
+          "ru": "Производственный цех",
+          "zh": "工业厂房"
         }
       },
       {
@@ -944,7 +1189,14 @@
           "fi": "Korjaamo, huoltokeskus",
           "et": "Töökoda, teeninduskeskus",
           "lv": "Darbnīca, servisa centrs",
-          "lt": "Dirbtuvės, aptarnavimo centras"
+          "lt": "Dirbtuvės, aptarnavimo centras",
+          "sr": "Radionica, servis",
+          "uk": "Майстерня, сервіс",
+          "tr": "Atölye, servis",
+          "he": "סדנה, מוסך שירות",
+          "ar": "ورشة، مركز صيانة",
+          "ru": "Мастерская, сервис",
+          "zh": "车间、维修中心"
         }
       },
       {
@@ -970,7 +1222,14 @@
           "fi": "Elintarviketehdas",
           "et": "Toiduainetööstus",
           "lv": "Pārtikas pārstrādes uzņēmums",
-          "lt": "Maisto perdirbimo įmonė"
+          "lt": "Maisto perdirbimo įmonė",
+          "sr": "Pogon za preradu hrane",
+          "uk": "Харчопереробне підприємство",
+          "tr": "Gıda işleme tesisi",
+          "he": "מפעל לעיבוד מזון",
+          "ar": "مصنع لتصنيع الأغذية",
+          "ru": "Пищеперерабатывающее предприятие",
+          "zh": "食品加工厂"
         }
       },
       {
@@ -996,7 +1255,14 @@
           "fi": "Muu teollisuuskiinteistö",
           "et": "Muu tööstuskinnisvara",
           "lv": "Cits rūpniecības īpašums",
-          "lt": "Kitas pramoninis turtas"
+          "lt": "Kitas pramoninis turtas",
+          "sr": "Ostale industrijske nekretnine",
+          "uk": "Інша промислова нерухомість",
+          "tr": "Diğer endüstriyel gayrimenkul",
+          "he": "נכס תעשייתי אחר",
+          "ar": "عقار صناعي آخر",
+          "ru": "Другая промышленная недвижимость",
+          "zh": "其他工业物业"
         }
       }
     ],
@@ -1025,7 +1291,14 @@
       "fi": "Kartanot ja historialliset kiinteistöt",
       "et": "Mõisad ja ajaloolised kinnistud",
       "lv": "Muižas un vēsturiski īpašumi",
-      "lt": "Dvarai ir istoriniai pastatai"
+      "lt": "Dvarai ir istoriniai pastatai",
+      "sr": "Kurije, dvorci i istorijske nekretnine",
+      "uk": "Садиби, замки та історична нерухомість",
+      "tr": "Konaklar, şatolar ve tarihî gayrimenkul",
+      "he": "אחוזות, טירות ונכסים היסטוריים",
+      "ar": "قصور ريفية وقلاع وعقارات تاريخية",
+      "ru": "Усадьбы, замки и историческая недвижимость",
+      "zh": "庄园、城堡及历史物业"
     },
     "subtypes": [
       {
@@ -1051,7 +1324,14 @@
           "fi": "Linna, kartano",
           "et": "Loss, mõisahoone",
           "lv": "Pils, muižas kungu māja",
-          "lt": "Pilis, dvaras"
+          "lt": "Pilis, dvaras",
+          "sr": "Dvorac, kurija",
+          "uk": "Замок, садиба",
+          "tr": "Şato, konak",
+          "he": "טירה, אחוזה",
+          "ar": "قلعة، قصر ريفي",
+          "ru": "Замок, усадьба",
+          "zh": "城堡、庄园宅邸"
         }
       },
       {
@@ -1077,7 +1357,14 @@
           "fi": "Historiallinen huvila, maaseutukartano",
           "et": "Ajalooline villa, maamaja",
           "lv": "Vēsturiska villa, lauku māja",
-          "lt": "Istorinė vila, kaimo rezidencija"
+          "lt": "Istorinė vila, kaimo rezidencija",
+          "sr": "Istorijska vila ili letnjikovac",
+          "uk": "Історична вілла або заміський маєток",
+          "tr": "Tarihî villa veya köşk",
+          "he": "וילה היסטורית או בית כפרי",
+          "ar": "فيلا تاريخية أو منزل ريفي",
+          "ru": "Историческая вилла или загородная усадьба",
+          "zh": "历史别墅或乡间宅邸"
         }
       },
       {
@@ -1103,7 +1390,14 @@
           "fi": "Linnoitus, luostari tai historiallinen rakennus",
           "et": "Kindlus, klooster või ajalooline hoone",
           "lv": "Cietoksnis, klosteris vai vēsturiska ēka",
-          "lt": "Tvirtovė, vienuolynas ar istorinis pastatas"
+          "lt": "Tvirtovė, vienuolynas ar istorinis pastatas",
+          "sr": "Tvrđava, manastir ili istorijska zgrada",
+          "uk": "Фортеця, монастир або історична будівля",
+          "tr": "Kale, manastır veya tarihî bina",
+          "he": "מבצר, מנזר או מבנה היסטורי",
+          "ar": "حصن أو دير أو مبنى تاريخي",
+          "ru": "Крепость, монастырь или историческое здание",
+          "zh": "要塞、修道院或历史建筑"
         }
       },
       {
@@ -1129,7 +1423,14 @@
           "fi": "Suojeltu kiinteistö",
           "et": "Mälestisena kaitstav kinnistu",
           "lv": "Kultūras piemineklis",
-          "lt": "Saugomas kultūros paveldo objektas"
+          "lt": "Saugomas kultūros paveldo objektas",
+          "sr": "Spomenik kulture",
+          "uk": "Пам’ятка архітектури",
+          "tr": "Tescilli yapı",
+          "he": "מבנה לשימור",
+          "ar": "مبنى أثري مسجّل",
+          "ru": "Памятник архитектуры",
+          "zh": "文物保护建筑"
         }
       },
       {
@@ -1155,7 +1456,14 @@
           "fi": "Muu historiallinen kiinteistö",
           "et": "Muu ajalooline kinnistu",
           "lv": "Cits vēsturisks īpašums",
-          "lt": "Kitas istorinis turtas"
+          "lt": "Kitas istorinis turtas",
+          "sr": "Ostale istorijske nekretnine",
+          "uk": "Інша історична нерухомість",
+          "tr": "Diğer tarihî gayrimenkul",
+          "he": "נכס היסטורי אחר",
+          "ar": "عقار تاريخي آخر",
+          "ru": "Другая историческая недвижимость",
+          "zh": "其他历史物业"
         }
       }
     ],
@@ -1184,7 +1492,14 @@
       "fi": "Tontit ja kehitysalueet",
       "et": "Krundid ja arendusalad",
       "lv": "Zemes gabali un attīstības teritorijas",
-      "lt": "Sklypai ir plėtros teritorijos"
+      "lt": "Sklypai ir plėtros teritorijos",
+      "sr": "Placevi i razvojne lokacije",
+      "uk": "Земельні ділянки та майданчики під забудову",
+      "tr": "Arsalar ve geliştirme alanları",
+      "he": "מגרשים ושטחים לפיתוח",
+      "ar": "أراضٍ ومواقع للتطوير",
+      "ru": "Земельные участки и площадки под застройку",
+      "zh": "地块及开发用地"
     },
     "subtypes": [
       {
@@ -1210,7 +1525,14 @@
           "fi": "Asuinrakennustontti",
           "et": "Elamumaa krunt",
           "lv": "Apbūves gabals dzīvojamai mājai",
-          "lt": "Gyvenamosios statybos sklypas"
+          "lt": "Gyvenamosios statybos sklypas",
+          "sr": "Plac za stambenu gradnju",
+          "uk": "Ділянка під житлову забудову",
+          "tr": "Konut imarlı arsa",
+          "he": "מגרש לבניית מגורים",
+          "ar": "قطعة أرض للبناء السكني",
+          "ru": "Участок под жилую застройку",
+          "zh": "住宅建设用地"
         }
       },
       {
@@ -1236,7 +1558,14 @@
           "fi": "Liike- tai teollisuustontti",
           "et": "Äri- või tootmismaa krunt",
           "lv": "Komerciālas vai rūpnieciskas apbūves gabals",
-          "lt": "Komercinės ar pramoninės paskirties sklypas"
+          "lt": "Komercinės ar pramoninės paskirties sklypas",
+          "sr": "Plac za poslovnu ili industrijsku gradnju",
+          "uk": "Комерційна або промислова ділянка",
+          "tr": "Ticari veya sanayi arsası",
+          "he": "מגרש מסחרי או תעשייתי",
+          "ar": "قطعة أرض تجارية أو صناعية",
+          "ru": "Коммерческий или промышленный участок",
+          "zh": "商业或工业用地"
         }
       },
       {
@@ -1262,7 +1591,14 @@
           "fi": "Matkailun kehitysalue",
           "et": "Turismi arendusala",
           "lv": "Tūrisma attīstības teritorija",
-          "lt": "Turizmo plėtros teritorija"
+          "lt": "Turizmo plėtros teritorija",
+          "sr": "Lokacija za turistički razvoj",
+          "uk": "Ділянка для туристичного розвитку",
+          "tr": "Turizm geliştirme alanı",
+          "he": "שטח לפיתוח תיירותי",
+          "ar": "موقع للتطوير السياحي",
+          "ru": "Участок для туристического развития",
+          "zh": "旅游开发用地"
         }
       },
       {
@@ -1288,7 +1624,14 @@
           "fi": "Laaja kehitysalue",
           "et": "Suur arendusala",
           "lv": "Liela attīstības teritorija",
-          "lt": "Didelė plėtros teritorija"
+          "lt": "Didelė plėtros teritorija",
+          "sr": "Veća razvojna lokacija",
+          "uk": "Великий майданчик під забудову",
+          "tr": "Büyük geliştirme alanı",
+          "he": "שטח פיתוח גדול",
+          "ar": "موقع تطوير كبير",
+          "ru": "Крупная площадка под застройку",
+          "zh": "大型开发用地"
         }
       },
       {
@@ -1314,7 +1657,14 @@
           "fi": "Maatalousmaa",
           "et": "Põllumajandusmaa",
           "lv": "Lauksaimniecības zeme",
-          "lt": "Žemės ūkio paskirties žemė"
+          "lt": "Žemės ūkio paskirties žemė",
+          "sr": "Poljoprivredno zemljište",
+          "uk": "Сільськогосподарська земля",
+          "tr": "Tarım arazisi",
+          "he": "קרקע חקלאית",
+          "ar": "أرض زراعية",
+          "ru": "Сельскохозяйственная земля",
+          "zh": "农业用地"
         }
       },
       {
@@ -1340,7 +1690,14 @@
           "fi": "Muu tontti tai kehitysalue",
           "et": "Muu krunt või arendusala",
           "lv": "Cits zemes gabals vai attīstības teritorija",
-          "lt": "Kitas sklypas ar plėtros teritorija"
+          "lt": "Kitas sklypas ar plėtros teritorija",
+          "sr": "Ostali placevi ili razvojne lokacije",
+          "uk": "Інша ділянка або майданчик під забудову",
+          "tr": "Diğer arsa veya geliştirme alanı",
+          "he": "מגרש או שטח פיתוח אחר",
+          "ar": "أرض أو موقع تطوير آخر",
+          "ru": "Другой участок или площадка под застройку",
+          "zh": "其他地块或开发用地"
         }
       }
     ],
@@ -1369,7 +1726,14 @@
       "fi": "Sijoituskiinteistöt",
       "et": "Investeerimiskinnisvara",
       "lv": "Investīciju īpašumi",
-      "lt": "Investicinis nekilnojamasis turtas"
+      "lt": "Investicinis nekilnojamasis turtas",
+      "sr": "Investicione nekretnine",
+      "uk": "Інвестиційна нерухомість",
+      "tr": "Yatırımlık gayrimenkul",
+      "he": "נכסי השקעה",
+      "ar": "عقارات استثمارية",
+      "ru": "Инвестиционная недвижимость",
+      "zh": "投资物业"
     },
     "subtypes": [
       {
@@ -1395,7 +1759,14 @@
           "fi": "Vuokrattu asuinkiinteistö",
           "et": "Üüritud elukinnisvara",
           "lv": "Izīrēts dzīvojamais īpašums",
-          "lt": "Išnuomotas gyvenamasis turtas"
+          "lt": "Išnuomotas gyvenamasis turtas",
+          "sr": "Izdata stambena nekretnina",
+          "uk": "Житлова нерухомість зі здачею в оренду",
+          "tr": "Kiracılı konut",
+          "he": "נכס מגורים מושכר",
+          "ar": "عقار سكني مؤجَّر",
+          "ru": "Жилая недвижимость, сданная в аренду",
+          "zh": "已出租住宅物业"
         }
       },
       {
@@ -1421,7 +1792,14 @@
           "fi": "Kerrostalo",
           "et": "Kortermaja",
           "lv": "Daudzdzīvokļu māja",
-          "lt": "Daugiabutis namas"
+          "lt": "Daugiabutis namas",
+          "sr": "Stambena zgrada sa više stanova",
+          "uk": "Багатоквартирний житловий будинок",
+          "tr": "Çok daireli konut binası",
+          "he": "בניין מגורים רב־יחידתי",
+          "ar": "مبنى سكني متعدد الوحدات",
+          "ru": "Многоквартирный жилой дом",
+          "zh": "多户住宅楼"
         }
       },
       {
@@ -1447,7 +1825,14 @@
           "fi": "Vuokrattu liike- tai teollisuuskiinteistö",
           "et": "Üüritud äri- või tööstuskinnisvara",
           "lv": "Iznomāts komerciāls vai rūpniecisks īpašums",
-          "lt": "Išnuomotas komercinis ar pramoninis turtas"
+          "lt": "Išnuomotas komercinis ar pramoninis turtas",
+          "sr": "Izdata poslovna ili industrijska nekretnina",
+          "uk": "Комерційна або промислова нерухомість зі здачею в оренду",
+          "tr": "Kiracılı ticari veya endüstriyel gayrimenkul",
+          "he": "נכס מסחרי או תעשייתי מושכר",
+          "ar": "عقار تجاري أو صناعي مؤجَّر",
+          "ru": "Коммерческая или промышленная недвижимость, сданная в аренду",
+          "zh": "已出租商业或工业物业"
         }
       },
       {
@@ -1473,7 +1858,14 @@
           "fi": "Tuottava kiinteistö",
           "et": "Tulu teeniv kinnisvara",
           "lv": "Ienākumus nesošs īpašums",
-          "lt": "Pajamas duodantis turtas"
+          "lt": "Pajamas duodantis turtas",
+          "sr": "Nekretnina koja donosi prihod",
+          "uk": "Прибуткова нерухомість",
+          "tr": "Gelir getiren gayrimenkul",
+          "he": "נכס מניב",
+          "ar": "عقار مدرّ للدخل",
+          "ru": "Доходная недвижимость",
+          "zh": "收益型物业"
         }
       },
       {
@@ -1499,7 +1891,14 @@
           "fi": "Kiinteistösalkku",
           "et": "Kinnisvaraportfell",
           "lv": "Īpašumu portfelis",
-          "lt": "Nekilnojamojo turto portfelis"
+          "lt": "Nekilnojamojo turto portfelis",
+          "sr": "Portfolio nekretnina",
+          "uk": "Портфель нерухомості",
+          "tr": "Gayrimenkul portföyü",
+          "he": "תיק נכסים",
+          "ar": "محفظة عقارية",
+          "ru": "Портфель недвижимости",
+          "zh": "物业组合"
         }
       },
       {
@@ -1525,7 +1924,14 @@
           "fi": "Kiinteistökehityshanke",
           "et": "Kinnisvaraarendusprojekt",
           "lv": "Nekustamā īpašuma attīstības projekts",
-          "lt": "Nekilnojamojo turto plėtros projektas"
+          "lt": "Nekilnojamojo turto plėtros projektas",
+          "sr": "Projekat razvoja nekretnina",
+          "uk": "Девелоперський проєкт",
+          "tr": "Gayrimenkul geliştirme projesi",
+          "he": "פרויקט ייזום נדל״ן",
+          "ar": "مشروع تطوير عقاري",
+          "ru": "Девелоперский проект",
+          "zh": "房地产开发项目"
         }
       },
       {
@@ -1551,7 +1957,14 @@
           "fi": "Muu sijoituskiinteistö",
           "et": "Muu investeerimiskinnisvara",
           "lv": "Cits investīciju īpašums",
-          "lt": "Kitas investicinis turtas"
+          "lt": "Kitas investicinis turtas",
+          "sr": "Ostale investicione nekretnine",
+          "uk": "Інша інвестиційна нерухомість",
+          "tr": "Diğer yatırımlık gayrimenkul",
+          "he": "נכס השקעה אחר",
+          "ar": "عقار استثماري آخر",
+          "ru": "Другая инвестиционная недвижимость",
+          "zh": "其他投资物业"
         }
       }
     ],
@@ -1576,7 +1989,14 @@
       "fi": "sijoituskiinteisto",
       "et": "investeerimiskinnisvara",
       "lv": "investiciju-ipasums",
-      "lt": "investicinis-turtas"
+      "lt": "investicinis-turtas",
+      "sr": "investiciona-nekretnina",
+      "uk": "investytsiina-nerukhomist",
+      "tr": "yatirimlik-gayrimenkul",
+      "he": "investment-property",
+      "ar": "investment-property",
+      "ru": "investitsionnaya-nedvizhimost",
+      "zh": "investment-property"
     }
   },
   {
@@ -1602,7 +2022,14 @@
       "fi": "Muut kiinteistöt",
       "et": "Muu kinnisvara",
       "lv": "Citi īpašumi",
-      "lt": "Kitas nekilnojamasis turtas"
+      "lt": "Kitas nekilnojamasis turtas",
+      "sr": "Ostale nekretnine",
+      "uk": "Інша нерухомість",
+      "tr": "Diğer gayrimenkuller",
+      "he": "נכסים אחרים",
+      "ar": "عقارات أخرى",
+      "ru": "Прочая недвижимость",
+      "zh": "其他物业"
     },
     "subtypes": [
       {
@@ -1628,7 +2055,14 @@
           "fi": "Autotalli, autopaikka",
           "et": "Garaaž, parkimiskoht",
           "lv": "Garāža, autostāvvieta",
-          "lt": "Garažas, automobilio stovėjimo vieta"
+          "lt": "Garažas, automobilio stovėjimo vieta",
+          "sr": "Garaža, parking mesto",
+          "uk": "Гараж, паркомісце",
+          "tr": "Garaj, otopark yeri",
+          "he": "מוסך, מקום חניה",
+          "ar": "مرآب، موقف سيارات",
+          "ru": "Гараж, машино-место",
+          "zh": "车库、停车位"
         }
       },
       {
@@ -1654,7 +2088,14 @@
           "fi": "Varasto, kellari",
           "et": "Panipaik, kelder",
           "lv": "Noliktava, pagrabs",
-          "lt": "Sandėliukas, rūsys"
+          "lt": "Sandėliukas, rūsys",
+          "sr": "Ostava, podrum",
+          "uk": "Комора, погріб",
+          "tr": "Depo, kiler",
+          "he": "מחסן, מרתף",
+          "ar": "مخزن، قبو",
+          "ru": "Кладовая, погреб",
+          "zh": "储藏室、地窖"
         }
       },
       {
@@ -1680,7 +2121,14 @@
           "fi": "Viinipuristamo, viinikellari",
           "et": "Veinipressikoda, veinikelder",
           "lv": "Vīna spiestuve, vīna pagrabs",
-          "lt": "Vyno spaudykla, vyno rūsys"
+          "lt": "Vyno spaudykla, vyno rūsys",
+          "sr": "Vinarija, vinski podrum",
+          "uk": "Винокурня, винний погріб",
+          "tr": "Şarap imalathanesi, şarap mahzeni",
+          "he": "בית גת, מרתף יין",
+          "ar": "معصرة نبيذ، قبو نبيذ",
+          "ru": "Винодельня, винный погреб",
+          "zh": "榨酒房、酒窖"
         }
       },
       {
@@ -1706,7 +2154,14 @@
           "fi": "Erikoiskiinteistö",
           "et": "Eriotstarbeline kinnisvara",
           "lv": "Īpašas nozīmes īpašums",
-          "lt": "Specialios paskirties turtas"
+          "lt": "Specialios paskirties turtas",
+          "sr": "Nekretnina posebne namene",
+          "uk": "Нерухомість спеціального призначення",
+          "tr": "Özel amaçlı gayrimenkul",
+          "he": "נכס לייעוד מיוחד",
+          "ar": "عقار لأغراض خاصة",
+          "ru": "Недвижимость специального назначения",
+          "zh": "特殊用途物业"
         }
       },
       {
@@ -1732,7 +2187,14 @@
           "fi": "Muu kiinteistö",
           "et": "Muu kinnisvara",
           "lv": "Cits īpašums",
-          "lt": "Kitas turtas"
+          "lt": "Kitas turtas",
+          "sr": "Ostale nekretnine",
+          "uk": "Інша нерухомість",
+          "tr": "Diğer gayrimenkul",
+          "he": "נכס אחר",
+          "ar": "عقار آخر",
+          "ru": "Прочая недвижимость",
+          "zh": "其他物业"
         }
       }
     ],
@@ -1757,7 +2219,14 @@
       "fi": "muu-kiinteisto",
       "et": "muu-kinnisvara",
       "lv": "cits-ipasums",
-      "lt": "kitas-turtas"
+      "lt": "kitas-turtas",
+      "sr": "ostale-nekretnine",
+      "uk": "insha-nerukhomist",
+      "tr": "diger-gayrimenkul",
+      "he": "other-property",
+      "ar": "other-property",
+      "ru": "prochaya-nedvizhimost",
+      "zh": "other-property"
     }
   }
 ]
