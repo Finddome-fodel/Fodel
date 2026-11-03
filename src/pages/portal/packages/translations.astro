@@ -1,0 +1,21 @@
+---
+/**
+ * Csomagok → Fordítási csomagok: placeholder. The translation packages (CC-3 in
+ * claude-code-translations.md) replace this page; the tab, the route, the
+ * guard and the endpoint (/api/portal/packages/translations) already exist.
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+
+const { profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+---
+
+<PackagesShell tab="translations">
+  <section class="set-card pk-soon">
+    <span class="pill">Hamarosan</span>
+    <h2>Fordítási csomagok</h2>
+    <p>Itt állíthatja majd be a fordítási csomagokat (Go, Európa, World): melyik nyelvek tartoznak beléjük, és mennyibe kerülnek. Addig a fordítás ára nyelvenként a Kiegészítők fülön található.</p>
+  </section>
+</PackagesShell>

@@ -1,0 +1,172 @@
+---
+/**
+ * Csomagok → Hirdetési csomagok (spec §9.0): one card per package — name,
+ * duration, what it contains, which one is recommended — with a live preview
+ * of what sellers see. Prices are shown read-only here and edited in one
+ * place only, Csomagok → Ársávok.
+ *
+ * Saved to site_settings.services.listingPackages / .packagePhone by
+ * /api/portal/packages/listing; the price list, the submit form, approval,
+ * checkout, renewal, invoices and the photo uploader all read the same values
+ * (src/lib/listing-packages.ts).
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+import { listingCatalog, packageCard } from '~/lib/listing-packages';
+import { tierRange } from '~/lib/price-tiers';
+import { fmtHuf, fmtEur } from '~/lib/portal/num';
+import { packageTab } from '~/lib/portal/package-admin';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const catalog = listingCatalog(row?.services);
+const previews = Object.fromEntries(catalog.packages.map((pkg) => [pkg.id, packageCard(pkg, catalog, 'hu')]));
+
+const tierLabel: Record<string, string> = { 'cheap-6m': 'Basic', 'normal-12m': 'Prémium' };
+const videoOptions = [
+  { value: 'included', label: 'Saját videó linkje' },
+  { value: 'none', label: 'Nincs videó' },
+];
+
+/** „0 – 150.000.000 Ft”, „150.000.001 Ft felett”, or „Minden ingatlanárnál” for a flat price. */
+function rangeText(tiers: (typeof catalog.packages)[number]['tiers'], index: number): string {
+  if (tiers.length === 1) return 'Minden ingatlanárnál';
+  const { fromHuf, toHuf } = tierRange(tiers, index);
+  if (toHuf === null) return `${fmtHuf(fromHuf - 1)} felett`;
+  return index === 0 ? `${fmtHuf(toHuf)}-ig` : `${fmtHuf(fromHuf)} – ${fmtHuf(toHuf)}`;
+}
+const tiersHref = packageTab('tiers').href;
+---
+
+<PackagesShell tab="listing" migrated={migrated}>
+  <form method="POST" action={packageTab('listing').api} id="pkg-form" class="pk-form" data-pk-form>
+    <fieldset disabled={!migrated}>
+      <div class="pk-grid">
+        {catalog.packages.map((pkg) => {
+          const k = (field: string) => `${pkg.id}_${field}`;
+          const preview = previews[pkg.id];
+          return (
+            <section class="set-card pk" data-pkg={pkg.id}>
+              <header class="pk-head">
+                <span class="pk-tier">{tierLabel[pkg.id] ?? pkg.id}</span>
+                <label class="pk-rec">
+                  <input type="radio" name="recommended" value={pkg.id} checked={pkg.recommended} />
+                  <span>Ajánlott</span>
+                </label>
+              </header>
+
+              <div class="pk-block">
+                <p class="pk-label">Név</p>
+                <div class="pk-row two">
+                  <label class="f"><span>Magyar</span><input type="text" name={k('name_hu')} maxlength="80" value={pkg.names.hu} data-bind="name" required /></label>
+                  <label class="f"><span>Holland</span><input type="text" name={k('name_nl')} maxlength="80" value={pkg.names.nl} required /></label>
+                </div>
+              </div>
+
+              <div class="pk-block">
+                <p class="pk-label">Ár és időtartam</p>
+                <div class="pk-sum">
+                  <ol aria-label="Árak ingatlanár szerint">
+                    {pkg.tiers.map((tier, index) => (
+                      <li><span>{rangeText(pkg.tiers, index)}</span><b>{fmtEur(tier.priceEur)}</b></li>
+                    ))}
+                  </ol>
+                  <a href={`${tiersHref}#pkg-${pkg.id}`}>Ársávok szerkesztése →</a>
+                </div>
+                <div class="pk-row two">
+                  <label class="f"><span>Időtartam</span><span class="unit"><input type="number" inputmode="numeric" name={k('months')} min="1" max="36" step="1" value={pkg.months} data-bind="months" required /><i>hónap</i></span></label>
+                </div>
+              </div>
+
+              <div class="pk-block">
+                <p class="pk-label">Tartalom</p>
+                <div class="f">
+                  <span>Videó a hirdetésben</span>
+                  <div class="seg" role="radiogroup" aria-label="Videó a hirdetésben">
+                    {videoOptions.map((option) => (
+                      <label>
+                        <input type="radio" name={k('video')} value={option.value} checked={pkg.video === option.value} data-bind="video" />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p class="f-hint">A hirdető saját videójának linkje díjmentes. A helyszíni videókészítés külön rendelhető kiegészítő (Kiegészítők).</p>
+                </div>
+
+                <div class="sw-list">
+                  <label class="sw">
+                    <input type="checkbox" name={k('phone')} value="yes" checked={pkg.phone} data-bind="phone" />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Telefonszám a hirdetésben</strong>Csak ha a hirdető is hozzájárult. Különben visszahívás-űrlap.</span>
+                  </label>
+                  <label class="sw">
+                    <input type="checkbox" name={k('edited_images')} value="yes" checked={pkg.editedImages} data-bind="editedImages" />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Képek szakszerű feldolgozása</strong>Mi javítjuk a fényképeket.</span>
+                  </label>
+                  <label class="sw">
+                    <input type="checkbox" name={k('edited_text')} value="yes" checked={pkg.editedText} data-bind="editedText" />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Szöveg szerkesztése</strong>Mi szerkesztjük a leírást.</span>
+                  </label>
+                </div>
+              </div>
+
+              <aside class="pk-preview" aria-label="Előnézet">
+                <p class="pk-label">Így látja a hirdető</p>
+                <div class:list={['pv', { rec: pkg.recommended }]} data-max-images={pkg.maxImages ?? ''}>
+                  <p class="pv-top"><b data-out="name">{preview.name}</b><span class="pv-badge">Ajánlott</span></p>
+                  <p class="pv-price"><b>{preview.price}</b> <span data-out="duration">{preview.duration}</span></p>
+                  {preview.priceTiers.map((tier) => <p class="pv-alt">{tier.price} · {tier.note}</p>)}
+                  <ul data-out="features">{preview.features.map((line) => <li>{line}</li>)}</ul>
+                </div>
+              </aside>
+            </section>
+          );
+        })}
+      </div>
+
+      <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn">Mentés</button></div></div>
+    </fieldset>
+  </form>
+</PackagesShell>
+
+<script>
+  // Live preview — display only; the server builds the real wording from the
+  // saved values (packageCard in src/lib/listing-packages.ts).
+  const form = document.getElementById('pkg-form') as HTMLFormElement | null;
+
+  function render(card: HTMLElement) {
+    const val = (bind: string) => card.querySelector<HTMLInputElement>(`[data-bind="${bind}"]`);
+    const on = (bind: string) => Boolean(val(bind)?.checked);
+    const video = card.querySelector<HTMLInputElement>('[data-bind="video"]:checked')?.value;
+    const months = val('months')?.value || '–';
+    const max = card.querySelector<HTMLElement>('.pv')?.dataset.maxImages ?? '';
+
+    const out = (name: string) => card.querySelector<HTMLElement>(`[data-out="${name}"]`)!;
+    out('name').textContent = val('name')?.value || '—';
+    out('duration').textContent = `${months} hónap`;
+
+    const lines = [
+      max ? `Legfeljebb ${max} kép` : 'Korlátlan számú kép',
+      on('editedImages') ? 'A képeket szakszerűen feldolgozzuk' : 'A képek az eredeti állapotban jelennek meg',
+      on('editedText') ? 'A szöveget szakszerűen megszerkesztjük' : 'A szöveg a beküldött formában jelenik meg',
+      video === 'included' ? 'Saját videója linkje díjmentesen megadható' : '',
+      on('phone') ? 'Az Ön telefonszáma megjelenhet a hirdetésben' : 'Az érdeklődők a FINDDOME-en keresztül érik el',
+    ].filter(Boolean);
+    out('features').replaceChildren(...lines.map((line) => Object.assign(document.createElement('li'), { textContent: line })));
+  }
+
+  form?.addEventListener('input', (event) => {
+    const card = (event.target as Element).closest<HTMLElement>('[data-pkg]');
+    if (card) render(card);
+    document.querySelectorAll<HTMLElement>('[data-pkg]').forEach((item) => {
+      const rec = Boolean(item.querySelector<HTMLInputElement>('input[name="recommended"]')?.checked);
+      item.querySelector('.pv')?.classList.toggle('rec', rec);
+    });
+  });
+</script>

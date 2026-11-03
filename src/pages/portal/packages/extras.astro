@@ -1,0 +1,93 @@
+---
+/**
+ * Csomagok → Kiegészítők: what can be ordered next to a package, and for
+ * how much. An extra with one price is edited here; one with price tiers
+ * shows them and links to Ársávok, so each price has exactly one place.
+ * Retired extras (homepage highlight, the paid later photo upload) stay
+ * listed as „Kivezetve” so it is clear why old orders still name them —
+ * they cannot be edited or ordered.
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+import MoneyInput from '~/components/portal/MoneyInput.astro';
+import { listingCatalog, PRICE_MAX } from '~/lib/listing-packages';
+import { tierRange } from '~/lib/price-tiers';
+import { fmtEur, fmtHuf } from '~/lib/portal/num';
+import { packageTab } from '~/lib/portal/package-admin';
+import { EXTRA_ADMIN } from '~/lib/portal/package-forms';
+import { countryLabel } from '~/config/countries';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const catalog = listingCatalog(row?.services);
+const selling = catalog.extras.filter((extra) => !extra.retired);
+const retired = catalog.extras.filter((extra) => extra.retired);
+const tiersHref = packageTab('tiers').href;
+---
+
+<PackagesShell tab="extras" migrated={migrated}>
+  <form method="POST" action={packageTab('extras').api} id="extras-form" class="pk-form" data-pk-form>
+    <fieldset disabled={!migrated}>
+      <section class="set-card">
+        <h2>Rendelhető kiegészítők</h2>
+        <p class="set-sub">Ezek jelennek meg az árlistán és a hirdetésfeladásnál, és ezekből készül a rendelés. Az ingatlanár szerint sávozott árakat az Ársávok fülön szerkesztheti.</p>
+        <div class="ex-grid">
+          {selling.map((extra) => {
+            const meta = EXTRA_ADMIN[extra.id];
+            return (
+              <div class="ex">
+                <div class="ex-name">
+                  <strong id={`ex-${extra.id}`}>{meta.label}</strong>
+                  {meta.note && <span>{meta.note}</span>}
+                  {extra.countries && (
+                    <span class="ex-tags">{extra.countries.map((code) => <span class="ex-tag">Csak itt: {countryLabel(code, 'hu')}</span>)}</span>
+                  )}
+                </div>
+                {extra.tiers.length === 1 ? (
+                  <div class="f">
+                    <MoneyInput name={`extra_${extra.id}`} value={extra.tiers[0].priceEur} min={0} max={PRICE_MAX} suffix={meta.unit} required aria-labelledby={`ex-${extra.id}`} />
+                    <a class="ex-link" href={`${tiersHref}#extra-${extra.id}`}>Ársávok hozzáadása →</a>
+                  </div>
+                ) : (
+                  <div class="pk-sum">
+                    <ol aria-label="Árak ingatlanár szerint">
+                      {extra.tiers.map((tier, index) => {
+                        const { fromHuf, toHuf } = tierRange(extra.tiers, index);
+                        return <li><span>{toHuf === null ? `${fmtHuf(fromHuf - 1)} felett` : index === 0 ? `${fmtHuf(toHuf)}-ig` : `${fmtHuf(fromHuf)} – ${fmtHuf(toHuf)}`}</span><b>{fmtEur(tier.priceEur)}</b></li>;
+                      })}
+                    </ol>
+                    <a href={`${tiersHref}#extra-${extra.id}`}>Ársávok szerkesztése →</a>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {retired.length > 0 && (
+        <section class="set-card">
+          <h2>Kivezetett tételek</h2>
+          <p class="set-sub">Már nem rendelhetők, és sehol sem jelennek meg eladásra. A régi rendelések és számlák továbbra is ezen a néven mutatják őket.</p>
+          <div class="ex-grid">
+            {retired.map((extra) => (
+              <div class="ex retired">
+                <div class="ex-name">
+                  <strong>{EXTRA_ADMIN[extra.id].label}</strong>
+                  {EXTRA_ADMIN[extra.id].note && <span>{EXTRA_ADMIN[extra.id].note}</span>}
+                  <span class="ex-tags"><span class="ex-tag off">Kivezetve</span><span class="ex-tag off">Utolsó ár: {fmtEur(extra.tiers[0].priceEur)}</span></span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn">Mentés</button></div></div>
+    </fieldset>
+  </form>
+</PackagesShell>
