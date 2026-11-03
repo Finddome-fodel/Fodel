@@ -14,6 +14,7 @@ import { PACKAGE_KINDS, valuationPackages } from '~/lib/valuation/packages';
 import { clearRuntimeConfigCache, type StoredValuationPackage } from '~/lib/runtime-config';
 import { requestRebuild } from '~/lib/rebuild';
 import { listingRules } from '~/lib/listing-rules';
+import { readMoney } from '~/lib/portal/num';
 
 export const prerender = false;
 
@@ -52,14 +53,18 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
   const current = valuationPackages(undefined);
   for (const kind of PACKAGE_KINDS) {
     const base = current.find((entry) => entry.kind === kind)!;
-    const priceRaw = String(form.get(`pkg_${kind}_price`) ?? '').trim();
-    const price = Number(priceRaw);
+    // A MoneyInput (spec §7): „1.500” is fifteen hundred, never 1.5. Empty means „árajánlat” (no fixed price).
+    const price = base.priceLocked ? null : readMoney(form, `pkg_${kind}_price`, { min: 0, max: 100000 });
+    if (price && !price.ok) {
+      const name = String(form.get(`pkg_${kind}_name_hu`) ?? '').trim() || kind;
+      return back('error=' + encodeURIComponent(`${name} – ár: ${price.message}`));
+    }
     valuationPackagesStored[kind] = {
       names: {
         hu: String(form.get(`pkg_${kind}_name_hu`) ?? '').trim().slice(0, NAME_MAX),
         nl: String(form.get(`pkg_${kind}_name_nl`) ?? '').trim().slice(0, NAME_MAX),
       },
-      ...(base.priceLocked ? {} : { priceEur: priceRaw !== '' && Number.isFinite(price) && price >= 0 && price <= 100000 ? Math.round(price) : null }),
+      ...(base.priceLocked ? {} : { priceEur: price?.ok ? price.value : null }),
       enabled: kind === 'indicative' ? true : form.get(`pkg_${kind}_enabled`) === 'yes',
     };
   }

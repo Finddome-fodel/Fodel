@@ -4,6 +4,7 @@ import { regionLabel } from '~/config/countries';
 import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
 import { parseLocaleNumber } from '~/lib/validation';
 import { roundEur, type RateSnapshot } from '~/lib/exchange-rates';
+import { groupAmountTyping } from '~/lib/portal/num';
 
 const coordinate = (s:string) => s.trim() ? Number(s.replace(/\s/g,'').replace(',','.')) : NaN;
 const roots=[...document.querySelectorAll<HTMLElement>('[data-listing-fields]')];
@@ -140,6 +141,22 @@ for(const form of forms){
       form.dispatchEvent(new CustomEvent('listing:price'));
     }catch{if(seq===priceSequence)out.textContent=x('Az árfolyam most nem érhető el. Próbálja újra a mentést később; korábbi árfolyamát megőrizzük.','De wisselkoers is nu niet beschikbaar. Probeer later opnieuw; de vorige koers blijft bewaard.','Exchange rates are unavailable. Try saving again later; the existing rate is preserved.');}
   }
+  // The price shows its grouping while typed („1.500.000”; en „1,500,000”), caret kept after the same digit (spec §7.4).
+  const priceInput=control('original_price') as HTMLInputElement|null;
+  priceInput?.addEventListener('input',()=>{
+    const before=priceInput.value,caret=priceInput.selectionStart??before.length;
+    const next=groupAmountTyping(before,locale);
+    if(next===before)return;
+    priceInput.value=next;
+    if(document.activeElement!==priceInput)return;
+    // Same number of digits left of the caret; right after the decimal mark if that was just typed.
+    const decimal=locale==='en'?'.':',';
+    const digits=before.slice(0,caret).replace(/\D/g,'').length;
+    let at=0;
+    for(let seen=0;at<next.length&&seen<digits;at++)if(/\d/.test(next[at]))seen++;
+    if(before[caret-1]===decimal&&next[at]===decimal)at++;
+    priceInput.setSelectionRange(at,at);
+  });
   control('original_price')?.addEventListener('change',()=>void showPrice());
   control('original_currency')?.addEventListener('change',()=>void showPrice());
   // The first estimate is needed for the package tier; stored prices remain unchanged until the amount/currency changes.

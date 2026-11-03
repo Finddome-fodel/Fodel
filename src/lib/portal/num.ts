@@ -153,3 +153,37 @@ export function readMoneyAll(form: FormData, name: string, opts: Omit<MoneyOptio
   const raw = isRawField(form, name);
   return form.getAll(name).map((value) => readMoney(String(value), undefined, { ...opts, raw }));
 }
+
+/* ── The owner's listing price (spec §7.4): grouped in the owner's portal language ── */
+
+/** hu and nl group with dots and use a decimal comma; en groups with commas and uses a decimal point. */
+export function amountSeparators(locale: string): { group: string; decimal: string } {
+  return locale === 'en' ? { group: ',', decimal: '.' } : { group: '.', decimal: ',' };
+}
+
+/**
+ * Regroups what an owner is typing into the price field: „1500000” → „1.500.000”
+ * (en: „1,500,000”), keeping up to two decimals after the locale's decimal mark.
+ * The server and the client read the result with parseLocaleNumber(), so the
+ * stored value stays the raw number.
+ */
+export function groupAmountTyping(text: string, locale: string): string {
+  const { group, decimal } = amountSeparators(locale);
+  const clean = text.replace(/[^\d.,]/g, '');
+  if (!clean) return '';
+  // The decimal mark is the locale's own, and only when at most two digits follow it.
+  const at = clean.lastIndexOf(decimal);
+  const tail = at >= 0 ? clean.slice(at + 1) : '';
+  const hasDecimal = at >= 0 && /^\d{0,2}$/.test(tail);
+  const whole = (hasDecimal ? clean.slice(0, at) : clean).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, group);
+  return hasDecimal ? `${grouped || '0'}${decimal}${tail}` : grouped;
+}
+
+/** A stored price shown in the owner's grouping („1.500.000”, „1,500,000.5”); none → ''. */
+export function formatAmount(value: number | null | undefined, locale: string): string {
+  if (value === null || value === undefined || !Number.isFinite(value) || value <= 0) return '';
+  const { decimal } = amountSeparators(locale);
+  const [whole, fraction = ''] = String(Math.round(value * 100) / 100).split('.');
+  return groupAmountTyping(fraction ? `${whole}${decimal}${fraction}` : whole, locale);
+}

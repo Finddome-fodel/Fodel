@@ -11,6 +11,7 @@
  */
 import type { OrderLine } from '~/lib/orders';
 import { PAYMENT_METHOD_LABEL, paymentStatusLabel } from '~/lib/portal/labels';
+import { fmtDecimal, fmtInt } from '~/lib/portal/num';
 
 export type LedgerFilters = {
   status: string;
@@ -169,9 +170,6 @@ export function totalsByCurrency(rows: LedgerRow[]): CurrencyTotals[] {
 
 /** Amount with its own currency. EUR keeps the site's "€ 1.234" style. */
 export function money(cents: number, currency: string): string {
-  const value = (cents / 100).toLocaleString('de-DE', {
-    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  });
+  const value = cents % 100 === 0 ? fmtInt(cents / 100) : fmtDecimal(cents / 100, { digits: 2, fixed: true });
   return currency === 'EUR' ? `€ ${value}` : `${value} ${currency}`;
 }

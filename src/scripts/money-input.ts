@@ -11,35 +11,41 @@ import { formatMoneyText, moneyDigits, rawMoney, MONEY_MESSAGES } from '~/lib/po
 const READY = 'moneyReady';
 
 const cents = (input: HTMLInputElement) => input.closest<HTMLElement>('[data-money]')?.dataset.cents === '1';
+/** `data-signed`: a leading minus is kept (invoice discount lines); every other MoneyInput is non-negative. */
+const signed = (input: HTMLInputElement) => input.closest<HTMLElement>('[data-money]')?.dataset.signed === '1';
+const minus = (input: HTMLInputElement, text: string) => signed(input) && /^\s*[-−–]/.test(text);
 
 /** The field's value as a number: whole units, or cents with allowCents. Empty → null. */
 export function moneyOf(input: HTMLInputElement | null | undefined): number | null {
   if (!input) return null;
   const raw = rawMoney(moneyDigits(input.value, cents(input)), cents(input));
-  return raw === '' ? null : Number(raw);
+  if (raw === '') return null;
+  return minus(input, input.value) ? -Number(raw) : Number(raw);
 }
 
 /** Puts a value (whole units, or cents with allowCents) into the field and its hidden twin. */
 export function setMoney(input: HTMLInputElement, value: number | null): void {
-  if (value === null || !Number.isFinite(value)) input.value = '';
+  const sign = value !== null && value < 0 && signed(input) ? '-' : '';
+  const abs = value === null ? null : Math.abs(value);
+  if (abs === null || !Number.isFinite(abs)) input.value = '';
   else if (cents(input)) {
-    const whole = Math.floor(value / 100);
-    const rest = value % 100;
-    input.value = formatMoneyText(rest ? `${whole},${String(rest).padStart(2, '0').replace(/0$/, '')}` : String(whole), true);
-  } else input.value = formatMoneyText(String(Math.round(value)));
+    const whole = Math.floor(abs / 100);
+    const rest = Math.round(abs % 100);
+    input.value = sign + formatMoneyText(rest ? `${whole},${String(rest).padStart(2, '0')}` : String(whole), true);
+  } else input.value = sign + formatMoneyText(String(Math.round(abs)));
   sync(input);
 }
 
 /** Digits (and the decimal comma) left of the caret. */
-function significantBefore(text: string, caret: number): number {
-  return text.slice(0, caret).replace(/[^\d,]/g, '').length;
+function significantBefore(text: string, caret: number, withSign = false): number {
+  return text.slice(0, caret).replace(withSign ? /[^\d,\-−–]/g : /[^\d,]/g, '').length;
 }
 
-function caretAfter(text: string, count: number): number {
+function caretAfter(text: string, count: number, withSign = false): number {
   if (count <= 0) return 0;
   let seen = 0;
   for (let i = 0; i < text.length; i++) {
-    if (/[\d,]/.test(text[i])) seen++;
+    if ((withSign ? /[\d,-]/ : /[\d,]/).test(text[i])) seen++;
     if (seen === count) return i + 1;
   }
   return text.length;
@@ -54,11 +60,12 @@ function sync(input: HTMLInputElement): void {
   const box = input.closest<HTMLElement>('[data-money]');
   const allowCents = cents(input);
   const raw = rawMoney(moneyDigits(input.value, allowCents), allowCents);
+  const negative = raw !== '' && minus(input, input.value);
   const hidden = hiddenOf(input);
-  if (hidden) hidden.value = raw;
+  if (hidden) hidden.value = negative ? `-${raw}` : raw;
   let message = '';
   if (raw !== '') {
-    const n = Number(raw);
+    const n = negative ? -Number(raw) : Number(raw);
     const min = box?.dataset.min ? Number(box.dataset.min) : null;
     const max = box?.dataset.max ? Number(box.dataset.max) : null;
     if (min !== null && n < min) message = MONEY_MESSAGES.min;
@@ -71,12 +78,13 @@ function reformat(input: HTMLInputElement): void {
   const allowCents = cents(input);
   const before = input.value;
   const caret = input.selectionStart ?? before.length;
-  const keep = significantBefore(before, caret);
-  const next = formatMoneyText(moneyDigits(before, allowCents), allowCents);
+  const keep = significantBefore(before, caret, signed(input));
+  const sign = minus(input, before) ? '-' : '';
+  const next = sign + formatMoneyText(moneyDigits(before, allowCents), allowCents);
   if (next !== before) {
     input.value = next;
     if (document.activeElement === input) {
-      const at = caretAfter(next, keep);
+      const at = caretAfter(next, keep, signed(input));
       input.setSelectionRange(at, at);
     }
   }
@@ -107,6 +115,8 @@ export function initMoneyInputs(root: ParentNode = document): void {
       const data = (event as InputEvent).data;
       if (!data || (event as InputEvent).inputType.startsWith('insertFromPaste')) return;
       const allowed = cents(input) ? /^[\d\s.,]+$/ : /^[\d\s.]+$/;
+      // A minus only where it means something: first, in a signed field.
+      if (signed(input) && /^[-−–]$/.test(data) && (input.selectionStart ?? 0) === 0) return;
       if (!allowed.test(data)) event.preventDefault();
     });
     reformat(input);

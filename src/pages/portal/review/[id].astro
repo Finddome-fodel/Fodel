@@ -38,6 +38,7 @@ import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/reque
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { paymentGatesPublishing } from '~/config/flags';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
+import { fmtDecimal, fmtEur } from '~/lib/portal/num';
 
 function mediaSrc(storagePath: string): string {
   if (storagePath.startsWith('http')) return storagePath;
@@ -162,7 +163,7 @@ const { data: freeEvent } = freeApprovedAt
 const freeNote = typeof freeEvent?.payload?.note === 'string' ? freeEvent.payload.note : null;
 const freeWaivedCents = Number(freeEvent?.payload?.waivedCents ?? 0);
 const freeFeeLine = freeWaivedCents > 0
-  ? ` A kiküldött ${(freeWaivedCents / 100).toLocaleString('de-DE')} €-s díjbekérőt érvénytelenítettük;`
+  ? ` A kiküldött ${fmtEur(freeWaivedCents / 100)}-s díjbekérőt érvénytelenítettük;`
   : ' Díjbekérő nem készült hozzá;';
 const canApproveFree = freeApprovalReady && !isFree && (reviewable || awaitingPayment);
 const openFee = openOrder?.status === 'pending' ? openOrder.amount_cents : null;
@@ -237,7 +238,7 @@ const { data: creditableReferral } = property.owner_id
 
   {awaitingPayment && (
     <p class="notice warn">
-      Ez a hirdetés jóváhagyva, fizetésre vár{openOrder ? ` — ${(openOrder.amount_cents / 100).toLocaleString('de-DE')} €` : ''}.
+      Ez a hirdetés jóváhagyva, fizetésre vár{openOrder ? ` — ${fmtEur(openOrder.amount_cents / 100)}` : ''}.
       Ha az átutalás megérkezett, alább élesítheti.
     </p>
   )}
@@ -257,7 +258,7 @@ const { data: creditableReferral } = property.owner_id
         const rules = fieldRules(group, subtype), shown = (k: keyof typeof rules) => rules[k] !== 'hidden';
         const d = readDetails(property.details, property);
         const term = (g: 'heating' | 'wall' | 'condition', key: string) => { const t = taxonomy[g].find((v) => v.key === key); return t ? labelIn(DETAIL_OPTIONS[g].find((v) => v.key === key)?.labels || t.labels, 'hu') : key; };
-        const m2 = (v: number | null | undefined) => v != null && v > 1 ? `${v.toLocaleString('hu')} m²` : null;
+        const m2 = (v: number | null | undefined) => v != null && v > 1 ? `${fmtDecimal(v)} m²` : null;
         const areas = [shown('floor_m2') && m2(property.floor_m2) && `${m2(property.floor_m2)} lakóegység`, shown('building_m2') && m2(property.building_m2) && `${m2(property.building_m2)} épület`, shown('plot_m2') && m2(property.plot_m2) && `${m2(property.plot_m2)} telek`].filter(Boolean);
         const counts = shown('rooms') ? ([['szoba', d.rooms], ['szint', d.floors], ['fürdőszoba', property.bathrooms ?? undefined], ['konyha', d.kitchens], ['különálló WC', d.toilets]] as [string, number | undefined][]).filter(([, n]) => n !== undefined).map(([k, n]) => `${n} ${k}`) : [];
         const energy = readEnergy(property.epc_class);
@@ -527,7 +528,7 @@ const { data: creditableReferral } = property.owner_id
             class="btn ghost"
             id="free-btn"
             data-from={property.status}
-            data-fee={openFee != null ? `${(openFee / 100).toLocaleString('de-DE')} €` : undefined}
+            data-fee={openFee != null ? fmtEur(openFee / 100) : undefined}
             data-service={requested.service ? 'yes' : undefined}
           >
             {awaitingPayment ? 'Jóváhagyás ingyen — díj elengedése' : 'Jóváhagyás ingyen'}

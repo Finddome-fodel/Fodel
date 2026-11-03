@@ -301,6 +301,48 @@ try {
     for (const price of [0, null, undefined, NaN]) assert.deepEqual(N.tierDrift([pkg], price), []);
   });
 
+  await test('MoneyInput in the browser: setMoney/moneyOf, signed invoice lines, plain fields stay non-negative', async () => {
+    const M = await server.ssrLoadModule('/src/scripts/money-input.ts');
+    const field = (dataset) => {
+      const box = { dataset };
+      return { value: '', selectionStart: 0, closest: () => box, parentElement: { querySelector: () => null }, setCustomValidity() {}, setSelectionRange() {} };
+    };
+    const priceLine = field({ cents: '1', signed: '1' });
+    M.setMoney(priceLine, -1290);
+    assert.equal(priceLine.value, '-12,90');
+    assert.equal(M.moneyOf(priceLine), -1290);
+    M.setMoney(priceLine, 123450);
+    assert.equal(priceLine.value, '1.234,50');
+    assert.equal(M.moneyOf(priceLine), 123450);
+    priceLine.value = '−1.000,00';
+    assert.equal(M.moneyOf(priceLine), -100000);
+    const plain = field({});
+    M.setMoney(plain, -1500000);
+    assert.equal(plain.value, '1.500.000');
+    plain.value = '-1.500.000';
+    assert.equal(M.moneyOf(plain), 1500000);
+    plain.value = '';
+    assert.equal(M.moneyOf(plain), null);
+  });
+
+  await test('owner price field: grouped in the owner\'s language, read back by parseLocaleNumber', async () => {
+    const N = await server.ssrLoadModule('/src/lib/portal/num.ts');
+    const { parseLocaleNumber } = await server.ssrLoadModule('/src/lib/parse-number.ts');
+    const cases = [
+      ['1500000', 'hu', '1.500.000', 1500000], ['1500000', 'en', '1,500,000', 1500000], ['1500000', 'nl', '1.500.000', 1500000],
+      ['1.500.0001', 'hu', '15.000.001', 15000001], ['1500,5', 'hu', '1.500,5', 1500.5], ['1500.50', 'en', '1,500.50', 1500.5],
+      ['1500,', 'hu', '1.500,', 1500], ['€ 250 000', 'hu', '250.000', 250000], ['', 'hu', '', null], ['0012', 'hu', '12', 12],
+    ];
+    for (const [typed, locale, shown, value] of cases) {
+      assert.equal(N.groupAmountTyping(typed, locale), shown, `${typed} (${locale})`);
+      assert.equal(shown ? parseLocaleNumber(shown) : null, value, `${shown} parses`);
+    }
+    assert.equal(N.formatAmount(64000000, 'hu'), '64.000.000');
+    assert.equal(N.formatAmount(1234.5, 'en'), '1,234.5');
+    assert.equal(N.formatAmount(null, 'hu'), '');
+    assert.equal(N.formatAmount(1, 'hu'), '1');
+  });
+
   console.log(`\n${passed} tier, rounding, money, Csomagok and order-notice checks passed.`);
 } finally {
   await server.close();

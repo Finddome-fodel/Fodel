@@ -26,6 +26,7 @@ import { invoiceCatalogue } from '~/lib/invoicing/catalogue';
 import { loadInvoiceSettings } from '~/lib/invoicing/settings';
 import { createDraftFromPayment, currentIssuer, getRow, isMigrated, isUuid, loadDoc, migrationDiagnosis } from '~/lib/invoicing/store';
 import { COUNTRIES, VAT_TREATMENTS, addDays, emptyParty, suggestVat, today, type InvoiceDoc } from '~/lib/invoicing/model';
+import { fmtInt } from '~/lib/portal/num';
 
 const { profile, user } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -220,7 +221,7 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
                   <>
                     <p class="cap">{g}</p>
                     {catalogue.filter((c) => c.group === g && !c.retired).map((c) => (
-                      <button type="button" data-cat={c.id}>{c.hu}<span class="iv-cat-price">€ {(c.grossCents / 100).toFixed(0)}</span></button>
+                      <button type="button" data-cat={c.id}>{c.hu}<span class="iv-cat-price">€ {fmtInt(c.grossCents / 100)}</span></button>
                     ))}
                   </>
                 ))}
@@ -311,6 +312,8 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
 
 <script>
   import { invoiceSheet } from '~/lib/invoicing/sheet';
+  import { initMoneyInputs, moneyOf } from '~/scripts/money-input';
+  import { fmtDecimal } from '~/lib/portal/num';
   import {
     NL_VAT_RATE, checkTaxId, computeTotals, eur, huf, hufFromCents, isEu, listPriceCents, rateFor, suggestVat, addDays,
     type InvoiceDoc, type PriceMode, type VatTreatment,
@@ -385,8 +388,8 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
     }
 
     /* ── lines ────────────────────────────────────────────────────────── */
-    // Shown to the cent; the exact (possibly fractional) value is kept until it is edited.
-    const priceText = (cents: number) => (cents / 100).toFixed(2);
+    // Shown to the cent as „1.234,50” (MoneyInput, spec §7); the exact (possibly fractional) value is kept until it is edited.
+    const priceText = (cents: number) => fmtDecimal(cents / 100, { digits: 2, fixed: true });
     function renderLines() {
       const host = $('#lines');
       host.innerHTML = doc.lines
@@ -401,12 +404,13 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
         <div class="iv-line-nums">
           <label>Menny.<input data-l="quantity" type="number" min="0" step="any" value="${l.quantity}" /></label>
           <label>Egység<input data-l="unit" value="${esc(l.unit ?? '')}" placeholder="db" /></label>
-          <label>Egységár (${doc.priceMode === 'net' ? 'nettó' : 'bruttó'})<input data-l="price" type="number" step="0.01" value="${priceText(l.unitCents)}" /></label>
+          <label>Egységár (${doc.priceMode === 'net' ? 'nettó' : 'bruttó'})<span class="unit money" data-money data-cents="1" data-signed="1"><input data-l="price" data-money-text type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="${priceText(l.unitCents)}" /><i>€</i></span></label>
           <output>${eur(Math.round(l.quantity * l.unitCents))}</output>
         </div>
       </div>`
         )
         .join('');
+      initMoneyInputs(host);
     }
     const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
@@ -417,7 +421,8 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
       const l = doc.lines[Number(row.dataset.i)];
       const k = el.dataset.l;
       if (k === 'price') {
-        l.unitCents = Math.round(Number(el.value || 0) * 100000) / 1000;
+        // MoneyInput has already reformatted the text („1.234,5”); read it as cents, never with Number().
+        l.unitCents = moneyOf(el) ?? 0;
         l.edited = true;
       } else if (k === 'quantity') l.quantity = Number(el.value || 0);
       else if (k) (l as any)[k] = el.value || undefined;

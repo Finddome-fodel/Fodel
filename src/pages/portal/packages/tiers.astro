@@ -18,7 +18,7 @@ import MoneyInput from '~/components/portal/MoneyInput.astro';
 import { listingCatalog, PRICE_MAX } from '~/lib/listing-packages';
 import { tierRange, TIER_BOUND_MAX, TIERS_MAX, type PriceTier } from '~/lib/price-tiers';
 import { exchangeRates } from '~/lib/exchange-rates';
-import { fmtHuf } from '~/lib/portal/num';
+import { fmtDecimal, fmtHuf } from '~/lib/portal/num';
 import { packageTab } from '~/lib/portal/package-admin';
 import { EXTRA_ADMIN, tierKey } from '~/lib/portal/package-forms';
 
@@ -82,7 +82,7 @@ const sample = 85_000_000;
             <div data-probe-for={item.key}><dt>{item.title}</dt><dd>–</dd></div>
           ))}
         </dl>
-        {hufPerEur && <p class="tr-rate">1 € ≈ {String(hufPerEur.toFixed(2)).replace('.', ',')} Ft (ECB, {rates?.date}). A forinthatárok euróértéke csak tájékoztató.</p>}
+        {hufPerEur && <p class="tr-rate">1 € ≈ {fmtDecimal(hufPerEur, { digits: 2, fixed: true })} Ft (ECB, {rates?.date}). A forinthatárok euróértéke csak tájékoztató.</p>}
       </section>
 
       {items.map((item) => (
