@@ -313,6 +313,7 @@ const trPaid = Astro.url.searchParams.get('translations');
                 : 'Az AI fordítás nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben).'}
             </p>
             <p class="tr-progress" id="tr-progress" role="status"></p>
+            <p class="tr-bar-note"><a class="hint-link" href={`/portal/translations/${property.id}`}>Fordítások egymás mellett: eredeti és fordítás, kézi javítással</a></p>
           </div>
         )}
         <div class="locale-tabs" role="tablist">

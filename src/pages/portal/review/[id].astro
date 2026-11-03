@@ -34,6 +34,8 @@ import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
 import { estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL } from '~/lib/ai/translate-core';
 import { jobsForProperty } from '~/lib/ai/translation-jobs';
+import { publishLanguageProblems } from '~/lib/ai/translation-overview';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/requested-extras';
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { paymentGatesPublishing } from '~/config/flags';
@@ -114,6 +116,8 @@ const trSuggested = suggested.extras.find((e) => e.id === 'translation')?.locale
 // A free-link owner's requests wait here for the admin's decision.
 const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
 const trOpen = trJobs.filter((job) => job.status === 'requested');
+// Bought languages a visitor could not read yet: the admin has to say they know before approving.
+const langProblems = await publishLanguageProblems(createSupabaseAdminClient(), property.id);
 const aboveThreshold = isAboveThreshold(property.price_huf, listing, suggested.packageId);
 const tieredPackage = listing.packages.find((pkg) => tierApplies(pkg, property.price_huf));
 
@@ -505,6 +509,28 @@ const { data: creditableReferral } = property.owner_id
     </section>
   )}
 
+  {(reviewable || awaitingPayment) && (langProblems.blocking.length > 0 || langProblems.waiting.length > 0) && (
+    <section class="card-block lang-check" id="lang-check">
+      <h2>Fordítások <span class="ai-badge">Ellenőrzés</span></h2>
+      <ul class="tr-list">
+        {[...langProblems.blocking, ...langProblems.waiting].map((item) => (
+          <li>
+            <span class="tr-lang">{HU_NAME[item.locale] ?? item.locale}</span>
+            <span class={`pill ${item.status === 'pending' ? 'pill-pending' : 'pill-bad'}`}>{item.status === 'failed' ? 'Hibás' : item.status === 'stale' ? 'Elavult' : item.status === 'pending' ? 'Folyamatban' : 'Hiányzik'}</span>
+            <span class="tr-err" style={item.status === 'pending' ? 'color: var(--ink-quiet)' : undefined}>{item.reason}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="hint"><a class="hint-link" href={`/portal/translations/${property.id}`}>Megnyitás egymás mellett</a>: itt kézzel is javíthatja.</p>
+      {langProblems.blocking.length > 0 && (
+        <label class="lang-ack">
+          <input type="checkbox" id="ack-languages" />
+          <span>Tudomásul veszem, hogy a(z) {langProblems.blocking.map((item) => HU_NAME[item.locale] ?? item.locale).join(', ')} fordítás hiányzik vagy hibás; a nyelv később automatikusan élesedik.</span>
+        </label>
+      )}
+    </section>
+  )}
+
   {(reviewable || awaitingPayment) && (
     <section class="actions card-block">
       {reviewable && (
@@ -677,6 +703,13 @@ const { data: creditableReferral } = property.owner_id
   async function doAction(action, payload) {
     // One request at a time: a second click while the first is on its way does nothing.
     if (busy) return;
+    // A bought language that is failed or missing: say it before anything is sent, instead of after.
+    const ack = document.getElementById('ack-languages');
+    if (ack && !ack.checked && (action === 'approve' || action === 'approve_free')) {
+      statusEl.textContent = 'Előbb jelölje be a fordításokról szóló tudomásulvételt.';
+      ack.focus();
+      return;
+    }
     busy = true;
     document.querySelectorAll('.actions button').forEach((button) => { button.disabled = true; });
     let leaving = false;
@@ -696,7 +729,7 @@ const { data: creditableReferral } = property.owner_id
     const res = await fetch(`/api/portal/properties/${propertyId}/status`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ action, ...payload }),
+      body: JSON.stringify({ action, ...payload, ...(document.getElementById('ack-languages')?.checked ? { acknowledgeLanguages: true } : {}) }),
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok || !json.ok) {
@@ -711,6 +744,7 @@ const { data: creditableReferral } = property.owner_id
         exclusive: 'A két helyszíni szolgáltatás közül csak az egyik választható.',
         forbidden: 'Ezt csak admin teheti meg.',
         'not-approvable': 'Ez a hirdetés ebben az állapotban nem hagyható jóvá ingyen — frissítse az oldalt.',
+        'languages-incomplete': 'Egy megvásárolt nyelv fordítása hiányzik vagy hibás — frissítse az oldalt, és jelölje be a tudomásulvételt.',
       };
       statusEl.textContent = messages[json.error] || json.message || 'Nem sikerült végrehajtani.';
       return false;
@@ -890,6 +924,8 @@ const { data: creditableReferral } = property.owner_id
   .tr-lang { min-width: 90px; font-weight: var(--fw-medium); color: var(--ink); text-transform: capitalize; }
   .tr-actions { margin-left: auto; display: inline-flex; gap: 8px; }
   .tr-err { flex-basis: 100%; color: var(--pt-red); }
+  .lang-ack { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; font-size: var(--fs-small); line-height: 1.6; cursor: pointer; }
+  .lang-ack input { margin-top: 4px; }
   .qty { width: 76px; padding: 10px 12px; font-size: var(--fs-small); color: var(--ink); font-variant-numeric: tabular-nums; }
   .referral { padding: 14px 16px; border-radius: var(--r-md); background: rgba(16, 42, 67, 0.05); margin-bottom: 20px; }
   .referral .checkbox { margin-bottom: 8px; background: transparent; padding: 6px 0; }

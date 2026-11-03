@@ -759,6 +759,108 @@ console.log('AI translation: the rules around the model');
     assert.ok(cut.title.length <= 198 && cut.title.endsWith('szó…'), cut.title);
     assert.equal(core.cutAtWord('rövid', 10), 'rövid');
   });
+  const status = await import('../src/lib/ai/translation-status.ts');
+  const contact = await import('../src/lib/ai/translation-contact.ts');
+  test('a free listing\'s translation may not carry a phone number, e-mail or web address, and a price is never a phone number', () => {
+    for (const bad of ['Hívjon: +36 30 123 4567', 'Tel 06 30 123 4567', 'info@example.com', 'www.example.hu', 'Visit example.com/tanya', 'call 0031 20 123 4567']) assert.ok(contact.contactIn(bad), bad);
+    for (const fine of ['Eladó ház 12 500 000 Ft, 120 m², 2 szoba, 1998-ban épült', 'Postcode 8254 Kékkút, plot 1500 m²', 'Price 12.500.000 HUF', 'hrsz. 0123/4', 'GPS 46.85, 17.56']) assert.equal(contact.contactIn(fine), null, fine);
+    const fails2 = (output, free) => core.checkTranslation(src, output, { freeListing: free });
+    const withPhone = text('Family house', 'Lovely house, 120 m², built in 1998. Call +36 30 123 4567.', 'Three rooms.\n\nLarge garden, on an 800 m² plot.');
+    assert.throws(() => fails2(withPhone, true), (e) => e.code === 'contact' && e.output === withPhone);
+    assert.throws(() => fails2(withPhone, false), (e) => e.code === 'numbers' || e.code === 'contact', 'a paid listing skips the contact check (the digits still count as numbers)');
+    fails2(text('Family house', 'Lovely house, 120 m², built in 1998.', 'Three rooms.\n\nLarge garden, on an 800 m² plot.'), true);
+  });
+  test('a refused answer carries the text it wrote, and the retry is told what was wrong', () => {
+    const wrong = text('House', 'Price 999 m².', 'x');
+    let error = null;
+    try { core.checkTranslation(src, wrong); } catch (e) { error = e; }
+    assert.ok(error instanceof core.TranslationCheckError && error.output === wrong);
+    assert.match(core.retryFeedback(error), /numbers/i);
+    assert.equal(core.retryFeedback(new Error('x')), null);
+    assert.match(core.buildSystemPrompt('hu', 'de', core.retryFeedback(error)), /A previous attempt was refused/);
+    assert.doesNotMatch(core.buildSystemPrompt('hu', 'de'), /previous attempt/);
+  });
+  test('every failure has a short code and a Hungarian name', () => {
+    assert.equal(core.failCodeOf(new core.TranslationCheckError('too-long', 'x')), 'too-long');
+    assert.equal(core.failCodeOf(Object.assign(new Error('x'), { code: 'openai-429' })), 'openai-429');
+    assert.equal(core.failCodeOf(Object.assign(new Error('x'), { name: 'AbortError' })), 'timeout');
+    assert.equal(core.failCodeOf(new SyntaxError('x')), 'bad-json');
+    assert.equal(core.failCodeOf(new Error('x')), 'error');
+    assert.equal(core.failCodeHu('too-long'), 'Túl hosszú cím vagy szöveg');
+    assert.equal(core.failCodeHu('openai-503'), 'Az OpenAI nem érhető el');
+    assert.equal(core.failCodeHu(null), '');
+  });
+  test('the languages split into Europe and the World, in site order', () => {
+    const groups = core.localeGroups(['hu', 'nl', 'tr', 'en', 'ar', 'sr']);
+    assert.deepEqual(groups, { europe: ['hu', 'nl', 'en', 'sr'], world: ['tr', 'ar'] });
+  });
+  const fact = (locale, over = {}) => ({ property_id: 'p', locale, excluded: false, has_text: false, machine: null, manual_override: null, needs_review: null, translated_from: null, source_hash: null, validated_at: null, check_warnings: null, job_id: null, job_status: null, job_origin: null, fail_code: null, last_error: null, attempts: null, job_finished_at: null, ...over });
+  const ctx = { sourceLocale: 'hu', sourceHash: 'H2' };
+  const stat = (f, c = ctx) => status.translationStatus(f, c).status;
+  test('the eight statuses, decided in one place', () => {
+    assert.equal(stat(fact('hu', { has_text: true })), 'source');
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2' })), 'ok');
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2', needs_review: true, check_warnings: ['A címet az AI lerövidítette.'] })), 'review');
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1' })), 'stale');
+    assert.equal(stat(fact('pl', { job_status: 'queued' })), 'pending');
+    assert.equal(stat(fact('pl', { job_status: 'requested' })), 'pending');
+    assert.equal(stat(fact('pl', { job_status: 'failed', fail_code: 'too-long', last_error: 'A fordított cím túl hosszú.' })), 'failed');
+    assert.equal(stat(fact('pl', { excluded: true, has_text: true })), 'excluded');
+    assert.equal(stat(fact('pl')), 'missing');
+  });
+  test('a status says why, in Hungarian', () => {
+    const failed = status.translationStatus(fact('pl', { job_status: 'failed', fail_code: 'too-long' }), ctx);
+    assert.equal(failed.label, 'Hibás: Túl hosszú cím vagy szöveg');
+    assert.match(failed.reason, /Túl hosszú/);
+    assert.equal(status.translationStatus(fact('pl', { job_status: 'requested' }), ctx).label, 'Jóváhagyásra vár');
+    assert.equal(status.translationStatus(fact('pl', { job_status: 'queued' }), { ...ctx, capped: true }).label, 'Folyamatban (napi keret elérve)');
+    assert.equal(status.translationStatus(fact('pl', { job_status: 'running' }), { ...ctx, capped: true }).label, 'Folyamatban', 'only a waiting job is held back by the budget');
+  });
+  test('a failed job does not hide a text that is current; a stale text is not hidden by a failed re-translation either', () => {
+    assert.equal(stat(fact('pl', { job_status: 'failed', has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2' })), 'ok', 'the old text is still right');
+    assert.equal(stat(fact('pl', { job_status: 'failed', has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1', fail_code: 'numbers' })), 'failed');
+    assert.equal(stat(fact('pl', { job_status: 'done', has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2' })), 'ok');
+  });
+  test('a hand-made text is ok, shows it was edited, and goes stale when the source changes', () => {
+    const edited = fact('de', { has_text: true, machine: false, manual_override: true, translated_from: 'hu', source_hash: 'H1' });
+    assert.equal(stat(edited), 'stale');
+    const current = status.translationStatus({ ...edited, source_hash: 'H2' }, ctx);
+    assert.deepEqual([current.status, current.manual, current.reason], ['ok', true, 'Kézzel javított szöveg.']);
+    assert.equal(stat(fact('nl', { has_text: true, machine: false })), 'ok', 'text a person wrote as an original is never stale');
+  });
+  test('without a source fingerprint nothing is called stale', () => {
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1' }), { sourceLocale: 'hu', sourceHash: '' }), 'ok');
+  });
+  test('counts and the column summary line', () => {
+    const infos = ['ok', 'ok', 'failed', 'pending', 'missing'].map((s) => ({ status: s }));
+    const counts = status.countStatuses(infos);
+    assert.equal(status.summaryLine(counts), '2 kész · 1 folyamatban · 1 hibás');
+    assert.equal(status.summaryLine(status.countStatuses([])), '');
+    assert.deepEqual(status.STATUS_ORDER.slice(0, 2), ['failed', 'stale']);
+  });
+  test('before publishing, bought languages that a visitor cannot read are named; one still being made is only news', () => {
+    const facts = [
+      fact('pl', { job_status: 'failed', fail_code: 'numbers' }),
+      fact('de', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2', job_status: 'done', job_origin: 'upload_paid' }),
+      fact('fr', { job_status: 'queued' }),
+      fact('es', { excluded: true }),
+      fact('it', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1' }),
+    ];
+    const result = status.languageProblems(facts, ctx, ['pl', 'de', 'fr', 'es', 'it', 'nl']);
+    assert.deepEqual(result.blocking.map((i) => [i.locale, i.status]), [['pl', 'failed'], ['it', 'stale']]);
+    assert.deepEqual(result.waiting.map((i) => i.locale), ['fr']);
+    assert.deepEqual(status.languageProblems(facts, ctx, []).blocking, []);
+  });
+  test('bought languages are read from the jobs: paid and package ones that were not cancelled or declined', () => {
+    const jobs = [
+      { locale: 'de', origin: 'upload_paid', status: 'done' }, { locale: 'fr', origin: 'after_publish_paid', status: 'failed' },
+      { locale: 'es', origin: 'package', status: 'queued' }, { locale: 'it', origin: 'admin', status: 'done' },
+      { locale: 'nl', origin: 'free', status: 'requested' }, { locale: 'pl', origin: 'upload_paid', status: 'cancelled' },
+      { locale: 'lt', origin: 'upload_paid', status: 'declined' }, { locale: 'de', origin: 'package', status: 'done' },
+    ];
+    assert.deepEqual(status.expectedFromJobs(jobs).sort(), ['de', 'es', 'fr']);
+    assert.deepEqual(status.blankFact('p', 'xx').locale, 'xx');
+  });
   test('long prose splits on paragraphs, never mid-word, and loses nothing', () => {
     const paragraph = 'Ez egy mondat. '.repeat(300).trim();
     const body = [paragraph, paragraph, 'Rövid vég.'].join('\n\n');

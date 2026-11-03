@@ -34,6 +34,8 @@ import {validSubtype, groupOf, subtypeOf} from '~/lib/listing-catalogue';
 import { detailGaps } from '~/lib/listing-details';
 import type { APIRoute } from 'astro';
 import { approvedWording } from '~/lib/approved-text';
+import { publishLanguageProblems } from '~/lib/ai/translation-overview';
+import { HU_NAME } from '~/lib/ai/translate-core';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
@@ -65,6 +67,22 @@ export const prerender = false;
 
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+/**
+ * Bought languages a visitor could not read (failed, missing, out of date): an admin may still approve,
+ * but only knowing it. Without `acknowledgeLanguages` the request is refused with the list; the review
+ * page shows it and sends the acknowledgement. Quietly passes before migration 0051.
+ */
+async function languagesGate(propertyId: string, body: Record<string, unknown>): Promise<Response | null> {
+  if (body.acknowledgeLanguages === true) return null;
+  const { blocking } = await publishLanguageProblems(createSupabaseAdminClient(), propertyId);
+  if (blocking.length === 0) return null;
+  const names = blocking.map((item) => HU_NAME[item.locale] ?? item.locale).join(', ');
+  return json(409, {
+    ok: false, error: 'languages-incomplete', problems: blocking,
+    message: `A(z) ${names} fordítás hiányzik vagy hibás. Ha ennek tudatában jóváhagyja, a nyelv később automatikusan élesedik.`,
+  });
+}
 
 /** Runs work that follows a saved change: a failure is logged, never thrown. */
 async function safely<T>(what: string, task: () => Promise<T>): Promise<T | null> {
@@ -188,6 +206,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // Refuse before anything is sent or charged: a placeholder price or area is not an approvable listing.
     const placeholder = placeholderProblem(property);
     if (placeholder) return json(422, { ok: false, error: 'placeholder', message: placeholder });
+    const languageStop = await languagesGate(property.id, body);
+    if (languageStop) return languageStop;
 
     const owner = await ownerContact(supabase, property.owner_id);
     const locale = owner?.locale ?? 'hu';
@@ -465,6 +485,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   if (action === 'approve_free') {
     if (!isAdmin) return json(403, { ok: false, error: 'forbidden' });
     const admin = createSupabaseAdminClient();
+    const languageStop = await languagesGate(property.id, body);
+    if (languageStop) return languageStop;
 
     // Before migration 0045 the columns are missing: say so, change nothing.
     const { data: state, error: stateError } = await admin

@@ -1,0 +1,264 @@
+---
+/**
+ * Admin — one listing's translations, side by side: the original on the left, the language you are
+ * working on to the right. Fix a text by hand ("Mentés (kézi javítás)"), translate it again, or have
+ * only the title shortened. A text saved here is a person's: a machine re-translation asks before it
+ * replaces it. The status of every language comes from src/lib/ai/translation-status.ts.
+ */
+export const prerender = false;
+
+import Portal from '~/layouts/Portal.astro';
+import { icon } from '~/lib/portal/icons';
+import { isAiEnabled } from '~/lib/ai/client';
+import {
+  ALL_LOCALES, HU_NAME, TARGET_LIMITS, TITLE_GOAL, failCodeHu, listingText, localeGroups, pickSource,
+} from '~/lib/ai/translate-core';
+import { blankFact, translationStatus, type StatusInfo } from '~/lib/ai/translation-status';
+import { loadListingLanguages } from '~/lib/ai/translation-overview';
+import { dailyCapMicroEur, spentTodayMicroEur } from '~/lib/ai/translation-jobs';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const id = Astro.params.propertyId!;
+const { data: property } = await supabase.from('properties').select('id, ref, status, settlement, free_listing').eq('id', id).maybeSingle();
+if (!property) return Astro.redirect('/portal/translations');
+
+const { data: rows } = await supabase.from('property_translations').select('*').eq('property_id', id);
+const translations = (rows ?? []) as any[];
+const source = pickSource(translations);
+const sourceLocale = source?.locale ?? 'hu';
+const sourceText = listingText(source ?? {});
+const capped = (await spentTodayMicroEur(createSupabaseAdminClient()).catch(() => 0)) >= dailyCapMicroEur();
+const { migrated, ctx, byLocale } = await loadListingLanguages(supabase, id, capped);
+const context = ctx ?? { sourceLocale, sourceHash: '', capped };
+const infoFor = (code: string): StatusInfo => byLocale.get(code)?.info ?? translationStatus(blankFact(id, code), context);
+
+const targets = ALL_LOCALES.filter((code) => code !== sourceLocale);
+const groups = localeGroups(targets);
+const asked = Astro.url.searchParams.get('lang') ?? '';
+const needsAttention = (code: string) => ['failed', 'stale', 'review'].includes(infoFor(code).status);
+const locale = targets.includes(asked) ? asked : targets.find((code) => infoFor(code).status === 'failed') ?? targets.find(needsAttention) ?? (targets.includes('en') ? 'en' : targets[0]);
+const info = infoFor(locale);
+const fact = byLocale.get(locale);
+const row = translations.find((t) => t.locale === locale);
+const nameCap = (code: string) => (HU_NAME[code] ?? code.toUpperCase()).replace(/^./, (c) => c.toUpperCase());
+
+// The last failed attempt: what the AI wrote, so only the wrong part has to be fixed.
+const { data: lastJobs } = await supabase.from('translation_jobs').select('*').eq('property_id', id).eq('locale', locale).order('created_at', { ascending: false }).limit(1);
+const lastJob = (lastJobs ?? [])[0] as any;
+const partial = lastJob?.status === 'failed' && lastJob?.partial_output && !row ? (lastJob.partial_output as { title?: string; description?: string; body?: string }) : null;
+const text = { title: row?.title ?? partial?.title ?? '', description: row?.description ?? partial?.description ?? '', body: row?.body ?? partial?.body ?? '' };
+const warnings: string[] = [...(fact?.check_warnings ?? [])];
+const failure = info.status === 'failed' ? [failCodeHu(fact?.fail_code), fact?.last_error].filter(Boolean).join(': ') : '';
+const aiOn = isAiEnabled();
+const handMade = Boolean(row && !row.machine && (row.title?.trim() || row.description?.trim()));
+const excluded = info.status === 'excluded';
+const sourceTitle = sourceText.title || 'Névtelen hirdetés';
+const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakter`;
+---
+
+<Portal title={`Fordítások · ${sourceTitle}`}>
+  <header class="ph">
+    <div>
+      <p class="eyebrow"><a href="/portal/translations">Fordítások</a> · #{property.ref}</p>
+      <h1>{sourceTitle}</h1>
+      <p class="lede">{property.settlement} · eredeti nyelv: {HU_NAME[sourceLocale] ?? sourceLocale}. Balra az eredeti szöveg, jobbra a kiválasztott nyelv.</p>
+    </div>
+    <p class="count"><a class="btn ghost small" href={`/portal/properties/${id}#translations`}>Hirdetés szerkesztése</a></p>
+  </header>
+
+  {!migrated && <p class="notice warn">Futtassa le a 0051-es migrációt (a Supabase SQL Editorban): addig az állapotok nem pontosak, és a kézi mentés nem működik.</p>}
+  {!source && <p class="notice error">Ehhez a hirdetéshez nincs kézzel írt forrásszöveg, ezért nincs mit fordítani.</p>}
+
+  <div class="chips-wrap">
+    {[['Európa', groups.europe], ['Világ', groups.world]].map(([label, list]) => (list as string[]).length > 0 && (
+      <div class="chip-group">
+        <p class="chip-label">{label}</p>
+        <ul class="chips">
+          {(list as string[]).map((code) => {
+            const state = infoFor(code);
+            return (
+              <li>
+                <a class="chip" href={`/portal/translations/${id}?lang=${code}`} aria-current={code === locale ? 'true' : undefined} title={`${nameCap(code)}: ${state.label}`}>
+                  <span class={`dot s-${state.status}`} aria-hidden="true"></span>{nameCap(code)}<span class="sr">: {state.label}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    ))}
+  </div>
+
+  <div class="sbs">
+    <section class="sbs-card src" aria-labelledby="src-h">
+      <h2 id="src-h">Eredeti · {nameCap(sourceLocale)}</h2>
+      <div class="ro">
+        <p class="lab">Cím <span class="cnt">{count(sourceText.title)}</span></p>
+        <p class="val title">{sourceText.title}</p>
+      </div>
+      <div class="ro">
+        <p class="lab">Rövid leírás <span class="cnt">{count(sourceText.description)}</span></p>
+        <p class="val">{sourceText.description || '—'}</p>
+      </div>
+      <div class="ro">
+        <p class="lab">Részletes leírás <span class="cnt">{count(sourceText.body)}</span></p>
+        <p class="val">{sourceText.body || '—'}</p>
+      </div>
+    </section>
+
+    <section class="sbs-card tgt" aria-labelledby="tgt-h">
+      <div class="tgt-head">
+        <h2 id="tgt-h">{nameCap(locale)}</h2>
+        <span class={`status st-${info.status}`}><span class={`dot s-${info.status}`} aria-hidden="true"></span>{info.label}{info.manual ? ' · kézzel javított' : ''}</span>
+      </div>
+
+      {info.status !== 'failed' && <p class="why">{info.reason}</p>}
+      {warnings.length > 0 && <ul class="warns">{warnings.map((w) => <li>{w}</li>)}</ul>}
+      {failure && <p class="notice error">{failure}</p>}
+      {partial && <p class="notice warn">Az AI utolsó próbálkozása látszik alább. Javítsa ki, ami nem jó (többnyire a cím), és mentse.</p>}
+      {excluded && <p class="notice warn">Ez a nyelv kizárva: a szöveg megmarad, de nem jelenik meg a hirdetésnél.</p>}
+
+      <form id="tr-form" data-locale={locale} novalidate>
+        <div class="field">
+          <label for="f-title">Cím <span class="cnt" id="c-title"></span></label>
+          <input id="f-title" name="title" type="text" maxlength={TARGET_LIMITS.title} value={text.title} autocomplete="off" />
+          <p class="hint">Legfeljebb {TARGET_LIMITS.title} karakter; ajánlott legfeljebb {TITLE_GOAL}.</p>
+        </div>
+        <div class="field">
+          <label for="f-description">Rövid leírás <span class="cnt" id="c-description"></span></label>
+          <textarea id="f-description" name="description" rows="4" maxlength={TARGET_LIMITS.description}>{text.description}</textarea>
+        </div>
+        <div class="field">
+          <label for="f-body">Részletes leírás <span class="cnt" id="c-body"></span></label>
+          <textarea id="f-body" name="body" rows="12" maxlength={TARGET_LIMITS.body}>{text.body}</textarea>
+          <p class="hint">Bekezdéseket üres sorral válasszon el.</p>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn" id="save-btn" disabled={!migrated || !source}>Mentés (kézi javítás)</button>
+          <button type="button" class="btn ghost" id="retr-btn" disabled={!aiOn || !source}>Újrafordítás</button>
+          <button type="button" class="btn ghost" id="short-btn" disabled={!aiOn}>Csak a cím rövidítése</button>
+        </div>
+        {!aiOn && <p class="hint">Az AI nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben): az újrafordítás és a rövidítés addig nem érhető el, a kézi mentés igen.</p>}
+        <p class="status-line" id="status-line" role="status"></p>
+      </form>
+    </section>
+  </div>
+</Portal>
+
+<script define:vars={{ propertyId: id, locale, handMade, aiOn, titleGoal: TITLE_GOAL }}>
+  const form = document.getElementById('tr-form');
+  const statusEl = document.getElementById('status-line');
+  const fields = { title: form.elements.title, description: form.elements.description, body: form.elements.body };
+  const fmt = (n) => n.toLocaleString('hu-HU');
+  const counters = () => {
+    for (const [name, el] of Object.entries(fields)) {
+      const out = document.getElementById(`c-${name}`);
+      const n = el.value.length;
+      out.textContent = n ? `${fmt(n)} / ${fmt(el.maxLength)}` : '';
+      out.dataset.near = String(name === 'title' ? n > titleGoal : n >= el.maxLength - 20);
+    }
+  };
+  form.addEventListener('input', counters);
+  counters();
+
+  const post = async (payload) => {
+    const res = await fetch(`/api/portal/properties/${propertyId}/translations`, {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ locale, ...payload }),
+    });
+    const json = await res.json().catch(() => ({}));
+    return { res, json };
+  };
+  const busy = (on) => form.querySelectorAll('button').forEach((b) => { b.disabled = on || b.dataset.off === 'true'; });
+  form.querySelectorAll('button[disabled]').forEach((b) => { b.dataset.off = 'true'; });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    busy(true); statusEl.textContent = 'Mentés…';
+    const { res, json } = await post({ action: 'override', title: fields.title.value, description: fields.description.value, body: fields.body.value });
+    if (!res.ok || !json.ok) { busy(false); statusEl.textContent = json.message || 'Nem sikerült menteni.'; return; }
+    window.pf.toast('Elmentve: kézi javításként.', 'ok');
+    location.reload();
+  });
+
+  document.getElementById('short-btn').addEventListener('click', async () => {
+    if (!fields.title.value.trim()) { statusEl.textContent = 'Előbb írjon be egy címet.'; return; }
+    busy(true); statusEl.textContent = 'A cím rövidítése…';
+    const { res, json } = await post({ action: 'shorten', title: fields.title.value });
+    busy(false);
+    if (!res.ok || !json.ok) { statusEl.textContent = json.message || 'Nem sikerült.'; return; }
+    if (!json.changed) { statusEl.textContent = 'Az AI nem tudta értelmesen lerövidíteni, a cím változatlan.'; return; }
+    fields.title.value = json.title; counters();
+    statusEl.textContent = 'A cím lerövidült. Nézze át, és mentse.';
+  });
+
+  document.getElementById('retr-btn').addEventListener('click', async () => {
+    let confirmOverwrite = false;
+    if (handMade) {
+      confirmOverwrite = await window.pf.confirm({
+        title: 'Felülírja a kézzel javított szöveget?',
+        body: 'Ehhez a nyelvhez kézzel írt vagy javított szöveg tartozik. Az újrafordítás lecseréli az AI új fordítására; a mostani szöveg elvész.',
+        confirmLabel: 'Újrafordítás', danger: true,
+      });
+      if (!confirmOverwrite) return;
+    }
+    busy(true); statusEl.textContent = 'Indítás…';
+    const { res, json } = await post({ action: 'retranslate', confirmOverwrite });
+    if (!res.ok || !json.ok) { busy(false); statusEl.textContent = json.message || 'Nem sikerült elindítani.'; return; }
+    window.pf.toast('Az újrafordítás elindult.', 'ok');
+    setTimeout(() => location.reload(), 1200);
+  });
+</script>
+
+<style>
+  .ph .eyebrow a { color: inherit; text-decoration: none; }
+  .ph .eyebrow a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .chips-wrap { display: grid; gap: 12px; margin: 0 0 24px; }
+  .chip-label { margin: 0 0 6px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-quiet); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 11px; border-radius: var(--r-pill); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); color: var(--ink); text-decoration: none; font-size: 14px; transition: box-shadow 0.2s var(--ease-out); }
+  .chip:hover { box-shadow: 0 0 0 1px var(--ink-quiet); }
+  .chip[aria-current='true'] { box-shadow: 0 0 0 2px var(--ink); font-weight: var(--fw-medium); }
+  .chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .sbs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .sbs-card { padding: 24px 26px; border-radius: var(--r-lg); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); }
+  .sbs-card h2 { margin: 0 0 16px; font-family: var(--serif); font-size: 22px; font-weight: var(--fw-display); }
+  .src { background: var(--linen); box-shadow: none; }
+  .ro { margin: 0 0 18px; }
+  .lab { margin: 0 0 4px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-quiet); }
+  .cnt { margin-left: 8px; letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; color: var(--ink-quiet); }
+  .cnt[data-near='true'] { color: var(--pt-red); }
+  .val { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; color: var(--ink); }
+  .val.title { font-family: var(--serif); font-size: 19px; line-height: 1.4; }
+  .tgt-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+  .tgt-head h2 { margin-bottom: 8px; }
+  .status { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: var(--fw-medium); }
+  .st-failed { color: var(--pt-red); }
+  .st-review, .st-stale { color: var(--pt-amber); }
+  .st-ok { color: var(--pt-green); }
+  .why { margin: 0 0 14px; font-size: var(--fs-small); color: var(--ink-quiet); line-height: 1.6; }
+  .warns { margin: 0 0 14px; padding-left: 18px; font-size: var(--fs-small); color: var(--pt-amber); }
+  .field { margin: 0 0 18px; }
+  .field label { display: block; margin: 0 0 6px; font-weight: var(--fw-medium); font-size: 15px; }
+  .field input, .field textarea { width: 100%; padding: 12px 14px; border-radius: var(--r-md); border: 1px solid var(--pt-hair); background: var(--white); color: var(--ink); font: inherit; font-size: 16px; line-height: 1.6; resize: vertical; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--ink); box-shadow: var(--focus-ring); }
+  .hint { margin: 6px 0 0; font-size: 13px; color: var(--ink-quiet); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .status-line { min-height: 1.4em; margin: 12px 0 0; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .dot { display: inline-block; position: relative; width: 12px; height: 12px; border-radius: 50%; box-sizing: border-box; flex: none; }
+  .s-ok { background: var(--pt-green); }
+  .s-review { background: var(--pt-amber); }
+  .s-stale { background: var(--white); box-shadow: inset 0 0 0 2.5px var(--pt-amber); }
+  .s-pending { background: var(--white); box-shadow: inset 0 0 0 2.5px #2f5f9e; }
+  .s-pending::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: #2f5f9e; }
+  .s-failed { background: var(--pt-red); }
+  .s-failed::after { content: '×'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--white); font-size: 11px; font-weight: 700; line-height: 1; }
+  .s-excluded { background: repeating-linear-gradient(135deg, #9aa5b1 0 2px, #e2e6ea 2px 4px); }
+  .s-missing { background: transparent; box-shadow: inset 0 0 0 1.5px #c3cad1; }
+  .s-source { border-radius: 3px; background: var(--ink); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 900px) { .sbs { grid-template-columns: minmax(0, 1fr); } .sbs-card { padding: 20px; } }
+</style>
