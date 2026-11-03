@@ -1,8 +1,7 @@
 /**
  * The note shown when seller- or editor-written text appears in a language
- * other than the reader's. Every page language except Hungarian and Dutch
- * shows the English text
- * first where there is one, then the Dutch, then the Hungarian (see resolveText in
+ * other than the reader's. Listing text falls back to English first (every listing has it),
+ * then German, then Dutch, then Hungarian (see textOrder in src/lib/listing-languages.ts, resolveText in
  * src/lib/properties.ts and localizedPosts in src/lib/blog.ts). FODEL never
  * translates such text on the fly; it says which language it is in.
  *
@@ -11,133 +10,104 @@
  */
 import type { Locale } from '~/i18n/ui';
 
-type Named = 'nl' | 'hu';
-type Noted = 'en' | 'de' | 'fr' | 'es' | 'pl' | 'ro' | 'sk' | 'it' | 'pt' | 'el' | 'cs' | 'sl' | 'sv' | 'da' | 'no' | 'fi' | 'et' | 'lv' | 'lt';
-/**
- * The seven languages added in November 2026. Their pages fall back to the
- * English text first (resolveText), so they also name English.
- */
-type Later = 'sr' | 'uk' | 'tr' | 'he' | 'ar' | 'ru' | 'zh';
-const LATER: readonly Locale[] = ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh'];
+/** The seven languages added after the first twenty-one. Once the site's own Locale has them this is the same set. */
+export type AddedLocale = 'sr' | 'uk' | 'tr' | 'he' | 'ar' | 'ru' | 'zh';
+type Named = 'nl' | 'hu' | 'en' | 'de';
+type Noted = Exclude<Locale, 'hu' | 'nl'> | AddedLocale;
 
-const LATER_LANGUAGE_IN: Record<Later, Record<Named | 'en', string>> = {
-  sr: { nl: 'holandskom', hu: 'mađarskom', en: 'engleskom' },
-  uk: { nl: 'нідерландською', hu: 'угорською', en: 'англійською' },
-  tr: { nl: 'Felemenkçe', hu: 'Macarca', en: 'İngilizce' },
-  he: { nl: 'הולנדית', hu: 'הונגרית', en: 'אנגלית' },
-  ar: { nl: 'الهولندية', hu: 'المجرية', en: 'الإنجليزية' },
-  ru: { nl: 'нидерландском', hu: 'венгерском', en: 'английском' },
-  zh: { nl: '荷兰语', hu: '匈牙利语', en: '英语' },
-};
-
-function laterNote(locale: Later, language: string, kind: Kind): string {
-  const description = kind === 'description';
-  switch (locale) {
-    case 'sr':
-      return description ? `Opis na ${language} jeziku` : `Članak na ${language} jeziku`;
-    case 'uk':
-      return description ? `Опис ${language} мовою` : `Стаття ${language} мовою`;
-    case 'tr':
-      return description ? `${language} açıklama` : `${language} makale`;
-    case 'he':
-      return description ? `תיאור ב${language}` : `מאמר ב${language}`;
-    case 'ar':
-      return description ? `الوصف باللغة ${language}` : `المقال باللغة ${language}`;
-    case 'ru':
-      return description ? `Описание на ${language} языке` : `Статья на ${language} языке`;
-    case 'zh':
-      return description ? `描述语言：${language}` : `文章语言：${language}`;
-  }
-}
-
+/** The name of each fallback language, in the grammatical form the note's sentence needs. */
 const LANGUAGE_IN: Record<Noted, Record<Named, string>> = {
-  en: { nl: 'Dutch', hu: 'Hungarian' },
-  de: { nl: 'Niederländisch', hu: 'Ungarisch' },
-  fr: { nl: 'néerlandais', hu: 'hongrois' },
-  es: { nl: 'neerlandés', hu: 'húngaro' },
-  pl: { nl: 'niderlandzkim', hu: 'węgierskim' },
-  ro: { nl: 'neerlandeză', hu: 'maghiară' },
-  sk: { nl: 'holandčine', hu: 'maďarčine' },
-  it: { nl: 'olandese', hu: 'ungherese' },
-  pt: { nl: 'neerlandês', hu: 'húngaro' },
-  el: { nl: 'ολλανδικά', hu: 'ουγγρικά' },
-  cs: { nl: 'nizozemštině', hu: 'maďarštině' },
-  sl: { nl: 'nizozemščini', hu: 'madžarščini' },
-  sv: { nl: 'nederländska', hu: 'ungerska' },
-  da: { nl: 'hollandsk', hu: 'ungarsk' },
-  no: { nl: 'nederlandsk', hu: 'ungarsk' },
-  fi: { nl: 'hollanniksi', hu: 'unkariksi' },
-  et: { nl: 'hollandi keeles', hu: 'ungari keeles' },
-  lv: { nl: 'holandiešu valodā', hu: 'ungāru valodā' },
-  lt: { nl: 'olandų kalba', hu: 'vengrų kalba' },
+  en: { nl: 'Dutch', hu: 'Hungarian', en: 'English', de: 'German' },
+  de: { nl: 'Niederländisch', hu: 'Ungarisch', en: 'Englisch', de: 'Deutsch' },
+  fr: { nl: 'néerlandais', hu: 'hongrois', en: 'anglais', de: 'allemand' },
+  es: { nl: 'neerlandés', hu: 'húngaro', en: 'inglés', de: 'alemán' },
+  pl: { nl: 'niderlandzkim', hu: 'węgierskim', en: 'angielskim', de: 'niemieckim' },
+  ro: { nl: 'neerlandeză', hu: 'maghiară', en: 'engleză', de: 'germană' },
+  sk: { nl: 'holandčine', hu: 'maďarčine', en: 'angličtine', de: 'nemčine' },
+  it: { nl: 'olandese', hu: 'ungherese', en: 'inglese', de: 'tedesco' },
+  pt: { nl: 'neerlandês', hu: 'húngaro', en: 'inglês', de: 'alemão' },
+  el: { nl: 'ολλανδικά', hu: 'ουγγρικά', en: 'αγγλικά', de: 'γερμανικά' },
+  cs: { nl: 'nizozemštině', hu: 'maďarštině', en: 'angličtině', de: 'němčině' },
+  sl: { nl: 'nizozemščini', hu: 'madžarščini', en: 'angleščini', de: 'nemščini' },
+  sv: { nl: 'nederländska', hu: 'ungerska', en: 'engelska', de: 'tyska' },
+  da: { nl: 'hollandsk', hu: 'ungarsk', en: 'engelsk', de: 'tysk' },
+  no: { nl: 'nederlandsk', hu: 'ungarsk', en: 'engelsk', de: 'tysk' },
+  fi: { nl: 'hollanniksi', hu: 'unkariksi', en: 'englanniksi', de: 'saksaksi' },
+  et: { nl: 'hollandi keeles', hu: 'ungari keeles', en: 'inglise keeles', de: 'saksa keeles' },
+  lv: { nl: 'holandiešu valodā', hu: 'ungāru valodā', en: 'angļu valodā', de: 'vācu valodā' },
+  lt: { nl: 'olandų kalba', hu: 'vengrų kalba', en: 'anglų kalba', de: 'vokiečių kalba' },
+  sr: { nl: 'holandskom', hu: 'mađarskom', en: 'engleskom', de: 'nemačkom' },
+  uk: { nl: 'нідерландською мовою', hu: 'угорською мовою', en: 'англійською мовою', de: 'німецькою мовою' },
+  tr: { nl: 'Felemenkçe', hu: 'Macarca', en: 'İngilizce', de: 'Almanca' },
+  he: { nl: 'בהולנדית', hu: 'בהונגרית', en: 'באנגלית', de: 'בגרמנית' },
+  ar: { nl: 'بالهولندية', hu: 'بالمجرية', en: 'بالإنجليزية', de: 'بالألمانية' },
+  ru: { nl: 'нидерландском языке', hu: 'венгерском языке', en: 'английском языке', de: 'немецком языке' },
+  zh: { nl: '荷兰文', hu: '匈牙利文', en: '英文', de: '德文' },
 };
 
 type Kind = 'description' | 'article';
 
-export function sourceNote(locale: Locale, from: Locale, kind: Kind): string | null {
+/** The sentence for each reader language: the text's kind and the language it is in. */
+const NOTE: Record<Noted, (kind: Kind, language: string) => string> = {
+  en: (kind, l) => (kind === 'description' ? `Description in ${l}` : `Article in ${l}`),
+  de: (kind, l) => (kind === 'description' ? `Beschreibung auf ${l}` : `Artikel auf ${l}`),
+  fr: (kind, l) => (kind === 'description' ? `Description en ${l}` : `Article en ${l}`),
+  es: (kind, l) => (kind === 'description' ? `Descripción en ${l}` : `Artículo en ${l}`),
+  pl: (kind, l) => (kind === 'description' ? `Opis w języku ${l}` : `Artykuł w języku ${l}`),
+  ro: (kind, l) => (kind === 'description' ? `Descriere în limba ${l}` : `Articol în limba ${l}`),
+  sk: (kind, l) => (kind === 'description' ? `Popis v ${l}` : `Článok v ${l}`),
+  it: (kind, l) => (kind === 'description' ? `Descrizione in ${l}` : `Articolo in ${l}`),
+  pt: (kind, l) => (kind === 'description' ? `Descrição em ${l}` : `Artigo em ${l}`),
+  el: (kind, l) => (kind === 'description' ? `Περιγραφή στα ${l}` : `Άρθρο στα ${l}`),
+  cs: (kind, l) => (kind === 'description' ? `Popis v ${l}` : `Článek v ${l}`),
+  sl: (kind, l) => (kind === 'description' ? `Opis v ${l}` : `Članek v ${l}`),
+  sv: (kind, l) => (kind === 'description' ? `Beskrivning på ${l}` : `Artikel på ${l}`),
+  da: (kind, l) => (kind === 'description' ? `Beskrivelse på ${l}` : `Artikel på ${l}`),
+  no: (kind, l) => (kind === 'description' ? `Beskrivelse på ${l}` : `Artikkel på ${l}`),
+  fi: (kind, l) => (kind === 'description' ? `Kuvaus ${l}` : `Artikkeli ${l}`),
+  et: (kind, l) => (kind === 'description' ? `Kirjeldus ${l}` : `Artikkel ${l}`),
+  lv: (kind, l) => (kind === 'description' ? `Apraksts ${l}` : `Raksts ${l}`),
+  lt: (kind, l) => (kind === 'description' ? `Aprašymas ${l}` : `Straipsnis ${l}`),
+  sr: (kind, l) => (kind === 'description' ? `Opis na ${l}` : `Članak na ${l}`),
+  uk: (kind, l) => (kind === 'description' ? `Опис ${l}` : `Стаття ${l}`),
+  tr: (kind, l) => (kind === 'description' ? `${l} açıklama` : `${l} makale`),
+  he: (kind, l) => (kind === 'description' ? `תיאור ${l}` : `מאמר ${l}`),
+  ar: (kind, l) => (kind === 'description' ? `الوصف ${l}` : `المقال ${l}`),
+  ru: (kind, l) => (kind === 'description' ? `Описание на ${l}` : `Статья на ${l}`),
+  zh: (kind, l) => (kind === 'description' ? `${l}描述` : `${l}文章`),
+};
+
+/**
+ * What to say when a page shows text in another language than its own, or null when nothing needs saying: the
+ * text is in the page's language, or the page is Hungarian or Dutch (which always showed the original).
+ */
+export function sourceNote(locale: Locale | AddedLocale, from: Locale | AddedLocale, kind: Kind): string | null {
   if (locale === from || locale === 'hu' || locale === 'nl') return null;
-  if (LATER.includes(locale)) {
-    if (from !== 'nl' && from !== 'hu' && from !== 'en') return null;
-    return laterNote(locale as Later, LATER_LANGUAGE_IN[locale as Later][from], kind);
-  }
-  if (from !== 'nl' && from !== 'hu') return null;
-  const language = LANGUAGE_IN[locale as Noted][from];
-  switch (locale) {
-    case 'en':
-      return kind === 'description' ? `Description in ${language}` : `Article in ${language}`;
-    case 'de':
-      return kind === 'description' ? `Beschreibung auf ${language}` : `Artikel auf ${language}`;
-    case 'fr':
-      return kind === 'description' ? `Description en ${language}` : `Article en ${language}`;
-    case 'es':
-      return kind === 'description' ? `Descripción en ${language}` : `Artículo en ${language}`;
-    case 'pl':
-      return kind === 'description' ? `Opis w języku ${language}` : `Artykuł w języku ${language}`;
-    case 'ro':
-      return kind === 'description' ? `Descriere în limba ${language}` : `Articol în limba ${language}`;
-    case 'sk':
-      return kind === 'description' ? `Popis v ${language}` : `Článok v ${language}`;
-    case 'it':
-      return kind === 'description' ? `Descrizione in ${language}` : `Articolo in ${language}`;
-    case 'pt':
-      return kind === 'description' ? `Descrição em ${language}` : `Artigo em ${language}`;
-    case 'el':
-      return kind === 'description' ? `Περιγραφή στα ${language}` : `Άρθρο στα ${language}`;
-    case 'cs':
-      return kind === 'description' ? `Popis v ${language}` : `Článek v ${language}`;
-    case 'sl':
-      return kind === 'description' ? `Opis v ${language}` : `Članek v ${language}`;
-    case 'sv':
-      return kind === 'description' ? `Beskrivning på ${language}` : `Artikel på ${language}`;
-    case 'da':
-      return kind === 'description' ? `Beskrivelse på ${language}` : `Artikel på ${language}`;
-    case 'no':
-      return kind === 'description' ? `Beskrivelse på ${language}` : `Artikkel på ${language}`;
-    case 'fi':
-      return kind === 'description' ? `Kuvaus ${language}` : `Artikkeli ${language}`;
-    case 'et':
-      return kind === 'description' ? `Kirjeldus ${language}` : `Artikkel ${language}`;
-    case 'lv':
-      return kind === 'description' ? `Apraksts ${language}` : `Raksts ${language}`;
-    case 'lt':
-      return kind === 'description' ? `Aprašymas ${language}` : `Straipsnis ${language}`;
-    default:
-      return null;
-  }
+  if (from !== 'nl' && from !== 'hu' && from !== 'en' && from !== 'de') return null;
+  return NOTE[locale as Noted](kind, LANGUAGE_IN[locale as Noted][from]);
 }
 
 /** "Automatically translated", for a listing text the AI wrote. Shown only when showMachineTranslationNote() is on. Never claims a person checked it. */
-const MACHINE_NOTE: Record<Locale, string> = {
+const MACHINE_NOTE: Record<Locale | AddedLocale, string> = {
   hu: 'Automatikus fordítás', nl: 'Automatisch vertaald', en: 'Automatically translated', de: 'Automatisch übersetzt', fr: 'Traduction automatique',
   es: 'Traducción automática', pl: 'Tłumaczenie automatyczne', ro: 'Traducere automată', sk: 'Automatický preklad', it: 'Traduzione automatica',
   pt: 'Tradução automática', el: 'Αυτόματη μετάφραση', cs: 'Automatický překlad', sl: 'Samodejni prevod', sv: 'Automatiskt översatt',
   da: 'Automatisk oversat', no: 'Automatisk oversatt', fi: 'Automaattinen käännös', et: 'Automaattne tõlge', lv: 'Automātisks tulkojums', lt: 'Automatinis vertimas',
-  sr: 'Automatski prevedeno',
-  uk: 'Перекладено автоматично',
-  tr: 'Otomatik olarak çevrildi',
-  he: 'תורגם אוטומטית',
-  ar: 'مترجم آليًا',
-  ru: 'Переведено автоматически',
-  zh: '自动翻译',
+  sr: 'Automatski prevod', uk: 'Автоматичний переклад', tr: 'Otomatik çeviri', he: 'תרגום אוטומטי', ar: 'ترجمة آلية', ru: 'Автоматический перевод', zh: '自动翻译',
 };
-export const machineNote = (locale: Locale): string => MACHINE_NOTE[locale];
+export const machineNote = (locale: Locale | AddedLocale): string => MACHINE_NOTE[locale];
+
+/**
+ * "This listing is not available in other languages", for the language switcher of a listing page. The first
+ * twenty-one languages have it inside the switcher; these seven are looked up here until the switcher's own
+ * dictionary has them.
+ */
+export const LISTING_UNAVAILABLE_NOTE: Record<AddedLocale, string> = {
+  sr: 'Oglas nije dostupan na drugim jezicima.',
+  uk: 'Це оголошення недоступне іншими мовами.',
+  tr: 'Bu ilan başka dillerde mevcut değil.',
+  he: 'המודעה אינה זמינה בשפות נוספות.',
+  ar: 'هذا الإعلان غير متاح بلغات أخرى.',
+  ru: 'Это объявление недоступно на других языках.',
+  zh: '此房源暂无其他语言版本。',
+};

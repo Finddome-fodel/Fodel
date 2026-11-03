@@ -77,7 +77,7 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
   const translations = form
     .getAll('translations')
     .map(String)
-    .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && all.indexOf(code) === i);
+    .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && ALL_LOCALES.includes(code) && all.indexOf(code) === i);
   // Package and single languages are only ids: the server prices them (src/lib/orders.ts). A package that is not
   // on sale falls back to Go, and a single the chosen package already includes is not a single.
   const trPackage = catalog.translation.packages.find((p) => p.id === str(form, 'translation_package') && (p.active || p.id === 'go'))?.id ?? 'go';

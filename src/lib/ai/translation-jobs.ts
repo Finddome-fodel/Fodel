@@ -402,11 +402,11 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
       // The next attempt is told what was wrong, so it is not the same attempt again.
       await updateRunningJob(client, job.id, {
         status: 'queued', last_error: failure.message, claimed_at: new Date().toISOString(),
-        fail_code: failCode, partial_output: partial, feedback: retryFeedback(error),
+        fail_code: failCode, partial_output: partial, feedback: retryFeedback(error, { target: job.locale }),
       });
       return { outcome: 'requeued', stopAll: failure.stopAll };
     }
-    await finishJob(client, job, { status: 'failed', last_error: failure.message, fail_code: failCode, partial_output: partial, feedback: retryFeedback(error) });
+    await finishJob(client, job, { status: 'failed', last_error: failure.message, fail_code: failCode, partial_output: partial, feedback: retryFeedback(error, { target: job.locale }) });
     await logEvent({
       kind: 'ai.translation_failed', subjectType: 'property', subjectId: job.property_id, propertyId: job.property_id, locale: job.locale,
       source: job.origin, dedupeKey: `translation-job-${job.id}-failed-${job.attempts}`, payload: { origin: job.origin, reason: failure.message, code: failCode },

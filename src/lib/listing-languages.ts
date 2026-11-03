@@ -67,3 +67,12 @@ export function switcherLocales(policy: ListingPolicy, cfg: TranslationPricing, 
 export function listedIn(policy: ListingPolicy, locale: string, cfg: TranslationPricing, targets: readonly string[], mode: UnpurchasedMode = 'redirect'): boolean {
   return servingOf(policy, locale, cfg, targets, mode).serve !== 'redirect';
 }
+
+/**
+ * Which language's text a page shows, in order: its own, then English (every listing has it: Go includes it),
+ * German, Dutch, and Hungarian last. A Hungarian or Dutch page tries only its own language, then Hungarian.
+ */
+export function textOrder<T extends string>(locale: T): (T | 'en' | 'de' | 'nl' | 'hu')[] {
+  if (locale === 'hu' || locale === 'nl') return [...new Set<T | 'hu'>([locale, 'hu'])] as (T | 'en' | 'de' | 'nl' | 'hu')[];
+  return [...new Set<T | 'en' | 'de' | 'nl' | 'hu'>([locale, 'en', 'de', 'nl', 'hu'])];
+}

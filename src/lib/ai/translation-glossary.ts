@@ -3,7 +3,7 @@
  * Generated from src/i18n/GLOSSARY.md (the site's own vetted terms): [Hungarian, target].
  * Regenerate by re-running the extraction after the glossary changes; do not edit by hand.
  */
-export const TRANSLATION_GLOSSARY: Record<string, [string, string][]> = {
+const GENERATED_GLOSSARY: Record<string, [string, string][]> = {
   nl: [["ingatlan", "woning / vastgoed"], ["megye", "comitaat"], ["település", "plaats"], ["földhivatal", "kadaster"], ["energetikai tanúsítvány", "energielabel"], ["irányár", "vraagprijs"], ["telek", "perceel"], ["alapterület", "woonoppervlak"], ["tanya", "boerderij"], ["kúria, kastély", "landhuis, herenhuis"], ["vályogház", "leemhuis"]],
   en: [["ingatlan", "property"], ["megye", "county"], ["település", "town or village"], ["földhivatal", "land registry"], ["energetikai tanúsítvány", "energy performance certificate (EPC)"], ["irányár", "asking price"], ["telek", "plot"], ["alapterület", "floor area"], ["tanya", "farmstead"], ["kúria, kastély", "manor house"], ["vályogház", "adobe house"]],
   de: [["ingatlan", "Immobilie"], ["megye", "Komitat"], ["település", "Ort"], ["földhivatal", "Grundbuchamt"], ["energetikai tanúsítvány", "Energieausweis"], ["irányár", "Angebotspreis"], ["telek", "Grundstück"], ["alapterület", "Wohnfläche"], ["tanya", "Hof"], ["kúria, kastély", "Landhaus, Herrenhaus"], ["vályogház", "Lehmhaus"]],
@@ -25,3 +25,20 @@ export const TRANSLATION_GLOSSARY: Record<string, [string, string][]> = {
   lv: [["ingatlan", "īpašums"], ["megye", "apriņķis"], ["földhivatal", "zemesgrāmata"], ["energetikai tanúsítvány", "energosertifikāts"]],
   lt: [["ingatlan", "nekilnojamasis turtas"], ["megye", "apskritis"], ["földhivatal", "nekilnojamojo turto registras"], ["energetikai tanúsítvány", "energinio naudingumo sertifikatas"]],
 };
+
+/**
+ * The same kind of terms for the seven languages added later (written by hand: the site's glossary has no
+ * entry for them yet). Where a language has no everyday word for a Hungarian notion, the Hungarian word
+ * follows in brackets, which the prompt allows. Currency and unit stay as they are.
+ */
+const NEW_LANGUAGE_GLOSSARY: Record<string, [string, string][]> = {
+  sr: [["tanya", "salaš"], ["zártkert", "baštenska parcela (zártkert)"], ["présház", "vinogradarska kućica (présház)"], ["hrsz.", "br. parcele (hrsz.)"], ["m²", "m²"], ["Ft", "Ft (HUF)"], ["irányár", "okvirna cena"], ["ár", "cena"], ["telek", "plac"], ["nyaraló", "vikendica"], ["felújított", "renoviran"], ["panel", "panelna gradnja"], ["tégla", "ciglana gradnja"]],
+  uk: [["tanya", "хутір"], ["zártkert", "садова ділянка (zártkert)"], ["présház", "виноградарський будиночок (présház)"], ["hrsz.", "номер ділянки (hrsz.)"], ["m²", "m²"], ["Ft", "Ft (HUF)"], ["irányár", "орієнтовна ціна"], ["ár", "ціна"], ["telek", "земельна ділянка"], ["nyaraló", "дача"], ["felújított", "відремонтований"], ["panel", "панельний будинок"], ["tégla", "цегляний"]],
+  tr: [["tanya", "çiftlik evi (tanya)"], ["zártkert", "bağ bahçe parseli (zártkert)"], ["présház", "bağ evi (présház)"], ["hrsz.", "parsel no (hrsz.)"], ["m²", "m²"], ["Ft", "Ft (HUF)"], ["irányár", "talep edilen fiyat"], ["ár", "fiyat"], ["telek", "arsa"], ["nyaraló", "yazlık"], ["felújított", "yenilenmiş"], ["panel", "panel bina"], ["tégla", "tuğla"]],
+  he: [["tanya", "חווה (tanya)"], ["zártkert", "חלקת גן (zártkert)"], ["présház", "בית כרם (présház)"], ["hrsz.", "מספר חלקה (hrsz.)"], ["m²", "m²"], ["Ft", "Ft (HUF)"], ["irányár", "מחיר מבוקש"], ["ár", "מחיר"], ["telek", "מגרש"], ["nyaraló", "בית נופש"], ["felújított", "משופץ"], ["panel", "בניין פנלים טרומי"], ["tégla", "לבנים"]],
+  ar: [["tanya", "مزرعة (tanya)"], ["zártkert", "قطعة بستان (zártkert)"], ["présház", "بيت كرم (présház)"], ["hrsz.", "رقم القسيمة (hrsz.)"], ["m²", "m²"], ["Ft", "Ft (HUF)"], ["irányár", "السعر المطلوب"], ["ár", "السعر"], ["telek", "قطعة أرض"], ["nyaraló", "بيت للعطلات"], ["felújított", "مجدّد"], ["panel", "مبنى من الألواح الجاهزة"], ["tégla", "طوب"]],
+  ru: [["tanya", "хутор"], ["zártkert", "садовый участок (zártkert)"], ["présház", "виноградарский домик (présház)"], ["hrsz.", "номер участка (hrsz.)"], ["m²", "m²"], ["Ft", "Ft (HUF)"], ["irányár", "ориентировочная цена"], ["ár", "цена"], ["telek", "земельный участок"], ["nyaraló", "дача"], ["felújított", "после ремонта"], ["panel", "панельный дом"], ["tégla", "кирпичный"]],
+  zh: [["tanya", "农庄 (tanya)"], ["zártkert", "小型园地 (zártkert)"], ["présház", "葡萄园小屋 (présház)"], ["hrsz.", "地块编号 (hrsz.)"], ["m²", "m²"], ["Ft", "Ft (HUF)"], ["irányár", "参考价格"], ["ár", "价格"], ["telek", "地块"], ["nyaraló", "度假屋"], ["felújított", "已翻新"], ["panel", "预制板楼"], ["tégla", "砖砌"]],
+};
+
+export const TRANSLATION_GLOSSARY: Record<string, [string, string][]> = { ...GENERATED_GLOSSARY, ...NEW_LANGUAGE_GLOSSARY };

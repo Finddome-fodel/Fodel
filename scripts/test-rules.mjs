@@ -706,6 +706,10 @@ console.log('AI translation: the rules around the model');
 {
   const core = await import('../src/lib/ai/translate-core.ts');
   const engine = await import('../src/lib/ai/translate.ts');
+  const glossary = await import('../src/lib/ai/translation-glossary.ts');
+  const slugs = await import('../src/lib/listing-slug.ts');
+  const languages = await import('../src/lib/listing-languages.ts');
+  const fallbackLib = await import('../src/i18n/fallback.ts');
   const text = (title, description, body = '') => ({ title, description, body });
   test('thousands separators in any style are one number', () => {
     assert.deepEqual(core.numberTokens('Ár: 12 500 000 Ft, 12.500.000, 12,500,000 és 12 500 000'), ['12500000', '12500000', '12500000', '12500000']);
@@ -1003,6 +1007,18 @@ console.log('AI translation: the rules around the model');
     assert.equal(tp.packageLocales(europe, T28).includes('sr') && tp.packageLocales(europe, T28).includes('uk'), true, 'sr and uk are in Európa by the rule (open question 1)');
   });
 
+  test('with all 28 languages a World listing is entitled to 27 targets, an Európa one to 22 (sr and uk among them), the original never', () => {
+    const own = (translationPackage) => ({ translationPackage, sourceLocale: 'hu' });
+    const world27 = tp.entitledLocales(own('world'), cfg0, T28);
+    const europe22 = tp.entitledLocales(own('europe'), cfg0, T28);
+    assert.equal(world27.length, 27);
+    assert.equal(world27.includes('hu'), false);
+    for (const code of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) assert.ok(world27.includes(code), `World has ${code}`);
+    assert.equal(europe22.length, 22);
+    assert.ok(europe22.includes('sr') && europe22.includes('uk'));
+    for (const code of ['tr', 'he', 'ar', 'ru', 'zh']) assert.equal(europe22.includes(code), false, `Európa has no ${code}`);
+  });
+
   test('English is in every package, even a hand-made list without it, and can never be switched off', () => {
     const custom = pcfg({ packages: [{ id: 'europe', locales: ['fr', 'es'] }] });
     assert.deepEqual(tp.packageLocales(tp.packageById(custom, 'europe'), T28), ['en', 'fr', 'es']);
@@ -1278,6 +1294,93 @@ console.log('AI translation: the rules around the model');
     try { await engine.translateListing(src, 'hu', 'en', mock(() => ({ title: 'House', description: 'Price 999 m².', body: 'x' })), 'gpt-4o-mini'); } catch (error) { refused = error; }
     test('an answer that breaks the checks never comes back as a translation', () => {
       assert.ok(refused instanceof core.TranslationCheckError);
+    });
+
+    /* ── The seven languages added later: Chinese, Arabic, Hebrew, Ukrainian, Russian, Turkish, Serbian ─────────── */
+    const hu1500 = text('Felújított tanya 2 ha földdel', 'A tanya 1985-ben épült, 185 m² lakóterülettel.', `${'A birtok csendes környezetben fekszik, a kertből a dombokra nyílik kilátás, a gazdasági épületek jó állapotúak. '.repeat(14)}Irányár: 90 000 000 Ft.`.trim());
+    const zhBody = `${'这处农庄坐落在安静的环境中，花园可以眺望山丘，农用建筑状况良好。'.repeat(12)}参考价格：90 000 000 Ft。`;
+    test('a Chinese translation, far shorter than the Hungarian in characters, passes the checks (a 1,500-character description)', async () => {
+      assert.ok(hu1500.body.length > 1400);
+      const zh = await engine.translateListing(hu1500, 'hu', 'zh', mock(() => ({ title: '翻新农庄，2公顷土地', description: '农庄建于1985年，居住面积185 m²。', body: zhBody })), 'gpt-4o-mini');
+      assert.ok(zh.body.length < hu1500.body.length * 0.35, 'the old 35 % rule would have refused it');
+      assert.equal(core.sizeBoundsFor('zh')[0], 0.15);
+      assert.deepEqual([...core.sizeBoundsFor('ar')], [0.5, 2]);
+      assert.deepEqual([...core.sizeBoundsFor('fr')], [0.35, 3], 'every other language keeps the wide default');
+      assert.throws(() => core.checkTranslation(hu1500, { title: 'x', description: '农庄建于1985年，居住面积185 m²。', body: 'a'.repeat(5) }, { target: 'de' }), (e) => e.code === 'size', 'the same shortness is still refused for German');
+    });
+    test('the prompt asks for the right script and for Western digits where numbers would otherwise change shape', () => {
+      const sr = core.buildSystemPrompt('hu', 'sr');
+      assert.match(sr, /Serbian \(Latin script\)/);
+      assert.match(sr, /ekavian, in the Latin script only/);
+      assert.match(core.buildSystemPrompt('hu', 'zh'), /Simplified Chinese \(zh-Hans\)/);
+      for (const code of ['ar', 'he', 'zh']) assert.match(core.buildSystemPrompt('hu', code), /Western digits 0-9/, code);
+      for (const code of ['sr', 'uk', 'tr', 'ru', 'fr']) assert.doesNotMatch(core.buildSystemPrompt('hu', code), /Western digits/, code);
+      assert.match(core.buildSystemPrompt('hu', 'ar'), /tanya = مزرعة \(tanya\)/, 'the glossary reaches the prompt');
+      for (const code of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) {
+        assert.ok(core.HU_NAME[code] && core.englishName(code) !== code, `${code} has both names`);
+        assert.equal((glossary.TRANSLATION_GLOSSARY[code] ?? []).length, 13, `${code} glossary`);
+      }
+    });
+    test('Arabic-Indic, Persian and full-width digits count as the same numbers', () => {
+      assert.equal(core.toAsciiDigits('١٢٣ ۴۵۶ ７８９'), '123 456 789');
+      assert.deepEqual(core.numberTokens('السعر ٩٠٬٠٠٠٬٠٠٠ Ft'), ['90000000']);
+      assert.equal(core.numbersProblem('Ár: 90 000 000 Ft, 185 m², 1985', 'السعر: ٩٠٬٠٠٠٬٠٠٠ Ft، ١٨٥ m²، ١٩٨٥'), null, 'matching values pass');
+      assert.match(core.numbersProblem('Ár: 90 000 000 Ft, 185 m², 1985', 'السعر: ٩٠٬٠٠٠٬٠٠٠ Ft، ١٨٥ m²، ١٩٩٥'), /1985|1995/, 'a different value fails');
+      const arabic = { title: 'مزرعة مجدّدة', description: 'بنيت المزرعة عام ١٩٨٥ بمساحة سكنية ١٨٥ م².', body: '' };
+      const source = text('Felújított tanya', 'A tanya 1985-ben épült, 185 m² lakóterülettel.', '');
+      assert.doesNotThrow(() => core.checkTranslation(source, arabic, { target: 'ar' }));
+      assert.throws(() => core.checkTranslation(source, { ...arabic, description: 'بنيت المزرعة عام ١٩٩٥ بمساحة سكنية ١٨٥ م².' }, { target: 'ar' }), (e) => e.code === 'numbers');
+    });
+    test('Serbian in Cyrillic is refused and asked again in Latin; Latin passes; the other scripts are held to theirs', () => {
+      const source = text('Felújított tanya 2 ha földdel', 'A tanya 1985-ben épült, 185 m² lakóterülettel és nagy kerttel.', '');
+      const latin = { title: 'Renovirani salaš sa 2 ha zemlje', description: 'Salaš je izgrađen 1985. godine, sa 185 m² stambenog prostora i velikom baštom.', body: '' };
+      const cyrillic = { title: 'Реновирани салаш са 2 ха земље', description: 'Салаш је изграђен 1985. године, са 185 m² стамбеног простора и великом баштом.', body: '' };
+      assert.doesNotThrow(() => core.checkTranslation(source, latin, { target: 'sr' }));
+      let refusal = null;
+      try { core.checkTranslation(source, cyrillic, { target: 'sr' }); } catch (error) { refusal = error; }
+      assert.equal(refusal?.code, 'script');
+      assert.match(core.retryFeedback(refusal, { target: 'sr' }), /Latin script only/);
+      assert.equal(core.failCodeHu('script'), 'Rossz írásrendszer');
+      assert.doesNotThrow(() => core.checkTranslation(source, cyrillic, { target: 'uk' }), 'Cyrillic is right for Ukrainian');
+      assert.throws(() => core.checkTranslation(source, latin, { target: 'ru' }), (e) => e.code === 'script', 'Latin letters are not Russian');
+      assert.throws(() => core.checkTranslation(source, latin, { target: 'zh' }), (e) => e.code === 'script');
+      assert.doesNotThrow(() => core.checkTranslation(source, latin, { target: 'tr' }), 'Turkish is Latin, nothing to enforce');
+    });
+    test('a listing address is readable in every language: Latin words stay, Cyrillic is transliterated, Hebrew, Arabic and Chinese fall back to English, then the reference', () => {
+      assert.equal(slugs.categoryWord('woonhuis', 'nl', 'house', 'house'), 'woonhuis', 'a Latin word is untouched');
+      assert.equal(slugs.categoryWord('dům', 'cs', 'house', 'house'), 'dům', 'even with accents: no existing address changes');
+      assert.equal(slugs.categoryWord('хутор', 'ru', 'farm', 'farm'), 'khutor');
+      assert.equal(slugs.categoryWord('хутір', 'uk', 'farm', 'farm'), 'khutir');
+      assert.equal(slugs.categoryWord('Щасливий дім', 'uk', 'house', 'house'), 'shchaslyvyy-dim');
+      assert.equal(slugs.categoryWord('חווה', 'he', 'farm', 'farm'), 'farm');
+      assert.equal(slugs.categoryWord('مزرعة', 'ar', 'farm', 'farm'), 'farm');
+      assert.equal(slugs.categoryWord('农庄', 'zh', 'farm', 'farm'), 'farm');
+      assert.equal(slugs.categoryWord('农庄', 'zh', undefined, 'farm'), 'farm', 'no English word: the category key');
+      assert.equal(slugs.categoryWord('', 'ar', 'ab', 'farm'), 'farm', 'a two-letter English word is too short as well');
+      assert.deepEqual(slugs.safeCategorySlugs({ hu: 'tanya', en: 'farm', ru: 'хутор', ar: 'مزرعة' }, 'farm'), { hu: 'tanya', en: 'farm', ru: 'khutor', ar: 'farm' });
+      assert.equal(slugs.titleSlug('农庄出售', 'zh', 'Farm for sale', 'fd-1'), 'farm-for-sale');
+      assert.equal(slugs.titleSlug('农庄出售', 'zh', '', '1234'), 'fd-1234');
+      assert.equal(slugs.titleSlug('Хутор у Закарпатті', 'uk', 'x', '1'), 'khutor-u-zakarpatti');
+      assert.equal(slugs.asciiSlug('Veszprém megye'), 'veszprem-megye');
+    });
+    test('a page shows its own language, then English, German, Dutch, Hungarian, and says so when it is not its own', () => {
+      assert.deepEqual(languages.textOrder('ar'), ['ar', 'en', 'de', 'nl', 'hu']);
+      assert.deepEqual(languages.textOrder('en'), ['en', 'de', 'nl', 'hu']);
+      assert.deepEqual(languages.textOrder('de'), ['de', 'en', 'nl', 'hu']);
+      assert.deepEqual(languages.textOrder('nl'), ['nl', 'hu']);
+      assert.deepEqual(languages.textOrder('hu'), ['hu']);
+      assert.equal(fallbackLib.sourceNote('ar', 'en', 'description'), 'الوصف بالإنجليزية');
+      assert.equal(fallbackLib.sourceNote('zh', 'en', 'description'), '英文描述');
+      assert.equal(fallbackLib.sourceNote('he', 'de', 'description'), 'תיאור בגרמנית');
+      assert.equal(fallbackLib.sourceNote('ru', 'en', 'description'), 'Описание на английском языке');
+      assert.equal(fallbackLib.sourceNote('fr', 'en', 'description'), 'Description en anglais');
+      assert.equal(fallbackLib.sourceNote('de', 'hu', 'description'), 'Beschreibung auf Ungarisch', 'the old notes are unchanged');
+      assert.equal(fallbackLib.sourceNote('ar', 'ar', 'description'), null, 'its own language: nothing to say');
+      assert.equal(fallbackLib.sourceNote('hu', 'en', 'description'), null);
+      for (const code of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) {
+        assert.ok(fallbackLib.machineNote(code).length > 3 && fallbackLib.LISTING_UNAVAILABLE_NOTE[code].length > 10, code);
+        for (const from of ['nl', 'hu', 'en', 'de']) assert.ok(fallbackLib.sourceNote(code, from, 'article'), `${code} <- ${from}`);
+      }
     });
   })();
 }
