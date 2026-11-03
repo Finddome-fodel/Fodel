@@ -50,9 +50,9 @@ const pkgSummary = catalog.packages
   .map((p) => {
     // "€ 129 vagy € 179" — every tier price, the last joined with "or".
     const prices = p.tiers.map((tier) => fmt(tier.priceEur));
-    const or = x('vagy', 'of', 'or', 'oder', 'ou', 'o', 'lub', 'sau', 'alebo', 'o', 'ou', 'ή', 'nebo', 'ali', 'eller', 'eller', 'eller', 'tai', 'või', 'vai', 'arba');
+    const or = x({ hu: 'vagy', nl: 'of', en: 'or', de: 'oder', fr: 'ou', es: 'o', pl: 'lub', ro: 'sau', sk: 'alebo', it: 'o', pt: 'ou', el: 'ή', cs: 'nebo', sl: 'ali', sv: 'eller', da: 'eller', no: 'eller', fi: 'tai', et: 'või', lv: 'vai', lt: 'arba', sr: 'or', uk: 'or', tr: 'or', he: 'or', ar: 'or', ru: 'or', zh: 'or' });
     const price = prices.length > 1 ? `${prices.slice(0, -1).join(', ')} ${or} ${prices[prices.length - 1]}` : prices[0];
-    return x(`${p.months} hónapos ${price}`, `${p.months} maanden ${price}`, `${p.months}-month listing ${price}`, `${p.months}-monatiges Inserat ${price}`, `annonce de ${p.months} mois à ${price}`, `anuncio de ${p.months} meses por ${price}`, `ogłoszenie na ${nOf('pl', p.months, 'miesiąc', 'miesiące', 'miesięcy')} za ${price}`, `anunț pe ${nOf('ro', p.months, 'lună', 'luni', 'de luni')} la ${price}`, `inzerát na ${nOf('sk', p.months, 'mesiac', 'mesiace', 'mesiacov')} za ${price}`, `annuncio di ${p.months} mesi a ${price}`, `anúncio de ${p.months} meses por ${price}`, `αγγελία ${p.months} μηνών στα ${price}`, `${p.months}měsíční inzerát za ${price}`, `${p.months}-mesečni oglas za ${price}`, `annons i ${p.months} månader för ${price}`, `annonce i ${p.months} måneder til ${price}`, `annonse i ${p.months} måneder for ${price}`, `${p.months} kuukauden ilmoitus hintaan ${price}`, `${p.months}-kuuline kuulutus hinnaga ${price}`, `${nOf('lv', p.months, 'mēneša', 'mēnešu')} sludinājums par ${price}`, `${nOf('lt', p.months, 'mėnesio', 'mėnesių', 'mėnesių')} skelbimas už ${price}`);
+    return x({ hu: `${p.months} hónapos ${price}`, nl: `${p.months} maanden ${price}`, en: `${p.months}-month listing ${price}`, de: `${p.months}-monatiges Inserat ${price}`, fr: `annonce de ${p.months} mois à ${price}`, es: `anuncio de ${p.months} meses por ${price}`, pl: `ogłoszenie na ${nOf('pl', p.months, 'miesiąc', 'miesiące', 'miesięcy')} za ${price}`, ro: `anunț pe ${nOf('ro', p.months, 'lună', 'luni', 'de luni')} la ${price}`, sk: `inzerát na ${nOf('sk', p.months, 'mesiac', 'mesiace', 'mesiacov')} za ${price}`, it: `annuncio di ${p.months} mesi a ${price}`, pt: `anúncio de ${p.months} meses por ${price}`, el: `αγγελία ${p.months} μηνών στα ${price}`, cs: `${p.months}měsíční inzerát za ${price}`, sl: `${p.months}-mesečni oglas za ${price}`, sv: `annons i ${p.months} månader för ${price}`, da: `annonce i ${p.months} måneder til ${price}`, no: `annonse i ${p.months} måneder for ${price}`, fi: `${p.months} kuukauden ilmoitus hintaan ${price}`, et: `${p.months}-kuuline kuulutus hinnaga ${price}`, lv: `${nOf('lv', p.months, 'mēneša', 'mēnešu')} sludinājums par ${price}`, lt: `${nOf('lt', p.months, 'mėnesio', 'mėnesių', 'mėnesių')} skelbimas už ${price}`, sr: `${p.months}-month listing ${price}`, uk: `${p.months}-month listing ${price}`, tr: `${p.months}-month listing ${price}`, he: `${p.months}-month listing ${price}`, ar: `${p.months}-month listing ${price}`, ru: `${p.months}-month listing ${price}`, zh: `${p.months}-month listing ${price}` });
   })
   .join(', ');
 // Only the category highlight is sold now (the homepage is an editorial choice).
@@ -714,6 +714,223 @@ const copies = {
     commissionTitle: `${pct(COMMISSION.percent)} be PVM, ne mažiau kaip ${eurText(locale, COMMISSION.minimumEur)}`,
     contractFrom: (n: number) => `nuo ${eurText(locale, n)}`,
   },
+  sr: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FINDDOME listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
+  uk: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FINDDOME listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
+  tr: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FINDDOME listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
+  he: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FINDDOME listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
+  ar: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FINDDOME listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
+  ru: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FINDDOME listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
+  zh: {
+    metaTitle: `Prices: listing fees from ${eurText(locale, from)}`,
+    metaDescription: `FINDDOME listing prices: ${pkgSummary}. Translation ${eurText(locale, translationPrice)} per language, highlighting €${hlRange} per month. All prices include ${pct(vat)} Dutch VAT.`,
+    eyebrow: 'Prices',
+    title: 'Clear prices,',
+    titleEm: 'no hidden costs',
+    body: `All prices include ${pct(vat)} Dutch VAT. You pay the listing fee once, after approval; an approved listing goes online at once. We charge commission only when we bring the buyer.`,
+    packagesHead: 'Listing packages',
+    extrasHead: 'Optional extras',
+    contractsHead: 'Bilingual sale and purchase agreement',
+    commissionHead: 'Commission',
+    vatNote: `All prices include ${pct(vat)} Dutch VAT.`,
+    cta: 'Place a listing',
+    ctaNote: 'On approval we publish at once, and you receive the payment request by email.',
+    extras: [
+      { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
+      { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+    ],
+    services: ['Applying for the energy performance certificate'],
+    onsiteUnit: 'one-off, on site',
+    servicesHead: 'Other services',
+    servicesNote: 'For these we prepare a tailored quote. Do ask.',
+    contractNote: 'Translation of the sale and purchase agreement per language combination, from-prices.',
+    commissionBody:
+      'We charge commission only when FINDDOME has introduced the buyer, a written sale and purchase agreement exists and the deposit has been paid. If the buyer contacts you directly and you do not need our help, you pay nothing on top of the listing fee.',
+    refundHead: 'Refund policy',
+    commissionTitle: `${COMMISSION.percent}% net, min. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `from ${eurText(locale, n)}`,
+  },
 };
 
 type Copy = (typeof copies)['en'];
@@ -722,10 +939,10 @@ const nlExtra = { refundHead: 'Terugbetalingsbeleid', commissionTitle: `${COMMIS
 const t = { ...copies[locale], ...(locale === 'hu' ? huExtra : locale === 'nl' ? nlExtra : {}) } as Copy;
 
 const contractLabels: Record<string, L10n> = {
-  hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois', es: 'Húngaro', pl: 'Węgierski', ro: 'Maghiară', sk: 'Maďarčina', it: 'Ungherese', pt: 'Húngaro', el: 'Ουγγρικά', cs: 'Maďarština', sl: 'Madžarščina', sv: 'Ungerska', da: 'Ungarsk', no: 'Ungarsk', fi: 'Unkari', et: 'Ungari keel', lv: 'Ungāru valoda', lt: 'Vengrų kalba' },
-  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars', en: 'German–Hungarian', de: 'Deutsch–Ungarisch', fr: 'Allemand–hongrois', es: 'Alemán–húngaro', pl: 'Niemiecki–węgierski', ro: 'Germană–maghiară', sk: 'Nemčina–maďarčina', it: 'Tedesco–ungherese', pt: 'Alemão–húngaro', el: 'Γερμανικά–ουγγρικά', cs: 'Němčina–maďarština', sl: 'Nemščina–madžarščina', sv: 'Tyska–ungerska', da: 'Tysk–ungarsk', no: 'Tysk–ungarsk', fi: 'Saksa–unkari', et: 'Saksa–ungari', lv: 'Vācu–ungāru', lt: 'Vokiečių–vengrų' },
-  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois', es: 'Inglés–húngaro', pl: 'Angielski–węgierski', ro: 'Engleză–maghiară', sk: 'Angličtina–maďarčina', it: 'Inglese–ungherese', pt: 'Inglês–húngaro', el: 'Αγγλικά–ουγγρικά', cs: 'Angličtina–maďarština', sl: 'Angleščina–madžarščina', sv: 'Engelska–ungerska', da: 'Engelsk–ungarsk', no: 'Engelsk–ungarsk', fi: 'Englanti–unkari', et: 'Inglise–ungari', lv: 'Angļu–ungāru', lt: 'Anglų–vengrų' },
-  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois', es: 'Neerlandés–húngaro', pl: 'Niderlandzki–węgierski', ro: 'Neerlandeză–maghiară', sk: 'Holandčina–maďarčina', it: 'Olandese–ungherese', pt: 'Neerlandês–húngaro', el: 'Ολλανδικά–ουγγρικά', cs: 'Nizozemština–maďarština', sl: 'Nizozemščina–madžarščina', sv: 'Nederländska–ungerska', da: 'Hollandsk–ungarsk', no: 'Nederlandsk–ungarsk', fi: 'Hollanti–unkari', et: 'Hollandi–ungari', lv: 'Nīderlandiešu–ungāru', lt: 'Olandų–vengrų' },
+  hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois', es: 'Húngaro', pl: 'Węgierski', ro: 'Maghiară', sk: 'Maďarčina', it: 'Ungherese', pt: 'Húngaro', el: 'Ουγγρικά', cs: 'Maďarština', sl: 'Madžarščina', sv: 'Ungerska', da: 'Ungarsk', no: 'Ungarsk', fi: 'Unkari', et: 'Ungari keel', lv: 'Ungāru valoda', lt: 'Vengrų kalba', sr: 'Hungarian', uk: 'Hungarian', tr: 'Hungarian', he: 'Hungarian', ar: 'Hungarian', ru: 'Hungarian', zh: 'Hungarian' },
+  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars', en: 'German–Hungarian', de: 'Deutsch–Ungarisch', fr: 'Allemand–hongrois', es: 'Alemán–húngaro', pl: 'Niemiecki–węgierski', ro: 'Germană–maghiară', sk: 'Nemčina–maďarčina', it: 'Tedesco–ungherese', pt: 'Alemão–húngaro', el: 'Γερμανικά–ουγγρικά', cs: 'Němčina–maďarština', sl: 'Nemščina–madžarščina', sv: 'Tyska–ungerska', da: 'Tysk–ungarsk', no: 'Tysk–ungarsk', fi: 'Saksa–unkari', et: 'Saksa–ungari', lv: 'Vācu–ungāru', lt: 'Vokiečių–vengrų', sr: 'German–Hungarian', uk: 'German–Hungarian', tr: 'German–Hungarian', he: 'German–Hungarian', ar: 'German–Hungarian', ru: 'German–Hungarian', zh: 'German–Hungarian' },
+  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois', es: 'Inglés–húngaro', pl: 'Angielski–węgierski', ro: 'Engleză–maghiară', sk: 'Angličtina–maďarčina', it: 'Inglese–ungherese', pt: 'Inglês–húngaro', el: 'Αγγλικά–ουγγρικά', cs: 'Angličtina–maďarština', sl: 'Angleščina–madžarščina', sv: 'Engelska–ungerska', da: 'Engelsk–ungarsk', no: 'Engelsk–ungarsk', fi: 'Englanti–unkari', et: 'Inglise–ungari', lv: 'Angļu–ungāru', lt: 'Anglų–vengrų', sr: 'English–Hungarian', uk: 'English–Hungarian', tr: 'English–Hungarian', he: 'English–Hungarian', ar: 'English–Hungarian', ru: 'English–Hungarian', zh: 'English–Hungarian' },
+  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois', es: 'Neerlandés–húngaro', pl: 'Niderlandzki–węgierski', ro: 'Neerlandeză–maghiară', sk: 'Holandčina–maďarčina', it: 'Olandese–ungherese', pt: 'Neerlandês–húngaro', el: 'Ολλανδικά–ουγγρικά', cs: 'Nizozemština–maďarština', sl: 'Nizozemščina–madžarščina', sv: 'Nederländska–ungerska', da: 'Hollandsk–ungarsk', no: 'Nederlandsk–ungarsk', fi: 'Hollanti–unkari', et: 'Hollandi–ungari', lv: 'Nīderlandiešu–ungāru', lt: 'Olandų–vengrų', sr: 'Dutch–Hungarian', uk: 'Dutch–Hungarian', tr: 'Dutch–Hungarian', he: 'Dutch–Hungarian', ar: 'Dutch–Hungarian', ru: 'Dutch–Hungarian', zh: 'Dutch–Hungarian' },
 };
 const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
 
@@ -881,7 +1098,7 @@ const packageSchema = listingServiceSchema(locale, {
   }
   th,
   td {
-    text-align: left;
+    text-align: start;
     padding: 18px 0;
     font-weight: var(--fw-body);
     font-size: var(--fs-body);
@@ -892,12 +1109,12 @@ const packageSchema = listingServiceSchema(locale, {
     transition: background-color 0.3s var(--ease-out);
   }
   tr > :first-child {
-    padding-left: 24px;
-    border-radius: var(--r-md) 0 0 var(--r-md);
+    padding-inline-start: 24px;
+    border-start-start-radius: var(--r-md); border-start-end-radius: 0; border-end-end-radius: 0; border-end-start-radius: var(--r-md);
   }
   tr > :last-child {
-    padding-right: 24px;
-    border-radius: 0 var(--r-md) var(--r-md) 0;
+    padding-inline-end: 24px;
+    border-start-start-radius: 0; border-start-end-radius: var(--r-md); border-end-end-radius: var(--r-md); border-end-start-radius: 0;
   }
   tr:hover > * {
     background: var(--white);
@@ -910,15 +1127,15 @@ const packageSchema = listingServiceSchema(locale, {
     font-weight: var(--fw-medium);
     font-size: var(--fs-lead);
     color: var(--ink);
-    text-align: right;
+    text-align: end;
     white-space: nowrap;
-    padding-left: 24px;
+    padding-inline-start: 24px;
   }
   .unit {
-    text-align: right;
+    text-align: end;
     white-space: nowrap;
     font-size: var(--fs-small);
-    padding-left: 12px;
+    padding-inline-start: 12px;
     width: 1%;
   }
 
@@ -939,7 +1156,7 @@ const packageSchema = listingServiceSchema(locale, {
   /* "à partir de 300 €" is longer than the Hungarian "300 €-tól": let it wrap on a phone. */
   .contracts .amount {
     white-space: normal;
-    padding-left: 12px;
+    padding-inline-start: 12px;
     font-size: var(--fs-body);
   }
   .contracts tr:hover > * {
@@ -1006,7 +1223,7 @@ const packageSchema = listingServiceSchema(locale, {
     flex-direction: column;
     align-items: flex-end;
     flex-shrink: 0;
-    text-align: right;
+    text-align: end;
   }
   .cta-note {
     font-size: 13.5px;
@@ -1028,10 +1245,10 @@ const packageSchema = listingServiceSchema(locale, {
       padding: 48px calc(var(--pad-x-mob) - var(--slab-x) + 4px);
     }
     tr > :first-child {
-      padding-left: 16px;
+      padding-inline-start: 16px;
     }
     tr > :last-child {
-      padding-right: 16px;
+      padding-inline-end: 16px;
     }
     .two-col .duo-panel {
       padding-block: 44px;
@@ -1044,15 +1261,15 @@ const packageSchema = listingServiceSchema(locale, {
     }
     .commission-cta {
       align-items: flex-start;
-      text-align: left;
+      text-align: start;
     }
     .unit {
       display: none;
     }
     /* With the unit hidden, the amount closes the row. */
     .extras .amount {
-      padding-right: 16px;
-      border-radius: 0 var(--r-md) var(--r-md) 0;
+      padding-inline-end: 16px;
+      border-start-start-radius: 0; border-start-end-radius: var(--r-md); border-end-end-radius: var(--r-md); border-end-start-radius: 0;
     }
   }
 </style>

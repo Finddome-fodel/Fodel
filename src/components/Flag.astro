@@ -5,7 +5,10 @@
  */
 type Code =
   | 'hu' | 'nl' | 'gb' | 'de' | 'fr' | 'it' | 'es' | 'pl' | 'ro' | 'sk'
-  | 'pt' | 'gr' | 'cz' | 'si' | 'se' | 'dk' | 'no' | 'fi' | 'ee' | 'lv' | 'lt';
+  | 'pt' | 'gr' | 'cz' | 'si' | 'se' | 'dk' | 'no' | 'fi' | 'ee' | 'lv' | 'lt'
+  | 'rs' | 'ua' | 'tr' | 'il' | 'ru' | 'cn'
+  /** Arabic is the language of many countries: a neutral script badge, not one nation's flag. */
+  | 'ar';
 
 interface Props {
   code: Code;
@@ -232,6 +235,74 @@ const clipId = `flag-clip-${code}-${Math.random().toString(36).slice(2, 8)}`;
           <path d="M0,18 L10.4,10.2 M24,18 L13.6,7.8" stroke="#C8102E" stroke-width="1.2" />
           <path d="M12,0 V18 M0,9 H24" stroke="#fff" stroke-width="6" />
           <path d="M12,0 V18 M0,9 H24" stroke="#C8102E" stroke-width="3.6" />
+        </>
+      )
+    }
+    {
+      code === 'rs' && (
+        <>
+          <rect width="24" height="6" fill="#C6363C" />
+          <rect width="24" height="6" y="6" fill="#0C4076" />
+          <rect width="24" height="6" y="12" fill="#fff" />
+          <path d="M6 4.6h4v4.2c0 1.5-1 2.4-2 2.8-1-.4-2-1.3-2-2.8z" fill="#C6363C" stroke="#EDB92E" stroke-width="0.6" />
+          <path d="M8 5.6v5M6.6 7.6h2.8" stroke="#fff" stroke-width="0.7" />
+        </>
+      )
+    }
+    {
+      code === 'ua' && (
+        <>
+          <rect width="24" height="9" fill="#0057B7" />
+          <rect width="24" height="9" y="9" fill="#FFD700" />
+        </>
+      )
+    }
+    {
+      code === 'tr' && (
+        <>
+          <rect width="24" height="18" fill="#E30A17" />
+          <circle cx="9" cy="9" r="4.5" fill="#fff" />
+          <circle cx="10.1" cy="9" r="3.6" fill="#E30A17" />
+          <polygon points="14.60,6.90 15.07,8.35 16.60,8.35 15.36,9.25 15.83,10.70 14.60,9.80 13.37,10.70 13.84,9.25 12.60,8.35 14.13,8.35" fill="#fff" transform="rotate(-18 14.6 9)" />
+        </>
+      )
+    }
+    {
+      code === 'il' && (
+        <>
+          <rect width="24" height="18" fill="#fff" />
+          <rect width="24" height="2.2" y="1.8" fill="#0038B8" />
+          <rect width="24" height="2.2" y="14" fill="#0038B8" />
+          <path d="M12 5.6l2.9 5.05H9.1zM12 12.4l-2.9-5.05h5.8z" fill="none" stroke="#0038B8" stroke-width="0.75" stroke-linejoin="round" />
+        </>
+      )
+    }
+    {
+      code === 'ru' && (
+        <>
+          <rect width="24" height="6" fill="#fff" />
+          <rect width="24" height="6" y="6" fill="#0039A6" />
+          <rect width="24" height="6" y="12" fill="#D52B1E" />
+        </>
+      )
+    }
+    {
+      code === 'cn' && (
+        <>
+          <rect width="24" height="18" fill="#DE2910" />
+          <polygon points="4.50,1.80 5.11,3.67 7.07,3.67 5.48,4.82 6.09,6.68 4.50,5.53 2.91,6.68 3.52,4.82 1.93,3.67 3.89,3.67" fill="#FFDE00" />
+          <polygon points="9.00,0.90 9.20,1.52 9.86,1.52 9.33,1.91 9.53,2.53 9.00,2.14 8.47,2.53 8.67,1.91 8.14,1.52 8.80,1.52" fill="#FFDE00" />
+          <polygon points="10.80,2.70 11.00,3.32 11.66,3.32 11.13,3.71 11.33,4.33 10.80,3.94 10.27,4.33 10.47,3.71 9.94,3.32 10.60,3.32" fill="#FFDE00" />
+          <polygon points="10.80,5.40 11.00,6.02 11.66,6.02 11.13,6.41 11.33,7.03 10.80,6.64 10.27,7.03 10.47,6.41 9.94,6.02 10.60,6.02" fill="#FFDE00" />
+          <polygon points="9.00,7.20 9.20,7.82 9.86,7.82 9.33,8.21 9.53,8.83 9.00,8.44 8.47,8.83 8.67,8.21 8.14,7.82 8.80,7.82" fill="#FFDE00" />
+        </>
+      )
+    }
+    {
+      code === 'ar' && (
+        <>
+          <rect width="24" height="18" fill="#1F4E46" />
+          <text x="12" y="13.4" text-anchor="middle" font-size="12" font-family="'Noto Sans Arabic Variable', 'Noto Sans Arabic', Tahoma, sans-serif" fill="#fff">ع</text>
         </>
       )
     }

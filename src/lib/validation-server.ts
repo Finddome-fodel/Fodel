@@ -27,8 +27,15 @@ import { copy as fi } from './validation-copy/fi.ts';
 import { copy as et } from './validation-copy/et.ts';
 import { copy as lv } from './validation-copy/lv.ts';
 import { copy as lt } from './validation-copy/lt.ts';
+import { copy as sr } from './validation-copy/sr.ts';
+import { copy as uk } from './validation-copy/uk.ts';
+import { copy as tr } from './validation-copy/tr.ts';
+import { copy as he } from './validation-copy/he.ts';
+import { copy as ar } from './validation-copy/ar.ts';
+import { copy as ru } from './validation-copy/ru.ts';
+import { copy as zh } from './validation-copy/zh.ts';
 
-const COPY: Record<string, ValidationCopy> = { hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt };
+const COPY: Record<string, ValidationCopy> = { hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt, sr, uk, tr, he, ar, ru, zh };
 
 /** An unknown language gets Dutch, the site's default for visitors we cannot place. */
 const copyFor = (locale: string): ValidationCopy => COPY[locale] ?? nl;

@@ -649,4 +649,11 @@ export const LEGAL: Record<Locale, Record<LegalKey, ContentPageData>> = {
   et: LEGAL_ET,
   lv: LEGAL_LV,
   lt: LEGAL_LT,
+  sr: LEGAL_EN,
+  uk: LEGAL_EN,
+  tr: LEGAL_EN,
+  he: LEGAL_EN,
+  ar: LEGAL_EN,
+  ru: LEGAL_EN,
+  zh: LEGAL_EN,
 };

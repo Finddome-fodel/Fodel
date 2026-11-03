@@ -21,10 +21,10 @@ const x = localizer(locale);
 const videos = await latestVideos(8);
 const play = CHROME[locale].playVideo;
 
-const title = x('Legfrissebb videóink', 'Onze nieuwste video’s', 'Our latest videos', 'Unsere neuesten Videos', 'Nos dernières vidéos', 'Nuestros últimos vídeos', 'Nasze najnowsze filmy', 'Cele mai recente videoclipuri', 'Naše najnovšie videá', 'I nostri ultimi video', 'Os nossos vídeos mais recentes', 'Τα τελευταία μας βίντεο', 'Naše nejnovější videa', 'Naši najnovejši videoposnetki', 'Våra senaste videor', 'Vores seneste videoer', 'Våre nyeste videoer', 'Uusimmat videomme', 'Meie uusimad videod', 'Mūsu jaunākie video', 'Mūsų naujausi vaizdo įrašai');
-const allVideos = x('Minden videó', 'Alle video’s', 'All videos', 'Alle Videos', 'Toutes les vidéos', 'Todos los vídeos', 'Wszystkie filmy', 'Toate videoclipurile', 'Všetky videá', 'Tutti i video', 'Todos os vídeos', 'Όλα τα βίντεο', 'Všechna videa', 'Vsi videoposnetki', 'Alla videor', 'Alle videoer', 'Alle videoer', 'Kaikki videot', 'Kõik videod', 'Visi video', 'Visi vaizdo įrašai');
-const prev = x('Előző', 'Vorige', 'Previous', 'Zurück', 'Précédent', 'Anterior', 'Poprzednie', 'Anterior', 'Predchádzajúce', 'Precedente', 'Anterior', 'Προηγούμενο', 'Předchozí', 'Prejšnje', 'Föregående', 'Forrige', 'Forrige', 'Edellinen', 'Eelmine', 'Iepriekšējais', 'Ankstesnis');
-const next = x('Következő', 'Volgende', 'Next', 'Weiter', 'Suivant', 'Siguiente', 'Następne', 'Următorul', 'Nasledujúce', 'Successivo', 'Seguinte', 'Επόμενο', 'Další', 'Naslednje', 'Nästa', 'Næste', 'Neste', 'Seuraava', 'Järgmine', 'Nākamais', 'Kitas');
+const title = x({ hu: 'Legfrissebb videóink', nl: 'Onze nieuwste video’s', en: 'Our latest videos', de: 'Unsere neuesten Videos', fr: 'Nos dernières vidéos', es: 'Nuestros últimos vídeos', pl: 'Nasze najnowsze filmy', ro: 'Cele mai recente videoclipuri', sk: 'Naše najnovšie videá', it: 'I nostri ultimi video', pt: 'Os nossos vídeos mais recentes', el: 'Τα τελευταία μας βίντεο', cs: 'Naše nejnovější videa', sl: 'Naši najnovejši videoposnetki', sv: 'Våra senaste videor', da: 'Vores seneste videoer', no: 'Våre nyeste videoer', fi: 'Uusimmat videomme', et: 'Meie uusimad videod', lv: 'Mūsu jaunākie video', lt: 'Mūsų naujausi vaizdo įrašai', sr: 'Our latest videos', uk: 'Our latest videos', tr: 'Our latest videos', he: 'Our latest videos', ar: 'Our latest videos', ru: 'Our latest videos', zh: 'Our latest videos' });
+const allVideos = x({ hu: 'Minden videó', nl: 'Alle video’s', en: 'All videos', de: 'Alle Videos', fr: 'Toutes les vidéos', es: 'Todos los vídeos', pl: 'Wszystkie filmy', ro: 'Toate videoclipurile', sk: 'Všetky videá', it: 'Tutti i video', pt: 'Todos os vídeos', el: 'Όλα τα βίντεο', cs: 'Všechna videa', sl: 'Vsi videoposnetki', sv: 'Alla videor', da: 'Alle videoer', no: 'Alle videoer', fi: 'Kaikki videot', et: 'Kõik videod', lv: 'Visi video', lt: 'Visi vaizdo įrašai', sr: 'All videos', uk: 'All videos', tr: 'All videos', he: 'All videos', ar: 'All videos', ru: 'All videos', zh: 'All videos' });
+const prev = x({ hu: 'Előző', nl: 'Vorige', en: 'Previous', de: 'Zurück', fr: 'Précédent', es: 'Anterior', pl: 'Poprzednie', ro: 'Anterior', sk: 'Predchádzajúce', it: 'Precedente', pt: 'Anterior', el: 'Προηγούμενο', cs: 'Předchozí', sl: 'Prejšnje', sv: 'Föregående', da: 'Forrige', no: 'Forrige', fi: 'Edellinen', et: 'Eelmine', lv: 'Iepriekšējais', lt: 'Ankstesnis', sr: 'Previous', uk: 'Previous', tr: 'Previous', he: 'Previous', ar: 'Previous', ru: 'Previous', zh: 'Previous' });
+const next = x({ hu: 'Következő', nl: 'Volgende', en: 'Next', de: 'Weiter', fr: 'Suivant', es: 'Siguiente', pl: 'Następne', ro: 'Următorul', sk: 'Nasledujúce', it: 'Successivo', pt: 'Seguinte', el: 'Επόμενο', cs: 'Další', sl: 'Naslednje', sv: 'Nästa', da: 'Næste', no: 'Neste', fi: 'Seuraava', et: 'Järgmine', lv: 'Nākamais', lt: 'Kitas', sr: 'Next', uk: 'Next', tr: 'Next', he: 'Next', ar: 'Next', ru: 'Next', zh: 'Next' });
 
 const date = (iso: string) => new Intl.DateTimeFormat(locale === 'no' ? 'nb' : locale, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(iso));
 ---
@@ -38,10 +38,10 @@ const date = (iso: string) => new Intl.DateTimeFormat(locale === 'no' ? 'nb' : l
           <Button variant="text" href={YOUTUBE.url} target="_blank" rel="noopener">{allVideos}</Button>
           <div class="videos-arrows">
             <button type="button" class="videos-btn" data-videos="prev" aria-label={prev}>
-              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true"><path d="M15 6H2M6.5 1.5 2 6l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <svg class="icon-dir" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true"><path d="M15 6H2M6.5 1.5 2 6l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             </button>
             <button type="button" class="videos-btn" data-videos="next" aria-label={next}>
-              <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true"><path d="M1 6h13M9.5 1.5 14 6l-4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <svg class="icon-dir" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true"><path d="M1 6h13M9.5 1.5 14 6l-4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             </button>
           </div>
         </div>
@@ -76,10 +76,11 @@ const date = (iso: string) => new Intl.DateTimeFormat(locale === 'no' ? 'nb' : l
     const update = () => {
       const max = row.scrollWidth - row.clientWidth - 2;
       section.toggleAttribute('data-static', max <= 0);
-      buttons.forEach((b) => b.setAttribute('aria-disabled', String(b.dataset.videos === 'prev' ? row.scrollLeft <= 2 : row.scrollLeft >= max)));
+      const at = Math.abs(row.scrollLeft); // negative on right-to-left pages
+      buttons.forEach((b) => b.setAttribute('aria-disabled', String(b.dataset.videos === 'prev' ? at <= 2 : at >= max)));
     };
     buttons.forEach((b) =>
-      b.addEventListener('click', () => row.scrollBy({ left: (b.dataset.videos === 'prev' ? -1 : 1) * step(), behavior: 'smooth' }))
+      b.addEventListener('click', () => row.scrollBy({ left: (b.dataset.videos === 'prev' ? -1 : 1) * (getComputedStyle(row).direction === 'rtl' ? -1 : 1) * step(), behavior: 'smooth' }))
     );
     row.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update, { passive: true });
@@ -209,7 +210,7 @@ const date = (iso: string) => new Intl.DateTimeFormat(locale === 'no' ? 'nb' : l
   }
   .video-play {
     position: absolute;
-    left: 20px;
+    inset-inline-start: 20px;
     bottom: 20px;
     z-index: 1;
     display: grid;
@@ -219,7 +220,7 @@ const date = (iso: string) => new Intl.DateTimeFormat(locale === 'no' ? 'nb' : l
     border-radius: 50%;
     background: var(--cream);
     color: var(--ink);
-    padding-left: 3px;
+    padding-inline-start: 3px;
     transition: transform 0.4s var(--ease-out), background-color 0.4s var(--ease-out);
   }
   .video-poster:hover img,
@@ -237,7 +238,7 @@ const date = (iso: string) => new Intl.DateTimeFormat(locale === 'no' ? 'nb' : l
   }
   .video-meta {
     margin-top: 16px;
-    padding-right: 8px;
+    padding-inline-end: 8px;
   }
   .video-title {
     margin: 0 0 6px;
@@ -284,7 +285,7 @@ const date = (iso: string) => new Intl.DateTimeFormat(locale === 'no' ? 'nb' : l
       scroll-padding-inline: var(--pad-x-mob);
     }
     .video-play {
-      left: 14px;
+      inset-inline-start: 14px;
       bottom: 14px;
       width: 48px;
       height: 48px;

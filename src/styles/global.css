@@ -49,6 +49,35 @@
   src: url('../assets/fonts/jost-latin-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
+/* Cyrillic (ru, uk; Serbian is written in Latin script here): Jost's own
+   Cyrillic cut, so Russian and Ukrainian pages keep the house typeface. DM Sans
+   has no Cyrillic; headings fall through to Jost in --serif. */
+@font-face {
+  font-family: 'Jost Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../assets/fonts/jost-cyrillic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+/* Hebrew and Arabic: Noto Sans, a humanist sans that sits well next to Jost.
+   Only fetched when a page has those characters (unicode-range). */
+@font-face {
+  font-family: 'Noto Sans Hebrew Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../assets/fonts/noto-sans-hebrew-hebrew-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../assets/fonts/noto-sans-arabic-arabic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC;
+}
 
 
 /* Arial stretched to the metrics of each typeface (measured from the font
@@ -194,7 +223,7 @@ input[type='date'] {
   font-family: inherit;
 }
 input[type='date']::-webkit-date-and-time-value {
-  text-align: left;
+  text-align: start;
 }
 /* Autofilled fields keep the site's surface instead of the browser's pale
    yellow/blue (dark panels override --autofill-bg / --autofill-ink). */
@@ -229,7 +258,7 @@ svg {
 .skip-link {
   position: absolute;
   top: 12px;
-  left: 12px;
+  inset-inline-start: 12px;
   z-index: 2000;
   padding: 12px 20px;
   border-radius: var(--r-pill);
@@ -276,13 +305,16 @@ svg {
   content: '';
   position: absolute;
   bottom: -3px;
-  left: 0;
-  right: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   height: 1px;
   background: var(--accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--dur-fast) ease;
+}
+[dir='rtl'] .nav-link::after {
+  transform-origin: right;
 }
 
 .nav-link[aria-current='page']::after {
@@ -444,6 +476,9 @@ svg {
   transform-origin: left;
   transition: transform 1.4s var(--ease-out) calc(var(--reveal-delay, 0s) + 0.25s);
 }
+[dir='rtl'] [data-reveal-ready] .gold-rule, [dir='rtl'] [data-reveal-ready] .draw {
+  transform-origin: right;
+}
 [data-reveal-ready] .gold-rule.center {
   transform-origin: center;
 }
@@ -509,7 +544,7 @@ svg {
    lines up with every line under it. „ is 0.30em wide at display tracking,
    “ 0.32em; one value serves both within a pixel. */
 .hang-quote {
-  margin-left: -0.31em;
+  margin-inline-start: -0.31em;
 }
 
 /* ── Link with a drawn underline ── */
@@ -947,4 +982,62 @@ svg {
 
 .print-only {
   display: none;
+}
+
+/* ── Scripts beyond Latin (November 2026: sr, uk, tr, he, ar, ru, zh) ──
+   Simplified Chinese uses the reader's own system CJK face: a webfont would be
+   megabytes. Arabic letters join, so tracking (letter-spacing) breaks words
+   apart; it is switched off everywhere on Arabic pages, and the taller Arabic
+   glyphs get more line height. */
+html:lang(zh) {
+  --serif: 'DM Sans Variable', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', 'Source Han Sans SC', 'DM Sans Fallback', sans-serif;
+  --sans: 'Jost Variable', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', 'Source Han Sans SC', 'Jost Fallback', sans-serif;
+}
+html:lang(zh) body {
+  line-height: 1.75;
+  line-break: strict;
+}
+html:lang(ar) body {
+  line-height: 1.75;
+}
+html:lang(ar) *,
+html:lang(ar) *::before,
+html:lang(ar) *::after {
+  letter-spacing: 0 !important;
+}
+html:lang(he) body {
+  line-height: 1.7;
+}
+
+/* ── Right-to-left (he, ar) ──
+   Layout uses logical properties (margin-inline-start, inset-inline-end…), so
+   it mirrors by itself. What must not mirror is marked here: arrows and
+   chevrons that mean "forward" flip; prices, phone numbers, references, e-mail
+   addresses and the map stay left-to-right. */
+[dir='rtl'] .icon-dir,
+[dir='rtl'] .arrow-chip {
+  scale: -1 1;
+}
+[dir='rtl'] .rail-progress {
+  scale: -1 1;
+}
+/* Sideways nudges and slides: translateX(calc(5px * var(--dir-x))) moves the
+   right way in either direction. */
+:root {
+  --dir-x: 1;
+}
+[dir='rtl'] {
+  --dir-x: -1;
+}
+.ltr,
+[dir='rtl'] input[type='tel'],
+[dir='rtl'] input[type='email'],
+[dir='rtl'] input[type='url'] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+[dir='rtl'] input[type='tel'],
+[dir='rtl'] input[type='email'],
+[dir='rtl'] input[type='url'] {
+  text-align: end;
 }

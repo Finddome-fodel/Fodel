@@ -91,8 +91,8 @@ const LIVE_ROUTES = [
   ['hu/eladoknak/index.html', '/hu/eladoknak/'],
   ['nl/adverteren/index.html', '/nl/adverteren/'],
 ];
-// The twenty newer languages: the Supabase-backed pages in their own slugs.
-for (const l of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt']) {
+// The other languages: the Supabase-backed pages in their own slugs.
+for (const l of LOCALES.filter((l) => l !== 'hu' && l !== 'nl')) {
   for (const key of ['home', 'properties', 'sold', 'submitAd', 'blog', 'priceList', 'sellers']) {
     const p = routePath(l, key);
     LIVE_ROUTES.push([`${p.slice(1)}index.html`, p]);
@@ -303,7 +303,7 @@ console.log('\nhreflang');
     // need no alternates.
     if (/name="robots" content="noindex/.test(html)) continue;
     const canonical = html.match(/<link rel="canonical" href="(.*?)"/)?.[1];
-    const alts = [...html.matchAll(/<link rel="alternate" hreflang="(hu|nl|en|de|fr|es|pl|ro|sk|it|pt-PT|el|cs|sl|sv|da|nb|fi|et|lv|lt)" href="(.*?)"/g)].map(
+    const alts = [...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="(.*?)"/g)].filter((m) => m[1] !== 'x-default').map(
       (m) => m[2]
     );
     if (!canonical) continue;
@@ -352,6 +352,9 @@ console.log('\nLanguages');
     checked++;
     const lang = html.match(/<html[^>]*\blang="([^"]+)"/)?.[1];
     if (lang !== LOCALE_META[locale].htmlLang) fail(`${relPath} has lang="${lang}", expected "${LOCALE_META[locale].htmlLang}"`);
+    // Hebrew and Arabic read right to left; every other language left to right.
+    const dir = html.match(/<html[^>]*\bdir="([^"]+)"/)?.[1];
+    if (dir !== LOCALE_META[locale].dir) fail(`${relPath} has dir="${dir}", expected "${LOCALE_META[locale].dir}"`);
     const canonical = html.match(/<link rel="canonical" href="(.*?)"/)?.[1] ?? '';
     // A blog stand-in (an article shown in another language) points at its original.
     const standIn = /\/(blog|nieuws)\/[^/]+\//.test(relPath);

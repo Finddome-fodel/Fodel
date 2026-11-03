@@ -37,7 +37,7 @@ export const SITE_URL = resolveSiteUrl();
 export const SITE_HOST = new URL(SITE_URL).host;
 
 /** Every language the public site exists in, each as a complete site under /<code>/. */
-export const LOCALES = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'];
+export const LOCALES = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt', 'sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh'];
 
 export const DEFAULT_LOCALE = 'hu';
 

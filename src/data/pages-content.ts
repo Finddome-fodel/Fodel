@@ -550,4 +550,11 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
   et: CONTENT_ET,
   lv: CONTENT_LV,
   lt: CONTENT_LT,
+  sr: CONTENT_EN,
+  uk: CONTENT_EN,
+  tr: CONTENT_EN,
+  he: CONTENT_EN,
+  ar: CONTENT_EN,
+  ru: CONTENT_EN,
+  zh: CONTENT_EN,
 };

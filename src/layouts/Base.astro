@@ -74,7 +74,7 @@ const jsonLd = graph([organisationSchema(locale, company), ...schema]);
 ---
 
 <!doctype html>
-<html lang={meta.htmlLang}>
+<html lang={meta.htmlLang} dir={meta.dir}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -110,7 +110,7 @@ const jsonLd = graph([organisationSchema(locale, company), ...schema]);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
 
-    <FontPreload />
+    <FontPreload locale={locale} />
     <meta name="theme-color" content="#102A43" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />

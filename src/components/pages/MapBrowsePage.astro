@@ -30,30 +30,37 @@ const { locale } = Astro.props;
 const ui = UI[locale];
 
 const x = localizer(locale);
-const title = x('Ingatlanok térképen', 'Woningen op de kaart', 'Properties on the map', 'Immobilien auf der Karte', 'Les biens sur la carte', 'Los inmuebles en el mapa', 'Nieruchomości na mapie', 'Proprietățile pe hartă', 'Nehnuteľnosti na mape', 'Immobili sulla mappa', 'Imóveis no mapa', 'Ακίνητα στον χάρτη', 'Nemovitosti na mapě', 'Nepremičnine na zemljevidu', 'Fastigheter på kartan', 'Ejendomme på kortet', 'Eiendommer på kartet', 'Kohteet kartalla', 'Kinnisvara kaardil', 'Īpašumi kartē', 'Turtas žemėlapyje');
-const description = x(
-  'Böngéssze a FINDDOME magyarországi ingatlanait térképen, régió szerint csoportosítva.',
-  'Blader door het Hongaarse vastgoed van FINDDOME op de kaart, gegroepeerd per regio.',
-  'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
-  'Stöbern Sie auf der Karte durch die ungarischen Immobilien von FINDDOME, nach Region gruppiert.',
-  'Parcourez sur la carte les biens hongrois de FINDDOME, regroupés par région.',
-  'Explore en el mapa los inmuebles húngaros de FINDDOME, agrupados por región.',
-  'Przeglądaj na mapie węgierskie nieruchomości FINDDOME pogrupowane według regionów.',
-  'Explorați pe hartă proprietățile FINDDOME din Ungaria, grupate pe regiuni.',
-  'Prezrite si na mape maďarské nehnuteľnosti FINDDOME zoskupené podľa regiónov.',
-  'Sfogli gli immobili ungheresi di FINDDOME su una mappa, raggruppati per regione.',
-  'Explore os imóveis húngaros da FINDDOME num mapa, agrupados por região.',
-  'Περιηγηθείτε στα ουγγρικά ακίνητα της FINDDOME σε χάρτη, ομαδοποιημένα ανά περιφέρεια.',
-  'Prohlédněte si maďarské nemovitosti FINDDOME na mapě, seskupené podle regionů.',
-  'Prebrskajte madžarske nepremičnine FINDDOME na zemljevidu, razvrščene po regijah.',
-  'Bläddra bland FINDDOME:s ungerska fastigheter på en karta, grupperade per region.',
-  'Se FINDDOME’s ungarske ejendomme på et kort, grupperet efter region.',
-  'Se FINDDOMEs ungarske eiendommer på et kart, gruppert etter region.',
-  'Selaa FINDDOMEn unkarilaisia kohteita kartalla alueittain ryhmiteltyinä.',
-  'Sirvige FINDDOME’i Ungari kinnisvara kaardil, piirkondade kaupa rühmitatuna.',
-  'Pārlūkojiet FINDDOME īpašumus Ungārijā kartē, sagrupētus pa reģioniem.',
-  'Peržiūrėkite FINDDOME nekilnojamąjį turtą Vengrijoje žemėlapyje, sugrupuotą pagal regionus.'
-);
+const title = x({ hu: 'Ingatlanok térképen', nl: 'Woningen op de kaart', en: 'Properties on the map', de: 'Immobilien auf der Karte', fr: 'Les biens sur la carte', es: 'Los inmuebles en el mapa', pl: 'Nieruchomości na mapie', ro: 'Proprietățile pe hartă', sk: 'Nehnuteľnosti na mape', it: 'Immobili sulla mappa', pt: 'Imóveis no mapa', el: 'Ακίνητα στον χάρτη', cs: 'Nemovitosti na mapě', sl: 'Nepremičnine na zemljevidu', sv: 'Fastigheter på kartan', da: 'Ejendomme på kortet', no: 'Eiendommer på kartet', fi: 'Kohteet kartalla', et: 'Kinnisvara kaardil', lv: 'Īpašumi kartē', lt: 'Turtas žemėlapyje', sr: 'Properties on the map', uk: 'Properties on the map', tr: 'Properties on the map', he: 'Properties on the map', ar: 'Properties on the map', ru: 'Properties on the map', zh: 'Properties on the map' });
+const description = x({
+  hu: 'Böngéssze a FINDDOME magyarországi ingatlanait térképen, régió szerint csoportosítva.',
+  nl: 'Blader door het Hongaarse vastgoed van FINDDOME op de kaart, gegroepeerd per regio.',
+  en: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  de: 'Stöbern Sie auf der Karte durch die ungarischen Immobilien von FINDDOME, nach Region gruppiert.',
+  fr: 'Parcourez sur la carte les biens hongrois de FINDDOME, regroupés par région.',
+  es: 'Explore en el mapa los inmuebles húngaros de FINDDOME, agrupados por región.',
+  pl: 'Przeglądaj na mapie węgierskie nieruchomości FINDDOME pogrupowane według regionów.',
+  ro: 'Explorați pe hartă proprietățile FINDDOME din Ungaria, grupate pe regiuni.',
+  sk: 'Prezrite si na mape maďarské nehnuteľnosti FINDDOME zoskupené podľa regiónov.',
+  it: 'Sfogli gli immobili ungheresi di FINDDOME su una mappa, raggruppati per regione.',
+  pt: 'Explore os imóveis húngaros da FINDDOME num mapa, agrupados por região.',
+  el: 'Περιηγηθείτε στα ουγγρικά ακίνητα της FINDDOME σε χάρτη, ομαδοποιημένα ανά περιφέρεια.',
+  cs: 'Prohlédněte si maďarské nemovitosti FINDDOME na mapě, seskupené podle regionů.',
+  sl: 'Prebrskajte madžarske nepremičnine FINDDOME na zemljevidu, razvrščene po regijah.',
+  sv: 'Bläddra bland FINDDOME:s ungerska fastigheter på en karta, grupperade per region.',
+  da: 'Se FINDDOME’s ungarske ejendomme på et kort, grupperet efter region.',
+  no: 'Se FINDDOMEs ungarske eiendommer på et kart, gruppert etter region.',
+  fi: 'Selaa FINDDOMEn unkarilaisia kohteita kartalla alueittain ryhmiteltyinä.',
+  et: 'Sirvige FINDDOME’i Ungari kinnisvara kaardil, piirkondade kaupa rühmitatuna.',
+  lv: 'Pārlūkojiet FINDDOME īpašumus Ungārijā kartē, sagrupētus pa reģioniem.',
+  lt: 'Peržiūrėkite FINDDOME nekilnojamąjį turtą Vengrijoje žemėlapyje, sugrupuotą pagal regionus.',
+  sr: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  uk: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  tr: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  he: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  ar: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  ru: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  zh: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+});
 
 const trail = crumbs(locale, [
   { name: ui.nav.properties, url: path(locale, 'properties') },
@@ -87,7 +94,7 @@ const listHref = carriedQuery
       <h1>{title}</h1>
       <a href={listHref} class="list-link">{ui.filters.viewList}</a>
       <button type="button" id="search-this-area" class="area-btn">
-        {x('Keresés ezen a területen', 'Zoek in dit gebied', 'Search this area', 'In diesem Bereich suchen', 'Rechercher dans cette zone', 'Buscar en esta zona', 'Szukaj w tym obszarze', 'Căutați în această zonă', 'Hľadať v tejto oblasti', 'Cerca in quest’area', 'Pesquisar nesta zona', 'Αναζήτηση σε αυτή την περιοχή', 'Hledat v této oblasti', 'Išči na tem območju', 'Sök i det här området', 'Søg i dette område', 'Søk i dette området', 'Hae tältä alueelta', 'Otsi sellelt alalt', 'Meklēt šajā apgabalā', 'Ieškoti šioje vietovėje')}
+        {x({ hu: 'Keresés ezen a területen', nl: 'Zoek in dit gebied', en: 'Search this area', de: 'In diesem Bereich suchen', fr: 'Rechercher dans cette zone', es: 'Buscar en esta zona', pl: 'Szukaj w tym obszarze', ro: 'Căutați în această zonă', sk: 'Hľadať v tejto oblasti', it: 'Cerca in quest’area', pt: 'Pesquisar nesta zona', el: 'Αναζήτηση σε αυτή την περιοχή', cs: 'Hledat v této oblasti', sl: 'Išči na tem območju', sv: 'Sök i det här området', da: 'Søg i dette område', no: 'Søk i dette området', fi: 'Hae tältä alueelta', et: 'Otsi sellelt alalt', lv: 'Meklēt šajā apgabalā', lt: 'Ieškoti šioje vietovėje', sr: 'Search this area', uk: 'Search this area', tr: 'Search this area', he: 'Search this area', ar: 'Search this area', ru: 'Search this area', zh: 'Search this area' })}
       </button>
     </div>
     <div class="map-wrap">

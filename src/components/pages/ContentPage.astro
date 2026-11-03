@@ -24,7 +24,7 @@ interface Props {
 }
 
 const { locale, routeKey, data, noindex = false } = Astro.props;
-const onThisPage = localizer(locale)('Ezen az oldalon', 'Op deze pagina', 'On this page', 'Auf dieser Seite', 'Sur cette page', 'En esta página', 'Na tej stronie', 'Pe această pagină', 'Na tejto stránke', 'In questa pagina', 'Nesta página', 'Σε αυτή τη σελίδα', 'Na této stránce', 'Na tej strani', 'På den här sidan', 'På denne side', 'På denne siden', 'Tällä sivulla', 'Sellel lehel', 'Šajā lapā', 'Šiame puslapyje');
+const onThisPage = localizer(locale)({ hu: 'Ezen az oldalon', nl: 'Op deze pagina', en: 'On this page', de: 'Auf dieser Seite', fr: 'Sur cette page', es: 'En esta página', pl: 'Na tej stronie', ro: 'Pe această pagină', sk: 'Na tejto stránke', it: 'In questa pagina', pt: 'Nesta página', el: 'Σε αυτή τη σελίδα', cs: 'Na této stránce', sl: 'Na tej strani', sv: 'På den här sidan', da: 'På denne side', no: 'På denne siden', fi: 'Tällä sivulla', et: 'Sellel lehel', lv: 'Šajā lapā', lt: 'Šiame puslapyje', sr: 'On this page', uk: 'On this page', tr: 'On this page', he: 'On this page', ar: 'On this page', ru: 'On this page', zh: 'On this page' });
 const path = (key: RouteKey) => routePath(locale, key);
 const { hours } = await getCompany();
 
@@ -232,7 +232,7 @@ const showIndex = index.length >= 3;
     top: calc(var(--nav-h) + 16px);
     max-height: calc(100vh - var(--nav-h) - 40px);
     overflow-y: auto;
-    padding: 20px 12px 20px 14px;
+    padding-block: 20px; padding-inline: 14px 12px;
     border-radius: var(--r-xl);
     background: var(--white);
     border: 1px solid rgba(16, 42, 67, 0.07);
@@ -274,8 +274,8 @@ const showIndex = index.length >= 3;
   .notice {
     max-width: 62ch;
     margin: 0 0 28px;
-    padding-left: 14px;
-    border-left: 2px solid rgba(16, 42, 67, 0.18);
+    padding-inline-start: 14px;
+    border-inline-start: 2px solid rgba(16, 42, 67, 0.18);
     font-size: var(--fs-small);
     line-height: 1.6;
     color: var(--taupe);
@@ -325,7 +325,7 @@ const showIndex = index.length >= 3;
   }
   .bullets li {
     position: relative;
-    padding-left: 26px;
+    padding-inline-start: 26px;
     font-size: var(--fs-body);
     line-height: var(--lh-body);
     color: var(--taupe);
@@ -334,7 +334,7 @@ const showIndex = index.length >= 3;
   .bullets li::before {
     content: '';
     position: absolute;
-    left: 4px;
+    inset-inline-start: 4px;
     top: 0.72em;
     width: 7px;
     height: 7px;
@@ -345,12 +345,12 @@ const showIndex = index.length >= 3;
     counter-reset: item;
   }
   ol.bullets li {
-    padding-left: 40px;
+    padding-inline-start: 40px;
   }
   ol.bullets li::before {
     counter-increment: item;
     content: counter(item);
-    left: 0;
+    inset-inline-start: 0;
     top: 0.1em;
     display: grid;
     place-items: center;
@@ -411,7 +411,7 @@ const showIndex = index.length >= 3;
   }
   th,
   td {
-    text-align: left;
+    text-align: start;
     padding: 15px 18px;
     background: var(--white);
     font-size: var(--fs-body);
@@ -422,11 +422,11 @@ const showIndex = index.length >= 3;
   th {
     color: var(--ink);
     width: 40%;
-    border-radius: var(--r-md) 0 0 var(--r-md);
+    border-start-start-radius: var(--r-md); border-start-end-radius: 0; border-end-end-radius: 0; border-end-start-radius: var(--r-md);
   }
   td {
     color: var(--taupe);
-    border-radius: 0 var(--r-md) var(--r-md) 0;
+    border-start-start-radius: 0; border-start-end-radius: var(--r-md); border-end-end-radius: var(--r-md); border-end-start-radius: 0;
   }
 
   .callout {

@@ -133,6 +133,9 @@ const hasActions = !!(primary || secondary);
     transform-origin: left;
     animation: fx-draw 1.2s var(--ease-out) 0.4s both;
   }
+  :global([dir='rtl']) .ph-eyebrow-rule {
+    transform-origin: right;
+  }
   h1 {
     font-family: var(--serif);
     font-weight: var(--fw-hero);
@@ -168,14 +171,14 @@ const hasActions = !!(primary || secondary);
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     min-height: min(max(620px, calc(100svh - var(--nav-h))), 920px);
-    padding: 0 var(--slab-x) var(--slab-x) 0;
+    padding-block: 0 var(--slab-x); padding-inline: 0 var(--slab-x);
     container-type: inline-size;
   }
   .is-image .copy {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 64px 64px 72px var(--pad-x);
+    padding-block: 64px 72px; padding-inline: var(--pad-x) 64px;
   }
   .is-image h1 {
     /* Fits the longest word into the copy column (half the header, less its
@@ -243,6 +246,9 @@ const hasActions = !!(primary || secondary);
     background: var(--border);
     transform-origin: left;
     animation: fx-draw 1.8s var(--ease-in-out) 0.5s both;
+  }
+  :global([dir='rtl']) .ph-baseline {
+    transform-origin: right;
   }
 
   @media (max-width: 1100px) {

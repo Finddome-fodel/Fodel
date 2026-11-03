@@ -576,14 +576,19 @@ export function countriesOf(properties: Property[]): string[] {
   return [...new Set(properties.map((p) => p.data.location.country))].sort();
 }
 
-/** URL-safe slug for a region or county name (handles Hungarian diacritics). */
-export function slugify(value: string): string {
-  return value
+/**
+ * URL-safe slug for a region or county name (handles Hungarian diacritics).
+ * Text in a non-Latin script (Hebrew, Arabic, Chinese, Cyrillic) leaves
+ * nothing behind; `fallback` (an English slug or a reference) is used then.
+ */
+export function slugify(value: string, fallback = ''): string {
+  const slug = value
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
+  return slug || fallback;
 }
 
 /** Price buckets used by the filter UI, in euro. */

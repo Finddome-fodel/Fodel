@@ -433,6 +433,62 @@ const ACK = {
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Laba diena, ${escapeHtml(name)},` : 'Laba diena,'}</p>\n       <p>dėkojame už jūsų žinutę. Ją gavome, ir mūsų komandos narys netrukus su jumis susisieks. ${escapeHtml(hours)}</p>\n       <p>Skubate? Skambinkite mums ${escapeHtml(phones)}.</p>\n       <p>Pagarbiai<br>FINDDOME Nekilnojamasis turtas</p>`,
   },
+  sr: {
+    subject: 'Thank you for your message | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+  },
+  uk: {
+    subject: 'Thank you for your message | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+  },
+  tr: {
+    subject: 'Thank you for your message | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+  },
+  he: {
+    subject: 'Thank you for your message | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+  },
+  ar: {
+    subject: 'Thank you for your message | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+  },
+  ru: {
+    subject: 'Thank you for your message | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+  },
+  zh: {
+    subject: 'Thank you for your message | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
+       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
+       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
+       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+  },
 } as const;
 
 /**

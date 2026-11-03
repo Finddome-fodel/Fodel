@@ -21,7 +21,7 @@ import { showMachineTranslationNote } from '~/config/flags';
 import { COMPANY } from '~/config/company';
 import { featureLabel } from '~/data/features';
 import { activeProperties, similarTo, text, resolveText, url as propUrl, type Property } from '~/lib/properties';
-import { propertyAlternates, crumbs } from '~/lib/page';
+import { propertyAlternates, propertySwitcher, listingPageIndexable, crumbs } from '~/lib/page';
 import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
 import { eur, huf, area, floorArea, epcLabel, formatDate, placeLabel } from '~/lib/format';
 import { copy } from '~/data/copy';
@@ -102,14 +102,14 @@ const specs = [
   d.areas.floorM2 && { label: ui.property.area, value: floorArea(d.areas.floorM2, locale) },
   d.areas.plotM2 && { label: ui.property.land, value: area(d.areas.plotM2, locale) },
   d.details.cellar_m2 && { label: detailLabel('cellar_m2', locale), value: floorArea(d.details.cellar_m2, locale) },
-  d.areas.buildingM2 && {label:x('Teljes épületterület','Totale gebouwoppervlakte','Total building area','Gesamte Gebäudefläche','Surface totale du bâtiment', 'Superficie total construida', 'Całkowita powierzchnia budynku', 'Suprafața totală a clădirii', 'Celková plocha budovy', 'Superficie edificata totale', 'Área total de construção', 'Συνολική δομημένη επιφάνεια', 'Celková zastavěná plocha', 'Skupna površina stavbe', 'Total byggnadsyta', 'Samlet bebygget areal', 'Totalt bebygd areal', 'Kokonaisrakennusala', 'Hoone kogupind', 'Kopējā apbūves platība', 'Bendras pastato plotas'),value:floorArea(d.areas.buildingM2,locale)},
-  d.propertySubtype && {label:x('Altípus','Subtype','Subtype','Untertyp','Sous-type', 'Subtipo', 'Podtyp', 'Subtip', 'Podtyp', 'Sottotipo', 'Subtipo', 'Υποκατηγορία', 'Podtyp', 'Podvrsta', 'Undertyp', 'Undertype', 'Undertype', 'Alatyyppi', 'Alamtüüp', 'Apakštips', 'Potipis'),value:subtypeLabel(d.propertyGroup||d.category,d.propertySubtype,locale)},
+  d.areas.buildingM2 && {label:x({ hu: 'Teljes épületterület', nl: 'Totale gebouwoppervlakte', en: 'Total building area', de: 'Gesamte Gebäudefläche', fr: 'Surface totale du bâtiment', es: 'Superficie total construida', pl: 'Całkowita powierzchnia budynku', ro: 'Suprafața totală a clădirii', sk: 'Celková plocha budovy', it: 'Superficie edificata totale', pt: 'Área total de construção', el: 'Συνολική δομημένη επιφάνεια', cs: 'Celková zastavěná plocha', sl: 'Skupna površina stavbe', sv: 'Total byggnadsyta', da: 'Samlet bebygget areal', no: 'Totalt bebygd areal', fi: 'Kokonaisrakennusala', et: 'Hoone kogupind', lv: 'Kopējā apbūves platība', lt: 'Bendras pastato plotas', sr: 'Total building area', uk: 'Total building area', tr: 'Total building area', he: 'Total building area', ar: 'Total building area', ru: 'Total building area', zh: 'Total building area' }),value:floorArea(d.areas.buildingM2,locale)},
+  d.propertySubtype && {label:x({ hu: 'Altípus', nl: 'Subtype', en: 'Subtype', de: 'Untertyp', fr: 'Sous-type', es: 'Subtipo', pl: 'Podtyp', ro: 'Subtip', sk: 'Podtyp', it: 'Sottotipo', pt: 'Subtipo', el: 'Υποκατηγορία', cs: 'Podtyp', sl: 'Podvrsta', sv: 'Undertyp', da: 'Undertype', no: 'Undertype', fi: 'Alatyyppi', et: 'Alamtüüp', lv: 'Apakštips', lt: 'Potipis', sr: 'Subtype', uk: 'Subtype', tr: 'Subtype', he: 'Subtype', ar: 'Subtype', ru: 'Subtype', zh: 'Subtype' }),value:subtypeLabel(d.propertyGroup||d.category,d.propertySubtype,locale)},
   // A stated class reads "Energy rating: B"; a yes/no answer reads "Energy certificate: None".
   epc && { label: readEnergy(d.building.epcClass).rating ? ui.property.epc : detailLabel('energy', locale), value: epc },
-  d.building.condition && {label:x('Állapot','Staat','Condition','Zustand','État', 'Estado', 'Stan', 'Stare', 'Stav', 'Stato', 'Estado', 'Κατάσταση', 'Stav', 'Stanje', 'Skick', 'Stand', 'Tilstand', 'Kunto', 'Seisukord', 'Stāvoklis', 'Būklė'),value:text(d.building.condition,locale)},
-  d.building.heating.length > 0 && {label:x('Fűtés','Verwarming','Heating','Heizung','Chauffage', 'Calefacción', 'Ogrzewanie', 'Încălzire', 'Vykurovanie', 'Riscaldamento', 'Aquecimento', 'Θέρμανση', 'Vytápění', 'Ogrevanje', 'Uppvärmning', 'Opvarmning', 'Oppvarming', 'Lämmitys', 'Küte', 'Apkure', 'Šildymas'),value:d.building.heating.map((h)=>text(h,locale)).join(', ')},
+  d.building.condition && {label:x({ hu: 'Állapot', nl: 'Staat', en: 'Condition', de: 'Zustand', fr: 'État', es: 'Estado', pl: 'Stan', ro: 'Stare', sk: 'Stav', it: 'Stato', pt: 'Estado', el: 'Κατάσταση', cs: 'Stav', sl: 'Stanje', sv: 'Skick', da: 'Stand', no: 'Tilstand', fi: 'Kunto', et: 'Seisukord', lv: 'Stāvoklis', lt: 'Būklė', sr: 'Condition', uk: 'Condition', tr: 'Condition', he: 'Condition', ar: 'Condition', ru: 'Condition', zh: 'Condition' }),value:text(d.building.condition,locale)},
+  d.building.heating.length > 0 && {label:x({ hu: 'Fűtés', nl: 'Verwarming', en: 'Heating', de: 'Heizung', fr: 'Chauffage', es: 'Calefacción', pl: 'Ogrzewanie', ro: 'Încălzire', sk: 'Vykurovanie', it: 'Riscaldamento', pt: 'Aquecimento', el: 'Θέρμανση', cs: 'Vytápění', sl: 'Ogrevanje', sv: 'Uppvärmning', da: 'Opvarmning', no: 'Oppvarming', fi: 'Lämmitys', et: 'Küte', lv: 'Apkure', lt: 'Šildymas', sr: 'Heating', uk: 'Heating', tr: 'Heating', he: 'Heating', ar: 'Heating', ru: 'Heating', zh: 'Heating' }),value:d.building.heating.map((h)=>text(h,locale)).join(', ')},
   d.building.yearBuilt && { label: ui.property.yearBuilt, value: String(d.building.yearBuilt) },
-  d.building.walls.length > 0 && { label: x('Falazat', 'Muurwerk', 'Wall material', 'Wandmaterial', 'Matériau des murs', 'Material de los muros', 'Materiał ścian', 'Materialul pereților', 'Materiál múrov', 'Materiale delle pareti', 'Material das paredes', 'Υλικό τοιχοποιίας', 'Materiál zdí', 'Material sten', 'Väggmaterial', 'Vægmateriale', 'Veggmateriale', 'Seinämateriaali', 'Seinamaterjal', 'Sienu materiāls', 'Sienų medžiaga'), value: d.building.walls.map((w) => w.labels[locale] ?? w.labels.nl ?? w.labels.hu).join(', ') },
+  d.building.walls.length > 0 && { label: x({ hu: 'Falazat', nl: 'Muurwerk', en: 'Wall material', de: 'Wandmaterial', fr: 'Matériau des murs', es: 'Material de los muros', pl: 'Materiał ścian', ro: 'Materialul pereților', sk: 'Materiál múrov', it: 'Materiale delle pareti', pt: 'Material das paredes', el: 'Υλικό τοιχοποιίας', cs: 'Materiál zdí', sl: 'Material sten', sv: 'Väggmaterial', da: 'Vægmateriale', no: 'Veggmateriale', fi: 'Seinämateriaali', et: 'Seinamaterjal', lv: 'Sienu materiāls', lt: 'Sienų medžiaga', sr: 'Wall material', uk: 'Wall material', tr: 'Wall material', he: 'Wall material', ar: 'Wall material', ru: 'Wall material', zh: 'Wall material' }), value: d.building.walls.map((w) => w.labels[locale] ?? w.labels.nl ?? w.labels.hu).join(', ') },
 ].filter(Boolean) as { label: string; value: string }[];
 
 // Text facts, utilities and parking: below the description, beside the features.
@@ -136,7 +136,7 @@ const mapUrl = d.location.precision === 'exact'
   : `https://www.openstreetmap.org/#map=14/${d.location.lat}/${d.location.lng}`;
 
 
-const metaDescription = `${title} · ${placeLabel(d.location.settlement, d.location.county)}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}${d.areas.plotM2 ? `, ${area(d.areas.plotM2,locale)}` : ''}. ${x('Azonosító', 'Referentie', 'Reference', 'Referenz', 'Référence', 'Referencia', 'Numer referencyjny', 'Referință', 'Referenčné číslo', 'Riferimento', 'Referência', 'Κωδικός', 'Číslo inzerátu', 'Referenca', 'Referens', 'Reference', 'Referanse', 'Viite', 'Viitenumber', 'Atsauce', 'Nuoroda')} ${d.ref}.`;
+const metaDescription = `${title} · ${placeLabel(d.location.settlement, d.location.county)}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}${d.areas.plotM2 ? `, ${area(d.areas.plotM2,locale)}` : ''}. ${x({ hu: 'Azonosító', nl: 'Referentie', en: 'Reference', de: 'Referenz', fr: 'Référence', es: 'Referencia', pl: 'Numer referencyjny', ro: 'Referință', sk: 'Referenčné číslo', it: 'Riferimento', pt: 'Referência', el: 'Κωδικός', cs: 'Číslo inzerátu', sl: 'Referenca', sv: 'Referens', da: 'Reference', no: 'Referanse', fi: 'Viite', et: 'Viitenumber', lv: 'Atsauce', lt: 'Nuoroda', sr: 'Reference', uk: 'Reference', tr: 'Reference', he: 'Reference', ar: 'Reference', ru: 'Reference', zh: 'Reference' })} ${d.ref}.`;
 
 const videoId = d.media.videoUrl ? extractYouTubeId(d.media.videoUrl) : null;
 
@@ -161,31 +161,38 @@ const contact = publicContact(
   listingRules(services)
 );
 const contactDialled = contact ? normalizePhone(contact.phone, 'HU') : { ok: false as const };
-const staffTitle = x('Az Ön kapcsolattartója', 'Uw contactpersoon', 'Your contact', 'Ihr Ansprechpartner', 'Votre interlocuteur', 'Su persona de contacto', 'Państwa osoba kontaktowa', 'Persoana dvs. de contact', 'Vaša kontaktná osoba', 'Il suo referente', 'O seu contacto', 'Το πρόσωπο επικοινωνίας σας', 'Vaše kontaktní osoba', 'Vaša kontaktna oseba', 'Din kontaktperson', 'Din kontaktperson', 'Din kontaktperson', 'Yhteyshenkilösi', 'Teie kontaktisik', 'Jūsu kontaktpersona', 'Jūsų kontaktinis asmuo');
-const staffNote = x('A FINDDOME munkatársa szívesen válaszol a kérdéseire, és egyeztet a tulajdonossal.', 'Een collega van FINDDOME beantwoordt graag uw vragen en overlegt met de eigenaar.', 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', 'Ein Mitarbeiter von FINDDOME beantwortet gern Ihre Fragen und stimmt sich mit dem Eigentümer ab.', 'Un collaborateur de FINDDOME répond volontiers à vos questions et se concerte avec le propriétaire.', 'Un compañero de FINDDOME responderá encantado a sus preguntas y lo coordinará con el propietario.', 'Pracownik FINDDOME chętnie odpowie na pytania i skontaktuje się z właścicielem.', 'Un coleg FINDDOME vă răspunde bucuros la întrebări și se consultă cu proprietarul.', 'Kolega z FINDDOME rád odpovie na vaše otázky a dohodne sa s majiteľom.', 'Un collega di FINDDOME risponde volentieri alle sue domande e si coordina con il proprietario.', 'Um colega da FINDDOME responde com todo o gosto às suas perguntas e articula-se com o proprietário.', 'Ένας συνεργάτης της FINDDOME θα απαντήσει με χαρά στις ερωτήσεις σας και θα συνεννοηθεί με τον ιδιοκτήτη.', 'Kolega z FINDDOME rád odpoví na vaše otázky a domluví se s majitelem.', 'Sodelavec FINDDOME vam bo z veseljem odgovoril na vprašanja in se uskladil z lastnikom.', 'En kollega på FINDDOME svarar gärna på dina frågor och stämmer av med ägaren.', 'En kollega fra FINDDOME svarer gerne på dine spørgsmål og koordinerer med ejeren.', 'En kollega i FINDDOME svarer gjerne på spørsmålene dine og koordinerer med eieren.', 'FINDDOMEn työntekijä vastaa mielellään kysymyksiisi ja sopii asioista omistajan kanssa.', 'FINDDOME töötaja vastab hea meelega teie küsimustele ja lepib omanikuga kokku.', 'FINDDOME darbinieks labprāt atbildēs uz jūsu jautājumiem un saskaņos ar īpašnieku.', 'FINDDOME darbuotojas mielai atsakys į jūsų klausimus ir susisieks su savininku.');
-const whatsappMessage = x(
-  `Jó napot! Érdeklődöm a(z) „${title}” (#${d.ref}) hirdetés iránt: ${abs(pageUrl)}`,
-  `Goedendag, ik heb interesse in „${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Guten Tag, ich interessiere mich für „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
-  `Bonjour, je m’intéresse à «\u00a0${title}\u00a0» (#${d.ref})\u00a0: ${abs(pageUrl)}`,
-  `Hola, me interesa «${title}» (#${d.ref}): ${abs(pageUrl)}`,
-  `Dzień dobry, interesuje mnie „${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Bună ziua, sunt interesat de „${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Dobrý deň, mám záujem o „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
-  `Buongiorno, vorrei informazioni su “${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Olá, tenho interesse em «${title}» (#${d.ref}): ${abs(pageUrl)}`,
-  `Γεια σας, ενδιαφέρομαι για το «${title}» (#${d.ref}): ${abs(pageUrl)}`,
-  `Dobrý den, mám zájem o „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
-  `Pozdravljeni, zanima me „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
-  `Hej! Jag är intresserad av ”${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Hej, jeg er interesseret i “${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Hei, jeg er interessert i «${title}» (#${d.ref}): ${abs(pageUrl)}`,
-  `Hei, olen kiinnostunut kohteesta ”${title}” (#${d.ref}): ${abs(pageUrl)}`,
-  `Tere! Mind huvitab „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
-  `Labdien! Mani interesē „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
-  `Laba diena, mane domina „${title}“ (#${d.ref}): ${abs(pageUrl)}`
-);
+const staffTitle = x({ hu: 'Az Ön kapcsolattartója', nl: 'Uw contactpersoon', en: 'Your contact', de: 'Ihr Ansprechpartner', fr: 'Votre interlocuteur', es: 'Su persona de contacto', pl: 'Państwa osoba kontaktowa', ro: 'Persoana dvs. de contact', sk: 'Vaša kontaktná osoba', it: 'Il suo referente', pt: 'O seu contacto', el: 'Το πρόσωπο επικοινωνίας σας', cs: 'Vaše kontaktní osoba', sl: 'Vaša kontaktna oseba', sv: 'Din kontaktperson', da: 'Din kontaktperson', no: 'Din kontaktperson', fi: 'Yhteyshenkilösi', et: 'Teie kontaktisik', lv: 'Jūsu kontaktpersona', lt: 'Jūsų kontaktinis asmuo', sr: 'Your contact', uk: 'Your contact', tr: 'Your contact', he: 'Your contact', ar: 'Your contact', ru: 'Your contact', zh: 'Your contact' });
+const staffNote = x({ hu: 'A FINDDOME munkatársa szívesen válaszol a kérdéseire, és egyeztet a tulajdonossal.', nl: 'Een collega van FINDDOME beantwoordt graag uw vragen en overlegt met de eigenaar.', en: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', de: 'Ein Mitarbeiter von FINDDOME beantwortet gern Ihre Fragen und stimmt sich mit dem Eigentümer ab.', fr: 'Un collaborateur de FINDDOME répond volontiers à vos questions et se concerte avec le propriétaire.', es: 'Un compañero de FINDDOME responderá encantado a sus preguntas y lo coordinará con el propietario.', pl: 'Pracownik FINDDOME chętnie odpowie na pytania i skontaktuje się z właścicielem.', ro: 'Un coleg FINDDOME vă răspunde bucuros la întrebări și se consultă cu proprietarul.', sk: 'Kolega z FINDDOME rád odpovie na vaše otázky a dohodne sa s majiteľom.', it: 'Un collega di FINDDOME risponde volentieri alle sue domande e si coordina con il proprietario.', pt: 'Um colega da FINDDOME responde com todo o gosto às suas perguntas e articula-se com o proprietário.', el: 'Ένας συνεργάτης της FINDDOME θα απαντήσει με χαρά στις ερωτήσεις σας και θα συνεννοηθεί με τον ιδιοκτήτη.', cs: 'Kolega z FINDDOME rád odpoví na vaše otázky a domluví se s majitelem.', sl: 'Sodelavec FINDDOME vam bo z veseljem odgovoril na vprašanja in se uskladil z lastnikom.', sv: 'En kollega på FINDDOME svarar gärna på dina frågor och stämmer av med ägaren.', da: 'En kollega fra FINDDOME svarer gerne på dine spørgsmål og koordinerer med ejeren.', no: 'En kollega i FINDDOME svarer gjerne på spørsmålene dine og koordinerer med eieren.', fi: 'FINDDOMEn työntekijä vastaa mielellään kysymyksiisi ja sopii asioista omistajan kanssa.', et: 'FINDDOME töötaja vastab hea meelega teie küsimustele ja lepib omanikuga kokku.', lv: 'FINDDOME darbinieks labprāt atbildēs uz jūsu jautājumiem un saskaņos ar īpašnieku.', lt: 'FINDDOME darbuotojas mielai atsakys į jūsų klausimus ir susisieks su savininku.', sr: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', uk: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', tr: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', he: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', ar: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', ru: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.', zh: 'A FINDDOME colleague will gladly answer your questions and liaise with the owner.' });
+const whatsappMessage = x({
+  hu: `Jó napot! Érdeklődöm a(z) „${title}” (#${d.ref}) hirdetés iránt: ${abs(pageUrl)}`,
+  nl: `Goedendag, ik heb interesse in „${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  en: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  de: `Guten Tag, ich interessiere mich für „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  fr: `Bonjour, je m’intéresse à «\u00a0${title}\u00a0» (#${d.ref})\u00a0: ${abs(pageUrl)}`,
+  es: `Hola, me interesa «${title}» (#${d.ref}): ${abs(pageUrl)}`,
+  pl: `Dzień dobry, interesuje mnie „${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  ro: `Bună ziua, sunt interesat de „${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  sk: `Dobrý deň, mám záujem o „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  it: `Buongiorno, vorrei informazioni su “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  pt: `Olá, tenho interesse em «${title}» (#${d.ref}): ${abs(pageUrl)}`,
+  el: `Γεια σας, ενδιαφέρομαι για το «${title}» (#${d.ref}): ${abs(pageUrl)}`,
+  cs: `Dobrý den, mám zájem o „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  sl: `Pozdravljeni, zanima me „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  sv: `Hej! Jag är intresserad av ”${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  da: `Hej, jeg er interesseret i “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  no: `Hei, jeg er interessert i «${title}» (#${d.ref}): ${abs(pageUrl)}`,
+  fi: `Hei, olen kiinnostunut kohteesta ”${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  et: `Tere! Mind huvitab „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  lv: `Labdien! Mani interesē „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  lt: `Laba diena, mane domina „${title}“ (#${d.ref}): ${abs(pageUrl)}`,
+  sr: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  uk: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  tr: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  he: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  ar: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  ru: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+  zh: `Hello, I am interested in “${title}” (#${d.ref}): ${abs(pageUrl)}`,
+});
 ---
 
 <Base
@@ -193,6 +200,8 @@ const whatsappMessage = x(
   title={`${title}, ${d.location.settlement}`}
   description={metaDescription}
   alternates={propertyAlternates(d.categorySlugs, d.ref)}
+  switcher={propertySwitcher(d.categorySlugs, d.ref)}
+  noindex={!listingPageIndexable(locale)}
   ogType="article"
   ogImage={shareImage.src}
   whatsapp={{ message: whatsappMessage }}
@@ -264,7 +273,7 @@ const whatsappMessage = x(
           <div class="hero-gallery no-print">
             <div class="property-detail-gallery-controls">
               <button class="property-detail-nav" type="button" id="gal-prev" aria-label={ui.property.prevImage} aria-controls="gallery">
-                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+                <svg class="icon-dir" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
                   <path d="M15 6H2M6.5 1.5 2 6l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </button>
@@ -272,7 +281,7 @@ const whatsappMessage = x(
                 01 / {String(gallery.length).padStart(2, '0')}
               </p>
               <button class="property-detail-nav" type="button" id="gal-next" aria-label={ui.property.nextImage} aria-controls="gallery">
-                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+                <svg class="icon-dir" width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
                   <path d="M1 6h13M9.5 1.5 14 6l-4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </button>
@@ -301,7 +310,7 @@ const whatsappMessage = x(
             <path d="M10 18s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
             <circle cx="10" cy="8" r="2.2" stroke="currentColor" stroke-width="1.6" />
           </svg>
-          {x('OpenStreetMap-en', 'Op OpenStreetMap', 'On OpenStreetMap', 'Auf OpenStreetMap', 'Sur OpenStreetMap', 'En OpenStreetMap', 'W OpenStreetMap', 'Pe OpenStreetMap', 'Na OpenStreetMap', 'Su OpenStreetMap', 'No OpenStreetMap', 'Στο OpenStreetMap', 'Na OpenStreetMap', 'Na OpenStreetMap', 'På OpenStreetMap', 'På OpenStreetMap', 'På OpenStreetMap', 'OpenStreetMapissa', 'OpenStreetMapis', 'OpenStreetMap kartē', '„OpenStreetMap“ žemėlapyje')}
+          {x({ hu: 'OpenStreetMap-en', nl: 'Op OpenStreetMap', en: 'On OpenStreetMap', de: 'Auf OpenStreetMap', fr: 'Sur OpenStreetMap', es: 'En OpenStreetMap', pl: 'W OpenStreetMap', ro: 'Pe OpenStreetMap', sk: 'Na OpenStreetMap', it: 'Su OpenStreetMap', pt: 'No OpenStreetMap', el: 'Στο OpenStreetMap', cs: 'Na OpenStreetMap', sl: 'Na OpenStreetMap', sv: 'På OpenStreetMap', da: 'På OpenStreetMap', no: 'På OpenStreetMap', fi: 'OpenStreetMapissa', et: 'OpenStreetMapis', lv: 'OpenStreetMap kartē', lt: '„OpenStreetMap“ žemėlapyje', sr: 'On OpenStreetMap', uk: 'On OpenStreetMap', tr: 'On OpenStreetMap', he: 'On OpenStreetMap', ar: 'On OpenStreetMap', ru: 'On OpenStreetMap', zh: 'On OpenStreetMap' })}
         </a>
       </p>
 
@@ -309,7 +318,7 @@ const whatsappMessage = x(
         <span class="price">{eur(d.price.eur, locale)}</span>
         <span class="price-huf">{huf(d.price.huf, locale)}</span>
         <span class="price-asof">
-          {x('Árfolyam', 'Koers', 'Exchange rate', 'Wechselkurs', 'Taux de change', 'Tipo de cambio', 'Kurs wymiany', 'Curs de schimb', 'Výmenný kurz', 'Tasso di cambio', 'Taxa de câmbio', 'Συναλλαγματική ισοτιμία', 'Směnný kurz', 'Menjalni tečaj', 'Växelkurs', 'Valutakurs', 'Valutakurs', 'Valuuttakurssi', 'Vahetuskurss', 'Valūtas kurss', 'Valiutos kursas')}{colon} {formatDate(d.price.asOf, locale)}
+          {x({ hu: 'Árfolyam', nl: 'Koers', en: 'Exchange rate', de: 'Wechselkurs', fr: 'Taux de change', es: 'Tipo de cambio', pl: 'Kurs wymiany', ro: 'Curs de schimb', sk: 'Výmenný kurz', it: 'Tasso di cambio', pt: 'Taxa de câmbio', el: 'Συναλλαγματική ισοτιμία', cs: 'Směnný kurz', sl: 'Menjalni tečaj', sv: 'Växelkurs', da: 'Valutakurs', no: 'Valutakurs', fi: 'Valuuttakurssi', et: 'Vahetuskurss', lv: 'Valūtas kurss', lt: 'Valiutos kursas', sr: 'Exchange rate', uk: 'Exchange rate', tr: 'Exchange rate', he: 'Exchange rate', ar: 'Exchange rate', ru: 'Exchange rate', zh: 'Exchange rate' })}{colon} {formatDate(d.price.asOf, locale)}
         </span>
       </div>
 
@@ -330,7 +339,7 @@ const whatsappMessage = x(
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M4 6V1.75h8V6M4 12H2.25A1.25 1.25 0 0 1 1 10.75v-3.5A1.25 1.25 0 0 1 2.25 6h11.5A1.25 1.25 0 0 1 15 7.25v3.5A1.25 1.25 0 0 1 13.75 12H12M4 9.5h8v4.75H4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
           </svg>
-          {x('Nyomtatás', 'Afdrukken', 'Print', 'Drucken', 'Imprimer', 'Imprimir', 'Drukuj', 'Imprimare', 'Vytlačiť', 'Stampa', 'Imprimir', 'Εκτύπωση', 'Tisk', 'Natisni', 'Skriv ut', 'Udskriv', 'Skriv ut', 'Tulosta', 'Prindi', 'Drukāt', 'Spausdinti')}
+          {x({ hu: 'Nyomtatás', nl: 'Afdrukken', en: 'Print', de: 'Drucken', fr: 'Imprimer', es: 'Imprimir', pl: 'Drukuj', ro: 'Imprimare', sk: 'Vytlačiť', it: 'Stampa', pt: 'Imprimir', el: 'Εκτύπωση', cs: 'Tisk', sl: 'Natisni', sv: 'Skriv ut', da: 'Udskriv', no: 'Skriv ut', fi: 'Tulosta', et: 'Prindi', lv: 'Drukāt', lt: 'Spausdinti', sr: 'Print', uk: 'Print', tr: 'Print', he: 'Print', ar: 'Print', ru: 'Print', zh: 'Print' })}
         </button>
       </div>
 
@@ -355,7 +364,7 @@ const whatsappMessage = x(
       {
         hasFacts && (
           <section class="features facts">
-            <Eyebrow space="14px">{x('Részletek', 'Details', 'Details', 'Details', 'Détails', 'Detalles', 'Szczegóły', 'Detalii', 'Podrobnosti', 'Dettagli', 'Detalhes', 'Λεπτομέρειες', 'Podrobnosti', 'Podrobnosti', 'Detaljer', 'Detaljer', 'Detaljer', 'Tiedot', 'Üksikasjad', 'Informācija', 'Informacija')}</Eyebrow>
+            <Eyebrow space="14px">{x({ hu: 'Részletek', nl: 'Details', en: 'Details', de: 'Details', fr: 'Détails', es: 'Detalles', pl: 'Szczegóły', ro: 'Detalii', sk: 'Podrobnosti', it: 'Dettagli', pt: 'Detalhes', el: 'Λεπτομέρειες', cs: 'Podrobnosti', sl: 'Podrobnosti', sv: 'Detaljer', da: 'Detaljer', no: 'Detaljer', fi: 'Tiedot', et: 'Üksikasjad', lv: 'Informācija', lt: 'Informacija', sr: 'Details', uk: 'Details', tr: 'Details', he: 'Details', ar: 'Details', ru: 'Details', zh: 'Details' })}</Eyebrow>
             {factRows.length > 0 && (
               <dl class="fact-list">
                 {factRows.map((row) => (
@@ -416,7 +425,7 @@ const whatsappMessage = x(
             )}
             {contact.kind === 'owner' && d.seller.speaks.length > 0 && (
               <p class="owner-speaks">
-                {x('Beszélt nyelvek', 'Spreekt', 'Speaks', 'Spricht', 'Langues parlées', 'Idiomas', 'Języki', 'Limbi vorbite', 'Hovorí', 'Parla', 'Fala', 'Μιλά', 'Mluví', 'Govori', 'Talar', 'Taler', 'Snakker', 'Puhuu', 'Räägib', 'Runā', 'Kalba')}{colon}{' '}
+                {x({ hu: 'Beszélt nyelvek', nl: 'Spreekt', en: 'Speaks', de: 'Spricht', fr: 'Langues parlées', es: 'Idiomas', pl: 'Języki', ro: 'Limbi vorbite', sk: 'Hovorí', it: 'Parla', pt: 'Fala', el: 'Μιλά', cs: 'Mluví', sl: 'Govori', sv: 'Talar', da: 'Taler', no: 'Snakker', fi: 'Puhuu', et: 'Räägib', lv: 'Runā', lt: 'Kalba', sr: 'Speaks', uk: 'Speaks', tr: 'Speaks', he: 'Speaks', ar: 'Speaks', ru: 'Speaks', zh: 'Speaks' })}{colon}{' '}
                 {d.seller.speaks.map((s) => languageName(s,locale)).join(' · ')}
               </p>
             )}
@@ -426,32 +435,39 @@ const whatsappMessage = x(
 
       <aside class="guarantee">
         <Eyebrow space="8px">
-          {x('FINDDOME Garancia', 'De FINDDOME-garantie', 'The FINDDOME guarantee', 'Die FINDDOME-Garantie', 'La garantie FINDDOME', 'La garantía FINDDOME', 'Gwarancja FINDDOME', 'Garanția FINDDOME', 'Záruka FINDDOME', 'La garanzia FINDDOME', 'A garantia FINDDOME', 'Η εγγύηση FINDDOME', 'Záruka FINDDOME', 'Jamstvo FINDDOME', 'FINDDOME-garantin', 'FINDDOME-garantien', 'FINDDOME-garantien', 'FINDDOME-takuu', 'FINDDOME’i garantii', 'FINDDOME garantija', 'FINDDOME garantija')}
+          {x({ hu: 'FINDDOME Garancia', nl: 'De FINDDOME-garantie', en: 'The FINDDOME guarantee', de: 'Die FINDDOME-Garantie', fr: 'La garantie FINDDOME', es: 'La garantía FINDDOME', pl: 'Gwarancja FINDDOME', ro: 'Garanția FINDDOME', sk: 'Záruka FINDDOME', it: 'La garanzia FINDDOME', pt: 'A garantia FINDDOME', el: 'Η εγγύηση FINDDOME', cs: 'Záruka FINDDOME', sl: 'Jamstvo FINDDOME', sv: 'FINDDOME-garantin', da: 'FINDDOME-garantien', no: 'FINDDOME-garantien', fi: 'FINDDOME-takuu', et: 'FINDDOME’i garantii', lv: 'FINDDOME garantija', lt: 'FINDDOME garantija', sr: 'The FINDDOME guarantee', uk: 'The FINDDOME guarantee', tr: 'The FINDDOME guarantee', he: 'The FINDDOME guarantee', ar: 'The FINDDOME guarantee', ru: 'The FINDDOME guarantee', zh: 'The FINDDOME guarantee' })}
         </Eyebrow>
         <p>
-          {x(
-            'Minden hirdető azonosítása megtörtént. Kétnyelvű adásvételi szerződés, meghatalmazásos képviselet és földhivatali ügyintézés igény szerint elérhető.',
-            'Elke adverteerder is door ons geïdentificeerd. Tweetalige koopovereenkomst, vertegenwoordiging met volmacht en inschrijving bij het kadaster zijn op verzoek beschikbaar.',
-            'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
-            'Jeder Inserent wurde von uns identifiziert. Zweisprachiger Kaufvertrag, Vertretung per Vollmacht und Grundbucheintragung sind auf Anfrage verfügbar.',
-            'Chaque annonceur a été identifié par nos soins. Un contrat de vente bilingue, une représentation par procuration et l’inscription au registre foncier sont disponibles sur demande.',
-            'Hemos verificado la identidad de cada anunciante. Bajo petición, ofrecemos un contrato de compraventa bilingüe, representación mediante poder notarial y la inscripción en el Registro de la Propiedad.',
-            'Tożsamość każdego ogłoszeniodawcy została przez nas zweryfikowana. Na życzenie zapewniamy dwujęzyczną umowę kupna-sprzedaży, reprezentację na podstawie pełnomocnictwa oraz wpis do księgi wieczystej.',
-            'Am verificat identitatea fiecărui ofertant. La cerere, oferim contract de vânzare-cumpărare bilingv, reprezentare prin procură și înscrierea în cartea funciară.',
-            'Totožnosť každého inzerenta sme overili. Na požiadanie zabezpečíme dvojjazyčnú kúpnu zmluvu, zastupovanie na základe plnomocenstva a zápis do katastra nehnuteľností.',
-            'Ogni inserzionista è stato identificato da noi. Su richiesta sono disponibili un contratto di compravendita bilingue, la rappresentanza tramite procura e la registrazione al catasto.',
-            'Todos os anunciantes foram identificados por nós. Mediante pedido, disponibilizamos contrato de compra e venda bilingue, representação por procuração e registo na conservatória do registo predial.',
-            'Κάθε διαφημιζόμενος έχει ταυτοποιηθεί από εμάς. Κατόπιν αιτήματος διατίθενται δίγλωσσο συμβόλαιο αγοραπωλησίας, εκπροσώπηση με πληρεξούσιο και εγγραφή στο κτηματολόγιο.',
-            'Každého inzerenta jsme ověřili. Na požádání zajistíme dvojjazyčnou kupní smlouvu, zastoupení na základě plné moci i zápis do katastru nemovitostí.',
-            'Vsakega oglaševalca smo identificirali. Na zahtevo zagotovimo dvojezično kupoprodajno pogodbo, zastopanje na podlagi pooblastila in vpis v zemljiško knjigo.',
-            'Varje annonsör har identifierats av oss. På begäran erbjuder vi ett tvåspråkigt köpekontrakt, ombud med fullmakt och inskrivning i fastighetsregistret.',
-            'Alle annoncører er identificeret af os. En tosproget købsaftale, repræsentation ved fuldmagt og tinglysning kan fås efter ønske.',
-            'Alle annonsører er identifisert av oss. Tospråklig kjøpekontrakt, representasjon med fullmakt og tinglysing kan leveres på forespørsel.',
-            'Olemme tunnistaneet jokaisen ilmoittajan. Pyynnöstä saatavilla ovat kaksikielinen kauppakirja, edustus valtakirjalla ja kirjaaminen kiinteistörekisteriin.',
-            'Oleme iga kuulutaja isiku tuvastanud. Soovi korral pakume kakskeelset ostu-müügilepingut, esindamist volikirja alusel ja kinnistusraamatusse kandmist.',
-            'Katru sludinātāju esam identificējuši. Pēc pieprasījuma piedāvājam divvalodu pirkuma līgumu, pārstāvību ar pilnvaru un reģistrāciju zemesgrāmatā.',
-            'Kiekvieno skelbėjo tapatybę patikrinome. Pageidaujant galima parengti dvikalbę pirkimo–pardavimo sutartį, atstovauti pagal įgaliojimą ir įregistruoti turtą registre.'
-          )}
+          {x({
+            hu: 'Minden hirdető azonosítása megtörtént. Kétnyelvű adásvételi szerződés, meghatalmazásos képviselet és földhivatali ügyintézés igény szerint elérhető.',
+            nl: 'Elke adverteerder is door ons geïdentificeerd. Tweetalige koopovereenkomst, vertegenwoordiging met volmacht en inschrijving bij het kadaster zijn op verzoek beschikbaar.',
+            en: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            de: 'Jeder Inserent wurde von uns identifiziert. Zweisprachiger Kaufvertrag, Vertretung per Vollmacht und Grundbucheintragung sind auf Anfrage verfügbar.',
+            fr: 'Chaque annonceur a été identifié par nos soins. Un contrat de vente bilingue, une représentation par procuration et l’inscription au registre foncier sont disponibles sur demande.',
+            es: 'Hemos verificado la identidad de cada anunciante. Bajo petición, ofrecemos un contrato de compraventa bilingüe, representación mediante poder notarial y la inscripción en el Registro de la Propiedad.',
+            pl: 'Tożsamość każdego ogłoszeniodawcy została przez nas zweryfikowana. Na życzenie zapewniamy dwujęzyczną umowę kupna-sprzedaży, reprezentację na podstawie pełnomocnictwa oraz wpis do księgi wieczystej.',
+            ro: 'Am verificat identitatea fiecărui ofertant. La cerere, oferim contract de vânzare-cumpărare bilingv, reprezentare prin procură și înscrierea în cartea funciară.',
+            sk: 'Totožnosť každého inzerenta sme overili. Na požiadanie zabezpečíme dvojjazyčnú kúpnu zmluvu, zastupovanie na základe plnomocenstva a zápis do katastra nehnuteľností.',
+            it: 'Ogni inserzionista è stato identificato da noi. Su richiesta sono disponibili un contratto di compravendita bilingue, la rappresentanza tramite procura e la registrazione al catasto.',
+            pt: 'Todos os anunciantes foram identificados por nós. Mediante pedido, disponibilizamos contrato de compra e venda bilingue, representação por procuração e registo na conservatória do registo predial.',
+            el: 'Κάθε διαφημιζόμενος έχει ταυτοποιηθεί από εμάς. Κατόπιν αιτήματος διατίθενται δίγλωσσο συμβόλαιο αγοραπωλησίας, εκπροσώπηση με πληρεξούσιο και εγγραφή στο κτηματολόγιο.',
+            cs: 'Každého inzerenta jsme ověřili. Na požádání zajistíme dvojjazyčnou kupní smlouvu, zastoupení na základě plné moci i zápis do katastru nemovitostí.',
+            sl: 'Vsakega oglaševalca smo identificirali. Na zahtevo zagotovimo dvojezično kupoprodajno pogodbo, zastopanje na podlagi pooblastila in vpis v zemljiško knjigo.',
+            sv: 'Varje annonsör har identifierats av oss. På begäran erbjuder vi ett tvåspråkigt köpekontrakt, ombud med fullmakt och inskrivning i fastighetsregistret.',
+            da: 'Alle annoncører er identificeret af os. En tosproget købsaftale, repræsentation ved fuldmagt og tinglysning kan fås efter ønske.',
+            no: 'Alle annonsører er identifisert av oss. Tospråklig kjøpekontrakt, representasjon med fullmakt og tinglysing kan leveres på forespørsel.',
+            fi: 'Olemme tunnistaneet jokaisen ilmoittajan. Pyynnöstä saatavilla ovat kaksikielinen kauppakirja, edustus valtakirjalla ja kirjaaminen kiinteistörekisteriin.',
+            et: 'Oleme iga kuulutaja isiku tuvastanud. Soovi korral pakume kakskeelset ostu-müügilepingut, esindamist volikirja alusel ja kinnistusraamatusse kandmist.',
+            lv: 'Katru sludinātāju esam identificējuši. Pēc pieprasījuma piedāvājam divvalodu pirkuma līgumu, pārstāvību ar pilnvaru un reģistrāciju zemesgrāmatā.',
+            lt: 'Kiekvieno skelbėjo tapatybę patikrinome. Pageidaujant galima parengti dvikalbę pirkimo–pardavimo sutartį, atstovauti pagal įgaliojimą ir įregistruoti turtą registre.',
+            sr: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            uk: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            tr: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            he: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            ar: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            ru: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+            zh: 'Every advertiser has been identified by us. A bilingual sale and purchase agreement, representation under power of attorney and registration at the land registry are available on request.',
+          })}
         </p>
       </aside>
     </div>
@@ -467,46 +483,53 @@ const whatsappMessage = x(
         formId="enquiry"
         onDark
         meta={{ propertyRef: d.ref, propertyTitle: title }}
-        submitLabel={x('Visszahívást kérek', 'Bel mij terug', 'Request a callback', 'Rückruf anfordern', 'Demander un rappel', 'Solicitar una llamada', 'Poproś o telefon', 'Solicitați un apel', 'Požiadať o spätné volanie', 'Richiesta di richiamata', 'Pedir uma chamada', 'Ζητήστε να σας καλέσουμε', 'Požádat o zavolání zpět', 'Prosim za povratni klic', 'Bli uppringd', 'Bliv ringet op', 'Bli oppringt', 'Pyydä soittoa', 'Palun helistage mulle', 'Lūgt atzvanīt', 'Prašyti perskambinti')}
-        successTitle={x('Köszönjük, hamarosan hívjuk!', 'Bedankt, wij bellen u terug!', 'Thank you, we will call you back', 'Vielen Dank, wir rufen Sie zurück', 'Merci, nous vous rappelons', 'Gracias, le devolveremos la llamada', 'Dziękujemy, oddzwonimy', 'Vă mulțumim, vă vom suna înapoi', 'Ďakujeme, zavoláme vám späť', 'Grazie, la richiameremo', 'Obrigado, vamos ligar-lhe', 'Ευχαριστούμε, θα σας καλέσουμε', 'Děkujeme, zavoláme vám zpět', 'Hvala, poklicali vas bomo', 'Tack, vi ringer upp dig', 'Tak, vi ringer dig op', 'Takk, vi ringer deg opp', 'Kiitos, soitamme sinulle', 'Aitäh, helistame teile tagasi', 'Paldies, mēs jums atzvanīsim', 'Ačiū, mes jums perskambinsime')}
-        successBody={x(
-          'Munkatársunk 24 órán belül felkeresi a megadott elérhetőségen.',
-          'Een medewerker neemt binnen 24 uur contact met u op.',
-          'A member of our team will contact you within 24 hours.',
-          'Ein Mitarbeiter meldet sich innerhalb von 24 Stunden bei Ihnen.',
-          'Un collaborateur vous contactera dans les 24 heures.',
-          'Un miembro de nuestro equipo se pondrá en contacto con usted en un plazo de 24 horas.',
-          'Nasz pracownik skontaktuje się z Państwem w ciągu 24 godzin.',
-          'Un coleg vă va contacta în cel mult 24 de ore.',
-          'Náš kolega vás bude kontaktovať do 24 hodín.',
-          'Un membro del nostro team la contatterà entro 24 ore.',
-          'Um membro da nossa equipa entrará em contacto consigo no prazo de 24 horas.',
-          'Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας εντός 24 ωρών.',
-          'Někdo z našeho týmu vás bude kontaktovat do 24 hodin.',
-          'Član naše ekipe vas bo kontaktiral v 24 urah.',
-          'Någon i vårt team kontaktar dig inom 24 timmar.',
-          'En fra vores team kontakter dig inden for 24 timer.',
-          'En i teamet vårt kontakter deg innen 24 timer.',
-          'Tiimimme jäsen ottaa sinuun yhteyttä 24 tunnin kuluessa.',
-          'Meie meeskonna liige võtab teiega ühendust 24 tunni jooksul.',
-          'Kāds no mūsu komandas sazināsies ar jums 24 stundu laikā.',
-          'Mūsų komandos narys susisieks su jumis per 24 valandas.'
-        )}
+        submitLabel={x({ hu: 'Visszahívást kérek', nl: 'Bel mij terug', en: 'Request a callback', de: 'Rückruf anfordern', fr: 'Demander un rappel', es: 'Solicitar una llamada', pl: 'Poproś o telefon', ro: 'Solicitați un apel', sk: 'Požiadať o spätné volanie', it: 'Richiesta di richiamata', pt: 'Pedir uma chamada', el: 'Ζητήστε να σας καλέσουμε', cs: 'Požádat o zavolání zpět', sl: 'Prosim za povratni klic', sv: 'Bli uppringd', da: 'Bliv ringet op', no: 'Bli oppringt', fi: 'Pyydä soittoa', et: 'Palun helistage mulle', lv: 'Lūgt atzvanīt', lt: 'Prašyti perskambinti', sr: 'Request a callback', uk: 'Request a callback', tr: 'Request a callback', he: 'Request a callback', ar: 'Request a callback', ru: 'Request a callback', zh: 'Request a callback' })}
+        successTitle={x({ hu: 'Köszönjük, hamarosan hívjuk!', nl: 'Bedankt, wij bellen u terug!', en: 'Thank you, we will call you back', de: 'Vielen Dank, wir rufen Sie zurück', fr: 'Merci, nous vous rappelons', es: 'Gracias, le devolveremos la llamada', pl: 'Dziękujemy, oddzwonimy', ro: 'Vă mulțumim, vă vom suna înapoi', sk: 'Ďakujeme, zavoláme vám späť', it: 'Grazie, la richiameremo', pt: 'Obrigado, vamos ligar-lhe', el: 'Ευχαριστούμε, θα σας καλέσουμε', cs: 'Děkujeme, zavoláme vám zpět', sl: 'Hvala, poklicali vas bomo', sv: 'Tack, vi ringer upp dig', da: 'Tak, vi ringer dig op', no: 'Takk, vi ringer deg opp', fi: 'Kiitos, soitamme sinulle', et: 'Aitäh, helistame teile tagasi', lv: 'Paldies, mēs jums atzvanīsim', lt: 'Ačiū, mes jums perskambinsime', sr: 'Thank you, we will call you back', uk: 'Thank you, we will call you back', tr: 'Thank you, we will call you back', he: 'Thank you, we will call you back', ar: 'Thank you, we will call you back', ru: 'Thank you, we will call you back', zh: 'Thank you, we will call you back' })}
+        successBody={x({
+          hu: 'Munkatársunk 24 órán belül felkeresi a megadott elérhetőségen.',
+          nl: 'Een medewerker neemt binnen 24 uur contact met u op.',
+          en: 'A member of our team will contact you within 24 hours.',
+          de: 'Ein Mitarbeiter meldet sich innerhalb von 24 Stunden bei Ihnen.',
+          fr: 'Un collaborateur vous contactera dans les 24 heures.',
+          es: 'Un miembro de nuestro equipo se pondrá en contacto con usted en un plazo de 24 horas.',
+          pl: 'Nasz pracownik skontaktuje się z Państwem w ciągu 24 godzin.',
+          ro: 'Un coleg vă va contacta în cel mult 24 de ore.',
+          sk: 'Náš kolega vás bude kontaktovať do 24 hodín.',
+          it: 'Un membro del nostro team la contatterà entro 24 ore.',
+          pt: 'Um membro da nossa equipa entrará em contacto consigo no prazo de 24 horas.',
+          el: 'Ένα μέλος της ομάδας μας θα επικοινωνήσει μαζί σας εντός 24 ωρών.',
+          cs: 'Někdo z našeho týmu vás bude kontaktovat do 24 hodin.',
+          sl: 'Član naše ekipe vas bo kontaktiral v 24 urah.',
+          sv: 'Någon i vårt team kontaktar dig inom 24 timmar.',
+          da: 'En fra vores team kontakter dig inden for 24 timer.',
+          no: 'En i teamet vårt kontakter deg innen 24 timer.',
+          fi: 'Tiimimme jäsen ottaa sinuun yhteyttä 24 tunnin kuluessa.',
+          et: 'Meie meeskonna liige võtab teiega ühendust 24 tunni jooksul.',
+          lv: 'Kāds no mūsu komandas sazināsies ar jums 24 stundu laikā.',
+          lt: 'Mūsų komandos narys susisieks su jumis per 24 valandas.',
+          sr: 'A member of our team will contact you within 24 hours.',
+          uk: 'A member of our team will contact you within 24 hours.',
+          tr: 'A member of our team will contact you within 24 hours.',
+          he: 'A member of our team will contact you within 24 hours.',
+          ar: 'A member of our team will contact you within 24 hours.',
+          ru: 'A member of our team will contact you within 24 hours.',
+          zh: 'A member of our team will contact you within 24 hours.',
+        })}
       >
         <fieldset class="pref" data-required-label={ui.form.required} data-optional-label={ui.form.optional}>
-          <legend>{x('Hogyan keressük Önt?', 'Hoe nemen we contact op?', 'How we should contact you', 'Wie wir Sie erreichen sollen', 'Comment vous contacter', 'Cómo prefiere que le contactemos', 'Preferowana forma kontaktu', 'Cum doriți să vă contactăm', 'Ako vás máme kontaktovať', 'Come preferisce essere contattato', 'Como prefere ser contactado', 'Πώς να επικοινωνήσουμε μαζί σας', 'Jak vás máme kontaktovat', 'Kako naj vas kontaktiramo', 'Hur vi ska kontakta dig', 'Sådan skal vi kontakte dig', 'Slik skal vi kontakte deg', 'Miten otamme sinuun yhteyttä', 'Kuidas teiega ühendust võtta', 'Kā ar jums sazināties', 'Kaip su jumis susisiekti')}</legend>
+          <legend>{x({ hu: 'Hogyan keressük Önt?', nl: 'Hoe nemen we contact op?', en: 'How we should contact you', de: 'Wie wir Sie erreichen sollen', fr: 'Comment vous contacter', es: 'Cómo prefiere que le contactemos', pl: 'Preferowana forma kontaktu', ro: 'Cum doriți să vă contactăm', sk: 'Ako vás máme kontaktovať', it: 'Come preferisce essere contattato', pt: 'Como prefere ser contactado', el: 'Πώς να επικοινωνήσουμε μαζί σας', cs: 'Jak vás máme kontaktovat', sl: 'Kako naj vas kontaktiramo', sv: 'Hur vi ska kontakta dig', da: 'Sådan skal vi kontakte dig', no: 'Slik skal vi kontakte deg', fi: 'Miten otamme sinuun yhteyttä', et: 'Kuidas teiega ühendust võtta', lv: 'Kā ar jums sazināties', lt: 'Kaip su jumis susisiekti', sr: 'How we should contact you', uk: 'How we should contact you', tr: 'How we should contact you', he: 'How we should contact you', ar: 'How we should contact you', ru: 'How we should contact you', zh: 'How we should contact you' })}</legend>
           <label class="opt">
             <input type="radio" name="contact_pref" value="callback" checked />
             <span>
-              <b>{x('Visszahívást kérek', 'Terugbellen', 'Request a callback', 'Rückruf anfordern', 'Demander un rappel', 'Solicitar una llamada', 'Poproś o telefon', 'Solicitați un apel', 'Požiadať o spätné volanie', 'Richiesta di richiamata', 'Pedir uma chamada', 'Ζητήστε να σας καλέσουμε', 'Požádat o zavolání zpět', 'Prosim za povratni klic', 'Bli uppringd', 'Bliv ringet op', 'Bli oppringt', 'Pyydä soittoa', 'Palun helistage mulle', 'Lūgt atzvanīt', 'Prašyti perskambinti')}</b>
-              <small>{x('24 órán belül hívjuk', 'Binnen 24 uur', 'Within 24 hours', 'Innerhalb von 24 Stunden', 'Sous 24\u00a0heures', 'En 24 horas', 'W ciągu 24 godzin', 'În 24 de ore', 'Do 24 hodín', 'Entro 24 ore', 'No prazo de 24 horas', 'Εντός 24 ωρών', 'Do 24 hodin', 'V 24 urah', 'Inom 24 timmar', 'Inden for 24 timer', 'Innen 24 timer', '24 tunnin kuluessa', '24 tunni jooksul', '24 stundu laikā', 'Per 24 valandas')}</small>
+              <b>{x({ hu: 'Visszahívást kérek', nl: 'Terugbellen', en: 'Request a callback', de: 'Rückruf anfordern', fr: 'Demander un rappel', es: 'Solicitar una llamada', pl: 'Poproś o telefon', ro: 'Solicitați un apel', sk: 'Požiadať o spätné volanie', it: 'Richiesta di richiamata', pt: 'Pedir uma chamada', el: 'Ζητήστε να σας καλέσουμε', cs: 'Požádat o zavolání zpět', sl: 'Prosim za povratni klic', sv: 'Bli uppringd', da: 'Bliv ringet op', no: 'Bli oppringt', fi: 'Pyydä soittoa', et: 'Palun helistage mulle', lv: 'Lūgt atzvanīt', lt: 'Prašyti perskambinti', sr: 'Request a callback', uk: 'Request a callback', tr: 'Request a callback', he: 'Request a callback', ar: 'Request a callback', ru: 'Request a callback', zh: 'Request a callback' })}</b>
+              <small>{x({ hu: '24 órán belül hívjuk', nl: 'Binnen 24 uur', en: 'Within 24 hours', de: 'Innerhalb von 24 Stunden', fr: 'Sous 24\u00a0heures', es: 'En 24 horas', pl: 'W ciągu 24 godzin', ro: 'În 24 de ore', sk: 'Do 24 hodín', it: 'Entro 24 ore', pt: 'No prazo de 24 horas', el: 'Εντός 24 ωρών', cs: 'Do 24 hodin', sl: 'V 24 urah', sv: 'Inom 24 timmar', da: 'Inden for 24 timer', no: 'Innen 24 timer', fi: '24 tunnin kuluessa', et: '24 tunni jooksul', lv: '24 stundu laikā', lt: 'Per 24 valandas', sr: 'Within 24 hours', uk: 'Within 24 hours', tr: 'Within 24 hours', he: 'Within 24 hours', ar: 'Within 24 hours', ru: 'Within 24 hours', zh: 'Within 24 hours' })}</small>
             </span>
           </label>
           <label class="opt">
             <input type="radio" name="contact_pref" value="email" />
             <span>
-              <b>{x('E-mailben', 'Per e-mail', 'By email', 'Per E-Mail', 'Par e-mail', 'Por correo electrónico', 'E-mailem', 'Prin e-mail', 'E-mailom', 'Per e-mail', 'Por e-mail', 'Με email', 'E-mailem', 'Po e-pošti', 'Via mejl', 'På e-mail', 'På e-post', 'Sähköpostitse', 'E-postiga', 'E-pastā', 'El. paštu')}</b>
-              <small>{x('Írásban válaszolunk', 'Wij antwoorden schriftelijk', 'We reply in writing', 'Wir antworten schriftlich', 'Nous répondons par écrit', 'Le respondemos por escrito', 'Odpowiadamy na piśmie', 'Vă răspundem în scris', 'Odpovieme písomne', 'Rispondiamo per iscritto', 'Respondemos por escrito', 'Απαντάμε γραπτώς', 'Odpovíme písemně', 'Odgovorimo pisno', 'Vi svarar skriftligt', 'Vi svarer skriftligt', 'Vi svarer skriftlig', 'Vastaamme kirjallisesti', 'Vastame kirjalikult', 'Atbildam rakstiski', 'Atsakome raštu')}</small>
+              <b>{x({ hu: 'E-mailben', nl: 'Per e-mail', en: 'By email', de: 'Per E-Mail', fr: 'Par e-mail', es: 'Por correo electrónico', pl: 'E-mailem', ro: 'Prin e-mail', sk: 'E-mailom', it: 'Per e-mail', pt: 'Por e-mail', el: 'Με email', cs: 'E-mailem', sl: 'Po e-pošti', sv: 'Via mejl', da: 'På e-mail', no: 'På e-post', fi: 'Sähköpostitse', et: 'E-postiga', lv: 'E-pastā', lt: 'El. paštu', sr: 'By email', uk: 'By email', tr: 'By email', he: 'By email', ar: 'By email', ru: 'By email', zh: 'By email' })}</b>
+              <small>{x({ hu: 'Írásban válaszolunk', nl: 'Wij antwoorden schriftelijk', en: 'We reply in writing', de: 'Wir antworten schriftlich', fr: 'Nous répondons par écrit', es: 'Le respondemos por escrito', pl: 'Odpowiadamy na piśmie', ro: 'Vă răspundem în scris', sk: 'Odpovieme písomne', it: 'Rispondiamo per iscritto', pt: 'Respondemos por escrito', el: 'Απαντάμε γραπτώς', cs: 'Odpovíme písemně', sl: 'Odgovorimo pisno', sv: 'Vi svarar skriftligt', da: 'Vi svarer skriftligt', no: 'Vi svarer skriftlig', fi: 'Vastaamme kirjallisesti', et: 'Vastame kirjalikult', lv: 'Atbildam rakstiski', lt: 'Atsakome raštu', sr: 'We reply in writing', uk: 'We reply in writing', tr: 'We reply in writing', he: 'We reply in writing', ar: 'We reply in writing', ru: 'We reply in writing', zh: 'We reply in writing' })}</small>
             </span>
           </label>
         </fieldset>
@@ -525,7 +548,7 @@ const whatsappMessage = x(
       </FormShell>
 
       <p class="enq-alt">
-        {x('Vagy hívjon minket', 'Of bel ons', 'Or call us', 'Oder rufen Sie uns an', 'Ou appelez-nous', 'O llámenos', 'Lub zadzwoń do nas', 'Sau sunați-ne', 'Alebo nám zavolajte', 'Oppure ci chiami', 'Ou ligue-nos', 'Ή καλέστε μας', 'Nebo nám zavolejte', 'Ali nas pokličite', 'Eller ring oss', 'Eller ring til os', 'Eller ring oss', 'Tai soita meille', 'Või helistage meile', 'Vai zvaniet mums', 'Arba paskambinkite mums')}{colon}<br />
+        {x({ hu: 'Vagy hívjon minket', nl: 'Of bel ons', en: 'Or call us', de: 'Oder rufen Sie uns an', fr: 'Ou appelez-nous', es: 'O llámenos', pl: 'Lub zadzwoń do nas', ro: 'Sau sunați-ne', sk: 'Alebo nám zavolajte', it: 'Oppure ci chiami', pt: 'Ou ligue-nos', el: 'Ή καλέστε μας', cs: 'Nebo nám zavolejte', sl: 'Ali nas pokličite', sv: 'Eller ring oss', da: 'Eller ring til os', no: 'Eller ring oss', fi: 'Tai soita meille', et: 'Või helistage meile', lv: 'Vai zvaniet mums', lt: 'Arba paskambinkite mums', sr: 'Or call us', uk: 'Or call us', tr: 'Or call us', he: 'Or call us', ar: 'Or call us', ru: 'Or call us', zh: 'Or call us' })}{colon}<br />
         {
           COMPANY.phones.slice(0, 2).map((p) => (
             <a href={p.href}>{p.display}</a>
@@ -625,15 +648,18 @@ const whatsappMessage = x(
     document.getElementById('gal-next')?.addEventListener('click', () => show(index + 1));
 
     root.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
+      // Right-to-left pages read the photos the other way round.
+      const back = document.documentElement.dir === 'rtl' ? 1 : -1;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(index + back); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(index - back); }
     });
 
     let startX = 0;
     root.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
     root.addEventListener('touchend', (e) => {
       const delta = e.changedTouches[0].clientX - startX;
-      if (Math.abs(delta) > 48) show(delta < 0 ? index + 1 : index - 1);
+      const forward = document.documentElement.dir === 'rtl' ? delta > 0 : delta < 0;
+      if (Math.abs(delta) > 48) show(forward ? index + 1 : index - 1);
     }, { passive: true });
   }
 
@@ -661,7 +687,7 @@ const whatsappMessage = x(
   .crumbs {
     position: absolute;
     top: 20px;
-    left: 20px;
+    inset-inline-start: 20px;
     z-index: 4;
     max-width: calc(100% - 40px);
     padding: 9px 18px;
@@ -765,8 +791,8 @@ const whatsappMessage = x(
   }
   .hero-foot {
     position: absolute;
-    left: calc(var(--pad-x) - var(--slab-x));
-    right: 28px;
+    inset-inline-start: calc(var(--pad-x) - var(--slab-x));
+    inset-inline-end: 28px;
     bottom: 36px;
     z-index: 3;
     display: flex;
@@ -833,6 +859,9 @@ const whatsappMessage = x(
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.6s var(--ease-out);
+  }
+  :global([dir='rtl']) .gal-bar span::after {
+    transform-origin: right;
   }
   .gal-bar span[data-on]::after {
     transform: none;
@@ -916,7 +945,7 @@ const whatsappMessage = x(
   .price-asof {
     font-size: 13px;
     color: var(--taupe);
-    margin-left: auto;
+    margin-inline-start: auto;
   }
 
   /* The figures, as one card joined to the price above it. */
@@ -1024,8 +1053,8 @@ const whatsappMessage = x(
     margin-bottom: 18px;
   }
   .prose :global(blockquote) {
-    border-left: 2px solid var(--ink);
-    padding: 4px 0 4px 24px;
+    border-inline-start: 2px solid var(--ink);
+    padding-block: 4px; padding-inline: 24px 0;
     margin: 32px 0;
     font-family: var(--serif);
     font-size: var(--fs-lead);
@@ -1142,7 +1171,7 @@ const whatsappMessage = x(
     align-items: center;
     gap: 12px;
     height: 48px;
-    padding: 0 22px 0 6px;
+    padding-block: 0; padding-inline: 6px 22px;
     border-radius: var(--r-pill);
     background: var(--ink);
     color: var(--cream);
@@ -1323,7 +1352,7 @@ const whatsappMessage = x(
   @media (max-width: 768px) {
     .crumbs {
       top: 12px;
-      left: 12px;
+      inset-inline-start: 12px;
       max-width: calc(100% - 24px);
       padding: 7px 14px;
     }
@@ -1335,8 +1364,8 @@ const whatsappMessage = x(
       border-radius: var(--r-xl);
     }
     .hero-foot {
-      left: 12px;
-      right: 12px;
+      inset-inline-start: 12px;
+      inset-inline-end: 12px;
       bottom: 12px;
       gap: 16px;
       flex-direction: column;
@@ -1381,7 +1410,7 @@ const whatsappMessage = x(
       grid-column: span 2;
     }
     .price-asof {
-      margin-left: 0;
+      margin-inline-start: 0;
       width: 100%;
     }
     .owner,

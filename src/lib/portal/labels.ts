@@ -130,6 +130,13 @@ export const LOCALE_LABEL: Record<string, string> = {
   et: 'Észt',
   lv: 'Lett',
   lt: 'Litván',
+  sr: 'Szerb',
+  uk: 'Ukrán',
+  tr: 'Török',
+  he: 'Héber',
+  ar: 'Arab',
+  ru: 'Orosz',
+  zh: 'Kínai',
 };
 
 /**

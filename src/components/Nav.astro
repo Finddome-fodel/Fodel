@@ -79,7 +79,7 @@ const isCurrent = (href: string) =>
     </ul>
 
     <div class="nav-end">
-      <LanguageSwitcher locale={locale} alternates={alternates} align="right" />
+      <LanguageSwitcher locale={locale} alternates={alternates} align="end" />
 
       <a class="nav-account" href={loginHref} rel="nofollow" aria-label={accountLabel}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -98,7 +98,7 @@ const isCurrent = (href: string) =>
     </div>
 
     <div class="nav-mobile-only">
-      <LanguageSwitcher locale={locale} alternates={alternates} align="right" />
+      <LanguageSwitcher locale={locale} alternates={alternates} align="end" />
 
       <button
         class="burger"
@@ -288,7 +288,7 @@ const isCurrent = (href: string) =>
     min-height: var(--nav-h);
     max-width: calc(var(--maxw) + 2 * var(--pad-x));
     margin-inline: auto;
-    padding: 0 max(var(--pad-x), env(safe-area-inset-right, 0px)) 0 max(var(--pad-x), env(safe-area-inset-left, 0px));
+    padding-block: 0; padding-inline: max(var(--pad-x), env(safe-area-inset-left, 0px)) max(var(--pad-x), env(safe-area-inset-right, 0px));
     border-radius: 0;
     background: rgba(244, 244, 242, 0);
     border: 1px solid transparent;
@@ -311,7 +311,7 @@ const isCurrent = (href: string) =>
   .nav[data-scrolled] .nav-inner,
   .nav[data-menu-open] .nav-inner {
     min-height: 66px;
-    padding: 0 8px 0 calc(var(--pad-x) - var(--slab-x));
+    padding-block: 0; padding-inline: calc(var(--pad-x) - var(--slab-x)) 8px;
     border-radius: var(--r-pill);
     background: rgba(250, 250, 248, 0.88);
     border-color: rgba(16, 42, 67, 0.07);
@@ -337,12 +337,13 @@ const isCurrent = (href: string) =>
     display: flex;
     align-items: center;
     gap: 2px;
-    margin-left: clamp(16px, 3.4vw, 56px);
+    margin-inline-start: clamp(16px, 3.4vw, 56px);
     list-style: none;
   }
   .nav-pill {
     position: absolute;
     top: 50%;
+    /* Physical on purpose (logical:keep): --x is the link's offsetLeft, which is measured from the left in either direction. */
     left: 0;
     height: 40px;
     width: var(--w, 0px);
@@ -422,7 +423,7 @@ const isCurrent = (href: string) =>
     opacity: 0.45;
   }
   .nav-end .nav-cta {
-    margin-left: 6px;
+    margin-inline-start: 6px;
   }
   .nav-cta :global(.btn) {
     white-space: nowrap;
@@ -448,8 +449,8 @@ const isCurrent = (href: string) =>
   }
   .burger span {
     position: absolute;
-    left: 15px;
-    right: 15px;
+    inset-inline-start: 15px;
+    inset-inline-end: 15px;
     height: 1.5px;
     border-radius: 2px;
     background: var(--cream);
@@ -463,7 +464,7 @@ const isCurrent = (href: string) =>
   }
   .burger span:nth-child(2) {
     top: 27px;
-    left: 21px;
+    inset-inline-start: 21px;
   }
   .burger[aria-expanded='true'] span:nth-child(1) {
     top: 23.5px;
@@ -471,7 +472,7 @@ const isCurrent = (href: string) =>
   }
   .burger[aria-expanded='true'] span:nth-child(2) {
     top: 23.5px;
-    left: 15px;
+    inset-inline-start: 15px;
     transform: rotate(-45deg);
   }
 
@@ -551,7 +552,7 @@ const isCurrent = (href: string) =>
     grid-template-columns: 34px minmax(0, 1fr) auto;
     align-items: center;
     gap: 8px;
-    padding: 12px 8px 12px 14px;
+    padding-block: 12px; padding-inline: 14px 8px;
     border-radius: var(--r-lg);
     font-family: var(--serif);
     font-weight: var(--fw-medium);
@@ -622,7 +623,7 @@ const isCurrent = (href: string) =>
       padding-inline: 12px;
     }
     .nav-links {
-      margin-left: clamp(12px, 2vw, 32px);
+      margin-inline-start: clamp(12px, 2vw, 32px);
     }
   }
   @media (max-width: 1400px) {
@@ -661,7 +662,7 @@ const isCurrent = (href: string) =>
     .nav[data-scrolled] .nav-inner,
     .nav[data-menu-open] .nav-inner {
       min-height: 66px;
-      padding: 0 8px 0 calc(var(--pad-x) - var(--slab-x));
+      padding-block: 0; padding-inline: calc(var(--pad-x) - var(--slab-x)) 8px;
     }
     .nav[data-menu-open] {
       padding: 10px var(--slab-x);
@@ -675,7 +676,7 @@ const isCurrent = (href: string) =>
       grid-column: 2;
     }
     .nav:not([data-scrolled]):not([data-menu-open]) .burger {
-      margin-right: -4px;
+      margin-inline-end: -4px;
     }
   }
 </style>

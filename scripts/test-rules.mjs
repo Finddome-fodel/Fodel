@@ -24,7 +24,7 @@ import {
   defaultPhoneCountry, countryOfNumber, formatPhoneAsYouType,
 } from '../src/lib/validation.ts';
 import { errorMessage } from '../src/lib/validation-server.ts';
-import { LOCALES, ROUTES, UI, path, localizer, localeFrom, isLocale } from '../src/i18n/ui.ts';
+import { LOCALES, LATER_LOCALES, LOCALE_META, ROUTES, UI, path, localizer, localeFrom, isLocale } from '../src/i18n/ui.ts';
 import { eur, huf, area, grouped, placeLabel } from '../src/lib/format.ts';
 import { execFileSync } from 'node:child_process';
 import { registerHooks } from 'node:module';
@@ -291,7 +291,10 @@ const ERROR_CASES = [
 test('every validation message exists in every language and says something different', () => {
   for (const e of ERROR_CASES) {
     const seen = new Set();
-    for (const l of LOCALES) {
+    // A later language still on its English stand-in is counted by check:i18n
+    // (coverage), not here; once translated it must differ like the rest.
+    const langs = LOCALES.filter((l) => !(LATER_LOCALES.includes(l) && errorMessage(e, l) === errorMessage(e, 'en')));
+    for (const l of langs) {
       const text = errorMessage(e, l);
       assert.ok(typeof text === 'string' && text.length > 3, `${e.code} in ${l}`);
       assert.ok(!/undefined|\[object|NaN/.test(text), `${e.code} in ${l}: ${text}`);
@@ -299,7 +302,7 @@ test('every validation message exists in every language and says something diffe
     }
     // Swedish and Norwegian both write “Minst 5.”; that is correct in both.
     const shared = e.code === 'min' ? 1 : 0;
-    assert.equal(seen.size, LOCALES.length - shared, `${e.code} is identical in two languages`);
+    assert.equal(seen.size, langs.length - shared, `${e.code} is identical in two languages`);
   }
 });
 test('routes: same pages, own slugs, unique inside a language', () => {
@@ -317,15 +320,14 @@ test('locale helpers', () => {
   assert.equal(isLocale('xx'), false);
   assert.equal(localeFrom('de-AT', 'nl'), 'nl');
   assert.equal(localeFrom('de', 'nl'), 'de');
-  const nine = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u'];
-  assert.equal(localizer('fr')(...nine), 'e');
-  assert.equal(localizer('es')(...nine), 'f');
-  assert.equal(localizer('pl')(...nine), 'g');
-  assert.equal(localizer('ro')(...nine), 'h');
-  assert.equal(localizer('sk')(...nine), 'i');
-  assert.equal(localizer('it')(...nine), 'j');
-  assert.equal(localizer('no')(...nine), 'q');
-  assert.equal(localizer('lt')(...nine), 'u');
+  for (const l of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) assert.equal(isLocale(l), true);
+  // One key per language: each locale reads its own value, never a neighbour's.
+  const values = Object.fromEntries(LOCALES.map((l) => [l, `v-${l}`]));
+  for (const l of LOCALES) assert.equal(localizer(l)(values), `v-${l}`);
+  assert.equal(LOCALES.length, 28);
+  assert.deepEqual(LOCALES.filter((l) => LOCALE_META[l].dir === 'rtl'), ['he', 'ar']);
+  assert.equal(LOCALE_META.sr.htmlLang, 'sr-Latn');
+  assert.equal(LOCALE_META.zh.htmlLang, 'zh-Hans');
 });
 test('money and area in the house style of each language', () => {
   assert.equal(eur(178000, 'hu'), '€\u00a0178\u00a0000');

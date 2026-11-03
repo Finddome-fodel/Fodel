@@ -448,6 +448,13 @@ export const FAQ: Record<Locale, FaqEntry[]> = { ...HU_NL, en: FAQ_EN, de: FAQ_D
   et: FAQ_ET,
   lv: FAQ_LV,
   lt: FAQ_LT,
+  sr: FAQ_EN,
+  uk: FAQ_EN,
+  tr: FAQ_EN,
+  he: FAQ_EN,
+  ar: FAQ_EN,
+  ru: FAQ_EN,
+  zh: FAQ_EN,
 };
 
 /** FAQPage structured data expects plain text, not markup. */

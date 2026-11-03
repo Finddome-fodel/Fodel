@@ -345,6 +345,111 @@ const copies = {
     stillHead: 'Neradote atsakymo?',
     stillBody: '{hours} Užsisakykite nemokamą atgalinį skambutį arba parašykite mums.',
   },
+  sr: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
+  uk: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
+  tr: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
+  he: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
+  ar: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
+  ru: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
+  zh: {
+    metaTitle: 'FAQ: buying in Hungary',
+    metaDescription:
+      'Can I buy in Hungary as an EU citizen? What does your brokerage cost? Do I have to be there to sign? The questions buyers ask us most.',
+    eyebrow: 'FAQ',
+    title: 'Questions and',
+    titleEm: 'answers',
+    body: 'Below are the questions we get most often. If yours is not here, call us or ask for a free callback.',
+    groups: [
+      { id: 'buyer' as FaqAudience, label: 'For buyers' },
+      { id: 'both' as FaqAudience, label: 'General' },
+    ],
+    stillHead: 'Did not find your answer',
+    stillBody: '{hours} Ask for a free callback, or write to us.',
+  },
 };
 const t = copies[locale];
 
@@ -363,7 +468,7 @@ const grouped = t.groups
   <PageHeader eyebrow={t.eyebrow} title={t.title} titleEm={t.titleEm} body={t.body} compact />
 
   <div class="faq-page">
-    <nav class="toc no-print" aria-label={x('Kérdések', 'Vragen', 'Questions', 'Fragen', 'Questions', 'Preguntas', 'Pytania', 'Întrebări', 'Otázky', 'Domande', 'Perguntas', 'Ερωτήσεις', 'Otázky', 'Vprašanja', 'Frågor', 'Spørgsmål', 'Spørsmål', 'Kysymykset', 'Küsimused', 'Jautājumi', 'Klausimai')}>
+    <nav class="toc no-print" aria-label={x({ hu: 'Kérdések', nl: 'Vragen', en: 'Questions', de: 'Fragen', fr: 'Questions', es: 'Preguntas', pl: 'Pytania', ro: 'Întrebări', sk: 'Otázky', it: 'Domande', pt: 'Perguntas', el: 'Ερωτήσεις', cs: 'Otázky', sl: 'Vprašanja', sv: 'Frågor', da: 'Spørgsmål', no: 'Spørsmål', fi: 'Kysymykset', et: 'Küsimused', lv: 'Jautājumi', lt: 'Klausimai', sr: 'Questions', uk: 'Questions', tr: 'Questions', he: 'Questions', ar: 'Questions', ru: 'Questions', zh: 'Questions' })}>
       {
         grouped.map((group) => (
           <div class="toc-group">
@@ -458,7 +563,7 @@ const grouped = t.groups
     max-height: calc(100vh - var(--nav-h) - 40px);
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 22px 12px 22px 16px;
+    padding-block: 22px; padding-inline: 16px 12px;
     border-radius: var(--r-xl);
     background: var(--white);
     border: 1px solid rgba(16, 42, 67, 0.07);
@@ -466,7 +571,7 @@ const grouped = t.groups
     scrollbar-color: var(--border) transparent;
   }
   .toc :global(.toc-label) {
-    padding-left: 12px;
+    padding-inline-start: 12px;
     color: var(--taupe);
   }
   .toc-group + .toc-group {
@@ -556,14 +661,14 @@ const grouped = t.groups
     margin-bottom: 0;
   }
   .bullet {
-    padding-left: 22px;
+    padding-inline-start: 22px;
     position: relative;
     margin-bottom: 8px;
   }
   .bullet::before {
     content: '';
     position: absolute;
-    left: 4px;
+    inset-inline-start: 4px;
     top: 0.72em;
     width: 6px;
     height: 6px;

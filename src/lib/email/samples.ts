@@ -7,10 +7,10 @@
 import { templates } from '~/lib/email/templates';
 import type { BuiltEmail } from '~/lib/email/templates';
 import { SITE_URL } from '~/config/site.mjs';
-import { buildInvite } from '~/lib/portal/invites';
+import { buildInvite, isInviteLocale } from '~/lib/portal/invites';
 import { HU_OWNER_INVITE } from '~/data/invite-letter';
 import { lifecycleEmails } from '~/lib/email/lifecycle';
-import { localizer, path, type Locale } from '~/i18n/ui';
+import { LOCALES, localizer, path, type Locale } from '~/i18n/ui';
 
 const SAMPLE_REF = '7213';
 const SAMPLE_TITLE = 'Felújított parasztház a Balaton-felvidéken';
@@ -25,7 +25,12 @@ const sampleUrl = (l: Locale) => `${SITE_URL}/${l}/${l === 'hu' ? 'haz-elado' : 
  */
 const say = (locale: Locale) => {
   const pick = localizer(locale);
-  return (...nine: string[]) => (pick as (...all: string[]) => string)(...nine, ...Array<string>(12).fill(nine[2]));
+  const codes = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const;
+  return (...nine: string[]) => {
+    const values = Object.fromEntries(LOCALES.map((code) => [code, nine[2]])) as Record<Locale, string>;
+    codes.forEach((code, index) => (values[code] = nine[index]));
+    return pick(values);
+  };
 };
 export const TITLES: Record<Locale, string> = {
   hu: SAMPLE_TITLE,
@@ -49,6 +54,13 @@ export const TITLES: Record<Locale, string> = {
   et: 'Renoveeritud talumaja Balatoni kõrgustikul',
   lv: 'Renovēta lauku māja Balatona augstienē',
   lt: 'Renovuota sodyba Balatono aukštumose',
+  sr: 'Renovated farmhouse in the Balaton Uplands',
+  uk: 'Renovated farmhouse in the Balaton Uplands',
+  tr: 'Renovated farmhouse in the Balaton Uplands',
+  he: 'Renovated farmhouse in the Balaton Uplands',
+  ar: 'Renovated farmhouse in the Balaton Uplands',
+  ru: 'Renovated farmhouse in the Balaton Uplands',
+  zh: 'Renovated farmhouse in the Balaton Uplands',
 };
 
 /**
@@ -162,6 +174,41 @@ const SAMPLE_ORDER: Record<Locale, { label: string; amount: string }[]> = {
     { label: 'Skelbimas — 12 mėnesių', amount: '129 €' },
     { label: 'Vertimas — 2 kalbos', amount: '50 €' },
     { label: 'Vaizdo pristatymas', amount: '36 €' },
+  ],
+  sr: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
+  ],
+  uk: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
+  ],
+  tr: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
+  ],
+  he: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
+  ],
+  ar: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
+  ],
+  ru: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
+  ],
+  zh: [
+    { label: 'Listing — 12 months', amount: '€129' },
+    { label: 'Translation — 2 languages', amount: '€50' },
+    { label: 'Video presentation', amount: '€36' },
   ],
 };
 
@@ -375,7 +422,7 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
   // What buildInvite() actually sends once that letter is approved: the owner
   // gets it, an admin still gets the built-in admin wording (the role bug).
   inviteOwnerAfterApproval: () => buildInvite(approvedStub, 'hu', 'owner', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
-  inviteAdminAfterApproval: (l) => buildInvite(approvedStub, l, 'admin', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
+  inviteAdminAfterApproval: (l) => buildInvite(approvedStub, isInviteLocale(l) ? l : 'en', 'admin', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
   // Quote completion (0019): expiry, renewal, the monthly owner check, newsletter.
   expiryReminder: (l) => lifecycleEmails.expiryReminder(l, {
     ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), days: 14, price: say(l)('25 €', '€ 25', '€25', '25 €', '25 €', '25 €', '25 €', '25 €', '25 €'),

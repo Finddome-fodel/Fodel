@@ -33,6 +33,13 @@ const FEED: Record<Locale, { title: string; description: string }> = {
   et: { title: 'FINDDOME Kinnisvara: uudised ja artiklid', description: 'Analüüsid Ungari kinnisvaraturu ja Lääne-Euroopa ostjate kohta.' },
   lv: { title: 'FINDDOME Nekustamais īpašums: jaunumi un raksti', description: 'Ungārijas nekustamo īpašumu tirgus un Rietumeiropas pircēju analīze.' },
   lt: { title: 'FINDDOME Nekilnojamasis turtas: naujienos ir straipsniai', description: 'Vengrijos nekilnojamojo turto rinkos ir Vakarų Europos pirkėjų analizė.' },
+  sr: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  uk: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  tr: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  he: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  ar: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  ru: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  zh: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
 };
 
 export async function blogFeed(locale: Locale, context: APIContext) {

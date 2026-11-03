@@ -34,6 +34,13 @@ import { FI } from './copy/fi';
 import { ET } from './copy/et';
 import { LV } from './copy/lv';
 import { LT } from './copy/lt';
+import { SR } from './copy/sr';
+import { UK } from './copy/uk';
+import { TR } from './copy/tr';
+import { HE } from './copy/he';
+import { AR } from './copy/ar';
+import { RU } from './copy/ru';
+import { ZH } from './copy/zh';
 import {
   shell,
   textShell,
@@ -64,7 +71,7 @@ export type OrderLine = { label: string; amount: string };
  * written for the office, which reads Hungarian: they always use HU, whatever
  * language the seller writes in.
  */
-const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK, it: IT, pt: PT, el: EL, cs: CS, sl: SL, sv: SV, da: DA, no: NO, fi: FI, et: ET, lv: LV, lt: LT };
+const COPY = { hu: HU, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK, it: IT, pt: PT, el: EL, cs: CS, sl: SL, sv: SV, da: DA, no: NO, fi: FI, et: ET, lv: LV, lt: LT, sr: SR, uk: UK, tr: TR, he: HE, ar: AR, ru: RU, zh: ZH };
 
 /** The emails whose wording an admin can edit (everything but the shared `common` block). */
 export const COPY_KEYS = Object.keys(HU).filter((key) => key !== 'common');
@@ -268,6 +275,13 @@ export const INVITE_SYSTEM_TEXT: Record<ShellLocale, { linkFallback: string; exp
   et: { linkFallback: ET.common.linkFallback, expiry: ET.invite.expiry },
   lv: { linkFallback: LV.common.linkFallback, expiry: LV.invite.expiry },
   lt: { linkFallback: LT.common.linkFallback, expiry: LT.invite.expiry },
+  sr: { linkFallback: SR.common.linkFallback, expiry: SR.invite.expiry },
+  uk: { linkFallback: UK.common.linkFallback, expiry: UK.invite.expiry },
+  tr: { linkFallback: TR.common.linkFallback, expiry: TR.invite.expiry },
+  he: { linkFallback: HE.common.linkFallback, expiry: HE.invite.expiry },
+  ar: { linkFallback: AR.common.linkFallback, expiry: AR.invite.expiry },
+  ru: { linkFallback: RU.common.linkFallback, expiry: RU.invite.expiry },
+  zh: { linkFallback: ZH.common.linkFallback, expiry: ZH.invite.expiry },
 };
 
 export function inviteFromTemplate(

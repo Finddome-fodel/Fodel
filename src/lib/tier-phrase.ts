@@ -31,6 +31,13 @@ const TIER_PHRASE: Record<Locale, TierPhrase> = {
   et: { above: (x) => `kinnisvara hinnaga üle ${x}`, upTo: (x) => `kinnisvara hinnaga kuni ${x}`, between: (a, b) => `kinnisvara hinnaga ${a}–${b}` },
   lv: { above: (x) => `īpašums virs ${x}`, upTo: (x) => `īpašums līdz ${x}`, between: (a, b) => `īpašums no ${a} līdz ${b}` },
   lt: { above: (x) => `turtas virš ${x}`, upTo: (x) => `turtas iki ${x}`, between: (a, b) => `turtas nuo ${a} iki ${b}` },
+  sr: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  uk: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  tr: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  he: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  ar: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  ru: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  zh: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
 };
 
 /**

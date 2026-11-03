@@ -37,7 +37,7 @@
  */
 import { SITE_URL } from '~/config/site.mjs';
 import { COMPANY, addressLine } from '~/config/company';
-import { BRAND, type Locale } from '~/i18n/ui';
+import { BRAND, LOCALE_META, type Locale } from '~/i18n/ui';
 
 /** The recipient's language: every email exists in all five. */
 export type EmailLocale = Locale;
@@ -268,6 +268,34 @@ const FOOTER_COPY = {
     why: 'Šį laišką gaunate, nes turite FINDDOME paskyrą arba pas mus įdėjote skelbimą.',
     contact: 'Kontaktai',
   },
+  sr: {
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
+    contact: 'Contact',
+  },
+  uk: {
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
+    contact: 'Contact',
+  },
+  tr: {
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
+    contact: 'Contact',
+  },
+  he: {
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
+    contact: 'Contact',
+  },
+  ar: {
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
+    contact: 'Contact',
+  },
+  ru: {
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
+    contact: 'Contact',
+  },
+  zh: {
+    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
+    contact: 'Contact',
+  },
 } as const;
 
 /**
@@ -298,6 +326,13 @@ const VISITOR_WHY: Record<ShellLocale, string> = {
   et: 'Saate selle kirja, sest võtsite meiega ühendust FINDDOME’i veebilehe kaudu.',
   lv: 'Jūs saņemat šo e-pastu, jo sazinājāties ar mums, izmantojot FINDDOME tīmekļa vietni.',
   lt: 'Šį laišką gaunate, nes susisiekėte su mumis per FINDDOME svetainę.',
+  sr: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  uk: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  tr: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  he: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  ar: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  ru: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  zh: 'You are receiving this email because you contacted us through the FINDDOME website.',
 };
 
 function wordmark(locale: ShellLocale): string {
@@ -331,7 +366,7 @@ export function shell(opts: {
   const mail = locale === 'hu' ? COMPANY.email.hu : COMPANY.email.primary;
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="${locale}">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${LOCALE_META[locale].htmlLang}" dir="${LOCALE_META[locale].dir}">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -349,12 +384,12 @@ export function shell(opts: {
   }
 </style>
 </head>
-<body style="margin:0;padding:0;background-color:${LINEN};-webkit-font-smoothing:antialiased;">
+<body dir="${LOCALE_META[locale].dir}" style="margin:0;padding:0;background-color:${LINEN};-webkit-font-smoothing:antialiased;">
 <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">${esc(preheader)}</div>
 <!-- Word-joiner run: stops clients padding the preview line with the first words of the body. -->
 <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;</div>
 
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${LINEN};">
+<table role="presentation" dir="${LOCALE_META[locale].dir}" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${LINEN};">
   <tr>
     <td align="center" style="padding:32px 12px;">
 

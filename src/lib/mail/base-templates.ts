@@ -24,6 +24,7 @@
  */
 import type { Company } from '~/lib/runtime-config';
 import { TEMPLATE_PLACEHOLDER_PREFIX } from './editable';
+import { LOCALE_META, isLocale } from '~/i18n/ui';
 
 export type BaseKind = 'property' | 'general';
 export const BASE_LOCALES = ['hu', 'nl', 'en', 'de'] as const;
@@ -251,8 +252,12 @@ function button(label: string, href: string, opts: { key: keyof typeof LABEL; li
 const eyebrowStyle = `font-family:${SANS};font-size:11px;letter-spacing:0.26em;text-transform:uppercase;color:${TAUPE};`;
 
 function head(title: string, locale: string): string {
+  // Hebrew and Arabic mail reads right to left; Gmail drops <html>/<body>
+  // attributes, so the direction is repeated on <body> below.
+  const dir = isLocale(locale) ? LOCALE_META[locale].dir : 'ltr';
+  const lang = isLocale(locale) ? LOCALE_META[locale].htmlLang : locale;
   return `<!doctype html>
-<html lang="${locale}">
+<html lang="${lang}" dir="${dir}">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="x-apple-disable-message-reformatting">
 <title>${esc(title)}</title>
@@ -263,7 +268,7 @@ img{border:0;outline:none;text-decoration:none;display:block;max-width:100%;heig
 @media only screen and (max-width:700px){.shell{width:100%!important}.px{padding-left:24px!important;padding-right:24px!important}.title{font-size:30px!important}.stat{display:block!important;width:100%!important;border-right:0!important;border-bottom:1px solid ${BORDER}!important;padding:12px 0!important}.cta{display:table!important;width:100%!important}.cta a{display:block!important}.stack{display:block!important;width:100%!important;text-align:left!important}}
 </style>
 </head>
-<body style="margin:0;padding:0;background:${CREAM};">`;
+<body dir="${dir}" style="margin:0;padding:0;background:${CREAM};">`;
 }
 
 function wordmark(company: Company, locale: BaseLocale, siteUrl: string): string {

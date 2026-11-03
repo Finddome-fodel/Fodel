@@ -1,7 +1,8 @@
 ---
 /**
- * The language menu: a flag + code toggle that lists all twenty-one languages, each
- * as a complete site. Every row links to the equivalent page when the template
+ * The language menu: a flag + code toggle that lists all twenty-eight languages,
+ * each as a complete site, in two labelled groups (Europe, World) sorted by
+ * their own names. Every row links to the equivalent page when the template
  * passes `alternates`, and to that language's home page otherwise.
  *
  * Used twice per page (desktop nav + mobile drawer), so ids are randomised
@@ -9,25 +10,56 @@
  * to set up every `[data-switcher]` instance it finds.
  *
  * Every row is a real `<a href>`: switching works with JavaScript off, and the
- * script only adds the open/close behaviour and remembers the choice in the
- * `fodel_lang` cookie the root page reads.
+ * script only adds the open/close behaviour, the search field (which matches
+ * the native name, the English name, the name in the page's language and the
+ * code, so "arab" finds العربية) and remembers the choice in the `fodel_lang`
+ * cookie the root page reads.
  */
 import Flag from './Flag.astro';
-import { LOCALE_META, SWITCHER_LOCALES, UI, type Locale } from '~/i18n/ui';
+import { LOCALE_META, SWITCHER_LOCALES, UI, localizer, type Locale } from '~/i18n/ui';
 
 interface Props {
   locale: Locale;
   /** The same page in another language, where one exists. Falls back to that language's home. */
   alternates?: Partial<Record<Locale, string>>;
-  align?: 'left' | 'right';
+  /** Which edge of the toggle the menu lines up with; follows the writing direction. */
+  align?: 'start' | 'end';
 }
 
-const { locale, alternates = {}, align = 'right' } = Astro.props;
+const { locale, alternates = {}, align = 'end' } = Astro.props;
 const current = LOCALE_META[locale];
 const uid = Math.random().toString(36).slice(2, 8);
 const menuId = `lang-menu-${uid}`;
+const x = localizer(locale);
 /** The toggle's accessible name, in the page's own language. */
 const switchLabel = UI[locale].a11y.langSwitch;
+
+/** Languages outside Europe: shown as their own group, in their own scripts. */
+const WORLD: readonly Locale[] = ['tr', 'he', 'ar', 'ru', 'zh'];
+const byName = new Intl.Collator('en', { sensitivity: 'base' });
+const sorted = (codes: Locale[]) => codes.sort((a, b) => byName.compare(LOCALE_META[a].label, LOCALE_META[b].label));
+const codes = SWITCHER_LOCALES.map(({ code }) => code);
+const englishNames = new Intl.DisplayNames(['en'], { type: 'language' });
+const pageNames = new Intl.DisplayNames([current.htmlLang, 'en'], { type: 'language' });
+const searchText = (code: Locale) => {
+  const meta = LOCALE_META[code];
+  const tag = meta.htmlLang.split('-')[0];
+  return [meta.label, englishNames.of(tag), pageNames.of(tag), code, meta.short].join(' ').toLocaleLowerCase();
+};
+const groups = [
+  {
+    id: 'europe',
+    label: x({ hu: 'Európa', nl: 'Europa', en: 'Europe', de: 'Europa', fr: 'Europe', es: 'Europa', pl: 'Europa', ro: 'Europa', sk: 'Európa', it: 'Europa', pt: 'Europa', el: 'Ευρώπη', cs: 'Evropa', sl: 'Evropa', sv: 'Europa', da: 'Europa', no: 'Europa', fi: 'Eurooppa', et: 'Euroopa', lv: 'Eiropa', lt: 'Europa', sr: 'Evropa', uk: 'Європа', tr: 'Avrupa', he: 'אירופה', ar: 'أوروبا', ru: 'Европа', zh: '欧洲' }),
+    codes: sorted(codes.filter((code) => !WORLD.includes(code))),
+  },
+  {
+    id: 'world',
+    label: x({ hu: 'Világ', nl: 'Wereld', en: 'World', de: 'Welt', fr: 'Monde', es: 'Mundo', pl: 'Świat', ro: 'Lume', sk: 'Svet', it: 'Mondo', pt: 'Mundo', el: 'Κόσμος', cs: 'Svět', sl: 'Svet', sv: 'Världen', da: 'Verden', no: 'Verden', fi: 'Maailma', et: 'Maailm', lv: 'Pasaule', lt: 'Pasaulis', sr: 'Svet', uk: 'Світ', tr: 'Dünya', he: 'העולם', ar: 'العالم', ru: 'Мир', zh: '世界' }),
+    codes: sorted(codes.filter((code) => WORLD.includes(code))),
+  },
+];
+const searchLabel = x({ hu: 'Nyelv keresése', nl: 'Taal zoeken', en: 'Find a language', de: 'Sprache suchen', fr: 'Rechercher une langue', es: 'Buscar idioma', pl: 'Szukaj języka', ro: 'Caută o limbă', sk: 'Hľadať jazyk', it: 'Cerca una lingua', pt: 'Procurar idioma', el: 'Αναζήτηση γλώσσας', cs: 'Hledat jazyk', sl: 'Poišči jezik', sv: 'Sök språk', da: 'Søg sprog', no: 'Søk etter språk', fi: 'Etsi kieli', et: 'Otsi keelt', lv: 'Meklēt valodu', lt: 'Ieškoti kalbos', sr: 'Pronađite jezik', uk: 'Знайти мову', tr: 'Dil arayın', he: 'חיפוש שפה', ar: 'ابحث عن لغة', ru: 'Найти язык', zh: '查找语言' });
+const noMatch = x({ hu: 'Nincs ilyen nyelv', nl: 'Geen taal gevonden', en: 'No language found', de: 'Keine Sprache gefunden', fr: 'Aucune langue trouvée', es: 'No se ha encontrado ningún idioma', pl: 'Nie znaleziono języka', ro: 'Nicio limbă găsită', sk: 'Jazyk sa nenašiel', it: 'Nessuna lingua trovata', pt: 'Nenhum idioma encontrado', el: 'Δεν βρέθηκε γλώσσα', cs: 'Jazyk nenalezen', sl: 'Jezika ni mogoče najti', sv: 'Inget språk hittades', da: 'Intet sprog fundet', no: 'Fant ikke noe språk', fi: 'Kieltä ei löytynyt', et: 'Keelt ei leitud', lv: 'Valoda nav atrasta', lt: 'Kalba nerasta', sr: 'Jezik nije pronađen', uk: 'Мову не знайдено', tr: 'Dil bulunamadı', he: 'לא נמצאה שפה', ar: 'لم يتم العثور على لغة', ru: 'Язык не найден', zh: '未找到该语言' });
 ---
 
 <div class="switcher" data-switcher data-align={align}>
@@ -44,32 +76,47 @@ const switchLabel = UI[locale].a11y.langSwitch;
       <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   </button>
-  <ul class="switcher-menu" id={menuId}>
+  <div class="switcher-menu" id={menuId}>
+    <div class="switcher-search" hidden data-search>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+        <path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+      <input type="search" aria-label={searchLabel} placeholder={searchLabel} autocomplete="off" spellcheck="false" enterkeyhint="go" />
+    </div>
     {
-      SWITCHER_LOCALES.map(({ code }) => {
-        const meta = LOCALE_META[code];
-        const active = code === locale;
-        return (
-          <li>
-            <a
-              href={alternates[code] ?? `/${code}/`}
-              hreflang={meta.hreflang}
-              lang={meta.htmlLang}
-              class:list={['switcher-row', { active }]}
-              aria-current={active ? 'true' : undefined}
-              data-lang={code}
-            >
-              <Flag code={meta.flag} />
-              <span class="switcher-name">{meta.label}</span>
-              <span class="switcher-code" aria-hidden="true">
-                {meta.short}
-              </span>
-            </a>
-          </li>
-        );
-      })
+      groups.map((group) => (
+        <section class="switcher-group" data-group={group.id} aria-labelledby={`${menuId}-${group.id}`}>
+          <p class="switcher-heading" id={`${menuId}-${group.id}`}>{group.label}</p>
+          <ul>
+            {group.codes.map((code) => {
+              const meta = LOCALE_META[code];
+              const active = code === locale;
+              return (
+                <li data-match={searchText(code)}>
+                  <a
+                    href={alternates[code] ?? `/${code}/`}
+                    hreflang={meta.hreflang}
+                    lang={meta.htmlLang}
+                    class:list={['switcher-row', { active }]}
+                    aria-current={active ? 'true' : undefined}
+                    data-lang={code}
+                  >
+                    <Flag code={meta.flag} />
+                    <span class="switcher-name" dir="auto">{meta.label}</span>
+                    <span class="switcher-code" aria-hidden="true">
+                      {meta.short}
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))
     }
-  </ul>
+    <p class="switcher-empty" hidden data-empty>{noMatch}</p>
+  </div>
 </div>
 
 <script>
@@ -87,7 +134,39 @@ const switchLabel = UI[locale].a11y.langSwitch;
     const toggle = root.querySelector<HTMLButtonElement>('.switcher-toggle');
     const menu = root.querySelector<HTMLElement>('.switcher-menu');
     if (!toggle || !menu) return;
-    const rows = () => Array.from(menu.querySelectorAll<HTMLAnchorElement>('a.switcher-row'));
+    const rows = () =>
+      Array.from(menu.querySelectorAll<HTMLAnchorElement>('a.switcher-row')).filter((a) => !a.closest('li')?.hidden);
+    const searchBox = menu.querySelector<HTMLElement>('[data-search]');
+    const search = searchBox?.querySelector<HTMLInputElement>('input');
+    const empty = menu.querySelector<HTMLElement>('[data-empty]');
+    // The search field only does something with this script, so it only shows with it.
+    if (searchBox) searchBox.hidden = false;
+    const filter = () => {
+      const query = (search?.value ?? '').trim().toLocaleLowerCase();
+      let shown = 0;
+      menu.querySelectorAll<HTMLElement>('section.switcher-group').forEach((group) => {
+        let inGroup = 0;
+        group.querySelectorAll<HTMLLIElement>('li[data-match]').forEach((li) => {
+          const hit = !query || (li.dataset.match ?? '').includes(query);
+          li.hidden = !hit;
+          if (hit) inGroup++;
+        });
+        group.hidden = inGroup === 0;
+        shown += inGroup;
+      });
+      if (empty) empty.hidden = shown > 0;
+    };
+    search?.addEventListener('input', filter);
+    search?.addEventListener('keydown', (e: KeyboardEvent) => {
+      // Enter on a narrowed list follows the first match.
+      if (e.key === 'Enter') {
+        const first = rows()[0];
+        if (first) {
+          e.preventDefault();
+          first.click();
+        }
+      }
+    });
     // Closed and out of the tab order from here on; without this script the
     // menu instead opens on hover and keyboard focus (see the CSS below).
     root.setAttribute('data-ready', '');
@@ -98,6 +177,10 @@ const switchLabel = UI[locale].a11y.langSwitch;
       root.toggleAttribute('data-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       menu.inert = !open;
+      if (!open && search && search.value) {
+        search.value = '';
+        filter();
+      }
       if (open && focusFirst) (rows().find((a) => a.classList.contains('active')) ?? rows()[0])?.focus();
     };
 
@@ -128,6 +211,7 @@ const switchLabel = UI[locale].a11y.langSwitch;
       if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && isOpen()) {
         e.preventDefault();
         const list = rows();
+        if (!list.length) return;
         const at = list.indexOf(document.activeElement as HTMLAnchorElement);
         const step = e.key === 'ArrowDown' ? 1 : -1;
         list[(at + step + list.length) % list.length]?.focus();
@@ -189,22 +273,20 @@ const switchLabel = UI[locale].a11y.langSwitch;
   .switcher-menu {
     position: absolute;
     top: calc(100% + 10px);
-    min-width: 232px;
+    width: min(300px, calc(100vw - 24px));
     background: var(--paper);
     border: 1px solid rgba(16, 42, 67, 0.08);
     border-radius: var(--r-lg);
     box-shadow: var(--shadow-float);
-    list-style: none;
     padding: 6px;
     z-index: 1100;
-    /* Twenty-one rows are taller than a phone: the list scrolls inside the card. */
-    max-height: min(70vh, 480px);
+    /* Twenty-eight rows are taller than a phone: the list scrolls inside the card. */
+    max-height: min(75vh, 560px);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
     opacity: 0;
     transform: translateY(-6px) scale(0.97);
-    transform-origin: top right;
     pointer-events: none;
     /* Hidden from tab order and touch once closed even where `inert` is not
        supported; the delay lets the closing fade finish first. */
@@ -214,25 +296,19 @@ const switchLabel = UI[locale].a11y.langSwitch;
       transform 0.45s var(--ease-out),
       visibility 0s linear 0.45s;
   }
-  /* Wide screens: three columns of seven, filled column by column, so the whole
-     list is visible at once. */
-  @media (min-width: 900px) {
-    .switcher-menu {
-      display: grid;
-      grid-auto-flow: column;
-      grid-template-rows: repeat(7, auto);
-      grid-template-columns: repeat(3, minmax(190px, 1fr));
-      min-width: 600px;
-      max-height: none;
-      overflow: visible;
-    }
+  .switcher[data-align='end'] .switcher-menu {
+    inset-inline-end: 0;
+    transform-origin: top right;
   }
-  .switcher[data-align='right'] .switcher-menu {
-    right: 0;
-  }
-  .switcher[data-align='left'] .switcher-menu {
-    left: 0;
+  .switcher[data-align='start'] .switcher-menu {
+    inset-inline-start: 0;
     transform-origin: top left;
+  }
+  :global([dir='rtl']) .switcher[data-align='end'] .switcher-menu {
+    transform-origin: top left;
+  }
+  :global([dir='rtl']) .switcher[data-align='start'] .switcher-menu {
+    transform-origin: top right;
   }
   .switcher[data-open] .switcher-menu,
   .switcher:not([data-ready]):is(:hover, :focus-within) .switcher-menu {
@@ -241,6 +317,79 @@ const switchLabel = UI[locale].a11y.langSwitch;
     pointer-events: auto;
     visibility: visible;
     transition-delay: 0s;
+  }
+
+  .switcher-search {
+    position: sticky;
+    top: -6px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -6px -6px 4px;
+    padding: 10px 14px;
+    background: var(--paper);
+    border-bottom: 1px solid rgba(16, 42, 67, 0.08);
+    color: var(--taupe);
+  }
+  .switcher-search[hidden] {
+    display: none;
+  }
+  .switcher-search input {
+    flex: 1;
+    min-width: 0;
+    height: 32px;
+    border: none;
+    background: none;
+    font: inherit;
+    font-family: var(--sans);
+    font-size: var(--fs-small);
+    color: var(--ink);
+    outline: none;
+  }
+  .switcher-search input::placeholder {
+    color: var(--taupe);
+  }
+  .switcher-search:focus-within {
+    color: var(--ink);
+  }
+
+  .switcher-group[hidden] {
+    display: none;
+  }
+  .switcher-group + .switcher-group {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(16, 42, 67, 0.08);
+  }
+  .switcher-heading {
+    padding: 10px 12px 4px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: var(--fw-medium);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--taupe);
+  }
+  .switcher-group ul {
+    list-style: none;
+  }
+  .switcher-group li[hidden] {
+    display: none;
+  }
+
+  /* Wide screens: four columns, filled row by row, so both groups are visible
+     at once without scrolling. */
+  @media (min-width: 900px) {
+    .switcher-menu {
+      width: min(780px, calc(100vw - 48px));
+      max-height: min(80vh, 640px);
+    }
+    .switcher-group ul {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2px;
+    }
   }
 
   .switcher-row {
@@ -272,11 +421,19 @@ const switchLabel = UI[locale].a11y.langSwitch;
   }
   .switcher-name {
     flex: 1;
+    min-width: 0;
+    text-align: start;
+    overflow-wrap: anywhere;
   }
   .switcher-code {
     color: var(--taupe);
     font-size: 12px;
     letter-spacing: 0.08em;
+  }
+  .switcher-empty {
+    padding: 14px 12px;
+    font-size: var(--fs-small);
+    color: var(--taupe);
   }
   .sr-only {
     position: absolute;

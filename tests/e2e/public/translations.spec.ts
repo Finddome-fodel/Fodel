@@ -58,7 +58,7 @@ test('the sitemap lists every language (static build only)', async ({ request })
 const DUTCH = /(?<![\p{L}])(het|een|voor|niet|ook|uw|wij|naar|geen|worden|deze|bent|kunt|onze|woning)(?![\p{L}])/iu;
 const HUNGARIAN = /[őűŐŰ]|(?<![\p{L}])(és|hogy|vagy|nincs|egy|ingatlan|hirdetés|kérjük)(?![\p{L}])/iu;
 
-for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const) {
+for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt', 'sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh'] as const) {
   test(`${locale}: no Dutch or Hungarian wording is left on the static pages`, async ({ page }) => {
     test.setTimeout(240_000);
     const leftovers: string[] = [];
@@ -104,6 +104,13 @@ test('an unknown page answers 404 in the language of its URL', async ({ request 
     it: /non trovata|404/i, pt: /não encontrada|404/i, el: /δεν βρέθηκε|404/i, cs: /nenalezena|404/i, sl: /ni bila najdena|404/i,
     sv: /hittades inte|404/i, da: /blev ikke fundet|404/i, no: /fant ikke|404/i, fi: /ei löytynyt|404/i, et: /ei leitud|404/i,
     lv: /nav atrasta|404/i, lt: /nerastas|404/i,
+    sr: /not found|404/i,
+    uk: /not found|404/i,
+    tr: /not found|404/i,
+    he: /not found|404/i,
+    ar: /not found|404/i,
+    ru: /not found|404/i,
+    zh: /not found|404/i,
   };
   for (const locale of LOCALES) {
     const response = await request.get(`/${locale}/this-page-does-not-exist/`);

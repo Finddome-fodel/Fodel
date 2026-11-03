@@ -301,4 +301,21 @@ await db.exec(`set role authenticated;set test.admin='true';set test.uid='${othe
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 assert.deepEqual(await contact(id),{public_contact:'staff',seller_contact_visible:true},'an admin can still choose deliberately');
 console.log('✓ 0049 locks free listings to FINDDOME contact (forged requests too), keeps admin choices and paid listings, and is repeatable');
+// 0050: the seven later languages. Run 1 (enum) on its own, run 2 (newsletter check) after; both repeatable.
+{
+  const enumSql=fs.readFileSync(root+'/supabase/migrations/0050_locales_7.sql','utf8');
+  const newsSql=fs.readFileSync(root+'/supabase/migrations/0050_locales_7_newsletter.sql','utf8');
+  await db.exec(`create table if not exists newsletter_subscribers(id uuid primary key default gen_random_uuid(),email text not null,locale text not null default 'nl' constraint newsletter_locale_old check(locale in ('hu','nl','en')));`);
+  try{await db.exec(enumSql);await db.exec(enumSql);await db.exec(newsSql);await db.exec(newsSql);}catch(e){console.error('MIGRATION 0050 FAILED',e.message,e.detail);process.exit(1);}
+  const codes=(await get(`select unnest(enum_range(null::locale_code))::text as code`)).map(r=>r.code);
+  for(const code of ['sr','uk','tr','he','ar','ru','zh'])assert.ok(codes.includes(code),`locale_code has ${code}`);
+  await db.exec(`insert into property_translations(property_id,locale,title,description,body)values('${id}','ar','عقار تجريبي','وصف','') on conflict (property_id,locale) do nothing;`);
+  assert.equal((await get(`select count(*)::int as n from property_translations where property_id='${id}' and locale='ar'`))[0].n,1);
+  for(const code of ['sr','uk','tr','he','ar','ru','zh','hu','lt'])await db.exec(`insert into newsletter_subscribers(email,locale)values('${code}@test.local','${code}')`);
+  await assert.rejects(()=>db.exec(`insert into newsletter_subscribers(email,locale)values('xx@test.local','xx')`));
+  const checks=(await get(`select conname from pg_constraint where conrelid='newsletter_subscribers'::regclass and contype='c'`)).map(r=>r.conname);
+  assert.deepEqual(checks,['newsletter_subscribers_locale_check'],'the old locale check is replaced, not added to');
+  await db.exec(`delete from property_translations where locale='ar';drop table newsletter_subscribers;`);
+  console.log('✓ 0050 adds sr, uk, tr, he, ar, ru, zh (enum run on its own), widens the newsletter check to 28 languages, and is repeatable');
+}
 await db.close();

@@ -64,7 +64,7 @@ const t5 = (
   et: string,
   lv: string,
   lt: string,
-): L10n => ({ hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt });
+): L10n => ({ hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt, sr: en, uk: en, tr: en, he: en, ar: en, ru: en, zh: en });
 
 const dontKnow: ValuationOption = { value: DONT_KNOW, label: t5('Nem tudom', 'Weet ik niet', 'I don’t know', 'Weiß ich nicht', 'Je ne sais pas', 'No lo sé', 'Nie wiem', 'Nu știu', 'Neviem', 'Non lo so', 'Não sei', 'Δεν ξέρω', 'Nevím', 'Ne vem', 'Vet inte', 'Ved ikke', 'Vet ikke', 'En tiedä', 'Ei tea', 'Nezinu', 'Nežinau') };
 const yes: ValuationOption = { value: 'igen', label: t5('Igen', 'Ja', 'Yes', 'Ja', 'Oui', 'Sí', 'Tak', 'Da', 'Áno', 'Sì', 'Sim', 'Ναι', 'Ano', 'Da', 'Ja', 'Ja', 'Ja', 'Kyllä', 'Jah', 'Jā', 'Taip') };

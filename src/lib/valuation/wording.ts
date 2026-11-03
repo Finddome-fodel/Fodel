@@ -37,71 +37,85 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
   if (baseline.kind === 'ksh') {
     const county = baseline.level === 'county';
     const level = county
-      ? x('vármegye', 'provincie', 'county', 'Komitat', 'comitat', 'condado', 'komitat', 'județ', 'župa', 'contea', 'condado', 'νομός', 'župa', 'županija', 'län', 'amt', 'fylke', 'lääni', 'maakond', 'mede', 'apskritis')
-      : x('település', 'plaats', 'settlement', 'Ort', 'localité', 'localidad', 'miejscowość', 'localitate', 'obec', 'comune', 'localidade', 'οικισμός', 'obec', 'kraj', 'ort', 'by', 'sted', 'paikkakunta', 'asula', 'apdzīvotā vieta', 'gyvenvietė');
-    const records = x(`${n} adat`, `${n} gegevens`, `${n} records`, `${n} Datensätze`, `${n} données`, `${nOf('es', n, 'dato', 'datos')}`, `${nOf('pl', n, 'rekord', 'rekordy', 'rekordów')}`, `${nOf('ro', n, 'înregistrare', 'înregistrări', 'de înregistrări')}`, `${nOf('sk', n, 'záznam', 'záznamy', 'záznamov')}`, `${n} ${n === 1 ? 'dato' : 'dati'}`, `${n} ${n === 1 ? 'registo' : 'registos'}`, `${n} ${n === 1 ? 'εγγραφή' : 'εγγραφές'}`, `${nOf('cs', n, 'záznam', 'záznamy', 'záznamů')}`, `${nOf('sl', n, 'zapis', 'zapisi', 'zapisov', 'zapisa')}`, `${n} ${n === 1 ? 'post' : 'poster'}`, `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, `${n} ${n === 1 ? 'tietue' : 'tietuetta'}`, `${n} ${n === 1 ? 'kirje' : 'kirjet'}`, `${nOf('lv', n, 'ieraksts', 'ieraksti', 'ierakstu')}`, `${nOf('lt', n, 'įrašas', 'įrašai', 'įrašų')}`);
+      ? x({ hu: 'vármegye', nl: 'provincie', en: 'county', de: 'Komitat', fr: 'comitat', es: 'condado', pl: 'komitat', ro: 'județ', sk: 'župa', it: 'contea', pt: 'condado', el: 'νομός', cs: 'župa', sl: 'županija', sv: 'län', da: 'amt', no: 'fylke', fi: 'lääni', et: 'maakond', lv: 'mede', lt: 'apskritis', sr: 'county', uk: 'county', tr: 'county', he: 'county', ar: 'county', ru: 'county', zh: 'county' })
+      : x({ hu: 'település', nl: 'plaats', en: 'settlement', de: 'Ort', fr: 'localité', es: 'localidad', pl: 'miejscowość', ro: 'localitate', sk: 'obec', it: 'comune', pt: 'localidade', el: 'οικισμός', cs: 'obec', sl: 'kraj', sv: 'ort', da: 'by', no: 'sted', fi: 'paikkakunta', et: 'asula', lv: 'apdzīvotā vieta', lt: 'gyvenvietė', sr: 'settlement', uk: 'settlement', tr: 'settlement', he: 'settlement', ar: 'settlement', ru: 'settlement', zh: 'settlement' });
+    const records = x({ hu: `${n} adat`, nl: `${n} gegevens`, en: `${n} records`, de: `${n} Datensätze`, fr: `${n} données`, es: `${nOf('es', n, 'dato', 'datos')}`, pl: `${nOf('pl', n, 'rekord', 'rekordy', 'rekordów')}`, ro: `${nOf('ro', n, 'înregistrare', 'înregistrări', 'de înregistrări')}`, sk: `${nOf('sk', n, 'záznam', 'záznamy', 'záznamov')}`, it: `${n} ${n === 1 ? 'dato' : 'dati'}`, pt: `${n} ${n === 1 ? 'registo' : 'registos'}`, el: `${n} ${n === 1 ? 'εγγραφή' : 'εγγραφές'}`, cs: `${nOf('cs', n, 'záznam', 'záznamy', 'záznamů')}`, sl: `${nOf('sl', n, 'zapis', 'zapisi', 'zapisov', 'zapisa')}`, sv: `${n} ${n === 1 ? 'post' : 'poster'}`, da: `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, no: `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, fi: `${n} ${n === 1 ? 'tietue' : 'tietuetta'}`, et: `${n} ${n === 1 ? 'kirje' : 'kirjet'}`, lv: `${nOf('lv', n, 'ieraksts', 'ieraksti', 'ierakstu')}`, lt: `${nOf('lt', n, 'įrašas', 'įrašai', 'įrašų')}`, sr: `${n} records`, uk: `${n} records`, tr: `${n} records`, he: `${n} records`, ar: `${n} records`, ru: `${n} records`, zh: `${n} records` });
     return `KSH Ingatlanadattár, ${baseline.year} (${level}, ${records})`;
   }
   if (baseline.kind === 'comps') {
-    return x(
-      `${n} hasonló FINDDOME-hirdetés`,
-      `${n} vergelijkbare FINDDOME-advertenties`,
-      `${n} comparable FINDDOME listings`,
-      `${n} vergleichbare FINDDOME-Inserate`,
-      `${n} annonces FINDDOME comparables`,
-      `${nOf('es', n, 'anuncio FINDDOME comparable', 'anuncios FINDDOME comparables')}`,
-      `${nOf('pl', n, 'porównywalne ogłoszenie FINDDOME', 'porównywalne ogłoszenia FINDDOME', 'porównywalnych ogłoszeń FINDDOME')}`,
-      `${nOf('ro', n, 'anunț FINDDOME comparabil', 'anunțuri FINDDOME comparabile', 'de anunțuri FINDDOME comparabile')}`,
-      `${nOf('sk', n, 'porovnateľný inzerát FINDDOME', 'porovnateľné inzeráty FINDDOME', 'porovnateľných inzerátov FINDDOME')}`,
-      `${n} ${n === 1 ? 'annuncio FINDDOME comparabile' : 'annunci FINDDOME comparabili'}`,
-      `${n} ${n === 1 ? 'anúncio FINDDOME comparável' : 'anúncios FINDDOME comparáveis'}`,
-      `${n} ${n === 1 ? 'συγκρίσιμη αγγελία FINDDOME' : 'συγκρίσιμες αγγελίες FINDDOME'}`,
-      `${nOf('cs', n, 'srovnatelný inzerát FINDDOME', 'srovnatelné inzeráty FINDDOME', 'srovnatelných inzerátů FINDDOME')}`,
-      `${nOf('sl', n, 'primerljiv oglas FINDDOME', 'primerljivi oglasi FINDDOME', 'primerljivih oglasov FINDDOME', 'primerljiva oglasa FINDDOME')}`,
-      `${n} ${n === 1 ? 'jämförbar FINDDOME-annons' : 'jämförbara FINDDOME-annonser'}`,
-      `${n} ${n === 1 ? 'sammenlignelig FINDDOME-annonce' : 'sammenlignelige FINDDOME-annoncer'}`,
-      `${n} ${n === 1 ? 'sammenlignbar FINDDOME-annonse' : 'sammenlignbare FINDDOME-annonser'}`,
-      `${n} ${n === 1 ? 'vertailukelpoinen FINDDOME-ilmoitus' : 'vertailukelpoista FINDDOME-ilmoitusta'}`,
-      `${n} ${n === 1 ? 'võrreldav FINDDOME’i kuulutus' : 'võrreldavat FINDDOME’i kuulutust'}`,
-      `${nOf('lv', n, 'salīdzināms FINDDOME sludinājums', 'salīdzināmi FINDDOME sludinājumi', 'salīdzināmu FINDDOME sludinājumu')}`,
-      `${nOf('lt', n, 'palyginamas FINDDOME skelbimas', 'palyginami FINDDOME skelbimai', 'palyginamų FINDDOME skelbimų')}`
-    );
+    return x({
+      hu: `${n} hasonló FINDDOME-hirdetés`,
+      nl: `${n} vergelijkbare FINDDOME-advertenties`,
+      en: `${n} comparable FINDDOME listings`,
+      de: `${n} vergleichbare FINDDOME-Inserate`,
+      fr: `${n} annonces FINDDOME comparables`,
+      es: `${nOf('es', n, 'anuncio FINDDOME comparable', 'anuncios FINDDOME comparables')}`,
+      pl: `${nOf('pl', n, 'porównywalne ogłoszenie FINDDOME', 'porównywalne ogłoszenia FINDDOME', 'porównywalnych ogłoszeń FINDDOME')}`,
+      ro: `${nOf('ro', n, 'anunț FINDDOME comparabil', 'anunțuri FINDDOME comparabile', 'de anunțuri FINDDOME comparabile')}`,
+      sk: `${nOf('sk', n, 'porovnateľný inzerát FINDDOME', 'porovnateľné inzeráty FINDDOME', 'porovnateľných inzerátov FINDDOME')}`,
+      it: `${n} ${n === 1 ? 'annuncio FINDDOME comparabile' : 'annunci FINDDOME comparabili'}`,
+      pt: `${n} ${n === 1 ? 'anúncio FINDDOME comparável' : 'anúncios FINDDOME comparáveis'}`,
+      el: `${n} ${n === 1 ? 'συγκρίσιμη αγγελία FINDDOME' : 'συγκρίσιμες αγγελίες FINDDOME'}`,
+      cs: `${nOf('cs', n, 'srovnatelný inzerát FINDDOME', 'srovnatelné inzeráty FINDDOME', 'srovnatelných inzerátů FINDDOME')}`,
+      sl: `${nOf('sl', n, 'primerljiv oglas FINDDOME', 'primerljivi oglasi FINDDOME', 'primerljivih oglasov FINDDOME', 'primerljiva oglasa FINDDOME')}`,
+      sv: `${n} ${n === 1 ? 'jämförbar FINDDOME-annons' : 'jämförbara FINDDOME-annonser'}`,
+      da: `${n} ${n === 1 ? 'sammenlignelig FINDDOME-annonce' : 'sammenlignelige FINDDOME-annoncer'}`,
+      no: `${n} ${n === 1 ? 'sammenlignbar FINDDOME-annonse' : 'sammenlignbare FINDDOME-annonser'}`,
+      fi: `${n} ${n === 1 ? 'vertailukelpoinen FINDDOME-ilmoitus' : 'vertailukelpoista FINDDOME-ilmoitusta'}`,
+      et: `${n} ${n === 1 ? 'võrreldav FINDDOME’i kuulutus' : 'võrreldavat FINDDOME’i kuulutust'}`,
+      lv: `${nOf('lv', n, 'salīdzināms FINDDOME sludinājums', 'salīdzināmi FINDDOME sludinājumi', 'salīdzināmu FINDDOME sludinājumu')}`,
+      lt: `${nOf('lt', n, 'palyginamas FINDDOME skelbimas', 'palyginami FINDDOME skelbimai', 'palyginamų FINDDOME skelbimų')}`,
+      sr: `${n} comparable FINDDOME listings`,
+      uk: `${n} comparable FINDDOME listings`,
+      tr: `${n} comparable FINDDOME listings`,
+      he: `${n} comparable FINDDOME listings`,
+      ar: `${n} comparable FINDDOME listings`,
+      ru: `${n} comparable FINDDOME listings`,
+      zh: `${n} comparable FINDDOME listings`,
+    });
   }
   return undefined;
 }
 
 /** "2024, retrieved 12 March 2026" */
 export function valuationSourceDate(locale: Locale, baseline: ValuationBaseline): string {
-  const word = localizer(locale)('letöltve', 'opgehaald', 'retrieved', 'abgerufen', 'consulté le', 'consultado el', 'stan na', 'consultat la', 'stav k', 'consultato', 'consultado', 'ανάκτηση', 'staženo', 'pridobljeno', 'hämtad', 'hentet', 'hentet', 'haettu', 'allalaaditud', 'iegūts', 'gauta');
+  const word = localizer(locale)({ hu: 'letöltve', nl: 'opgehaald', en: 'retrieved', de: 'abgerufen', fr: 'consulté le', es: 'consultado el', pl: 'stan na', ro: 'consultat la', sk: 'stav k', it: 'consultato', pt: 'consultado', el: 'ανάκτηση', cs: 'staženo', sl: 'pridobljeno', sv: 'hämtad', da: 'hentet', no: 'hentet', fi: 'haettu', et: 'allalaaditud', lv: 'iegūts', lt: 'gauta', sr: 'retrieved', uk: 'retrieved', tr: 'retrieved', he: 'retrieved', ar: 'retrieved', ru: 'retrieved', zh: 'retrieved' });
   return `${baseline.year}, ${word} ${baseline.retrievedAt ?? '—'}`;
 }
 
 /** The card-payment button that follows a valuation request. */
 export function payNowLabel(locale: Locale, pkg: ValuationPackage): string {
   const price = priceLabel(pkg, locale);
-  return localizer(locale)(
-    `Fizetés most — ${price} (bankkártya)`,
-    `Nu betalen — ${price} (kaart)`,
-    `Pay now — ${price} (card)`,
-    `Jetzt bezahlen — ${price} (Karte)`,
-    `Payer maintenant — ${price} (carte)`,
-    `Pagar ahora — ${price} (tarjeta)`,
-    `Zapłać teraz — ${price} (karta)`,
-    `Plătiți acum — ${price} (card)`,
-    `Zaplatiť teraz — ${price} (karta)`,
-    `Paghi ora — ${price} (carta)`,
-    `Pagar agora — ${price} (cartão)`,
-    `Πληρωμή τώρα — ${price} (κάρτα)`,
-    `Zaplatit nyní — ${price} (kartou)`,
-    `Plačajte zdaj — ${price} (s kartico)`,
-    `Betala nu — ${price} (kort)`,
-    `Betal nu — ${price} (kort)`,
-    `Betal nå — ${price} (kort)`,
-    `Maksa nyt — ${price} (kortti)`,
-    `Maksa kohe — ${price} (kaart)`,
-    `Maksāt tagad — ${price} (karte)`,
-    `Mokėti dabar — ${price} (kortele)`
-  );
+  return localizer(locale)({
+    hu: `Fizetés most — ${price} (bankkártya)`,
+    nl: `Nu betalen — ${price} (kaart)`,
+    en: `Pay now — ${price} (card)`,
+    de: `Jetzt bezahlen — ${price} (Karte)`,
+    fr: `Payer maintenant — ${price} (carte)`,
+    es: `Pagar ahora — ${price} (tarjeta)`,
+    pl: `Zapłać teraz — ${price} (karta)`,
+    ro: `Plătiți acum — ${price} (card)`,
+    sk: `Zaplatiť teraz — ${price} (karta)`,
+    it: `Paghi ora — ${price} (carta)`,
+    pt: `Pagar agora — ${price} (cartão)`,
+    el: `Πληρωμή τώρα — ${price} (κάρτα)`,
+    cs: `Zaplatit nyní — ${price} (kartou)`,
+    sl: `Plačajte zdaj — ${price} (s kartico)`,
+    sv: `Betala nu — ${price} (kort)`,
+    da: `Betal nu — ${price} (kort)`,
+    no: `Betal nå — ${price} (kort)`,
+    fi: `Maksa nyt — ${price} (kortti)`,
+    et: `Maksa kohe — ${price} (kaart)`,
+    lv: `Maksāt tagad — ${price} (karte)`,
+    lt: `Mokėti dabar — ${price} (kortele)`,
+    sr: `Pay now — ${price} (card)`,
+    uk: `Pay now — ${price} (card)`,
+    tr: `Pay now — ${price} (card)`,
+    he: `Pay now — ${price} (card)`,
+    ar: `Pay now — ${price} (card)`,
+    ru: `Pay now — ${price} (card)`,
+    zh: `Pay now — ${price} (card)`,
+  });
 }
 
 /** The package price in every language, for the office's service request. */
