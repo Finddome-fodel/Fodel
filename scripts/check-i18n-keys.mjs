@@ -79,8 +79,11 @@ function call(fn) {
   }
 }
 
+/** Code identifiers, URL slugs and link targets: identical to English by design, not counted. */
+const STRUCTURAL = /(?:\.(?:type|to|id|audience|dir|slug|ctaUrl)$)|(?:\.slugs\.)|(?::ROUTES\.)/;
+
 function count(lang, other, en, where) {
-  if (!LATER.includes(lang) || typeof en !== 'string' || !en.trim()) return;
+  if (!LATER.includes(lang) || typeof en !== 'string' || !en.trim() || STRUCTURAL.test(where)) return;
   const bare = en.replace(new RegExp(MARKS.join('|'), 'g'), '').replace(/[\s\d.,:;!?()[\]{}"'’“”«»%+\-–—/·•|&@#*=<>€$£¥₺₴₽₪﷼²³]/g, '');
   coverage[lang].total++;
   // Nothing translatable (numbers, punctuation, units) or allowed to stay as it is.
