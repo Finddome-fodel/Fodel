@@ -36,6 +36,7 @@ import { CONTENT_SR } from '~/data/content-sr';
 import { CONTENT_TR } from '~/data/content-tr';
 import { CONTENT_HE } from '~/data/content-he';
 import { CONTENT_AR } from '~/data/content-ar';
+import { CONTENT_ZH } from '~/data/content-zh';
 
 
 /** The long-form pages, by key. Every language must have all of them. */
@@ -562,5 +563,5 @@ export const CONTENT: Record<Locale, Record<ContentKey, ContentPageData>> = {
   he: CONTENT_HE,
   ar: CONTENT_AR,
   ru: CONTENT_RU,
-  zh: CONTENT_EN,
+  zh: CONTENT_ZH,
 };
