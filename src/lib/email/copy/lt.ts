@@ -85,6 +85,27 @@ export const LT = {
     cta: 'Redaguoti skelbimą',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Peržiūrėjome jūsų naujas nuotraukas (#${ref})`,
+    preheader: 'Patvirtintos nuotraukos jau matomos jūsų skelbime.',
+    heading: 'Peržiūrėjome jūsų naujas nuotraukas',
+    body: (title: string, ref: string) =>
+      `Dėkojame, kad atnaujinote skelbimo „${title}“ (#${ref}) nuotraukų galeriją. Mūsų komanda peržiūrėjo naujas nuotraukas.`,
+    approvedLabel: 'Patvirtintos, jau matomos',
+    rejectedLabel: 'Nepaskelbtos',
+    reasonsTitle: 'Kodėl kai kurios nuotraukos nebuvo paskelbtos?',
+    reasons: {
+      quality: 'Neryški, tamsi ar prastos kokybės nuotrauka',
+      unrelated: 'Nerodo šio objekto',
+      personal: 'Matomi asmens duomenys (veidai, valstybiniai numeriai, dokumentai)',
+      branding: 'Yra teksto, logotipas, vandens ženklas ar kontaktai',
+      duplicate: 'Ta pati nuotrauka jau yra galerijoje',
+      inappropriate: 'Skelbimui netinkamas turinys',
+    } as Record<string, string>,
+    after: 'Naujas nuotraukas galite ir toliau pridėti nemokamai. Kiekviena nauja nuotrauka skelbime pasirodo po trumpos peržiūros.',
+    cta: 'Tvarkyti nuotraukas',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Patvirtinta (#${ref}): liko tik apmokėti`,
     preheader: 'Jūsų skelbimas patvirtintas ir bus paskelbtas, kai tik gausime mokėjimą.',

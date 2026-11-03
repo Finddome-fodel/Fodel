@@ -89,6 +89,27 @@ export const PL = {
     cta: 'Edytuj ogłoszenie',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Sprawdziliśmy Twoje nowe zdjęcia (#${ref})`,
+    preheader: 'Zatwierdzone zdjęcia są już widoczne w ogłoszeniu.',
+    heading: 'Sprawdziliśmy Twoje nowe zdjęcia',
+    body: (title: string, ref: string) =>
+      `Dziękujemy za zaktualizowanie galerii ogłoszenia „${title}” (#${ref}). Nasz zespół sprawdził nowe zdjęcia.`,
+    approvedLabel: 'Zatwierdzone, już widoczne',
+    rejectedLabel: 'Nieopublikowane',
+    reasonsTitle: 'Dlaczego niektóre zdjęcia nie zostały opublikowane?',
+    reasons: {
+      quality: 'Nieostre, ciemne lub słabej jakości zdjęcie',
+      unrelated: 'Nie przedstawia tej nieruchomości',
+      personal: 'Widoczne dane osobowe (twarze, tablice rejestracyjne, dokumenty)',
+      branding: 'Zawiera tekst, logo, znak wodny lub dane kontaktowe',
+      duplicate: 'To samo zdjęcie jest już w galerii',
+      inappropriate: 'Treść nieodpowiednia do ogłoszenia',
+    } as Record<string, string>,
+    after: 'Nadal możesz bezpłatnie dodawać nowe zdjęcia. Każde nowe zdjęcie pojawi się w ogłoszeniu po krótkiej weryfikacji.',
+    cta: 'Zarządzaj zdjęciami',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Zatwierdzone (#${ref}) – pozostała tylko płatność`,
     preheader: 'Ogłoszenie jest zatwierdzone i zostanie opublikowane po otrzymaniu płatności.',

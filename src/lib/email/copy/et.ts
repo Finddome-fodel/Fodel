@@ -85,6 +85,27 @@ export const ET = {
     cta: 'Muuda kuulutust',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Vaatasime teie uued fotod üle (#${ref})`,
+    preheader: 'Heakskiidetud fotod on kuulutuses juba nähtavad.',
+    heading: 'Vaatasime teie uued fotod üle',
+    body: (title: string, ref: string) =>
+      `Täname, et uuendasite kuulutuse „${title}“ (#${ref}) fotogaleriid. Meie meeskond vaatas uued fotod üle.`,
+    approvedLabel: 'Heaks kiidetud, juba nähtav',
+    rejectedLabel: 'Ei avaldatud',
+    reasonsTitle: 'Miks mõnda fotot ei avaldatud?',
+    reasons: {
+      quality: 'Udune, tume või kehva kvaliteediga pilt',
+      unrelated: 'Ei näita seda kinnisvara',
+      personal: 'Näha on isikuandmed (näod, numbrimärgid, dokumendid)',
+      branding: 'Sisaldab teksti, logo, vesimärki või kontaktandmeid',
+      duplicate: 'Sama pilt on juba galeriis',
+      inappropriate: 'Kuulutusse sobimatu sisu',
+    } as Record<string, string>,
+    after: 'Uusi fotosid saate jätkuvalt tasuta lisada. Iga uus pilt ilmub kuulutusse pärast lühikest kontrolli.',
+    cta: 'Halda fotosid',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Kinnitatud (#${ref}): jäänud on vaid makse`,
     preheader: 'Teie kuulutus on kinnitatud ja avaldatakse kohe, kui makse laekub.',

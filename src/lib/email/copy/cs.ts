@@ -85,6 +85,27 @@ export const CS = {
     cta: 'Upravit inzerát',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Zkontrolovali jsme vaše nové fotografie (#${ref})`,
+    preheader: 'Schválené fotografie jsou už v inzerátu vidět.',
+    heading: 'Zkontrolovali jsme vaše nové fotografie',
+    body: (title: string, ref: string) =>
+      `Děkujeme, že jste aktualizovali galerii inzerátu „${title}“ (#${ref}). Náš tým zkontroloval nové fotografie.`,
+    approvedLabel: 'Schváleno, už viditelné',
+    rejectedLabel: 'Nezveřejněno',
+    reasonsTitle: 'Proč některé fotografie nebyly zveřejněny?',
+    reasons: {
+      quality: 'Rozmazaná, tmavá nebo nekvalitní fotografie',
+      unrelated: 'Nezobrazuje tuto nemovitost',
+      personal: 'Jsou na ní vidět osobní údaje (obličeje, SPZ, doklady)',
+      branding: 'Obsahuje text, logo, vodoznak nebo kontaktní údaje',
+      duplicate: 'Stejná fotografie už je v galerii',
+      inappropriate: 'Obsah nevhodný do inzerátu',
+    } as Record<string, string>,
+    after: 'Nové fotografie můžete i nadále přidávat zdarma. Každá nová fotografie se v inzerátu objeví po krátké kontrole.',
+    cta: 'Spravovat fotografie',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Schváleno (#${ref}): zbývá jen platba`,
     preheader: 'Váš inzerát je schválen a bude zveřejněn, jakmile dorazí platba.',

@@ -85,6 +85,27 @@ export const EN = {
     cta: 'Edit listing',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `We have reviewed your new photos (#${ref})`,
+    preheader: 'The approved photos are already showing in your listing.',
+    heading: 'We have reviewed your new photos',
+    body: (title: string, ref: string) =>
+      `Thank you for updating the gallery of your listing “${title}” (#${ref}). Our team has reviewed the new photos.`,
+    approvedLabel: 'Approved, now live',
+    rejectedLabel: 'Not published',
+    reasonsTitle: 'Why were some photos not published?',
+    reasons: {
+      quality: 'Blurred, dark or low-quality image',
+      unrelated: 'Does not show this property',
+      personal: 'Shows personal data (faces, number plates, documents)',
+      branding: 'Contains text, a logo, a watermark or contact details',
+      duplicate: 'The same image is already in the gallery',
+      inappropriate: 'Content not suitable for a listing',
+    } as Record<string, string>,
+    after: 'You can keep adding new photos free of charge. Every new image appears in your listing after a short review.',
+    cta: 'Manage photos',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Approved (#${ref}): only the payment is left`,
     preheader: 'Your listing is approved and goes live as soon as the payment arrives.',

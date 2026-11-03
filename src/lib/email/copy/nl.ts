@@ -101,6 +101,27 @@ export const NL = {
     cta: 'Advertentie aanpassen',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `We hebben uw nieuwe foto’s bekeken (#${ref})`,
+    preheader: 'De goedgekeurde foto’s staan al in uw advertentie.',
+    heading: 'We hebben uw nieuwe foto’s bekeken',
+    body: (title: string, ref: string) =>
+      `Bedankt dat u de fotogalerij van uw advertentie „${title}” (#${ref}) hebt bijgewerkt. Onze medewerker heeft de nieuwe foto’s bekeken.`,
+    approvedLabel: 'Goedgekeurd, nu zichtbaar',
+    rejectedLabel: 'Niet geplaatst',
+    reasonsTitle: 'Waarom zijn sommige foto’s niet geplaatst?',
+    reasons: {
+      quality: 'Onscherpe, donkere of slechte foto',
+      unrelated: 'Toont niet deze woning',
+      personal: 'Er zijn persoonsgegevens zichtbaar (gezichten, kentekens, documenten)',
+      branding: 'Bevat tekst, een logo, een watermerk of contactgegevens',
+      duplicate: 'Dezelfde foto staat al in de galerij',
+      inappropriate: 'Inhoud die niet in een advertentie past',
+    } as Record<string, string>,
+    after: 'U kunt kosteloos nieuwe foto’s blijven toevoegen. Elke nieuwe foto verschijnt na een korte controle in uw advertentie.',
+    cta: 'Foto’s beheren',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Goedgekeurd (#${ref}): alleen de betaling nog`,
     preheader: 'Uw advertentie is goedgekeurd en gaat live zodra de betaling binnen is.',
@@ -321,6 +342,20 @@ export const NL = {
       admin: 'Admin',
     } as Record<string, string>,
     cta: 'Openen in het portaal',
+  },
+
+  adminPhotosPending: {
+    subject: (ref: string) => `Nieuwe foto’s wachten op goedkeuring (#${ref})`,
+    preheader: 'Bij een live advertentie zijn nieuwe foto’s toegevoegd.',
+    heading: 'Nieuwe foto’s wachten op goedkeuring',
+    body: (title: string, ref: string) =>
+      `De adverteerder heeft nieuwe foto’s toegevoegd aan de live advertentie „${title}” (#${ref}). Tot de goedkeuring zijn ze niet zichtbaar op de site.`,
+    labels: {
+      listing: 'Advertentie',
+      owner: 'Adverteerder',
+      count: 'Wacht op goedkeuring',
+    },
+    cta: 'Foto’s beoordelen',
   },
 
   referralAdminNotice: {
