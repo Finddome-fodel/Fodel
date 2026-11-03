@@ -82,13 +82,14 @@ for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el'
   });
 }
 
-for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const) {
+for (const locale of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt', 'sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh'] as const) {
   test(`${locale}: the legal pages say they are a courtesy translation`, async ({ page }) => {
     const needle = {
       en: /translation for convenience/i, de: /Übersetzung/, fr: /traduction/i,
       es: /traducción/i, pl: /tłumaczeni/i, ro: /traducere/i, sk: /preklad/i,
       it: /traduzione/i, pt: /tradução/i, el: /μετάφραση/i, cs: /překlad/i, sl: /prevod/i, sv: /översättning/i,
       da: /oversættelse/i, no: /oversettelse/i, fi: /käännös/i, et: /tõlge/i, lv: /tulkojums/i, lt: /vertimas/i,
+      sr: /prevod/i, uk: /переклад/i, tr: /çeviri/i, he: /תרגום/, ar: /ترجمة/, ru: /перевод/i, zh: /译文/,
     }[locale];
     for (const key of ['privacy', 'terms', 'cookies', 'imprint'] as const) {
       await page.goto(routePath(locale, key));
