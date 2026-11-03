@@ -31,7 +31,7 @@ import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
 import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
-import { ALL_LOCALES, HU_NAME, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
+import { ALL_LOCALES, HU_NAME, LIMITS, TARGET_LIMITS, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
 import { jobsForProperty, latestPerLocale } from '~/lib/ai/translation-jobs';
 import TranslationPicker from '~/components/portal/TranslationPicker.astro';
 import { TRANSLATION_COPY, type PortalCopyLang } from '~/lib/ai/translation-copy';
@@ -350,7 +350,7 @@ const trPaid = Astro.url.searchParams.get('translations');
                   : 'Minden nyelven van szöveg.'
                 : 'Az AI fordítás nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben).'}
             </p>
-            <p class="tr-progress" id="tr-progress" role="status" aria-live="polite"></p>
+            <p class="tr-progress" id="tr-progress" role="status"></p>
           </div>
         )}
         <div class="locale-tabs" role="tablist">
@@ -366,7 +366,8 @@ const trPaid = Astro.url.searchParams.get('translations');
           const suggestion = suggestionByLocale[l.value];
           return (
             <div class="locale-panel" data-locale-panel={l.value} hidden={i !== 0}>
-              <Field locale="hu" name={`title_${l.value}`} label="Hirdetés címe" required={required} value={t?.title ?? ''} />
+              <Field locale="hu" name={`title_${l.value}`} label="Hirdetés címe" required={required} value={t?.title ?? ''} maxlength={l.value === trSourceLocale ? LIMITS.title : TARGET_LIMITS.title} />
+              <p class="title-count" data-title-count={`title_${l.value}`}></p>
               <Field locale="hu" name={`description_${l.value}`} label="Rövid leírás" type="textarea" rows={3} required={required} value={t?.description ?? ''} />
               <Field locale="hu" name={`body_${l.value}`} label="Részletes leírás" type="textarea" rows={8} value={t?.body ?? ''}
                 hint="Bekezdéseket üres sorral válasszon el." />
@@ -679,6 +680,20 @@ const trPaid = Astro.url.searchParams.get('translations');
 
 
 <script>
+  /* ── Title length: a live count, so a long title is noticed before it is saved ── */
+  document.querySelectorAll<HTMLElement>('[data-title-count]').forEach((counter) => {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${counter.dataset.titleCount}"]`);
+    if (!input) return;
+    const max = input.maxLength;
+    const show = () => {
+      const length = input.value.length;
+      counter.textContent = length ? `${length} / ${max} karakter` : '';
+      counter.dataset.near = String(length >= max - 10);
+    };
+    input.addEventListener('input', show);
+    show();
+  });
+
   /* ── Section rail: the section being read lights up ─────────────────── */
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-rail]')];
   const targets = links.map((link) => document.getElementById(link.dataset.rail!)).filter((el): el is HTMLElement => Boolean(el));
@@ -1132,6 +1147,9 @@ const trPaid = Astro.url.searchParams.get('translations');
   .tr-machine { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 10px; font-size: var(--fs-small); color: var(--ink-quiet); }
   .tr-machine .ai-badge { margin-left: 0; }
   .tr-stale { color: var(--pt-red); font-weight: var(--fw-medium); }
+  .title-count { margin: -4px 0 14px; font-size: var(--fs-small); color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+  .title-count:empty { display: none; }
+  .title-count[data-near='true'] { color: var(--pt-red); }
   .tr-state { margin: 8px 0 0; font-size: var(--fs-small); color: var(--ink-quiet); }
   .tr-state:empty { display: none; }
   .tr-state[data-state='failed'] { color: var(--pt-red); }

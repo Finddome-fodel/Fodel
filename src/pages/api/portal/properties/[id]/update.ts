@@ -17,6 +17,7 @@
 import type { APIRoute } from 'astro';
 import { portalLang } from '~/lib/portal/auth-copy';
 import { LOCALE_OPTIONS } from '~/lib/portal/properties';
+import { LIMITS, TARGET_LIMITS, pickSource } from '~/lib/ai/translate-core';
 import { getProperty } from '~/lib/portal/properties';
 import { readPriceRounding } from '~/lib/exchange-rates';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
@@ -126,11 +127,15 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     return back('error='+encodeURIComponent(`${CONTACT_FIELD_HU[field.replace(/_[a-z]{2}$/,'')]??field}${/_[a-z]{2}$/.test(field)?` (${field.slice(-2).toUpperCase()})`:''}: ${errorMessage(error,'hu')}${isAdmin?' Ha szándékosan hagyja benne, jelölje be: „Tudatosan benne hagyom”.':''}`)+'&contact_field='+encodeURIComponent(field));
   }
   const translations=[];
-  for(const {value:locale} of LOCALE_OPTIONS){
+  // The text a person wrote holds to LIMITS.title; a translation may be longer (translate-core.ts TARGET_LIMITS).
+  const sourceLocale=pickSource(current.translations)?.locale??'hu';
+  for(const {value:locale,label} of LOCALE_OPTIONS){
     const title=prose(form,`title_${locale}`),description=prose(form,`description_${locale}`);
     if(locale==='hu'&&(!title||!description))return back('error='+encodeURIComponent('A magyar cím és rövid leírás kötelező.'));
+    const titleLimit=locale===sourceLocale?LIMITS.title:TARGET_LIMITS.title;
+    if(title.length>titleLimit)return back('error='+encodeURIComponent(`A cím legfeljebb ${titleLimit} karakter lehet (${label.replace(/ \(kötelező\)$/,'')}: ${title.length} karakter). Rövidítse a címet; a mentés most nem történt meg.`));
     // Existing translations and legacy optional copy survive an empty/unoffered locale.
-    if(title||description)translations.push({locale,title:title.slice(0,160)||description.slice(0,60),description:description.slice(0,6000),body:prose(form,`body_${locale}`).slice(0,30000)});
+    if(title||description)translations.push({locale,title:title||description.slice(0,60),description:description.slice(0,6000),body:prose(form,`body_${locale}`).slice(0,30000)});
   }
   const {error:updateError}=await supabase.rpc('save_listing_editor',{
     p_id:id,p_patch:patch,p_private:{...values.privateData,internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations,

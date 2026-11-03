@@ -345,7 +345,7 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
     await logEvent({
       kind: 'ai.translation_done', subjectType: 'property', subjectId: job.property_id, propertyId: job.property_id, locale: job.locale,
       source: job.origin, dedupeKey: `translation-job-${job.id}-done`,
-      payload: { from: source.locale, origin: job.origin, model: translated.model, tokensIn: translated.tokensIn, tokensOut: translated.tokensOut, costMicroEur: translated.costMicroEur },
+      payload: { from: source.locale, origin: job.origin, model: translated.model, tokensIn: translated.tokensIn, tokensOut: translated.tokensOut, costMicroEur: translated.costMicroEur, ...(translated.titleFix ? { titleFix: translated.titleFix } : {}) },
     }).catch(() => {});
     return { outcome: 'done', stopAll: false };
   } catch (error) {
