@@ -23,7 +23,14 @@
         "fi": "Uudiskohde",
         "et": "Uusehitis",
         "lv": "Jaunbūve",
-        "lt": "Naujos statybos"
+        "lt": "Naujos statybos",
+        "sr": "Novogradnja",
+        "uk": "Новобудова",
+        "tr": "Yeni yapı",
+        "he": "בנייה חדשה",
+        "ar": "بناء جديد",
+        "ru": "Новостройка",
+        "zh": "新建"
       }
     },
     {
@@ -49,7 +56,14 @@
         "fi": "Kuin uusi",
         "et": "Nagu uus",
         "lv": "Kā jauns",
-        "lt": "Kaip naujas"
+        "lt": "Kaip naujas",
+        "sr": "Kao novo",
+        "uk": "Як новий",
+        "tr": "Yeni gibi",
+        "he": "כמו חדש",
+        "ar": "كالجديد",
+        "ru": "Как новый",
+        "zh": "近新"
       }
     },
     {
@@ -75,7 +89,14 @@
         "fi": "Remontoitu",
         "et": "Renoveeritud",
         "lv": "Renovēts",
-        "lt": "Renovuotas"
+        "lt": "Renovuotas",
+        "sr": "Renovirano",
+        "uk": "Після ремонту",
+        "tr": "Yenilenmiş",
+        "he": "משופץ",
+        "ar": "مُجدَّد",
+        "ru": "После ремонта",
+        "zh": "已翻新"
       }
     },
     {
@@ -101,7 +122,14 @@
         "fi": "Hyvä kunto",
         "et": "Heas seisukorras",
         "lv": "Labā stāvoklī",
-        "lt": "Geros būklės"
+        "lt": "Geros būklės",
+        "sr": "Dobro stanje",
+        "uk": "Хороший стан",
+        "tr": "İyi durumda",
+        "he": "מצב טוב",
+        "ar": "حالة جيدة",
+        "ru": "Хорошее состояние",
+        "zh": "状况良好"
       }
     },
     {
@@ -127,7 +155,14 @@
         "fi": "Keskinkertainen kunto",
         "et": "Keskmine seisukord",
         "lv": "Vidējs stāvoklis",
-        "lt": "Vidutinė būklė"
+        "lt": "Vidutinė būklė",
+        "sr": "Prosečno stanje",
+        "uk": "Середній стан",
+        "tr": "Orta durumda",
+        "he": "מצב בינוני",
+        "ar": "حالة متوسطة",
+        "ru": "Среднее состояние",
+        "zh": "状况一般"
       }
     },
     {
@@ -153,7 +188,14 @@
         "fi": "Remontin tarpeessa",
         "et": "Vajab renoveerimist",
         "lv": "Nepieciešama renovācija",
-        "lt": "Reikia renovuoti"
+        "lt": "Reikia renovuoti",
+        "sr": "Za renoviranje",
+        "uk": "Потребує ремонту",
+        "tr": "Tadilat gerektiriyor",
+        "he": "דורש שיפוץ",
+        "ar": "بحاجة إلى تجديد",
+        "ru": "Требует ремонта",
+        "zh": "需翻新"
       }
     },
     {
@@ -179,7 +221,14 @@
         "fi": "Huono kunto / raunio",
         "et": "Halb seisukord / vare",
         "lv": "Slikts stāvoklis / drupas",
-        "lt": "Prasta būklė / griuvėsiai"
+        "lt": "Prasta būklė / griuvėsiai",
+        "sr": "Loše stanje / ruševina",
+        "uk": "Поганий стан / руїна",
+        "tr": "Kötü durumda / harabe",
+        "he": "מצב גרוע / חורבה",
+        "ar": "حالة سيئة / متهدم",
+        "ru": "Плохое состояние / руины",
+        "zh": "状况差 / 危旧"
       }
     },
     {
@@ -205,7 +254,14 @@
         "fi": "Keskeneräinen rakennus",
         "et": "Pooleli ehitis",
         "lv": "Nepabeigta būvniecība",
-        "lt": "Nebaigta statyba"
+        "lt": "Nebaigta statyba",
+        "sr": "Nedovršena gradnja",
+        "uk": "Незавершене будівництво",
+        "tr": "Yarım kalmış inşaat",
+        "he": "בנייה לא גמורה",
+        "ar": "بناء غير مكتمل",
+        "ru": "Незавершённое строительство",
+        "zh": "未完工建筑"
       }
     },
     {
@@ -231,7 +287,14 @@
         "fi": "Tuntematon",
         "et": "Teadmata",
         "lv": "Nezināms",
-        "lt": "Nežinoma"
+        "lt": "Nežinoma",
+        "sr": "Nepoznato",
+        "uk": "Невідомо",
+        "tr": "Bilinmiyor",
+        "he": "לא ידוע",
+        "ar": "غير معروف",
+        "ru": "Неизвестно",
+        "zh": "未知"
       }
     }
   ],
@@ -259,7 +322,14 @@
         "fi": "Kaasulämmitys",
         "et": "Gaasiküte",
         "lv": "Gāzes apkure",
-        "lt": "Dujinis šildymas"
+        "lt": "Dujinis šildymas",
+        "sr": "Grejanje na gas",
+        "uk": "Газове опалення",
+        "tr": "Doğalgazlı ısıtma",
+        "he": "חימום בגז",
+        "ar": "تدفئة بالغاز",
+        "ru": "Газовое отопление",
+        "zh": "燃气供暖"
       }
     },
     {
@@ -285,7 +355,14 @@
         "fi": "Sähkölämmitys",
         "et": "Elektriküte",
         "lv": "Elektriskā apkure",
-        "lt": "Elektrinis šildymas"
+        "lt": "Elektrinis šildymas",
+        "sr": "Električno grejanje",
+        "uk": "Електричне опалення",
+        "tr": "Elektrikli ısıtma",
+        "he": "חימום חשמלי",
+        "ar": "تدفئة كهربائية",
+        "ru": "Электрическое отопление",
+        "zh": "电供暖"
       }
     },
     {
@@ -311,7 +388,14 @@
         "fi": "Puu ja kiinteä polttoaine",
         "et": "Puit ja tahke kütus",
         "lv": "Malka un cietais kurināmais",
-        "lt": "Malkos ir kietasis kuras"
+        "lt": "Malkos ir kietasis kuras",
+        "sr": "Drva i čvrsto gorivo",
+        "uk": "Дрова і тверде паливо",
+        "tr": "Odun ve katı yakıt",
+        "he": "עצים ודלק מוצק",
+        "ar": "الحطب والوقود الصلب",
+        "ru": "Дрова и твёрдое топливо",
+        "zh": "木材及固体燃料"
       }
     },
     {
@@ -337,7 +421,14 @@
         "fi": "Lämpöpumppu",
         "et": "Soojuspump",
         "lv": "Siltumsūknis",
-        "lt": "Šilumos siurblys"
+        "lt": "Šilumos siurblys",
+        "sr": "Toplotna pumpa",
+        "uk": "Тепловий насос",
+        "tr": "Isı pompası",
+        "he": "משאבת חום",
+        "ar": "مضخة حرارية",
+        "ru": "Тепловой насос",
+        "zh": "热泵"
       }
     },
     {
@@ -363,7 +454,14 @@
         "fi": "Kaukolämpö",
         "et": "Kaugküte",
         "lv": "Centralizētā siltumapgāde",
-        "lt": "Centralizuotas šildymas"
+        "lt": "Centralizuotas šildymas",
+        "sr": "Daljinsko grejanje",
+        "uk": "Централізоване опалення",
+        "tr": "Merkezi bölgesel ısıtma",
+        "he": "הסקה מרכזית עירונית",
+        "ar": "تدفئة مركزية عامة",
+        "ru": "Центральное отопление",
+        "zh": "集中供暖"
       }
     },
     {
@@ -389,7 +487,14 @@
         "fi": "Öljylämmitys",
         "et": "Õliküte",
         "lv": "Šķidrā kurināmā apkure",
-        "lt": "Skystojo kuro šildymas"
+        "lt": "Skystojo kuro šildymas",
+        "sr": "Grejanje na lož-ulje",
+        "uk": "Опалення на рідкому паливі",
+        "tr": "Mazotlu ısıtma",
+        "he": "חימום בסולר",
+        "ar": "تدفئة بالمازوت",
+        "ru": "Отопление на жидком топливе",
+        "zh": "燃油供暖"
       }
     },
     {
@@ -415,7 +520,14 @@
         "fi": "Aurinkolämpö",
         "et": "Päikeseküte",
         "lv": "Saules apkure",
-        "lt": "Saulės šildymas"
+        "lt": "Saulės šildymas",
+        "sr": "Solarno grejanje",
+        "uk": "Сонячне опалення",
+        "tr": "Güneş enerjili ısıtma",
+        "he": "חימום סולארי",
+        "ar": "تدفئة بالطاقة الشمسية",
+        "ru": "Солнечное отопление",
+        "zh": "太阳能供暖"
       }
     },
     {
@@ -441,7 +553,14 @@
         "fi": "Yhdistelmälämmitys",
         "et": "Kombineeritud küttesüsteem",
         "lv": "Kombinēta apkures sistēma",
-        "lt": "Mišri šildymo sistema"
+        "lt": "Mišri šildymo sistema",
+        "sr": "Kombinovani sistem grejanja",
+        "uk": "Комбінована система опалення",
+        "tr": "Karma ısıtma sistemi",
+        "he": "מערכת חימום משולבת",
+        "ar": "نظام تدفئة مختلط",
+        "ru": "Комбинированная система отопления",
+        "zh": "混合供暖系统"
       }
     },
     {
@@ -467,7 +586,14 @@
         "fi": "Muu",
         "et": "Muu",
         "lv": "Cits",
-        "lt": "Kita"
+        "lt": "Kita",
+        "sr": "Ostalo",
+        "uk": "Інше",
+        "tr": "Diğer",
+        "he": "אחר",
+        "ar": "أخرى",
+        "ru": "Другое",
+        "zh": "其他"
       }
     },
     {
@@ -493,7 +619,14 @@
         "fi": "Ei lämmitystä",
         "et": "Küte puudub",
         "lv": "Bez apkures",
-        "lt": "Be šildymo"
+        "lt": "Be šildymo",
+        "sr": "Bez grejanja",
+        "uk": "Без опалення",
+        "tr": "Isıtma yok",
+        "he": "ללא חימום",
+        "ar": "بلا تدفئة",
+        "ru": "Без отопления",
+        "zh": "无供暖"
       }
     },
     {
@@ -519,7 +652,14 @@
         "fi": "Tuntematon",
         "et": "Teadmata",
         "lv": "Nezināms",
-        "lt": "Nežinoma"
+        "lt": "Nežinoma",
+        "sr": "Nepoznato",
+        "uk": "Невідомо",
+        "tr": "Bilinmiyor",
+        "he": "לא ידוע",
+        "ar": "غير معروف",
+        "ru": "Неизвестно",
+        "zh": "未知"
       }
     }
   ],
@@ -547,7 +687,14 @@
         "fi": "Tiili",
         "et": "Telliskivi",
         "lv": "Ķieģelis",
-        "lt": "Plytos"
+        "lt": "Plytos",
+        "sr": "Cigla",
+        "uk": "Цегла",
+        "tr": "Tuğla",
+        "he": "לבנים",
+        "ar": "طوب",
+        "ru": "Кирпич",
+        "zh": "砖"
       }
     },
     {
@@ -573,7 +720,14 @@
         "fi": "Savitiili",
         "et": "Savitellis",
         "lv": "Mālu ķieģeļi",
-        "lt": "Molio plytos"
+        "lt": "Molio plytos",
+        "sr": "Ćerpič",
+        "uk": "Саман",
+        "tr": "Kerpiç",
+        "he": "לבני בוץ",
+        "ar": "طوب لبن",
+        "ru": "Саман",
+        "zh": "土坯"
       }
     },
     {
@@ -599,7 +753,14 @@
         "fi": "Sekamuuraus",
         "et": "Segamüüritis",
         "lv": "Jaukts mūris",
-        "lt": "Mišrus mūras"
+        "lt": "Mišrus mūras",
+        "sr": "Mešovita gradnja",
+        "uk": "Змішана кладка",
+        "tr": "Karma duvar",
+        "he": "בנייה משולבת",
+        "ar": "بناء مختلط",
+        "ru": "Смешанная кладка",
+        "zh": "混合砌体"
       }
     },
     {
@@ -625,7 +786,14 @@
         "fi": "Betoni / elementti",
         "et": "Betoon / paneel",
         "lv": "Betons / paneļi",
-        "lt": "Betonas / plokštės"
+        "lt": "Betonas / plokštės",
+        "sr": "Beton / panel",
+        "uk": "Бетон / панель",
+        "tr": "Beton / panel",
+        "he": "בטון / פאנלים",
+        "ar": "خرسانة / ألواح",
+        "ru": "Бетон / панель",
+        "zh": "混凝土 / 预制板"
       }
     },
     {
@@ -651,7 +819,14 @@
         "fi": "Puu / kevytrakenne",
         "et": "Puit / kergkonstruktsioon",
         "lv": "Koks / vieglā konstrukcija",
-        "lt": "Mediena / lengva konstrukcija"
+        "lt": "Mediena / lengva konstrukcija",
+        "sr": "Drvo / laka konstrukcija",
+        "uk": "Дерево / легка конструкція",
+        "tr": "Ahşap / hafif yapı",
+        "he": "עץ / בנייה קלה",
+        "ar": "خشب / هيكل خفيف",
+        "ru": "Дерево / лёгкая конструкция",
+        "zh": "木结构 / 轻型结构"
       }
     },
     {
@@ -677,7 +852,14 @@
         "fi": "Kivi",
         "et": "Kivi",
         "lv": "Akmens",
-        "lt": "Akmuo"
+        "lt": "Akmuo",
+        "sr": "Kamen",
+        "uk": "Камінь",
+        "tr": "Taş",
+        "he": "אבן",
+        "ar": "حجر",
+        "ru": "Камень",
+        "zh": "石材"
       }
     },
     {
@@ -703,7 +885,14 @@
         "fi": "Teräsrunko",
         "et": "Teraskarkass",
         "lv": "Tērauda karkass",
-        "lt": "Plieninis karkasas"
+        "lt": "Plieninis karkasas",
+        "sr": "Čelična konstrukcija",
+        "uk": "Сталевий каркас",
+        "tr": "Çelik konstrüksiyon",
+        "he": "שלד פלדה",
+        "ar": "هيكل فولاذي",
+        "ru": "Стальной каркас",
+        "zh": "钢结构"
       }
     },
     {
@@ -729,7 +918,14 @@
         "fi": "Muu",
         "et": "Muu",
         "lv": "Cits",
-        "lt": "Kita"
+        "lt": "Kita",
+        "sr": "Ostalo",
+        "uk": "Інше",
+        "tr": "Diğer",
+        "he": "אחר",
+        "ar": "أخرى",
+        "ru": "Другое",
+        "zh": "其他"
       }
     },
     {
@@ -755,7 +951,14 @@
         "fi": "Tuntematon",
         "et": "Teadmata",
         "lv": "Nezināms",
-        "lt": "Nežinoma"
+        "lt": "Nežinoma",
+        "sr": "Nepoznato",
+        "uk": "Невідомо",
+        "tr": "Bilinmiyor",
+        "he": "לא ידוע",
+        "ar": "غير معروف",
+        "ru": "Неизвестно",
+        "zh": "未知"
       }
     }
   ]
