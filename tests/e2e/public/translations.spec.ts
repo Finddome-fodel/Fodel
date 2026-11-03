@@ -108,7 +108,7 @@ test('an unknown page answers 404 in the language of its URL', async ({ request 
     uk: /не знайдено|404/i,
     tr: /bulunamadı|404/i,
     he: /לא נמצא|404/i,
-    ar: /not found|404/i,
+    ar: /غير موجودة|404/i,
     ru: /не найдена|404/i,
     zh: /not found|404/i,
   };

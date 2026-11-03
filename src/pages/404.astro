@@ -37,7 +37,7 @@ const locale =
 const x = localizer(locale);
 const others = LOCALES.filter((code) => code !== locale);
 
-const title = x({ hu: 'Az oldal nem található', nl: 'Pagina niet gevonden', en: 'Page not found', de: 'Seite nicht gefunden', fr: 'Page introuvable', es: 'Página no encontrada', pl: 'Nie znaleziono strony', ro: 'Pagina nu a fost găsită', sk: 'Stránka sa nenašla', it: 'Pagina non trovata', pt: 'Página não encontrada', el: 'Η σελίδα δεν βρέθηκε', cs: 'Stránka nenalezena', sl: 'Stran ni bila najdena', sv: 'Sidan hittades inte', da: 'Siden blev ikke fundet', no: 'Fant ikke siden', fi: 'Sivua ei löytynyt', et: 'Lehte ei leitud', lv: 'Lapa nav atrasta', lt: 'Puslapis nerastas', sr: 'Stranica nije pronađena', uk: 'Сторінку не знайдено', tr: 'Sayfa bulunamadı', he: 'הדף לא נמצא', ar: 'Page not found', ru: 'Страница не найдена', zh: 'Page not found' });
+const title = x({ hu: 'Az oldal nem található', nl: 'Pagina niet gevonden', en: 'Page not found', de: 'Seite nicht gefunden', fr: 'Page introuvable', es: 'Página no encontrada', pl: 'Nie znaleziono strony', ro: 'Pagina nu a fost găsită', sk: 'Stránka sa nenašla', it: 'Pagina non trovata', pt: 'Página não encontrada', el: 'Η σελίδα δεν βρέθηκε', cs: 'Stránka nenalezena', sl: 'Stran ni bila najdena', sv: 'Sidan hittades inte', da: 'Siden blev ikke fundet', no: 'Fant ikke siden', fi: 'Sivua ei löytynyt', et: 'Lehte ei leitud', lv: 'Lapa nav atrasta', lt: 'Puslapis nerastas', sr: 'Stranica nije pronađena', uk: 'Сторінку не знайдено', tr: 'Sayfa bulunamadı', he: 'הדף לא נמצא', ar: 'الصفحة غير موجودة', ru: 'Страница не найдена', zh: 'Page not found' });
 const body = x({
   hu: 'A keresett oldal nem létezik, vagy áthelyeztük. Nézze meg a kínálatunkat, vagy vegye fel velünk a kapcsolatot.',
   nl: 'De pagina die u zocht bestaat niet of is verplaatst. Bekijk ons aanbod, of neem contact met ons op.',
@@ -64,11 +64,11 @@ const body = x({
   uk: 'Сторінки, яку ви шукали, не існує або її переміщено. Перегляньте нашу нерухомість або зв’яжіться з нами.',
   tr: 'Aradığınız sayfa mevcut değil veya taşınmış. Mülklerimize göz atın ya da bizimle iletişime geçin.',
   he: 'הדף שחיפשתם אינו קיים או שהועבר. עיינו בנכסים שלנו או צרו איתנו קשר.',
-  ar: 'The page you were looking for does not exist or has moved. See our properties, or get in touch.',
+  ar: 'الصفحة التي تبحث عنها غير موجودة أو نُقلت. تصفّح عقاراتنا أو تواصل معنا.',
   ru: 'Страница, которую вы искали, не существует или была перемещена. Посмотрите нашу недвижимость или свяжитесь с нами.',
   zh: 'The page you were looking for does not exist or has moved. See our properties, or get in touch.',
 });
-const otherLanguages = x({ hu: 'Más nyelven', nl: 'In een andere taal', en: 'In another language', de: 'In einer anderen Sprache', fr: 'Dans une autre langue', es: 'En otro idioma', pl: 'W innym języku', ro: 'În altă limbă', sk: 'V inom jazyku', it: 'In un’altra lingua', pt: 'Noutra língua', el: 'Σε άλλη γλώσσα', cs: 'V jiném jazyce', sl: 'V drugem jeziku', sv: 'På ett annat språk', da: 'På et andet sprog', no: 'På et annet språk', fi: 'Toisella kielellä', et: 'Teises keeles', lv: 'Citā valodā', lt: 'Kita kalba', sr: 'Na drugom jeziku', uk: 'Іншою мовою', tr: 'Başka bir dilde', he: 'בשפה אחרת', ar: 'In another language', ru: 'На другом языке', zh: 'In another language' });
+const otherLanguages = x({ hu: 'Más nyelven', nl: 'In een andere taal', en: 'In another language', de: 'In einer anderen Sprache', fr: 'Dans une autre langue', es: 'En otro idioma', pl: 'W innym języku', ro: 'În altă limbă', sk: 'V inom jazyku', it: 'In un’altra lingua', pt: 'Noutra língua', el: 'Σε άλλη γλώσσα', cs: 'V jiném jazyce', sl: 'V drugem jeziku', sv: 'På ett annat språk', da: 'På et andet sprog', no: 'På et annet språk', fi: 'Toisella kielellä', et: 'Teises keeles', lv: 'Citā valodā', lt: 'Kita kalba', sr: 'Na drugom jeziku', uk: 'Іншою мовою', tr: 'Başka bir dilde', he: 'בשפה אחרת', ar: 'بلغة أخرى', ru: 'На другом языке', zh: 'In another language' });
 ---
 
 <Base locale={locale} title={`404 | ${title}`} description={body} noindex>
@@ -83,7 +83,7 @@ const otherLanguages = x({ hu: 'Más nyelven', nl: 'In een andere taal', en: 'In
           <p class="col-body">{body}</p>
           <div class="actions">
             <Button variant="dark" href={path(locale, 'properties')}>{x({ hu: 'Ingatlanok', nl: 'Ons aanbod', en: 'Our properties', de: 'Unser Angebot', fr: 'Nos biens', es: 'Nuestros inmuebles', pl: 'Nasze nieruchomości', ro: 'Proprietățile noastre', sk: 'Naše nehnuteľnosti', it: 'I nostri immobili', pt: 'Os nossos imóveis', el: 'Τα ακίνητά μας', cs: 'Naše nemovitosti', sl: 'Naše nepremičnine', sv: 'Våra fastigheter', da: 'Vores ejendomme', no: 'Våre eiendommer', fi: 'Kohteemme', et: 'Meie kinnisvara', lv: 'Mūsu īpašumi', lt: 'Mūsų nekilnojamasis turtas', sr: 'Naše nekretnine', uk: 'Наші об’єкти', tr: 'Mülklerimiz', he: 'הנכסים שלנו', ar: 'عقاراتنا', ru: 'Наши объекты', zh: '我们的房源' })}</Button>
-            <Button variant="text" href={path(locale, 'contact')}>{x({ hu: 'Kapcsolat', nl: 'Contact', en: 'Contact', de: 'Kontakt', fr: 'Contact', es: 'Contacto', pl: 'Kontakt', ro: 'Contact', sk: 'Kontakt', it: 'Contatti', pt: 'Contacto', el: 'Επικοινωνία', cs: 'Kontakt', sl: 'Kontakt', sv: 'Kontakt', da: 'Kontakt', no: 'Kontakt', fi: 'Yhteystiedot', et: 'Kontakt', lv: 'Kontakti', lt: 'Kontaktai', sr: 'Kontakt', uk: 'Контакти', tr: 'İletişim', he: 'צור קשר', ar: 'Contact', ru: 'Контакты', zh: 'Contact' })}</Button>
+            <Button variant="text" href={path(locale, 'contact')}>{x({ hu: 'Kapcsolat', nl: 'Contact', en: 'Contact', de: 'Kontakt', fr: 'Contact', es: 'Contacto', pl: 'Kontakt', ro: 'Contact', sk: 'Kontakt', it: 'Contatti', pt: 'Contacto', el: 'Επικοινωνία', cs: 'Kontakt', sl: 'Kontakt', sv: 'Kontakt', da: 'Kontakt', no: 'Kontakt', fi: 'Yhteystiedot', et: 'Kontakt', lv: 'Kontakti', lt: 'Kontaktai', sr: 'Kontakt', uk: 'Контакти', tr: 'İletişim', he: 'צור קשר', ar: 'اتصل بنا', ru: 'Контакты', zh: 'Contact' })}</Button>
           </div>
         </div>
 

@@ -466,12 +466,12 @@ const ACK = {
        <p>בברכה,<br>FINDDOME נדל״ן</p>`,
   },
   ar: {
-    subject: 'Thank you for your message | FINDDOME',
+    subject: 'شكرًا على رسالتك | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
-       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
-       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
-       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+      `<p>عزيزي/عزيزتي ${escapeHtml(name || 'الزائر')}،</p>
+       <p>شكرًا على رسالتك. لقد تلقّيناها، وسيتواصل معك أحد أعضاء فريقنا قريبًا. ${escapeHtml(hours)}</p>
+       <p>هل أنت مستعجل؟ اتصل بنا على ${escapeHtml(phones)}.</p>
+       <p>مع أطيب التحيات،<br>FINDDOME العقارية</p>`,
   },
   ru: {
     subject: 'Спасибо за сообщение | FINDDOME',

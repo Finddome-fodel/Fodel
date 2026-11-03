@@ -37,9 +37,9 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
   if (baseline.kind === 'ksh') {
     const county = baseline.level === 'county';
     const level = county
-      ? x({ hu: 'vármegye', nl: 'provincie', en: 'county', de: 'Komitat', fr: 'comitat', es: 'condado', pl: 'komitat', ro: 'județ', sk: 'župa', it: 'contea', pt: 'condado', el: 'νομός', cs: 'župa', sl: 'županija', sv: 'län', da: 'amt', no: 'fylke', fi: 'lääni', et: 'maakond', lv: 'mede', lt: 'apskritis', sr: 'županija', uk: 'медьє', tr: 'il', he: 'מחוז', ar: 'county', ru: 'медье', zh: 'county' })
-      : x({ hu: 'település', nl: 'plaats', en: 'settlement', de: 'Ort', fr: 'localité', es: 'localidad', pl: 'miejscowość', ro: 'localitate', sk: 'obec', it: 'comune', pt: 'localidade', el: 'οικισμός', cs: 'obec', sl: 'kraj', sv: 'ort', da: 'by', no: 'sted', fi: 'paikkakunta', et: 'asula', lv: 'apdzīvotā vieta', lt: 'gyvenvietė', sr: 'naselje', uk: 'населений пункт', tr: 'yerleşim yeri', he: 'יישוב', ar: 'settlement', ru: 'населённый пункт', zh: 'settlement' });
-    const records = x({ hu: `${n} adat`, nl: `${n} gegevens`, en: `${n} records`, de: `${n} Datensätze`, fr: `${n} données`, es: `${nOf('es', n, 'dato', 'datos')}`, pl: `${nOf('pl', n, 'rekord', 'rekordy', 'rekordów')}`, ro: `${nOf('ro', n, 'înregistrare', 'înregistrări', 'de înregistrări')}`, sk: `${nOf('sk', n, 'záznam', 'záznamy', 'záznamov')}`, it: `${n} ${n === 1 ? 'dato' : 'dati'}`, pt: `${n} ${n === 1 ? 'registo' : 'registos'}`, el: `${n} ${n === 1 ? 'εγγραφή' : 'εγγραφές'}`, cs: `${nOf('cs', n, 'záznam', 'záznamy', 'záznamů')}`, sl: `${nOf('sl', n, 'zapis', 'zapisi', 'zapisov', 'zapisa')}`, sv: `${n} ${n === 1 ? 'post' : 'poster'}`, da: `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, no: `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, fi: `${n} ${n === 1 ? 'tietue' : 'tietuetta'}`, et: `${n} ${n === 1 ? 'kirje' : 'kirjet'}`, lv: `${nOf('lv', n, 'ieraksts', 'ieraksti', 'ierakstu')}`, lt: `${nOf('lt', n, 'įrašas', 'įrašai', 'įrašų')}`, sr: `${nOf('sr', n, 'podatak', 'podatka', 'podataka')}`, uk: `${nOf('uk', n, 'запис', 'записи', 'записів')}`, tr: `${n} kayıt`, he: `${nOf('he', n, 'רשומה', 'רשומות', 'רשומות', 'רשומות')}`, ar: `${n} records`, ru: `${nOf('ru', n, 'запись', 'записи', 'записей')}`, zh: `${n} records` });
+      ? x({ hu: 'vármegye', nl: 'provincie', en: 'county', de: 'Komitat', fr: 'comitat', es: 'condado', pl: 'komitat', ro: 'județ', sk: 'župa', it: 'contea', pt: 'condado', el: 'νομός', cs: 'župa', sl: 'županija', sv: 'län', da: 'amt', no: 'fylke', fi: 'lääni', et: 'maakond', lv: 'mede', lt: 'apskritis', sr: 'županija', uk: 'медьє', tr: 'il', he: 'מחוז', ar: 'المقاطعة', ru: 'медье', zh: 'county' })
+      : x({ hu: 'település', nl: 'plaats', en: 'settlement', de: 'Ort', fr: 'localité', es: 'localidad', pl: 'miejscowość', ro: 'localitate', sk: 'obec', it: 'comune', pt: 'localidade', el: 'οικισμός', cs: 'obec', sl: 'kraj', sv: 'ort', da: 'by', no: 'sted', fi: 'paikkakunta', et: 'asula', lv: 'apdzīvotā vieta', lt: 'gyvenvietė', sr: 'naselje', uk: 'населений пункт', tr: 'yerleşim yeri', he: 'יישוב', ar: 'البلدة', ru: 'населённый пункт', zh: 'settlement' });
+    const records = x({ hu: `${n} adat`, nl: `${n} gegevens`, en: `${n} records`, de: `${n} Datensätze`, fr: `${n} données`, es: `${nOf('es', n, 'dato', 'datos')}`, pl: `${nOf('pl', n, 'rekord', 'rekordy', 'rekordów')}`, ro: `${nOf('ro', n, 'înregistrare', 'înregistrări', 'de înregistrări')}`, sk: `${nOf('sk', n, 'záznam', 'záznamy', 'záznamov')}`, it: `${n} ${n === 1 ? 'dato' : 'dati'}`, pt: `${n} ${n === 1 ? 'registo' : 'registos'}`, el: `${n} ${n === 1 ? 'εγγραφή' : 'εγγραφές'}`, cs: `${nOf('cs', n, 'záznam', 'záznamy', 'záznamů')}`, sl: `${nOf('sl', n, 'zapis', 'zapisi', 'zapisov', 'zapisa')}`, sv: `${n} ${n === 1 ? 'post' : 'poster'}`, da: `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, no: `${n} ${n === 1 ? 'datapunkt' : 'datapunkter'}`, fi: `${n} ${n === 1 ? 'tietue' : 'tietuetta'}`, et: `${n} ${n === 1 ? 'kirje' : 'kirjet'}`, lv: `${nOf('lv', n, 'ieraksts', 'ieraksti', 'ierakstu')}`, lt: `${nOf('lt', n, 'įrašas', 'įrašai', 'įrašų')}`, sr: `${nOf('sr', n, 'podatak', 'podatka', 'podataka')}`, uk: `${nOf('uk', n, 'запис', 'записи', 'записів')}`, tr: `${n} kayıt`, he: `${nOf('he', n, 'רשומה', 'רשומות', 'רשומות', 'רשומות')}`, ar: `عدد السجلات: ${n}`, ru: `${nOf('ru', n, 'запись', 'записи', 'записей')}`, zh: `${n} records` });
     return `KSH Ingatlanadattár, ${baseline.year} (${level}, ${records})`;
   }
   if (baseline.kind === 'comps') {
@@ -69,7 +69,7 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
       uk: `${nOf('uk', n, 'схоже оголошення FINDDOME', 'схожі оголошення FINDDOME', 'схожих оголошень FINDDOME')}`,
       tr: `${n} benzer FINDDOME ilanı`,
       he: `מודעות FINDDOME דומות: ${n}`,
-      ar: `${n} comparable FINDDOME listings`,
+      ar: `إعلانات FINDDOME مماثلة: ${n}`,
       ru: `${nOf('ru', n, 'похожее объявление FINDDOME', 'похожих объявления FINDDOME', 'похожих объявлений FINDDOME')}`,
       zh: `${n} comparable FINDDOME listings`,
     });
@@ -79,7 +79,7 @@ export function valuationBasis(locale: Locale, baseline: ValuationBaseline | nul
 
 /** "2024, retrieved 12 March 2026" */
 export function valuationSourceDate(locale: Locale, baseline: ValuationBaseline): string {
-  const word = localizer(locale)({ hu: 'letöltve', nl: 'opgehaald', en: 'retrieved', de: 'abgerufen', fr: 'consulté le', es: 'consultado el', pl: 'stan na', ro: 'consultat la', sk: 'stav k', it: 'consultato', pt: 'consultado', el: 'ανάκτηση', cs: 'staženo', sl: 'pridobljeno', sv: 'hämtad', da: 'hentet', no: 'hentet', fi: 'haettu', et: 'allalaaditud', lv: 'iegūts', lt: 'gauta', sr: 'preuzeto', uk: 'дані отримано', tr: 'erişim tarihi', he: 'נשלף בתאריך', ar: 'retrieved', ru: 'данные получены', zh: 'retrieved' });
+  const word = localizer(locale)({ hu: 'letöltve', nl: 'opgehaald', en: 'retrieved', de: 'abgerufen', fr: 'consulté le', es: 'consultado el', pl: 'stan na', ro: 'consultat la', sk: 'stav k', it: 'consultato', pt: 'consultado', el: 'ανάκτηση', cs: 'staženo', sl: 'pridobljeno', sv: 'hämtad', da: 'hentet', no: 'hentet', fi: 'haettu', et: 'allalaaditud', lv: 'iegūts', lt: 'gauta', sr: 'preuzeto', uk: 'дані отримано', tr: 'erişim tarihi', he: 'נשלף בתאריך', ar: 'تاريخ الاسترجاع', ru: 'данные получены', zh: 'retrieved' });
   return `${baseline.year}, ${word} ${baseline.retrievedAt ?? '—'}`;
 }
 
@@ -112,7 +112,7 @@ export function payNowLabel(locale: Locale, pkg: ValuationPackage): string {
     uk: `Оплатити зараз — ${price} (картка)`,
     tr: `Şimdi öde — ${price} (kart)`,
     he: `תשלום עכשיו — ${price} (כרטיס אשראי)`,
-    ar: `Pay now — ${price} (card)`,
+    ar: `ادفع الآن — ${price} (بطاقة)`,
     ru: `Оплатить сейчас — ${price} (карта)`,
     zh: `Pay now — ${price} (card)`,
   });
