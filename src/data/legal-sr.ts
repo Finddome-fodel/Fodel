@@ -26,6 +26,9 @@ const tierPrices = (pkg: typeof normal) =>
   legacyTiers(pkg.priceEur, pkg.priceEurAbove, pkg.thresholdHuf).map((tier) => eur(tier.priceEur, L)).join(' / ');
 // Only the category highlight is sold since November 2026; the homepage is an editorial choice.
 const minMonths = (extra('category-highlight') as { minMonths?: number }).minMonths ?? 3;
+/** Serbian month count: 1 mesec, 2–4 meseca, 5+ meseci (11–14 meseci). */
+const months = (n: number) =>
+  `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'mesec' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'meseca' : 'meseci'}`;
 
 export const LEGAL_SR = {
   imprint: {
@@ -233,12 +236,12 @@ export const LEGAL_SR = {
         title: '3. Cene',
         intro: `Sve cene uključuju holandski PDV od ${LISTING_VAT_PERCENT}%. Potpun pregled nalazi se na stranici Cene.`,
         rows: [
-          [`Ekonomični oglas (${cheap.months} meseca)`, eur(cheap.priceEur, L)],
-          [`Standardni oglas (${normal.months} meseci)`, `${tierPrices(normal)}`],
+          [`Ekonomični oglas (${months(cheap.months)})`, eur(cheap.priceEur, L)],
+          [`Standardni oglas (${months(normal.months)})`, `${tierPrices(normal)}`],
           ['Prevod', `${eur(extra('translation').priceEur, L)} po jeziku`],
           [
             'Isticanje',
-            `${eur(extra('category-highlight').priceEur, L)} mesečno (najmanje ${minMonths} meseca)`,
+            `${eur(extra('category-highlight').priceEur, L)} mesečno (najmanje ${months(minMonths)})`,
           ],
         ],
       },
