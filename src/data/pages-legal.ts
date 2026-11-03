@@ -38,6 +38,7 @@ import { LEGAL_UK } from '~/data/legal-uk';
 import { LEGAL_SR } from '~/data/legal-sr';
 import { LEGAL_TR } from '~/data/legal-tr';
 import { LEGAL_HE } from '~/data/legal-he';
+import { LEGAL_AR } from '~/data/legal-ar';
 
 const UPDATED = { hu: '2026. július 27.', nl: '27 juli 2026' };
 
@@ -658,7 +659,7 @@ export const LEGAL: Record<Locale, Record<LegalKey, ContentPageData>> = {
   uk: LEGAL_UK,
   tr: LEGAL_TR,
   he: LEGAL_HE,
-  ar: LEGAL_EN,
+  ar: LEGAL_AR,
   ru: LEGAL_RU,
   zh: LEGAL_EN,
 };
