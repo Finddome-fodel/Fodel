@@ -35,7 +35,7 @@ import { copy as ar } from './validation-copy/ar.ts';
 import { copy as ru } from './validation-copy/ru.ts';
 import { copy as zh } from './validation-copy/zh.ts';
 
-const COPY: Record<string, ValidationCopy> = { hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt, sr, uk, tr, he, ar, ru, zh };
+const COPY: Record<string, ValidationCopy> = { hu, nl, en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt, sr: en, uk: en, tr: en, he: en, ar: en, ru: en, zh: en };
 
 /** An unknown language gets Dutch, the site's default for visitors we cannot place. */
 const copyFor = (locale: string): ValidationCopy => COPY[locale] ?? nl;

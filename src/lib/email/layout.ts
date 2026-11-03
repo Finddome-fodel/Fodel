@@ -269,12 +269,12 @@ const FOOTER_COPY = {
     contact: 'Kontaktai',
   },
   sr: {
-    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
-    contact: 'Contact',
+    why: 'Ovaj imejl dobijate jer imate FINDDOME nalog ili ste kod nas postavili oglas.',
+    contact: 'Kontakt',
   },
   uk: {
-    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
-    contact: 'Contact',
+    why: 'Ви отримали цей лист, тому що маєте акаунт FINDDOME або розмістили в нас оголошення.',
+    contact: 'Контакти',
   },
   tr: {
     why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
@@ -326,8 +326,8 @@ const VISITOR_WHY: Record<ShellLocale, string> = {
   et: 'Saate selle kirja, sest võtsite meiega ühendust FINDDOME’i veebilehe kaudu.',
   lv: 'Jūs saņemat šo e-pastu, jo sazinājāties ar mums, izmantojot FINDDOME tīmekļa vietni.',
   lt: 'Šį laišką gaunate, nes susisiekėte su mumis per FINDDOME svetainę.',
-  sr: 'You are receiving this email because you contacted us through the FINDDOME website.',
-  uk: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  sr: 'Ovaj imejl dobijate jer ste nam se obratili preko sajta FINDDOME.',
+  uk: 'Ви отримали цей лист, тому що зверталися до нас через сайт FINDDOME.',
   tr: 'You are receiving this email because you contacted us through the FINDDOME website.',
   he: 'You are receiving this email because you contacted us through the FINDDOME website.',
   ar: 'You are receiving this email because you contacted us through the FINDDOME website.',

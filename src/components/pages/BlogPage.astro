@@ -49,7 +49,7 @@ const noteOf = (index: number) => {
   const entry = index < 0 ? leadEntry : restEntries[index];
   return entry ? sourceNote(locale, entry.from, 'article') : null;
 };
-const minutes = (n: number) => x({ hu: `${n} perc olvasás`, nl: `${n} min. lezen`, en: `${n} min read`, de: `${n} Min. Lesezeit`, fr: `${n} min de lecture`, es: `${n} min de lectura`, pl: `${n} min czytania`, ro: `${n} min de lectură`, sk: `${n} min čítania`, it: `${n} min di lettura`, pt: `${n} min de leitura`, el: `${n} λεπτά ανάγνωσης`, cs: `${n} min čtení`, sl: `${n} min branja`, sv: `${n} min läsning`, da: `${n} min. læsning`, no: `${n} min lesing`, fi: `Lukuaika ${n} min`, et: `Lugemisaeg ${n} min`, lv: `Lasīšanas laiks ${n} min`, lt: `Skaitymo laikas ${n} min.`, sr: `${n} min read`, uk: `${n} min read`, tr: `${n} min read`, he: `${n} min read`, ar: `${n} min read`, ru: `${n} min read`, zh: `${n} min read` });
+const minutes = (n: number) => x({ hu: `${n} perc olvasás`, nl: `${n} min. lezen`, en: `${n} min read`, de: `${n} Min. Lesezeit`, fr: `${n} min de lecture`, es: `${n} min de lectura`, pl: `${n} min czytania`, ro: `${n} min de lectură`, sk: `${n} min čítania`, it: `${n} min di lettura`, pt: `${n} min de leitura`, el: `${n} λεπτά ανάγνωσης`, cs: `${n} min čtení`, sl: `${n} min branja`, sv: `${n} min läsning`, da: `${n} min. læsning`, no: `${n} min lesing`, fi: `Lukuaika ${n} min`, et: `Lugemisaeg ${n} min`, lv: `Lasīšanas laiks ${n} min`, lt: `Skaitymo laikas ${n} min.`, sr: `${n} min čitanja`, uk: `${n} хв читання`, tr: `${n} dk okuma`, he: `${n} דק׳ קריאה`, ar: `قراءة في ${n} د`, ru: `${n} мин чтения`, zh: `阅读约 ${n} 分钟` });
 
 const t = {
   metaTitle: x({
@@ -74,13 +74,13 @@ const t = {
     et: 'Uudised ja artiklid: turg, kolimine, nõuanded',
     lv: 'Jaunumi un raksti: tirgus, pārcelšanās, padomi',
     lt: 'Naujienos ir straipsniai: rinka, persikėlimas, patarimai',
-    sr: 'News and articles: market, moving, advice',
-    uk: 'News and articles: market, moving, advice',
-    tr: 'News and articles: market, moving, advice',
-    he: 'News and articles: market, moving, advice',
-    ar: 'News and articles: market, moving, advice',
-    ru: 'News and articles: market, moving, advice',
-    zh: 'News and articles: market, moving, advice',
+    sr: 'Vesti i članci: tržište, preseljenje, saveti',
+    uk: 'Новини та статті: ринок, переїзд, поради',
+    tr: 'Haberler ve makaleler: piyasa, taşınma, öneriler',
+    he: 'חדשות ומאמרים: שוק, מעבר, ייעוץ',
+    ar: 'أخبار ومقالات: السوق والانتقال ونصائح',
+    ru: 'Новости и статьи: рынок, переезд, советы',
+    zh: '新闻与文章：市场、移居与建议',
   }),
   metaDescription: x({
     hu: 'Elemzések a magyar ingatlanpiacról és a nyugat-európai vevőkről: miért költöznek a hollandok Magyarországra, és mit jelent ez az eladóknak.',
@@ -104,17 +104,17 @@ const t = {
     et: 'Analüüsid Ungari kinnisvaraturu ja Lääne-Euroopa ostjate kohta: miks Madalmaade elanikud Ungarisse kolivad ja mida see tähendab.',
     lv: 'Ungārijas nekustamo īpašumu tirgus un Rietumeiropas pircēju analīze: kāpēc cilvēki no Nīderlandes pārceļas uz Ungāriju un ko tas nozīmē.',
     lt: 'Vengrijos nekilnojamojo turto rinkos ir Vakarų Europos pirkėjų analizė: kodėl žmonės iš Nyderlandų persikelia į Vengriją ir ką tai reiškia.',
-    sr: 'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
-    uk: 'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
-    tr: 'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
-    he: 'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
-    ar: 'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
-    ru: 'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
-    zh: 'Analysis of the Hungarian property market and Western European buyers: why people from the Netherlands move to Hungary, and what it means.',
+    sr: 'Analiza mađarskog tržišta nekretnina i kupaca iz Zapadne Evrope: zašto se ljudi iz Holandije sele u Mađarsku i šta to znači.',
+    uk: 'Аналіз угорського ринку нерухомості та покупців із Західної Європи: чому люди з Нідерландів переїжджають до Угорщини і що це означає.',
+    tr: 'Macar emlak piyasası ve Batı Avrupalı alıcılar üzerine analizler: Hollanda’dan insanlar neden Macaristan’a taşınıyor ve bu ne anlama geliyor.',
+    he: 'ניתוח של שוק הנדל״ן ההונגרי ושל קונים ממערב אירופה: למה אנשים מהולנד עוברים להונגריה, ומה המשמעות של זה.',
+    ar: 'تحليلات عن سوق العقارات المجري والمشترين من أوروبا الغربية: لماذا ينتقل أشخاص من هولندا إلى المجر، وماذا يعني ذلك.',
+    ru: 'Аналитика венгерского рынка недвижимости и покупателей из Западной Европы: почему люди из Нидерландов переезжают в Венгрию и что это значит.',
+    zh: '关于匈牙利房产市场和西欧买家的分析：为什么荷兰人移居匈牙利，这又意味着什么。',
   }),
-  eyebrow: x({ hu: 'Hírek és cikkek', nl: 'Nieuws', en: 'News and articles', de: 'Neuigkeiten und Artikel', fr: 'Actualités et articles', es: 'Noticias y artículos', pl: 'Aktualności i artykuły', ro: 'Noutăți și articole', sk: 'Novinky a články', it: 'Notizie e articoli', pt: 'Notícias e artigos', el: 'Νέα και άρθρα', cs: 'Novinky a články', sl: 'Novice in članki', sv: 'Nyheter och artiklar', da: 'Nyheder og artikler', no: 'Nyheter og artikler', fi: 'Uutiset ja artikkelit', et: 'Uudised ja artiklid', lv: 'Jaunumi un raksti', lt: 'Naujienos ir straipsniai', sr: 'News and articles', uk: 'News and articles', tr: 'News and articles', he: 'News and articles', ar: 'News and articles', ru: 'News and articles', zh: 'News and articles' }),
-  title: x({ hu: 'Piac,', nl: 'Markt,', en: 'Market,', de: 'Markt,', fr: 'Marché,', es: 'Mercado,', pl: 'Rynek,', ro: 'Piață,', sk: 'Trh,', it: 'Mercato,', pt: 'Mercado,', el: 'Αγορά,', cs: 'Trh,', sl: 'Trg,', sv: 'Marknad,', da: 'Marked,', no: 'Marked,', fi: 'Markkinat,', et: 'Turg,', lv: 'Tirgus,', lt: 'Rinka,', sr: 'Market,', uk: 'Market,', tr: 'Market,', he: 'Market,', ar: 'Market,', ru: 'Market,', zh: 'Market,' }),
-  titleEm: x({ hu: 'háttér, tanácsok', nl: 'achtergrond, advies', en: 'background, advice', de: 'Hintergrund, Ratgeber', fr: 'contexte, conseils', es: 'contexto, consejos', pl: 'tło, porady', ro: 'context, sfaturi', sk: 'súvislosti, rady', it: 'contesto, consigli', pt: 'contexto, conselhos', el: 'πλαίσιο, συμβουλές', cs: 'souvislosti, rady', sl: 'ozadje, nasveti', sv: 'bakgrund, råd', da: 'baggrund, råd', no: 'bakgrunn, råd', fi: 'tausta, neuvot', et: 'taust, nõuanded', lv: 'konteksts, padomi', lt: 'kontekstas, patarimai', sr: 'background, advice', uk: 'background, advice', tr: 'background, advice', he: 'background, advice', ar: 'background, advice', ru: 'background, advice', zh: 'background, advice' }),
+  eyebrow: x({ hu: 'Hírek és cikkek', nl: 'Nieuws', en: 'News and articles', de: 'Neuigkeiten und Artikel', fr: 'Actualités et articles', es: 'Noticias y artículos', pl: 'Aktualności i artykuły', ro: 'Noutăți și articole', sk: 'Novinky a články', it: 'Notizie e articoli', pt: 'Notícias e artigos', el: 'Νέα και άρθρα', cs: 'Novinky a články', sl: 'Novice in članki', sv: 'Nyheter och artiklar', da: 'Nyheder og artikler', no: 'Nyheter og artikler', fi: 'Uutiset ja artikkelit', et: 'Uudised ja artiklid', lv: 'Jaunumi un raksti', lt: 'Naujienos ir straipsniai', sr: 'Vesti i članci', uk: 'Новини та статті', tr: 'Haberler ve makaleler', he: 'חדשות ומאמרים', ar: 'أخبار ومقالات', ru: 'Новости и статьи', zh: '新闻与文章' }),
+  title: x({ hu: 'Piac,', nl: 'Markt,', en: 'Market,', de: 'Markt,', fr: 'Marché,', es: 'Mercado,', pl: 'Rynek,', ro: 'Piață,', sk: 'Trh,', it: 'Mercato,', pt: 'Mercado,', el: 'Αγορά,', cs: 'Trh,', sl: 'Trg,', sv: 'Marknad,', da: 'Marked,', no: 'Marked,', fi: 'Markkinat,', et: 'Turg,', lv: 'Tirgus,', lt: 'Rinka,', sr: 'Tržište,', uk: 'Ринок,', tr: 'Piyasa,', he: 'שוק,', ar: 'السوق،', ru: 'Рынок,', zh: '市场、' }),
+  titleEm: x({ hu: 'háttér, tanácsok', nl: 'achtergrond, advies', en: 'background, advice', de: 'Hintergrund, Ratgeber', fr: 'contexte, conseils', es: 'contexto, consejos', pl: 'tło, porady', ro: 'context, sfaturi', sk: 'súvislosti, rady', it: 'contesto, consigli', pt: 'contexto, conselhos', el: 'πλαίσιο, συμβουλές', cs: 'souvislosti, rady', sl: 'ozadje, nasveti', sv: 'bakgrund, råd', da: 'baggrund, råd', no: 'bakgrunn, råd', fi: 'tausta, neuvot', et: 'taust, nõuanded', lv: 'konteksts, padomi', lt: 'kontekstas, patarimai', sr: 'pozadina, saveti', uk: 'контекст, поради', tr: 'arka plan, öneriler', he: 'רקע, ייעוץ', ar: 'خلفيات ونصائح', ru: 'контекст, советы', zh: '背景与建议' }),
   intro: x({
     hu: 'Amit a magyar ingatlanpiacról és a nyugat-európai vevőkről érdemes tudni.',
     nl: 'Wat u moet weten over de Hongaarse vastgoedmarkt en de kopers uit West-Europa.',
@@ -137,13 +137,13 @@ const t = {
     et: 'Mida tasub teada Ungari kinnisvaraturu ja Lääne-Euroopa ostjate kohta.',
     lv: 'Kas jāzina par Ungārijas nekustamo īpašumu tirgu un pircējiem no Rietumeiropas.',
     lt: 'Ką verta žinoti apie Vengrijos nekilnojamojo turto rinką ir pirkėjus iš Vakarų Europos.',
-    sr: 'What you should know about the Hungarian property market and buyers from Western Europe.',
-    uk: 'What you should know about the Hungarian property market and buyers from Western Europe.',
-    tr: 'What you should know about the Hungarian property market and buyers from Western Europe.',
-    he: 'What you should know about the Hungarian property market and buyers from Western Europe.',
-    ar: 'What you should know about the Hungarian property market and buyers from Western Europe.',
-    ru: 'What you should know about the Hungarian property market and buyers from Western Europe.',
-    zh: 'What you should know about the Hungarian property market and buyers from Western Europe.',
+    sr: 'Šta treba da znate o mađarskom tržištu nekretnina i kupcima iz Zapadne Evrope.',
+    uk: 'Що варто знати про угорський ринок нерухомості та покупців із Західної Європи.',
+    tr: 'Macar emlak piyasası ve Batı Avrupalı alıcılar hakkında bilmeniz gerekenler.',
+    he: 'מה כדאי לדעת על שוק הנדל״ן ההונגרי ועל קונים ממערב אירופה.',
+    ar: 'ما تحتاج إلى معرفته عن سوق العقارات المجري والمشترين من أوروبا الغربية.',
+    ru: 'Что нужно знать о венгерском рынке недвижимости и покупателях из Западной Европы.',
+    zh: '关于匈牙利房产市场和西欧买家，您需要了解的内容。',
   }),
   empty: x({
     hu: 'Hamarosan új cikkekkel jelentkezünk.',
@@ -167,17 +167,17 @@ const t = {
     et: 'Uued artiklid tulevad peagi.',
     lv: 'Drīzumā būs jauni raksti.',
     lt: 'Netrukus pasirodys naujų straipsnių.',
-    sr: 'New articles are coming soon.',
-    uk: 'New articles are coming soon.',
-    tr: 'New articles are coming soon.',
-    he: 'New articles are coming soon.',
-    ar: 'New articles are coming soon.',
-    ru: 'New articles are coming soon.',
-    zh: 'New articles are coming soon.',
+    sr: 'Novi članci uskoro stižu.',
+    uk: 'Нові статті з’являться найближчим часом.',
+    tr: 'Yeni makaleler çok yakında.',
+    he: 'מאמרים חדשים יעלו בקרוב.',
+    ar: 'مقالات جديدة قريبًا.',
+    ru: 'Новые статьи скоро появятся.',
+    zh: '新文章即将发布。',
   }),
-  kinds: x({ hu: 'Tartalomtípus', nl: 'Soort inhoud', en: 'Content type', de: 'Art des Inhalts', fr: 'Type de contenu', es: 'Tipo de contenido', pl: 'Rodzaj treści', ro: 'Tip de conținut', sk: 'Typ obsahu', it: 'Tipo di contenuto', pt: 'Tipo de conteúdo', el: 'Είδος περιεχομένου', cs: 'Typ obsahu', sl: 'Vrsta vsebine', sv: 'Innehållstyp', da: 'Indholdstype', no: 'Innholdstype', fi: 'Sisältötyyppi', et: 'Sisu tüüp', lv: 'Satura veids', lt: 'Turinio tipas', sr: 'Content type', uk: 'Content type', tr: 'Content type', he: 'Content type', ar: 'Content type', ru: 'Content type', zh: 'Content type' }),
-  articles: x({ hu: 'Cikkek', nl: 'Artikelen', en: 'Articles', de: 'Artikel', fr: 'Articles', es: 'Artículos', pl: 'Artykuły', ro: 'Articole', sk: 'Články', it: 'Articoli', pt: 'Artigos', el: 'Άρθρα', cs: 'Články', sl: 'Članki', sv: 'Artiklar', da: 'Artikler', no: 'Artikler', fi: 'Artikkelit', et: 'Artiklid', lv: 'Raksti', lt: 'Straipsniai', sr: 'Articles', uk: 'Articles', tr: 'Articles', he: 'Articles', ar: 'Articles', ru: 'Articles', zh: 'Articles' }),
-  cases: x({ hu: 'Esettanulmányok', nl: 'Casestudies', en: 'Case studies', de: 'Fallstudien', fr: 'Études de cas', es: 'Casos prácticos', pl: 'Studia przypadków', ro: 'Studii de caz', sk: 'Prípadové štúdie', it: 'Casi di studio', pt: 'Estudos de caso', el: 'Μελέτες περίπτωσης', cs: 'Případové studie', sl: 'Študije primerov', sv: 'Fallstudier', da: 'Casestudier', no: 'Casestudier', fi: 'Tapaustutkimukset', et: 'Juhtumiuuringud', lv: 'Gadījumu izpētes', lt: 'Atvejų analizės', sr: 'Case studies', uk: 'Case studies', tr: 'Case studies', he: 'Case studies', ar: 'Case studies', ru: 'Case studies', zh: 'Case studies' }),
+  kinds: x({ hu: 'Tartalomtípus', nl: 'Soort inhoud', en: 'Content type', de: 'Art des Inhalts', fr: 'Type de contenu', es: 'Tipo de contenido', pl: 'Rodzaj treści', ro: 'Tip de conținut', sk: 'Typ obsahu', it: 'Tipo di contenuto', pt: 'Tipo de conteúdo', el: 'Είδος περιεχομένου', cs: 'Typ obsahu', sl: 'Vrsta vsebine', sv: 'Innehållstyp', da: 'Indholdstype', no: 'Innholdstype', fi: 'Sisältötyyppi', et: 'Sisu tüüp', lv: 'Satura veids', lt: 'Turinio tipas', sr: 'Vrsta sadržaja', uk: 'Тип матеріалу', tr: 'İçerik türü', he: 'סוג תוכן', ar: 'نوع المحتوى', ru: 'Тип материала', zh: '内容类型' }),
+  articles: x({ hu: 'Cikkek', nl: 'Artikelen', en: 'Articles', de: 'Artikel', fr: 'Articles', es: 'Artículos', pl: 'Artykuły', ro: 'Articole', sk: 'Články', it: 'Articoli', pt: 'Artigos', el: 'Άρθρα', cs: 'Články', sl: 'Članki', sv: 'Artiklar', da: 'Artikler', no: 'Artikler', fi: 'Artikkelit', et: 'Artiklid', lv: 'Raksti', lt: 'Straipsniai', sr: 'Članci', uk: 'Статті', tr: 'Makaleler', he: 'מאמרים', ar: 'مقالات', ru: 'Статьи', zh: '文章' }),
+  cases: x({ hu: 'Esettanulmányok', nl: 'Casestudies', en: 'Case studies', de: 'Fallstudien', fr: 'Études de cas', es: 'Casos prácticos', pl: 'Studia przypadków', ro: 'Studii de caz', sk: 'Prípadové štúdie', it: 'Casi di studio', pt: 'Estudos de caso', el: 'Μελέτες περίπτωσης', cs: 'Případové studie', sl: 'Študije primerov', sv: 'Fallstudier', da: 'Casestudier', no: 'Casestudier', fi: 'Tapaustutkimukset', et: 'Juhtumiuuringud', lv: 'Gadījumu izpētes', lt: 'Atvejų analizės', sr: 'Studije slučaja', uk: 'Кейси', tr: 'Vaka çalışmaları', he: 'מקרי בוחן', ar: 'دراسات حالة', ru: 'Кейсы', zh: '案例' }),
 };
 ---
 
@@ -261,7 +261,7 @@ const t = {
                       </time>
                     )}
                     <span aria-hidden="true">·</span>
-                    <span>{post.reading_minutes} {x({ hu: 'perc', nl: 'min.', en: 'min', de: 'Min.', fr: 'min', es: 'min', pl: 'min', ro: 'min', sk: 'min', it: 'min', pt: 'min', el: 'λεπτά', cs: 'min', sl: 'min', sv: 'min', da: 'min', no: 'min', fi: 'min', et: 'min', lv: 'min', lt: 'min', sr: 'min', uk: 'min', tr: 'min', he: 'min', ar: 'min', ru: 'min', zh: 'min' })}</span>
+                    <span>{post.reading_minutes} {x({ hu: 'perc', nl: 'min.', en: 'min', de: 'Min.', fr: 'min', es: 'min', pl: 'min', ro: 'min', sk: 'min', it: 'min', pt: 'min', el: 'λεπτά', cs: 'min', sl: 'min', sv: 'min', da: 'min', no: 'min', fi: 'min', et: 'min', lv: 'min', lt: 'min', sr: 'min', uk: 'хв', tr: 'dk', he: 'דק׳', ar: 'د', ru: 'мин', zh: '分钟' })}</span>
                   </p>
                 </div>
               </a>

@@ -253,74 +253,74 @@ const wantsByLocale = {
     'Objektai Užduonojyje',
   ],
   sr: [
-    'Rural properties at a realistic price',
-    'Hilltop properties with a view',
-    'Properties at the edge of a forest',
-    'Holiday homes to let, and waterside properties',
-    'Farms suitable for livestock and horses',
-    'Large plots and agricultural property',
-    'Good links to Budapest airport',
-    'Property in Transdanubia',
+    'Seoske nekretnine po realnoj ceni',
+    'Nekretnine na brdu sa pogledom',
+    'Nekretnine na ivici šume',
+    'Kuće za odmor za izdavanje i nekretnine uz vodu',
+    'Imanja pogodna za stoku i konje',
+    'Veliki placevi i poljoprivredne nekretnine',
+    'Dobra povezanost sa aerodromom u Budimpešti',
+    'Nekretnine u Zadunavlju',
   ],
   uk: [
-    'Rural properties at a realistic price',
-    'Hilltop properties with a view',
-    'Properties at the edge of a forest',
-    'Holiday homes to let, and waterside properties',
-    'Farms suitable for livestock and horses',
-    'Large plots and agricultural property',
-    'Good links to Budapest airport',
-    'Property in Transdanubia',
+    'Сільська нерухомість за реальною ціною',
+    'Нерухомість на пагорбі з краєвидом',
+    'Нерухомість на узліссі',
+    'Будинки для відпочинку під оренду та нерухомість біля води',
+    'Господарства для худоби й коней',
+    'Великі ділянки та сільськогосподарська нерухомість',
+    'Зручне сполучення з аеропортом Будапешта',
+    'Нерухомість у Задунав’ї',
   ],
   tr: [
-    'Rural properties at a realistic price',
-    'Hilltop properties with a view',
-    'Properties at the edge of a forest',
-    'Holiday homes to let, and waterside properties',
-    'Farms suitable for livestock and horses',
-    'Large plots and agricultural property',
-    'Good links to Budapest airport',
-    'Property in Transdanubia',
+    'Makul fiyatlı kırsal mülkler',
+    'Manzaralı tepe mülkleri',
+    'Orman kenarındaki mülkler',
+    'Kiraya verilebilecek tatil evleri ve su kenarındaki mülkler',
+    'Hayvancılığa ve atlara uygun çiftlikler',
+    'Büyük arsalar ve tarım arazileri',
+    'Budapeşte havalimanına iyi ulaşım',
+    'Transdanubya’da mülkler',
   ],
   he: [
-    'Rural properties at a realistic price',
-    'Hilltop properties with a view',
-    'Properties at the edge of a forest',
-    'Holiday homes to let, and waterside properties',
-    'Farms suitable for livestock and horses',
-    'Large plots and agricultural property',
-    'Good links to Budapest airport',
-    'Property in Transdanubia',
+    'נכסים כפריים במחיר הגיוני',
+    'נכסים על גבעה עם נוף',
+    'נכסים בשולי היער',
+    'בתי נופש להשכרה ונכסים על המים',
+    'משקים המתאימים לבעלי חיים ולסוסים',
+    'מגרשים גדולים ונכסים חקלאיים',
+    'חיבור נוח לשדה התעופה של בודפשט',
+    'נכסים בעבר הדנובה',
   ],
   ar: [
-    'Rural properties at a realistic price',
-    'Hilltop properties with a view',
-    'Properties at the edge of a forest',
-    'Holiday homes to let, and waterside properties',
-    'Farms suitable for livestock and horses',
-    'Large plots and agricultural property',
-    'Good links to Budapest airport',
-    'Property in Transdanubia',
+    'عقارات ريفية بأسعار معقولة',
+    'عقارات على التلال بإطلالات',
+    'عقارات على أطراف الغابة',
+    'بيوت عطلات للتأجير وعقارات على الماء',
+    'مزارع مناسبة للماشية والخيول',
+    'قطع أراضٍ كبيرة وعقارات زراعية',
+    'سهولة الوصول إلى مطار بودابست',
+    'عقارات في منطقة ما وراء الدانوب',
   ],
   ru: [
-    'Rural properties at a realistic price',
-    'Hilltop properties with a view',
-    'Properties at the edge of a forest',
-    'Holiday homes to let, and waterside properties',
-    'Farms suitable for livestock and horses',
-    'Large plots and agricultural property',
-    'Good links to Budapest airport',
-    'Property in Transdanubia',
+    'Сельская недвижимость по реальной цене',
+    'Недвижимость на холме с видом',
+    'Недвижимость на опушке леса',
+    'Дома для отдыха под аренду и недвижимость у воды',
+    'Хозяйства для скота и лошадей',
+    'Большие участки и сельскохозяйственная недвижимость',
+    'Удобное сообщение с аэропортом Будапешта',
+    'Недвижимость в Задунайском крае',
   ],
   zh: [
-    'Rural properties at a realistic price',
-    'Hilltop properties with a view',
-    'Properties at the edge of a forest',
-    'Holiday homes to let, and waterside properties',
-    'Farms suitable for livestock and horses',
-    'Large plots and agricultural property',
-    'Good links to Budapest airport',
-    'Property in Transdanubia',
+    '价格合理的乡村房产',
+    '坐拥景观的山坡房产',
+    '森林边缘的房产',
+    '可出租的度假屋和临水房产',
+    '适合饲养牲畜和马匹的农庄',
+    '大面积地块和农业房产',
+    '前往布达佩斯机场交通便利',
+    '外多瑙地区的房产',
   ],
 };
 const wants = wantsByLocale[locale];
@@ -343,7 +343,7 @@ const wants = wantsByLocale[locale];
     titleEm={c.hero.titleEm}
     body={c.hero.body}
     image={vevoknek}
-    imageAlt={x({ hu: 'Felújított magyar parasztház belső tere', nl: 'Interieur van een gerenoveerde Hongaarse woning', en: 'Interior of a renovated Hungarian farmhouse', de: 'Innenraum eines renovierten ungarischen Bauernhauses', fr: 'Intérieur d’une maison hongroise rénovée', es: 'Interior de una casa de campo húngara reformada', pl: 'Wnętrze wyremontowanego węgierskiego domu wiejskiego', ro: 'Interiorul unei case de țară maghiare renovate', sk: 'Interiér zrekonštruovaného maďarského vidieckeho domu', it: 'Interno di una casa colonica ungherese ristrutturata', pt: 'Interior de uma casa de quinta húngara renovada', el: 'Εσωτερικό ανακαινισμένης ουγγρικής αγροικίας', cs: 'Interiér zrekonstruovaného maďarského statku', sl: 'Notranjost prenovljene madžarske kmečke hiše', sv: 'Interiör i ett renoverat ungerskt bondhus', da: 'Interiør i et renoveret ungarsk stuehus', no: 'Interiør i et renovert ungarsk våningshus', fi: 'Remontoidun unkarilaisen maalaistalon sisätilat', et: 'Renoveeritud Ungari talumaja interjöör', lv: 'Atjaunotas ungāru lauku mājas interjers', lt: 'Renovuoto vengriško ūkininko namo interjeras', sr: 'Interior of a renovated Hungarian farmhouse', uk: 'Interior of a renovated Hungarian farmhouse', tr: 'Interior of a renovated Hungarian farmhouse', he: 'Interior of a renovated Hungarian farmhouse', ar: 'Interior of a renovated Hungarian farmhouse', ru: 'Interior of a renovated Hungarian farmhouse', zh: 'Interior of a renovated Hungarian farmhouse' })}
+    imageAlt={x({ hu: 'Felújított magyar parasztház belső tere', nl: 'Interieur van een gerenoveerde Hongaarse woning', en: 'Interior of a renovated Hungarian farmhouse', de: 'Innenraum eines renovierten ungarischen Bauernhauses', fr: 'Intérieur d’une maison hongroise rénovée', es: 'Interior de una casa de campo húngara reformada', pl: 'Wnętrze wyremontowanego węgierskiego domu wiejskiego', ro: 'Interiorul unei case de țară maghiare renovate', sk: 'Interiér zrekonštruovaného maďarského vidieckeho domu', it: 'Interno di una casa colonica ungherese ristrutturata', pt: 'Interior de uma casa de quinta húngara renovada', el: 'Εσωτερικό ανακαινισμένης ουγγρικής αγροικίας', cs: 'Interiér zrekonstruovaného maďarského statku', sl: 'Notranjost prenovljene madžarske kmečke hiše', sv: 'Interiör i ett renoverat ungerskt bondhus', da: 'Interiør i et renoveret ungarsk stuehus', no: 'Interiør i et renovert ungarsk våningshus', fi: 'Remontoidun unkarilaisen maalaistalon sisätilat', et: 'Renoveeritud Ungari talumaja interjöör', lv: 'Atjaunotas ungāru lauku mājas interjers', lt: 'Renovuoto vengriško ūkininko namo interjeras', sr: 'Enterijer renovirane mađarske seoske kuće', uk: 'Інтер’єр відремонтованого угорського сільського будинку', tr: 'Yenilenmiş bir Macar çiftlik evinin içi', he: 'פנים של בית חווה הונגרי משופץ', ar: 'من داخل بيت ريفي مجري مُجدَّد', ru: 'Интерьер отремонтированного венгерского сельского дома', zh: '翻新后的匈牙利农舍内景' })}
     primary={{ label: c.hero.cta, href: path(locale, 'properties') }}
     secondary={{ label: c.hero.secondary, href: path(locale, 'searchRequest') }}
   />
@@ -352,7 +352,7 @@ const wants = wantsByLocale[locale];
   <section class="direct slab surface-ink" data-bg="dark">
     <p class="direct-source reveal">
       <span class="direct-rule draw" aria-hidden="true"></span>
-      {x({ hu: 'A FINDDOME-modell', nl: 'Het FINDDOME-model', en: 'The FINDDOME model', de: 'Das FINDDOME-Modell', fr: 'Le modèle FINDDOME', es: 'El modelo FINDDOME', pl: 'Model FINDDOME', ro: 'Modelul FINDDOME', sk: 'Model FINDDOME', it: 'Il modello FINDDOME', pt: 'O modelo FINDDOME', el: 'Το μοντέλο της FINDDOME', cs: 'Model FINDDOME', sl: 'Model FINDDOME', sv: 'FINDDOME-modellen', da: 'FINDDOME-modellen', no: 'FINDDOME-modellen', fi: 'FINDDOME-malli', et: 'FINDDOME’i mudel', lv: 'FINDDOME modelis', lt: 'FINDDOME modelis', sr: 'The FINDDOME model', uk: 'The FINDDOME model', tr: 'The FINDDOME model', he: 'The FINDDOME model', ar: 'The FINDDOME model', ru: 'The FINDDOME model', zh: 'The FINDDOME model' })}
+      {x({ hu: 'A FINDDOME-modell', nl: 'Het FINDDOME-model', en: 'The FINDDOME model', de: 'Das FINDDOME-Modell', fr: 'Le modèle FINDDOME', es: 'El modelo FINDDOME', pl: 'Model FINDDOME', ro: 'Modelul FINDDOME', sk: 'Model FINDDOME', it: 'Il modello FINDDOME', pt: 'O modelo FINDDOME', el: 'Το μοντέλο της FINDDOME', cs: 'Model FINDDOME', sl: 'Model FINDDOME', sv: 'FINDDOME-modellen', da: 'FINDDOME-modellen', no: 'FINDDOME-modellen', fi: 'FINDDOME-malli', et: 'FINDDOME’i mudel', lv: 'FINDDOME modelis', lt: 'FINDDOME modelis', sr: 'Model FINDDOME', uk: 'Модель FINDDOME', tr: 'FINDDOME modeli', he: 'המודל של FINDDOME', ar: 'نموذج FINDDOME', ru: 'Модель FINDDOME', zh: 'FINDDOME 模式' })}
     </p>
     <h2 class="direct-statement" data-words>
       {x({
@@ -377,13 +377,13 @@ const wants = wantsByLocale[locale];
         et: 'Kuulutuses on ka omaniku nimi ja telefoninumber.',
         lv: 'Sludinājumā ir norādīts arī īpašnieka vārds un tālruņa numurs.',
         lt: 'Skelbime nurodytas ir savininko vardas bei telefono numeris.',
-        sr: 'The owner’s name and number are in the listing too.',
-        uk: 'The owner’s name and number are in the listing too.',
-        tr: 'The owner’s name and number are in the listing too.',
-        he: 'The owner’s name and number are in the listing too.',
-        ar: 'The owner’s name and number are in the listing too.',
-        ru: 'The owner’s name and number are in the listing too.',
-        zh: 'The owner’s name and number are in the listing too.',
+        sr: 'Ime i broj vlasnika nalaze se i u oglasu.',
+        uk: 'Ім’я та номер власника також є в оголошенні.',
+        tr: 'Mülk sahibinin adı ve numarası da ilanda yer alır.',
+        he: 'גם שם בעל הנכס ומספר הטלפון שלו מופיעים במודעה.',
+        ar: 'يظهر اسم المالك ورقمه في الإعلان أيضًا.',
+        ru: 'Имя и номер владельца также указаны в объявлении.',
+        zh: '房源信息中也会显示业主的姓名和电话。',
       })}
     </h2>
 
@@ -411,19 +411,19 @@ const wants = wantsByLocale[locale];
           et: 'See ei ole loosung, vaid meie mudeli tuum. Kui omanik on sellega nõus, võite temaga otse ühendust võtta. Kui lepite ostu niimoodi kokku, ei maksa keegi vahendustasu. Meile on kuulutuse eest juba makstud.',
           lv: 'Tas nav sauklis, bet mūsu modeļa pamats. Ja īpašnieks tam ir piekritis, varat sazināties ar viņu tieši. Ja pirkumu noslēdzat šādi, neviens nemaksā komisijas maksu. Par sludinājumu mums jau ir samaksāts.',
           lt: 'Tai ne šūkis, o mūsų modelio esmė. Jei savininkas sutiko, galite susisiekti su juo tiesiogiai. Jei pirkimą sutarsite taip, niekas nemoka komisinio atlyginimo. Už skelbimą mums jau sumokėta.',
-          sr: 'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
-          uk: 'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
-          tr: 'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
-          he: 'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
-          ar: 'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
-          ru: 'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
-          zh: 'This is not a slogan but the heart of our model. Where the owner has agreed to it, you can contact them directly. If you arrange the purchase that way, nobody pays commission. We have already been paid for the listing.',
+          sr: 'Ovo nije slogan, već srž našeg modela. Ako se vlasnik složio, možete ga kontaktirati direktno. Ako kupovinu dogovorite na taj način, niko ne plaća proviziju. Za oglas smo već plaćeni.',
+          uk: 'Це не гасло, а суть нашої моделі. Якщо власник погодився, ви можете зв’язатися з ним напряму. Якщо ви домовитеся про купівлю саме так, ніхто не платить комісії. За оголошення нам уже заплатили.',
+          tr: 'Bu bir slogan değil, modelimizin özü. Mülk sahibi onay verdiyse onunla doğrudan iletişime geçebilirsiniz. Satın almayı bu şekilde ayarlarsanız kimse komisyon ödemez. İlan ücretimizi zaten aldık.',
+          he: 'זו לא סיסמה, אלא לב המודל שלנו. אם בעל הנכס הסכים לכך, אפשר לפנות אליו ישירות. אם תסגרו את הרכישה בדרך הזו, אף אחד לא משלם דמי תיווך. על המודעה כבר קיבלנו תשלום.',
+          ar: 'هذا ليس شعارًا، بل جوهر نموذجنا. إذا وافق المالك، يمكنك التواصل معه مباشرة. وإذا اتفقتما على الشراء بهذه الطريقة، فلا يدفع أحد عمولة. لقد تقاضينا أجر الإعلان مسبقًا.',
+          ru: 'Это не лозунг, а суть нашей модели. Если владелец дал согласие, вы можете связаться с ним напрямую. Если вы договоритесь о покупке таким образом, никто не платит комиссию. За объявление нам уже заплатили.',
+          zh: '这不是口号，而是我们模式的核心。只要业主同意，您就可以直接联系业主。如果您通过这种方式谈妥购买，任何一方都无需支付佣金。我们已经收取了房源发布费。',
         })}
       </p>
       <div class="direct-figure reveal">
         <span class="pct num">0<span class="pct-sign">%</span></span>
         <span class="pct-note">
-          {x({ hu: 'jutalék közvetlen üzletkötésnél', nl: 'courtage bij een directe koop', en: 'commission on a direct purchase', de: 'Provision bei direktem Kauf', fr: 'de commission en cas d’achat direct', es: 'de comisión en una compra directa', pl: 'prowizji przy zakupie bezpośrednim', ro: 'comision la achiziția directă', sk: 'provízia pri priamej kúpe', it: 'di provvigione sull’acquisto diretto', pt: 'de comissão numa compra direta', el: 'προμήθεια σε απευθείας αγορά', cs: 'provize při přímé koupi', sl: 'provizije pri neposrednem nakupu', sv: 'provision vid direktköp', da: 'provision ved direkte køb', no: 'provisjon ved direkte kjøp', fi: 'välityspalkkio suorassa kaupassa', et: 'vahendustasu otseostul', lv: 'komisijas maksa, pērkot tieši', lt: 'komisinis atlyginimas perkant tiesiogiai', sr: 'commission on a direct purchase', uk: 'commission on a direct purchase', tr: 'commission on a direct purchase', he: 'commission on a direct purchase', ar: 'commission on a direct purchase', ru: 'commission on a direct purchase', zh: 'commission on a direct purchase' })}
+          {x({ hu: 'jutalék közvetlen üzletkötésnél', nl: 'courtage bij een directe koop', en: 'commission on a direct purchase', de: 'Provision bei direktem Kauf', fr: 'de commission en cas d’achat direct', es: 'de comisión en una compra directa', pl: 'prowizji przy zakupie bezpośrednim', ro: 'comision la achiziția directă', sk: 'provízia pri priamej kúpe', it: 'di provvigione sull’acquisto diretto', pt: 'de comissão numa compra direta', el: 'προμήθεια σε απευθείας αγορά', cs: 'provize při přímé koupi', sl: 'provizije pri neposrednem nakupu', sv: 'provision vid direktköp', da: 'provision ved direkte køb', no: 'provisjon ved direkte kjøp', fi: 'välityspalkkio suorassa kaupassa', et: 'vahendustasu otseostul', lv: 'komisijas maksa, pērkot tieši', lt: 'komisinis atlyginimas perkant tiesiogiai', sr: 'provizije pri direktnoj kupovini', uk: 'комісії при прямій купівлі', tr: 'doğrudan alımda komisyon', he: 'דמי תיווך ברכישה ישירה', ar: 'عمولة عند الشراء المباشر', ru: 'комиссии при прямой покупке', zh: '直接购买零佣金' })}
         </span>
       </div>
     </div>
@@ -437,7 +437,7 @@ const wants = wantsByLocale[locale];
         <PointsList items={c.services.points} />
         <div class="services-more">
           <Button variant="text" href={path(locale, 'services')}>
-            {x({ hu: 'Szolgáltatások és díjak', nl: 'Diensten en tarieven', en: 'Services and prices', de: 'Leistungen und Preise', fr: 'Services et tarifs', es: 'Servicios y tarifas', pl: 'Usługi i ceny', ro: 'Servicii și tarife', sk: 'Služby a ceny', it: 'Servizi e prezzi', pt: 'Serviços e preços', el: 'Υπηρεσίες και τιμές', cs: 'Služby a ceny', sl: 'Storitve in cene', sv: 'Tjänster och priser', da: 'Ydelser og priser', no: 'Tjenester og priser', fi: 'Palvelut ja hinnat', et: 'Teenused ja hinnad', lv: 'Pakalpojumi un cenas', lt: 'Paslaugos ir kainos', sr: 'Services and prices', uk: 'Services and prices', tr: 'Services and prices', he: 'Services and prices', ar: 'Services and prices', ru: 'Services and prices', zh: 'Services and prices' })}
+            {x({ hu: 'Szolgáltatások és díjak', nl: 'Diensten en tarieven', en: 'Services and prices', de: 'Leistungen und Preise', fr: 'Services et tarifs', es: 'Servicios y tarifas', pl: 'Usługi i ceny', ro: 'Servicii și tarife', sk: 'Služby a ceny', it: 'Servizi e prezzi', pt: 'Serviços e preços', el: 'Υπηρεσίες και τιμές', cs: 'Služby a ceny', sl: 'Storitve in cene', sv: 'Tjänster och priser', da: 'Ydelser og priser', no: 'Tjenester og priser', fi: 'Palvelut ja hinnat', et: 'Teenused ja hinnad', lv: 'Pakalpojumi un cenas', lt: 'Paslaugos ir kainos', sr: 'Usluge i cene', uk: 'Послуги та ціни', tr: 'Hizmetler ve fiyatlar', he: 'שירותים ומחירים', ar: 'الخدمات والأسعار', ru: 'Услуги и цены', zh: '服务与价格' })}
           </Button>
         </div>
       </div>
@@ -453,11 +453,11 @@ const wants = wantsByLocale[locale];
   <section class="agri">
     <div class="agri-figure reveal" aria-hidden="true">
       <span class="ha num">{AGRI_HECTARE_LIMIT}</span>
-      <span class="ha-unit">{x({ hu: 'hektár', nl: 'hectare', en: 'hectares', de: 'Hektar', fr: 'hectares', es: 'hectáreas', pl: 'hektarów', ro: 'de hectare', sk: 'hektárov', it: 'ettari', pt: 'hectares', el: 'εκτάρια', cs: 'hektarů', sl: 'hektarjev', sv: 'hektar', da: 'hektar', no: 'hektar', fi: 'hehtaaria', et: 'hektarit', lv: 'hektāri', lt: 'hektarų', sr: 'hectares', uk: 'hectares', tr: 'hectares', he: 'hectares', ar: 'hectares', ru: 'hectares', zh: 'hectares' })}</span>
+      <span class="ha-unit">{x({ hu: 'hektár', nl: 'hectare', en: 'hectares', de: 'Hektar', fr: 'hectares', es: 'hectáreas', pl: 'hektarów', ro: 'de hectare', sk: 'hektárov', it: 'ettari', pt: 'hectares', el: 'εκτάρια', cs: 'hektarů', sl: 'hektarjev', sv: 'hektar', da: 'hektar', no: 'hektar', fi: 'hehtaaria', et: 'hektarit', lv: 'hektāri', lt: 'hektarų', sr: 'hektara', uk: 'гектарів', tr: 'hektar', he: 'הקטאר', ar: 'هكتار', ru: 'гектаров', zh: '公顷' })}</span>
     </div>
     <div class="agri-copy reveal">
       <SectionHead
-        eyebrow={x({ hu: 'Agráringatlan', nl: 'Agrarisch vastgoed', en: 'Agricultural property', de: 'Agrarimmobilien', fr: 'Immobilier agricole', es: 'Inmuebles rústicos', pl: 'Nieruchomości rolne', ro: 'Proprietăți agricole', sk: 'Poľnohospodárske nehnuteľnosti', it: 'Immobili agricoli', pt: 'Imóveis agrícolas', el: 'Αγροτικά ακίνητα', cs: 'Zemědělské nemovitosti', sl: 'Kmetijske nepremičnine', sv: 'Jordbruksfastigheter', da: 'Landbrugsejendomme', no: 'Landbrukseiendommer', fi: 'Maatalouskiinteistöt', et: 'Põllumajanduslik kinnisvara', lv: 'Lauksaimniecības īpašumi', lt: 'Žemės ūkio paskirties objektai', sr: 'Agricultural property', uk: 'Agricultural property', tr: 'Agricultural property', he: 'Agricultural property', ar: 'Agricultural property', ru: 'Agricultural property', zh: 'Agricultural property' })}
+        eyebrow={x({ hu: 'Agráringatlan', nl: 'Agrarisch vastgoed', en: 'Agricultural property', de: 'Agrarimmobilien', fr: 'Immobilier agricole', es: 'Inmuebles rústicos', pl: 'Nieruchomości rolne', ro: 'Proprietăți agricole', sk: 'Poľnohospodárske nehnuteľnosti', it: 'Immobili agricoli', pt: 'Imóveis agrícolas', el: 'Αγροτικά ακίνητα', cs: 'Zemědělské nemovitosti', sl: 'Kmetijske nepremičnine', sv: 'Jordbruksfastigheter', da: 'Landbrugsejendomme', no: 'Landbrukseiendommer', fi: 'Maatalouskiinteistöt', et: 'Põllumajanduslik kinnisvara', lv: 'Lauksaimniecības īpašumi', lt: 'Žemės ūkio paskirties objektai', sr: 'Poljoprivredne nekretnine', uk: 'Сільськогосподарська нерухомість', tr: 'Tarım arazileri', he: 'נכסים חקלאיים', ar: 'عقارات زراعية', ru: 'Сельскохозяйственная недвижимость', zh: '农业房产' })}
         title={x({
           hu: `Agrárvégzettséggel ${AGRI_HECTARE_LIMIT} hektárig vásárolhat`,
           nl: `Met een agrarische kwalificatie tot ${AGRI_HECTARE_LIMIT} hectare`,
@@ -480,13 +480,13 @@ const wants = wantsByLocale[locale];
           et: `Kuni ${nOf('et', AGRI_HECTARE_LIMIT, 'hektar', 'hektarit')} põllumajandusliku kvalifikatsiooniga`,
           lv: `Līdz ${nOf('lv', AGRI_HECTARE_LIMIT, 'hektāram', 'hektāriem')} ar lauksaimniecības kvalifikāciju`,
           lt: `Iki ${nOf('lt', AGRI_HECTARE_LIMIT, 'hektaro', 'hektarų', 'hektarų')} turint žemės ūkio kvalifikaciją`,
-          sr: `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
-          uk: `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
-          tr: `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
-          he: `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
-          ar: `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
-          ru: `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
-          zh: `Buy up to ${AGRI_HECTARE_LIMIT} hectares with an agricultural qualification`,
+          sr: `Kupite do ${AGRI_HECTARE_LIMIT} hektara uz poljoprivrednu kvalifikaciju`,
+          uk: `Купівля до ${AGRI_HECTARE_LIMIT} гектарів за наявності аграрної кваліфікації`,
+          tr: `Tarım yeterliliğiyle ${AGRI_HECTARE_LIMIT} hektara kadar satın alın`,
+          he: `רכישה של עד ${AGRI_HECTARE_LIMIT} הקטאר עם הכשרה חקלאית`,
+          ar: `اشترِ حتى ${AGRI_HECTARE_LIMIT} هكتار بمؤهل زراعي`,
+          ru: `Покупка до ${AGRI_HECTARE_LIMIT} гектаров при наличии аграрной квалификации`,
+          zh: `具备农业资质可购买最多 ${AGRI_HECTARE_LIMIT} 公顷`,
         })}
       />
       <p>
@@ -512,17 +512,17 @@ const wants = wantsByLocale[locale];
           et: `Põllumajandusliku kvalifikatsiooniga ELi kodanik võib Ungaris omandada kokku ${nOf('et', AGRI_HECTARE_LIMIT, 'hektari', 'hektarit')} maad. Kogu selle menetluse korraldame meie.`,
           lv: `ES pilsonis ar lauksaimniecības kvalifikāciju Ungārijā var iegādāties kopumā ${nOf('lv', AGRI_HECTARE_LIMIT, 'hektāru', 'hektārus')} zemes. Visu šo procedūru mēs nokārtosim jūsu vietā.`,
           lt: `ES pilietis, turintis žemės ūkio kvalifikaciją, Vengrijoje gali įsigyti iš viso ${nOf('lt', AGRI_HECTARE_LIMIT, 'hektarą', 'hektarus', 'hektarų')} žemės. Visą šią procedūrą sutvarkome už jus.`,
-          sr: `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
-          uk: `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
-          tr: `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
-          he: `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
-          ar: `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
-          ru: `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
-          zh: `An EU citizen with an agricultural qualification may acquire a total of ${AGRI_HECTARE_LIMIT} hectares of land in Hungary. We handle that whole procedure for you.`,
+          sr: `Državljanin EU sa poljoprivrednom kvalifikacijom može u Mađarskoj steći ukupno ${AGRI_HECTARE_LIMIT} hektara zemljišta. Ceo taj postupak obavljamo umesto vas.`,
+          uk: `Громадянин ЄС з аграрною кваліфікацією може набути в Угорщині загалом до ${AGRI_HECTARE_LIMIT} гектарів землі. Усю цю процедуру ми беремо на себе.`,
+          tr: `Tarım yeterliliğine sahip bir AB vatandaşı Macaristan’da toplam ${AGRI_HECTARE_LIMIT} hektara kadar arazi edinebilir. Bu sürecin tamamını sizin için yürütüyoruz.`,
+          he: `אזרח האיחוד האירופי בעל הכשרה חקלאית רשאי לרכוש בהונגריה עד ${AGRI_HECTARE_LIMIT} הקטאר קרקע בסך הכול. אנחנו מטפלים בכל ההליך הזה בשבילכם.`,
+          ar: `يحق لمواطن الاتحاد الأوروبي الحاصل على مؤهل زراعي أن يمتلك في المجر ما يصل إلى ${AGRI_HECTARE_LIMIT} هكتار من الأراضي إجمالًا. ونتولى عنك هذا الإجراء بالكامل.`,
+          ru: `Гражданин ЕС с аграрной квалификацией может приобрести в Венгрии в общей сложности до ${AGRI_HECTARE_LIMIT} гектаров земли. Всю эту процедуру мы берём на себя.`,
+          zh: `具备农业资质的欧盟公民在匈牙利最多可取得共计 ${AGRI_HECTARE_LIMIT} 公顷土地。整个流程由我们为您办理。`,
         })}
       </p>
       <Button variant="outline" href={path(locale, 'agricultural')}>
-        {x({ hu: 'Részletek', nl: 'Meer hierover', en: 'More on this', de: 'Mehr dazu', fr: 'En savoir plus', es: 'Más información', pl: 'Dowiedz się więcej', ro: 'Aflați mai multe', sk: 'Viac informácií', it: 'Maggiori informazioni', pt: 'Saber mais', el: 'Περισσότερα', cs: 'Více informací', sl: 'Več o tem', sv: 'Läs mer', da: 'Læs mere', no: 'Les mer', fi: 'Lue lisää', et: 'Loe lähemalt', lv: 'Uzzināt vairāk', lt: 'Plačiau', sr: 'More on this', uk: 'More on this', tr: 'More on this', he: 'More on this', ar: 'More on this', ru: 'More on this', zh: 'More on this' })}
+        {x({ hu: 'Részletek', nl: 'Meer hierover', en: 'More on this', de: 'Mehr dazu', fr: 'En savoir plus', es: 'Más información', pl: 'Dowiedz się więcej', ro: 'Aflați mai multe', sk: 'Viac informácií', it: 'Maggiori informazioni', pt: 'Saber mais', el: 'Περισσότερα', cs: 'Více informací', sl: 'Več o tem', sv: 'Läs mer', da: 'Læs mere', no: 'Les mer', fi: 'Lue lisää', et: 'Loe lähemalt', lv: 'Uzzināt vairāk', lt: 'Plačiau', sr: 'Više o tome', uk: 'Докладніше', tr: 'Daha fazlası', he: 'עוד בנושא', ar: 'اقرأ المزيد', ru: 'Подробнее', zh: '了解更多' })}
       </Button>
     </div>
   </section>
@@ -532,8 +532,8 @@ const wants = wantsByLocale[locale];
     featured.length > 0 && (
       <section class="featured slab">
         <SectionHead
-          eyebrow={x({ hu: 'Válogatás', nl: 'Selectie', en: 'Selection', de: 'Auswahl', fr: 'Sélection', es: 'Selección', pl: 'Wybór', ro: 'Selecție', sk: 'Výber', it: 'Selezione', pt: 'Seleção', el: 'Επιλογή', cs: 'Výběr', sl: 'Izbor', sv: 'Urval', da: 'Udvalg', no: 'Utvalg', fi: 'Valikoima', et: 'Valik', lv: 'Izlase', lt: 'Atranka', sr: 'Selection', uk: 'Selection', tr: 'Selection', he: 'Selection', ar: 'Selection', ru: 'Selection', zh: 'Selection' })}
-          title={x({ hu: 'Kiemelt ingatlanok', nl: 'Uitgelicht aanbod', en: 'Featured properties', de: 'Empfohlene Immobilien', fr: 'Biens à la une', es: 'Inmuebles destacados', pl: 'Wyróżnione nieruchomości', ro: 'Proprietăți recomandate', sk: 'Vybrané nehnuteľnosti', it: 'Immobili in evidenza', pt: 'Imóveis em destaque', el: 'Προτεινόμενα ακίνητα', cs: 'Vybrané nemovitosti', sl: 'Izpostavljene nepremičnine', sv: 'Utvalda fastigheter', da: 'Udvalgte ejendomme', no: 'Utvalgte eiendommer', fi: 'Nostetut kohteet', et: 'Esiletõstetud objektid', lv: 'Izceltie īpašumi', lt: 'Rekomenduojami objektai', sr: 'Featured properties', uk: 'Featured properties', tr: 'Featured properties', he: 'Featured properties', ar: 'Featured properties', ru: 'Featured properties', zh: 'Featured properties' })}
+          eyebrow={x({ hu: 'Válogatás', nl: 'Selectie', en: 'Selection', de: 'Auswahl', fr: 'Sélection', es: 'Selección', pl: 'Wybór', ro: 'Selecție', sk: 'Výber', it: 'Selezione', pt: 'Seleção', el: 'Επιλογή', cs: 'Výběr', sl: 'Izbor', sv: 'Urval', da: 'Udvalg', no: 'Utvalg', fi: 'Valikoima', et: 'Valik', lv: 'Izlase', lt: 'Atranka', sr: 'Izbor', uk: 'Добірка', tr: 'Seçki', he: 'מבחר', ar: 'مختارات', ru: 'Подборка', zh: '精选' })}
+          title={x({ hu: 'Kiemelt ingatlanok', nl: 'Uitgelicht aanbod', en: 'Featured properties', de: 'Empfohlene Immobilien', fr: 'Biens à la une', es: 'Inmuebles destacados', pl: 'Wyróżnione nieruchomości', ro: 'Proprietăți recomandate', sk: 'Vybrané nehnuteľnosti', it: 'Immobili in evidenza', pt: 'Imóveis em destaque', el: 'Προτεινόμενα ακίνητα', cs: 'Vybrané nemovitosti', sl: 'Izpostavljene nepremičnine', sv: 'Utvalda fastigheter', da: 'Udvalgte ejendomme', no: 'Utvalgte eiendommer', fi: 'Nostetut kohteet', et: 'Esiletõstetud objektid', lv: 'Izceltie īpašumi', lt: 'Rekomenduojami objektai', sr: 'Istaknute nekretnine', uk: 'Рекомендовані об’єкти', tr: 'Öne çıkan mülkler', he: 'נכסים מומלצים', ar: 'عقارات مميزة', ru: 'Рекомендуемые объекты', zh: '精选房源' })}
           size="large"
           class="feat-head reveal"
         >
@@ -562,17 +562,17 @@ const wants = wantsByLocale[locale];
 
   {/* ── Buyer FAQ ── */}
   <FaqAccordion
-    eyebrow={x({ hu: 'Gyakori kérdések', nl: 'Veelgestelde vragen', en: 'Frequently asked questions', de: 'Häufige Fragen', fr: 'Questions fréquentes', es: 'Preguntas frecuentes', pl: 'Najczęściej zadawane pytania', ro: 'Întrebări frecvente', sk: 'Časté otázky', it: 'Domande frequenti', pt: 'Perguntas frequentes', el: 'Συχνές ερωτήσεις', cs: 'Časté dotazy', sl: 'Pogosta vprašanja', sv: 'Vanliga frågor', da: 'Ofte stillede spørgsmål', no: 'Ofte stilte spørsmål', fi: 'Usein kysytyt kysymykset', et: 'Korduma kippuvad küsimused', lv: 'Biežāk uzdotie jautājumi', lt: 'Dažnai užduodami klausimai', sr: 'Frequently asked questions', uk: 'Frequently asked questions', tr: 'Frequently asked questions', he: 'Frequently asked questions', ar: 'Frequently asked questions', ru: 'Frequently asked questions', zh: 'Frequently asked questions' })}
-    title={x({ hu: 'Amit a vevők kérdezni szoktak', nl: 'Wat kopers ons vragen', en: 'What buyers ask us', de: 'Was Käufer uns fragen', fr: 'Ce que nous demandent les acheteurs', es: 'Lo que nos preguntan los compradores', pl: 'O co pytają nas kupujący', ro: 'Ce ne întreabă cumpărătorii', sk: 'Na čo sa nás pýtajú kupujúci', it: 'Che cosa ci chiedono gli acquirenti', pt: 'O que os compradores nos perguntam', el: 'Τι μας ρωτούν οι αγοραστές', cs: 'Na co se nás kupující ptají', sl: 'Kaj nas sprašujejo kupci', sv: 'Det här frågar köpare oss', da: 'Det spørger købere os om', no: 'Dette spør kjøpere oss om', fi: 'Mitä ostajat meiltä kysyvät', et: 'Mida ostjad meilt küsivad', lv: 'Ko mums jautā pircēji', lt: 'Ko mūsų klausia pirkėjai', sr: 'What buyers ask us', uk: 'What buyers ask us', tr: 'What buyers ask us', he: 'What buyers ask us', ar: 'What buyers ask us', ru: 'What buyers ask us', zh: 'What buyers ask us' })}
+    eyebrow={x({ hu: 'Gyakori kérdések', nl: 'Veelgestelde vragen', en: 'Frequently asked questions', de: 'Häufige Fragen', fr: 'Questions fréquentes', es: 'Preguntas frecuentes', pl: 'Najczęściej zadawane pytania', ro: 'Întrebări frecvente', sk: 'Časté otázky', it: 'Domande frequenti', pt: 'Perguntas frequentes', el: 'Συχνές ερωτήσεις', cs: 'Časté dotazy', sl: 'Pogosta vprašanja', sv: 'Vanliga frågor', da: 'Ofte stillede spørgsmål', no: 'Ofte stilte spørsmål', fi: 'Usein kysytyt kysymykset', et: 'Korduma kippuvad küsimused', lv: 'Biežāk uzdotie jautājumi', lt: 'Dažnai užduodami klausimai', sr: 'Česta pitanja', uk: 'Поширені запитання', tr: 'Sık sorulan sorular', he: 'שאלות נפוצות', ar: 'الأسئلة الشائعة', ru: 'Частые вопросы', zh: '常见问题' })}
+    title={x({ hu: 'Amit a vevők kérdezni szoktak', nl: 'Wat kopers ons vragen', en: 'What buyers ask us', de: 'Was Käufer uns fragen', fr: 'Ce que nous demandent les acheteurs', es: 'Lo que nos preguntan los compradores', pl: 'O co pytają nas kupujący', ro: 'Ce ne întreabă cumpărătorii', sk: 'Na čo sa nás pýtajú kupujúci', it: 'Che cosa ci chiedono gli acquirenti', pt: 'O que os compradores nos perguntam', el: 'Τι μας ρωτούν οι αγοραστές', cs: 'Na co se nás kupující ptají', sl: 'Kaj nas sprašujejo kupci', sv: 'Det här frågar köpare oss', da: 'Det spørger købere os om', no: 'Dette spør kjøpere oss om', fi: 'Mitä ostajat meiltä kysyvät', et: 'Mida ostjad meilt küsivad', lv: 'Ko mums jautā pircēji', lt: 'Ko mūsų klausia pirkėjai', sr: 'Šta nas kupci pitaju', uk: 'Що нас запитують покупці', tr: 'Alıcıların bize sorduğu sorular', he: 'מה קונים שואלים אותנו', ar: 'ما يسألنا عنه المشترون', ru: 'О чём нас спрашивают покупатели', zh: '买家常问的问题' })}
     entries={buyerFaq}
     moreHref={path(locale, 'faq')}
-    moreLabel={x({ hu: 'Összes kérdés és válasz', nl: 'Alle vragen en antwoorden', en: 'All questions and answers', de: 'Alle Fragen und Antworten', fr: 'Toutes les questions et réponses', es: 'Todas las preguntas y respuestas', pl: 'Wszystkie pytania i odpowiedzi', ro: 'Toate întrebările și răspunsurile', sk: 'Všetky otázky a odpovede', it: 'Tutte le domande e risposte', pt: 'Todas as perguntas e respostas', el: 'Όλες οι ερωτήσεις και απαντήσεις', cs: 'Všechny otázky a odpovědi', sl: 'Vsa vprašanja in odgovori', sv: 'Alla frågor och svar', da: 'Alle spørgsmål og svar', no: 'Alle spørsmål og svar', fi: 'Kaikki kysymykset ja vastaukset', et: 'Kõik küsimused ja vastused', lv: 'Visi jautājumi un atbildes', lt: 'Visi klausimai ir atsakymai', sr: 'All questions and answers', uk: 'All questions and answers', tr: 'All questions and answers', he: 'All questions and answers', ar: 'All questions and answers', ru: 'All questions and answers', zh: 'All questions and answers' })}
+    moreLabel={x({ hu: 'Összes kérdés és válasz', nl: 'Alle vragen en antwoorden', en: 'All questions and answers', de: 'Alle Fragen und Antworten', fr: 'Toutes les questions et réponses', es: 'Todas las preguntas y respuestas', pl: 'Wszystkie pytania i odpowiedzi', ro: 'Toate întrebările și răspunsurile', sk: 'Všetky otázky a odpovede', it: 'Tutte le domande e risposte', pt: 'Todas as perguntas e respostas', el: 'Όλες οι ερωτήσεις και απαντήσεις', cs: 'Všechny otázky a odpovědi', sl: 'Vsa vprašanja in odgovori', sv: 'Alla frågor och svar', da: 'Alle spørgsmål og svar', no: 'Alle spørsmål og svar', fi: 'Kaikki kysymykset ja vastaukset', et: 'Kõik küsimused ja vastused', lv: 'Visi jautājumi un atbildes', lt: 'Visi klausimai ir atsakymai', sr: 'Sva pitanja i odgovori', uk: 'Усі запитання та відповіді', tr: 'Tüm sorular ve cevaplar', he: 'כל השאלות והתשובות', ar: 'كل الأسئلة والأجوبة', ru: 'Все вопросы и ответы', zh: '全部问题与解答' })}
   />
 
   <ParallaxCta
-    eyebrow={x({ hu: 'Nem találta meg?', nl: 'Niet gevonden?', en: 'Cannot find it?', de: 'Nichts Passendes gefunden?', fr: 'Pas trouvé\u202f?', es: '¿No lo encuentra?', pl: 'Nie znaleźli Państwo?', ro: 'Nu găsiți ce căutați?', sk: 'Nenašli ste?', it: 'Non trova quello che cerca?', pt: 'Não encontra o que procura?', el: 'Δεν βρίσκετε αυτό που ψάχνετε;', cs: 'Nenašli jste, co hledáte?', sl: 'Ne najdete, kar iščete?', sv: 'Hittar du inte det du söker?', da: 'Kan du ikke finde det?', no: 'Finner du det ikke?', fi: 'Etkö löydä etsimääsi?', et: 'Ei leia sobivat?', lv: 'Nevarat atrast?', lt: 'Nerandate?', sr: 'Cannot find it?', uk: 'Cannot find it?', tr: 'Cannot find it?', he: 'Cannot find it?', ar: 'Cannot find it?', ru: 'Cannot find it?', zh: 'Cannot find it?' })}
-    title={x({ hu: 'Kerestesse velünk', nl: 'Laat ons zoeken', en: 'Let us search', de: 'Wir suchen', fr: 'Laissez-nous chercher', es: 'Déjenos buscar', pl: 'Poszukamy za Państwa', ro: 'Lăsați-ne pe noi să căutăm', sk: 'Nechajte hľadanie na nás', it: 'Lo cerchiamo noi', pt: 'Deixe-nos procurar', el: 'Αφήστε μας να ψάξουμε', cs: 'Vyhledáme to za vás', sl: 'Poiščemo namesto vas', sv: 'Låt oss leta', da: 'Lad os søge', no: 'La oss lete', fi: 'Anna meidän etsiä', et: 'Laske meil otsida', lv: 'Ļaujiet meklēt mums', lt: 'Leiskite ieškoti mums', sr: 'Let us search', uk: 'Let us search', tr: 'Let us search', he: 'Let us search', ar: 'Let us search', ru: 'Let us search', zh: 'Let us search' })}
-    titleEm={x({ hu: 'díjmentesen', nl: 'zonder kosten', en: 'free of charge', de: 'kostenlos für Sie', fr: 'gratuitement', es: 'gratis', pl: 'bezpłatnie', ro: 'gratuit', sk: 'bezplatne', it: 'gratuitamente', pt: 'gratuitamente', el: 'δωρεάν', cs: 'zdarma', sl: 'brezplačno', sv: 'kostnadsfritt', da: 'gratis', no: 'gratis', fi: 'maksutta', et: 'tasuta', lv: 'bez maksas', lt: 'nemokamai', sr: 'free of charge', uk: 'free of charge', tr: 'free of charge', he: 'free of charge', ar: 'free of charge', ru: 'free of charge', zh: 'free of charge' })}
+    eyebrow={x({ hu: 'Nem találta meg?', nl: 'Niet gevonden?', en: 'Cannot find it?', de: 'Nichts Passendes gefunden?', fr: 'Pas trouvé\u202f?', es: '¿No lo encuentra?', pl: 'Nie znaleźli Państwo?', ro: 'Nu găsiți ce căutați?', sk: 'Nenašli ste?', it: 'Non trova quello che cerca?', pt: 'Não encontra o que procura?', el: 'Δεν βρίσκετε αυτό που ψάχνετε;', cs: 'Nenašli jste, co hledáte?', sl: 'Ne najdete, kar iščete?', sv: 'Hittar du inte det du söker?', da: 'Kan du ikke finde det?', no: 'Finner du det ikke?', fi: 'Etkö löydä etsimääsi?', et: 'Ei leia sobivat?', lv: 'Nevarat atrast?', lt: 'Nerandate?', sr: 'Ne možete da pronađete?', uk: 'Не знайшли?', tr: 'Bulamıyor musunuz?', he: 'לא מצאתם?', ar: 'لم تجد ما تبحث عنه؟', ru: 'Не нашли?', zh: '没有找到？' })}
+    title={x({ hu: 'Kerestesse velünk', nl: 'Laat ons zoeken', en: 'Let us search', de: 'Wir suchen', fr: 'Laissez-nous chercher', es: 'Déjenos buscar', pl: 'Poszukamy za Państwa', ro: 'Lăsați-ne pe noi să căutăm', sk: 'Nechajte hľadanie na nás', it: 'Lo cerchiamo noi', pt: 'Deixe-nos procurar', el: 'Αφήστε μας να ψάξουμε', cs: 'Vyhledáme to za vás', sl: 'Poiščemo namesto vas', sv: 'Låt oss leta', da: 'Lad os søge', no: 'La oss lete', fi: 'Anna meidän etsiä', et: 'Laske meil otsida', lv: 'Ļaujiet meklēt mums', lt: 'Leiskite ieškoti mums', sr: 'Prepustite nama pretragu', uk: 'Доручіть пошук нам', tr: 'Biz arayalım', he: 'תנו לנו לחפש', ar: 'دعنا نبحث عنك', ru: 'Поручите поиск нам', zh: '让我们帮您找' })}
+    titleEm={x({ hu: 'díjmentesen', nl: 'zonder kosten', en: 'free of charge', de: 'kostenlos für Sie', fr: 'gratuitement', es: 'gratis', pl: 'bezpłatnie', ro: 'gratuit', sk: 'bezplatne', it: 'gratuitamente', pt: 'gratuitamente', el: 'δωρεάν', cs: 'zdarma', sl: 'brezplačno', sv: 'kostnadsfritt', da: 'gratis', no: 'gratis', fi: 'maksutta', et: 'tasuta', lv: 'bez maksas', lt: 'nemokamai', sr: 'besplatno', uk: 'безкоштовно', tr: 'ücretsiz', he: 'ללא תשלום', ar: 'مجانًا', ru: 'бесплатно', zh: '免费' })}
     body={x({
       hu: 'Adja meg, mit keres. A nem hirdetett kínálatból is keresünk Önnek.',
       nl: 'Geef door wat u zoekt. Wij zoeken ook buiten het geadverteerde aanbod.',
@@ -595,13 +595,13 @@ const wants = wantsByLocale[locale];
       et: 'Öelge meile, mida otsite. Otsime ka väljaspool meie kuulutatud objekte.',
       lv: 'Pastāstiet, ko meklējat. Meklējam arī ārpus mūsu sludinātajiem īpašumiem.',
       lt: 'Papasakokite, ko ieškote. Ieškome ir už mūsų skelbiamų objektų ribų.',
-      sr: 'Tell us what you are looking for. We also search beyond the properties we advertise.',
-      uk: 'Tell us what you are looking for. We also search beyond the properties we advertise.',
-      tr: 'Tell us what you are looking for. We also search beyond the properties we advertise.',
-      he: 'Tell us what you are looking for. We also search beyond the properties we advertise.',
-      ar: 'Tell us what you are looking for. We also search beyond the properties we advertise.',
-      ru: 'Tell us what you are looking for. We also search beyond the properties we advertise.',
-      zh: 'Tell us what you are looking for. We also search beyond the properties we advertise.',
+      sr: 'Recite nam šta tražite. Tražimo i izvan nekretnina koje oglašavamo.',
+      uk: 'Розкажіть, що ви шукаєте. Ми шукаємо й поза межами об’єктів, які рекламуємо.',
+      tr: 'Ne aradığınızı bize söyleyin. İlanlarımızın dışında da arama yapıyoruz.',
+      he: 'ספרו לנו מה אתם מחפשים. אנחנו מחפשים גם מעבר לנכסים שאנחנו מפרסמים.',
+      ar: 'أخبرنا بما تبحث عنه. نبحث أيضًا خارج العقارات التي نعلن عنها.',
+      ru: 'Расскажите, что вы ищете. Мы ищем и за пределами объектов, которые рекламируем.',
+      zh: '告诉我们您在找什么。我们的搜索范围不限于我们发布的房源。',
     })}
     primary={{ label: ui.cta.searchRequest, href: path(locale, 'searchRequest') }}
     secondary={{ label: ui.cta.contact, href: path(locale, 'contact') }}

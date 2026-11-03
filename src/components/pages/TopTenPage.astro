@@ -16,7 +16,7 @@ const properties = await editorsPick(10);
 // this — Base.astro leaves a title containing "FODEL" untouched, so a bare
 // "FODEL Top 10" on both locales never gets a distinguishing suffix).
 const heading = 'FODEL Top 10';
-const metaTitle = x({ hu: 'FODEL Top 10: szerkesztőségi ajánlás', nl: 'FODEL Top 10: aanbevolen door de redactie', en: 'FODEL Top 10: the editors’ picks', de: 'FODEL Top 10: die Empfehlungen der Redaktion', fr: 'FODEL Top 10\u00a0: la sélection de la rédaction', es: 'FODEL Top 10: la selección de la redacción', pl: 'FODEL Top 10: wybór redakcji', ro: 'FODEL Top 10: alegerea redacției', sk: 'FODEL Top 10: výber redakcie', it: 'FODEL Top 10: la selezione della redazione', pt: 'FODEL Top 10: a seleção da redação', el: 'FODEL Top 10: οι επιλογές της συντακτικής ομάδας', cs: 'FODEL Top 10: výběr redakce', sl: 'FODEL Top 10: izbor uredništva', sv: 'FODEL Top 10: redaktionens val', da: 'FODEL Top 10: redaktionens udvalg', no: 'FODEL Top 10: redaksjonens utvalg', fi: 'FODEL Top 10: toimituksen valinnat', et: 'FODEL Top 10: toimetuse valik', lv: 'FODEL Top 10: redakcijas izvēle', lt: 'FODEL Top 10: redakcijos pasirinkimas', sr: 'FODEL Top 10: the editors’ picks', uk: 'FODEL Top 10: the editors’ picks', tr: 'FODEL Top 10: the editors’ picks', he: 'FODEL Top 10: the editors’ picks', ar: 'FODEL Top 10: the editors’ picks', ru: 'FODEL Top 10: the editors’ picks', zh: 'FODEL Top 10: the editors’ picks' });
+const metaTitle = x({ hu: 'FODEL Top 10: szerkesztőségi ajánlás', nl: 'FODEL Top 10: aanbevolen door de redactie', en: 'FODEL Top 10: the editors’ picks', de: 'FODEL Top 10: die Empfehlungen der Redaktion', fr: 'FODEL Top 10\u00a0: la sélection de la rédaction', es: 'FODEL Top 10: la selección de la redacción', pl: 'FODEL Top 10: wybór redakcji', ro: 'FODEL Top 10: alegerea redacției', sk: 'FODEL Top 10: výber redakcie', it: 'FODEL Top 10: la selezione della redazione', pt: 'FODEL Top 10: a seleção da redação', el: 'FODEL Top 10: οι επιλογές της συντακτικής ομάδας', cs: 'FODEL Top 10: výběr redakce', sl: 'FODEL Top 10: izbor uredništva', sv: 'FODEL Top 10: redaktionens val', da: 'FODEL Top 10: redaktionens udvalg', no: 'FODEL Top 10: redaksjonens utvalg', fi: 'FODEL Top 10: toimituksen valinnat', et: 'FODEL Top 10: toimetuse valik', lv: 'FODEL Top 10: redakcijas izvēle', lt: 'FODEL Top 10: redakcijos pasirinkimas', sr: 'FODEL Top 10: izbor urednika', uk: 'FODEL Top 10: вибір редакції', tr: 'FODEL Top 10: editörlerin seçimi', he: 'FODEL Top 10: בחירת העורכים', ar: 'FODEL Top 10: اختيارات المحررين', ru: 'FODEL Top 10: выбор редакции', zh: 'FODEL Top 10：编辑精选' });
 const description = x({
   hu: 'A FODEL szerkesztői által ajánlott tíz ingatlan, függetlenül a fizetős kiemelésektől.',
   nl: 'Tien woningen aanbevolen door de redactie van FODEL, los van betaalde uitlichting.',
@@ -39,20 +39,20 @@ const description = x({
   et: 'Kümme kinnisvaraobjekti, mida FODELi toimetus soovitab, sõltumata tasulistest esiletõstmistest.',
   lv: 'Desmit īpašumi, ko iesaka FODEL redakcija, neatkarīgi no maksas izcēlumiem.',
   lt: 'Dešimt objektų, kuriuos rekomenduoja FODEL redakcija, nepriklausomai nuo mokamo išskyrimo.',
-  sr: 'Ten properties recommended by FODEL’s editors, independent of paid highlighting.',
-  uk: 'Ten properties recommended by FODEL’s editors, independent of paid highlighting.',
-  tr: 'Ten properties recommended by FODEL’s editors, independent of paid highlighting.',
-  he: 'Ten properties recommended by FODEL’s editors, independent of paid highlighting.',
-  ar: 'Ten properties recommended by FODEL’s editors, independent of paid highlighting.',
-  ru: 'Ten properties recommended by FODEL’s editors, independent of paid highlighting.',
-  zh: 'Ten properties recommended by FODEL’s editors, independent of paid highlighting.',
+  sr: 'Deset nekretnina koje preporučuju urednici FODEL-a, nezavisno od plaćenog isticanja.',
+  uk: 'Десять об’єктів нерухомості, які рекомендує редакція FODEL, незалежно від платного виділення.',
+  tr: 'FODEL editörlerinin, ücretli öne çıkarmadan bağımsız olarak önerdiği on mülk.',
+  he: 'עשרה נכסים שעורכי FODEL ממליצים עליהם, ללא קשר להבלטה בתשלום.',
+  ar: 'عشرة عقارات يوصي بها محررو FODEL، بصرف النظر عن الإبراز المدفوع.',
+  ru: 'Десять объектов недвижимости, которые рекомендует редакция FODEL, независимо от платного выделения.',
+  zh: '由 FODEL 编辑推荐的十套房产，与付费推广无关。',
 });
 ---
 <Base locale={locale} title={metaTitle} description={description} alternates={alternatesFor('top10')}>
   <PageHeader eyebrow="FODEL" title={heading} body={description} compact />
   <section class="grid">
     {properties.map((property, index) => <PropertyCard property={property} locale={locale} rank={index + 1} ratio="4 / 5" />)}
-    {properties.length === 0 && <p class="empty">{x({ hu: 'A válogatás hamarosan érkezik.', nl: 'De selectie volgt binnenkort.', en: 'The selection is coming soon.', de: 'Die Auswahl folgt in Kürze.', fr: 'La sélection arrive bientôt.', es: 'La selección llegará pronto.', pl: 'Wybór pojawi się wkrótce.', ro: 'Selecția va fi disponibilă în curând.', sk: 'Výber bude čoskoro k dispozícii.', it: 'La selezione arriverà presto.', pt: 'A seleção chegará em breve.', el: 'Η επιλογή έρχεται σύντομα.', cs: 'Výběr bude brzy k dispozici.', sl: 'Izbor bo kmalu na voljo.', sv: 'Urvalet kommer snart.', da: 'Udvalget kommer snart.', no: 'Utvalget kommer snart.', fi: 'Valikoima julkaistaan pian.', et: 'Valik ilmub peagi.', lv: 'Izlase drīzumā būs pieejama.', lt: 'Atranka netrukus bus paskelbta.', sr: 'The selection is coming soon.', uk: 'The selection is coming soon.', tr: 'The selection is coming soon.', he: 'The selection is coming soon.', ar: 'The selection is coming soon.', ru: 'The selection is coming soon.', zh: 'The selection is coming soon.' })}</p>}
+    {properties.length === 0 && <p class="empty">{x({ hu: 'A válogatás hamarosan érkezik.', nl: 'De selectie volgt binnenkort.', en: 'The selection is coming soon.', de: 'Die Auswahl folgt in Kürze.', fr: 'La sélection arrive bientôt.', es: 'La selección llegará pronto.', pl: 'Wybór pojawi się wkrótce.', ro: 'Selecția va fi disponibilă în curând.', sk: 'Výber bude čoskoro k dispozícii.', it: 'La selezione arriverà presto.', pt: 'A seleção chegará em breve.', el: 'Η επιλογή έρχεται σύντομα.', cs: 'Výběr bude brzy k dispozici.', sl: 'Izbor bo kmalu na voljo.', sv: 'Urvalet kommer snart.', da: 'Udvalget kommer snart.', no: 'Utvalget kommer snart.', fi: 'Valikoima julkaistaan pian.', et: 'Valik ilmub peagi.', lv: 'Izlase drīzumā būs pieejama.', lt: 'Atranka netrukus bus paskelbta.', sr: 'Izbor uskoro stiže.', uk: 'Добірка незабаром з’явиться.', tr: 'Seçki yakında burada.', he: 'המבחר יעלה בקרוב.', ar: 'المختارات قريبًا.', ru: 'Подборка скоро появится.', zh: '精选内容即将推出。' })}</p>}
   </section>
 </Base>
 <style>

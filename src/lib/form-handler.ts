@@ -434,20 +434,20 @@ const ACK = {
       `<p>${name ? `Laba diena, ${escapeHtml(name)},` : 'Laba diena,'}</p>\n       <p>dėkojame už jūsų žinutę. Ją gavome, ir mūsų komandos narys netrukus su jumis susisieks. ${escapeHtml(hours)}</p>\n       <p>Skubate? Skambinkite mums ${escapeHtml(phones)}.</p>\n       <p>Pagarbiai<br>FINDDOME Nekilnojamasis turtas</p>`,
   },
   sr: {
-    subject: 'Thank you for your message | FINDDOME',
+    subject: 'Hvala na poruci | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
-       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
-       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
-       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+      `<p>Poštovani/a ${escapeHtml(name || 'posetioče')},</p>
+       <p>Hvala na poruci. Primili smo je i član našeg tima će vam se uskoro javiti. ${escapeHtml(hours)}</p>
+       <p>Žurite? Pozovite nas: ${escapeHtml(phones)}.</p>
+       <p>Srdačan pozdrav,<br>FINDDOME Nekretnine</p>`,
   },
   uk: {
-    subject: 'Thank you for your message | FINDDOME',
+    subject: 'Дякуємо за повідомлення | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
-       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
-       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
-       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+      `<p>Вітаємо, ${escapeHtml(name || 'шановний відвідувачу')}!</p>
+       <p>Дякуємо за повідомлення. Ми його отримали, і співробітник нашої команди незабаром зв’яжеться з вами. ${escapeHtml(hours)}</p>
+       <p>Поспішаєте? Зателефонуйте нам: ${escapeHtml(phones)}.</p>
+       <p>З повагою,<br>FINDDOME НЕРУХОМІСТЬ</p>`,
   },
   tr: {
     subject: 'Thank you for your message | FINDDOME',

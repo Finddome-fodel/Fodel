@@ -24,7 +24,7 @@ interface Props {
 }
 
 const { locale, routeKey, data, noindex = false } = Astro.props;
-const onThisPage = localizer(locale)({ hu: 'Ezen az oldalon', nl: 'Op deze pagina', en: 'On this page', de: 'Auf dieser Seite', fr: 'Sur cette page', es: 'En esta página', pl: 'Na tej stronie', ro: 'Pe această pagină', sk: 'Na tejto stránke', it: 'In questa pagina', pt: 'Nesta página', el: 'Σε αυτή τη σελίδα', cs: 'Na této stránce', sl: 'Na tej strani', sv: 'På den här sidan', da: 'På denne side', no: 'På denne siden', fi: 'Tällä sivulla', et: 'Sellel lehel', lv: 'Šajā lapā', lt: 'Šiame puslapyje', sr: 'On this page', uk: 'On this page', tr: 'On this page', he: 'On this page', ar: 'On this page', ru: 'On this page', zh: 'On this page' });
+const onThisPage = localizer(locale)({ hu: 'Ezen az oldalon', nl: 'Op deze pagina', en: 'On this page', de: 'Auf dieser Seite', fr: 'Sur cette page', es: 'En esta página', pl: 'Na tej stronie', ro: 'Pe această pagină', sk: 'Na tejto stránke', it: 'In questa pagina', pt: 'Nesta página', el: 'Σε αυτή τη σελίδα', cs: 'Na této stránce', sl: 'Na tej strani', sv: 'På den här sidan', da: 'På denne side', no: 'På denne siden', fi: 'Tällä sivulla', et: 'Sellel lehel', lv: 'Šajā lapā', lt: 'Šiame puslapyje', sr: 'Na ovoj stranici', uk: 'На цій сторінці', tr: 'Bu sayfada', he: 'בעמוד זה', ar: 'في هذه الصفحة', ru: 'На этой странице', zh: '本页内容' });
 const path = (key: RouteKey) => routePath(locale, key);
 const { hours } = await getCompany();
 

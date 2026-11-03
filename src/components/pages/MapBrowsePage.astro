@@ -30,7 +30,7 @@ const { locale } = Astro.props;
 const ui = UI[locale];
 
 const x = localizer(locale);
-const title = x({ hu: 'Ingatlanok térképen', nl: 'Woningen op de kaart', en: 'Properties on the map', de: 'Immobilien auf der Karte', fr: 'Les biens sur la carte', es: 'Los inmuebles en el mapa', pl: 'Nieruchomości na mapie', ro: 'Proprietățile pe hartă', sk: 'Nehnuteľnosti na mape', it: 'Immobili sulla mappa', pt: 'Imóveis no mapa', el: 'Ακίνητα στον χάρτη', cs: 'Nemovitosti na mapě', sl: 'Nepremičnine na zemljevidu', sv: 'Fastigheter på kartan', da: 'Ejendomme på kortet', no: 'Eiendommer på kartet', fi: 'Kohteet kartalla', et: 'Kinnisvara kaardil', lv: 'Īpašumi kartē', lt: 'Turtas žemėlapyje', sr: 'Properties on the map', uk: 'Properties on the map', tr: 'Properties on the map', he: 'Properties on the map', ar: 'Properties on the map', ru: 'Properties on the map', zh: 'Properties on the map' });
+const title = x({ hu: 'Ingatlanok térképen', nl: 'Woningen op de kaart', en: 'Properties on the map', de: 'Immobilien auf der Karte', fr: 'Les biens sur la carte', es: 'Los inmuebles en el mapa', pl: 'Nieruchomości na mapie', ro: 'Proprietățile pe hartă', sk: 'Nehnuteľnosti na mape', it: 'Immobili sulla mappa', pt: 'Imóveis no mapa', el: 'Ακίνητα στον χάρτη', cs: 'Nemovitosti na mapě', sl: 'Nepremičnine na zemljevidu', sv: 'Fastigheter på kartan', da: 'Ejendomme på kortet', no: 'Eiendommer på kartet', fi: 'Kohteet kartalla', et: 'Kinnisvara kaardil', lv: 'Īpašumi kartē', lt: 'Turtas žemėlapyje', sr: 'Nekretnine na mapi', uk: 'Об’єкти на мапі', tr: 'Haritada mülkler', he: 'נכסים על המפה', ar: 'العقارات على الخريطة', ru: 'Объекты на карте', zh: '地图找房' });
 const description = x({
   hu: 'Böngéssze a FINDDOME magyarországi ingatlanait térképen, régió szerint csoportosítva.',
   nl: 'Blader door het Hongaarse vastgoed van FINDDOME op de kaart, gegroepeerd per regio.',
@@ -53,13 +53,13 @@ const description = x({
   et: 'Sirvige FINDDOME’i Ungari kinnisvara kaardil, piirkondade kaupa rühmitatuna.',
   lv: 'Pārlūkojiet FINDDOME īpašumus Ungārijā kartē, sagrupētus pa reģioniem.',
   lt: 'Peržiūrėkite FINDDOME nekilnojamąjį turtą Vengrijoje žemėlapyje, sugrupuotą pagal regionus.',
-  sr: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
-  uk: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
-  tr: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
-  he: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
-  ar: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
-  ru: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
-  zh: 'Browse FINDDOME’s Hungarian properties on a map, grouped by region.',
+  sr: 'Pregledajte mađarske nekretnine na FINDDOME-u na mapi, grupisane po regionima.',
+  uk: 'Переглядайте угорську нерухомість FINDDOME на мапі, згруповану за регіонами.',
+  tr: 'FINDDOME’daki Macaristan mülklerini bölgelere göre gruplanmış şekilde haritada inceleyin.',
+  he: 'עיינו בנכסים בהונגריה של FINDDOME על גבי מפה, מקובצים לפי אזור.',
+  ar: 'تصفّح عقارات FINDDOME في المجر على الخريطة، مجمّعة حسب المنطقة.',
+  ru: 'Просматривайте венгерскую недвижимость FINDDOME на карте, сгруппированную по регионам.',
+  zh: '在地图上按地区浏览 FINDDOME 的匈牙利房源。',
 });
 
 const trail = crumbs(locale, [
@@ -94,7 +94,7 @@ const listHref = carriedQuery
       <h1>{title}</h1>
       <a href={listHref} class="list-link">{ui.filters.viewList}</a>
       <button type="button" id="search-this-area" class="area-btn">
-        {x({ hu: 'Keresés ezen a területen', nl: 'Zoek in dit gebied', en: 'Search this area', de: 'In diesem Bereich suchen', fr: 'Rechercher dans cette zone', es: 'Buscar en esta zona', pl: 'Szukaj w tym obszarze', ro: 'Căutați în această zonă', sk: 'Hľadať v tejto oblasti', it: 'Cerca in quest’area', pt: 'Pesquisar nesta zona', el: 'Αναζήτηση σε αυτή την περιοχή', cs: 'Hledat v této oblasti', sl: 'Išči na tem območju', sv: 'Sök i det här området', da: 'Søg i dette område', no: 'Søk i dette området', fi: 'Hae tältä alueelta', et: 'Otsi sellelt alalt', lv: 'Meklēt šajā apgabalā', lt: 'Ieškoti šioje vietovėje', sr: 'Search this area', uk: 'Search this area', tr: 'Search this area', he: 'Search this area', ar: 'Search this area', ru: 'Search this area', zh: 'Search this area' })}
+        {x({ hu: 'Keresés ezen a területen', nl: 'Zoek in dit gebied', en: 'Search this area', de: 'In diesem Bereich suchen', fr: 'Rechercher dans cette zone', es: 'Buscar en esta zona', pl: 'Szukaj w tym obszarze', ro: 'Căutați în această zonă', sk: 'Hľadať v tejto oblasti', it: 'Cerca in quest’area', pt: 'Pesquisar nesta zona', el: 'Αναζήτηση σε αυτή την περιοχή', cs: 'Hledat v této oblasti', sl: 'Išči na tem območju', sv: 'Sök i det här området', da: 'Søg i dette område', no: 'Søk i dette området', fi: 'Hae tältä alueelta', et: 'Otsi sellelt alalt', lv: 'Meklēt šajā apgabalā', lt: 'Ieškoti šioje vietovėje', sr: 'Pretražite ovo područje', uk: 'Шукати в цій області', tr: 'Bu bölgede ara', he: 'חיפוש באזור הזה', ar: 'ابحث في هذه المنطقة', ru: 'Искать в этой области', zh: '搜索此区域' })}
       </button>
     </div>
     <div class="map-wrap">

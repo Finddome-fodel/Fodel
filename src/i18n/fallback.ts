@@ -132,12 +132,12 @@ const MACHINE_NOTE: Record<Locale, string> = {
   es: 'Traducción automática', pl: 'Tłumaczenie automatyczne', ro: 'Traducere automată', sk: 'Automatický preklad', it: 'Traduzione automatica',
   pt: 'Tradução automática', el: 'Αυτόματη μετάφραση', cs: 'Automatický překlad', sl: 'Samodejni prevod', sv: 'Automatiskt översatt',
   da: 'Automatisk oversat', no: 'Automatisk oversatt', fi: 'Automaattinen käännös', et: 'Automaattne tõlge', lv: 'Automātisks tulkojums', lt: 'Automatinis vertimas',
-  sr: 'Automatski prevod',
-  uk: 'Автоматичний переклад',
-  tr: 'Otomatik çeviri',
-  he: 'תרגום אוטומטי',
-  ar: 'ترجمة آلية',
-  ru: 'Автоматический перевод',
+  sr: 'Automatski prevedeno',
+  uk: 'Перекладено автоматично',
+  tr: 'Otomatik olarak çevrildi',
+  he: 'תורגם אוטומטית',
+  ar: 'مترجم آليًا',
+  ru: 'Переведено автоматически',
   zh: '自动翻译',
 };
 export const machineNote = (locale: Locale): string => MACHINE_NOTE[locale];
