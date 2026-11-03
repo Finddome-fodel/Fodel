@@ -194,3 +194,9 @@
   border-color: #f0b4ae;
   box-shadow: 0 0 0 4px rgba(240, 180, 174, 0.12);
 }
+
+/* A soft, non-blocking notice under a field (e.g. an autofilled county that matched nothing on the list). */
+.fld .hint.warn {
+  color: #8a5300;
+  margin: 8px 0 0;
+}

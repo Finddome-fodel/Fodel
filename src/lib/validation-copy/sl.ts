@@ -29,6 +29,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Vsaj ${chars(limit)}.`,
   consent: 'Za nadaljevanje sprejmite obvestilo o zasebnosti.',
   selfReferral: 'Ne morete priporočiti samega sebe: vpišite drug e-poštni naslov.',
+  choose: "Izberite možnost s seznama.",
+  contact: (kind, match) => (kind === 'email' ? `Besedilo ne sme vsebovati e-poštnega naslova (»${match}«). Kupci vas dosežejo prek FINDDOME.` : kind === 'phone' ? `Besedilo ne sme vsebovati telefonske številke (»${match}«). Kupci vas dosežejo prek FINDDOME.` : `Besedilo ne sme vsebovati spletne strani, družbenih omrežij ali aplikacije za sporočanje (»${match}«).`),
   summary: (count) =>
     count === 1
       ? 'Eno polje je treba preveriti:'

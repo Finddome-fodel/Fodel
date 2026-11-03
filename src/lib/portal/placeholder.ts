@@ -10,7 +10,7 @@ export function placeholderProblem(
 ): string | null {
   if (p.price_eur == null || Number(p.price_eur) <= 1) {
     return audience === 'owner'
-      ? 'Az ár még a kezdőérték (€1) — adja meg a hirdetés valódi irányárát.'
+      ? 'Az ár még a kezdőérték (€1) — adja meg a hirdetés valódi árát.'
       : 'Az ár még a kezdőérték (€1) — kérje meg a hirdetőt, hogy adja meg a valódi árat.';
   }
   for (const [value, name] of [[p.floor_m2, 'lakóterület'], [p.building_m2, 'épületterület'], [p.plot_m2, 'telekterület']] as const) {

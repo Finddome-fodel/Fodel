@@ -36,6 +36,14 @@ export function errorMessageIn(copy: ValidationCopy, error: FieldError): string 
       return copy.consent;
     case 'self-referral':
       return copy.selfReferral;
+    case 'choose':
+      return copy.choose;
+    case 'contact-email':
+      return copy.contact('email', error.match ?? '');
+    case 'contact-phone':
+      return copy.contact('phone', error.match ?? '');
+    case 'contact-link':
+      return copy.contact('link', error.match ?? '');
   }
 }
 

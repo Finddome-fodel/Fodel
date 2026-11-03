@@ -20,12 +20,12 @@ import { CHROME } from '~/i18n/chrome';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { PROPERTY_GROUPS, labelIn, subtypeLabel, validSubtype, groupOf } from '~/lib/listing-catalogue';
 import { countryLabel as labelCountry } from '~/config/countries';
+import { canonicalCounty, countyFacet } from '~/lib/counties';
 import { alternatesFor, crumbs } from '~/lib/page';
 import {
   activeProperties,
   searchProperties,
   regionsOf,
-  countiesOf,
   countriesOf,
   PRICE_BANDS,
   priceBandLabel,
@@ -54,7 +54,6 @@ const facetSource = await activeProperties();
 // Nothing published at all (a new site): say so, instead of blaming the filters.
 const catalogueEmpty = facetSource.length === 0;
 const regions = regionsOf(facetSource);
-const counties = countiesOf(facetSource);
 const categories = PROPERTY_GROUPS.map(g=>g.key);
 const countries = countriesOf(facetSource);
 const taxonomy = await getTaxonomy();
@@ -66,8 +65,13 @@ const region = params.get('region') ?? '';
 // County was supported by search_properties() and searchProperties() from
 // Stage 6 but never had a control. Hungarian buyers navigate by county far
 // more naturally than by FODEL's larger marketing regions.
-const county = params.get('county') ?? '';
 const country = params.get('country') ?? '';
+// Every canonical county of the chosen country (Hungary by default), with how many listings are in each, so
+// the filter is never nearly empty and never offers "Pest" and "Pest vármegye" side by side (src/lib/counties.ts).
+const facetCountry = country || 'HU';
+const counties = countyFacet(facetCountry, facetSource.filter((p) => p.data.location.country === facetCountry).map((p) => p.data.location.county), locale);
+const rawCounty = params.get('county') ?? '';
+const county = rawCounty ? (canonicalCounty(facetCountry, rawCounty) ?? rawCounty) : '';
 const settlement = params.get('settlement') ?? '';
 const priceBandId = params.get('price') ?? '';
 // Minimum room count. `beds` is the old name, kept so saved links keep working.
@@ -385,7 +389,7 @@ const labels = {
                 <label for="f-county">{ui.filters.county}</label>
                 <select id="f-county" name="county" data-auto>
                   <option value="">{ui.filters.all}</option>
-                  {counties.map((c) => <option value={c} selected={c === county}>{c}</option>)}
+                  {counties.map((c) => <option value={c.name} selected={c.name === county} class:list={{ empty: c.count === 0 }}>{c.count ? `${c.name} (${c.count})` : c.name}</option>)}
                 </select>
               </div>
               <div class="field">
@@ -778,6 +782,8 @@ const labels = {
 </script>
 
 <style>
+  /* Counties with no listing stay selectable (a saved search may want them) but read as quieter. */
+  option.empty { color: var(--taupe, #7a7064); }
   /* ══ Head ═════════════════════════════════════════════════════════════ */
   .head {
     padding: 32px var(--pad-x) 48px;

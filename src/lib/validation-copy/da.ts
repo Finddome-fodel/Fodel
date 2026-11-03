@@ -26,6 +26,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Mindst ${chars(limit)}.`,
   consent: 'Accepter privatlivspolitikken for at fortsætte.',
   selfReferral: 'Du kan ikke anbefale dig selv: angiv en anden e-mailadresse.',
+  choose: "Vælg en mulighed på listen.",
+  contact: (kind, match) => (kind === 'email' ? `Teksten må ikke indeholde en e-mailadresse (»${match}«). Købere kontakter dig via FINDDOME.` : kind === 'phone' ? `Teksten må ikke indeholde et telefonnummer (»${match}«). Købere kontakter dig via FINDDOME.` : `Teksten må ikke indeholde hjemmeside, sociale medier eller beskedapp (»${match}«).`),
   summary: (count) =>
     count === 1
       ? 'Et felt skal kontrolleres:'

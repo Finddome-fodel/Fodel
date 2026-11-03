@@ -9,6 +9,7 @@
  * touch a given property.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { canonicalCounty } from '~/lib/counties';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { readRequestedExtras, type RequestedExtras } from '~/lib/portal/requested-extras';
 
@@ -304,7 +305,8 @@ export async function applyIntake(
   if (category) patch.category = category;
 
   if (intake.settlement) patch.settlement = intake.settlement.slice(0, 120);
-  if (intake.county) patch.county = intake.county.slice(0, 60);
+  // Intake comes from the Hungarian valuation form: store the canonical county (src/lib/counties.ts).
+  if (intake.county) patch.county = (canonicalCounty('HU', intake.county) ?? intake.county).slice(0, 60);
 
   const priceHuf = toNumber(intake.priceHuf);
   if (priceHuf) {

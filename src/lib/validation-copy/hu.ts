@@ -21,5 +21,7 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Legalább ${limit} karakter legyen.`,
   consent: 'A folytatáshoz kérjük, fogadja el az adatkezelési tájékoztatót.',
   selfReferral: 'Saját magát nem ajánlhatja: adjon meg egy másik e-mail-címet.',
+  choose: "Kérjük, válasszon a listából.",
+  contact: (kind, match) => (kind === 'email' ? `A szöveg nem tartalmazhat e-mail-címet („${match}”). Az érdeklődők a FINDDOME-on keresztül érik el Önt.` : kind === 'phone' ? `A szöveg nem tartalmazhat telefonszámot („${match}”). Az érdeklődők a FINDDOME-on keresztül érik el Önt.` : `A szöveg nem tartalmazhat weboldal-, közösségimédia- vagy üzenetküldő-elérhetőséget („${match}”).`),
   summary: (count) => (count === 1 ? 'Egy mezőt még javítani kell:' : `${count} mezőt még javítani kell:`),
 };

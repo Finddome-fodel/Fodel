@@ -88,11 +88,11 @@ const extraMeta: Record<ExtraId, { label: string; unit: string; note?: string }>
                 <label class="sw">
                   <input type="checkbox" name={k('tiered')} value="yes" checked={pkg.priceEurAbove !== null} data-toggle="tier" />
                   <span class="sw-ui" aria-hidden="true"></span>
-                  <span><strong>Magasabb ár drágább ingatlanoknál</strong>Az irányár alapján automatikusan számolva.</span>
+                  <span><strong>Magasabb ár drágább ingatlanoknál</strong>Az ár alapján automatikusan számolva.</span>
                 </label>
                 <div class="pk-row two tier" hidden={pkg.priceEurAbove === null}>
                   <label class="f"><span>Magasabb ár</span><span class="unit"><input type="number" name={k('price_above')} min="0" max={PRICE_MAX} step="1" value={pkg.priceEurAbove ?? ''} data-bind="above" /><i>€</i></span></label>
-                  <label class="f"><span>Ha az irányár több mint</span><span class="unit"><input type="number" name={k('threshold_m')} min="1" max="100000" step="1" value={pkg.thresholdHuf !== null ? Math.round(pkg.thresholdHuf / 1_000_000) : ''} data-bind="threshold" /><i>M Ft</i></span></label>
+                  <label class="f"><span>Ha az ár több mint</span><span class="unit"><input type="number" name={k('threshold_m')} min="1" max="100000" step="1" value={pkg.thresholdHuf !== null ? Math.round(pkg.thresholdHuf / 1_000_000) : ''} data-bind="threshold" /><i>M Ft</i></span></label>
                 </div>
               </div>
 

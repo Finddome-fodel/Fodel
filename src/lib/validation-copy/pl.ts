@@ -25,6 +25,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Co najmniej ${chars(limit)}.`,
   consent: 'Aby kontynuować, prosimy zaakceptować politykę prywatności.',
   selfReferral: 'Nie można polecić samego siebie: podaj inny adres e-mail.',
+  choose: "Wybierz pozycję z listy.",
+  contact: (kind, match) => (kind === 'email' ? `Tekst nie może zawierać adresu e-mail („${match}”). Kupujący kontaktują się z Tobą przez FINDDOME.` : kind === 'phone' ? `Tekst nie może zawierać numeru telefonu („${match}”). Kupujący kontaktują się z Tobą przez FINDDOME.` : `Tekst nie może zawierać strony internetowej, mediów społecznościowych ani komunikatora („${match}”).`),
   summary: (count) =>
     count === 1
       ? 'Jedno pole wymaga poprawy:'

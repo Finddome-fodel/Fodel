@@ -1,5 +1,6 @@
 import { parseLocaleNumber, type FieldError } from '~/lib/validation';
 import { COUNTRIES } from '~/config/countries';
+import { canonicalCounty, hasCountyList } from '~/lib/counties';
 import { validSubtype, canonicalFeature, currentFeatures, CONTACT_LANGUAGES, categoryFor, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
 import { energyRating } from '~/lib/energy';
 import { convertPrice, exchangeRates, PRICE_CURRENCIES } from '~/lib/exchange-rates';
@@ -39,6 +40,11 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   if(lat===null&&(!options.allowIncomplete||get('lat')))errors.lat={code:'number'};
   if(lng===null&&(!options.allowIncomplete||get('lng')))errors.lng={code:'number'};
   const settlement=get('settlement').slice(0,120);
+  // County: one canonical spelling per county (src/lib/counties.ts). Where the country has a fixed list the value
+  // must be on it when the listing is submitted; a partial save keeps whatever was there so a draft never loses data.
+  const rawCounty=get('county').slice(0,120);
+  const county=hasCountyList(country)?(canonicalCounty(country,rawCounty)??rawCounty):rawCounty;
+  if(hasCountyList(country)&&!options.allowIncomplete&&!canonicalCounty(country,rawCounty))errors.county={code:'choose'};
   if(!options.allowIncomplete&&form.get('location_confirmed')!=='yes')errors.lat={code:'required'};
   // A pin alone identifies rural land. Settlement and administrative areas are optional.
   // Which facts this kind of property has (src/lib/listing-details.ts). A fact that does not apply keeps
@@ -133,7 +139,7 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   // The category follows the subtype; only a live or sold listing keeps its published URL.
   const category=categoryFor(current,group,subtype);
   return {
-    patch:{location_confirmed:form.get('location_confirmed')==='yes'&&lat!==null&&lng!==null,category,property_group:group,property_subtype:subtype||null,country,settlement,county:get('county').slice(0,120),region:get('region').slice(0,120),precision:showAddress||get('precision')==='exact'?'exact':'approximate',details,public_address:showAddress?street:null,public_postal_code:showAddress&&postalCode?postalCode:null,...price,...areas,
+    patch:{location_confirmed:form.get('location_confirmed')==='yes'&&lat!==null&&lng!==null,category,property_group:group,property_subtype:subtype||null,country,settlement,county,region:get('region').slice(0,120),precision:showAddress||get('precision')==='exact'?'exact':'approximate',details,public_address:showAddress?street:null,public_postal_code:showAddress&&postalCode?postalCode:null,...price,...areas,
       year_built:year,year_built_unknown:yearUnknown,renovated_in:renovated,condition_key:condition,heating_key:heatingKey,wall_key:wallKey,epc_class:epc,bathrooms,features,video_url:video||null,price_negotiable:form.get('price_negotiable')==='yes'},
     privateData:{lat:lat!==null&&lng!==null?lat:current.lat,lng:lat!==null&&lng!==null?lng:current.lng,street,postal_code:postalCode},
   };

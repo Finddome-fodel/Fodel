@@ -1,6 +1,7 @@
 import { PROPERTY_GROUPS, labelIn } from '~/lib/listing-catalogue';
 import { fieldRules, parkingFits, gapError, gapControl, type ListingField } from '~/lib/listing-details';
-import { regionsFor, regionLabel } from '~/config/countries';
+import { regionLabel } from '~/config/countries';
+import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
 import { parseLocaleNumber } from '~/lib/validation';
 import type { RateSnapshot } from '~/lib/exchange-rates';
 
@@ -173,13 +174,41 @@ for(const form of forms){
   control('settlement')?.addEventListener('change',()=>{
     if(country.value!=='HU')return;
     const match=places.find(p=>p[3]!==0&&p[1].localeCompare(get('settlement'),'hu',{sensitivity:'base'})===0);
-    const county=places.find(p=>p[3]===0&&p[0]===match?.[2])?.[1].replace(/ vármegye$/,'');
-    if(county)set('county',county);
+    const county=places.find(p=>p[3]===0&&p[0]===match?.[2])?.[1];
+    if(county)fillCounty(county);
   });
+  // County: a <select> for countries with a fixed list, a plain input otherwise. Both are in the HTML; exactly one
+  // is enabled and named "county", so FormData and form.elements.namedItem('county') always see a single control.
+  const countySelect=form.querySelector<HTMLSelectElement>('[data-county-select]');
+  const countyText=form.querySelector<HTMLInputElement>('[data-county-text]');
+  const countyMismatch=form.querySelector<HTMLElement>('[data-county-mismatch]');
+  const countyHint=form.querySelector<HTMLElement>('[data-county-hint]');
+  function swapCounty(){
+    if(!countySelect||!countyText)return;
+    const list=hasCountyList(country.value);
+    if(list){
+      const keep=countySelect.options[0];
+      countySelect.replaceChildren(keep,...countyOptions(country.value,locale).map(n=>new Option(n,n)));
+    }
+    countySelect.hidden=countySelect.disabled=!list;countyText.hidden=countyText.disabled=list;
+    if(list){countySelect.name='county';countyText.removeAttribute('name');}else{countyText.name='county';countySelect.removeAttribute('name');}
+    const label=form.querySelector<HTMLElement>('[data-region-label]');
+    if(label){label.textContent=regionLabel(country.value,locale);const host=label.closest('label');if(host)host.htmlFor=list?'f-county':'f-county-text';}
+    const req=form.querySelector<HTMLElement>('[data-county-req]');if(req)req.textContent=(list?req.dataset.required:req.dataset.optional)||'';
+    if(countyHint)countyHint.textContent=(list?countyHint.dataset.hintList:countyHint.dataset.hintFree)||'';
+    if(countyMismatch)countyMismatch.hidden=true;
+  }
+  /** Fill the county from a lookup (settlement list, map). For list countries only a canonical match is selected. */
+  function fillCounty(raw:string){
+    const canonical=canonicalCounty(country.value,raw);
+    if(!hasCountyList(country.value)){set('county',canonical||raw);return true;}
+    if(canonical){set('county',canonical);if(countyMismatch)countyMismatch.hidden=true;return true;}
+    if(countyMismatch)countyMismatch.hidden=false;
+    return false;
+  }
+  countySelect?.addEventListener('change',()=>{if(countyMismatch)countyMismatch.hidden=true;countySelect.querySelector('[data-stray]')?.remove();});
   function refreshCountry(clear=false){
-    const datalist=form.querySelector<HTMLDataListElement>('#listing-regions');
-    datalist?.replaceChildren(...regionsFor(country.value).map(r=>new Option(r.name)));
-    const label=form.querySelector<HTMLElement>('[data-region-label]');if(label)label.textContent=regionLabel(country.value,locale);
+    swapCounty();
     if(clear){set('county','');set('region','');set('settlement','');set('lat','');set('lng','');set('location_confirmed','');marker?.remove();void localPlaces();}
   }
   country.addEventListener('change',()=>{reverseSequence++;refreshCountry(true);});
@@ -189,13 +218,14 @@ for(const form of forms){
   type Hit={lat:number;lng:number;country:string;settlement:string;county:string;label:string};
   // Place fields the owner typed are theirs: a pin click may only fill what is empty or what an earlier lookup filled.
   const filled=new Set<string>();
-  for(const name of ['settlement','county'])control(name)?.addEventListener('input',()=>filled.delete(name));
+  control('settlement')?.addEventListener('input',()=>filled.delete('settlement'));
+  for(const el of [countySelect,countyText])el?.addEventListener('input',()=>filled.delete('county'));
   const writable=(name:string)=>!get(name).trim()||filled.has(name);
   function applyPlace(hit:Hit,move:boolean,keepTyped=false){
     if(hit.country!==country.value){set('country',hit.country);refreshCountry();set('region','');}
     const fill=(name:string,value:string)=>{if(value&&(!keepTyped||writable(name))){set(name,value);filled.add(name);}};
     fill('settlement',hit.settlement);
-    fill('county',hit.county.replace(/ (vármegye|County)$/,''));
+    if(hit.county&&(!keepTyped||writable('county'))&&fillCounty(hit.county))filled.add('county');
     if(move){set('lat',String(hit.lat));set('lng',String(hit.lng));}
     control('lng')?.dispatchEvent(new Event('change',{bubbles:true}));
   }

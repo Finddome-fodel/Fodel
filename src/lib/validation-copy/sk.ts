@@ -25,6 +25,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Aspoň ${chars(limit)}.`,
   consent: 'Ak chcete pokračovať, prijmite zásady ochrany osobných údajov.',
   selfReferral: 'Nemôžete odporučiť sami seba: zadajte inú e-mailovú adresu.',
+  choose: "Vyberte, prosím, položku zo zoznamu.",
+  contact: (kind, match) => (kind === 'email' ? `Text nesmie obsahovať e-mailovú adresu („${match}“). Záujemcovia vás kontaktujú cez FINDDOME.` : kind === 'phone' ? `Text nesmie obsahovať telefónne číslo („${match}“). Záujemcovia vás kontaktujú cez FINDDOME.` : `Text nesmie obsahovať webovú stránku, sociálne siete ani kontakt na messenger („${match}“).`),
   summary: (count) =>
     count === 1
       ? 'Jedno pole treba skontrolovať:'

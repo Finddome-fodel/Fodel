@@ -44,9 +44,13 @@ export type ErrorCode =
   | 'too-long'
   | 'min-length'
   | 'consent'
-  | 'self-referral';
+  | 'self-referral'
+  | 'choose'
+  | 'contact-email'
+  | 'contact-phone'
+  | 'contact-link';
 
-export type FieldError = { code: ErrorCode; country?: string; example?: string; limit?: number };
+export type FieldError = { code: ErrorCode; country?: string; example?: string; limit?: number; /** contact-*: the offending snippet. */ match?: string };
 
 /* ── Phone ─────────────────────────────────────────────────────────────── */
 

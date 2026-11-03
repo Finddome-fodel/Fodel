@@ -62,7 +62,7 @@ export const HU = {
     stepsTitle: 'Amire szüksége lesz',
     steps: [
       'Fényképek az ingatlanról: legalább egy, de minél több, annál jobb',
-      'Az ingatlan alapadatai: alapterület, telekméret, irányár',
+      'Az ingatlan alapadatai: alapterület, telekméret, ár',
       'Néhány mondat arról, mitől különleges az ingatlan',
     ],
     cta: 'Ugrás a portálra',
@@ -89,7 +89,7 @@ export const HU = {
       owner: 'Hirdető',
       email: 'E-mail',
       location: 'Helyszín',
-      price: 'Irányár',
+      price: 'Ár',
       photos: 'Fényképek',
       languages: 'Nyelvek',
     },

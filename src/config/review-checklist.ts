@@ -98,7 +98,7 @@ export const CHECKLIST: ChecklistItem[] = [
     group: 'data',
     label: 'Ár megadva, reális',
     ask: {
-      hu: 'Kérjük, ellenőrizze és adja meg az irányárat forintban és euróban.',
+      hu: 'Kérjük, ellenőrizze és adja meg az árat forintban és euróban.',
       nl: 'Controleer alstublieft de vraagprijs en vul deze in forint en euro in.',
       en: 'Please check the asking price and enter it in forints and euros.',
     },

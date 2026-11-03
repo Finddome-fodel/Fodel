@@ -21,5 +21,7 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Minimaal ${limit} tekens.`,
   consent: 'Ga akkoord met de privacyverklaring om verder te gaan.',
   selfReferral: 'U kunt uzelf niet aanbevelen: vul een ander e-mailadres in.',
+  choose: "Kies een waarde uit de lijst.",
+  contact: (kind, match) => (kind === 'email' ? `De tekst mag geen e-mailadres bevatten („${match}”). Geïnteresseerden bereiken u via FINDDOME.` : kind === 'phone' ? `De tekst mag geen telefoonnummer bevatten („${match}”). Geïnteresseerden bereiken u via FINDDOME.` : `De tekst mag geen website, sociale media of berichtenapp bevatten („${match}”).`),
   summary: (count) => (count === 1 ? 'Nog één veld controleren:' : `Nog ${count} velden controleren:`),
 };

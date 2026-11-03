@@ -44,7 +44,7 @@ const HU = {
     settlement: 'Település',
     settlementHint: 'Kezdjen gépelni, és válasszon a listából. Ha nincs benne, szabadon is megadhatja.',
     county: 'Megye',
-    price: 'Irányár (Ft)',
+    price: 'Ár (Ft)',
     priceHint: 'Forintban, pl. 45 000 000',
     floor: 'Alapterület (m²)',
     floorHint: 'pl. 120',
@@ -86,7 +86,7 @@ const HU = {
     missingHead: 'A beküldéshez még hiányzik:',
     missing: {
       photos: 'legalább egy fotó',
-      price: 'az irányár',
+      price: 'az ár',
       settlement: 'a település',
       description: 'a leírás',
       billing: 'a számlázási adatok',

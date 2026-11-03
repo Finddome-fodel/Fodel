@@ -131,7 +131,8 @@ export function fieldRules(group: string, subtype: string): Record<ListingField,
     settings: is(true, home),
     floor_m2: is(home, true),
     // Everything under a roof on the property, outbuildings included. A flat is measured by its living area.
-    building_m2: is(building && !flat, !loose),
+    // Optional for every type since November 2026 (client request): shown for buildings, never required.
+    building_m2: is(building && !flat, false),
     plot_m2: is(plot, group === 'land' || group === 'agricultural' || !(loose || PLOT_OPTIONAL.includes(subtype))),
     year_built: is(building, !loose),
     renovated_in: is(building, false),

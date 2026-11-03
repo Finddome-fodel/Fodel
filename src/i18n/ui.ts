@@ -1093,7 +1093,7 @@ const UI_HU_NL = {
 
     property: {
       reference: 'Azonosító',
-      price: 'Irányár',
+      price: 'Ár',
       rooms: 'Szobák',
       baths: 'Fürdők',
       area: 'Alapterület',

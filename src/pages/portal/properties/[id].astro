@@ -119,7 +119,7 @@ if (property.media.length === 0) blockers.push('Legalább egy fényképet fel ke
 if (!trByLocale.hu?.title?.trim()) blockers.push('A magyar cím kitöltése kötelező.');
 if (!trByLocale.hu?.description?.trim()) blockers.push('A magyar rövid leírás kitöltése kötelező.');
 if (!property.country || !Number.isFinite(property.lat) || !Number.isFinite(property.lng) || property.location_confirmed===false) blockers.push('Adja meg az országot és a helyet.');
-if (!(property.original_price && property.original_price>0) && (property.price_eur <= 1 || property.price_huf <= 1)) blockers.push('Adja meg az irányárat.');
+if (!(property.original_price && property.original_price>0) && (property.price_eur <= 1 || property.price_huf <= 1)) blockers.push('Adja meg az árat.');
 
 const openService = serviceResult.data;
 const servicesAvailable = !serviceResult.error;
@@ -130,7 +130,7 @@ const checks = [
   { label: 'Magyar cím', done: Boolean(trByLocale.hu?.title?.trim()) },
   { label: 'Rövid leírás', done: Boolean(trByLocale.hu?.description?.trim()) },
   { label: 'Ország és térképi hely', done: Boolean(property.country && Number.isFinite(property.lat) && Number.isFinite(property.lng) && property.location_confirmed!==false) },
-  { label: 'Irányár', done: Boolean(property.original_price && property.original_price>0) || (property.price_eur > 1 && property.price_huf > 1) },
+  { label: 'Ár', done: Boolean(property.original_price && property.original_price>0) || (property.price_eur > 1 && property.price_huf > 1) },
   { label: 'Legalább egy fénykép', done: property.media.length > 0 },
 ];
 const doneCount = checks.filter((check) => check.done).length;
