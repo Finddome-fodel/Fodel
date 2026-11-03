@@ -13,16 +13,20 @@ import {
   callOpenAiJsonWithUsage, isAiEnabled, type AiUsage,
 } from './client';
 import {
-  TRANSLATION_SCHEMA, buildSystemPrompt, buildUserMessage, checkTranslation, costMicroEur, listingChars,
-  maxTokensFor, modelFromEnv, splitForTranslation, type ListingText,
+  SHORTEN_SCHEMA, TITLE_GOAL, TRANSLATION_SCHEMA, buildShortenPrompt, buildSystemPrompt, buildUserMessage, checkTranslation,
+  costMicroEur, listingChars, maxTokensFor, modelFromEnv, settleTitle, splitForTranslation, type ListingText,
 } from './translate-core';
 
 export type CallJson = (opts: {
   system: string; user: string; schema: Record<string, unknown>; schemaName: string;
   maxTokens: number; timeoutMs: number; retry: boolean; model: string;
-}) => Promise<{ data: ListingText; usage: AiUsage }>;
+}) => Promise<{ data: any; usage: AiUsage }>;
 
-export type TranslationResult = ListingText & { model: string; tokensIn: number; tokensOut: number; costMicroEur: number };
+export type TranslationResult = ListingText & {
+  model: string; tokensIn: number; tokensOut: number; costMicroEur: number;
+  /** The title came back too long: 'shortened' by a second, title-only request; 'cut' at a word boundary as the last resort. */
+  titleFix?: 'shortened' | 'cut';
+};
 
 /** One request's worth of text. Above this a listing is split. */
 const ONE_CALL_CHARS = 4500;
@@ -63,7 +67,34 @@ async function pool<T, R>(items: T[], size: number, work: (item: T, index: numbe
   return results;
 }
 
-const callOpenAi: CallJson = (opts) => callOpenAiJsonWithUsage<ListingText>(opts);
+const callOpenAi: CallJson = (opts) => callOpenAiJsonWithUsage<any>(opts);
+
+/**
+ * One cheap request that shortens only the title. A model cannot count characters, so a title
+ * that came back over the goal is fixed here instead of failing a whole, otherwise good translation.
+ * Returns null when the request itself fails: the caller then keeps the title it has.
+ */
+async function shortenTitle(
+  title: string, targetLocale: string, call: CallJson, model: string, usage: { tokensIn: number; tokensOut: number }
+): Promise<string | null> {
+  try {
+    const { data, usage: used } = await call({
+      system: buildShortenPrompt(targetLocale),
+      user: JSON.stringify({ shorten_title: title, at_most_characters: TITLE_GOAL }),
+      schema: SHORTEN_SCHEMA as unknown as Record<string, unknown>,
+      schemaName: 'listing_title',
+      maxTokens: 300,
+      timeoutMs: 20_000,
+      retry: false,
+      model,
+    });
+    usage.tokensIn += used.tokensIn;
+    usage.tokensOut += used.tokensOut;
+    return typeof data?.title === 'string' ? data.title : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function translateListing(
   source: ListingText,
@@ -99,6 +130,13 @@ export async function translateListing(
     description: answers.map((answer) => answer.description).filter(Boolean).join('\n\n'),
     body: answers.map((answer) => answer.body).filter(Boolean).join('\n\n'),
   };
+  // The description and body are good; a title over the goal is repaired on its own, inside this attempt.
+  let titleFix: TranslationResult['titleFix'];
+  if (merged.title.length > TITLE_GOAL) {
+    const settled = settleTitle(merged.title, await shortenTitle(merged.title, targetLocale, call, model, usage));
+    merged.title = settled.title;
+    if (settled.how !== 'as-is') titleFix = settled.how;
+  }
   checkTranslation(source, merged);
-  return { ...merged, model, ...usage, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut) };
+  return { ...merged, model, ...usage, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut), ...(titleFix ? { titleFix } : {}) };
 }

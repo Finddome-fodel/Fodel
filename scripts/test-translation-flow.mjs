@@ -25,7 +25,7 @@ console.error = () => {};
 console.warn = () => {};
 
 /* ── OpenAI stand-in ─────────────────────────────────────────────────── */
-const stub = { mode: 'ok', calls: [], delay: 0 };
+const stub = { mode: 'ok', calls: [], shortenCalls: [], delay: 0 };
 const server = http.createServer((req, res) => {
   let raw = '';
   req.on('data', (chunk) => (raw += chunk));
@@ -38,10 +38,21 @@ const server = http.createServer((req, res) => {
     if (stub.mode === '429quota') return send(429, { error: { code: 'insufficient_quota' } });
     if (stub.mode === '500') return send(500, { error: { message: 'boom' } });
     const system = body.messages[0].content;
+    // The title-only request that repairs a title that came back too long.
+    if (/^You shorten real-estate listing titles/.test(system)) {
+      stub.shortenCalls.push(body);
+      if (stub.mode === 'long-title-500') return send(500, { error: { message: 'boom' } });
+      const given = JSON.parse(body.messages[1].content).shorten_title;
+      const short = stub.mode === 'long-title' ? given.slice(0, 120).replace(/\s\S*$/, '') : stub.mode === 'long-title-numbers' ? 'Farm, big plot' : given;
+      return send(200, { model: body.model, choices: [{ message: { content: JSON.stringify({ title: short }) }, finish_reason: 'stop' }], usage: { prompt_tokens: 120, completion_tokens: 40 } });
+    }
     const language = /into ([^.]+)\./.exec(system)?.[1] ?? '?';
     const input = JSON.parse(body.messages[1].content).translate;
     const out = (text) => (text ? `[${language}] ${text}` : '');
-    const answer = stub.mode === 'bad-numbers'
+    const longTitle = (title, to) => `${out(title)} ${'tereny rolne ze szczegółowym opisem gospodarstwa '.repeat(8)}`.slice(0, to).trim();
+    const answer = stub.mode.startsWith('long-title')
+      ? { title: longTitle(input.title, stub.mode === 'long-title' ? 175 : 260), description: out(input.description), body: out(input.body) }
+      : stub.mode === 'bad-numbers'
       ? { title: out(input.title), description: out(input.description).replace('120', '130'), body: out(input.body) }
       : { title: out(input.title), description: out(input.description), body: out(input.body) };
     send(200, { model: body.model, choices: [{ message: { content: JSON.stringify(answer) }, finish_reason: 'stop' }], usage: { prompt_tokens: 900, completion_tokens: 700 } });
@@ -77,7 +88,7 @@ const rpc = {
 };
 let seq = 0;
 function fresh({ translations, jobs = [] } = {}) {
-  stub.mode = 'ok'; stub.calls.length = 0; stub.delay = 0;
+  stub.mode = 'ok'; stub.calls.length = 0; stub.shortenCalls.length = 0; stub.delay = 0;
   delete globalThis.__ENV.TRANSLATION_DAILY_CAP_EUR;
   world.db = createFakeDb({
     properties: [{ id: 'p1', ref: '1001', status: 'published', owner_id: 'u1' }],
@@ -263,6 +274,62 @@ test('a failed job can be run again; one already running again cannot be doubled
   assert.equal(await jobsLib.retryJob(world.db.client, jobRows()[0].id), true);
   assert.deepEqual([jobRows()[0].status, jobRows()[0].attempts, jobRows()[0].last_error], ['queued', 0, null]);
   assert.equal(await jobsLib.retryJob(world.db.client, jobRows()[0].id), false, 'it is not failed any more');
+});
+
+/* ── A title that comes back too long (the Polish tanya listing) ──────── */
+
+const TANYA = [{ property_id: 'p1', locale: 'hu', title: 'Felújított tanya 2 ha földdel és 1500 m² gazdasági épülettel', description: 'Szép tanya 120 m² lakóterülettel.', body: 'Három szoba és nagy kert.' }];
+
+test('a title over the goal is shortened by one small request, inside the same attempt, and the job still succeeds', async () => {
+  fresh({ translations: TANYA, jobs: [{ locale: 'pl' }] });
+  stub.mode = 'long-title';
+  const result = await run();
+  assert.equal(result.done, 1);
+  assert.equal(stub.calls.length - stub.shortenCalls.length, 1, 'the translation itself is asked once');
+  assert.equal(stub.shortenCalls.length, 1, 'and only the title once more');
+  assert.ok(trRow('pl').title.length <= 150, trRow('pl').title);
+  assert.match(trRow('pl').description, /^\[Polish\] Szép tanya/, 'the good description is kept');
+  assert.equal(jobRows()[0].attempts, 1, 'no attempt was used up');
+  assert.equal(jobRows()[0].status, 'done');
+  assert.equal(world.db.table('activity_events').find((e) => e.kind === 'ai.translation_done').payload.titleFix, 'shortened');
+  assert.equal(jobRows()[0].tokens_in, 900 + 120, 'the extra request is costed too');
+});
+
+test('a title the model cannot shorten is cut at a word boundary with a mark, and still published', async () => {
+  fresh({ translations: TANYA, jobs: [{ locale: 'pl' }] });
+  stub.mode = 'long-title-stubborn';
+  const result = await run();
+  assert.equal(result.done, 1);
+  const title = trRow('pl').title;
+  assert.ok(title.length <= 200 && title.endsWith('…'), `${title.length}: ${title}`);
+  assert.ok(!/\s…$/.test(title) && !title.slice(0, -1).endsWith(' '));
+  assert.equal(world.db.table('activity_events').find((e) => e.kind === 'ai.translation_done').payload.titleFix, 'cut');
+});
+
+test('a shortened title that loses a number is not trusted', async () => {
+  fresh({ translations: TANYA, jobs: [{ locale: 'pl' }] });
+  stub.mode = 'long-title-numbers';
+  const result = await run();
+  assert.equal(result.done, 1);
+  assert.notEqual(trRow('pl').title, 'Farm, big plot');
+});
+
+test('when the shortening request itself fails, the translation is not lost', async () => {
+  fresh({ translations: TANYA, jobs: [{ locale: 'pl' }] });
+  stub.mode = 'long-title-500';
+  const result = await run();
+  assert.equal(result.done, 1);
+  assert.ok(trRow('pl').title.length <= 200 && trRow('pl').title.endsWith('…'));
+  assert.equal(jobRows()[0].attempts, 1);
+});
+
+test('re-running a failed Polish job after the fix now succeeds', async () => {
+  fresh({ translations: TANYA, jobs: [{ locale: 'pl', status: 'failed', attempts: 3, last_error: 'A fordított cím túl hosszú.' }] });
+  assert.equal(await jobsLib.retryJob(world.db.client, jobRows()[0].id), true);
+  stub.mode = 'long-title';
+  const result = await run();
+  assert.equal(result.done, 1);
+  assert.equal(jobRows()[0].status, 'done');
 });
 
 let failed = 0;

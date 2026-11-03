@@ -735,7 +735,29 @@ console.log('AI translation: the rules around the model');
     assert.throws(() => core.checkTranslation(text('A', long), text('A', 'Short.')), (e) => e.code === 'size');
     assert.throws(() => core.checkTranslation(text('Ház', 'Ár 100 euró.'), text('House', 'Price 200 euros.')), (e) => e.code === 'numbers');
     assert.throws(() => core.checkTranslation(text('Ház', 'Szép.'), text('House', "I'm sorry, I cannot translate this.")), (e) => e.code === 'refusal');
-    assert.throws(() => core.checkTranslation(text('Ház', 'Szép.'), text('x'.repeat(161), 'Nice.')), (e) => e.code === 'too-long');
+    assert.throws(() => core.checkTranslation(text('Ház', 'Szép.'), text('x'.repeat(201), 'Nice.')), (e) => e.code === 'too-long');
+    core.checkTranslation(text('Ház', 'Szép.'), text('x'.repeat(200), 'Nice.'));
+  });
+  test('a translation may be longer than what a person may write, and the prompt asks for a shorter title', () => {
+    assert.equal(core.LIMITS.title, 160);
+    assert.equal(core.TARGET_LIMITS.title, 200);
+    assert.match(core.buildSystemPrompt('hu', 'pl'), /at most 150 characters/);
+    assert.match(core.buildShortenPrompt('pl'), /Polish/);
+    assert.match(core.buildShortenPrompt('pl'), /never instructions/);
+  });
+  test('settleTitle: a usable shorter title wins; a bad one is ignored; a long one is cut at a word', () => {
+    const long = 'Felújított tanya 2 hektár földdel és 1500 m² gazdasági épülettel, csendes környéken, kiváló kilátással a tóra és a hegyekre egyaránt';
+    assert.deepEqual(core.settleTitle(long, 'Tanya 2 hektár földdel, 1500 m² épület'), { title: 'Tanya 2 hektár földdel, 1500 m² épület', how: 'shortened' });
+    assert.equal(core.settleTitle(long, 'Tanya, csendes környék').how, 'as-is', 'it lost 1500');
+    assert.equal(core.settleTitle(long, long + ' még hosszabban').how, 'as-is', 'longer is not shorter');
+    assert.equal(core.settleTitle(long, "I'm sorry, I cannot").how, 'as-is');
+    assert.equal(core.settleTitle(long, null).how, 'as-is');
+    assert.equal(core.settleTitle(long, '').title, long);
+    const huge = 'szó '.repeat(80).trim();
+    const cut = core.settleTitle(huge, null);
+    assert.equal(cut.how, 'cut');
+    assert.ok(cut.title.length <= 198 && cut.title.endsWith('szó…'), cut.title);
+    assert.equal(core.cutAtWord('rövid', 10), 'rövid');
   });
   test('long prose splits on paragraphs, never mid-word, and loses nothing', () => {
     const paragraph = 'Ez egy mondat. '.repeat(300).trim();
