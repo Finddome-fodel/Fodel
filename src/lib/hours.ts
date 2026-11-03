@@ -49,10 +49,10 @@ export function officeHours(h: Hours, locale: L): string {
     lt: `Pirmadienis–penktadienis · ${range}`,
     sr: `Ponedeljak–petak · ${range}`,
     uk: `Понеділок–п’ятниця · ${range}`,
-    tr: `Monday–Friday · ${range}`,
+    tr: `Pazartesi–Cuma · ${range}`,
     he: `Monday–Friday · ${range}`,
     ar: `Monday–Friday · ${range}`,
-    ru: `Monday–Friday · ${range}`,
+    ru: `Понедельник–пятница · ${range}`,
     zh: `Monday–Friday · ${range}`,
   }[locale];
 }
@@ -84,10 +84,10 @@ export function callbackHours(h: Hours, locale: L): string {
     lt: weekend ? `Perskambiname iki ${to}, taip pat savaitgaliais.` : `Darbo dienomis perskambiname iki ${to}.`,
     sr: weekend ? `Povratni pozivi do ${to}, i vikendom.` : `Povratni pozivi radnim danima do ${to}.`,
     uk: weekend ? `Зворотні дзвінки до ${to}, також у вихідні.` : `Зворотні дзвінки в робочі дні до ${to}.`,
-    tr: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
+    tr: weekend ? `Geri aramalar ${to} saatine kadar, hafta sonları da.` : `Geri aramalar hafta içi ${to} saatine kadar.`,
     he: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
     ar: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
-    ru: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
+    ru: weekend ? `Обратные звонки до ${to}, в том числе в выходные.` : `Обратные звонки в рабочие дни до ${to}.`,
     zh: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
   }[locale];
 }
@@ -121,10 +121,10 @@ export function hoursSentence(h: Hours, locale: L): string {
     lt: `Skambinkite mums darbo dienomis nuo ${from} iki ${to}; perskambiname iki ${cb}${weekend ? ', taip pat savaitgaliais' : ''}.`,
     sr: `Pozovite nas radnim danima od ${from} do ${to}; povratne pozive obavljamo do ${cb}${weekend ? ', i vikendom' : ''}.`,
     uk: `Телефонуйте нам у робочі дні з ${from} до ${to}; зворотні дзвінки — до ${cb}${weekend ? ', також у вихідні' : ''}.`,
-    tr: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
+    tr: `Bizi hafta içi ${from}–${to} saatleri arasında arayın; geri aramalar ${cb} saatine kadar${weekend ? ', hafta sonları da' : ''}.`,
     he: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
     ar: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
-    ru: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
+    ru: `Звоните нам в рабочие дни с ${from} до ${to}; обратные звонки — до ${cb}${weekend ? ', в том числе в выходные' : ''}.`,
     zh: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
   }[locale];
 }

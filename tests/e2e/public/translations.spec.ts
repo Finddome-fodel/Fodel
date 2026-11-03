@@ -106,10 +106,10 @@ test('an unknown page answers 404 in the language of its URL', async ({ request 
     lv: /nav atrasta|404/i, lt: /nerastas|404/i,
     sr: /nije pronađena|404/i,
     uk: /не знайдено|404/i,
-    tr: /not found|404/i,
+    tr: /bulunamadı|404/i,
     he: /not found|404/i,
     ar: /not found|404/i,
-    ru: /not found|404/i,
+    ru: /не найдена|404/i,
     zh: /not found|404/i,
   };
   for (const locale of LOCALES) {

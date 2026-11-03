@@ -277,8 +277,8 @@ const FOOTER_COPY = {
     contact: 'Контакти',
   },
   tr: {
-    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
-    contact: 'Contact',
+    why: 'Bu e-postayı, FINDDOME hesabınız olduğu veya bizde ilan verdiğiniz için alıyorsunuz.',
+    contact: 'İletişim',
   },
   he: {
     why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
@@ -289,8 +289,8 @@ const FOOTER_COPY = {
     contact: 'Contact',
   },
   ru: {
-    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
-    contact: 'Contact',
+    why: 'Вы получили это письмо, потому что у вас есть аккаунт FINDDOME или вы разместили у нас объявление.',
+    contact: 'Контакты',
   },
   zh: {
     why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
@@ -328,10 +328,10 @@ const VISITOR_WHY: Record<ShellLocale, string> = {
   lt: 'Šį laišką gaunate, nes susisiekėte su mumis per FINDDOME svetainę.',
   sr: 'Ovaj imejl dobijate jer ste nam se obratili preko sajta FINDDOME.',
   uk: 'Ви отримали цей лист, тому що зверталися до нас через сайт FINDDOME.',
-  tr: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  tr: 'Bu e-postayı, FINDDOME web sitesi üzerinden bizimle iletişime geçtiğiniz için alıyorsunuz.',
   he: 'You are receiving this email because you contacted us through the FINDDOME website.',
   ar: 'You are receiving this email because you contacted us through the FINDDOME website.',
-  ru: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  ru: 'Вы получили это письмо, потому что обращались к нам через сайт FINDDOME.',
   zh: 'You are receiving this email because you contacted us through the FINDDOME website.',
 };
 

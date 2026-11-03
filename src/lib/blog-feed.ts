@@ -35,10 +35,10 @@ const FEED: Record<Locale, { title: string; description: string }> = {
   lt: { title: 'FINDDOME Nekilnojamasis turtas: naujienos ir straipsniai', description: 'Vengrijos nekilnojamojo turto rinkos ir Vakarų Europos pirkėjų analizė.' },
   sr: { title: 'FINDDOME Nekretnine: vesti i članci', description: 'Analize mađarskog tržišta nekretnina i kupaca iz Zapadne Evrope.' },
   uk: { title: 'FINDDOME НЕРУХОМІСТЬ: новини та статті', description: 'Аналітика угорського ринку нерухомості та покупців із Західної Європи.' },
-  tr: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  tr: { title: 'FINDDOME EMLAK: haberler ve makaleler', description: 'Macaristan emlak piyasası ve Batı Avrupalı alıcılar üzerine analizler.' },
   he: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
   ar: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
-  ru: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  ru: { title: 'FINDDOME НЕДВИЖИМОСТЬ: новости и статьи', description: 'Аналитика венгерского рынка недвижимости и покупателей из Западной Европы.' },
   zh: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
 };
 

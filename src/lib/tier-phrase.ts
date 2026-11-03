@@ -33,10 +33,10 @@ const TIER_PHRASE: Record<Locale, TierPhrase> = {
   lt: { above: (x) => `turtas virš ${x}`, upTo: (x) => `turtas iki ${x}`, between: (a, b) => `turtas nuo ${a} iki ${b}` },
   sr: { above: (x) => `nekretnina sa cenom iznad ${x}`, upTo: (x) => `nekretnina sa cenom do ${x}`, between: (a, b) => `nekretnina sa cenom ${a}–${b}` },
   uk: { above: (x) => `нерухомість вартістю понад ${x}`, upTo: (x) => `нерухомість вартістю до ${x}`, between: (a, b) => `нерухомість вартістю ${a}–${b}` },
-  tr: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  tr: { above: (x) => `fiyatı ${x} üzerinde olan mülk`, upTo: (x) => `fiyatı en fazla ${x} olan mülk`, between: (a, b) => `fiyatı ${a}–${b} arasında olan mülk` },
   he: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
   ar: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
-  ru: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  ru: { above: (x) => `недвижимость стоимостью свыше ${x}`, upTo: (x) => `недвижимость стоимостью до ${x}`, between: (a, b) => `недвижимость стоимостью ${a}–${b}` },
   zh: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
 };
 
