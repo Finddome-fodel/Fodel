@@ -25,13 +25,14 @@ console.error = () => {};
 console.warn = () => {};
 
 /* ── OpenAI stand-in ─────────────────────────────────────────────────── */
-const stub = { mode: 'ok', calls: [], shortenCalls: [], delay: 0 };
+const stub = { mode: 'ok', calls: [], shortenCalls: [], systems: [], delay: 0 };
 const server = http.createServer((req, res) => {
   let raw = '';
   req.on('data', (chunk) => (raw += chunk));
   req.on('end', async () => {
     const body = JSON.parse(raw);
     stub.calls.push(body);
+    stub.systems.push(body.messages[0].content);
     if (stub.delay) await new Promise((r) => setTimeout(r, stub.delay));
     const send = (status, payload) => { res.writeHead(status, { 'content-type': 'application/json' }); res.end(JSON.stringify(payload)); };
     if (stub.mode === '401') return send(401, { error: { message: 'bad key sk-offline-test' } });
@@ -50,6 +51,9 @@ const server = http.createServer((req, res) => {
     const input = JSON.parse(body.messages[1].content).translate;
     const out = (text) => (text ? `[${language}] ${text}` : '');
     const longTitle = (title, to) => `${out(title)} ${'tereny rolne ze szczegółowym opisem gospodarstwa '.repeat(8)}`.slice(0, to).trim();
+    if (stub.mode === 'phone') {
+      return send(200, { model: body.model, choices: [{ message: { content: JSON.stringify({ title: out(input.title), description: `${out(input.description)} Hívjon: +36 30 123 4567.`, body: out(input.body) }) }, finish_reason: 'stop' }], usage: { prompt_tokens: 900, completion_tokens: 700 } });
+    }
     const answer = stub.mode.startsWith('long-title')
       ? { title: longTitle(input.title, stub.mode === 'long-title' ? 175 : 260), description: out(input.description), body: out(input.body) }
       : stub.mode === 'bad-numbers'
@@ -81,14 +85,14 @@ const rpc = {
     const rows = tables.property_translations;
     const existing = rows.find((r) => r.property_id === a.p_property && r.locale === a.p_locale);
     if (existing && !existing.machine && !a.p_overwrite) return { data: false, error: null };
-    const next = { property_id: a.p_property, locale: a.p_locale, title: a.p_title, description: a.p_description, body: a.p_body ?? '', machine: true, translated_from: a.p_from, source_hash: a.p_hash };
+    const next = { property_id: a.p_property, locale: a.p_locale, title: a.p_title, description: a.p_description, body: a.p_body ?? '', machine: true, translated_from: a.p_from, source_hash: a.p_hash, needs_review: Boolean(a.p_needs_review), check_warnings: a.p_warnings ?? [] };
     if (existing) Object.assign(existing, next); else rows.push(next);
     return { data: true, error: null };
   },
 };
 let seq = 0;
 function fresh({ translations, jobs = [] } = {}) {
-  stub.mode = 'ok'; stub.calls.length = 0; stub.shortenCalls.length = 0; stub.delay = 0;
+  stub.mode = 'ok'; stub.calls.length = 0; stub.shortenCalls.length = 0; stub.systems.length = 0; stub.delay = 0; world.admins = [];
   delete globalThis.__ENV.TRANSLATION_DAILY_CAP_EUR;
   world.db = createFakeDb({
     properties: [{ id: 'p1', ref: '1001', status: 'published', owner_id: 'u1' }],
@@ -332,10 +336,130 @@ test('re-running a failed Polish job after the fix now succeeds', async () => {
   assert.equal(jobRows()[0].status, 'done');
 });
 
+/* ── The translation layer: what a failure leaves behind, and what is said aloud ── */
+
+test('a refused answer leaves its code, the text it wrote and what to do better; the retry is told, and success clears it', async () => {
+  fresh({ jobs: [{ locale: 'de' }] });
+  stub.mode = 'bad-numbers';
+  await run();
+  const job = jobRows()[0];
+  assert.equal(job.status, 'queued');
+  assert.equal(job.fail_code, 'numbers');
+  assert.match(job.partial_output.description, /130/, 'the answer that was refused is kept');
+  assert.match(job.feedback, /numbers/i);
+  stub.mode = 'ok';
+  job.claimed_at = new Date(Date.now() - 60_000).toISOString();
+  await run();
+  assert.ok(stub.systems.at(-1).includes('A previous attempt was refused'), 'the second attempt is told what was wrong');
+  assert.equal(jobRows()[0].status, 'done');
+  assert.deepEqual([jobRows()[0].fail_code, jobRows()[0].partial_output, jobRows()[0].feedback], [null, null, null]);
+});
+
+test('a job that finally fails keeps the code and the last answer for the admin', async () => {
+  fresh({ jobs: [{ locale: 'de' }] });
+  stub.mode = 'bad-numbers';
+  for (let i = 0; i < 3; i++) { jobRows()[0].claimed_at = new Date(Date.now() - 60_000).toISOString(); await run(); }
+  assert.equal(jobRows()[0].status, 'failed');
+  assert.equal(jobRows()[0].fail_code, 'numbers');
+  assert.ok(jobRows()[0].partial_output.title);
+});
+
+test('a title the machine had to shorten is published, flagged for review, with the reason', async () => {
+  fresh({ translations: TANYA, jobs: [{ locale: 'pl' }] });
+  stub.mode = 'long-title';
+  await run();
+  assert.equal(trRow('pl').needs_review, true);
+  assert.match(trRow('pl').check_warnings[0], /lerövidítette/);
+  fresh({ jobs: [{ locale: 'de' }] });
+  await run();
+  assert.equal(trRow('de').needs_review, false);
+  assert.deepEqual(trRow('de').check_warnings, []);
+});
+
+test('a free listing\'s translation with a phone number is refused; a paid listing\'s is not', async () => {
+  fresh({ jobs: [{ locale: 'de' }] });
+  world.db.table('properties')[0].free_listing = true;
+  stub.mode = 'phone';
+  await run();
+  assert.equal(jobRows()[0].fail_code, 'contact');
+  assert.equal(trRow('de'), undefined, 'nothing saved');
+  fresh({ jobs: [{ locale: 'de' }] });
+  stub.mode = 'phone';
+  await run();
+  assert.ok(['numbers', undefined].includes(jobRows()[0].fail_code), 'a paid listing skips the contact check');
+});
+
+test('before migration 0051 the same work is done without the new columns', async () => {
+  const legacyOf = (base) => ({
+    rpc: async (name, args) => (name === 'save_machine_translation' && 'p_needs_review' in args
+      ? { data: null, error: { code: 'PGRST202', message: 'Could not find the function public.save_machine_translation' } }
+      : base.rpc(name, args)),
+    from: (table) => {
+      const query = base.from(table);
+      if (table !== 'translation_jobs') return query;
+      return new Proxy(query, {
+        get: (target, prop) => prop !== 'update' ? (typeof target[prop] === 'function' ? target[prop].bind(target) : target[prop]) : (patch) => {
+          if (!['fail_code', 'partial_output', 'feedback'].some((key) => key in patch)) return target.update(patch);
+          const dead = new Proxy({}, { get: (_, p) => (p === 'then' ? (resolve) => resolve({ data: null, error: { code: '42703', message: 'column "fail_code" of relation "translation_jobs" does not exist' } }) : () => dead) });
+          return dead;
+        },
+      });
+    },
+  });
+  fresh({ jobs: [{ locale: 'de' }, { locale: 'fr' }] });
+  const result = await jobsLib.processTranslationJobs(legacyOf(world.db.client), { budgetMs: 1500 });
+  assert.equal(result.done, 2);
+  assert.ok(jobRows().every((j) => j.status === 'done'));
+  assert.equal(trRow('de').title, '[German] Eladó ház');
+  fresh({ jobs: [{ locale: 'de' }] });
+  stub.mode = 'bad-numbers';
+  await jobsLib.processTranslationJobs(legacyOf(world.db.client), { budgetMs: 1500 });
+  assert.equal(jobRows()[0].status, 'queued', 'a refused answer is requeued even without the new columns');
+  assert.match(jobRows()[0].last_error, /Számeltérés/);
+});
+
+test('when the budget is spent the admins are told once a day, not on every run', async () => {
+  fresh({ jobs: [{ locale: 'de' }] });
+  world.admins = ['admin@test.local'];
+  globalThis.__ENV.TRANSLATION_DAILY_CAP_EUR = '1';
+  world.db.table('translation_jobs').push({ id: 'old', property_id: 'p1', locale: 'nl', status: 'done', cost_micro_eur: 1_000_000, finished_at: new Date().toISOString(), attempts: 1, created_at: '2026-10-30T00:00:00Z' });
+  world.sent.length = 0;
+  await run();
+  assert.equal(world.sent.length, 1);
+  assert.match(world.sent[0].subject, /keret/);
+  assert.equal(world.sent[0].to, 'admin@test.local');
+});
+
+test('a wrong key sends its own alert', async () => {
+  fresh({ jobs: [{ locale: 'de' }, { locale: 'fr' }] });
+  world.admins = ['admin@test.local'];
+  stub.mode = '401';
+  world.sent.length = 0;
+  await run({ concurrency: 1 });
+  assert.equal(world.sent.length, 1);
+  assert.match(world.sent[0].subject, /leállt/);
+});
+
+test('the daily digest names failures and old texts, and is sent only when there is something to say', async () => {
+  const alerts = await import('../src/lib/ai/translation-alerts.ts');
+  const quiet = { failed: [], stale: [], spentMicroEur: 10_000, capMicroEur: 5_000_000 };
+  assert.equal(alerts.digestIsWorthSending(quiet), false);
+  assert.equal(alerts.digestIsWorthSending({ ...quiet, spentMicroEur: 4_500_000 }), true, 'nearly out of budget');
+  const busy = { failed: [{ ref: '1001', propertyId: 'p1', locale: 'pl', reason: 'Túl hosszú cím vagy szöveg' }], stale: [{ ref: '1002', propertyId: 'p2', locale: 'de' }], spentMicroEur: 10_000, capMicroEur: 5_000_000 };
+  assert.equal(alerts.digestIsWorthSending(busy), true);
+  const mail = alerts.buildDigest(busy);
+  assert.match(mail.subject, /1 hibás/);
+  assert.match(mail.text, /#1001 · lengyel: Túl hosszú/);
+  assert.match(mail.text, /1 fordítás elavult/);
+  assert.ok(mail.html.includes('lengyel'));
+  const stop = alerts.buildStopAlert('cap', { spentMicroEur: 5_000_000, capMicroEur: 5_000_000, remaining: 4 });
+  assert.match(stop.text, /4 fordítás/);
+});
+
 let failed = 0;
 for (const [name, fn] of tests) {
   try { await fn(); console.log(`  ✓ ${name}`); }
-  catch (error) { failed++; console.log(`  ✗ ${name}\n      ${String(error.message).split('\n').slice(0, 5).join('\n      ')}`); }
+  catch (error) { failed++; if (process.env.TR_DEBUG) console.log(error.stack); console.log(`  ✗ ${name}\n      ${String(error.message).split('\n').slice(0, 5).join('\n      ')}`); }
 }
 server.close();
 console.log(failed ? `\n${failed} of ${tests.length} failed` : `\nAll ${tests.length} translation runner checks passed.`);

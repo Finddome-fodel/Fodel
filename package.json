@@ -26,6 +26,7 @@
     "test:translation": "node --no-warnings scripts/test-translation-flow.mjs",
     "test:own-listing": "node --no-warnings scripts/test-admin-own-listing.mjs",
     "test:free-approval": "node --no-warnings scripts/test-free-approval.mjs",
+    "test:language-gate": "node --no-warnings scripts/test-language-gate.mjs",
     "test:upload": "node --no-warnings scripts/test-upload-link.mjs",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "test:e2e": "playwright test",

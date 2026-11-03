@@ -388,4 +388,56 @@ for(let i=0;i<198;i++)await db.query('insert into property_media(property_id,sto
 await assert.rejects(()=>db.query('insert into property_media(property_id,storage_path,pending)values($1,$2,true)',[live,`${live}/over.webp`]),/photo-limit/,'pending photos count toward the limit');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 console.log('✓ 0053 queues live-listing photos as pending (never the cover, never self-approved), hides them from the public, keeps one approved photo, guards storage, keeps reasons owner-read-only, and is repeatable');
+// 0051: translation status. Repeatable; a hand edit of an AI text is noted and keeps the source fingerprint; the server's
+// write stores the checks' verdict and clears a hand edit only when told to overwrite; only an admin saves a hand-made text;
+// the overview view covers every listing x language and is not readable by anonymous visitors.
+const sql51=fs.readFileSync(root+'/supabase/migrations/0051_translation_status.sql','utf8');
+try{await db.exec(sql51);await db.exec(sql51);}catch(e){console.error('MIGRATION 0051 FAILED',e.message,e.detail);process.exit(1);}
+await db.exec(`reset role;set test.uid='';set test.admin='true';delete from translation_jobs;delete from property_translations where property_id='${id}';insert into property_translations(property_id,locale,title,description,body)values('${id}','hu','Cím','Rövid','Hosszú');insert into property_translations(property_id,locale,title,description,body,machine,translated_from,translated_at,source_hash)values('${id}','de','Titel','Kurz','Lang',true,'hu',now(),'H1');`);
+const locales=(await get(`select count(*)::int as n from pg_enum where enumtypid='locale_code'::regtype`))[0].n;
+assert.equal((await get(`select count(*)::int as n from translation_matrix where property_id='${id}'`))[0].n,locales,'one row per language');
+let m=(await get(`select * from translation_matrix where property_id='${id}' and locale='de'`))[0];
+assert.deepEqual([m.has_text,m.excluded,m.job_status,m.source_hash],[true,false,null,'H1']);
+assert.equal((await get(`select has_text from translation_matrix where property_id='${id}' and locale='fr'`))[0].has_text,false);
+await db.exec(`insert into translation_jobs(property_id,locale,origin,status,fail_code,partial_output,feedback)values('${id}','fr','package','failed','too-long','{"title":"x"}','Shorten it')`);
+await db.exec(`insert into translation_jobs(property_id,locale,origin,status,created_at)values('${id}','fr','admin','done',now()-interval '1 day')`);
+m=(await get(`select job_status,job_origin,fail_code from translation_matrix where property_id='${id}' and locale='fr'`))[0];
+assert.deepEqual(m,{job_status:'failed',job_origin:'package',fail_code:'too-long'},'the view shows the newest job');
+await assert.rejects(()=>db.exec(`insert into translation_jobs(property_id,locale,origin,status)values('${id}','es','bogus','queued')`),'the origin list is enforced');
+await db.exec(`update properties set excluded_locales='{nl}' where id='${id}'`);
+assert.equal((await get(`select excluded from translation_matrix where property_id='${id}' and locale='nl'`))[0].excluded,true);
+// A person edits an AI text through the editor: noted, fingerprint kept.
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';`);
+await db.query('select save_listing_editor($1,$2,$3,$4)',[id,{},null,[{locale:'de',title:'Titel',description:'Kurz',body:'Lang, geändert'}]]);
+row=(await get(`select machine,manual_override,needs_review,translated_from,source_hash from property_translations where property_id='${id}' and locale='de'`))[0];
+assert.deepEqual(row,{machine:false,manual_override:true,needs_review:false,translated_from:'hu',source_hash:'H1'});
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+// A text a person wrote as an original is not marked as an override.
+await db.exec(`insert into property_translations(property_id,locale,title,description,machine)values('${id}','nl','Huis','Kort',false)`);
+await db.exec(`update property_translations set title='Huis 2' where property_id='${id}' and locale='nl'`);
+assert.equal((await get(`select manual_override from property_translations where property_id='${id}' and locale='nl'`))[0].manual_override,false);
+// The server's write: the verdict is stored; a hand edit is replaced only on overwrite, and then stops being an override.
+const save51=(locale,title,overwrite,review=false)=>db.query(`select save_machine_translation('${id}'::uuid,$1::locale_code,'hu'::locale_code,$2,'Besch','Text','H2',$3,$4,$5) as ok`,[locale,title,overwrite,review,review?['A címet az AI lerövidítette.']:[]]);
+assert.equal((await save51('de','AI Titel',false)).rows[0].ok,false,'a hand edit is not replaced');
+assert.equal((await save51('de','AI Titel',true,true)).rows[0].ok,true);
+row=(await get(`select machine,manual_override,needs_review,check_warnings,source_hash,validated_at is not null as v from property_translations where property_id='${id}' and locale='de'`))[0];
+assert.deepEqual(row,{machine:true,manual_override:false,needs_review:true,check_warnings:['A címet az AI lerövidítette.'],source_hash:'H2',v:true});
+assert.equal((await db.query(`select save_machine_translation('${id}'::uuid,'en'::locale_code,'hu'::locale_code,'T','B','X','H2',false) as ok`)).rows[0].ok,true,'the older 8-argument call still works');
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';`);
+await assert.rejects(()=>save51('en','x2',false),'only the server (service role) may write machine translations');
+// A hand-made text: admins only.
+const override=(locale,title,hash=null)=>db.query('select save_translation_override($1,$2,$3,$4,$5,$6,$7)',[id,locale,title,'Kurz','Lang',hash,'hu']);
+await override('de','Handgemacht','H2');
+row=(await get(`select title,machine,manual_override,needs_review,source_hash,translated_from from property_translations where property_id='${id}' and locale='de'`))[0];
+assert.deepEqual(row,{title:'Handgemacht',machine:false,manual_override:true,needs_review:false,source_hash:'H2',translated_from:'hu'});
+await override('de','Handgemacht 2');
+assert.equal((await get(`select source_hash from property_translations where property_id='${id}' and locale='de'`))[0].source_hash,'H2','an earlier fingerprint is kept when none is given');
+await assert.rejects(()=>override('de','   '),'a title is required');
+await db.exec(`set test.admin='false';set test.uid='${owner}';`);
+await assert.rejects(()=>override('de','Nem szabad'),'a seller cannot');
+assert.equal((await get(`select count(*)::int as n from translation_matrix where property_id='${id}'`))[0].n,locales,'a seller reads the overview of their own listing');
+await db.exec(`reset role;set role anon;`);
+await assert.rejects(()=>get('select * from translation_matrix'),'anonymous has no access');
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+console.log('✓ 0051: repeatable; the overview, hand-edit tracking, the verdict, admin-only overrides and access all hold');
 await db.close();

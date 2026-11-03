@@ -26,6 +26,17 @@ export type TranslationResult = ListingText & {
   model: string; tokensIn: number; tokensOut: number; costMicroEur: number;
   /** The title came back too long: 'shortened' by a second, title-only request; 'cut' at a word boundary as the last resort. */
   titleFix?: 'shortened' | 'cut';
+  /** A person should look at it: published as it is, but flagged (a title the machine had to shorten). */
+  needsReview: boolean;
+  /** Why, in words for the admin. */
+  warnings: string[];
+};
+
+export type TranslateOptions = {
+  /** What the last refused attempt did wrong (translate-core.ts retryFeedback). */
+  feedback?: string | null;
+  /** Free listing: contact details in the answer are refused. */
+  freeListing?: boolean;
 };
 
 /** One request's worth of text. Above this a listing is split. */
@@ -74,7 +85,7 @@ const callOpenAi: CallJson = (opts) => callOpenAiJsonWithUsage<any>(opts);
  * that came back over the goal is fixed here instead of failing a whole, otherwise good translation.
  * Returns null when the request itself fails: the caller then keeps the title it has.
  */
-async function shortenTitle(
+export async function shortenTitle(
   title: string, targetLocale: string, call: CallJson, model: string, usage: { tokensIn: number; tokensOut: number }
 ): Promise<string | null> {
   try {
@@ -101,9 +112,10 @@ export async function translateListing(
   sourceLocale: string,
   targetLocale: string,
   call: CallJson = callOpenAi,
-  model: string = translationModel()
+  model: string = translationModel(),
+  options: TranslateOptions = {}
 ): Promise<TranslationResult> {
-  const system = buildSystemPrompt(sourceLocale, targetLocale);
+  const system = buildSystemPrompt(sourceLocale, targetLocale, options.feedback);
   const segments = planSegments(source);
   const usage = { tokensIn: 0, tokensOut: 0 };
 
@@ -137,6 +149,21 @@ export async function translateListing(
     merged.title = settled.title;
     if (settled.how !== 'as-is') titleFix = settled.how;
   }
-  checkTranslation(source, merged);
-  return { ...merged, model, ...usage, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut), ...(titleFix ? { titleFix } : {}) };
+  checkTranslation(source, merged, { freeListing: options.freeListing });
+  const warnings = titleFix === 'cut'
+    ? ['A cím túl hosszú volt, ezért szóhatárnál le lett vágva. Érdemes átírni.']
+    : titleFix === 'shortened' ? ['A címet az AI lerövidítette, hogy beleférjen. Érdemes átnézni.'] : [];
+  return {
+    ...merged, model, ...usage, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut),
+    ...(titleFix ? { titleFix } : {}), needsReview: warnings.length > 0, warnings,
+  };
+}
+
+/** The editor's "Csak a cím rövidítése": one cheap request on one title. `how` is 'as-is' when nothing usable came back. */
+export async function shortenListingTitle(
+  title: string, targetLocale: string, call: CallJson = callOpenAi, model: string = translationModel()
+): Promise<{ title: string; how: 'as-is' | 'shortened' | 'cut'; costMicroEur: number }> {
+  const usage = { tokensIn: 0, tokensOut: 0 };
+  const settled = settleTitle(title, await shortenTitle(title, targetLocale, call, model, usage));
+  return { ...settled, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut) };
 }
