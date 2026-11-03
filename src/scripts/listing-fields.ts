@@ -3,7 +3,7 @@ import { fieldRules, parkingFits, gapError, gapControl, type ListingField } from
 import { regionLabel } from '~/config/countries';
 import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
 import { parseLocaleNumber } from '~/lib/validation';
-import type { RateSnapshot } from '~/lib/exchange-rates';
+import { roundEur, type RateSnapshot } from '~/lib/exchange-rates';
 
 const coordinate = (s:string) => s.trim() ? Number(s.replace(/\s/g,'').replace(',','.')) : NaN;
 const roots=[...document.querySelectorAll<HTMLElement>('[data-listing-fields]')];
@@ -128,9 +128,14 @@ for(const form of forms){
     try{
       const snapshot=await rates();if(seq!==priceSequence)return;
       const rate=snapshot.rates[get('original_currency')];if(!rate)throw new Error('rates');
-      const eur=Math.round(amount/rate*100)/100;
-      form.dataset.priceHuf=String(Math.round(eur*snapshot.rates.HUF));
-      out.textContent=`≈ ${new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(eur)}`;
+      // Same rule as convertPrice() on the server: a converted price is rounded to the admin's step (default €100),
+      // a euro price is kept; the forint figure (which decides the package tier) is never rounded.
+      const currency=get('original_currency');
+      const exact=Math.round(amount/rate*100)/100;
+      const step=Number(roots.find(r=>r.closest('form')===form)?.dataset.rounding)||100;
+      const eur=currency==='EUR'?exact:roundEur(exact,{step});
+      form.dataset.priceHuf=String(currency==='HUF'?Math.round(amount):Math.round(exact*snapshot.rates.HUF));
+      out.textContent=`≈ ${new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',maximumFractionDigits:currency==='EUR'?2:0}).format(eur)}`;
       if(note)note.textContent=`${snapshot.source} · ${snapshot.date} · 1 EUR = ${rate} ${get('original_currency')}`;
       form.dispatchEvent(new CustomEvent('listing:price'));
     }catch{if(seq===priceSequence)out.textContent=x('Az árfolyam most nem érhető el. Próbálja újra a mentést később; korábbi árfolyamát megőrizzük.','De wisselkoers is nu niet beschikbaar. Probeer later opnieuw; de vorige koers blijft bewaard.','Exchange rates are unavailable. Try saving again later; the existing rate is preserved.');}

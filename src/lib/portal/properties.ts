@@ -10,6 +10,7 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { canonicalCounty } from '~/lib/counties';
+import { roundEur, PRICE_ROUNDING_DEFAULT } from '~/lib/exchange-rates';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { readRequestedExtras, type RequestedExtras } from '~/lib/portal/requested-extras';
 
@@ -313,7 +314,7 @@ export async function applyIntake(
     patch.price_huf = Math.round(priceHuf);
     // A working placeholder so the listing is coherent before an admin sets a
     // real rate. The editor requires both figures anyway before submission.
-    patch.price_eur = Math.max(1, Math.round(priceHuf / 400));
+    patch.price_eur = Math.max(1, roundEur(priceHuf / 400, PRICE_ROUNDING_DEFAULT));
   }
 
   const floor = toNumber(intake.floorM2);

@@ -21,7 +21,7 @@ export type TranslationOrder = { id: string; amount_cents: number; line_items: O
  */
 export async function openTranslationOrder(
   admin: any,
-  property: { id: string; owner_id: string | null },
+  property: { id: string; owner_id: string | null; price_huf?: number | null },
   locales: string[],
   locale: Locale
 ): Promise<TranslationOrder> {
@@ -37,7 +37,7 @@ export async function openTranslationOrder(
 
   const catalog = listingCatalog((await getCompany()).services);
   // buildOrderLines wants a package; only the translation line is kept and charged.
-  const lines = buildOrderLines({ packageId: catalog.packages[0].id, extras: [{ id: 'translation', quantity: locales.length, locales }] }, locale, catalog).filter((line) => line.id === 'translation');
+  const lines = buildOrderLines({ packageId: catalog.packages[0].id, priceHuf: property.price_huf ?? null, extras: [{ id: 'translation', quantity: locales.length, locales }] }, locale, catalog).filter((line) => line.id === 'translation');
   const base = {
     property_id: property.id,
     owner_id: property.owner_id,

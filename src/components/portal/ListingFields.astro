@@ -6,7 +6,8 @@ import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
 import { PRICE_CURRENCIES } from '~/lib/exchange-rates';
 import { readDetails, SETTINGS, UTILITIES, PARKING, detailLabel, fieldRules, parkingFits, HEATING_EXCLUSIVE, WALL_EXCLUSIVE, HEATING_RETIRED, WALL_RETIRED, type ListingField } from '~/lib/listing-details';
 import { UI } from '~/i18n/ui';
-import { termLabel, type Taxonomy } from '~/lib/runtime-config';
+import { termLabel, getCompany, type Taxonomy } from '~/lib/runtime-config';
+import { readPriceRounding } from '~/lib/exchange-rates';
 import type { PortalProperty } from '~/lib/portal/properties';
 import type { PortalLang } from '~/lib/portal/auth-copy';
 // Static on purpose: build.inlineStylesheets is 'always', so a dynamic import of this
@@ -15,6 +16,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 interface Props { property: PortalProperty; taxonomy: Taxonomy; locale?: PortalLang; section?: 'classification'|'location'|'details'|'features'|'all' }
 const {property:p,taxonomy,locale='hu',section='all'}=Astro.props;
 const x=(hu:string,nl:string,en:string)=>locale==='hu'?hu:locale==='nl'?nl:en;
+// The client preview rounds a converted price exactly as the server will store it (Csomagok → Kerekítés).
+const rounding=readPriceRounding((await getCompany()).services.priceRounding);
 // A new draft is stored with the country's middle as a stand-in point (the columns cannot be empty). Until
 // somebody places the pin, show the coordinate fields empty rather than as if they had been filled in.
 const placed=Boolean(p.location_confirmed)||(Boolean(p.settlement)&&!(p.lat===47.1625&&p.lng===19.5033));
@@ -53,7 +56,7 @@ const featureTerms=taxonomy.feature.filter(t=>(t.enabled||selected.has(t.key))&&
 const featureSections=[...new Set(featureTerms.map(t=>t.sectionKey||'other'))];
 const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin en omgeving','Garden and surroundings'),water:x('Vízparti adottságok','Voorzieningen aan het water','Waterfront features'),terrain:group==='agricultural'?x('A terület jellege','Kenmerken van het terrein','Land characteristics'):x('A telek jellege','Kenmerken van het perceel','Plot characteristics'),facilities:x('Épületek és létesítmények','Gebouwen en voorzieningen','Buildings and facilities'),technical:x('Műszaki adottságok','Technische voorzieningen','Technical features'),heritage:x('Történelmi értékek','Historisch karakter','Historic features'),access:x('Megközelítés és közművek','Bereikbaarheid en nutsvoorzieningen','Access and utilities'),investment:x('Befektetési jellemzők','Beleggingskenmerken','Investment features'),other:x('További jellemzők','Overige kenmerken','Other features')};
 ---
-<div class="listing-fields" data-listing-fields data-section={section} data-lang={locale} data-group={group} data-subtype={subtype} data-initial-price-huf={p.price_huf} data-word-required={words.required} data-word-optional={words.optional} data-choose={choose}>
+<div class="listing-fields" data-listing-fields data-section={section} data-lang={locale} data-group={group} data-subtype={subtype} data-initial-price-huf={p.price_huf} data-rounding={rounding.step} data-word-required={words.required} data-word-optional={words.optional} data-choose={choose}>
 {on('classification') && <section class="lf-section" id="basics">
   <header class="lf-heading"><span class="lf-number">01</span><div><h2>{x('Az ingatlan típusa','Het type vastgoed','Property type')}</h2><p>{x('Először fő kategóriát, majd azon belül altípust válasszon.','Kies eerst een hoofdcategorie en daarna het bijbehorende subtype.','Choose a category, then the subtype that describes your property.')}</p></div></header>
   <div class="lf-grid">

@@ -8,6 +8,7 @@
  * right of withdrawal, the ODR platform) is listed in Fodel-forditasok-atadas.md.
  */
 import type { ContentPageData } from '~/lib/content-sections';
+import { legacyTiers } from '~/lib/price-tiers';
 import { COMPANY, COMMISSION, addressLine, LISTING_EXTRAS, LISTING_PACKAGES, LISTING_VAT_PERCENT } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { eur } from '~/lib/format';
@@ -20,7 +21,11 @@ const notice =
   'Tai vertimas jūsų patogumui. Esant neatitikimų, viršenybę turi originalas nyderlandų (Nyderlandų teisės klausimais) arba vengrų kalba.';
 const extra = (id: (typeof LISTING_EXTRAS)[number]['id']) => LISTING_EXTRAS.find((entry) => entry.id === id)!;
 const [cheap, normal] = LISTING_PACKAGES;
-const minMonths = (extra('homepage-highlight') as { minMonths?: number }).minMonths ?? 3;
+/** Every tier price of a package, e.g. "€ 129 / € 179" (the tier is set by the listing's forint price). */
+const tierPrices = (pkg: typeof normal) =>
+  legacyTiers(pkg.priceEur, pkg.priceEurAbove, pkg.thresholdHuf).map((tier) => eur(tier.priceEur, L)).join(' / ');
+// Only the category highlight is sold since November 2026; the homepage is an editorial choice.
+const minMonths = (extra('category-highlight') as { minMonths?: number }).minMonths ?? 3;
 
 export const LEGAL_LT = {
   imprint: {
@@ -229,11 +234,11 @@ export const LEGAL_LT = {
         intro: `Visos kainos nurodytos su ${LISTING_VAT_PERCENT}\u00a0% Nyderlandų PVM. Visą apžvalgą rasite puslapyje „Kainos“.`,
         rows: [
           [`Ekonominis skelbimas (${cheap.months} mėn.)`, eur(cheap.priceEur, L)],
-          [`Standartinis skelbimas (${normal.months} mėn.)`, `${eur(normal.priceEur, L)} / ${eur(normal.priceEurAbove, L)}`],
+          [`Standartinis skelbimas (${normal.months} mėn.)`, `${tierPrices(normal)}`],
           ['Vertimas', `${eur(extra('translation').priceEur, L)} už kalbą`],
           [
             'Išskyrimas',
-            `${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} per mėnesį (min. ${minMonths} mėn.)`,
+            `${eur(extra('category-highlight').priceEur, L)} per mėnesį (min. ${minMonths} mėn.)`,
           ],
         ],
       },

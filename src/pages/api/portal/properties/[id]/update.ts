@@ -18,6 +18,7 @@ import type { APIRoute } from 'astro';
 import { portalLang } from '~/lib/portal/auth-copy';
 import { LOCALE_OPTIONS } from '~/lib/portal/properties';
 import { getProperty } from '~/lib/portal/properties';
+import { readPriceRounding } from '~/lib/exchange-rates';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
 import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { logEvent } from '~/lib/activity';
@@ -54,7 +55,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
 
   const { data: existing, error: fetchError } = await supabase
     .from('properties')
-    .select('id, owner_id, status, package, free_listing')
+    .select('id, owner_id, status, package, free_listing, country')
     .eq('id', id)
     .maybeSingle();
   if (fetchError || !existing) return back('error=not-found');
@@ -90,15 +91,17 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   if (!current) return back('error=not-found');
   const taxonomy = await getTaxonomy();
   let values: Awaited<ReturnType<typeof listingInput>>;
-  try { values = await listingInput(form,current,taxonomy); }
+  try { values = await listingInput(form,current,taxonomy,{rounding:readPriceRounding((await getCompany()).services.priceRounding)}); }
   catch(error) {
     const message = error instanceof ListingInputError && error.message === 'rates-unavailable'
       ? 'Az árfolyam most nem érhető el. Próbálja újra később; a korábbi adatok változatlanul megmaradtak.'
       : error instanceof ListingInputError ? 'Ellenőrizze ezeket a mezőket: ' + Object.keys(error.errors).join(', ') : 'Nem sikerült menteni.';
     return back('error=' + encodeURIComponent(message));
   }
+  const withoutHomepage=(value:unknown)=>{const {homepageHighlight:_drop,...rest}=(value&&typeof value==='object'?value:{}) as Record<string,unknown>;return rest;};
   const patch: Record<string,unknown> = {...values.patch,
-    requested_extras:{...current.requested_extras,categoryHighlight:form.get('request_category')==='yes',homepageHighlight:form.get('request_homepage')==='yes',topicHighlight:form.get('topic_highlight_requested')==='yes',dutchAgent:form.get('dutch_agent_requested')==='yes'},
+    // The homepage highlight is no longer requested (§4a); an old key is dropped on the next save.
+    requested_extras:{...withoutHomepage(current.requested_extras),categoryHighlight:form.get('request_category')==='yes',topicHighlight:form.get('topic_highlight_requested')==='yes',dutchAgent:form.get('dutch_agent_requested')==='yes'},
     seller_contact_visible:form.get('seller_contact_visible')==='yes',seller_name:str(form,'seller_name').slice(0,160)||null,
     seller_phone:sellerPhone(form),seller_speaks:contactLanguages(form),
     ...(existing.status==='published'?{reserved:form.get('reserved')==='yes'}:{}),

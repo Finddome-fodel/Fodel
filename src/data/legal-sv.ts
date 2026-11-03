@@ -8,6 +8,7 @@
  * right of withdrawal, the ODR platform) is listed in Fodel-forditasok-atadas.md.
  */
 import type { ContentPageData } from '~/lib/content-sections';
+import { legacyTiers } from '~/lib/price-tiers';
 import { COMPANY, COMMISSION, addressLine, LISTING_EXTRAS, LISTING_PACKAGES, LISTING_VAT_PERCENT } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { eur } from '~/lib/format';
@@ -20,7 +21,11 @@ const notice =
   'Detta är en översättning för din bekvämlighet. Vid avvikelser gäller det nederländska (i frågor enligt nederländsk rätt) eller det ungerska originalet.';
 const extra = (id: (typeof LISTING_EXTRAS)[number]['id']) => LISTING_EXTRAS.find((entry) => entry.id === id)!;
 const [cheap, normal] = LISTING_PACKAGES;
-const minMonths = (extra('homepage-highlight') as { minMonths?: number }).minMonths ?? 3;
+/** Every tier price of a package, e.g. "€ 129 / € 179" (the tier is set by the listing's forint price). */
+const tierPrices = (pkg: typeof normal) =>
+  legacyTiers(pkg.priceEur, pkg.priceEurAbove, pkg.thresholdHuf).map((tier) => eur(tier.priceEur, L)).join(' / ');
+// Only the category highlight is sold since November 2026; the homepage is an editorial choice.
+const minMonths = (extra('category-highlight') as { minMonths?: number }).minMonths ?? 3;
 
 export const LEGAL_SV = {
   imprint: {
@@ -229,11 +234,11 @@ export const LEGAL_SV = {
         intro: `Alla priser inkluderar ${LISTING_VAT_PERCENT}\u00a0% nederländsk moms. Se sidan Priser för en fullständig översikt.`,
         rows: [
           [`Basannons (${cheap.months} månader)`, eur(cheap.priceEur, L)],
-          [`Standardannons (${normal.months} månader)`, `${eur(normal.priceEur, L)} / ${eur(normal.priceEurAbove, L)}`],
+          [`Standardannons (${normal.months} månader)`, `${tierPrices(normal)}`],
           ['Översättning', `${eur(extra('translation').priceEur, L)} per språk`],
           [
             'Framhävning',
-            `${eur(extra('category-highlight').priceEur, L)}–${extra('homepage-highlight').priceEur} per månad (minst ${minMonths} månader)`,
+            `${eur(extra('category-highlight').priceEur, L)} per månad (minst ${minMonths} månader)`,
           ],
         ],
       },

@@ -28,7 +28,7 @@ if (filter) query = query.eq('status', filter);
 
 const { data: valuations } = await query;
 const shown = (valuations ?? []).filter((v) => !kindFilter || (v.request_kind ?? 'indicative') === kindFilter);
-// Names come from the packages an admin edits in Beállítások → Szolgáltatások.
+// Names come from the valuation packages an admin edits in Beállítások → Szolgáltatások (not the Csomagok menu, which prices listings).
 const kindLabel: Record<string, string> = Object.fromEntries(valuationPackages((await getCompany()).services).map((pkg) => [pkg.kind, pkg.names.hu]));
 const huf = (amount: number) => new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 }).format(amount);
 

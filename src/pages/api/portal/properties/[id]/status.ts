@@ -58,7 +58,7 @@ import {
 import { SITE_URL } from '~/config/site.mjs';
 import { eur, formatDate } from '~/lib/format';
 import { paymentGatesPublishing } from '~/config/flags';
-import { listingCatalog, packageOf, isAboveThreshold } from '~/lib/listing-packages';
+import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import { addMonths } from '~/lib/listing-rules';
 
 export const prerender = false;
@@ -230,7 +230,6 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const selection: OrderSelection = body.order
       ? {
           packageId: String(body.order.packageId ?? property.package),
-          aboveThreshold: Boolean(body.order.aboveThreshold),
           extras: Array.isArray(body.order.extras)
             ? body.order.extras.map((e: any) => ({
                 id: String(e.id),
@@ -245,14 +244,18 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           video_url: property.video_url,
           homepage_featured: property.homepage_featured,
           featured: property.featured,
+          country: property.country ?? null,
           // The Supabase row nests these under the join's own name; the
           // `as any` that used to stand here hid the mismatch and would have
           // thrown the first time an admin approved without the review
           // screen's order panel.
           locales: (property.property_translations ?? []).map((t: { locale: string }) => t.locale),
         }, listing);
-    // The higher tier is decided from the listing's own price, never the browser.
-    selection.aboveThreshold = isAboveThreshold(packageOf(listing, selection.packageId), property.price_huf);
+    // The price tier is decided from the listing's own forint price at this moment, never the browser (§9.2);
+    // the country decides which extras may be sold (the video shoot is Hungary only, §4b).
+    selection.priceHuf = property.price_huf;
+    selection.country = property.country ?? null;
+    delete selection.aboveThreshold;
     // A language the listing already has text in is never sold: the AI would not touch it, and the owner would pay for nothing.
     const haveText = new Set((property.property_translations ?? []).filter((t: { title: string; description: string }) => t.title?.trim() || t.description?.trim()).map((t: { locale: string }) => t.locale));
     selection.extras = selection.extras.flatMap((extra) => {

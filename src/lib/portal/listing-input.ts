@@ -3,7 +3,7 @@ import { COUNTRIES } from '~/config/countries';
 import { canonicalCounty, hasCountyList } from '~/lib/counties';
 import { validSubtype, canonicalFeature, currentFeatures, CONTACT_LANGUAGES, categoryFor, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
 import { energyRating } from '~/lib/energy';
-import { convertPrice, exchangeRates, PRICE_CURRENCIES } from '~/lib/exchange-rates';
+import { convertPrice, exchangeRates, PRICE_CURRENCIES, type PriceRounding } from '~/lib/exchange-rates';
 import { readDetails, fieldRules, parkingFits, exclusiveChoice, HEATING_EXCLUSIVE, WALL_EXCLUSIVE, SETTING_KEYS, UTILITY_KEYS, PARKING_KEYS, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
 import { extractYouTubeId } from '~/lib/video';
 import type { Taxonomy } from '~/lib/runtime-config';
@@ -29,7 +29,7 @@ export function parseArea(raw:string,unit:string):number|null {
   if(!Number.isFinite(result)||result>1e12)throw new Error('invalid-area');
   return Math.round(result*1e6)/1e6;
 }
-export async function listingInput(form:FormData,current:PortalProperty,taxonomy:Taxonomy,options:{allowIncomplete?:boolean}={}){
+export async function listingInput(form:FormData,current:PortalProperty,taxonomy:Taxonomy,options:{allowIncomplete?:boolean;/** Csomagok → Kerekítés (site_settings.services.priceRounding); default €100. */rounding?:PriceRounding}={}){
   const get=(key:string)=>formString(form,key);
   const errors:Record<string,FieldError>={};
   const group=get('property_group'),subtype=get('property_subtype');
@@ -132,7 +132,7 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   // Do not change a saved price/rate/date merely because somebody edited the description.
   if(amount&&(Number(current.original_price)!==amount||current.original_currency!==currency||!current.exchange_rate)){
     try{
-      const snapshot=await exchangeRates(),converted=convertPrice(amount!,currency,snapshot);
+      const snapshot=await exchangeRates(),converted=convertPrice(amount!,currency,snapshot,options.rounding);
       price={original_price:amount,original_currency:currency,price_eur:converted.eur,price_huf:converted.huf,exchange_rate:converted.rate,exchange_source:snapshot.source,price_asof:snapshot.date,price_calculated_at:new Date().toISOString()};
     }catch{throw new ListingInputError({original_price:{code:'number'}},'rates-unavailable');}
   }

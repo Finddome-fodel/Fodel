@@ -19,7 +19,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { localeFrom } from '~/i18n/ui';
 import type { PortalLang } from '~/lib/portal/auth-copy';
 import { getCompany, getTaxonomy } from '~/lib/runtime-config';
-import { listingCatalog, packageOf } from '~/lib/listing-packages';
+import { listingCatalog, packageOf, extraSoldIn, type ListingCatalog } from '~/lib/listing-packages';
 import { TRANSLATION_LANGUAGES, isOnsiteServiceId } from '~/config/company';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { createServiceRequest } from '~/lib/portal/service-requests';
@@ -27,6 +27,7 @@ import { syncDutchAgent } from '~/lib/portal/dutch-agent';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { type FieldError } from '~/lib/validation';
 import { getProperty } from '~/lib/portal/properties';
+import { readPriceRounding } from '~/lib/exchange-rates';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
 import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { contactDisplayPatch } from '~/lib/contact-display';
@@ -37,7 +38,13 @@ export type SetupStep = (typeof SETUP_STEPS)[number];
 
 export type StepResult = { ok: true } | { ok: false; error: string; errors?: Record<string, FieldError> };
 
-type Existing = { id: string; owner_id: string | null; status: string; package: string; free_listing?: boolean | null };
+type Existing = { id: string; owner_id: string | null; status: string; package: string; free_listing?: boolean | null; country?: string | null };
+
+/** Whether the video shoot may be requested: sold in this country, or the country is not chosen yet. */
+const videoSold = (catalog: ListingCatalog, country?: string | null) => {
+  const shoot = catalog.extras.find((extra) => extra.id === 'video');
+  return Boolean(shoot) && (!country || extraSoldIn(shoot!, country));
+};
 
 /** The longest description the setup accepts — the same ceiling the 1.x form had. */
 export const DESCRIPTION_MAX = 6000;
@@ -81,11 +88,11 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
     package: chosen.id,
     translations,
     categoryHighlight: form.get('categoryHighlight') === 'yes',
-    homepageHighlight: form.get('homepageHighlight') === 'yes',
     topicHighlight: form.get('topicHighlight') === 'yes',
     dutchAgent: form.get('dutchAgent') === 'yes',
-    // Only a package that sells video as an extra takes the request.
-    video: chosen.video === 'extra' && form.get('video') === 'yes',
+    // The video shoot is sold in Hungary only (§4b). A draft whose country is not chosen yet keeps
+    // the request; the approval screen offers it only for a Hungarian property.
+    video: form.get('video') === 'yes' && videoSold(catalog, existing.country),
     service,
   });
   const { error: extrasError } = await supabase.from('properties').update({ requested_extras: requested }).eq('id', existing.id);
@@ -146,7 +153,7 @@ async function syncService(supabase: SupabaseClient, existing: Existing, wanted:
 async function saveProperty(supabase:SupabaseClient,existing:Existing,form:FormData):Promise<StepResult>{
   const current=await getProperty(supabase,existing.id);if(!current)return {ok:false,error:'not-found'};
   try{
-    const values=await listingInput(form,current,await getTaxonomy(),{allowIncomplete:form.get('partial')==='yes'});
+    const values=await listingInput(form,current,await getTaxonomy(),{allowIncomplete:form.get('partial')==='yes',rounding:readPriceRounding((await getCompany()).services.priceRounding)});
     const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:values.patch,p_private:values.privateData});
     if(error){console.error('[setup] save_listing_editor failed (property)',existing.id,error.message);return {ok:false,error:'save-failed'};}
     return {ok:true};

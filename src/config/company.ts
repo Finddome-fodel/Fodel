@@ -200,12 +200,19 @@ export const LISTING_PACKAGES = [
   },
 ] as const;
 
+/**
+ * Extras. November 2026 (spec §4): the homepage highlight and the paid later
+ * photo upload are no longer sold (`retired`: the ids stay so old orders and
+ * invoices still name their lines); `video` is now FINDDOME filming the
+ * property — drone footage and professional editing — for €180, in Hungary
+ * only. An owner's own video link is free.
+ */
 export const LISTING_EXTRAS = [
   { id: 'translation', priceEur: 25, unit: 'language' },
   { id: 'category-highlight', priceEur: 15, unit: 'month', minMonths: 3 },
-  { id: 'homepage-highlight', priceEur: 25, unit: 'month', minMonths: 3 },
-  { id: 'video', priceEur: 36, unit: 'once' },
-  { id: 'retro-images', priceEur: 30, unit: 'once' },
+  { id: 'homepage-highlight', priceEur: 25, unit: 'month', minMonths: 3, retired: true },
+  { id: 'video', priceEur: 180, unit: 'once', countries: ['HU'] },
+  { id: 'retro-images', priceEur: 30, unit: 'once', retired: true },
   { id: 'renewal-6m', priceEur: 25, unit: 'once' },
 ] as const;
 
@@ -219,9 +226,10 @@ export const LISTING_EXTRAS = [
  * `onsite-visit` is also the "personal valuation by Gábor" offered on the
  * valuation result — one catalogue item, never two prices (brief 3 §D.5).
  *
- * Not to be confused with the €36 `video` extra above, which is FODEL placing
- * a video the owner supplies (a YouTube/Vimeo link) on the listing; these two
- * send someone to the property to shoot it.
+ * Not to be confused with the €180 `video` extra above (November 2026), which
+ * is a listing extra — FINDDOME filming a Hungarian property with drone shots
+ * and an edited cut — ordered with the listing package. The owner's own video
+ * link stays free in every package.
  */
 export const ONSITE_SERVICES = [
   {

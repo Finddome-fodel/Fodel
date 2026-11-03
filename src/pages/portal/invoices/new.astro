@@ -219,7 +219,7 @@ const title = draftId ? 'Piszkozat szerkesztése' : 'Új számla';
                 {groups.map((g) => (
                   <>
                     <p class="cap">{g}</p>
-                    {catalogue.filter((c) => c.group === g).map((c) => (
+                    {catalogue.filter((c) => c.group === g && !c.retired).map((c) => (
                       <button type="button" data-cat={c.id}>{c.hu}<span class="iv-cat-price">€ {(c.grossCents / 100).toFixed(0)}</span></button>
                     ))}
                   </>

@@ -8,7 +8,8 @@
  * and the cron, the public pages and the admin all call the same functions.
  *
  * Every number here is a default the admin can change in Beállítások →
- * Szolgáltatások (site_settings.services). None of them is a client decision
+ * Szolgáltatások (site_settings.services); package prices and content are
+ * edited in the Csomagok menu (/portal/packages). None of them is a client decision
  * yet; the handover lists each one.
  */
 
