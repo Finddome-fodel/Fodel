@@ -458,12 +458,12 @@ const ACK = {
        <p>Saygılarımızla,<br>FINDDOME EMLAK</p>`,
   },
   he: {
-    subject: 'Thank you for your message | FINDDOME',
+    subject: 'תודה על פנייתכם | FINDDOME',
     body: (name: string, phones: string, hours: string) =>
-      `<p>Dear ${escapeHtml(name || 'visitor')},</p>
-       <p>Thank you for your message. We have received it, and one of our team will be in touch shortly. ${escapeHtml(hours)}</p>
-       <p>In a hurry? Call us on ${escapeHtml(phones)}.</p>
-       <p>Kind regards,<br>FINDDOME Real Estates</p>`,
+      `<p>שלום ${escapeHtml(name || 'וברוכים הבאים')},</p>
+       <p>תודה על פנייתכם. קיבלנו אותה, ואחד מאנשי הצוות שלנו ייצור איתכם קשר בקרוב. ${escapeHtml(hours)}</p>
+       <p>ממהרים? התקשרו אלינו: ${escapeHtml(phones)}.</p>
+       <p>בברכה,<br>FINDDOME נדל״ן</p>`,
   },
   ar: {
     subject: 'Thank you for your message | FINDDOME',

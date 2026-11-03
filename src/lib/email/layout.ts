@@ -281,8 +281,8 @@ const FOOTER_COPY = {
     contact: 'İletişim',
   },
   he: {
-    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
-    contact: 'Contact',
+    why: 'קיבלתם מייל זה כי יש לכם חשבון ב־FINDDOME או שפרסמתם אצלנו מודעה.',
+    contact: 'צור קשר',
   },
   ar: {
     why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
@@ -329,7 +329,7 @@ const VISITOR_WHY: Record<ShellLocale, string> = {
   sr: 'Ovaj imejl dobijate jer ste nam se obratili preko sajta FINDDOME.',
   uk: 'Ви отримали цей лист, тому що зверталися до нас через сайт FINDDOME.',
   tr: 'Bu e-postayı, FINDDOME web sitesi üzerinden bizimle iletişime geçtiğiniz için alıyorsunuz.',
-  he: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  he: 'קיבלתם מייל זה כי פניתם אלינו דרך אתר FINDDOME.',
   ar: 'You are receiving this email because you contacted us through the FINDDOME website.',
   ru: 'Вы получили это письмо, потому что обращались к нам через сайт FINDDOME.',
   zh: 'You are receiving this email because you contacted us through the FINDDOME website.',

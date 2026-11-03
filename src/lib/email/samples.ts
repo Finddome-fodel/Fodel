@@ -57,7 +57,7 @@ export const TITLES: Record<Locale, string> = {
   sr: 'Renovirana seoska kuća u brdima iznad Balatona',
   uk: 'Відремонтований селянський будинок на пагорбах біля Балатону',
   tr: 'Balaton tepelerinde yenilenmiş çiftlik evi',
-  he: 'Renovated farmhouse in the Balaton Uplands',
+  he: 'בית חווה משופץ בגבעות שמעל אגם בלטון',
   ar: 'Renovated farmhouse in the Balaton Uplands',
   ru: 'Отремонтированный крестьянский дом на холмах у Балатона',
   zh: 'Renovated farmhouse in the Balaton Uplands',
@@ -191,9 +191,9 @@ const SAMPLE_ORDER: Record<Locale, { label: string; amount: string }[]> = {
     { label: 'Video tanıtım', amount: '€36' },
   ],
   he: [
-    { label: 'Listing — 12 months', amount: '€129' },
-    { label: 'Translation — 2 languages', amount: '€50' },
-    { label: 'Video presentation', amount: '€36' },
+    { label: 'מודעה — 12 חודשים', amount: '€129' },
+    { label: 'תרגום — 2 שפות', amount: '€50' },
+    { label: 'סרטון תדמית', amount: '€36' },
   ],
   ar: [
     { label: 'Listing — 12 months', amount: '€129' },
