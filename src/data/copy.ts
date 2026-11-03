@@ -68,13 +68,13 @@ const BASE = {
       meta: {
         title: 'FINDDOME Ingatlan | Hirdesse ingatlanát Európában',
         description:
-          'Töltse fel hirdetését néhány lépésben. Online fizetés után 21 nyelvű oldalunkon jelenik meg, kizárólagossági szerződés nélkül.',
+          'Töltse fel hirdetését néhány lépésben. Online fizetés után 28 nyelvű oldalunkon jelenik meg, kizárólagossági szerződés nélkül.',
       },
       hero: {
         eyebrow: `Alapítva 2013 · ${foundedInLabel('hu')}`,
         title: ['Hirdesse', 'ingatlanát', 'Európában'],
         emphasis: 1,
-        body: 'Töltse fel hirdetését néhány lépésben. Átnézzük, és online fizetés után megjelenik 21 nyelvű oldalunkon, kizárólagossági szerződés nélkül. Az érdeklődők közvetlenül Önhöz vagy hozzánk fordulhatnak.',
+        body: 'Töltse fel hirdetését néhány lépésben. Átnézzük, és online fizetés után megjelenik 28 nyelvű oldalunkon, kizárólagossági szerződés nélkül. Az érdeklődők közvetlenül Önhöz vagy hozzánk fordulhatnak.',
         primary: 'Ingatlanok',
         secondary: 'Hirdessen nálunk',
         featuredLabel: 'Kiemelt ingatlan',
@@ -331,13 +331,13 @@ const BASE = {
       meta: {
         title: 'FINDDOME Vastgoed | Adverteer uw vastgoed in Europa',
         description:
-          'Plaats uw advertentie in enkele stappen. Na online betaling staat ze op onze site in 21 talen, zonder exclusiviteitscontract.',
+          'Plaats uw advertentie in enkele stappen. Na online betaling staat ze op onze site in 28 talen, zonder exclusiviteitscontract.',
       },
       hero: {
         eyebrow: `Sinds 2013 · ${foundedInLabel('nl')}`,
         title: ['Adverteer', 'uw vastgoed', 'in Europa'],
         emphasis: 1,
-        body: 'Plaats uw advertentie in enkele stappen. Wij controleren haar en na online betaling staat ze op onze site in 21 talen, zonder exclusiviteitscontract. Geïnteresseerden nemen rechtstreeks contact op met u of via ons.',
+        body: 'Plaats uw advertentie in enkele stappen. Wij controleren haar en na online betaling staat ze op onze site in 28 talen, zonder exclusiviteitscontract. Geïnteresseerden nemen rechtstreeks contact op met u of via ons.',
         primary: 'Woningen bekijken',
         secondary: 'Gratis zoekopdracht',
         featuredLabel: 'Uitgelicht',

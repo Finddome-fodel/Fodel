@@ -22,13 +22,13 @@ export const LT = {
     meta: {
       title: 'FINDDOME Real Estates | Skelbkite savo nekilnojamąjį turtą Europoje',
       description:
-        'Įkelkite skelbimą keliais žingsniais. Apmokėjus internetu jis paskelbiamas 21 kalba, be išskirtinumo sutarties.',
+        'Įkelkite skelbimą keliais žingsniais. Apmokėjus internetu jis paskelbiamas 28 kalbomis, be išskirtinumo sutarties.',
     },
     hero: {
       eyebrow: `Nuo 2013 m. · ${foundedInLabel(L)}`,
       title: ['Skelbkite', 'savo nekilnojamąjį turtą', 'visoje Europoje'],
       emphasis: 1,
-      body: 'Įkelkite skelbimą keliais žingsniais. Mes jį peržiūrime, o apmokėjus internetu jis paskelbiamas mūsų svetainėje 21 kalba, be išskirtinumo sutarties. Besidomintys susisiekia tiesiogiai su jumis arba per mus.',
+      body: 'Įkelkite skelbimą keliais žingsniais. Mes jį peržiūrime, o apmokėjus internetu jis paskelbiamas mūsų svetainėje 28 kalbomis, be išskirtinumo sutarties. Besidomintys susisiekia tiesiogiai su jumis arba per mus.',
       primary: 'Peržiūrėti objektus',
       secondary: 'Nemokama objekto paieška',
       featuredLabel: 'Rekomenduojami',

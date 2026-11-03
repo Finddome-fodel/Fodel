@@ -83,7 +83,7 @@ export function hasRequests(extras: RequestedExtras): boolean {
 /** Hungarian summary lines for the admin (review screen, service list). */
 export function describeRequestedExtras(extras: RequestedExtras): string[] {
   const lines: string[] = [];
-  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván' };
+  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván', sr: 'szerb', uk: 'ukrán', tr: 'török', he: 'héber', ar: 'arab', ru: 'orosz', zh: 'kínai' };
   if (extras.translations?.length) lines.push(`Fordítás: ${extras.translations.map((code) => LANG_HU[code] ?? code).join(', ')}`);
   if (extras.categoryHighlight) lines.push('Kiemelés a kategóriában');
   if (extras.topicHighlight) lines.push('Témakörön belüli kiemelés: altípus, egyedi áregyeztetéssel');

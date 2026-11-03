@@ -170,7 +170,7 @@ for (const spec of MODULES) {
 }
 
 // The JSON catalogues of listing groups, options and features.
-for (const name of ['groups', 'options', 'features']) {
+for (const name of ['groups', 'options', 'features', 'details']) {
   walk(JSON.parse(fs.readFileSync(new URL(`../src/data/listing/${name}.json`, import.meta.url), 'utf8')), `listing/${name}.json`);
 }
 

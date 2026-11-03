@@ -22,13 +22,13 @@ export const PT = {
     meta: {
       title: 'FINDDOME Real Estates | Anuncie o seu imóvel na Europa',
       description:
-        'Carregue o seu anúncio em poucos passos. Após o pagamento online, é publicado em 21 idiomas, sem contrato de exclusividade.',
+        'Carregue o seu anúncio em poucos passos. Após o pagamento online, é publicado em 28 idiomas, sem contrato de exclusividade.',
     },
     hero: {
       eyebrow: `Desde 2013 · ${foundedInLabel(L)}`,
       title: ['Anuncie', 'o seu imóvel', 'na Europa'],
       emphasis: 1,
-      body: 'Carregue o seu anúncio em poucos passos. Nós revemo-lo e, após o pagamento online, é publicado no nosso site em 21 idiomas, sem contrato de exclusividade. Os interessados contactam-no diretamente ou através de nós.',
+      body: 'Carregue o seu anúncio em poucos passos. Nós revemo-lo e, após o pagamento online, é publicado no nosso site em 28 idiomas, sem contrato de exclusividade. Os interessados contactam-no diretamente ou através de nós.',
       primary: 'Ver imóveis',
       secondary: 'Pesquisa de imóvel gratuita',
       featuredLabel: 'Em destaque',

@@ -381,6 +381,7 @@ console.log('\nLanguages');
     ['es', 'traducción'], ['pl', 'tłumaczeniem'], ['ro', 'traducere'], ['sk', 'preklad'],
     ['it', 'traduzione'], ['pt', 'tradução'], ['el', 'μετάφραση'], ['cs', 'překlad'], ['sl', 'prevod'], ['sv', 'översättning'],
     ['da', 'oversættelse'], ['no', 'oversettelse'], ['fi', 'käännös'], ['et', 'tõlge'], ['lv', 'tulkojums'], ['lt', 'vertimas'],
+    ['sr', 'prevod'], ['uk', 'переклад'], ['tr', 'çeviri'], ['he', 'תרגום'], ['ar', 'ترجمة'], ['ru', 'перевод'], ['zh', '译文'],
   ]) {
     const page = getHtml(`${routePath(l, 'terms').slice(1)}index.html`);
     if (page && !page.includes(needle)) fail(`${routePath(l, 'terms')} lacks the courtesy-translation note`);

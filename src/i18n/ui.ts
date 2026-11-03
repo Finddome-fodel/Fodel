@@ -73,18 +73,18 @@ export const LOCALE_META = {
 export type SwitcherLocale = Locale;
 
 /**
- * What the nav's language menu offers. All twenty-one languages are complete sites;
- * the order is the order of the menu. ROUTES and UI are typed per Locale, and
- * scripts/verify-ssg.mjs enforces hreflang reciprocity, so a language with no
- * page behind it cannot be emitted by accident.
- */
-/**
  * The seven languages added in November 2026. Their fallback for text nobody
  * has written in them yet is English (then Dutch, then Hungarian), and listing
  * text is not machine-translated into them yet (LISTING_TRANSLATION_LOCALES).
  */
 export const LATER_LOCALES: readonly Locale[] = ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh'];
 
+/**
+ * What the nav's language menu offers. All twenty-eight languages are complete sites;
+ * the order is the order of the menu. ROUTES and UI are typed per Locale, and
+ * scripts/verify-ssg.mjs enforces hreflang reciprocity, so a language with no
+ * page behind it cannot be emitted by accident.
+ */
 export const SWITCHER_LOCALES = LOCALES.map((code) => ({ code })) as ReadonlyArray<{ code: Locale }>;
 
 /** The language a visitor gets when nothing else tells us (root page, x-default). */
