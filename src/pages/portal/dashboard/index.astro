@@ -38,7 +38,7 @@ const ownerId = isAdmin ? null : (Astro.locals.user?.id ?? NO_OWNER);
 let propertyQuery = supabase
   .from('properties')
   .select(
-    '*, property_translations(locale, title), property_media(storage_path, is_hero, sort_order)'
+    '*, property_translations(locale, title), property_media(storage_path, is_hero, sort_order, pending)'
   );
 if (ownerId) propertyQuery = propertyQuery.eq('owner_id', ownerId);
 const [{ data: rows }, { data: openEnquiryRows }] = await Promise.all([
@@ -115,7 +115,8 @@ const waiting = newestFirst(
 );
 
 const thumb = (p: (typeof properties)[number]) => {
-  const media = [...(p.property_media ?? [])].sort((a: any, b: any) => a.sort_order - b.sort_order);
+  // The photo the public sees: one still waiting for review is skipped.
+  const media = [...(p.property_media ?? [])].filter((m: any) => m.pending !== true).sort((a: any, b: any) => a.sort_order - b.sort_order);
   return (media.find((m: any) => m.is_hero) ?? media[0])?.storage_path as string | undefined;
 };
 

@@ -122,6 +122,8 @@ type MediaRow = {
   label: Record<string, string> | null;
   sort_order: number;
   is_hero: boolean;
+  /** Migration 0053: added to a live listing and not yet approved. RLS hides it from the public already. */
+  pending?: boolean;
 };
 
 type PropertyRow = {
@@ -205,7 +207,8 @@ function localisedField(
 
 function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
   const translations = row.property_translations.filter(t=>t.title!=='Új hirdetés'||t.description?.trim()||t.body?.trim());
-  const media = [...row.property_media].sort((a, b) => a.sort_order - b.sort_order);
+  // A photo waiting for review never reaches a public page, whichever client read the row.
+  const media = row.property_media.filter((m) => m.pending !== true).sort((a, b) => a.sort_order - b.sort_order);
   const hero = media.find((m) => m.is_hero) ?? media[0];
   const gallery = media.filter((m) => m !== hero);
 

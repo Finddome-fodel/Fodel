@@ -20,7 +20,8 @@ import PromotionChoices from '~/components/portal/PromotionChoices.astro';
 import ContactChoice from '~/components/portal/ContactChoice.astro';
 import ContactLanguages from '~/components/portal/ContactLanguages.astro';
 import Field from '~/components/forms/Field.astro';
-import PhotoUploader from '~/components/portal/PhotoUploader.astro';
+import PhotoUploader, { type PhotoNotice } from '~/components/portal/PhotoUploader.astro';
+import { photoAccess } from '~/lib/portal/photo-moderation';
 import { ONSITE_SERVICES } from '~/config/company';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
 import { getProperty, STATUS_LABEL, LOCALE_OPTIONS, OWNER_EDITABLE } from '~/lib/portal/properties';
@@ -75,6 +76,21 @@ const [taxonomy, suggestionsResult, notesResult, orderResult, company, serviceRe
   supabase.from('service_requests').select('id, service_id, status, scheduled_for').eq('property_id', property.id).in('status', ['requested', 'scheduled']).order('created_at', { ascending: false }).limit(1).maybeSingle(),
 ]);
 const editable = isAdmin || OWNER_EDITABLE.includes(property.status);
+// §4c part 2: the owner of a live listing may still add, reorder and remove
+// photos (free); new ones wait for an admin. The rest of the form stays locked.
+const photoMode = photoAccess(property.status, { isAdmin, isOwner: isOwnProperty });
+const photosLive = photoMode === 'live';
+let photoNotices: PhotoNotice[] = [];
+if (isOwnProperty && !isAdmin) {
+  const { data: rejections } = await supabase
+    .from('property_media_rejections')
+    .select('id, photo_count, reason_code, reason, note, created_at')
+    .eq('property_id', property.id)
+    .is('dismissed_at', null)
+    .order('created_at', { ascending: false })
+    .limit(20);
+  photoNotices = (rejections ?? []) as PhotoNotice[];
+}
 
 const saved = Astro.url.searchParams.get('saved') === '1';
 const err = Astro.url.searchParams.get('error');
@@ -259,6 +275,7 @@ const trPaid = Astro.url.searchParams.get('translations');
     <p class="notice warn">
       Ez a hirdetés jelenleg <strong>{STATUS_LABEL[property.status]}</strong> állapotban van, ezért
       a mezők nem szerkeszthetők.
+      {photosLive && <> Új fotókat viszont díjmentesen feltölthet: <a href="#media"><strong>Fotók ↓</strong></a></>}
       {property.status === 'submitted' && ' Amint elbírálásra kerül, ismét szerkesztheti, ha javítás szükséges.'}
       {awaitingPayment && ' A díj rendezése után a hirdetés automatikusan élesedik.'}
       {awaitingPayment && order && <> <a href="#pay"><strong>Ugrás a fizetéshez ↓</strong></a></>}
@@ -569,9 +586,11 @@ const trPaid = Astro.url.searchParams.get('translations');
       media={property.media}
       photoLimit={photoLimit}
       packageName={listingPackage.names.hu}
-      editable={editable}
+      editable={photoMode !== 'none'}
       isAdmin={isAdmin}
       locale="hu"
+      live={photosLive}
+      notices={photoNotices}
     />
   </div>
 

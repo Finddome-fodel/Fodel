@@ -158,7 +158,7 @@ export async function reviewPhotos(
           title,
           approved: approveIds.length,
           rejected: groupRejections(rejects),
-          url: `${SITE_URL}/portal/properties/${propertyId}#photos`,
+          url: `${SITE_URL}/portal/properties/${propertyId}#media`,
         });
         return deliver(owner.email, email);
       })) === true;

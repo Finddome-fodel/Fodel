@@ -228,7 +228,7 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
         { code: 'quality', count: 2 },
         { code: 'personal', count: 1, note: say(l)('Az autó rendszáma olvasható.', 'Het kenteken van de auto is leesbaar.', 'The car’s number plate is readable.', 'Das Kennzeichen des Autos ist lesbar.', 'La plaque d’immatriculation de la voiture est lisible.', 'La matrícula del coche es legible.', 'Tablica rejestracyjna samochodu jest czytelna.', 'Numărul de înmatriculare al mașinii se poate citi.', 'ŠPZ auta je čitateľná.') },
       ],
-      url: `${SITE_URL}/portal/properties/sample#photos`,
+      url: `${SITE_URL}/portal/properties/sample#media`,
     }),
   approvedAwaitingPayment: (l) =>
     templates.approvedAwaitingPayment(l, {
