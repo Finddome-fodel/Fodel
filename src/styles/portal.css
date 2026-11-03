@@ -1631,6 +1631,15 @@ main.pm.pm .notice.warn,
 main.pm.pm .soft-warn {
   border-radius: var(--r-md);
 }
+/* Amber, as in the status pills. */
+main.pm.pm .notice.warn {
+  background: var(--pt-amber-bg);
+  color: var(--pt-amber);
+}
+main.pm.pm .notice > strong:first-child {
+  display: block;
+  margin-bottom: 2px;
+}
 
 /* Form controls */
 main.pm.pm

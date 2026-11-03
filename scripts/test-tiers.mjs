@@ -284,7 +284,24 @@ try {
     assert.equal(owner.status, 403);
   });
 
-  console.log(`\n${passed} tier, rounding, money and Csomagok checks passed.`);
+  await test('order notices: retired lines and tier drift on unpaid orders', async () => {
+    const N = await server.ssrLoadModule('/src/lib/portal/order-notices.ts');
+    const cat = { extras: [{ id: 'homepage-highlight', retired: true }, { id: 'category-highlight' }] };
+    const pkg = { kind: 'package', id: 'basic', quantity: 1, unitCents: 12900, label: 'Alap', tier: { index: 0, fromHuf: 0, toHuf: 150_000_000 } };
+    const home = { kind: 'extra', id: 'homepage-highlight', quantity: 3, unitCents: 1000, label: 'Kiemelés a főoldalon' };
+    const cathl = { kind: 'extra', id: 'category-highlight', quantity: 3, unitCents: 1000, label: 'Kiemelés' };
+    assert.equal(N.needsReview('pending'), true);
+    for (const s of ['paid', 'manual', 'cancelled', 'refunded', null]) assert.equal(N.needsReview(s), false);
+    assert.deepEqual(N.retiredLines([pkg, home, cathl], cat), [home]);
+    assert.deepEqual(N.retiredLines([{ ...home, kind: 'package' }], cat), []);
+    assert.deepEqual(N.tierDrift([pkg, home], 150_000_000), []); // the bound itself is still the lower band
+    assert.deepEqual(N.tierDrift([pkg], 150_000_001).map((d) => d.direction), ['up']);
+    assert.deepEqual(N.tierDrift([{ ...pkg, tier: { index: 1, fromHuf: 150_000_001, toHuf: null } }], 90_000_000).map((d) => d.direction), ['down']);
+    assert.deepEqual(N.tierDrift([{ ...pkg, tier: { index: 1, fromHuf: 150_000_001, toHuf: null } }], 900_000_000), []);
+    for (const price of [0, null, undefined, NaN]) assert.deepEqual(N.tierDrift([pkg], price), []);
+  });
+
+  console.log(`\n${passed} tier, rounding, money, Csomagok and order-notice checks passed.`);
 } finally {
   await server.close();
 }

@@ -313,7 +313,7 @@ const trPaid = Astro.url.searchParams.get('translations');
       <section id="translations" class="ed-card">
         <header class="card-head"><div><h2>Szövegek</h2><p>Minden nyelven külön szöveg. A magyar kötelező, a többi bővíti az elérést.</p></div></header>
         {property.free_listing && (
-          <p class={contactField ? 'notice warn' : 'notice'} id="contact-rule">
+          <p class={contactField ? 'notice warn' : 'notice contact-rule'} id="contact-rule">
             Ingyenes hirdetés: a szövegekben nem szerepelhet e-mail-cím, telefonszám, weboldal vagy üzenetküldő-elérhetőség. Az érdeklődők a FINDDOME-on keresztül érik el a tulajdonost.
           </p>
         )}
@@ -1180,6 +1180,7 @@ const trPaid = Astro.url.searchParams.get('translations');
   .review-note blockquote { margin: 0 0 12px; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--ink); white-space: pre-line; }
   .review-note-foot { font-size: 14.5px; line-height: 1.7; color: var(--ink-quiet); }
   .notice { margin-bottom: 16px; }
+  .contact-rule { background: rgba(16, 42, 67, 0.05); color: var(--ink); font-size: var(--fs-small); }
 
   /* ── Payment ─────────────────────────────────────────────────────────── */
   .pay h3 { margin: 30px 0 12px; }
