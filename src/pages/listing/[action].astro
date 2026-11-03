@@ -1024,40 +1024,40 @@ const COPY = {
     error: 'Что-то пошло не так. Попробуйте ещё раз или напишите нам.',
   },
   zh: {
-    invalidTitle: 'This link is no longer valid',
-    invalidBody: 'The link has expired or is incomplete. Reply to the email you received it in and we will help.',
-    goneTitle: 'This listing is no longer active',
-    goneBody: 'The listing now shows as sold, expired or offline, so this step can no longer be taken.',
-    stillTitle: 'Thank you, noted',
-    stillBody: 'The listing stays active. We will ask again in a month.',
-    priceTitle: 'New asking price',
-    priceBody: 'Enter the new price. The listing is updated at once, without a new review.',
-    priceLabel: 'New price (€)',
-    current: 'Current price',
-    priceSave: 'Save new price',
-    priceDone: 'The new price is now in the listing',
-    priceBad: 'Enter a positive whole number.',
-    soldTitle: 'Have you sold the property',
-    soldBody: 'Once you confirm, the listing leaves our offer and moves to the sold properties. Congratulations.',
-    soldConfirm: 'Yes, it is sold',
-    soldDone: 'Congratulations on the sale',
-    soldDoneBody: 'The listing is now with the sold properties. One of our team will be in touch if anything is left to arrange.',
-    view: 'View listing',
-    renewTitle: 'Extend your listing',
-    renewBody: (price: string) => `6 more months of visibility: ${price}. The extension starts on the expiry date; if the listing has already expired, it is back online straight after payment.`,
-    expires: 'Expiry date',
-    expired: 'Expired',
-    payCard: 'Pay by card',
-    payBank: 'Pay by bank transfer',
-    bankTitle: 'Transfer details',
-    bankBody: 'As soon as the amount arrives we extend the listing and email you. The same details are in your inbox.',
-    amount: 'Amount',
-    account: 'Account',
-    reference: 'Reference',
-    paidTitle: 'Thank you for your payment',
-    paidBody: 'The extension is processed within a few minutes and confirmed by email.',
-    notRenewable: 'This listing cannot be extended (sold or offline). Questions? Write to us.',
-    error: 'Something went wrong. Please try again or write to us.',
+    invalidTitle: '此链接已失效',
+    invalidBody: '链接已过期或不完整。请回复您收到链接的那封邮件，我们会协助您。',
+    goneTitle: '此房源已不再有效',
+    goneBody: '该房源目前显示为已售出、已到期或已下线，因此无法再执行此步骤。',
+    stillTitle: '谢谢，已记录',
+    stillBody: '房源保持有效。我们将在一个月后再次询问。',
+    priceTitle: '新的报价',
+    priceBody: '请输入新价格。房源将立即更新，无需重新审核。',
+    priceLabel: '新价格（€）',
+    current: '当前价格',
+    priceSave: '保存新价格',
+    priceDone: '新价格已显示在房源中',
+    priceBad: '请输入正整数。',
+    soldTitle: '您已售出该房产',
+    soldBody: '确认后，该房源将从在售房源中移除，并转入已售房产。恭喜您。',
+    soldConfirm: '是的，已售出',
+    soldDone: '恭喜成交',
+    soldDoneBody: '该房源现已列入已售房产。如还有需要处理的事项，我们的团队成员会与您联系。',
+    view: '查看房源',
+    renewTitle: '延长您的房源',
+    renewBody: (price: string) => `再展示 6 个月：${price}。延期从到期日起算；如果房源已到期，付款后将立即重新上线。`,
+    expires: '到期日',
+    expired: '已到期',
+    payCard: '银行卡付款',
+    payBank: '银行转账付款',
+    bankTitle: '转账信息',
+    bankBody: '款项到账后，我们将立即延长房源并发送邮件通知您。相同的信息也已发送到您的邮箱。',
+    amount: '金额',
+    account: '账户',
+    reference: '付款附言',
+    paidTitle: '感谢您的付款',
+    paidBody: '延期将在几分钟内处理完毕，并通过邮件确认。',
+    notRenewable: '此房源无法延期（已售出或已下线）。如有疑问，请写信给我们。',
+    error: '出了点问题。请重试或写信给我们。',
   },
 };
 const T = COPY[locale];
@@ -1095,7 +1095,7 @@ if (valid) {
   const owner = property?.owner_id
     ? (await admin.from('profiles').select('full_name, email').eq('id', property.owner_id).maybeSingle()).data
     : null;
-  const ownerName = owner?.full_name || owner?.email || x({ hu: 'A tulajdonos', nl: 'De eigenaar', en: 'The owner', de: 'Der Eigentümer', fr: 'Le propriétaire', es: 'El propietario', pl: 'Właściciel', ro: 'Proprietarul', sk: 'Majiteľ', it: 'Il proprietario', pt: 'O proprietário', el: 'Ο ιδιοκτήτης', cs: 'Majitel', sl: 'Lastnik', sv: 'Ägaren', da: 'Ejeren', no: 'Eieren', fi: 'Omistaja', et: 'Omanik', lv: 'Īpašnieks', lt: 'Savininkas', sr: 'Vlasnik', uk: 'Власник', tr: 'Mülk sahibi', he: 'בעל הנכס', ar: 'المالك', ru: 'Владелец', zh: 'The owner' });
+  const ownerName = owner?.full_name || owner?.email || x({ hu: 'A tulajdonos', nl: 'De eigenaar', en: 'The owner', de: 'Der Eigentümer', fr: 'Le propriétaire', es: 'El propietario', pl: 'Właściciel', ro: 'Proprietarul', sk: 'Majiteľ', it: 'Il proprietario', pt: 'O proprietário', el: 'Ο ιδιοκτήτης', cs: 'Majitel', sl: 'Lastnik', sv: 'Ägaren', da: 'Ejeren', no: 'Eieren', fi: 'Omistaja', et: 'Omanik', lv: 'Īpašnieks', lt: 'Savininkas', sr: 'Vlasnik', uk: 'Власник', tr: 'Mülk sahibi', he: 'בעל הנכס', ar: 'المالك', ru: 'Владелец', zh: '业主' });
 
   if (!property) {
     view = { kind: 'message', title: T.invalidTitle, body: T.invalidBody, tone: 'warn' };
@@ -1115,7 +1115,7 @@ if (valid) {
         const bank = {
           amount: formatCents(order.amount_cents, locale),
           account: `${company.banks.nl.iban} · BIC ${company.banks.nl.bic}`,
-          reference: `#${property.ref} ${x({ hu: 'hosszabbítás', nl: 'verlenging', en: 'extension', de: 'Verlängerung', fr: 'prolongation', es: 'prórroga', pl: 'przedłużenie', ro: 'prelungire', sk: 'predĺženie', it: 'proroga', pt: 'prorrogação', el: 'παράταση', cs: 'prodloužení', sl: 'podaljšanje', sv: 'förlängning', da: 'forlængelse', no: 'forlengelse', fi: 'jatko', et: 'pikendus', lv: 'pagarinājums', lt: 'pratęsimas', sr: 'produženje', uk: 'продовження', tr: 'uzatma', he: 'הארכה', ar: 'التمديد', ru: 'продление', zh: 'extension' })}`,
+          reference: `#${property.ref} ${x({ hu: 'hosszabbítás', nl: 'verlenging', en: 'extension', de: 'Verlängerung', fr: 'prolongation', es: 'prórroga', pl: 'przedłużenie', ro: 'prelungire', sk: 'predĺženie', it: 'proroga', pt: 'prorrogação', el: 'παράταση', cs: 'prodloužení', sl: 'podaljšanje', sv: 'förlängning', da: 'forlængelse', no: 'forlengelse', fi: 'jatko', et: 'pikendus', lv: 'pagarinājums', lt: 'pratęsimas', sr: 'produženje', uk: 'продовження', tr: 'uzatma', he: 'הארכה', ar: 'التمديد', ru: 'продление', zh: '延期' })}`,
         };
         if (post.get('method') === 'bank' && owner?.email) {
           await deliver(owner.email, lifecycleEmails.renewalTransfer(locale, { ref: property.ref, title, ...bank, payUrl: ownerLink('renew', id, locale, RENEW_LINK_DAYS) }));

@@ -39,7 +39,7 @@ const FEED: Record<Locale, { title: string; description: string }> = {
   he: { title: 'FINDDOME נדל״ן: חדשות ומאמרים', description: 'ניתוחים של שוק הנדל״ן ההונגרי ושל קונים ממערב אירופה.' },
   ar: { title: 'FINDDOME العقارية: أخبار ومقالات', description: 'تحليلات لسوق العقارات المجري وللمشترين من أوروبا الغربية.' },
   ru: { title: 'FINDDOME НЕДВИЖИМОСТЬ: новости и статьи', description: 'Аналитика венгерского рынка недвижимости и покупателей из Западной Европы.' },
-  zh: { title: 'FINDDOME Real Estates: news and articles', description: 'Analysis of the Hungarian property market and Western European buyers.' },
+  zh: { title: 'FINDDOME 房产：新闻与文章', description: '匈牙利房地产市场及西欧买家分析。' },
 };
 
 export async function blogFeed(locale: Locale, context: APIContext) {

@@ -53,7 +53,7 @@ export function officeHours(h: Hours, locale: L): string {
     he: `שני–שישי · ${range}`,
     ar: `الاثنين–الجمعة · ${range}`,
     ru: `Понедельник–пятница · ${range}`,
-    zh: `Monday–Friday · ${range}`,
+    zh: `周一至周五 · ${range}`,
   }[locale];
 }
 
@@ -88,7 +88,7 @@ export function callbackHours(h: Hours, locale: L): string {
     he: weekend ? `שיחות חוזרות עד ${to}, גם בסופי שבוע.` : `שיחות חוזרות בימי חול עד ${to}.`,
     ar: weekend ? `معاودة الاتصال حتى ${to}، بما في ذلك عطلات نهاية الأسبوع.` : `معاودة الاتصال في أيام العمل حتى ${to}.`,
     ru: weekend ? `Обратные звонки до ${to}, в том числе в выходные.` : `Обратные звонки в рабочие дни до ${to}.`,
-    zh: weekend ? `Callbacks until ${to}, weekends included.` : `Callbacks on weekdays until ${to}.`,
+    zh: weekend ? `回电服务至 ${to}，周末亦然。` : `工作日回电服务至 ${to}。`,
   }[locale];
 }
 
@@ -125,7 +125,7 @@ export function hoursSentence(h: Hours, locale: L): string {
     he: `התקשרו אלינו בימי חול בין ${from} ל־${to}; שיחות חוזרות עד ${cb}${weekend ? ', גם בסופי שבוע' : ''}.`,
     ar: `اتصل بنا في أيام العمل بين ${from} و${to}؛ ونعاود الاتصال حتى ${cb}${weekend ? '، بما في ذلك عطلات نهاية الأسبوع' : ''}.`,
     ru: `Звоните нам в рабочие дни с ${from} до ${to}; обратные звонки — до ${cb}${weekend ? ', в том числе в выходные' : ''}.`,
-    zh: `Call us on weekdays between ${from} and ${to}; callbacks run until ${cb}${weekend ? ', weekends included' : ''}.`,
+    zh: `请在工作日 ${from} 至 ${to} 致电我们；回电服务至 ${cb}${weekend ? '，周末亦然' : ''}。`,
   }[locale];
 }
 

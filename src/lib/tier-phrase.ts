@@ -37,7 +37,7 @@ const TIER_PHRASE: Record<Locale, TierPhrase> = {
   he: { above: (x) => `נכס במחיר של מעל ${x}`, upTo: (x) => `נכס במחיר של עד ${x}`, between: (a, b) => `נכס במחיר של ${a}–${b}` },
   ar: { above: (x) => `عقار بسعر يزيد على ${x}`, upTo: (x) => `عقار بسعر يصل إلى ${x}`, between: (a, b) => `عقار بسعر ${a}–${b}` },
   ru: { above: (x) => `недвижимость стоимостью свыше ${x}`, upTo: (x) => `недвижимость стоимостью до ${x}`, between: (a, b) => `недвижимость стоимостью ${a}–${b}` },
-  zh: { above: (x) => `property priced above ${x}`, upTo: (x) => `property priced up to ${x}`, between: (a, b) => `property priced ${a}–${b}` },
+  zh: { above: (x) => `价格高于 ${x} 的房产`, upTo: (x) => `价格不超过 ${x} 的房产`, between: (a, b) => `价格在 ${a}–${b} 之间的房产` },
 };
 
 /**

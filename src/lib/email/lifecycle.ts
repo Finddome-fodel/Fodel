@@ -43,7 +43,7 @@ const sign: Record<EmailLocale, string> = {
   he: 'בברכה,\nFINDDOME נדל״ן',
   ar: 'مع أطيب التحيات،\nFINDDOME العقارية',
   ru: 'С уважением,\nFINDDOME НЕДВИЖИМОСТЬ',
-  zh: 'Kind regards,\nFINDDOME Real Estates',
+  zh: '此致\nFINDDOME 房产',
 };
 const questions: Record<EmailLocale, string> = {
   hu: `Kérdése van? Válaszoljon erre a levélre, vagy hívjon minket: ${COMPANY.phones[0].display}.`,
@@ -73,7 +73,7 @@ const questions: Record<EmailLocale, string> = {
   he: `יש לכם שאלות? השיבו למייל זה או התקשרו אלינו: ${COMPANY.phones[0].display}.`,
   ar: `لديك أسئلة؟ رُدّ على هذه الرسالة أو اتصل بنا: ${COMPANY.phones[0].display}.`,
   ru: `Есть вопросы? Ответьте на это письмо или позвоните нам: ${COMPANY.phones[0].display}.`,
-  zh: `Questions? Reply to this email or call us: ${COMPANY.phones[0].display}.`,
+  zh: `如有疑问，请直接回复此邮件或致电：${COMPANY.phones[0].display}。`,
 };
 const signOff = (l: EmailLocale) => small(questions[l]) + p(sign[l]);
 const textSign = (l: EmailLocale) => `${questions[l]}\n\n${sign[l]}`;
@@ -382,15 +382,15 @@ const EXPIRY = {
     sold: 'Если объект тем временем продан, сообщите нам, ответив на это письмо.',
   },
   zh: {
-    subject: (d: number) => `Your listing expires in ${d} days | FINDDOME`,
-    preheader: 'One click extends it by 6 months.',
-    heading: 'Your listing expires soon',
-    intro: (t: string, d: number, on: string) => `Your listing “${t}” expires in ${d} days, on ${on}. After that it comes off the site.`,
-    body: (price: string) => `If the property is still for sale, extend it by 6 months (${price}). You can pay by card or bank transfer; the extension starts on the expiry date, so you lose not a single day.`,
-    cta: 'Extend listing',
-    view: 'View listing',
-    labels: { ref: 'Reference', ends: 'Expiry date' },
-    sold: 'If it has sold in the meantime, let us know by replying to this email.',
+    subject: (d: number) => `您的房源将在 ${d} 天后到期 | FINDDOME`,
+    preheader: '一键即可延长 6 个月。',
+    heading: '您的房源即将到期',
+    intro: (t: string, d: number, on: string) => `您的房源“${t}”将在 ${d} 天后（${on}）到期，届时将从网站下架。`,
+    body: (price: string) => `如果房产仍在出售，请将房源延长 6 个月（${price}）。您可以通过银行卡或银行转账付款；延期从到期日起算，一天也不会浪费。`,
+    cta: '延长房源',
+    view: '查看房源',
+    labels: { ref: '房源编号', ends: '到期日' },
+    sold: '如果房产在此期间已售出，请回复此邮件告知我们。',
   },
 };
 
@@ -633,12 +633,12 @@ const EXPIRED = {
     cta: 'Продлить и вернуть на сайт',
   },
   zh: {
-    subject: 'Your listing has expired: one click and it is back online',
-    preheader: 'After renewal it is back online straight away.',
-    heading: 'Your listing has expired',
-    intro: (t: string) => `The listing “${t}” has expired and is no longer on the site. Your details and photos have been kept.`,
-    body: (price: string) => `If the property is still for sale, extend it by 6 months (${price}): after payment the listing is back online straight away, at the same address.`,
-    cta: 'Extend and put back online',
+    subject: '您的房源已到期：一键即可重新上线',
+    preheader: '续期后立即重新上线。',
+    heading: '您的房源已到期',
+    intro: (t: string) => `房源“${t}”已到期，目前已不在网站上展示。您的资料和照片均已保留。`,
+    body: (price: string) => `如果房产仍在出售，请将房源延长 6 个月（${price}）：付款后房源将立即以原网址重新上线。`,
+    cta: '延期并重新上线',
   },
 };
 
@@ -844,11 +844,11 @@ const RENEWED = {
     cta: 'Посмотреть объявление',
   },
   zh: {
-    subject: 'Your listing has been extended | FINDDOME',
-    preheader: 'The new expiry date is in this email.',
-    heading: 'Extended',
-    intro: (t: string, on: string) => `The listing “${t}” now runs until ${on}. Thank you.`,
-    cta: 'View listing',
+    subject: '您的房源已延期 | FINDDOME',
+    preheader: '新的到期日见本邮件。',
+    heading: '已延期',
+    intro: (t: string, on: string) => `房源“${t}”现有效至 ${on}。谢谢。`,
+    cta: '查看房源',
   },
 };
 
@@ -1110,13 +1110,13 @@ const TRANSFER = {
     cta: 'Способы оплаты',
   },
   zh: {
-    subject: (r: string) => `Extension by bank transfer (#${r})`,
-    preheader: 'The payment details; once it arrives we extend the listing.',
-    heading: 'Extension by bank transfer',
-    intro: (t: string) => `Thank you. We extend the listing “${t}” as soon as the payment arrives.`,
-    labels: { amount: 'Amount', account: 'Account', reference: 'Reference' },
-    note: 'Prefer to pay by card after all? You can always do so with the button below.',
-    cta: 'Ways to pay',
+    subject: (r: string) => `通过银行转账延期（#${r}）`,
+    preheader: '付款信息；款项到账后我们即延长房源。',
+    heading: '通过银行转账延期',
+    intro: (t: string) => `谢谢。款项到账后，我们将立即延长房源“${t}”。`,
+    labels: { amount: '金额', account: '账户', reference: '付款附言' },
+    note: '还是想用银行卡付款？随时可以通过下方按钮完成。',
+    cta: '付款方式',
   },
 };
 
@@ -1460,16 +1460,16 @@ const REFRESH = {
     valid: (d: string) => `Ссылки действительны до ${d}.`,
   },
   zh: {
-    subject: (t: string, r: boolean) => `${r ? 'Reminder: ' : ''}Still for sale? · ${t}`,
-    preheader: 'One click, no sign-in.',
-    heading: 'Is the property still for sale?',
-    intro: (t: string, price: string) => `Once a month we ask whether the listing “${t}” (${price}) is still current. Buyers trust listings that are accurate.`,
-    reminder: 'We asked you a week ago, but have not had an answer yet.',
-    still: 'Yes, still for sale',
-    price: 'The price has changed',
-    sold: 'Sold',
-    how: 'One click is enough, no need to sign in. We update a new price straight away.',
-    valid: (d: string) => `The links are valid until ${d}.`,
+    subject: (t: string, r: boolean) => `${r ? '提醒：' : ''}仍在出售吗？ · ${t}`,
+    preheader: '一键操作，无需登录。',
+    heading: '房产仍在出售吗？',
+    intro: (t: string, price: string) => `我们每月确认一次房源“${t}”（${price}）是否仍然有效。准确的房源更能赢得买家信任。`,
+    reminder: '我们一周前已询问过您，但尚未收到回复。',
+    still: '是的，仍在出售',
+    price: '价格已变更',
+    sold: '已售出',
+    how: '只需一键，无需登录。新价格会立即更新。',
+    valid: (d: string) => `链接有效期至 ${d}。`,
   },
 };
 
@@ -1781,14 +1781,14 @@ const NEWSLETTER: Record<ShellLocale, { subject: string; preheader: string; head
     why: 'Вы получили это письмо, потому что этот адрес подписан на рассылку FINDDOME.',
   },
   zh: {
-    subject: 'Confirm your subscription | FINDDOME newsletter',
-    preheader: 'One click, and we will send you new listings.',
-    heading: 'One more click',
-    intro: 'Thank you for subscribing to the FINDDOME newsletter. Please confirm it was you. We send nothing until you do.',
-    cta: 'Confirm subscription',
-    ignore: 'If you did not subscribe, simply ignore this email: without confirmation we send nothing.',
-    unsubscribe: 'Unsubscribe',
-    why: 'You are receiving this email because this address was subscribed to the FINDDOME newsletter.',
+    subject: '请确认订阅 | FINDDOME 简报',
+    preheader: '一键确认，我们就会为您发送新房源。',
+    heading: '只差一步',
+    intro: '感谢您订阅 FINDDOME 简报。请确认是您本人订阅。在您确认之前，我们不会发送任何内容。',
+    cta: '确认订阅',
+    ignore: '如果您并未订阅，请忽略此邮件：未经确认，我们不会发送任何内容。',
+    unsubscribe: '退订',
+    why: '您收到此邮件，是因为此地址订阅了 FINDDOME 简报。',
   },
 };
 

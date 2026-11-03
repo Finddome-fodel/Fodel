@@ -110,7 +110,7 @@ test('an unknown page answers 404 in the language of its URL', async ({ request 
     he: /לא נמצא|404/i,
     ar: /غير موجودة|404/i,
     ru: /не найдена|404/i,
-    zh: /not found|404/i,
+    zh: /未找到|404/i,
   };
   for (const locale of LOCALES) {
     const response = await request.get(`/${locale}/this-page-does-not-exist/`);

@@ -60,7 +60,7 @@ export const TITLES: Record<Locale, string> = {
   he: 'בית חווה משופץ בגבעות שמעל אגם בלטון',
   ar: 'بيت ريفي مُجدَّد في مرتفعات بحيرة بالاتون',
   ru: 'Отремонтированный крестьянский дом на холмах у Балатона',
-  zh: 'Renovated farmhouse in the Balaton Uplands',
+  zh: '巴拉顿高地翻新农舍',
 };
 
 /**
@@ -206,9 +206,9 @@ const SAMPLE_ORDER: Record<Locale, { label: string; amount: string }[]> = {
     { label: 'Видеопрезентация', amount: '€36' },
   ],
   zh: [
-    { label: 'Listing — 12 months', amount: '€129' },
-    { label: 'Translation — 2 languages', amount: '€50' },
-    { label: 'Video presentation', amount: '€36' },
+    { label: '房源发布 — 12 个月', amount: '€129' },
+    { label: '翻译 — 2 种语言', amount: '€50' },
+    { label: '视频展示', amount: '€36' },
   ],
 };
 

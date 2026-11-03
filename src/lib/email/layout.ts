@@ -293,8 +293,8 @@ const FOOTER_COPY = {
     contact: 'Контакты',
   },
   zh: {
-    why: 'You are receiving this email because you have a FINDDOME account or placed a listing with us.',
-    contact: 'Contact',
+    why: '您收到此邮件，是因为您拥有 FINDDOME 账户或曾在我们这里发布房源。',
+    contact: '联系我们',
   },
 } as const;
 
@@ -332,7 +332,7 @@ const VISITOR_WHY: Record<ShellLocale, string> = {
   he: 'קיבלתם מייל זה כי פניתם אלינו דרך אתר FINDDOME.',
   ar: 'تتلقى هذه الرسالة لأنك تواصلت معنا عبر موقع FINDDOME.',
   ru: 'Вы получили это письмо, потому что обращались к нам через сайт FINDDOME.',
-  zh: 'You are receiving this email because you contacted us through the FINDDOME website.',
+  zh: '您收到此邮件，是因为您曾通过 FINDDOME 网站联系我们。',
 };
 
 function wordmark(locale: ShellLocale): string {
