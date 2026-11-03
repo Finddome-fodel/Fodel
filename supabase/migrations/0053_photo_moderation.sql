@@ -198,11 +198,17 @@ create table if not exists property_media_rejections (
   id uuid primary key default gen_random_uuid(),
   property_id uuid not null references properties (id) on delete cascade,
   photo_count integer not null default 1 check (photo_count > 0),
+  -- The admin's choice (quality, unrelated, personal, branding, duplicate,
+  -- inappropriate, other), its Hungarian wording, and the free-text note.
+  reason_code text,
   reason text not null check (char_length(reason) between 1 and 1000),
+  note text check (note is null or char_length(note) <= 500),
   decided_by uuid references profiles (id) on delete set null,
   created_at timestamptz not null default now(),
   dismissed_at timestamptz
 );
+alter table property_media_rejections add column if not exists reason_code text;
+alter table property_media_rejections add column if not exists note text;
 create index if not exists property_media_rejections_property_idx on property_media_rejections (property_id, created_at desc);
 
 alter table property_media_rejections enable row level security;
@@ -230,6 +236,7 @@ language plpgsql set search_path = public as $$
 begin
   if is_admin() or current_user not in ('authenticated', 'anon') then return new; end if;
   if new.property_id is distinct from old.property_id or new.reason is distinct from old.reason
+     or new.reason_code is distinct from old.reason_code or new.note is distinct from old.note
      or new.photo_count is distinct from old.photo_count or new.decided_by is distinct from old.decided_by
      or new.created_at is distinct from old.created_at then
     raise exception 'rejection-read-only';

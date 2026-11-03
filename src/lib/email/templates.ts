@@ -840,14 +840,13 @@ ${common.signOff}`,
 /** Office notice: an owner added photos to a live listing (Hungarian, like every office notice). */
 export function adminPhotosPending(
   locale: EmailLocale,
-  opts: { ref: string; title: string; owner: string; count: number; url: string }
+  opts: { ref: string; title: string; owner: string; url: string }
 ): BuiltEmail {
   const c = office().adminPhotosPending;
   const L = c.labels;
   const rows: [string, string][] = [
     [L.listing, `${opts.title} (#${opts.ref})`],
     [L.owner, opts.owner || '—'],
-    [L.count, String(opts.count)],
   ];
   return {
     subject: c.subject(opts.ref),

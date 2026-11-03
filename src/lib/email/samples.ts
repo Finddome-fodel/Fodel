@@ -372,7 +372,7 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
   serviceRequested: (l) => templates.serviceRequested(l, { service: say(l)('Gábor helyszíni látogatása', 'Bezoek van Gábor', 'Visit by Gábor', 'Besuch durch Gábor', 'Visite de Gábor', 'Visita de Gábor', 'Wizyta Gábora', 'Vizita lui Gábor', 'Návšteva Gábora'), price: say(l)('200 €', '€ 200', '€200', '200 €', '200 €', '200 €', '200 €', '200 €', '200 €') }),
   judicialRequested: (l) => templates.judicialRequested(l),
   adminPhotosPending: (l) => templates.adminPhotosPending(l, {
-    ref: SAMPLE_REF, title: SAMPLE_TITLE, owner: 'Kovács Anna (anna.kovacs@example.com)', count: 3,
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, owner: 'Kovács Anna (anna.kovacs@example.com)',
     url: `${SITE_URL}/portal/photos`,
   }),
   adminServiceRequested: (l) => templates.adminServiceRequested(l, {

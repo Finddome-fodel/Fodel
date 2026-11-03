@@ -353,7 +353,6 @@ export const NL = {
     labels: {
       listing: 'Advertentie',
       owner: 'Adverteerder',
-      count: 'Wacht op goedkeuring',
     },
     cta: 'Foto’s beoordelen',
   },

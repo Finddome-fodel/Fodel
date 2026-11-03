@@ -34,6 +34,8 @@ export const EVENT_LABEL: Record<string, string> = {
   'listing.published': 'Hirdetés élesítve',
   'listing.curation': 'Top 10 válogatás módosítva',
   'media.uploaded': 'Fénykép feltöltve',
+  'media.submitted': 'Új fotó jóváhagyásra (élő hirdetés)',
+  'media.reviewed': 'Utólag feltöltött fotók elbírálva',
   'ai_suggestion.accepted': 'AI szövegjavaslat elfogadva',
   'ai.translation_requested': 'Fordítást kértek (jóváhagyásra vár)',
   'ai.translation_ordered': 'Fordítást rendeltek (fizetésre vár)',

@@ -357,7 +357,6 @@ export const HU = {
     labels: {
       listing: 'Hirdetés',
       owner: 'Hirdető',
-      count: 'Jóváhagyásra vár',
     },
     cta: 'Fotók moderálása',
   },
