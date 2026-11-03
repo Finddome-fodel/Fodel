@@ -9,8 +9,8 @@ import { SITE_HOST } from '~/config/site.mjs';
 
 export const AR = {
   common: {
-    greeting: (name: string) => `عزيزنا/عزيزتنا ${name}،`,
-    greetingNoName: 'عزيزنا المعلن،',
+    greeting: (name: string) => `عزيزي/عزيزتي ${name}،`,
+    greetingNoName: 'عزيزي المعلن،',
     signOff: 'مع أطيب التحيات،\nFINDDOME العقارية',
     questions: 'إذا كان لديك أي سؤال، يكفي الرد على هذه الرسالة.',
     linkFallback: 'إذا لم يعمل الزر، انسخ هذا العنوان إلى المتصفح:',
