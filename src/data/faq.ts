@@ -37,6 +37,7 @@ import { FAQ_FI } from '~/data/faq-fi';
 import { FAQ_ET } from '~/data/faq-et';
 import { FAQ_LV } from '~/data/faq-lv';
 import { FAQ_LT } from '~/data/faq-lt';
+import { FAQ_RU } from '~/data/faq-ru';
 
 export type FaqAudience = 'seller' | 'buyer' | 'both';
 
@@ -453,7 +454,7 @@ export const FAQ: Record<Locale, FaqEntry[]> = { ...HU_NL, en: FAQ_EN, de: FAQ_D
   tr: FAQ_EN,
   he: FAQ_EN,
   ar: FAQ_EN,
-  ru: FAQ_EN,
+  ru: FAQ_RU,
   zh: FAQ_EN,
 };
 
