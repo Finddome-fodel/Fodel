@@ -42,7 +42,9 @@ import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { listingCatalog, packageCard, packageOf } from '~/lib/listing-packages';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { ONSITE_SERVICES } from '~/config/company';
-import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import { ALL_LOCALES, pickSource } from '~/lib/ai/translate-core';
+import { packageById, packageLocales } from '~/lib/translation-packages';
 import { LOCALE_META } from '~/i18n/ui';
 import { DESCRIPTION_MAX } from '~/lib/portal/setup';
 import { SETUP_COPY } from '~/lib/portal/setup-copy';
@@ -96,6 +98,11 @@ const askedLocales: string[] = free
   ? ((await supabase.from('translation_jobs').select('locale').eq('property_id', property.id).eq('origin', 'free').in('status', ['requested', 'queued', 'running'])).data ?? []).map((job: { locale: string }) => job.locale)
   : [];
 const presentLocales = property.translations.filter((row) => row.title?.trim() && row.title !== 'Új hirdetés').map((row) => row.locale);
+// The translation choice the seller made before, or a fresh one: Go, which every listing has.
+const trSourceLocale = pickSource(property.translations)?.locale ?? 'hu';
+const trPackageId = requested.translationPackage ?? 'go';
+const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackageId), ALL_LOCALES));
+const trExtras = (free ? askedLocales : requested.translations ?? []).filter((code) => !trIncluded.has(code));
 const ALL_STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
 const STEPS = ALL_STEPS.filter((step) => !free || (step !== 'package' && step !== 'billing'));
 const at = (step: (typeof ALL_STEPS)[number]) => ALL_STEPS.indexOf(step);
@@ -113,7 +120,6 @@ const pricing = {
       { name: p.names[lang], cents: p.priceEur * 100, aboveCents: p.priceEurAbove !== null ? p.priceEurAbove * 100 : null, threshold: p.thresholdHuf, video: p.video, phone: p.phone },
     ])
   ),
-  translationCents: extra('translation').priceEur * 100,
   categoryCents: extra('category-highlight').priceEur * 100 * (extra('category-highlight').minMonths ?? 1),
   homepageCents: extra('homepage-highlight').priceEur * 100 * (extra('homepage-highlight').minMonths ?? 1),
   videoCents: extra('video').priceEur * 100,
@@ -192,7 +198,7 @@ const strings = {
         <fieldset class="su-extras">
           <legend>{t.extrasHead}</legend>
           <p class="su-note">{t.extrasNote}</p>
-          <TranslationPicker lang={lang} selected={requested.translations ?? []} present={presentLocales} priceEur={extra('translation').priceEur} />
+          <TranslationPackagePicker lang={lang} cfg={catalog.translation} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trPackageId} extras={trExtras} excluded={requested.excludedLocales ?? []} present={presentLocales} />
           <div class="chips">
             <label class="chip">
               <input type="checkbox" name="categoryHighlight" value="yes" checked={requested.categoryHighlight} />
@@ -262,7 +268,7 @@ const strings = {
         {free && (
           <div class="su-fieldset">
             <input type="hidden" name="translations_present" value="yes" />
-            <TranslationPicker lang={lang} free selected={askedLocales} present={presentLocales} priceEur={null} />
+            <TranslationPackagePicker lang={lang} free cfg={catalog.translation} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trPackageId} extras={trExtras} excluded={requested.excludedLocales ?? []} present={presentLocales} />
           </div>
         )}
 
@@ -613,10 +619,12 @@ const strings = {
     const above = pkg.aboveCents !== null && pkg.threshold !== null && priceHuf() > pkg.threshold;
     let cents = above ? pkg.aboveCents! : pkg.cents;
     const lines = [pkg.name];
-    const translations = f.querySelectorAll<HTMLInputElement>('input[name="translations"]:checked');
-    if (translations.length) {
-      cents += translations.length * pricing.translationCents;
-      lines.push(`${s.translation} × ${translations.length}`);
+    // The translation picker keeps its own total (the package plus single languages), in cents.
+    const picker = f.querySelector<HTMLElement>('[data-tpk]');
+    const translationCents = Number(picker?.dataset.cents || 0);
+    if (translationCents > 0) {
+      cents += translationCents;
+      lines.push(picker?.querySelector('[data-tpk-summary]')?.textContent?.split(' · ')[0] || s.translation);
     }
     const flag = (name: string) => Boolean(f.querySelector<HTMLInputElement>(`input[name="${name}"]`)?.checked);
     const add = (when: boolean, amount: number, label: string) => {
@@ -648,9 +656,12 @@ const strings = {
     root.querySelectorAll<HTMLElement>('[data-total]').forEach((el) => (el.textContent = total));
   }
   form('package')?.addEventListener('change', syncPackage);
+  form('package')?.addEventListener('tp:change', syncPackage);
   form('property')?.addEventListener('change', syncPackage);
   form('property')?.addEventListener('listing:price',syncPackage);
   syncPackage();
+  // The translation picker sets itself up in its own script; this catches the case where it ran second.
+  window.addEventListener('load', syncPackage);
 
   /* ── Step 3: character counter ─────────────────────────────────────── */
 

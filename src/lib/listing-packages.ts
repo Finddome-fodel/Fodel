@@ -16,9 +16,10 @@
  * Orders stay denormalised (src/lib/orders.ts): a price change here affects
  * new orders only, never one already written.
  */
-import { LISTING_PACKAGES, LISTING_EXTRAS } from '~/config/company';
+import { LISTING_PACKAGES, LISTING_EXTRAS, TRANSLATION_PACKAGES } from '~/config/company';
+import { translationPricing, type TranslationPricing } from '~/lib/translation-packages';
 import { listingRules, type PackageId } from '~/lib/listing-rules';
-import { localizer, type L10n, type Locale } from '~/i18n/ui';
+import { LOCALES, localizer, type L10n, type Locale } from '~/i18n/ui';
 import { eur } from '~/lib/format';
 import { nOf } from '~/i18n/plural';
 
@@ -55,13 +56,15 @@ export type ListingExtra = {
   minMonths?: number;
 };
 
-export type ListingCatalog = { packages: ListingPackage[]; extras: ListingExtra[] };
+export type ListingCatalog = { packages: ListingPackage[]; extras: ListingExtra[]; translation: TranslationPricing };
 
 export type StoredListingPackage = Partial<Omit<ListingPackage, 'id' | 'names'>> & { names?: Partial<Record<'hu' | 'nl', string>> };
 export type StoredServices = {
   listingPackages?: Partial<Record<PackageId, StoredListingPackage>>;
   listingExtras?: Partial<Record<ExtraId, { priceEur?: number }>>;
   packagePhone?: unknown;
+  /** Translation packages and single-language prices (src/lib/translation-packages.ts). */
+  translationPackages?: unknown;
 } | null | undefined;
 
 export const PRICE_MAX = 10_000;
@@ -116,13 +119,16 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
   if (packages.filter((p) => p.recommended).length !== 1) {
     packages.forEach((p, i) => (p.recommended = i === packages.length - 1));
   }
+  const translation = translationPricing(services?.translationPackages, TRANSLATION_PACKAGES, LOCALES);
   const extras = LISTING_EXTRAS.map((extra): ListingExtra => ({
     id: extra.id,
-    priceEur: num(services?.listingExtras?.[extra.id]?.priceEur, extra.priceEur, 0, PRICE_MAX),
+    // One language bought on its own: the single price of the translation packages (the older per-language
+    // price in listingExtras is kept in old orders only).
+    priceEur: extra.id === 'translation' ? translation.singleEur.european : num(services?.listingExtras?.[extra.id]?.priceEur, extra.priceEur, 0, PRICE_MAX),
     unit: extra.unit,
     ...('minMonths' in extra ? { minMonths: extra.minMonths } : {}),
   }));
-  return { packages, extras };
+  return { packages, extras, translation };
 }
 
 export function packageOf(catalog: ListingCatalog, id: string | null | undefined): ListingPackage {

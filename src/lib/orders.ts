@@ -23,7 +23,8 @@ import { ONSITE_SERVICES } from '~/config/company';
 import type { Locale } from '~/i18n/ui';
 import { eurCents, intlTag } from '~/lib/format';
 import type { RequestedExtras } from '~/lib/portal/requested-extras';
-import { OWNER_TARGETS } from '~/lib/ai/translate-core';
+import { ALL_LOCALES } from '~/lib/ai/translate-core';
+import { cleanExclusions, translationLines, type TranslationLine } from '~/lib/translation-packages';
 import { listingCatalog, packageOf, isAboveThreshold as tierApplies, type ListingCatalog } from '~/lib/listing-packages';
 
 /**
@@ -56,6 +57,8 @@ export type OrderLine = {
   label: string;
   /** Translation lines only: the languages bought, so paying is enough to know what to translate. */
   locales?: string[];
+  /** A translation package line: which package it buys, so paying is enough to know what to apply. */
+  packageId?: string;
 };
 
 /** What the admin's review form sends: ids and counts, never money. */
@@ -64,6 +67,19 @@ export type OrderSelection = {
   /** The €179 tier applies above 150M HUF — decided from the listing, not typed in. */
   aboveThreshold?: boolean;
   extras: { id: string; quantity: number; /** Translation: the languages. The quantity is then their count. */ locales?: string[] }[];
+  /**
+   * The translation choice: a package (Go costs nothing), single languages on top, and what the buyer switched
+   * off (the price does not change). A `translation` extra that names its languages is read as single languages.
+   */
+  translation?: {
+    packageId: string;
+    extraLocales?: string[];
+    excludedLocales?: string[];
+    /** The language the listing was written in (default hu). */
+    sourceLocale?: string;
+    /** The package the listing already has: moving up costs the difference, staying costs nothing. */
+    currentPackageId?: string | null;
+  };
 };
 
 /* ── Labels ──────────────────────────────────────────────────────────────── */
@@ -238,9 +254,11 @@ export function catalogue(locale: OrderLocale, cat: ListingCatalog = listingCata
   };
 }
 
+export type OrderErrorCode = 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive' | 'bad-locale' | 'exclude-en';
+
 export class OrderError extends Error {
-  code: 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive' | 'bad-locale';
-  constructor(code: 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive' | 'bad-locale') {
+  code: OrderErrorCode;
+  constructor(code: OrderErrorCode) {
     super(code);
     this.code = code;
   }
@@ -273,19 +291,24 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
     throw new OrderError('exclusive');
   }
 
+  // Single languages named on a `translation` extra are priced like the ones in the picker: one language at a
+  // time, European or World-only, and a language the chosen package already includes costs nothing.
+  const legacySingles: string[] = [];
+
   for (const chosen of selection.extras) {
     const extra = orderExtras(cat).find((e) => e.id === chosen.id);
     if (!extra) throw new OrderError('unknown-extra');
 
-    // A translation line that names its languages is priced by their count and
-    // remembers them: that list, read back from the stored order, is what the
-    // AI translates after payment (never anything in a later request).
-    let locales: string[] | undefined;
+    // A translation line that names its languages remembers them: that list, read back from the stored order,
+    // is what the AI translates after payment (never anything in a later request).
     if (extra.id === 'translation' && chosen.locales !== undefined) {
-      locales = [...new Set(chosen.locales)];
-      if (locales.length === 0 || locales.some((code) => !(OWNER_TARGETS as readonly string[]).includes(code))) throw new OrderError('bad-locale');
+      const named = [...new Set(chosen.locales)];
+      const source = selection.translation?.sourceLocale ?? 'hu';
+      if (named.length === 0 || named.some((code) => code === source || !ALL_LOCALES.includes(code))) throw new OrderError('bad-locale');
+      legacySingles.push(...named);
+      continue;
     }
-    const quantity = locales ? locales.length : Math.floor(chosen.quantity);
+    const quantity = Math.floor(chosen.quantity);
     if (!Number.isFinite(quantity) || quantity < 1 || quantity > 60) {
       throw new OrderError('bad-quantity');
     }
@@ -302,10 +325,34 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
       quantity,
       unitCents: extra.priceEur * 100,
       label: quantity > 1 && unit ? `${base}${locale === 'hu' || locale === 'nl' ? ' — ' : ': '}${quantity} ${unit}` : base,
-      ...(locales ? { locales } : {}),
     });
   }
 
+  if (selection.translation || legacySingles.length > 0) lines.push(...translationOrderLines(selection, legacySingles, locale, cat));
+
+  return lines;
+}
+
+/**
+ * The translation lines of a selection: the package, then single languages, all priced from the catalogue.
+ * Throws rather than quietly changing the choice: English can never be switched off, and a package that is not
+ * on sale cannot be bought.
+ */
+function translationOrderLines(selection: OrderSelection, legacySingles: string[], locale: OrderLocale, cat: ListingCatalog): TranslationLine[] {
+  const choice = selection.translation ?? { packageId: 'go' };
+  const sourceLocale = choice.sourceLocale ?? 'hu';
+  const cfg = cat.translation;
+  const pkg = cfg.packages.find((p) => p.id === choice.packageId);
+  if (!pkg || (pkg.id !== 'go' && !pkg.active && pkg.id !== choice.currentPackageId)) throw new OrderError('unknown-package');
+  const singles = [...new Set([...(choice.extraLocales ?? []), ...legacySingles])];
+  if (singles.some((code) => code === sourceLocale || !ALL_LOCALES.includes(code))) throw new OrderError('bad-locale');
+  const cleaned = cleanExclusions(choice.excludedLocales ?? [], { translationPackage: pkg.id, extraLocales: singles, sourceLocale }, cfg, ALL_LOCALES);
+  if (cleaned.problem === 'exclude-en') throw new OrderError('exclude-en');
+  if (cleaned.problem) throw new OrderError('bad-locale');
+  const lines = translationLines(
+    { packageId: pkg.id, extraLocales: singles, excludedLocales: cleaned.excluded, sourceLocale }, cfg, locale, ALL_LOCALES,
+    choice.currentPackageId === undefined ? {} : { currentPackageId: choice.currentPackageId }
+  );
   return lines;
 }
 
@@ -372,13 +419,13 @@ export type SuggestInput = {
 
 export function suggestSelection(property: SuggestInput, cat: ListingCatalog = listingCatalog()): OrderSelection {
   const requested = property.requested ?? {};
-  // The languages the owner asked to have translated. A language the listing
-  // already has text in (written by the owner, or translated before) is not
-  // sold again; the AI translates only what is missing.
-  const languages = [...new Set(requested.translations ?? [])].filter((locale) => locale !== 'hu' && !property.locales.includes(locale));
+  // The package and single languages the owner asked for. A language the listing already has text in (written by
+  // the owner, or translated before) is not sold again; the AI translates only what is missing.
+  const packageId = cat.translation.packages.some((p) => p.id === requested.translationPackage && p.active) ? String(requested.translationPackage) : 'go';
+  const have = new Set([...property.locales, 'hu']);
+  const languages = [...new Set(requested.translations ?? [])].filter((locale) => !have.has(locale));
   const extras: { id: string; quantity: number; locales?: string[] }[] = [];
 
-  if (languages.length > 0) extras.push({ id: 'translation', quantity: languages.length, locales: languages });
   // A package with video included charges nothing for it; one without video offers none.
   if ((property.video_url || requested.video) && packageOf(cat, property.package).video === 'extra') extras.push({ id: 'video', quantity: 1 });
   // FODEL's own minimum for highlighting is three months.
@@ -390,5 +437,10 @@ export function suggestSelection(property: SuggestInput, cat: ListingCatalog = l
     packageId: property.package,
     aboveThreshold: isAboveThreshold(property.price_huf, cat, property.package),
     extras,
+    translation: {
+      packageId,
+      extraLocales: languages,
+      excludedLocales: [...(requested.excludedLocales ?? [])],
+    },
   };
 }

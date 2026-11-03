@@ -147,9 +147,9 @@ const extraMeta: Record<ExtraId, { label: string; unit: string; note?: string }>
 
       <section class="set-card pk-extras">
         <h2>Kiegészítők árai</h2>
-        <p class="set-sub">Ezek jelennek meg az árlistán és a hirdetésfeladásnál, és ezekből készül a rendelés.</p>
+        <p class="set-sub">Ezek jelennek meg az árlistán és a hirdetésfeladásnál, és ezekből készül a rendelés. A fordítás árait a <a href="/portal/packages/translations">Fordítási csomagok</a> és az <a href="/portal/packages/languages">Egyedi nyelvek</a> oldalon állíthatja.</p>
         <div class="ex-grid">
-          {catalog.extras.map((extra) => (
+          {catalog.extras.filter((extra) => extra.id !== 'translation').map((extra) => (
             <label class="ex">
               <span class="ex-name"><strong>{extraMeta[extra.id].label}</strong>{extraMeta[extra.id].note && <small>{extraMeta[extra.id].note}</small>}</span>
               <span class="unit"><input type="number" name={`extra_${extra.id}`} min="0" max={PRICE_MAX} step="1" value={extra.priceEur} data-extra={extra.id} required /><i>{extraMeta[extra.id].unit}</i></span>

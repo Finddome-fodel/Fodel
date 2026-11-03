@@ -65,12 +65,32 @@ export function invoiceCatalogue(services?: Services): CatalogueItem[] {
   return items;
 }
 
+export const TRANSLATION_PRICE_NOTE = {
+  hu: 'A csomag ára nem változik, ha egyes nyelveket kizár.',
+  nl: 'De prijs van het pakket blijft gelijk als talen worden uitgesloten.',
+};
+
+/**
+ * Every listing comes with English and German (Go). Go costs nothing, so it has no order line; the invoice says so
+ * in one line without a price, unless a bigger package was bought, which already names its languages.
+ */
+export function goIncludedLine(lines: OrderLine[]): InvoiceLine | null {
+  if (!lines.some((line) => line.kind === 'package') || lines.some((line) => line.id === 'translation-package')) return null;
+  return {
+    description: 'Fordítás: Go (angol, német) – benne van', descriptionNl: 'Vertaling: Go (Engels, Duits) – inbegrepen',
+    quantity: 1, unit: 'db', unitNl: 'stuk', unitCents: 0, catalogId: 'translation-go', listCents: 0,
+  };
+}
+
 /** A stored order line, carried onto an invoice in both languages. */
 export function invoiceLineFromOrder(line: OrderLine, items: CatalogueItem[]): InvoiceLine {
   const item = items.find((i) => i.id === line.id);
+  // A translation package keeps its own label (the package, how many languages, how many switched off) and says that
+  // switching languages off does not change the price. It is written into the line, so it stays true on the paper.
+  const package_ = line.id === 'translation-package';
   return {
-    description: item?.hu ?? line.label,
-    descriptionNl: item?.nl,
+    description: package_ ? `${line.label}\n${TRANSLATION_PRICE_NOTE.hu}` : (item?.hu ?? line.label),
+    descriptionNl: package_ ? `${line.label}\n${TRANSLATION_PRICE_NOTE.nl}` : item?.nl,
     quantity: line.quantity,
     unit: item?.unitHu ?? 'db',
     unitNl: item?.unitNl ?? 'stuk',

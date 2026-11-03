@@ -15,7 +15,7 @@ import { createDraftFromPayment } from '~/lib/invoicing/store';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { intlTag } from '~/lib/format';
 import { listingTitle, publishProperty, publicUrl, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
-import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
+import { applyPaidEntitlement, enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 import { logEvent } from '~/lib/activity';
 import { SITE_URL } from '~/config/site.mjs';
 
@@ -108,7 +108,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         const renewed = await renewProperty(admin, order.property_id, { months: 6, source: 'portal', actorId: user?.id, actorEmail: profile?.email, dedupeKey: `order-${order.id}` });
         if (!renewed.ok && renewed.error !== 'not-renewable') return json(500, { ok: false, error: renewed.error });
       } else if (property?.status === 'awaiting_payment') {
-        const published = await publishProperty(admin, order.property_id);
+        await applyPaidEntitlement(admin, order);
+        const published = await publishProperty(admin, order.property_id, { kickOrigin: new URL(request.url).origin });
         if (!published.ok) return json(500, { ok: false, error: published.error });
         await enqueuePaidTranslations(admin, order, new URL(request.url).origin);
       } else if (property?.status === 'published') {

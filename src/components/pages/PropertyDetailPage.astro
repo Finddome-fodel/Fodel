@@ -20,7 +20,7 @@ import { sourceNote, machineNote } from '~/i18n/fallback';
 import { showMachineTranslationNote } from '~/config/flags';
 import { COMPANY } from '~/config/company';
 import { featureLabel } from '~/data/features';
-import { activeProperties, similarTo, text, resolveText, url as propUrl, type Property } from '~/lib/properties';
+import { activeProperties, publishedLocalesOf, servingFor, similarTo, switcherLocalesOf, text, translationConfig, resolveText, url as propUrl, type Property } from '~/lib/properties';
 import { propertyAlternates, crumbs } from '~/lib/page';
 import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
 import { eur, huf, area, floorArea, epcLabel, formatDate, placeLabel } from '~/lib/format';
@@ -120,8 +120,18 @@ const factRows = [
 ].filter(Boolean) as { label: string; value: string }[];
 const hasFacts = factRows.length > 0 || d.details.utilities.length > 0 || d.details.parking.length > 0;
 
-const all = await activeProperties();
+const languages = await translationConfig();
+const all = await activeProperties(locale);
 const similar = similarTo(property, all, 3);
+
+// In which languages is this listing published? hreflang and the language menu name only those; a page that
+// shows another language's text (English, until the English text exists) is not indexed. Before migration 0052
+// nothing is restricted, as it always was.
+const policy = property.data.listing.languagePolicy;
+const published = new Set<Locale>(publishedLocalesOf(property, languages));
+const allAlternates = propertyAlternates(d.categorySlugs, d.ref);
+const alternates = policy.gated ? (Object.fromEntries(Object.entries(allAlternates).filter(([code]) => published.has(code as Locale))) as Partial<Record<Locale, string>>) : allAlternates;
+const standIn = policy.gated && servingFor(property, locale, languages).serve === 'fallback';
 
 const trail = crumbs(locale, [
   { name: ui.nav.properties, url: path(locale, 'properties') },
@@ -192,7 +202,10 @@ const whatsappMessage = x(
   locale={locale}
   title={`${title}, ${d.location.settlement}`}
   description={metaDescription}
-  alternates={propertyAlternates(d.categorySlugs, d.ref)}
+  alternates={alternates}
+  switcher={allAlternates}
+  switcherAvailable={policy.gated ? switcherLocalesOf(property, languages) : undefined}
+  noindex={standIn}
   ogType="article"
   ogImage={shareImage.src}
   whatsapp={{ message: whatsappMessage }}

@@ -11,17 +11,53 @@
  */
 import type { EnqueueResult, JobOrigin } from './translation-jobs';
 import type { OrderLine } from '../orders';
+import { TRANSLATION_LINE_IDS, TRANSLATION_PACKAGE_IDS, type TranslationPackageId } from '../translation-packages.ts';
 
-/** The languages bought on an order, in order, without repeats. */
-export function translationLocalesOf(lines: Pick<OrderLine, 'id' | 'locales'>[] | null | undefined): string[] {
-  const all = (lines ?? []).filter((line) => line.id === 'translation').flatMap((line) => line.locales ?? []);
+type Line = Pick<OrderLine, 'id' | 'locales'> & { packageId?: string };
+
+/** The languages bought on an order, in order, without repeats: single languages and the ones a package covers. */
+export function translationLocalesOf(lines: Line[] | null | undefined): string[] {
+  const all = (lines ?? []).filter((line) => TRANSLATION_LINE_IDS.includes(line.id)).flatMap((line) => line.locales ?? []);
   return [...new Set(all)];
 }
 
 /** An order made only of translations: bought later, from a live listing. It never publishes anything. */
 export function isTranslationOrder(lines: Pick<OrderLine, 'id' | 'kind'>[] | null | undefined): boolean {
   const list = lines ?? [];
-  return list.length > 0 && list.every((line) => line.id === 'translation');
+  return list.length > 0 && list.every((line) => TRANSLATION_LINE_IDS.includes(line.id));
+}
+
+/**
+ * What an order bought, read from its own (frozen) lines: the package, the single languages, and the languages the
+ * package line says it covers. Never from anything sent at payment time.
+ */
+export function translationPurchaseOf(lines: Line[] | null | undefined): { packageId: TranslationPackageId | null; singles: string[]; packageLocalesPaid?: string[] } {
+  const list = lines ?? [];
+  const packageLine = list.find((line) => line.id === 'translation-package' && (TRANSLATION_PACKAGE_IDS as readonly string[]).includes(String(line.packageId)));
+  const singles = [...new Set(list.filter((line) => line.id === 'translation' || line.id === 'translation-world').flatMap((line) => line.locales ?? []))];
+  return {
+    packageId: packageLine ? (packageLine.packageId as TranslationPackageId) : null,
+    singles,
+    ...(packageLine ? { packageLocalesPaid: packageLine.locales ?? [] } : {}),
+  };
+}
+
+/**
+ * The package and single languages a settled order bought become the listing's entitlement. Called before the
+ * listing is published (so the Go languages the buyer switched off are not translated first) and again with the
+ * jobs; applying the same order twice leaves the same result. Never throws; nothing before migration 0052.
+ */
+export async function applyPaidEntitlement(client: any, order: { id: string; property_id: string | null; line_items: OrderLine[] | null }): Promise<void> {
+  if (!order.property_id || translationLocalesOf(order.line_items).length === 0) return;
+  try {
+    const { applyPurchase } = await import('./translation-entitlement');
+    const { getCompany } = await import('../runtime-config');
+    const { listingCatalog } = await import('../listing-packages');
+    const catalog = listingCatalog((await getCompany()).services);
+    await applyPurchase(client, order.property_id, translationPurchaseOf(order.line_items), catalog.translation);
+  } catch (error) {
+    console.error(`[translate] entitlement not applied for order ${order.id}`, error instanceof Error ? error.message : error);
+  }
 }
 
 /**
@@ -41,9 +77,14 @@ export async function enqueuePaidTranslations(
   try {
     // Loaded here, not at the top, so the pure helpers above stay importable without a database client.
     const { enqueueTranslations, kickTranslation } = await import('./translation-jobs');
+    // The package and the languages become the listing's entitlement first: a text that is made but not entitled is not published.
+    await applyPaidEntitlement(client, order);
+    // A language that already has a text (an upgrade: English and German are usually there) is not translated, or paid for, twice.
+    const { data: rows } = await client.from('property_translations').select('locale, title, description').eq('property_id', order.property_id);
+    const have = new Set((rows ?? []).filter((row: any) => String(row.title ?? '').trim() || String(row.description ?? '').trim()).map((row: any) => row.locale));
     const result = await enqueueTranslations(client, {
       propertyId: order.property_id,
-      locales,
+      locales: locales.filter((code) => !have.has(code)),
       origin,
       status: 'queued',
       paymentId: order.id,

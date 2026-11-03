@@ -151,6 +151,7 @@ export function friendlyError(raw: string | null | undefined): string {
     [/invalid email|email.*invalid/i, 'Az e-mail cím formátuma nem megfelelő.'],
     [/invalid login credentials/i, 'Hibás e-mail cím vagy jelszó.'],
     [/row-level security|permission denied|not allowed/i, 'Ehhez a művelethez nincs jogosultsága.'],
+    [/exclude-en|properties_excluded_locales_no_en/i, 'Az angol nyelv nem zárható ki – ez a hirdetés alapnyelve a többi nyelvhez.'],
     [/violates check constraint.*whatsapp/i, 'A WhatsApp-számot nemzetközi formátumban adja meg, szóközök nélkül (pl. +36301234567).'],
     [/violates check constraint/i, 'Az egyik megadott érték nem megengedett.'],
     [/violates foreign key/i, 'Az elem máshol használatban van, ezért nem módosítható így.'],

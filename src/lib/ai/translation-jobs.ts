@@ -130,6 +130,11 @@ export async function enqueueTranslations(
   const hash = sourceHash(text);
   const estimate = estimateCostMicroEur(listingChars(text), translationModel());
 
+  // A language that already has a live job is not queued twice (the database's unique index says the same; this
+  // keeps the answer right, and the work out of a retried or overlapping call, without relying on an error).
+  const { data: liveJobs } = await client.from('translation_jobs').select('locale').eq('property_id', opts.propertyId).in('status', ['requested', 'queued', 'running']);
+  const live = new Set((liveJobs ?? []).map((job: { locale: string }) => job.locale));
+
   let ordered = new Set<string>();
   if (opts.paymentId) {
     const { data: earlier } = await client.from('translation_jobs').select('locale').eq('payment_id', opts.paymentId);
@@ -139,6 +144,7 @@ export async function enqueueTranslations(
   for (const locale of locales) {
     if (locale === source.locale) { result.skipped.push({ locale, reason: 'is-source' }); continue; }
     if (ordered.has(locale)) { result.skipped.push({ locale, reason: 'already-ordered' }); continue; }
+    if (live.has(locale)) { result.skipped.push({ locale, reason: 'already-live' }); continue; }
     const existing = (rows ?? []).find((row: { locale: string }) => row.locale === locale);
     if (existing && !existing.machine && (listingText(existing).title || listingText(existing).description) && !opts.overwrite) {
       result.skipped.push({ locale, reason: 'has-text' });
@@ -376,6 +382,9 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
       return { outcome: 'cancelled', stopAll: false };
     }
     await finishJob(client, job, { status: 'done', last_error: null, fail_code: null, partial_output: null, feedback: null, source_hash: sourceHash(text), ...costs });
+    // A translation an admin decided to make for nothing (their own run, or a free-link owner's request they approved)
+    // is published like a bought one. Nothing to do for a paid or package job: its entitlement came with the order.
+    if (job.origin === 'admin' || job.origin === 'free') await grantFreeLanguage(client, job.property_id, job.locale);
     await logEvent({
       kind: 'ai.translation_done', subjectType: 'property', subjectId: job.property_id, propertyId: job.property_id, locale: job.locale,
       source: job.origin, dedupeKey: `translation-job-${job.id}-done`,
@@ -415,6 +424,16 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
  * design: the daily cron, the admin's "Folytatás most" and a page that is
  * showing progress all start the same run if this one never arrives.
  */
+/** Never throws: the translation is saved, and an admin can still publish the language by hand. */
+async function grantFreeLanguage(client: Client, propertyId: string, locale: string): Promise<void> {
+  try {
+    const [{ grantLocales }, { getCompany }, { listingCatalog }] = await Promise.all([import('./translation-entitlement'), import('../runtime-config'), import('../listing-packages')]);
+    await grantLocales(client, propertyId, [locale], listingCatalog((await getCompany()).services).translation, { lift: false });
+  } catch (error) {
+    console.error(`[translate] free language not published for ${propertyId}/${locale}`, error instanceof Error ? error.message : error);
+  }
+}
+
 export async function kickTranslation(origin: string): Promise<void> {
   const secret = process.env.CRON_SECRET ?? import.meta.env.CRON_SECRET;
   if (!secret || !origin) return;

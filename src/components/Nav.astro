@@ -32,9 +32,11 @@ import { getCompany } from '~/lib/runtime-config';
 interface Props {
   locale: Locale;
   alternates?: Partial<Record<Locale, string>>;
+  /** A listing page: the languages it is published in; the menu offers only these. */
+  available?: readonly Locale[];
 }
 
-const { locale, alternates = {} } = Astro.props;
+const { locale, alternates = {}, available } = Astro.props;
 const ui = UI[locale];
 const current = Astro.url.pathname;
 const COMPANY = await getCompany();
@@ -79,7 +81,7 @@ const isCurrent = (href: string) =>
     </ul>
 
     <div class="nav-end">
-      <LanguageSwitcher locale={locale} alternates={alternates} align="right" />
+      <LanguageSwitcher locale={locale} alternates={alternates} align="right" available={available} />
 
       <a class="nav-account" href={loginHref} rel="nofollow" aria-label={accountLabel}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -98,7 +100,7 @@ const isCurrent = (href: string) =>
     </div>
 
     <div class="nav-mobile-only">
-      <LanguageSwitcher locale={locale} alternates={alternates} align="right" />
+      <LanguageSwitcher locale={locale} alternates={alternates} align="right" available={available} />
 
       <button
         class="burger"

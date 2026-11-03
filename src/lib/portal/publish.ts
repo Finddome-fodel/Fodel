@@ -57,7 +57,7 @@ export type PublishResult =
 export async function publishProperty(
   client: any,
   propertyId: string,
-  opts: { dedupeKey?: string | null; notifyOwner?: boolean } = {}
+  opts: { dedupeKey?: string | null; notifyOwner?: boolean; kickOrigin?: string } = {}
 ): Promise<PublishResult> {
   const { data: property, error } = await client
     .from('properties')
@@ -101,6 +101,16 @@ export async function publishProperty(
     source: opts.dedupeKey ? 'stripe-webhook' : 'portal',
     dedupeKey: opts.dedupeKey ?? null,
   }).catch(() => {});
+
+  // Every listing comes with English and German (the Go package): queued now, translated within minutes. A
+  // failure here never touches the publication, and the admin's "Go nyelvek pótlása" can queue them again.
+  // Loaded here so the publish path itself keeps no hard dependency on the translation code.
+  try {
+    const [{ ensurePackageTranslations }, { createSupabaseAdminClient }] = await Promise.all([import('~/lib/ai/translation-entitlement'), import('~/lib/supabase-server')]);
+    await ensurePackageTranslations(createSupabaseAdminClient(), propertyId, listingCatalog((await getCompany()).services).translation, opts.kickOrigin);
+  } catch (error) {
+    console.error(`[publish] package languages not queued for ${propertyId}`, error instanceof Error ? error.message : error);
+  }
 
   return { ok: true, alreadyPublished: false };
 }

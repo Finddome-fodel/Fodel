@@ -30,7 +30,7 @@ import { localeFrom } from '~/i18n/ui';
 import { officeInbox } from '~/lib/email/routing';
 import { SITE_URL } from '~/config/site.mjs';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
-import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
+import { applyPaidEntitlement, enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 import { logEvent } from '~/lib/activity';
 
 export const prerender = false;
@@ -157,7 +157,9 @@ export const POST: APIRoute = async ({ request }) => {
     // Whether the listing is online now: it was, or this payment just put it there.
     let live = property?.status === 'published';
     if (property?.status === 'awaiting_payment') {
-      const result = await publishProperty(admin, order.property_id, { dedupeKey: event.id });
+      // What was bought is the listing's before it goes live, so a language the buyer switched off is never made first.
+      await applyPaidEntitlement(admin, order);
+      const result = await publishProperty(admin, order.property_id, { dedupeKey: event.id, kickOrigin: new URL(request.url).origin });
       if (!result.ok) {
         // The money is in and recorded; publication failed. A 500 makes
         // Stripe retry, and the retry skips straight to this publish.

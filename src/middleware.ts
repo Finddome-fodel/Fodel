@@ -50,6 +50,8 @@ const ADMIN_ONLY_PREFIXES = [
   '/portal/email',
   '/portal/translations',
   '/api/portal/translations',
+  '/portal/packages',
+  '/api/portal/packages',
   '/api/portal/upload-link',
   // Each of these API prefixes is distinct from its /portal/... counterpart
   // above and would NOT be covered by it — the same easy-to-forget gap the

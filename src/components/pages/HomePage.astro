@@ -64,9 +64,9 @@ const ui = UI[locale];
 const c = copy(locale).home;
 const steps = copy(locale).steps;
 
-const all = await activeProperties();
-const featured = await homepageFeatured(3);
-const top = await editorsPick(10);
+const all = await activeProperties(locale);
+const featured = await homepageFeatured(3, locale);
+const top = await editorsPick(10, locale);
 const taxonomy = await getTaxonomy();
 const company = await getCompany();
 // Brief 2 (§1/A): the three newest articles in this language — never another

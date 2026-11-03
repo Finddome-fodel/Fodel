@@ -13,16 +13,33 @@
  * `fodel_lang` cookie the root page reads.
  */
 import Flag from './Flag.astro';
-import { LOCALE_META, SWITCHER_LOCALES, UI, type Locale } from '~/i18n/ui';
+import { LOCALE_META, SWITCHER_LOCALES, UI, localizer, type Locale } from '~/i18n/ui';
 
 interface Props {
   locale: Locale;
   /** The same page in another language, where one exists. Falls back to that language's home. */
   alternates?: Partial<Record<Locale, string>>;
   align?: 'left' | 'right';
+  /**
+   * A listing page: the only languages it is published in. The others are left out of the menu, with a short
+   * note saying so, instead of leading to a page that sends the visitor away.
+   */
+  available?: readonly Locale[];
 }
 
-const { locale, alternates = {}, align = 'right' } = Astro.props;
+const { locale, alternates = {}, align = 'right', available } = Astro.props;
+const rows = available ? SWITCHER_LOCALES.filter(({ code }) => available.includes(code)) : SWITCHER_LOCALES;
+const hidden = available ? SWITCHER_LOCALES.length - rows.length : 0;
+const x = localizer(locale);
+const note = x(
+  'A hirdetés további nyelveken nem érhető el.', 'Deze woning is niet in andere talen beschikbaar.', 'This listing is not available in other languages.',
+  'Dieses Inserat ist in weiteren Sprachen nicht verfügbar.', "Cette annonce n'est pas disponible dans d'autres langues.", 'Este anuncio no está disponible en otros idiomas.',
+  'To ogłoszenie nie jest dostępne w innych językach.', 'Acest anunț nu este disponibil în alte limbi.', 'Tento inzerát nie je dostupný v ďalších jazykoch.',
+  'Questo annuncio non è disponibile in altre lingue.', 'Este anúncio não está disponível noutras línguas.', 'Αυτή η αγγελία δεν είναι διαθέσιμη σε άλλες γλώσσες.',
+  'Tento inzerát není dostupný v dalších jazycích.', 'Ta oglas ni na voljo v drugih jezikih.', 'Den här annonsen finns inte på fler språk.',
+  'Denne annonce er ikke tilgængelig på andre sprog.', 'Denne annonsen er ikke tilgjengelig på andre språk.', 'Tämä ilmoitus ei ole saatavilla muilla kielillä.',
+  'See kuulutus ei ole saadaval teistes keeltes.', 'Šis sludinājums nav pieejams citās valodās.', 'Šis skelbimas nepasiekiamas kitomis kalbomis.',
+);
 const current = LOCALE_META[locale];
 const uid = Math.random().toString(36).slice(2, 8);
 const menuId = `lang-menu-${uid}`;
@@ -46,7 +63,7 @@ const switchLabel = UI[locale].a11y.langSwitch;
   </button>
   <ul class="switcher-menu" id={menuId}>
     {
-      SWITCHER_LOCALES.map(({ code }) => {
+      rows.map(({ code }) => {
         const meta = LOCALE_META[code];
         const active = code === locale;
         return (
@@ -69,6 +86,7 @@ const switchLabel = UI[locale].a11y.langSwitch;
         );
       })
     }
+    {hidden > 0 && <li class="switcher-note" role="note">{note}</li>}
   </ul>
 </div>
 
@@ -186,6 +204,7 @@ const switchLabel = UI[locale].a11y.langSwitch;
     transform: rotate(180deg);
   }
 
+  .switcher-note { padding: 10px 14px 6px; border-top: 1px solid rgba(16, 42, 67, 0.12); font-size: 12px; line-height: 1.5; color: var(--ink-quiet, #5b6b7b); max-width: 220px; }
   .switcher-menu {
     position: absolute;
     top: calc(100% + 10px);

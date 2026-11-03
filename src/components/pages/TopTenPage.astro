@@ -9,7 +9,7 @@ import { editorsPick } from '~/lib/properties';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const x = localizer(locale);
-const properties = await editorsPick(10);
+const properties = await editorsPick(10, locale);
 // The heading stays the brand term "FODEL Top 10" in both locales; the
 // <title>/meta title need their own locale-distinct text, or the two pages
 // render an identical <title> (verify-ssg's duplicate-title check catches

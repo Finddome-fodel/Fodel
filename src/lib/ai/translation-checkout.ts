@@ -1,6 +1,6 @@
 /**
- * Buying translations for a live listing: a small order of its own (one
- * `translation` line that names its languages), paid by card with the same
+ * Buying translations for a live listing: a small order of its own (a package
+ * line and/or lines of single languages, each naming its languages), paid by card with the same
  * Stripe Checkout the rest of the site uses. The webhook recognises it by its
  * lines (translation-orders.ts) and queues exactly those languages once the
  * payment settles. The price comes from the catalogue, never from the browser.
@@ -10,7 +10,13 @@ import { buildOrderLines, orderTotalCents, type OrderLine } from '~/lib/orders';
 import { getStripe } from '~/lib/stripe';
 import { getCompany } from '~/lib/runtime-config';
 import { listingCatalog } from '~/lib/listing-packages';
+import { TRANSLATION_LINE_IDS, grantedLocales } from '~/lib/translation-packages';
+import { ALL_LOCALES } from './translate-core';
+import { loadEntitlement } from './translation-entitlement';
 import { isTranslationOrder } from './translation-orders';
+
+/** What a person asks to buy: ids only. The price is the catalogue's. */
+export type TranslationChoice = { packageId: string; extraLocales: string[]; excludedLocales: string[] };
 
 export type TranslationOrder = { id: string; amount_cents: number; line_items: OrderLine[]; stripe_session_id: string | null };
 
@@ -22,7 +28,7 @@ export type TranslationOrder = { id: string; amount_cents: number; line_items: O
 export async function openTranslationOrder(
   admin: any,
   property: { id: string; owner_id: string | null },
-  locales: string[],
+  choice: TranslationChoice,
   locale: Locale
 ): Promise<TranslationOrder> {
   const { data: open } = await admin
@@ -36,8 +42,22 @@ export async function openTranslationOrder(
   }
 
   const catalog = listingCatalog((await getCompany()).services);
-  // buildOrderLines wants a package; only the translation line is kept and charged.
-  const lines = buildOrderLines({ packageId: catalog.packages[0].id, extras: [{ id: 'translation', quantity: locales.length, locales }] }, locale, catalog).filter((line) => line.id === 'translation');
+  // What the listing already holds: a bigger package costs the difference, and a language it has or bought is not sold twice.
+  const held = await loadEntitlement(admin, property.id).catch(() => null);
+  const alreadyHeld = new Set(held ? [...grantedLocales(held.listing, catalog.translation, ALL_LOCALES), ...held.rows.filter((row) => row.title.trim() || row.description.trim()).map((row) => row.locale)] : []);
+  // buildOrderLines wants a package; only the translation lines are kept and charged.
+  const lines = buildOrderLines({
+    packageId: catalog.packages[0].id,
+    extras: [],
+    translation: {
+      packageId: choice.packageId,
+      extraLocales: choice.extraLocales.filter((code) => !alreadyHeld.has(code)),
+      excludedLocales: choice.excludedLocales,
+      sourceLocale: held?.listing.sourceLocale ?? 'hu',
+      currentPackageId: held?.listing.translationPackage ?? null,
+    },
+  }, locale, catalog).filter((line) => TRANSLATION_LINE_IDS.includes(line.id));
+  if (lines.length === 0) throw new Error('nothing-to-order');
   const base = {
     property_id: property.id,
     owner_id: property.owner_id,
