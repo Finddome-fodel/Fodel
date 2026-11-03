@@ -258,4 +258,47 @@ await db.exec(`reset role;set role anon;`);
 await assert.rejects(()=>get('select * from free_upload_link'),'anonymous has no access at all');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 console.log('✓ free_upload_link: repeatable, one row, admins only, never readable by sellers or anonymous');
+// 0047 (optional): converted prices rounded to €100; euro prices, placeholders and repeat runs untouched.
+const sql47=fs.readFileSync(root+'/supabase/migrations/0047_price_eur_rounding.sql','utf8');
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+const id47b='10000000-0000-4000-8000-000000000047',id47c='10000000-0000-4000-8000-000000000048';
+await db.exec(`update properties set original_currency='HUF',price_eur=587896 where id='${id}';insert into properties(id,ref,owner_id,status,category,country,settlement,county,region,lat,lng,price_eur,price_huf,price_asof,plot_m2,original_currency)values('${id47b}','4701','${owner}','draft','apartment','HU','Pécs','Baranya','',46.07,18.23,587896,235158560,'2026-10-23',1,'EUR'),('${id47c}','4702','${owner}','draft','apartment','HU','Pécs','Baranya','',46.07,18.23,1,1,'2026-10-23',1,null);`);
+try{await db.exec(sql47);await db.exec(sql47);}catch(e){console.error('MIGRATION 0047 FAILED',e.message,e.detail);process.exit(1);}
+assert.equal(Number((await get(`select price_eur from properties where id='${id}'`))[0].price_eur),587900,'a forint price is rounded');
+assert.equal(Number((await get(`select price_eur from properties where id='${id47b}'`))[0].price_eur),587896,'a euro price is never touched');
+assert.equal(Number((await get(`select price_eur from properties where id='${id47c}'`))[0].price_eur),1,'the placeholder stays');
+console.log('✓ 0047 rounds converted prices to €100, leaves euro prices and placeholders alone, and is repeatable');
+// 0048: homepage highlight retired. Open requests cancelled, paid ones kept; the sync never asks for one again.
+await db.exec(`delete from property_promotion_requests;update properties set requested_extras='{"homepageHighlight":true,"categoryHighlight":true}'::jsonb where id='${id}';update properties set requested_extras='{"homepageHighlight":false}'::jsonb where id='${id47b}';insert into property_promotion_requests(property_id,kind,status)values('${id}','homepage','requested'),('${id47b}','homepage','active');`);
+const sql48=fs.readFileSync(root+'/supabase/migrations/0048_extras_cleanup.sql','utf8');
+try{await db.exec(sql48);await db.exec(sql48);}catch(e){console.error('MIGRATION 0048 FAILED',e.message,e.detail);process.exit(1);}
+assert.deepEqual((await get(`select property_id,status from property_promotion_requests where kind='homepage' order by property_id`)).map(r=>r.status),['cancelled','active'],'open request cancelled, a paid one kept');
+assert.deepEqual((await get(`select requested_extras from properties where id='${id}'`))[0].requested_extras,{categoryHighlight:true},'the retired wish is cleared, the rest kept');
+assert.equal((await get(`select count(*)::int n from properties where requested_extras ? 'homepageHighlight'`))[0].n,0);
+await db.exec(`update properties set requested_extras='{"homepageHighlight":true,"categoryHighlight":true}'::jsonb where id='${id}';select sync_listing_promotion_requests('${id}'::uuid);`);
+assert.deepEqual((await get(`select kind,status from property_promotion_requests where property_id='${id}' and kind in ('category','homepage') order by kind`)),[{kind:'category',status:'requested'},{kind:'homepage',status:'cancelled'}],'a stale wish creates no homepage request; category still works');
+console.log('✓ 0048 cancels open homepage requests only, clears the retired wish, the sync skips homepage, and it is repeatable');
+// 0049: free listings show FINDDOME's contact only. Owners cannot undo it; admins can; paid listings untouched.
+await db.exec(`update properties set free_listing=true,public_contact='owner',seller_contact_visible=true where id='${id}';update properties set free_listing=false,public_contact='owner',seller_contact_visible=true where id='${id47b}';update properties set free_listing=true,public_contact='staff',public_contact_name='Födelmesi Gábor' where id='${id47c}';`);
+const sql49=fs.readFileSync(root+'/supabase/migrations/0049_free_listing_contact.sql','utf8');
+try{await db.exec(sql49);await db.exec(sql49);}catch(e){console.error('MIGRATION 0049 FAILED',e.message,e.detail);process.exit(1);}
+const contact=async x=>(await get(`select public_contact,seller_contact_visible from properties where id='${x}'`))[0];
+assert.deepEqual(await contact(id),{public_contact:'company',seller_contact_visible:false},'backfill: a free listing shows FINDDOME');
+assert.deepEqual(await contact(id47b),{public_contact:'owner',seller_contact_visible:true},'backfill: a paid listing is untouched');
+assert.equal((await contact(id47c)).public_contact,'staff','backfill: an admin\'s staff choice is kept');
+assert.deepEqual((await get(`select tgname from pg_trigger where tgrelid='properties'::regclass and tgname in ('properties_protect_contact','zz_properties_free_listing_contact') order by tgname`)).map(r=>r.tgname),['properties_protect_contact','zz_properties_free_listing_contact'],'fires after 0042 (name order)');
+await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';update properties set seller_contact_visible=true where id='${id}';update properties set seller_contact_visible=true where id='${id47b}';`);
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+assert.equal((await contact(id)).seller_contact_visible,false,'a forged request cannot show the owner on a free listing');
+assert.equal((await contact(id47b)).seller_contact_visible,true,'the owner of a paid listing still chooses');
+await db.exec('grant insert on properties to authenticated;');
+await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';insert into properties(id,ref,owner_id,status,category,country,settlement,county,region,lat,lng,price_eur,price_huf,price_asof,plot_m2,free_listing,seller_contact_visible)values('10000000-0000-4000-8000-000000000049','4703','${owner}','draft','apartment','HU','Pécs','Baranya','',46.07,18.23,100,40000,'2026-10-23',1,true,true);`);
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+const inserted=await get(`select public_contact,seller_contact_visible,free_listing from properties where id='10000000-0000-4000-8000-000000000049'`);
+assert.equal(inserted.length,1);
+if(inserted[0].free_listing)assert.deepEqual({public_contact:inserted[0].public_contact,seller_contact_visible:inserted[0].seller_contact_visible},{public_contact:'company',seller_contact_visible:false},'a forged free insert is locked too');
+await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';update properties set public_contact='staff',public_contact_name='Födelmesi Gábor',public_contact_phone='+31644005550',seller_contact_visible=true where id='${id}';`);
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+assert.deepEqual(await contact(id),{public_contact:'staff',seller_contact_visible:true},'an admin can still choose deliberately');
+console.log('✓ 0049 locks free listings to FINDDOME contact (forged requests too), keeps admin choices and paid listings, and is repeatable');
 await db.close();
