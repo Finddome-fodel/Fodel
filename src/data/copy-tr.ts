@@ -113,7 +113,7 @@ export const TR = {
   sellers: {
     meta: {
       title: 'Satıcılar için | Macaristan’daki gayrimenkulünüz Batı Avrupa’da',
-      description: `Macaristan’daki gayrimenkulünüzün ilanını ${REACH_COUNTRIES} ülkede, ${REACH_LANGUAGES} dilde verin; ${eur(69, L)} başlayan fiyatlarla ve münhasırlık olmadan. Komisyon yalnızca alıcıyı FINDDOME getirirse: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} KDV.`,
+      description: `Macaristan’daki gayrimenkulünüzün ilanını ${REACH_COUNTRIES} ülkede, ${REACH_LANGUAGES} dilde verin: başlangıç fiyatı ${eur(69, L)}, münhasırlık yok. Komisyon yalnızca alıcıyı FINDDOME getirirse: ${pct(COMMISSION.percent)} + ${pct(COMMISSION.vatPercent)} KDV.`,
     },
     hero: {
       eyebrow: 'Satıcılar için',
