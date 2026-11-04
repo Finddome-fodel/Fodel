@@ -9,6 +9,7 @@ export const prerender = false;
 
 import Portal from '~/layouts/Portal.astro';
 import { icon } from '~/lib/portal/icons';
+import { fmtInt } from '~/lib/portal/num';
 import { isAiEnabled } from '~/lib/ai/client';
 import {
   ALL_LOCALES, HU_NAME, TARGET_LIMITS, TITLE_GOAL, failCodeHu, listingText, localeGroups, pickSource,
@@ -61,7 +62,7 @@ const excludedNow = heldOff ?? targets.filter((code) => infoFor(code).status ===
 const excluded = info.status === 'excluded' || excludedNow.includes(locale);
 const sourceLocked = locale === 'en';
 const sourceTitle = sourceText.title || 'Névtelen hirdetés';
-const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakter`;
+const count = (value: string) => `${fmtInt(value.length)} karakter`;
 ---
 
 <Portal title={`Fordítások · ${sourceTitle}`}>
@@ -162,7 +163,7 @@ const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakt
   const form = document.getElementById('tr-form');
   const statusEl = document.getElementById('status-line');
   const fields = { title: form.elements.title, description: form.elements.description, body: form.elements.body };
-  const fmt = (n) => n.toLocaleString('hu-HU');
+  const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
   const counters = () => {
     for (const [name, el] of Object.entries(fields)) {
       const out = document.getElementById(`c-${name}`);

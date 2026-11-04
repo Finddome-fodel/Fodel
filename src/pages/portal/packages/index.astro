@@ -1,22 +1,27 @@
 ---
 /**
- * Csomagok → Hirdetési csomagok (spec §9.0): one card per package — name,
- * duration, what it contains, which one is recommended — with a live preview
- * of what sellers see. Prices are shown read-only here and edited in one
- * place only, Csomagok → Ársávok.
+ * Csomagok → Hirdetési csomagok (árak): the price matrix. Three packages (Basic, Europe, World) × the terms
+ * (1, 3, 6 months by default) × the value bands of the property (under 25 M, 25–100 M, over 100 M Ft by default).
  *
- * Saved to site_settings.services.listingPackages / .packagePhone by
- * /api/portal/packages/listing; the price list, the submit form, approval,
- * checkout, renewal, invoices and the photo uploader all read the same values
- * (src/lib/listing-packages.ts).
+ * One card per value band; in it a small table, a MoneyInput in cents per cell and „kb. … Ft” under it from today's
+ * rate (information only, never a price). Bands and terms can be added and removed; the „Próbaár” field shows what a
+ * property at that price would pay. Without JavaScript every price, bound and term can still be edited; adding or
+ * removing a band or a term needs the script.
+ *
+ * Saved to site_settings.services.listingPricing by /api/portal/packages/listing (pricingPatch, validatePricing).
+ * Everything that shows or charges a listing price goes through priceFor() (src/lib/listing-pricing.ts).
  */
 export const prerender = false;
 
 import PackagesShell from '~/components/portal/PackagesShell.astro';
-import { listingCatalog, packageCard } from '~/lib/listing-packages';
-import { tierRange } from '~/lib/price-tiers';
-import { fmtHuf, fmtEur } from '~/lib/portal/num';
+import MoneyInput from '~/components/portal/MoneyInput.astro';
+import { listingCatalog } from '~/lib/listing-packages';
+import { PACKAGE_KEYS, PRICE_CENTS_MAX, TIER_COUNT_MAX, tierLabel } from '~/lib/listing-pricing';
+import { formatHufHint } from '~/lib/fx';
+import { currentRate } from '~/lib/fx-store';
+import { fmtHuf } from '~/lib/portal/num';
 import { packageTab } from '~/lib/portal/package-admin';
+import { TIER_BOUND_MAX } from '~/lib/price-tiers';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -24,149 +29,386 @@ if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
 const migrated = Boolean(row && 'services' in row);
 const catalog = listingCatalog(row?.services);
-const previews = Object.fromEntries(catalog.packages.map((pkg) => [pkg.id, packageCard(pkg, catalog, 'hu')]));
-
-const tierLabel: Record<string, string> = { 'cheap-6m': 'Basic', 'normal-12m': 'Prémium' };
-const videoOptions = [
-  { value: 'included', label: 'Saját videó linkje' },
-  { value: 'none', label: 'Nincs videó' },
-];
-
-/** „0 – 150.000.000 Ft”, „150.000.001 Ft felett”, or „Minden ingatlanárnál” for a flat price. */
-function rangeText(tiers: (typeof catalog.packages)[number]['tiers'], index: number): string {
-  if (tiers.length === 1) return 'Minden ingatlanárnál';
-  const { fromHuf, toHuf } = tierRange(tiers, index);
-  if (toHuf === null) return `${fmtHuf(fromHuf - 1)} felett`;
-  return index === 0 ? `${fmtHuf(toHuf)}-ig` : `${fmtHuf(fromHuf)} – ${fmtHuf(toHuf)}`;
-}
-const tiersHref = packageTab('tiers').href;
+const pricing = catalog.pricing;
+const fx = await currentRate().catch(() => null);
+const rows = pricing.valueTiers;
+const label = (index: number) => tierLabel(rows, index, 'hu', (n) => fmtHuf(n));
 ---
 
 <PackagesShell tab="listing" migrated={migrated}>
-  <form method="POST" action={packageTab('listing').api} id="pkg-form" class="pk-form" data-pk-form>
+  <form method="POST" action={packageTab('listing').api} id="pm-form" class="pk-form pm" data-pk-form data-pm data-rate={fx?.rate ?? ''}>
     <fieldset disabled={!migrated}>
-      <div class="pk-grid">
-        {catalog.packages.map((pkg) => {
-          const k = (field: string) => `${pkg.id}_${field}`;
-          const preview = previews[pkg.id];
-          return (
-            <section class="set-card pk" data-pkg={pkg.id}>
-              <header class="pk-head">
-                <span class="pk-tier">{tierLabel[pkg.id] ?? pkg.id}</span>
-                <label class="pk-rec">
-                  <input type="radio" name="recommended" value={pkg.id} checked={pkg.recommended} />
-                  <span>Ajánlott</span>
+      <section class="set-card pm-intro">
+        <h2>Árak ingatlanérték és időtartam szerint</h2>
+        <p class="set-sub">Euróban, bruttó (az áfával együtt). Az ár az ingatlan forintban megadott értékétől, a csomagtól és az időtartamtól függ. A forintösszeg csak tájékoztató, az aznapi EKB-árfolyamon számolva; fizetni mindig euróban kell.</p>
+
+        <div class="pm-terms">
+          <div class="pm-terms-head">
+            <h3 id="pm-terms-h">Időtartamok</h3>
+            <button type="button" class="btn ghost small" data-pm-add-term hidden>+ Új időtartam</button>
+          </div>
+          <ul class="pm-chips" aria-labelledby="pm-terms-h" data-pm-terms>
+            {pricing.durations.map((months) => (
+              <li class="pm-chip" data-pm-term>
+                <label>
+                  <span class="sr-only">Időtartam hónapban</span>
+                  <input type="number" name="duration" min="1" max="24" step="1" inputmode="numeric" value={months} required />
                 </label>
+                <span class="pm-chip-unit">hónap</span>
+                <button type="button" class="pm-x" data-pm-remove-term aria-label={`${months} hónap eltávolítása`} hidden>×</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="pm-try">
+          <label class="f">
+            <span>Próbaár</span>
+            <MoneyInput value={null} min={0} max={TIER_BOUND_MAX} suffix="Ft" placeholder="pl. 48 000 000" data-pm-trial aria-describedby="pm-trial-out" />
+          </label>
+          <p id="pm-trial-out" class="pm-trial-out" data-pm-trial-out aria-live="polite">Írja be egy ingatlan forintban megadott értékét: megmutatjuk, melyik sávba esik, és mennyit fizetne.</p>
+        </div>
+      </section>
+
+      <div class="pm-tiers" data-pm-tiers>
+        {rows.map((tier, index) => {
+          const last = index === rows.length - 1;
+          return (
+            <section class="set-card pm-tier" data-pm-tier>
+              <header class="pm-tier-head">
+                <div>
+                  <h3 data-pm-label>{label(index)}</h3>
+                  <p class="pm-sub" data-pm-sub>{last ? 'Az utolsó sávnak nincs felső határa.' : 'Pontosan ennyi forintos ingatlan még ebbe a sávba tartozik.'}</p>
+                </div>
+                {!last ? (
+                  <label class="f pm-bound">
+                    <span>Felső határ</span>
+                    <MoneyInput name="bound" value={tier.upToHuf} min={1} max={TIER_BOUND_MAX} suffix="Ft" required data-pm-bound />
+                  </label>
+                ) : (
+                  <span class="pm-open">Nyitott sáv</span>
+                )}
+                <button type="button" class="btn ghost small" data-pm-remove-tier hidden disabled={rows.length < 2 || last}>Sáv törlése</button>
               </header>
 
-              <div class="pk-block">
-                <p class="pk-label">Név</p>
-                <div class="pk-row two">
-                  <label class="f"><span>Magyar</span><input type="text" name={k('name_hu')} maxlength="80" value={pkg.names.hu} data-bind="name" required /></label>
-                  <label class="f"><span>Holland</span><input type="text" name={k('name_nl')} maxlength="80" value={pkg.names.nl} required /></label>
-                </div>
-              </div>
-
-              <div class="pk-block">
-                <p class="pk-label">Ár és időtartam</p>
-                <div class="pk-sum">
-                  <ol aria-label="Árak ingatlanár szerint">
-                    {pkg.tiers.map((tier, index) => (
-                      <li><span>{rangeText(pkg.tiers, index)}</span><b>{fmtEur(tier.priceEur)}</b></li>
+              <div class="pm-scroll">
+                <table class="pm-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Csomag</th>
+                      {pricing.durations.map((months) => <th scope="col" data-pm-th>{months} hónap</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {PACKAGE_KEYS.map((key) => (
+                      <tr data-pm-pkg={key}>
+                        <th scope="row">
+                          {pricing.packages[key].names.hu}
+                          {!pricing.packages[key].enabled && <small>kikapcsolva</small>}
+                        </th>
+                        {pricing.durations.map((months, col) => {
+                          const cents = pricing.prices[key]?.[index]?.[months] ?? null;
+                          return (
+                            <td data-pm-cell>
+                              <MoneyInput
+                                name={`cell_${key}_${index}_${col}`}
+                                value={cents}
+                                allowCents
+                                min={1}
+                                max={PRICE_CENTS_MAX}
+                                suffix="€"
+                                required={pricing.packages[key].enabled}
+                                aria-label={`${pricing.packages[key].names.hu}, ${months} hónap`}
+                                data-pm-price
+                              />
+                              <small class="pm-huf" data-pm-huf>{cents !== null ? formatHufHint(cents, fx, 'hu') : ''}</small>
+                            </td>
+                          );
+                        })}
+                      </tr>
                     ))}
-                  </ol>
-                  <a href={`${tiersHref}#pkg-${pkg.id}`}>Ársávok szerkesztése →</a>
-                </div>
-                <div class="pk-row two">
-                  <label class="f"><span>Időtartam</span><span class="unit"><input type="number" inputmode="numeric" name={k('months')} min="1" max="36" step="1" value={pkg.months} data-bind="months" required /><i>hónap</i></span></label>
-                </div>
+                  </tbody>
+                </table>
               </div>
-
-              <div class="pk-block">
-                <p class="pk-label">Tartalom</p>
-                <div class="f">
-                  <span>Videó a hirdetésben</span>
-                  <div class="seg" role="radiogroup" aria-label="Videó a hirdetésben">
-                    {videoOptions.map((option) => (
-                      <label>
-                        <input type="radio" name={k('video')} value={option.value} checked={pkg.video === option.value} data-bind="video" />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  <p class="f-hint">A hirdető saját videójának linkje díjmentes. A helyszíni videókészítés külön rendelhető kiegészítő (Kiegészítők).</p>
-                </div>
-
-                <div class="sw-list">
-                  <label class="sw">
-                    <input type="checkbox" name={k('phone')} value="yes" checked={pkg.phone} data-bind="phone" />
-                    <span class="sw-ui" aria-hidden="true"></span>
-                    <span><strong>Telefonszám a hirdetésben</strong>Csak ha a hirdető is hozzájárult. Különben visszahívás-űrlap.</span>
-                  </label>
-                  <label class="sw">
-                    <input type="checkbox" name={k('edited_images')} value="yes" checked={pkg.editedImages} data-bind="editedImages" />
-                    <span class="sw-ui" aria-hidden="true"></span>
-                    <span><strong>Képek szakszerű feldolgozása</strong>Mi javítjuk a fényképeket.</span>
-                  </label>
-                  <label class="sw">
-                    <input type="checkbox" name={k('edited_text')} value="yes" checked={pkg.editedText} data-bind="editedText" />
-                    <span class="sw-ui" aria-hidden="true"></span>
-                    <span><strong>Szöveg szerkesztése</strong>Mi szerkesztjük a leírást.</span>
-                  </label>
-                </div>
-              </div>
-
-              <aside class="pk-preview" aria-label="Előnézet">
-                <p class="pk-label">Így látja a hirdető</p>
-                <div class:list={['pv', { rec: pkg.recommended }]} data-max-images={pkg.maxImages ?? ''}>
-                  <p class="pv-top"><b data-out="name">{preview.name}</b><span class="pv-badge">Ajánlott</span></p>
-                  <p class="pv-price"><b>{preview.price}</b> <span data-out="duration">{preview.duration}</span></p>
-                  {preview.priceTiers.map((tier) => <p class="pv-alt">{tier.price} · {tier.note}</p>)}
-                  <ul data-out="features">{preview.features.map((line) => <li>{line}</li>)}</ul>
-                </div>
-              </aside>
             </section>
           );
         })}
       </div>
 
+      <div class="pm-add">
+        <button type="button" class="btn ghost small" data-pm-add-tier hidden disabled={rows.length >= TIER_COUNT_MAX}>+ Új ingatlanérték-sáv</button>
+        <p class="set-sub">{fx ? `A „kb. … Ft” az EKB ${fx.date.replaceAll('-', '.')}. árfolyamán számolódik (1 € = ${fx.rate.toFixed(2).replace('.', ',')} Ft).` : 'Az árfolyam most nem érhető el, ezért nincs forintösszeg. Az euróárak ettől függetlenül érvényesek.'}</p>
+      </div>
+
       <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn">Mentés</button></div></div>
     </fieldset>
   </form>
+
+  <template id="pm-tier-template">
+    <section class="set-card pm-tier" data-pm-tier>
+      <header class="pm-tier-head">
+        <div>
+          <h3 data-pm-label></h3>
+          <p class="pm-sub" data-pm-sub>Pontosan ennyi forintos ingatlan még ebbe a sávba tartozik.</p>
+        </div>
+        <label class="f pm-bound">
+          <span>Felső határ</span>
+          <span class="unit money" data-money data-min="1" data-max={TIER_BOUND_MAX}><input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" name="bound" value="" required data-money-text data-pm-bound /><i>Ft</i></span>
+        </label>
+        <button type="button" class="btn ghost small" data-pm-remove-tier>Sáv törlése</button>
+      </header>
+      <div class="pm-scroll"><table class="pm-table"><thead><tr><th scope="col">Csomag</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </template>
 </PackagesShell>
 
 <script>
-  // Live preview — display only; the server builds the real wording from the
-  // saved values (packageCard in src/lib/listing-packages.ts).
-  const form = document.getElementById('pkg-form') as HTMLFormElement | null;
+  import { initMoneyInputs, moneyOf, setMoney } from '~/scripts/money-input';
+  import { formatHufHint } from '~/lib/fx';
+  import { tierIndexFor, tierLabel, priceFor, defaultPricing, PACKAGE_KEYS, type ListingPricing } from '~/lib/listing-pricing';
+  import { fmtHuf, fmtEur } from '~/lib/portal/num';
 
-  function render(card: HTMLElement) {
-    const val = (bind: string) => card.querySelector<HTMLInputElement>(`[data-bind="${bind}"]`);
-    const on = (bind: string) => Boolean(val(bind)?.checked);
-    const video = card.querySelector<HTMLInputElement>('[data-bind="video"]:checked')?.value;
-    const months = val('months')?.value || '–';
-    const max = card.querySelector<HTMLElement>('.pv')?.dataset.maxImages ?? '';
+  const form = document.querySelector<HTMLFormElement>('[data-pm]');
+  if (form) {
+    const rate = Number(form.dataset.rate) || null;
+    const fx = rate ? { rate } : null;
+    const tiersBox = form.querySelector<HTMLElement>('[data-pm-tiers]')!;
+    const termsBox = form.querySelector<HTMLElement>('[data-pm-terms]')!;
+    const tierCards = () => [...tiersBox.querySelectorAll<HTMLElement>('[data-pm-tier]')];
+    const terms = () => [...termsBox.querySelectorAll<HTMLInputElement>('input[name="duration"]')];
+    const hufOf = (n: number) => fmtHuf(n);
 
-    const out = (name: string) => card.querySelector<HTMLElement>(`[data-out="${name}"]`)!;
-    out('name').textContent = val('name')?.value || '—';
-    out('duration').textContent = `${months} hónap`;
+    // The add and remove buttons only exist for the script; without it every price is still editable.
+    form.querySelectorAll<HTMLElement>('[data-pm-add-term], [data-pm-add-tier], [data-pm-remove-term], [data-pm-remove-tier]').forEach((el) => (el.hidden = false));
 
-    const lines = [
-      max ? `Legfeljebb ${max} kép` : 'Korlátlan számú kép',
-      on('editedImages') ? 'A képeket szakszerűen feldolgozzuk' : 'A képek az eredeti állapotban jelennek meg',
-      on('editedText') ? 'A szöveget szakszerűen megszerkesztjük' : 'A szöveg a beküldött formában jelenik meg',
-      video === 'included' ? 'Saját videója linkje díjmentesen megadható' : '',
-      on('phone') ? 'Az Ön telefonszáma megjelenhet a hirdetésben' : 'Az érdeklődők a FINDDOME-en keresztül érik el',
-    ].filter(Boolean);
-    out('features').replaceChildren(...lines.map((line) => Object.assign(document.createElement('li'), { textContent: line })));
-  }
+    const bounds = () => tierCards().map((card) => moneyOf(card.querySelector<HTMLInputElement>('[data-pm-bound]')));
+    const tiersNow = () => {
+      const list = bounds();
+      return list.map((bound, i) => ({ upToHuf: i === list.length - 1 ? null : bound })) as { upToHuf: number | null }[];
+    };
 
-  form?.addEventListener('input', (event) => {
-    const card = (event.target as Element).closest<HTMLElement>('[data-pkg]');
-    if (card) render(card);
-    document.querySelectorAll<HTMLElement>('[data-pkg]').forEach((item) => {
-      const rec = Boolean(item.querySelector<HTMLInputElement>('input[name="recommended"]')?.checked);
-      item.querySelector('.pv')?.classList.toggle('rec', rec);
+    function refreshLabels() {
+      const cards = tierCards();
+      const valueTiers = cards.map((card, i) => ({ upToHuf: i === cards.length - 1 ? null : moneyOf(card.querySelector<HTMLInputElement>('[data-pm-bound]')) ?? 0 }));
+      cards.forEach((card, i) => {
+        const last = i === cards.length - 1;
+        const title = card.querySelector<HTMLElement>('[data-pm-label]')!;
+        const bound = valueTiers[i].upToHuf;
+        title.textContent = last || bound ? tierLabel(valueTiers as any, i, 'hu', hufOf) : 'Új sáv';
+        const remove = card.querySelector<HTMLButtonElement>('[data-pm-remove-tier]');
+        if (remove) remove.disabled = last || cards.length < 2;
+      });
+      form!.querySelector<HTMLButtonElement>('[data-pm-add-tier]')!.disabled = cards.length >= 6;
+      form!.querySelectorAll<HTMLButtonElement>('[data-pm-remove-term]').forEach((button) => (button.disabled = terms().length < 2));
+    }
+
+    function refreshHeads() {
+      const months = terms().map((input) => input.value || '–');
+      tierCards().forEach((card) => {
+        const head = card.querySelector('thead tr')!;
+        head.querySelectorAll('[data-pm-th]').forEach((th) => th.remove());
+        months.forEach((m) => { const th = document.createElement('th'); th.scope = 'col'; th.dataset.pmTh = ''; th.textContent = `${m} hónap`; head.append(th); });
+      });
+    }
+
+    function hint(cell: HTMLElement) {
+      const input = cell.querySelector<HTMLInputElement>('[data-pm-price]');
+      const out = cell.querySelector<HTMLElement>('[data-pm-huf]');
+      const cents = moneyOf(input);
+      if (out) out.textContent = cents ? formatHufHint(cents, fx, 'hu') : '';
+    }
+
+    function pricingNow(): ListingPricing {
+      const base = defaultPricing();
+      const durations = terms().map((input) => Number(input.value)).filter((n) => Number.isInteger(n) && n > 0);
+      const valueTiers = tiersNow().map((t) => ({ upToHuf: t.upToHuf })) as ListingPricing['valueTiers'];
+      const prices = {} as ListingPricing['prices'];
+      PACKAGE_KEYS.forEach((key) => {
+        prices[key] = {};
+        tierCards().forEach((card, row) => {
+          prices[key][row] = {};
+          card.querySelectorAll<HTMLElement>(`[data-pm-pkg="${key}"] [data-pm-cell]`).forEach((cell, col) => {
+            const cents = moneyOf(cell.querySelector<HTMLInputElement>('[data-pm-price]'));
+            if (cents && durations[col] !== undefined) prices[key][row][durations[col]] = cents;
+          });
+        });
+      });
+      return { ...base, valueTiers, durations, prices };
+    }
+
+    function trial() {
+      const out = form!.querySelector<HTMLElement>('[data-pm-trial-out]')!;
+      const huf = moneyOf(form!.querySelector<HTMLInputElement>('[data-pm-trial]'));
+      tierCards().forEach((card) => card.classList.remove('is-hit'));
+      if (!huf) {
+        out.textContent = 'Írja be egy ingatlan forintban megadott értékét: megmutatjuk, melyik sávba esik, és mennyit fizetne.';
+        return;
+      }
+      const pricing = pricingNow();
+      const index = tierIndexFor(pricing, huf);
+      const card = tierCards()[index];
+      card?.classList.add('is-hit');
+      const parts = PACKAGE_KEYS.map((key) => {
+        const name = card?.querySelector(`[data-pm-pkg="${key}"] th`)?.firstChild?.textContent?.trim() ?? key;
+        const cells = pricing.durations.map((months) => {
+          const price = priceFor({ packageId: key, months, tierIndex: index, pricing });
+          return price ? `${months} hó: ${fmtEur(price.cents / 100, { cents: true })}` : null;
+        }).filter(Boolean);
+        return `${name} – ${cells.join(', ')}`;
+      });
+      out.textContent = `${fmtHuf(huf)}: ${tierLabel(pricing.valueTiers, index, 'hu', hufOf)}. ${parts.join(' · ')}`;
+    }
+
+    function cloneCellsInto(card: HTMLElement, from: HTMLElement | null) {
+      const body = card.querySelector('tbody')!;
+      body.replaceChildren();
+      PACKAGE_KEYS.forEach((key) => {
+        const source = from?.querySelector<HTMLElement>(`[data-pm-pkg="${key}"]`);
+        const tr = document.createElement('tr');
+        tr.dataset.pmPkg = key;
+        const th = document.createElement('th');
+        th.scope = 'row';
+        th.textContent = source?.querySelector('th')?.firstChild?.textContent?.trim() ?? key;
+        tr.append(th);
+        terms().forEach((_t, col) => {
+          const td = document.createElement('td');
+          td.dataset.pmCell = '';
+          const sourceCell = source?.querySelectorAll<HTMLElement>('[data-pm-cell]')[col];
+          const cents = moneyOf(sourceCell?.querySelector<HTMLInputElement>('[data-pm-price]'));
+          td.innerHTML = `<span class="unit money" data-money data-cents="1" data-min="1" data-max="1000000"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" name="cell_${key}_0_${col}" value="" data-money-text data-pm-price aria-label="${th.textContent}, ${terms()[col]?.value ?? ''} hónap" /><i>€</i></span><small class="pm-huf" data-pm-huf></small>`;
+          tr.append(td);
+          queueMicrotask(() => { const input = td.querySelector<HTMLInputElement>('[data-pm-price]'); if (input && cents) { setMoney(input, cents); hint(td); } });
+        });
+        body.append(tr);
+      });
+    }
+
+    form.addEventListener('input', (event) => {
+      const target = event.target as HTMLElement;
+      const cell = target.closest<HTMLElement>('[data-pm-cell]');
+      if (cell) hint(cell);
+      if (target.matches('[data-pm-bound]')) refreshLabels();
+      if (target.matches('input[name="duration"]')) { refreshHeads(); refreshLabels(); }
+      if (target.matches('[data-pm-trial], [data-pm-bound], [data-pm-price], input[name="duration"]')) trial();
     });
-  });
+
+    form.addEventListener('click', (event) => {
+      const target = (event.target as HTMLElement).closest<HTMLElement>('button');
+      if (!target) return;
+      if (target.matches('[data-pm-add-tier]')) {
+        const cards = tierCards();
+        if (cards.length >= 6) return;
+        const template = document.getElementById('pm-tier-template') as HTMLTemplateElement;
+        const card = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+        const last = cards[cards.length - 1];
+        cards[cards.length - 1].before(card);
+        const head = card.querySelector('thead tr')!;
+        terms().forEach((input) => { const th = document.createElement('th'); th.scope = 'col'; th.dataset.pmTh = ''; th.textContent = `${input.value || '–'} hónap`; head.append(th); });
+        cloneCellsInto(card, last);
+        initMoneyInputs(card);
+        refreshLabels();
+        card.querySelector<HTMLInputElement>('[data-pm-bound]')?.focus();
+        form.dispatchEvent(new Event('input', { bubbles: true }));
+      } else if (target.matches('[data-pm-remove-tier]')) {
+        if (target.hasAttribute('disabled')) return;
+        target.closest('[data-pm-tier]')?.remove();
+        refreshLabels();
+        trial();
+        form.dispatchEvent(new Event('change', { bubbles: true }));
+      } else if (target.matches('[data-pm-add-term]')) {
+        if (terms().length >= 8) return;
+        const used = new Set(terms().map((input) => Number(input.value)));
+        let months = 12;
+        while (used.has(months) && months < 24) months += 1;
+        const li = document.createElement('li');
+        li.className = 'pm-chip';
+        li.dataset.pmTerm = '';
+        li.innerHTML = `<label><span class="sr-only">Időtartam hónapban</span><input type="number" name="duration" min="1" max="24" step="1" inputmode="numeric" value="${months}" required /></label><span class="pm-chip-unit">hónap</span><button type="button" class="pm-x" data-pm-remove-term aria-label="Időtartam eltávolítása">×</button>`;
+        termsBox.append(li);
+        tierCards().forEach((card) => {
+          card.querySelectorAll<HTMLElement>('tbody tr').forEach((tr) => {
+            const td = document.createElement('td');
+            td.dataset.pmCell = '';
+            const key = (tr as HTMLElement).dataset.pmPkg;
+            td.innerHTML = `<span class="unit money" data-money data-cents="1" data-min="1" data-max="1000000"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" name="cell_${key}_0_0" value="" data-money-text data-pm-price aria-label="${key}, ${months} hónap" /><i>€</i></span><small class="pm-huf" data-pm-huf></small>`;
+            tr.append(td);
+            initMoneyInputs(td);
+          });
+        });
+        refreshHeads();
+        refreshLabels();
+        li.querySelector('input')?.focus();
+        form.dispatchEvent(new Event('input', { bubbles: true }));
+      } else if (target.matches('[data-pm-remove-term]')) {
+        if (terms().length < 2) return;
+        const chip = target.closest('[data-pm-term]')!;
+        const col = [...termsBox.children].indexOf(chip);
+        chip.remove();
+        tierCards().forEach((card) => card.querySelectorAll('tbody tr').forEach((tr) => tr.querySelectorAll('[data-pm-cell]')[col]?.remove()));
+        refreshHeads();
+        refreshLabels();
+        trial();
+        form.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    });
+
+    // Rows and columns arrive in the order they are on screen: number the cells before the browser posts them.
+    form.addEventListener('submit', () => {
+      tierCards().forEach((card, row) => {
+        card.querySelectorAll<HTMLElement>('[data-pm-pkg]').forEach((tr) => {
+          const key = tr.dataset.pmPkg;
+          tr.querySelectorAll<HTMLElement>('[data-pm-cell]').forEach((cell, col) => {
+            cell.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+              if (input.name.startsWith('cell_')) input.name = `cell_${key}_${row}_${col}`;
+              else if (input.name.endsWith('__raw')) input.name = `cell_${key}_${row}_${col}__raw`;
+            });
+          });
+        });
+      });
+    });
+
+    refreshLabels();
+  }
 </script>
+
+<style is:global>
+  .pm .pm-terms { display: grid; gap: 10px; margin-top: 18px; }
+  .pm .pm-terms-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .pm .pm-terms h3, .pm .pm-tier h3 { margin: 0; font-family: var(--serif); font-weight: var(--fw-display); font-size: 20px; letter-spacing: var(--ls-heading); color: var(--ink); }
+  .pm .pm-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .pm .pm-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 8px 6px 12px; border-radius: var(--r-pill); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .pm .pm-chip input { width: 3.2em; min-height: 36px; padding: 4px 6px; text-align: center; font: inherit; font-variant-numeric: tabular-nums; }
+  .pm .pm-chip-unit { font-size: 14px; color: var(--ink-quiet); }
+  .pm .pm-x { width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; font-size: 18px; line-height: 1; color: var(--ink-quiet); cursor: pointer; }
+  .pm .pm-x:hover:not(:disabled) { background: rgba(16, 42, 67, 0.08); color: var(--ink); }
+  .pm .pm-x:disabled { opacity: 0.35; cursor: not-allowed; }
+  .pm .pm-x:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+  .pm .pm-try { display: grid; gap: 10px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--pt-hair); }
+  .pm .pm-try .f { max-width: 320px; }
+  .pm .pm-trial-out { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink-quiet); }
+
+  .pm .pm-tiers { display: grid; gap: 20px; }
+  .pm .pm-tier { display: grid; gap: 18px; transition: box-shadow 0.3s var(--ease-out); }
+  .pm .pm-tier.is-hit { box-shadow: 0 0 0 2px var(--ink); }
+  .pm .pm-tier-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 20px; }
+  .pm .pm-sub { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-quiet); }
+  .pm .pm-bound { min-width: 240px; }
+  .pm .pm-open { padding: 6px 14px; border-radius: var(--r-pill); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); font-size: 13.5px; color: var(--ink-quiet); }
+
+  .pm .pm-scroll { overflow-x: auto; margin-inline: -4px; padding: 2px 4px; }
+  .pm .pm-table { width: 100%; border-collapse: collapse; min-width: 520px; }
+  .pm .pm-table th, .pm .pm-table td { padding: 12px 10px; text-align: start; vertical-align: top; border-top: 1px solid var(--pt-hair); }
+  .pm .pm-table thead th { border-top: 0; font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: var(--fw-medium); color: var(--ink-quiet); }
+  .pm .pm-table tbody th { font-weight: var(--fw-medium); color: var(--ink); white-space: nowrap; }
+  .pm .pm-table tbody th small { display: block; font-weight: var(--fw-body); font-size: 12px; color: var(--ink-quiet); }
+  .pm .pm-table td .unit input { width: 100%; min-width: 118px; min-height: 46px; padding: 10px 34px 10px 14px; font: inherit; font-variant-numeric: tabular-nums; }
+  .pm .pm-huf { display: block; margin-top: 6px; min-height: 1.3em; font-size: 12.5px; color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+
+  .pm .pm-add { display: grid; justify-items: start; gap: 8px; }
+  @media (max-width: 560px) {
+    .pm .pm-bound { min-width: 0; width: 100%; }
+    .pm .pm-tier-head { align-items: stretch; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pm .pm-tier { transition: none; } }
+</style>

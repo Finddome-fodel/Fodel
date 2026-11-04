@@ -24,9 +24,10 @@ if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
 const migrated = Boolean(row && 'services' in row);
 const catalog = listingCatalog(row?.services);
-const selling = catalog.extras.filter((extra) => !extra.retired);
+const selling = catalog.extras.filter((extra) => !extra.retired && extra.id !== 'translation');
 const retired = catalog.extras.filter((extra) => extra.retired);
 const tiersHref = packageTab('tiers').href;
+const singles = catalog.pricing.singleLanguages;
 ---
 
 <PackagesShell tab="extras" migrated={migrated}>
@@ -66,6 +67,21 @@ const tiersHref = packageTab('tiers').href;
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section class="set-card">
+        <h2>Nem módosítható tételek</h2>
+        <p class="set-sub">Ezeknek az ára nem itt dől el.</p>
+        <div class="ex-grid">
+          <div class="ex">
+            <div class="ex-name"><strong>Utólagos képfeltöltés</strong><span>Élő hirdetéshez is feltölthető új kép; az ügyfélszolgálat jóváhagyása után jelenik meg.</span></div>
+            <div class="pk-sum"><b>Ingyenes</b></div>
+          </div>
+          <div class="ex">
+            <div class="ex-name"><strong>Fordítás egyedi nyelvre</strong><span>{singles.enabled ? 'Be van kapcsolva.' : 'Ki van kapcsolva: a nyelvek a csomaggal járnak.'}</span></div>
+            <div class="pk-sum"><a href={packageTab('languages').href}>Az ára az Egyedi nyelvek fülön állítható →</a></div>
+          </div>
         </div>
       </section>
 

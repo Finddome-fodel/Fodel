@@ -17,7 +17,7 @@ import { requestRebuild } from '~/lib/rebuild';
 import { logEvent } from '~/lib/activity';
 import { friendlyError } from '~/lib/portal/labels';
 
-export type PackageTabId = 'listing' | 'translations' | 'languages' | 'extras' | 'tiers' | 'rounding';
+export type PackageTabId = 'listing' | 'translations' | 'extras' | 'languages' | 'fx' | 'tiers' | 'rounding';
 
 export type PackageTab = {
   id: PackageTabId;
@@ -29,16 +29,16 @@ export type PackageTab = {
   api: string;
   /** Whether a save must rebuild the prerendered public pages (prices are baked into them). */
   rebuild: boolean;
-  /** Shell only: the page says what will live there. The translation PR (CC-3) replaces it. */
-  placeholder?: boolean;
 };
 
 export const PACKAGE_TABS: readonly PackageTab[] = [
-  { id: 'listing', label: 'Hirdetési csomagok', href: '/portal/packages', api: '/api/portal/packages/listing', rebuild: true },
-  { id: 'translations', label: 'Fordítási csomagok', href: '/portal/packages/translations', api: '/api/portal/packages/translations', rebuild: true, placeholder: true },
-  { id: 'languages', label: 'Egyedi nyelvek', href: '/portal/packages/languages', api: '/api/portal/packages/languages', rebuild: true, placeholder: true },
+  { id: 'listing', label: 'Hirdetési csomagok (árak)', href: '/portal/packages', api: '/api/portal/packages/listing', rebuild: true },
+  { id: 'translations', label: 'Csomagok tartalma', href: '/portal/packages/translations', api: '/api/portal/packages/translations', rebuild: true },
   { id: 'extras', label: 'Kiegészítők', href: '/portal/packages/extras', api: '/api/portal/packages/extras', rebuild: true },
-  { id: 'tiers', label: 'Ársávok', href: '/portal/packages/tiers', api: '/api/portal/packages/tiers', rebuild: true },
+  { id: 'languages', label: 'Egyedi nyelvek', href: '/portal/packages/languages', api: '/api/portal/packages/languages', rebuild: true },
+  // Today's EUR/HUF rate for the informational forint hints; a "Frissítés most" runs the daily fetch by hand.
+  { id: 'fx', label: 'Árfolyam', href: '/portal/packages/fx', api: '/api/portal/packages/fx', rebuild: false },
+  { id: 'tiers', label: 'Ársávok (kiegészítők)', href: '/portal/packages/tiers', api: '/api/portal/packages/tiers', rebuild: true },
   // The rounding step only changes prices saved from now on; no public page shows it.
   { id: 'rounding', label: 'Kerekítés', href: '/portal/packages/rounding', api: '/api/portal/packages/rounding', rebuild: false },
 ];
@@ -109,7 +109,14 @@ export async function saveServicesPatch(
     subjectType: 'site_settings',
     subjectId: null,
     source: 'portal',
-    payload: { tab, keys: Object.keys(changes), ...(options.payload ?? {}) },
+    payload: {
+      tab,
+      keys: Object.keys(changes),
+      // What changed, so a bad price can be put back from the log.
+      before: Object.fromEntries(Object.keys(changes).map((key) => [key, current[key] ?? null])),
+      after: Object.fromEntries(Object.keys(changes).map((key) => [key, changes[key] ?? null])),
+      ...(options.payload ?? {}),
+    },
   }).catch(() => {});
 
   return backToTab(tab, 'saved=1');

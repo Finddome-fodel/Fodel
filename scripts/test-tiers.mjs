@@ -189,28 +189,6 @@ try {
   /* ── Csomagok forms (§9.0) ─────────────────────────────────────────── */
   const fd = (obj) => { const f = new FormData(); for (const [k, v] of Object.entries(obj)) for (const value of [].concat(v)) f.append(k, String(value)); return f; };
   const stored = { listingPackages: { 'normal-12m': { tiers: three, names: { hu: 'Prémium', nl: 'Premium' } } }, listingExtras: { translation: { priceEur: 30 } }, priceRounding: { step: 500 }, other: 'kept' };
-  const listingForm = {
-    recommended: 'cheap-6m',
-    'cheap-6m_name_hu': 'Alap', 'cheap-6m_name_nl': 'Basis', 'cheap-6m_months': '6', 'cheap-6m_video': 'none',
-    'normal-12m_name_hu': 'Prémium+', 'normal-12m_name_nl': 'Premium+', 'normal-12m_months': '12', 'normal-12m_video': 'included', 'normal-12m_phone': 'yes',
-  };
-  await test('listing tab: names/content saved, prices untouched, nothing else written', () => {
-    const patch = F.listingPatch(fd(listingForm), stored);
-    assert.deepEqual(Object.keys(patch).sort(), ['listingPackages', 'packagePhone']);
-    assert.equal(patch.listingPackages['cheap-6m'].names.hu, 'Alap');
-    assert.equal(patch.listingPackages['cheap-6m'].video, 'none');
-    assert.equal(patch.listingPackages['cheap-6m'].recommended, true);
-    assert.equal(patch.listingPackages['normal-12m'].recommended, false);
-    assert.deepEqual(patch.listingPackages['normal-12m'].tiers, three, 'stored tiers are kept');
-    assert.equal(patch.listingPackages['normal-12m'].priceEurAbove, 229, 'legacy mirror for older readers');
-    assert.deepEqual(patch.packagePhone, { 'cheap-6m': false, 'normal-12m': true });
-    assert.equal(patch.listingPackages['normal-12m'].names.de, undefined, 'only the editable names are stored');
-  });
-  await test('listing tab: bad input is refused with a Hungarian message', () => {
-    assert.throws(() => F.listingPatch(fd({ ...listingForm, 'cheap-6m_name_hu': '' }), stored), A.PackageSaveError);
-    assert.throws(() => F.listingPatch(fd({ ...listingForm, 'cheap-6m_months': '0' }), stored), /1 és 36/);
-    assert.throws(() => F.listingPatch(fd({ ...listingForm, recommended: 'x' }), stored), /ajánlott/);
-  });
   await test('extras tab: single prices saved; tiered and retired extras kept', () => {
     const withTiered = { ...stored, listingExtras: { ...stored.listingExtras, 'category-highlight': { tiers: [{ upToHuf: 100, priceEur: 10 }, { upToHuf: null, priceEur: 20 }] } } };
     const patch = F.extrasPatch(fd({ extra_translation: '35', extra_video: '180', 'extra_renewal-6m': '25', 'extra_category-highlight': '99', 'extra_homepage-highlight': '1' }), withTiered);
@@ -221,46 +199,43 @@ try {
     assert.throws(() => F.extrasPatch(fd({ extra_video: '1.5' }), stored), /egész/);
     assert.throws(() => F.extrasPatch(fd({ extra_video: '' }), stored), A.PackageSaveError);
   });
-  await test('tiers tab: rows → tiers for packages and extras; errors name the item and row', () => {
-    const key = F.tierKey('pkg', 'cheap-6m');
-    const ex = F.tierKey('extra', 'translation');
+  await test('tiers tab: rows → tiers for the extras; errors name the item and row; the packages are not tiered here', () => {
+    const key = F.tierKey('extra', 'category-highlight');
     // With JS: the hidden twins post every row (the last bound empty) plus the raw marker.
-    const form = fd({ [`${key}_bound`]: ['100000000', ''], [`${key}_bound__raw`]: '1', [`${key}_price`]: ['69', '89'], [`${key}_price__raw`]: '1', [`${ex}_price`]: '25' });
+    const form = fd({ [`${key}_bound`]: ['100000000', ''], [`${key}_bound__raw`]: '1', [`${key}_price`]: ['15', '25'], [`${key}_price__raw`]: '1' });
     const patch = F.tiersPatch(form, stored);
-    assert.deepEqual(Object.keys(patch).sort(), ['listingExtras', 'listingPackages']);
-    assert.deepEqual(patch.listingPackages['cheap-6m'].tiers, [{ upToHuf: 100_000_000, priceEur: 69 }, { upToHuf: null, priceEur: 89 }]);
-    assert.deepEqual(patch.listingPackages['normal-12m'].tiers, three, 'an item not on the form is kept');
+    assert.deepEqual(Object.keys(patch), ['listingExtras']);
+    assert.deepEqual(patch.listingExtras['category-highlight'].tiers, [{ upToHuf: 100_000_000, priceEur: 15 }, { upToHuf: null, priceEur: 25 }]);
     assert.deepEqual(patch.listingExtras.translation, stored.listingExtras.translation, 'the translation price is not a tier of this tab');
     // Without JS: the last row has no bound at all, and the text is formatted.
-    const noJs = F.tiersPatch(fd({ [`${key}_bound`]: '100.000.000', [`${key}_price`]: ['69', '89'] }), stored);
-    assert.deepEqual(noJs.listingPackages['cheap-6m'].tiers, [{ upToHuf: 100_000_000, priceEur: 69 }, { upToHuf: null, priceEur: 89 }]);
+    const noJs = F.tiersPatch(fd({ [`${key}_bound`]: '100.000.000', [`${key}_price`]: ['15', '25'] }), stored);
+    assert.deepEqual(noJs.listingExtras['category-highlight'].tiers, [{ upToHuf: 100_000_000, priceEur: 15 }, { upToHuf: null, priceEur: 25 }]);
     assert.throws(() => F.tiersPatch(fd({ [`${key}_bound`]: ['200', '100'], [`${key}_price`]: ['1', '2', '3'] }), stored), /2\. sáv: A felső határ legyen nagyobb/);
     assert.throws(() => F.tiersPatch(fd({ [`${key}_bound`]: '', [`${key}_price`]: ['1', '2'] }), stored), /1\. sáv/);
+    const packageKey = F.tierKey('pkg', 'basic');
+    assert.deepEqual(F.tiersPatch(fd({ [`${packageKey}_price`]: ['1', '2'], [`${packageKey}_bound`]: '5' }), stored).listingExtras, F.tiersPatch(fd({}), stored).listingExtras, 'a package row on this form changes nothing');
   });
-  await test('round trip: what the tiers tab saves is what checkout charges', () => {
-    const key = F.tierKey('pkg', 'normal-12m');
-    const patch = F.tiersPatch(fd({ [`${key}_bound`]: ['150000000', '300000000'], [`${key}_price`]: ['129', '179', '229'] }), {});
-    const cat = P.listingCatalog(patch);
-    for (const [huf, eur] of [[150_000_000, 129], [150_000_001, 179], [300_000_000, 179], [300_000_001, 229]]) {
-      assert.equal(O.buildOrderLines({ packageId: 'normal-12m', priceHuf: huf, extras: [] }, 'hu', cat)[0].unitCents, eur * 100, String(huf));
+  await test('round trip: what the tiers tab saves for an extra is what checkout charges', () => {
+    const key = F.tierKey('extra', 'category-highlight');
+    const patch = F.tiersPatch(fd({ [`${key}_bound`]: ['150000000', '300000000'], [`${key}_price`]: ['15', '25', '35'] }), {});
+    const cat = P.listingCatalog({ ...patch, pricingLive: true });
+    for (const [huf, eur] of [[150_000_000, 15], [150_000_001, 25], [300_000_000, 25], [300_000_001, 35]]) {
+      const lines = O.buildOrderLines({ packageId: 'basic', months: 3, priceHuf: huf, extras: [{ id: 'category-highlight', quantity: 3 }] }, 'hu', cat);
+      assert.equal(lines.find((line) => line.id === 'category-highlight').unitCents, eur * 100, String(huf));
     }
   });
   await test('rounding tab: only the offered steps', () => {
     assert.deepEqual(F.roundingPatch(fd({ step: '1000' })), { priceRounding: { step: 1000 } });
     assert.throws(() => F.roundingPatch(fd({ step: '7' })), A.PackageSaveError);
   });
-  await test('legacy form (old settings page): prices with a threshold in millions still save', () => {
-    const patch = F.legacyPatch(fd({ ...listingForm, 'normal-12m_price': '129', 'normal-12m_tiered': 'yes', 'normal-12m_price_above': '179', 'normal-12m_threshold_m': '150', 'cheap-6m_price': '69', extra_translation: '25' }), stored);
-    assert.deepEqual(patch.listingPackages['normal-12m'].tiers, two);
-    assert.deepEqual(patch.listingPackages['cheap-6m'].tiers, [{ upToHuf: null, priceEur: 69 }]);
-    assert.equal(patch.listingPackages['cheap-6m'].names.hu, 'Alap');
-    assert.equal(patch.listingExtras.translation.priceEur, 30, 'the single-language price is not saved from this form');
-  });
-  await test('PACKAGE_TABS: six tabs, unique routes under /portal/packages, rounding does not rebuild', () => {
-    assert.deepEqual(A.PACKAGE_TABS.map((t) => t.id), ['listing', 'translations', 'languages', 'extras', 'tiers', 'rounding']);
-    assert.equal(new Set(A.PACKAGE_TABS.map((t) => t.href)).size, 6);
+  await test('PACKAGE_TABS: seven tabs, unique routes under /portal/packages, none a placeholder, rounding and the rate do not rebuild', () => {
+    assert.deepEqual(A.PACKAGE_TABS.map((t) => t.id), ['listing', 'translations', 'extras', 'languages', 'fx', 'tiers', 'rounding']);
+    assert.deepEqual(A.PACKAGE_TABS.map((t) => t.label).slice(0, 2), ['Hirdetési csomagok (árak)', 'Csomagok tartalma']);
+    assert.equal(new Set(A.PACKAGE_TABS.map((t) => t.href)).size, 7);
+    assert.equal(A.PACKAGE_TABS.some((t) => 'placeholder' in t), false, 'no tab is a placeholder any more');
     for (const tab of A.PACKAGE_TABS) { assert.match(tab.href, /^\/portal\/packages/); assert.match(tab.api, /^\/api\/portal\/packages\//); }
     assert.equal(A.packageTab('rounding').rebuild, false);
+    assert.equal(A.packageTab('fx').rebuild, false);
     assert.equal(A.backToTab('tiers', 'saved=1').headers.get('location'), '/portal/packages/tiers?saved=1');
   });
   await test('saveServicesPatch: merges only its keys, refuses non-admins, reports errors on the tab', async () => {

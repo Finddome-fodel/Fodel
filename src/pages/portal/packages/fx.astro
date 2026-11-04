@@ -1,0 +1,114 @@
+---
+/**
+ * Csomagok → Árfolyam: the EUR/HUF rate behind every „kb. … Ft”. Today's rate, its date and source, the last
+ * successful fetch, the last 14 days, a sample of the price matrix in forints, and „Frissítés most” (the same fetch
+ * the daily job runs). The forint is information only: prices are in euro and are never computed from this rate.
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+import { listingCatalog } from '~/lib/listing-packages';
+import { PACKAGE_KEYS } from '~/lib/listing-pricing';
+import { currentRate, recentSnapshots } from '~/lib/fx-store';
+import { fxStale, fxAgeDays, formatHufHint } from '~/lib/fx';
+import { eurPrice } from '~/lib/format';
+import { fmtDecimal } from '~/lib/portal/num';
+import { packageTab } from '~/lib/portal/package-admin';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const catalog = listingCatalog(row?.services);
+const pricing = catalog.pricing;
+const fx = await currentRate().catch(() => null);
+const history = await recentSnapshots(14).catch(() => []);
+const stale = fx ? fxStale(fx) : false;
+const day = (date: string) => date.replaceAll('-', '.') + '.';
+const fetched = (iso: string) => new Intl.DateTimeFormat('hu-HU', { timeZone: 'Europe/Budapest', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso));
+const sampleCols = pricing.durations;
+---
+
+<PackagesShell tab="fx" migrated={migrated}>
+  <div class="fx">
+    {!fx && (
+      <p class="notice error" role="alert">Nincs elérhető árfolyam. A hirdetések euróárai és a fizetés ettől függetlenül működnek, de a „kb. … Ft” összegek nem jelennek meg. Kattintson a „Frissítés most” gombra, vagy futtassa le a 0056-os migrációt.</p>
+    )}
+    {fx && stale && (
+      <p class="notice warn" role="status">Elavult árfolyam ({day(fx.date)}, {fxAgeDays(fx)} napos). Az utolsó ismert árfolyammal számolunk tovább. Ellenőrizze, hogy a napi frissítés fut-e (Vercel → Cron Jobs → /api/cron/fx), vagy frissítsen most.</p>
+    )}
+
+    <section class="set-card fx-now">
+      <div class="fx-head">
+        <div>
+          <p class="pk-label">Mai árfolyam</p>
+          {fx ? (
+            <p class="fx-rate"><b>1 € = {fmtDecimal(fx.rate, { digits: 2, fixed: true })} Ft</b></p>
+          ) : (
+            <p class="fx-rate"><b>–</b></p>
+          )}
+        </div>
+        <form method="POST" action={packageTab('fx').api}>
+          <button type="submit" class="btn" disabled={!migrated}>Frissítés most</button>
+        </form>
+      </div>
+      {fx && (
+        <dl class="fx-meta">
+          <div><dt>Az EKB referencianapja</dt><dd>{day(fx.date)}</dd></div>
+          <div><dt>Forrás</dt><dd>{fx.source}</dd></div>
+          <div><dt>Utolsó sikeres lekérés</dt><dd>{fetched(fx.fetchedAt)}</dd></div>
+        </dl>
+      )}
+      <p class="set-sub">Az árfolyam naponta frissül (16:30 körül, az EKB közzététele után). Kézzel nem írható át. A forintösszeg csak tájékoztató: a fizetés mindig euróban történik.</p>
+    </section>
+
+    <section class="set-card">
+      <h2>Utolsó 14 nap</h2>
+      {history.length > 0 ? (
+        <table class="list fx-table">
+          <thead><tr><th scope="col">Nap</th><th scope="col">1 € =</th><th scope="col">Forrás</th></tr></thead>
+          <tbody>
+            {history.map((snapshot) => <tr><td>{day(snapshot.date)}</td><td>{fmtDecimal(snapshot.rates.HUF, { digits: 2, fixed: true })} Ft</td><td>{snapshot.source}</td></tr>)}
+          </tbody>
+        </table>
+      ) : (
+        <p class="set-sub">Még nincs mentett nap.</p>
+      )}
+    </section>
+
+    {fx && (
+      <section class="set-card">
+        <h2>Az árak forintban, tájékoztatásul</h2>
+        <p class="set-sub">Így jelenik meg az árlistán a középső ingatlanérték-sáv (a második). Százra kerekítve.</p>
+        <div class="fx-scroll">
+          <table class="list fx-table">
+            <thead><tr><th scope="col">Csomag</th>{sampleCols.map((months) => <th scope="col">{months} hónap</th>)}</tr></thead>
+            <tbody>
+              {PACKAGE_KEYS.map((key) => (
+                <tr>
+                  <th scope="row">{pricing.packages[key].names.hu}</th>
+                  {sampleCols.map((months) => {
+                    const cents = pricing.prices[key]?.[Math.min(1, pricing.valueTiers.length - 1)]?.[months];
+                    return <td>{cents ? <>{eurPrice(cents, 'hu')} <small>{formatHufHint(cents, fx, 'hu')}</small></> : '–'}</td>;
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+  </div>
+</PackagesShell>
+
+<style is:global>
+  .fx { display: grid; gap: 20px; }
+  .fx .fx-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .fx .fx-rate { margin: 4px 0 0; font-family: var(--serif); font-size: 34px; letter-spacing: var(--ls-display); color: var(--ink); }
+  .fx .fx-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 14px; margin: 16px 0 0; }
+  .fx .fx-meta dt { font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-quiet); }
+  .fx .fx-meta dd { margin: 4px 0 0; color: var(--ink); }
+  .fx .fx-scroll { overflow-x: auto; }
+  .fx .fx-table td small { display: block; color: var(--ink-quiet); font-size: 12.5px; }
+</style>

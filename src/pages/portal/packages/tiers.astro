@@ -36,21 +36,10 @@ const rates = await Promise.race([
 ]);
 const hufPerEur = rates?.rates.HUF ?? null;
 
-const tierLabel: Record<string, string> = { 'cheap-6m': 'Basic', 'normal-12m': 'Prémium' };
 type Item = { anchor: string; key: string; title: string; sub: string; unit: string; tiers: PriceTier[]; kind: 'pkg' | 'extra'; id: string };
 const items: Item[] = [
-  ...catalog.packages.map((pkg): Item => ({
-    anchor: `pkg-${pkg.id}`,
-    key: tierKey('pkg', pkg.id),
-    title: `${tierLabel[pkg.id] ?? pkg.id} · ${pkg.names.hu}`,
-    sub: `Hirdetési csomag, ${pkg.months} hónap`,
-    unit: '€',
-    tiers: pkg.tiers,
-    kind: 'pkg',
-    id: pkg.id,
-  })),
   ...catalog.extras
-    .filter((extra) => !extra.retired)
+    .filter((extra) => !extra.retired && extra.id !== 'translation')
     .map((extra): Item => ({
       anchor: `extra-${extra.id}`,
       key: tierKey('extra', extra.id),

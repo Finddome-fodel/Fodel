@@ -41,7 +41,6 @@ const err = Astro.url.searchParams.get('error');
       {PACKAGE_TABS.map((item) => (
         <a href={item.href} aria-current={item.id === tab ? 'page' : undefined} data-pk-tab>
           {item.label}
-          {item.placeholder && <small>hamarosan</small>}
         </a>
       ))}
     </nav>
