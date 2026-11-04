@@ -523,4 +523,40 @@ const created=await db.query(`insert into properties(ref,owner_id,status,categor
 if(created)assert.deepEqual(created.rows[0],{translation_package:'basic',extra_locales:[]},'an insert by a seller starts on Go');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 console.log('✓ 0053: repeatable; the backfill keeps every language; English cannot be excluded; sellers cannot grant themselves languages');
+// 0055 (own run): the three packages join the enum next to the two old ones; repeatable.
+{
+  const sql55=fs.readFileSync(root+'/supabase/migrations/0055_listing_package_values.sql','utf8');
+  try{await db.exec(sql55);await db.exec(sql55);}catch(e){console.error('MIGRATION 0055 FAILED',e.message,e.detail);process.exit(1);}
+  const values=(await get(`select unnest(enum_range(null::listing_package))::text as v`)).map(r=>r.v);
+  assert.deepEqual(values,['cheap-6m','normal-12m','basic','europe','world'],'the old values stay, the new ones follow');
+  console.log('✓ 0055 adds basic, europe and world next to the two old package values, and is repeatable');
+}
+// 0056: the term and band of a package, and the daily rate. Sellers cannot set them; anyone can read the rates; only the server writes.
+{
+  const sql56=fs.readFileSync(root+'/supabase/migrations/0056_pricing_2026.sql','utf8');
+  await db.exec(`reset role;set test.uid='';set test.admin='true';create table if not exists site_settings(id int primary key,services jsonb);insert into site_settings values(1,'{"priceRounding":{"step":500}}') on conflict do nothing;`);
+  try{await db.exec(sql56);await db.exec(sql56);}catch(e){console.error('MIGRATION 0056 FAILED',e.message,e.detail);process.exit(1);}
+  const cols=(await get(`select column_name from information_schema.columns where table_name='properties' and column_name in ('package_months','price_tier_index','price_tier_huf_bounds') order by 1`)).map(r=>r.column_name);
+  assert.deepEqual(cols,['package_months','price_tier_huf_bounds','price_tier_index']);
+  await db.exec(`update properties set package='basic',package_months=6,price_tier_index=1,price_tier_huf_bounds='[24999999,100000000]' where id='${id}'`);
+  await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';update properties set package_months=1,price_tier_index=2,price_tier_huf_bounds='[]' where id='${id}'`);
+  await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+  assert.deepEqual((await get(`select package_months,price_tier_index,price_tier_huf_bounds::text as b from properties where id='${id}'`))[0],{package_months:6,price_tier_index:1,b:'[24999999, 100000000]'},'a seller cannot change the term or the band');
+  await db.exec(`set test.admin='false';set test.uid='${other}';update properties set package_months=2 where id='${id}'`);
+  await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+  await db.exec(`update properties set package_months=3 where id='${id}'`);
+  assert.equal((await get(`select package_months from properties where id='${id}'`))[0].package_months,3,'the server or an admin can');
+  await assert.rejects(()=>db.exec(`update properties set package_months=25 where id='${id}'`),'at most 24 months');
+  await db.exec(`insert into exchange_rate_snapshots(rate_date,rates)values('2026-11-04','{"HUF":385.12,"GBP":0.87}')`);
+  await assert.rejects(()=>db.exec(`insert into exchange_rate_snapshots(rate_date,rates)values('2026-11-05','{"GBP":0.87}')`),'a day without a forint rate is refused');
+  await db.exec(`set role anon;`);
+  assert.equal((await get(`select (rates->>'HUF')::numeric as huf from exchange_rate_snapshots`))[0].huf,'385.12','anonymous visitors read the rate');
+  await assert.rejects(()=>db.exec(`insert into exchange_rate_snapshots(rate_date,rates)values('2026-11-06','{"HUF":1}')`),'anonymous cannot write');
+  await db.exec(`reset role;set role authenticated;`);
+  await assert.rejects(()=>db.exec(`update exchange_rate_snapshots set rates='{"HUF":1}'`),'a signed-in user cannot write either');
+  await db.exec(`reset role;set test.uid='';set test.admin='true';delete from exchange_rate_snapshots;update properties set package='cheap-6m',package_months=null,price_tier_index=null,price_tier_huf_bounds=null where id='${id}'`);
+  assert.deepEqual((await get(`select services from site_settings where id=1`))[0].services,{priceRounding:{step:500},pricingLive:true},'0056 switches the new packages on and keeps the other settings');
+  await db.exec(`drop table site_settings;`);
+  console.log('✓ 0056 records the term and band (sellers cannot set them), keeps the daily rate readable by all and writable by the server only, and is repeatable');
+}
 await db.close();
