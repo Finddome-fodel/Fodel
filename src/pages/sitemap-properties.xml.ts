@@ -22,7 +22,7 @@ export const GET: APIRoute = async () => {
   const languages = await translationConfig();
 
   const urls = properties.map((p) => {
-    // Only the languages the listing is published in (src/lib/listing-languages.ts); before migration 0052 every language, as it always was.
+    // Only the languages the listing is published in (src/lib/listing-languages.ts); before migration 0053 every language, as it always was.
     const locales = p.data.listing.languagePolicy.gated ? publishedLocalesOf(p, languages) : [...LOCALES];
     const links = locales.map(
       (l) => `<xhtml:link rel="alternate" hreflang="${LOCALE_META[l].hreflang}" href="${SITE}${propertyUrl(p, l)}" />`

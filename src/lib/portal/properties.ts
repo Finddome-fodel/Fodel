@@ -39,7 +39,7 @@ export type PortalMedia = {
   is_hero: boolean;
   width: number | null;
   height: number | null;
-  /** Migration 0053: added to a live listing, waiting for an admin; not on the public site. */
+  /** Migration 0054: added to a live listing, waiting for an admin; not on the public site. */
   pending?: boolean;
   submitted_at?: string | null;
 };

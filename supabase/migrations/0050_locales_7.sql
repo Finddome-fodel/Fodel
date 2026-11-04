@@ -2,7 +2,7 @@
 --
 -- RUN 1 OF 2. Run by hand in the Supabase SQL editor, ON ITS OWN (nothing else
 -- in the same run), after 0049 and BEFORE deploying the branch that adds /sr,
--- /uk, /tr, /he, /ar, /ru and /zh. Then run 0050_locales_7_newsletter.sql as a
+-- /uk, /tr, /he, /ar, /ru and /zh. Then run 0051_locales_7_newsletter.sql as a
 -- second, separate run. Safe to run twice.
 --
 -- The locale_code enum (0001, widened in 0023 and 0026) learns the seven new

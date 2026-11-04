@@ -389,7 +389,7 @@ test('a free listing\'s translation with a phone number is refused; a paid listi
   assert.ok(['numbers', undefined].includes(jobRows()[0].fail_code), 'a paid listing skips the contact check');
 });
 
-test('before migration 0051 the same work is done without the new columns', async () => {
+test('before migration 0052 the same work is done without the new columns', async () => {
   const legacyOf = (base) => ({
     rpc: async (name, args) => (name === 'save_machine_translation' && 'p_needs_review' in args
       ? { data: null, error: { code: 'PGRST202', message: 'Could not find the function public.save_machine_translation' } }

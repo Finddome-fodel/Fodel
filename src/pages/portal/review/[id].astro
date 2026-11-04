@@ -116,7 +116,7 @@ const trSource = pickSource(property.translations);
 const trPerLanguage = estimateCostMicroEur(trSource ? listingChars(listingText(trSource)) : 0, translationModel());
 const trPresent = property.translations.filter((row) => row.title?.trim() || row.description?.trim()).map((row) => row.locale);
 const priceAt = (item: { tiers: { upToHuf: number | null; priceEur: number }[] } | undefined) => (item ? priceEurFor(item, property.price_huf) : 0);
-// What the listing already holds (migration 0052): an upgrade costs the difference. Null before the migration.
+// What the listing already holds (migration 0053): an upgrade costs the difference. Null before the migration.
 const trHeld = await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null);
 const trChoice = suggested.translation ?? { packageId: 'go', extraLocales: [], excludedLocales: [] };
 // A free-link owner's requests wait here for the admin's decision.

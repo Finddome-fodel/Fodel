@@ -1,4 +1,4 @@
--- 0050 (run 2 of 2): newsletter sign-ups in the seven new languages
+-- 0051 (run 2 of 2 of the seven-language change): newsletter sign-ups in the seven new languages
 --
 -- Run by hand in the Supabase SQL editor AFTER 0050_locales_7.sql has run on
 -- its own, and before deploying. Safe to run twice.

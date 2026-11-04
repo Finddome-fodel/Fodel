@@ -2,7 +2,7 @@
  * What state is a listing's text in, in one language? The admin overview, the side-by-side editor,
  * the publish check and the daily digest all ask this one function, so they can never disagree.
  *
- * The facts come from the `translation_matrix` view (migration 0051); the source fingerprint is made
+ * The facts come from the `translation_matrix` view (migration 0052); the source fingerprint is made
  * here, because "the source changed since" compares fingerprints made by translate-core.ts.
  *
  * Pure, relative imports only: scripts/test-rules.mjs loads this file directly in Node.

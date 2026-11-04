@@ -7,14 +7,14 @@
  * A language is PUBLISHED when the listing was written in it, or it is part of what was bought (package plus
  * single languages) and not switched off, and it has text. English is mandatory: it is the fallback text of
  * every other language, so its page always exists (with the original's text until the English one is ready).
- * Before migration 0052 (`gated` false) nothing changes: every language is served, as it always was.
+ * Before migration 0053 (`gated` false) nothing changes: every language is served, as it always was.
  */
 import { entitledLocales, grantedLocales, NON_EXCLUDABLE_LOCALES, type TranslationPricing } from './translation-packages.ts';
 
 export { NON_EXCLUDABLE_LOCALES };
 
 export type ListingPolicy = {
-  /** The row has the columns of migration 0052: the rules apply. */
+  /** The row has the columns of migration 0053: the rules apply. */
   gated: boolean;
   /** The language the listing was written in. */
   sourceLocale: string;

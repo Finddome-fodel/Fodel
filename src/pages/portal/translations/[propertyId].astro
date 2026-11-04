@@ -74,7 +74,7 @@ const count = (value: string) => `${value.length.toLocaleString('hu-HU')} karakt
     <p class="count"><a class="btn ghost small" href={`/portal/properties/${id}#translations`}>Hirdetés szerkesztése</a></p>
   </header>
 
-  {!migrated && <p class="notice warn">Futtassa le a 0051-es migrációt (a Supabase SQL Editorban): addig az állapotok nem pontosak, és a kézi mentés nem működik.</p>}
+  {!migrated && <p class="notice warn">Futtassa le a 0052-es migrációt (a Supabase SQL Editorban): addig az állapotok nem pontosak, és a kézi mentés nem működik.</p>}
   {!source && <p class="notice error">Ehhez a hirdetéshez nincs kézzel írt forrásszöveg, ezért nincs mit fordítani.</p>}
 
   <div class="chips-wrap">

@@ -45,7 +45,7 @@ export function translationPurchaseOf(lines: Line[] | null | undefined): { packa
 /**
  * The package and single languages a settled order bought become the listing's entitlement. Called before the
  * listing is published (so the Go languages the buyer switched off are not translated first) and again with the
- * jobs; applying the same order twice leaves the same result. Never throws; nothing before migration 0052.
+ * jobs; applying the same order twice leaves the same result. Never throws; nothing before migration 0053.
  */
 export async function applyPaidEntitlement(client: any, order: { id: string; property_id: string | null; line_items: OrderLine[] | null }): Promise<void> {
   if (!order.property_id || translationLocalesOf(order.line_items).length === 0) return;

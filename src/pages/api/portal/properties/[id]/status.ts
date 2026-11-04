@@ -73,7 +73,7 @@ const json = (status: number, body: Record<string, unknown>) =>
 /**
  * Bought languages a visitor could not read (failed, missing, out of date): an admin may still approve,
  * but only knowing it. Without `acknowledgeLanguages` the request is refused with the list; the review
- * page shows it and sends the acknowledgement. Quietly passes before migration 0051.
+ * page shows it and sends the acknowledgement. Quietly passes before migration 0052.
  */
 async function languagesGate(propertyId: string, body: Record<string, unknown>): Promise<Response | null> {
   if (body.acknowledgeLanguages === true) return null;

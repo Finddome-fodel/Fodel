@@ -206,7 +206,7 @@ const listingLive = property.status === 'published';
 const trOwnerPanel = isOwnProperty && !isAdmin && listingLive;
 const trBusy = Object.fromEntries(trJobs.filter((job) => ['requested', 'queued', 'running'].includes(job.status)).map((job) => [job.locale, tc.statusLabels[job.status]]));
 const trConfig = listingCatalog(company.services).translation;
-// What the listing is published in (migration 0052); null before it ran, and then none of this is shown.
+// What the listing is published in (migration 0053); null before it ran, and then none of this is shown.
 const trEntitlement = (isAdmin || isOwnProperty) ? await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null) : null;
 const trGranted = trEntitlement ? grantedLocales(trEntitlement.listing, trConfig, ALL_LOCALES) : [];
 const trPaid = Astro.url.searchParams.get('translations');

@@ -23,7 +23,7 @@ import { MAX_UPLOAD_MB, MAX_EDGE, LOW_RESOLUTION_EDGE } from '~/lib/media';
 import type { PortalMedia } from '~/lib/portal/properties';
 import { PENDING_PHOTOS_MAX } from '~/lib/portal/photo-moderation';
 
-/** A "these photos were not published" notice (migration 0053, property_media_rejections). */
+/** A "these photos were not published" notice (migration 0054, property_media_rejections). */
 export type PhotoNotice = { id: string; photo_count: number; reason_code: string | null; reason: string; note: string | null; created_at: string };
 
 interface Props {

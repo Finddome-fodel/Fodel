@@ -229,7 +229,7 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
         p_hash: source ? sourceHash(listingText(source)) : null, p_from: source?.locale ?? null,
       });
       if (error) {
-        if (isMissingTranslationSchema(error)) return json(503, { ok: false, error: 'schema-missing', message: 'Futtassa le a 0051-es migrációt (a Supabase SQL Editorban).' });
+        if (isMissingTranslationSchema(error)) return json(503, { ok: false, error: 'schema-missing', message: 'Futtassa le a 0052-es migrációt (a Supabase SQL Editorban).' });
         console.error('[translations] override failed', property.id, locale, error.message);
         return json(500, { ok: false, error: 'save-failed', message: 'Nem sikerült menteni.' });
       }

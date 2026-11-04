@@ -1,10 +1,10 @@
 /**
- * Free later photo upload with moderation (spec §4c part 2, migration 0053).
+ * Free later photo upload with moderation (spec §4c part 2, migration 0054).
  *
  * The pure rules shared by the upload API, the admin queue and the editor:
  * who may change the photos of a listing in which status, the review limits,
  * the rejection reasons and how a batch of decisions is checked and grouped.
- * The database enforces the same rules on its own (0053); these exist so the
+ * The database enforces the same rules on its own (0054); these exist so the
  * screens say the right thing before a request ever reaches it.
  */
 

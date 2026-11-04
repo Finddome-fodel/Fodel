@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
     .select('id', { count: 'exact', head: true })
     .eq('property_id', id);
   const replaceId=String(form.get('replace')||'');
-  // `pending` exists only after migration 0053; a draft never needs it.
+  // `pending` exists only after migration 0054; a draft never needs it.
   const replaceColumns:string=live?'id,storage_path,pending':'id,storage_path';
   const {data:replaced,error:replaceError}:{data:{id:string;storage_path:string;pending?:boolean}|null;error:unknown}=replaceId?await (supabase.from('property_media') as any).select(replaceColumns).eq('id',replaceId).eq('property_id',id).maybeSingle():{data:null,error:null};
   if(replaceId && (replaceError||!replaced))return json(404,{ok:false,error:'not-found'});
@@ -78,7 +78,7 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
         alt: {},
         sort_order: count ?? 0,
         is_hero: isFirst,
-        // The database decides this too (0053): never trust the request for it.
+        // The database decides this too (0054): never trust the request for it.
         ...(live ? { pending: true } : {}),
       })
       .select('id')

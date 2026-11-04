@@ -129,7 +129,7 @@ type MediaRow = {
   label: Record<string, string> | null;
   sort_order: number;
   is_hero: boolean;
-  /** Migration 0053: added to a live listing and not yet approved. RLS hides it from the public already. */
+  /** Migration 0054: added to a live listing and not yet approved. RLS hides it from the public already. */
   pending?: boolean;
 };
 
@@ -187,7 +187,7 @@ type PropertyRow = {
   bargain_since: string | null;
   published_at: string | null;
   expires_at: string | null;
-  /** Migration 0052: the languages bought and switched off. Absent before it has been run. */
+  /** Migration 0053: the languages bought and switched off. Absent before it has been run. */
   translation_package?: string | null;
   extra_locales?: string[] | null;
   excluded_locales?: string[] | null;

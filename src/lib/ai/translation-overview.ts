@@ -1,5 +1,5 @@
 /**
- * Reading the translation_matrix view (migration 0051) for the admin screens, the publish check and the
+ * Reading the translation_matrix view (migration 0052) for the admin screens, the publish check and the
  * daily digest. Every function degrades to "not migrated yet" instead of throwing, so the app keeps
  * working before the migration has been run.
  */
@@ -14,7 +14,7 @@ type Client = SupabaseClient<any, any, any>;
 /** PostgREST answers at most 1000 rows; 28 languages x 30 listings stays below it. */
 const CHUNK = 30;
 
-/** The view or a column is missing: migration 0051 has not been run. */
+/** The view or a column is missing: migration 0052 has not been run. */
 export function isMissingMatrix(error: { code?: string | null; message?: string | null } | null | undefined): boolean {
   if (!error) return false;
   if (error.code && ['42P01', 'PGRST205', '42703', 'PGRST204'].includes(error.code)) return true;

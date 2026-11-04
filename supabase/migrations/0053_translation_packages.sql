@@ -1,13 +1,13 @@
--- 0052 — Translation packages: Go / Európa / World, single languages, and switching a language off (FINDDOME, November 2026).
+-- 0053 — Translation packages: Go / Európa / World, single languages, and switching a language off (FINDDOME, November 2026).
 --
--- Run by hand in the Supabase SQL editor, after 0051. Safe to run twice; one transaction. It changes no listing
+-- Run by hand in the Supabase SQL editor, after 0052. Safe to run twice; one transaction. It changes no listing
 -- text, no price and no translation: it only records, for every listing, what languages it is entitled to.
 --
 -- What it adds to `properties`:
 --   translation_package   'go' (free: the original language, English and German), 'europe' or 'world'. Set only by
 --                         a paid order (the server) or an admin, never by a seller.
 --   extra_locales         single languages bought on top of the package. Same rule: server or admin only.
---   excluded_locales      languages switched off for this listing (0051 added the column; repeated here so this
+--   excluded_locales      languages switched off for this listing (0052 added the column; repeated here so this
 --                         file stands on its own). A seller may change it at any time through the app.
 --   a check               English can never be excluded: it is the fallback text of every other language.
 --   a trigger             a seller's session cannot set or change translation_package or extra_locales, whatever

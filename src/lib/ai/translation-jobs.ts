@@ -48,17 +48,17 @@ export function isMissingTranslationSchema(error: { code?: string | null; messag
   return /translation_jobs|claim_translation_jobs|save_machine_translation|machine/.test(error.message ?? '') && /does not exist|schema cache|could not find/i.test(error.message ?? '');
 }
 
-/** A column from migration 0051 is missing: write the same change without it. */
+/** A column from migration 0052 is missing: write the same change without it. */
 function isMissingColumn(error: { code?: string | null; message?: string | null } | null | undefined): boolean {
   if (!error) return false;
   if (error.code && ['42703', 'PGRST204'].includes(error.code)) return true;
   return /column/i.test(error.message ?? '') && /does not exist|schema cache|could not find/i.test(error.message ?? '');
 }
 
-/** The columns 0051 added to translation_jobs. Before it has been run, only the older ones are written. */
+/** The columns 0052 added to translation_jobs. Before it has been run, only the older ones are written. */
 const EXTRA_JOB_COLUMNS = ['fail_code', 'partial_output', 'feedback'];
 
-/** Updates a running job; if 0051 is not there yet, writes the same change without the new columns. */
+/** Updates a running job; if 0052 is not there yet, writes the same change without the new columns. */
 async function updateRunningJob(client: Client, jobId: string, patch: Record<string, unknown>): Promise<void> {
   const attempt = (body: Record<string, unknown>) => client.from('translation_jobs').update(body).eq('id', jobId).eq('status', 'running');
   const { error } = await attempt(patch);
@@ -371,7 +371,7 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
     let { data: saved, error: saveError } = await client.rpc('save_machine_translation', {
       ...saveArgs, p_needs_review: translated.needsReview, p_warnings: translated.warnings,
     });
-    // Before migration 0051 the function has the older, shorter signature.
+    // Before migration 0052 the function has the older, shorter signature.
     if (saveError && isMissingTranslationSchema(saveError)) ({ data: saved, error: saveError } = await client.rpc('save_machine_translation', saveArgs));
     if (saveError) throw new Error(saveError.message);
 

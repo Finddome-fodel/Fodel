@@ -1,4 +1,4 @@
--- 0053_photo_moderation.sql — free later photo upload with moderation
+-- 0054_photo_moderation.sql — free later photo upload with moderation
 -- (FINDDOME November 2026, spec §4c part 2).
 --
 -- Until now an owner could change photos only while the listing was a draft
@@ -249,6 +249,7 @@ create trigger property_media_rejection_guard before update on property_media_re
   for each row execute function property_media_rejection_guard();
 
 grant select, insert, update, delete on property_media_rejections to authenticated;
+grant select, insert, update, delete on property_media_rejections to service_role;
 
 /* ── 7. Storage: the owner may add and remove files on a live listing ──── */
 

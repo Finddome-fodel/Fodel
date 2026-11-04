@@ -1,4 +1,4 @@
--- 0051 — Translation status: see every listing x language at a glance, fix a text by hand (FINDDOME, November 2026).
+-- 0052 — Translation status: see every listing x language at a glance, fix a text by hand (FINDDOME, November 2026).
 --
 -- Run by hand in the Supabase SQL editor, after 0050 (or after 0045 if 0046-0050 have not
 -- been run yet: nothing here needs them). Safe to run twice; one transaction; it changes no
@@ -16,7 +16,7 @@
 --                           feedback          what a retry was told
 --                           origin may now also be 'package' (translation packages, a later release)
 --   properties              excluded_locales  languages an owner or admin switched off for this listing
---                                              (the column is used from here on; 0052 relies on it)
+--                                              (the column is used from here on; 0053 relies on it)
 --   a trigger               a person's edit of a machine text marks it manual_override and keeps the
 --                           fingerprint of the source it was made from, so "the Hungarian text changed
 --                           since" still works after a hand edit

@@ -6,7 +6,7 @@
  *     until the admin says they know (acknowledgeLanguages);
  *   - a language still being made is only news: it never blocks;
  *   - a listing with nothing bought, a language that is fine, or one that was excluded is not held back;
- *   - before migration 0051 (no overview) nothing is held back at all.
+ *   - before migration 0052 (no overview) nothing is held back at all.
  *
  *   npm run test:language-gate
  */
@@ -98,7 +98,7 @@ test('a "needs review" language is published text, so it does not stop an approv
   assert.equal((await approve()).status, 200);
 });
 
-test('before migration 0051 there is no overview and nothing is held back', async () => {
+test('before migration 0052 there is no overview and nothing is held back', async () => {
   fresh({ jobs: [job('pl', 'upload_paid', 'failed')], matrixMissing: true });
   const real = world.db.client;
   // What PostgREST answers for a view that does not exist yet.

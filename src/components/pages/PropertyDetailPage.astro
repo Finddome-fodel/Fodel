@@ -125,7 +125,7 @@ const all = await activeProperties(locale);
 const similar = similarTo(property, all, 3);
 
 // In which languages is this listing published? hreflang and the language menu name only those; a page that
-// shows another language's text (English, until the English text exists) is not indexed. Before migration 0052
+// shows another language's text (English, until the English text exists) is not indexed. Before migration 0053
 // nothing is restricted, as it always was.
 const policy = property.data.listing.languagePolicy;
 const published = new Set<Locale>(publishedLocalesOf(property, languages));

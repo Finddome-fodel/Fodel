@@ -1,6 +1,6 @@
 ---
 /**
- * Admin — photos added to live listings (spec §4c part 2, migration 0053).
+ * Admin — photos added to live listings (spec §4c part 2, migration 0054).
  * Owners add photos to a published listing for free; each one waits here
  * until an admin approves it (it then appears on the public page, SSR, no
  * rebuild) or rejects it with a reason (the file is deleted and the owner gets
@@ -97,7 +97,7 @@ const dateFmt = new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: 'shor
     <p class="count" data-total-wrap><b data-total>{total}</b><span>kép vár</span></p>
   </header>
 
-  {!migrated && <p class="notice error">Ehhez az oldalhoz futtassa le a 0053-as migrációt.</p>}
+  {!migrated && <p class="notice error">Ehhez az oldalhoz futtassa le a 0054-as migrációt.</p>}
 
   {groups.length > 0 && (
     <div class="queue" data-queue>

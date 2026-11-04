@@ -23,7 +23,7 @@ const json = (status: number, body: Record<string, unknown>) =>
 const MESSAGE: Record<string, string> = {
   'exclude-en': 'Az angol nyelv nem zárható ki – ez a hirdetés alapnyelve a többi nyelvhez.',
   'is-source': 'A hirdetés eredeti nyelve nem zárható ki.',
-  'schema-missing': 'Futtassa le a 0052-es migrációt.',
+  'schema-missing': 'Futtassa le a 0053-es migrációt.',
   'save-failed': 'A mentés most nem sikerült. Próbálja újra.',
 };
 

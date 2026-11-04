@@ -7,7 +7,7 @@
  *   - every listing that goes live is queued for English and German (Go), except what was switched off;
  *   - an owner or an admin can switch languages off and on; English can never be switched off, not by the
  *     browser and not by a forged request; a switched-off language's waiting jobs are cancelled;
- *   - before migration 0052 nothing of this runs, and payment and publishing work exactly as before;
+ *   - before migration 0053 nothing of this runs, and payment and publishing work exactly as before;
  *   - the admin's two settings tabs each write only their own keys of site_settings.services.
  *
  *   npm run test:translation:packages
@@ -182,7 +182,7 @@ test('a language that already has a text is not queued again', async () => {
   assert.deepEqual(jobLocales(), ['de']);
 });
 
-test('before migration 0052 payment and publishing work exactly as they did and nothing of the packages runs', async () => {
+test('before migration 0053 payment and publishing work exactly as they did and nothing of the packages runs', async () => {
   fresh({ gated: false, lines: [pkgLine, singleLine(['fr', 'nl'])] });
   const res = await pay('evt_i');
   assert.equal(res.status, 200);

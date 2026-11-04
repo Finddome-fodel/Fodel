@@ -4,8 +4,8 @@
  *
  * The rules themselves (which languages a package covers, what is left after an exclusion) are the pure ones in
  * src/lib/translation-packages.ts; what is published where is src/lib/listing-languages.ts. This file only
- * reads and writes `properties` (translation_package, extra_locales, excluded_locales, migration 0052) with the
- * service client, and queues jobs. Every function does nothing, quietly, before migration 0052.
+ * reads and writes `properties` (translation_package, extra_locales, excluded_locales, migration 0053) with the
+ * service client, and queues jobs. Every function does nothing, quietly, before migration 0053.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { logEvent } from '~/lib/activity';
@@ -24,7 +24,7 @@ const RANK: Record<string, number> = { go: 0, europe: 1, world: 2 };
 
 export type Entitlement = { listing: ListingLanguages; rows: { locale: string; title: string; description: string; machine: boolean }[] };
 
-/** The listing's current entitlement, or null before migration 0052 (or for an unknown listing). */
+/** The listing's current entitlement, or null before migration 0053 (or for an unknown listing). */
 export async function loadEntitlement(client: Client, propertyId: string): Promise<Entitlement | null> {
   const { data: row, error } = await client.from('properties').select('*').eq('id', propertyId).maybeSingle();
   if (error || !row || !('translation_package' in row)) return null;
@@ -158,7 +158,7 @@ async function queuePackageJobs(client: Client, propertyId: string, locales: str
 /**
  * Queues what a listing is entitled to and does not have yet: English and German for every listing (Go), and
  * whatever else was bought. Called when a listing goes live and from the admin's "Go nyelvek pótlása". Safe to
- * call twice: a language with text or a live job is skipped. Nothing before migration 0052.
+ * call twice: a language with text or a live job is skipped. Nothing before migration 0053.
  */
 export async function ensurePackageTranslations(client: Client, propertyId: string, cfg: TranslationPricing, kickOrigin?: string): Promise<string[]> {
   const current = await loadEntitlement(client, propertyId);
@@ -175,7 +175,7 @@ export async function ensurePackageTranslations(client: Client, propertyId: stri
  * The exclusions an owner chose in the wizard (kept with the draft in `requested_extras.excludedLocales`), stored
  * on the listing when it is approved. Only languages the listing is entitled to now can be switched off here;
  * the ones of a package still to be paid are carried by the package line (applyPurchase). Adds to what is
- * switched off already, never removes. Never throws; quietly nothing before migration 0052.
+ * switched off already, never removes. Never throws; quietly nothing before migration 0053.
  */
 export async function applyRequestedExclusions(client: Client, propertyId: string, requested: string[], cfg: TranslationPricing): Promise<boolean> {
   if (requested.length === 0) return false;

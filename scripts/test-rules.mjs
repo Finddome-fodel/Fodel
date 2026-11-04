@@ -1180,7 +1180,7 @@ console.log('AI translation: the rules around the model');
     assert.deepEqual(serve(machineOnly, 'fr'), { serve: 'redirect', permanent: true }, 'a machine text nobody bought is not published');
   });
 
-  test('before migration 0052 nothing changes: every language that has a text is served, as it always was', () => {
+  test('before migration 0053 nothing changes: every language that has a text is served, as it always was', () => {
     const p = { gated: false, sourceLocale: 'hu', languagesWithText: ['hu', 'fr'] };
     for (const code of T28) assert.deepEqual(serve(p, code), { serve: 'render' });
     assert.deepEqual(ll.publishedLocales(p, cfg0, T28), ['hu', 'fr']);
@@ -1385,7 +1385,7 @@ console.log('AI translation: the rules around the model');
   })();
 }
 
-// ── Free later photo upload with moderation (§4c part 2, migration 0053) ──
+// ── Free later photo upload with moderation (§4c part 2, migration 0054) ──
 {
   const pm = await import('../src/lib/portal/photo-moderation.ts');
   const u = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;

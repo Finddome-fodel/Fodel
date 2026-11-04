@@ -1,9 +1,9 @@
 /**
- * Server side of the photo moderation (spec §4c part 2, migration 0053):
+ * Server side of the photo moderation (spec §4c part 2, migration 0054):
  * telling the office that a live listing has new photos, and carrying out
  * an admin's batch of approve / reject decisions.
  *
- * Every query runs through the caller's own session, so RLS and the 0053
+ * Every query runs through the caller's own session, so RLS and the 0054
  * triggers decide as well; only the admin roster is read with the service
  * role (the owner may not see it).
  */

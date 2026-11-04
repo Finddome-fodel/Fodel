@@ -8,10 +8,10 @@ export const prerender = false;
 /**
  * An owner may change photos freely while the listing is theirs to edit
  * (draft or changes requested) — the same rule as every other field. On a
- * live listing (§4c, migration 0053) they may remove photos, reorder them and
+ * live listing (§4c, migration 0054) they may remove photos, reorder them and
  * pick an approved cover; a photo still waiting for review can be recaptioned
  * or removed, an approved one is not rewritten unseen. A submitted listing's
- * photos change only through review (brief §7). RLS and the 0053 triggers
+ * photos change only through review (brief §7). RLS and the 0054 triggers
  * enforce the same rules independently.
  */
 async function authorize(locals: App.Locals, propertyId: string) {
@@ -46,7 +46,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     .eq('property_id', id)
     .maybeSingle();
   if (!media) return json(404, { ok: false, error: 'not-found' });
-  // A live listing keeps at least one photo on the site (0053 enforces it too).
+  // A live listing keeps at least one photo on the site (0054 enforces it too).
   if (auth.live && !media.pending) {
     const { count } = await auth.supabase
       .from('property_media')

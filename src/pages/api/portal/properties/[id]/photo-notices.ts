@@ -6,7 +6,7 @@ const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
 /**
- * The owner closes a "these photos were not published" notice (0053:
+ * The owner closes a "these photos were not published" notice (0054:
  * property_media_rejections). RLS lets only the listing's owner (or an
  * admin) touch it, and a trigger lets the owner change nothing but
  * `dismissed_at`.

@@ -258,6 +258,17 @@ await db.exec(`reset role;set role anon;`);
 await assert.rejects(()=>get('select * from free_upload_link'),'anonymous has no access at all');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 console.log('✓ free_upload_link: repeatable, one row, admins only, never readable by sellers or anonymous');
+// 0046: counties get one canonical spelling. Data only; a second run changes nothing; unknown names are left alone.
+{
+  const sql46=fs.readFileSync(root+'/supabase/migrations/0046_county_normalize.sql','utf8');
+  const countyOf=async()=>(await get(`select county from properties where id='${id}'`))[0].county;
+  for(const [before,after] of [['Pest vármegye','Pest'],['  Csongrád ','Csongrád-Csanád'],['Budapest XIII. kerület','Budapest'],['BARANYA','Baranya'],['Somewhere Else','Somewhere Else']]){
+    await db.exec(`reset role;set test.uid='';set test.admin='true';update properties set country='HU',county='${before}' where id='${id}'`);
+    try{await db.exec(sql46);await db.exec(sql46);}catch(e){console.error('MIGRATION 0046 FAILED',e.message,e.detail);process.exit(1);}
+    assert.equal(await countyOf(),after,`${before} -> ${after}`);
+  }
+  console.log('✓ 0046 brings county spellings to the canonical names, leaves unknown ones alone, and is repeatable');
+}
 // 0047 (optional): converted prices rounded to €100; euro prices, placeholders and repeat runs untouched.
 const sql47=fs.readFileSync(root+'/supabase/migrations/0047_price_eur_rounding.sql','utf8');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
@@ -304,7 +315,7 @@ console.log('✓ 0049 locks free listings to FINDDOME contact (forged requests t
 // 0050: the seven later languages. Run 1 (enum) on its own, run 2 (newsletter check) after; both repeatable.
 {
   const enumSql=fs.readFileSync(root+'/supabase/migrations/0050_locales_7.sql','utf8');
-  const newsSql=fs.readFileSync(root+'/supabase/migrations/0050_locales_7_newsletter.sql','utf8');
+  const newsSql=fs.readFileSync(root+'/supabase/migrations/0051_locales_7_newsletter.sql','utf8');
   await db.exec(`create table if not exists newsletter_subscribers(id uuid primary key default gen_random_uuid(),email text not null,locale text not null default 'nl' constraint newsletter_locale_old check(locale in ('hu','nl','en')));`);
   try{await db.exec(enumSql);await db.exec(enumSql);await db.exec(newsSql);await db.exec(newsSql);}catch(e){console.error('MIGRATION 0050 FAILED',e.message,e.detail);process.exit(1);}
   const codes=(await get(`select unnest(enum_range(null::locale_code))::text as code`)).map(r=>r.code);
@@ -318,12 +329,12 @@ console.log('✓ 0049 locks free listings to FINDDOME contact (forged requests t
   await db.exec(`delete from property_translations where locale='ar';drop table newsletter_subscribers;`);
   console.log('✓ 0050 adds sr, uk, tr, he, ar, ru, zh (enum run on its own), widens the newsletter check to 28 languages, and is repeatable');
 }
-// 0053: free later photo upload with moderation. Storage is stubbed like Supabase's (bucket + foldername()).
+// 0054: free later photo upload with moderation. Storage is stubbed like Supabase's (bucket + foldername()).
 await db.exec(`reset role;set test.uid='';set test.admin='true';create schema if not exists storage;create table if not exists storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);create or replace function storage.foldername(name text) returns text[] language sql immutable as $$select (string_to_array(name,'/'))[1:array_length(string_to_array(name,'/'),1)-1]$$;alter table storage.objects enable row level security;create policy test_storage_read on storage.objects for select using(true);grant usage on schema storage to authenticated,anon;grant select,insert,delete on storage.objects to authenticated;alter table property_media enable row level security;grant insert,delete on property_media to authenticated;grant select on property_media to anon;grant select on profiles to authenticated;drop policy if exists test_public_signed_in on properties;create policy test_public_signed_in on properties for select to authenticated using(status in ('published','sold'));`);
 const live='10000000-0000-4000-8000-000000000053';
 await db.exec(`delete from property_media where property_id='${id}';insert into properties(id,ref,owner_id,status,category,country,settlement,county,region,lat,lng,price_eur,price_huf,price_asof,plot_m2)values('${live}','5300','${owner}','published','apartment','HU','Pécs','Baranya','',46.07,18.23,100000,40000000,'2026-10-23',1);insert into property_media(property_id,storage_path,is_hero,sort_order)values('${live}','${live}/approved-a.webp',true,0),('${live}','${live}/approved-b.webp',false,1);`);
-const sql53=fs.readFileSync(root+'/supabase/migrations/0053_photo_moderation.sql','utf8');
-try{await db.exec(sql53);await db.exec(sql53);}catch(e){console.error('MIGRATION 0053 FAILED',e.message,e.detail);process.exit(1);}
+const sql53=fs.readFileSync(root+'/supabase/migrations/0054_photo_moderation.sql','utf8');
+try{await db.exec(sql53);await db.exec(sql53);}catch(e){console.error('MIGRATION 0054 FAILED',e.message,e.detail);process.exit(1);}
 assert.equal((await get(`select count(*)::int n from property_media where property_id='${live}' and pending`))[0].n,0,'existing photos stay approved');
 const asOwner=`set role authenticated;set test.admin='false';set test.uid='${owner}';`,asAdmin=`reset role;set test.uid='${other}';set test.admin='true';`;
 // The owner adds a photo to the live listing (file first, as the API does); it cannot sneak in as approved or as the cover.
@@ -387,12 +398,12 @@ await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 for(let i=0;i<198;i++)await db.query('insert into property_media(property_id,storage_path,pending)values($1,$2,$3)',[live,`${live}/bulk-${i}.webp`,i%2===0]);
 await assert.rejects(()=>db.query('insert into property_media(property_id,storage_path,pending)values($1,$2,true)',[live,`${live}/over.webp`]),/photo-limit/,'pending photos count toward the limit');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
-console.log('✓ 0053 queues live-listing photos as pending (never the cover, never self-approved), hides them from the public, keeps one approved photo, guards storage, keeps reasons owner-read-only, and is repeatable');
-// 0051: translation status. Repeatable; a hand edit of an AI text is noted and keeps the source fingerprint; the server's
+console.log('✓ 0054 queues live-listing photos as pending (never the cover, never self-approved), hides them from the public, keeps one approved photo, guards storage, keeps reasons owner-read-only, and is repeatable');
+// 0052: translation status. Repeatable; a hand edit of an AI text is noted and keeps the source fingerprint; the server's
 // write stores the checks' verdict and clears a hand edit only when told to overwrite; only an admin saves a hand-made text;
 // the overview view covers every listing x language and is not readable by anonymous visitors.
-const sql51=fs.readFileSync(root+'/supabase/migrations/0051_translation_status.sql','utf8');
-try{await db.exec(sql51);await db.exec(sql51);}catch(e){console.error('MIGRATION 0051 FAILED',e.message,e.detail);process.exit(1);}
+const sql51=fs.readFileSync(root+'/supabase/migrations/0052_translation_status.sql','utf8');
+try{await db.exec(sql51);await db.exec(sql51);}catch(e){console.error('MIGRATION 0052 FAILED',e.message,e.detail);process.exit(1);}
 await db.exec(`reset role;set test.uid='';set test.admin='true';delete from translation_jobs;delete from property_translations where property_id='${id}';insert into property_translations(property_id,locale,title,description,body)values('${id}','hu','Cím','Rövid','Hosszú');insert into property_translations(property_id,locale,title,description,body,machine,translated_from,translated_at,source_hash)values('${id}','de','Titel','Kurz','Lang',true,'hu',now(),'H1');`);
 const locales=(await get(`select count(*)::int as n from pg_enum where enumtypid='locale_code'::regtype`))[0].n;
 assert.equal((await get(`select count(*)::int as n from translation_matrix where property_id='${id}'`))[0].n,locales,'one row per language');
@@ -439,12 +450,12 @@ assert.equal((await get(`select count(*)::int as n from translation_matrix where
 await db.exec(`reset role;set role anon;`);
 await assert.rejects(()=>get('select * from translation_matrix'),'anonymous has no access');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
-console.log('✓ 0051: repeatable; the overview, hand-edit tracking, the verdict, admin-only overrides and access all hold');
-// 0052: translation packages. Repeatable; English can never be excluded; a seller cannot grant themselves a package or languages
+console.log('✓ 0052: repeatable; the overview, hand-edit tracking, the verdict, admin-only overrides and access all hold');
+// 0053: translation packages. Repeatable; English can never be excluded; a seller cannot grant themselves a package or languages
 // (insert or update), the server and admins can; the backfill keeps every language a listing already has.
 await db.exec(`reset role;set test.uid='';set test.admin='true';delete from translation_jobs;delete from property_translations where property_id='${id}';insert into property_translations(property_id,locale,title,description,body,machine)values('${id}','hu','Cím','Rövid','Hosszú',false),('${id}','nl','Huis','Kort','',true),('${id}','de','Haus','Kurz','',true),('${id}','en','House','Short','',true),('${id}','fr','Maison','Court','',false);insert into translation_jobs(property_id,locale,origin,status)values('${id}','nl','upload_paid','done');update properties set excluded_locales='{}' where id='${id}';`);
-const sql52=fs.readFileSync(root+'/supabase/migrations/0052_translation_packages.sql','utf8');
-try{await db.exec(sql52);await db.exec(sql52);}catch(e){console.error('MIGRATION 0052 FAILED',e.message,e.detail);process.exit(1);}
+const sql52=fs.readFileSync(root+'/supabase/migrations/0053_translation_packages.sql','utf8');
+try{await db.exec(sql52);await db.exec(sql52);}catch(e){console.error('MIGRATION 0053 FAILED',e.message,e.detail);process.exit(1);}
 let tp=(await get(`select translation_package,extra_locales::text[] as extra_locales,excluded_locales::text[] as excluded_locales from properties where id='${id}'`))[0];
 assert.deepEqual(tp,{translation_package:'go',extra_locales:['nl','fr'],excluded_locales:[]},'the backfill keeps nl and fr, and leaves out the original (hu), English and German which Go covers');
 await db.exec(`update properties set extra_locales='{}' where id='${id}'`);
@@ -486,5 +497,5 @@ await db.exec(`set role authenticated;set test.admin='false';set test.uid='${own
 const created=await db.query(`insert into properties(ref,owner_id,status,category,country,settlement,county,region,lat,lng,translation_package,extra_locales) values('9999','${owner}','draft','house','HU','X','Y','Z',47,19,'world','{fr}') returning translation_package,extra_locales::text[] as extra_locales`).catch(()=>null);
 if(created)assert.deepEqual(created.rows[0],{translation_package:'go',extra_locales:[]},'an insert by a seller starts on Go');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
-console.log('✓ 0052: repeatable; the backfill keeps every language; English cannot be excluded; sellers cannot grant themselves languages');
+console.log('✓ 0053: repeatable; the backfill keeps every language; English cannot be excluded; sellers cannot grant themselves languages');
 await db.close();

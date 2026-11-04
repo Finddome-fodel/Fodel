@@ -13,7 +13,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  * The admin's decisions on photos added to a live listing (§4c part 2):
  * `{ propertyId, decisions: [{ id, action: 'approve' | 'reject', reason?, note? }] }`.
  * Admin-only twice over: the middleware (ADMIN_ONLY_PREFIXES) and the check
- * below; RLS lets only an admin clear `pending` anyway (0053).
+ * below; RLS lets only an admin clear `pending` anyway (0054).
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   const { supabase, profile, user } = locals;
