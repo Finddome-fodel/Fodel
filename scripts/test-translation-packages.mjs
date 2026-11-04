@@ -53,7 +53,7 @@ function stripeEvent(type, object, id = `evt_${++eventSeq}`) {
 const pay = (id) => webhook.POST({ request: stripeEvent('checkout.session.completed', { id: 'cs_1', payment_status: 'paid', metadata: { orderId: 'o1', propertyId: 'p1' }, customer_details: { name: 'A', email: 'owner@example.test' } }, id) });
 
 const pkgLine = { kind: 'package', id: 'normal-12m', label: 'Standard hirdetés', quantity: 1, unitCents: 12900 };
-const europeLine = (locales) => ({ kind: 'extra', id: 'translation-package', packageId: 'europe', label: 'Fordítási csomag: Európa', quantity: 1, unitCents: 1200, locales });
+const europeLine = (locales, excludedLocales) => ({ kind: 'extra', id: 'translation-package', packageId: 'europe', label: 'Fordítási csomag: Európa', quantity: 1, unitCents: 1200, locales, ...(excludedLocales ? { excludedLocales } : {}) });
 const singleLine = (locales) => ({ kind: 'extra', id: 'translation', label: 'Fordítás', quantity: locales.length, unitCents: 100, locales });
 const EUROPE = packages.packageLocales(packages.packageById(cfg, 'europe'), (await import('../src/lib/ai/translate-core.ts')).ALL_LOCALES).filter((code) => code !== 'hu');
 
@@ -120,7 +120,7 @@ test('single languages bought on top of Go are stored as extra languages', async
 });
 
 test('the languages the buyer switched off are never translated and are stored as switched off', async () => {
-  fresh({ lines: [pkgLine, europeLine(EUROPE.filter((code) => code !== 'de' && code !== 'pl'))] });
+  fresh({ lines: [pkgLine, europeLine(EUROPE.filter((code) => code !== 'de' && code !== 'pl'), ['de', 'pl'])] });
   await pay('evt_d');
   assert.deepEqual(prop().excluded_locales.sort(), ['de', 'pl']);
   assert.equal(jobLocales().includes('de'), false, 'German was switched off, so even Go does not make it');
@@ -348,47 +348,56 @@ const TAB_PACKAGES = {
   world_name_hu: 'World', world_name_en: 'World', world_name_nl: 'World', world_price: '29', world_active: 'yes',
 };
 
-test('the packages tab writes only the packages: the prices of the other tab and everything else in the settings stay as they are', async () => {
+const CONTENT = (over = {}) => {
+  const fields = { recommended: 'europe' };
+  for (const key of ['basic', 'europe', 'world']) {
+    const name = key[0].toUpperCase() + key.slice(1);
+    Object.assign(fields, { [`${key}_name_hu`]: name, [`${key}_name_en`]: name, [`${key}_images`]: '20', [`${key}_video`]: 'included', [`${key}_phone`]: 'yes', [`${key}_enabled`]: 'yes' });
+  }
+  return { ...fields, ...over };
+};
+
+test('Csomagok tartalma writes only its own keys: the single-language prices and everything else in the settings stay as they are', async () => {
   fresh();
   world.db.table('site_settings')[0].services.translationPackages = { singleEur: { european: 2, world: 7 }, worldOnly: ['tr', 'ar'] };
   const before = JSON.parse(JSON.stringify(services()));
-  const res = await submitTab(tabTranslations, TAB_PACKAGES);
+  const res = await submitTab(tabTranslations, CONTENT({ world_name_hu: 'Világ', world_images: '35' }));
   assert.equal(res.headers.get('location'), '/portal/packages/translations?saved=1');
   const after = services();
   assert.deepEqual(after.translationPackages.singleEur, before.translationPackages.singleEur, 'the other tab\'s keys');
   assert.deepEqual(after.translationPackages.worldOnly, before.translationPackages.worldOnly);
-  assert.deepEqual(after.listingPackages, before.listingPackages, 'listing packages untouched');
+  assert.deepEqual(after.listingPackages, before.listingPackages, 'the older listing packages are untouched');
   assert.deepEqual(after.packagePhone, before.packagePhone);
   assert.equal(after.other, 'kept');
-  const saved = catalog.listingCatalog(after).translation;
-  assert.equal(packages.packageById(saved, 'europe').priceEur, 14);
-  assert.equal(packages.packageById(saved, 'world').priceEur, 29);
-  assert.equal(saved.packages.find((p) => p.recommended).id, 'europe');
-  assert.equal(events('settings.translation_packages').length, 1);
+  assert.equal(after.listingPricing.packages.world.names.hu, 'Világ');
+  assert.equal(after.listingPricing.packages.world.features.maxImages, 35);
+  assert.equal(events('settings.packages').length, 1);
+  assert.equal(events('settings.packages')[0].payload.tab, 'translations');
 });
 
-test('the languages tab writes only the single prices and the World-only list', async () => {
+test('Egyedi nyelvek writes only the switch and the two single prices (cents)', async () => {
   fresh();
-  await submitTab(tabTranslations, TAB_PACKAGES);
+  await submitTab(tabTranslations, CONTENT());
   const packagesBefore = JSON.stringify(services().translationPackages.packages);
-  const listingBefore = JSON.stringify(services().listingPackages);
-  const res = await submitTab(tabLanguages, { single_european: '1,5', single_world: '6', world_only: ['tr', 'he', 'ar', 'zh', 'ru'] });
+  const pricingBefore = JSON.stringify(services().listingPricing.packages);
+  const res = await submitTab(tabLanguages, { european: '1,50', world: '6' });
   assert.equal(res.headers.get('location'), '/portal/packages/languages?saved=1');
   assert.equal(JSON.stringify(services().translationPackages.packages), packagesBefore, 'the packages of the other tab');
-  assert.equal(JSON.stringify(services().listingPackages), listingBefore);
-  const saved = catalog.listingCatalog(services()).translation;
-  assert.deepEqual(saved.singleEur, { european: 1.5, world: 6 });
-  assert.deepEqual(saved.worldOnly, ['tr', 'he', 'ar', 'zh', 'ru'], 'kept although the site does not have these languages yet');
+  assert.equal(JSON.stringify(services().listingPricing.packages), pricingBefore);
+  assert.deepEqual(services().listingPricing.singleLanguages, { enabled: false, europeanCents: 150, worldOnlyCents: 600 });
+  assert.deepEqual(services().translationPackages.singleEur, { european: 1.5, world: 6 });
+  const refused = await submitTab(tabLanguages, { european: '1,5x', world: '6' });
+  assert.match(decodeURIComponent(refused.headers.get('location')), /error=Európai nyelv/);
+  assert.deepEqual(services().listingPricing.singleLanguages, { enabled: false, europeanCents: 150, worldOnlyCents: 600 }, 'a refused save writes nothing');
 });
 
-test('a new price applies to new orders only; an order already made keeps its own lines', async () => {
+test('a new setting applies to new orders only; an order already made keeps its own lines', async () => {
   fresh({ lines: [pkgLine, europeLine(EUROPE)] });
   const frozen = JSON.stringify(world.db.table('payments')[0].line_items);
-  await submitTab(tabTranslations, TAB_PACKAGES);
+  await submitTab(tabTranslations, CONTENT({ europe_name_hu: 'Európa+', recommended: 'world' }));
   assert.equal(JSON.stringify(world.db.table('payments')[0].line_items), frozen);
-  const fresher = catalog.listingCatalog(services());
-  const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation: { packageId: 'europe' } }, 'hu', fresher);
-  assert.equal(lines.find((l) => l.id === 'translation-package').unitCents, 1400);
+  assert.equal(services().listingPricing.packages.world.recommended, true);
+  assert.equal(services().listingPricing.packages.europe.recommended, false, 'exactly one package is recommended');
 });
 
 test('only an admin can save either tab', async () => {
@@ -401,26 +410,66 @@ test('only an admin can save either tab', async () => {
   assert.equal(JSON.stringify(services()), before);
 });
 
-test('a hand-made language list is kept, English is added to it, and an absurd price is ignored', async () => {
+test('a hand-made language list is kept and English is added to it; a list equal to the rule is stored as no list', async () => {
   fresh();
-  await submitTab(tabTranslations, { ...TAB_PACKAGES, europe_price: '99999999', europe_override: 'yes', europe_locale: ['fr', 'es'] });
+  await submitTab(tabTranslations, CONTENT({ lang_europe__present: '1', lang_europe: ['fr', 'es'] }));
   const saved = catalog.listingCatalog(services()).translation;
   const europe = packages.packageById(saved, 'europe');
-  assert.equal(europe.priceEur, 12, 'the default stands');
-  assert.deepEqual(packages.packageLocales(europe, ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl']), ['en', 'fr', 'es']);
+  const sample = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl'];
+  const listed = packages.packageLocales(europe, sample);
+  assert.ok(listed.includes('en') && listed.includes('fr') && listed.includes('es'), 'English is always in');
+  assert.equal(listed.includes('de') || listed.includes('pl'), false, 'only what was ticked');
+  await submitTab(tabTranslations, CONTENT({ lang_europe__present: '1', lang_europe: EUROPE.concat('hu') }));
+  const again = (services().translationPackages.packages ?? []).find((p) => p.id === 'europe');
+  assert.equal(again?.locales, undefined, 'equal to the rule: stored as the rule, so a language added to the site later still joins');
 });
 
-test('a badge an admin clears stays cleared; one never saved keeps its default; Go has none by default', async () => {
-  fresh();
-  const defaults = catalog.listingCatalog(services()).translation;
-  assert.equal(packages.packageById(defaults, 'basic').badge.hu, '', 'Go says "Benne van" on its price line already');
-  assert.ok(packages.packageById(defaults, 'europe').badge.hu, 'Európa keeps its badge');
-  await submitTab(tabTranslations, { ...TAB_PACKAGES, europe_badge_hu: 'Ajánlott', europe_badge_en: '', europe_badge_nl: '' });
-  const saved = catalog.listingCatalog(services()).translation;
-  assert.equal(packages.packageById(saved, 'europe').badge.hu, 'Ajánlott');
-  assert.equal(packages.packageById(saved, 'europe').badge.en, '', 'an empty badge is no badge');
-  const bare = packages.translationPricing({ packages: [{ id: 'europe' }] }, defaults.packages ? { singleEur: defaults.singleEur, worldOnly: defaults.worldOnly, packages: defaults.packages } : undefined, ['en']);
-  assert.ok(packages.packageById(bare, 'europe').badge.hu, 'a missing badge falls back to the default');
+/* ── Fix 3.5: the order's own snapshot, and one application per order ── */
+
+test('3.5 the switch-off is the order\'s own: a language an admin added to the package after the order is not switched off', async () => {
+  fresh({ property: { translation_package: 'basic' } });
+  const ALL = (await import('../src/lib/ai/translate-core.ts')).ALL_LOCALES;
+  const later = packages.translationPricing({ packages: [{ id: 'europe', locales: [...EUROPE, 'tr'] }] }, { singleEur: cfg.singleEur, worldOnly: cfg.worldOnly, packages: cfg.packages }, ALL);
+  assert.ok(packages.packageLocales(packages.packageById(later, 'europe'), ALL).includes('tr'), 'the admin did add Turkish to Európa');
+  const ok = await entitlement.applyPurchase(world.db.client, 'p1', { packageId: 'europe', singles: [], packageLocalesPaid: EUROPE.filter((c) => c !== 'fr'), excludedAtOrder: ['fr'], orderId: 'o1' }, later);
+  assert.equal(ok, true);
+  assert.deepEqual(prop().excluded_locales, ['fr'], 'only what the buyer switched off, never a language they never saw');
+  assert.equal(prop().translation_package, 'europe');
+});
+
+test('3.5 a retried payment never switches a language off again: the owner\'s choice after paying stands', async () => {
+  fresh({ lines: [pkgLine, europeLine(EUROPE.filter((c) => c !== 'fr'), ['fr'])] });
+  await pay('evt_r1');
+  assert.deepEqual(prop().excluded_locales, ['fr']);
+  prop().excluded_locales = []; // the owner switches French back on
+  await pay('evt_r2');
+  await pay('evt_r1');
+  assert.deepEqual(prop().excluded_locales, [], 'two more deliveries leave it on');
+  const order = world.db.table('payments')[0];
+  const { applyPaidEntitlement } = await import('../src/lib/ai/translation-orders.ts');
+  await applyPaidEntitlement(world.db.client, order);
+  assert.deepEqual(prop().excluded_locales, [], 'and so does the admin pressing "Fizetve" again');
+});
+
+test('3.5 an order line from before the snapshot excludes nothing; the same order applied three times is one change and one event', async () => {
+  fresh({ property: { translation_package: 'basic' } });
+  const purchase = { packageId: 'europe', singles: [], packageLocalesPaid: EUROPE, orderId: 'o1' };
+  await entitlement.applyPurchase(world.db.client, 'p1', purchase, cfg);
+  const once = JSON.stringify(prop());
+  await entitlement.applyPurchase(world.db.client, 'p1', purchase, cfg);
+  await entitlement.applyPurchase(world.db.client, 'p1', purchase, cfg);
+  assert.equal(JSON.stringify(prop()), once);
+  assert.deepEqual(prop().excluded_locales, [], 'an old-format line switched nothing off');
+  assert.equal(events('translation.entitlement_applied').length, 1, 'logged once');
+});
+
+test('3.5 only a duplicate claim means "applied before": a log that is unavailable does not swallow the owner\'s switch-offs', async () => {
+  fresh({ property: { translation_package: 'basic' } });
+  const unavailable = { from: (name) => (name === 'activity_events'
+    ? { insert: async () => ({ data: null, error: { code: '42P01', message: 'relation "activity_events" does not exist' } }), delete: () => ({ eq: async () => ({}) }) }
+    : world.db.client.from(name)) };
+  await entitlement.applyPurchase(unavailable, 'p1', { packageId: 'europe', singles: [], packageLocalesPaid: EUROPE, excludedAtOrder: ['fr'], orderId: 'o2' }, cfg);
+  assert.deepEqual(prop().excluded_locales, ['fr'], 'proceeds as the first time');
 });
 
 let failed = 0;

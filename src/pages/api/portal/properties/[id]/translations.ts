@@ -41,7 +41,7 @@ async function load(locals: App.Locals, id: string | undefined): Promise<
 > {
   const { supabase, profile, user } = locals;
   if (!user || !id) return { response: json(401, { ok: false, error: 'unauthenticated' }) };
-  const { data: property } = await supabase.from('properties').select('id, ref, status, owner_id, free_listing').eq('id', id).maybeSingle();
+  const { data: property } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
   if (!property) return { response: json(404, { ok: false, error: 'not-found' }) };
   const isAdmin = profile?.role === 'admin';
   const isOwner = property.owner_id === user.id;
@@ -53,7 +53,8 @@ const clean = (value: unknown): string[] => (Array.isArray(value) ? [...new Set(
 
 /** The package and languages a person asked for: ids only. */
 function readChoice(body: Record<string, any>, cfg: TranslationPricing) {
-  const packageId = cfg.packages.some((p) => p.id === body.packageId && (p.active || p.id === 'basic')) ? String(body.packageId) : 'basic';
+  // The package is only an id: whether it is on sale, and its price, are decided where the order is built.
+  const packageId = cfg.packages.some((p) => p.id === body.packageId) ? String(body.packageId) : 'basic';
   return { packageId, extraLocales: clean(body.locales), excludedLocales: clean(body.excluded) };
 }
 

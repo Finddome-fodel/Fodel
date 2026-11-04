@@ -6,10 +6,11 @@
  * payment settles. The price comes from the catalogue, never from the browser.
  */
 import type { Locale } from '~/i18n/ui';
-import { buildOrderLines, orderTotalCents, type OrderLine } from '~/lib/orders';
+import { buildOrderLines, orderTotalCents, OrderError, type OrderLine } from '~/lib/orders';
 import { getStripe } from '~/lib/stripe';
 import { getCompany } from '~/lib/runtime-config';
-import { listingCatalog } from '~/lib/listing-packages';
+import { listingCatalog, sellingPackages } from '~/lib/listing-packages';
+import { isPackageKey, tierIndexFor } from '~/lib/listing-pricing';
 import { TRANSLATION_LINE_IDS, grantedLocales } from '~/lib/translation-packages';
 import { ALL_LOCALES } from './translate-core';
 import { loadEntitlement } from './translation-entitlement';
@@ -21,13 +22,23 @@ export type TranslationChoice = { packageId: string; extraLocales: string[]; exc
 export type TranslationOrder = { id: string; amount_cents: number; line_items: OrderLine[]; stripe_session_id: string | null };
 
 /**
+ * The term an upgrade is priced for: what the listing was bought for, else (a listing on one of the older packages) the
+ * configured term closest to the months it has left.
+ */
+function upgradeTerm(property: { package_months?: number | null; expires_at?: string | null }, durations: readonly number[]): number {
+  if (typeof property.package_months === 'number' && durations.includes(property.package_months)) return property.package_months;
+  const left = property.expires_at ? Math.max(1, Math.round((Date.parse(property.expires_at) - Date.now()) / (30 * 86_400_000))) : Math.max(...durations);
+  return [...durations].sort((a, b) => Math.abs(a - left) - Math.abs(b - left) || b - a)[0];
+}
+
+/**
  * Replaces whatever translation order was still open with one for exactly these
  * languages: a person who changes their mind never leaves two debts or two live
  * payment links behind. The listing's own first order is never touched.
  */
 export async function openTranslationOrder(
   admin: any,
-  property: { id: string; owner_id: string | null; price_huf?: number | null },
+  property: { id: string; owner_id: string | null; price_huf?: number | null; package?: string | null; package_months?: number | null; price_tier_index?: number | null; expires_at?: string | null },
   choice: TranslationChoice,
   locale: Locale
 ): Promise<TranslationOrder> {
@@ -42,12 +53,14 @@ export async function openTranslationOrder(
   }
 
   const catalog = listingCatalog((await getCompany()).services);
+  if (catalog.pricingLive) return insertOrder(admin, property, upgradeLines(property, choice, catalog, locale, await loadEntitlement(admin, property.id).catch(() => null)), locale);
+
   // What the listing already holds: a bigger package costs the difference, and a language it has or bought is not sold twice.
   const held = await loadEntitlement(admin, property.id).catch(() => null);
   const alreadyHeld = new Set(held ? [...grantedLocales(held.listing, catalog.translation, ALL_LOCALES), ...held.rows.filter((row) => row.title.trim() || row.description.trim()).map((row) => row.locale)] : []);
   // buildOrderLines wants a package; only the translation lines are kept and charged.
   const lines = buildOrderLines({
-    packageId: catalog.packages[0].id,
+    packageId: catalog.packages.find((p) => p.legacy)!.id,
     priceHuf: property.price_huf ?? null,
     extras: [],
     translation: {
@@ -59,6 +72,27 @@ export async function openTranslationOrder(
     },
   }, locale, catalog).filter((line) => TRANSLATION_LINE_IDS.includes(line.id));
   if (lines.length === 0) throw new Error('nothing-to-order');
+  return insertOrder(admin, property, lines, locale);
+}
+
+/** An upgrade to a bigger package: the difference for the same term, inside the band the listing was bought in (Q6). */
+function upgradeLines(
+  property: { price_huf?: number | null; package?: string | null; package_months?: number | null; price_tier_index?: number | null; expires_at?: string | null },
+  choice: TranslationChoice, catalog: ReturnType<typeof listingCatalog>, locale: Locale, held: Awaited<ReturnType<typeof loadEntitlement>>
+): OrderLine[] {
+  const from = property.package && isPackageKey(property.package) ? property.package : 'basic';
+  const months = upgradeTerm(property, catalog.pricing.durations);
+  const tierIndex = typeof property.price_tier_index === 'number' ? property.price_tier_index : tierIndexFor(catalog.pricing, property.price_huf);
+  if (!isPackageKey(choice.packageId) || !sellingPackages(catalog).some((pkg) => pkg.id === choice.packageId)) throw new OrderError('unknown-package');
+  const lines = buildOrderLines({
+    packageId: choice.packageId, upgradeFrom: from, months, tierIndex, priceHuf: property.price_huf ?? null, extras: [],
+    translation: { packageId: choice.packageId, excludedLocales: choice.excludedLocales, sourceLocale: held?.listing.sourceLocale ?? 'hu' },
+  }, locale, catalog);
+  if (lines.length === 0 || lines[0].unitCents <= 0) throw new Error('nothing-to-order');
+  return lines;
+}
+
+async function insertOrder(admin: any, property: { id: string; owner_id: string | null }, lines: OrderLine[], locale: Locale): Promise<TranslationOrder> {
   const base = {
     property_id: property.id,
     owner_id: property.owner_id,

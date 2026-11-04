@@ -64,7 +64,7 @@ export function createFakeDb(seed = {}, options = {}) {
         for (const input of this.rows) {
           const row = { id: `${this.name}-${++seq}`, ...input };
           if (this.name === 'activity_events' && row.dedupe_key && rows.some((r) => r.dedupe_key === row.dedupe_key)) {
-            return { data: null, error: { message: 'duplicate key value violates unique constraint "activity_events_dedupe_key"' } };
+            return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint "activity_events_dedupe_key"' } };
           }
           // The partial unique index of migration 0043: one live job per listing and language.
           if (this.name === 'translation_jobs' && ['requested', 'queued', 'running'].includes(row.status ?? 'queued')

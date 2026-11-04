@@ -22,7 +22,7 @@
 import type { APIRoute } from 'astro';
 import { isStripeEnabled, getStripe } from '~/lib/stripe';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
-import { publishProperty, listingTitle, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
+import { publishProperty, listingTitle, renewProperty, isRenewalOrder, renewalMonthsOf } from '~/lib/portal/publish';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { intlTag } from '~/lib/format';
@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request }) => {
       // the renewal is logged under the order's own key, checked first.
       const { data: done } = await admin.from('activity_events').select('id').eq('dedupe_key', `order-${order.id}:renewed`).maybeSingle();
       if (done) return new Response(null, { status: 200 });
-      const renewed = await renewProperty(admin, order.property_id, { months: 6, source: 'stripe-webhook', dedupeKey: `order-${order.id}`, notifyOwner: !alreadySettled });
+      const renewed = await renewProperty(admin, order.property_id, { months: renewalMonthsOf(order.line_items as OrderLine[]), source: 'stripe-webhook', dedupeKey: `order-${order.id}`, notifyOwner: !alreadySettled });
       if (!renewed.ok && renewed.error !== 'not-renewable') {
         console.error(`[stripe] renewal paid but not applied for ${order.property_id}`, renewed.error);
         return new Response('renewal failed', { status: 500 });

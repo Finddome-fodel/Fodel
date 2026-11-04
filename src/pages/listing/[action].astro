@@ -26,7 +26,9 @@ import { lifecycleEmails } from '~/lib/email/lifecycle';
 import { eur, huf } from '~/lib/format';
 import { formatCents } from '~/lib/orders';
 import { isStripeEnabled } from '~/lib/stripe';
-import { openRenewalOrder, renewalCheckoutUrl, renewalPriceCents } from '~/lib/portal/renewal';
+import { openRenewalOrder, renewalCheckoutUrl, renewalPriceCents, renewalOptions } from '~/lib/portal/renewal';
+import { monthsText } from '~/lib/orders';
+import { eurPrice } from '~/lib/format';
 import { getCompany } from '~/lib/runtime-config';
 import { readPriceRounding, roundEur } from '~/lib/exchange-rates';
 import { SITE_URL } from '~/config/site.mjs';
@@ -1106,7 +1108,7 @@ if (valid) {
       view = { kind: 'message', title: T.goneTitle, body: T.notRenewable, tone: 'warn' };
     } else if (post) {
       try {
-        const order = await openRenewalOrder(admin, property, locale, owner?.email);
+        const order = await openRenewalOrder(admin, property, locale, owner?.email, Number(post.get('months')) || undefined);
         if (post.get('method') === 'card' && isStripeEnabled()) {
           const back = ownerLink('renew', id, locale, RENEW_LINK_DAYS).replace(SITE_URL, url.origin);
           return Astro.redirect(await renewalCheckoutUrl(admin, order, property, back), 303);
@@ -1196,7 +1198,10 @@ if (valid) {
 const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur, 'hu')}` : `${eur(property.price_eur, locale)} · ${huf(property.price_huf, locale)}`) : '';
 const expiry = property?.expires_at ? new Date(property.expires_at) : null;
 const expiryText = expiry ? expiry.toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
-const renewalPrice = formatCents(await renewalPriceCents(property?.price_huf), locale);
+const renewalPrice = formatCents(await renewalPriceCents(property ?? {}), locale);
+// Since November 2026 a renewal is 1, 3 or 6 more months of the listing's own package, at today's price.
+const renewalTerms = property ? await renewalOptions(property).catch(() => []) : [];
+const defaultTerm = renewalTerms.some((option) => option.months === 6) ? 6 : renewalTerms.at(-1)?.months;
 const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ? T.priceTitle : view.kind === 'sold' ? T.soldTitle : T.renewTitle;
 ---
 
@@ -1267,6 +1272,17 @@ const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ?
             </div>
           ) : (
             <form method="POST" class="act-choices">
+              {renewalTerms.length > 1 && (
+                <fieldset class="act-terms">
+                  {renewalTerms.map((option) => (
+                    <label>
+                      <input type="radio" name="months" value={option.months} checked={option.months === defaultTerm} />
+                      <span>{monthsText(option.months, locale)}</span>
+                      <b class="num">{eurPrice(option.cents, locale)}</b>
+                    </label>
+                  ))}
+                </fieldset>
+              )}
               {isStripeEnabled() && <button class="act-btn" type="submit" name="method" value="card">{T.payCard}<ArrowChip /></button>}
               <button class:list={['act-btn', isStripeEnabled() && 'ghost']} type="submit" name="method" value="bank">{T.payBank}{!isStripeEnabled() && <ArrowChip />}</button>
             </form>
@@ -1278,6 +1294,11 @@ const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ?
 </Base>
 
 <style>
+  .act-terms { display: grid; gap: 8px; margin: 0 0 12px; padding: 0; border: 0; min-width: 0; }
+  .act-terms label { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 12px 16px; border-radius: var(--r-md, 12px); background: var(--white, #fff); box-shadow: inset 0 0 0 1px var(--pt-hair, rgba(16,42,67,.14)); cursor: pointer; }
+  .act-terms input { position: absolute; opacity: 0; pointer-events: none; }
+  .act-terms label:has(input:checked) { box-shadow: inset 0 0 0 2px var(--ink, #102a43); }
+  .act-terms label:has(input:focus-visible) { outline: var(--focus-ring, 2px solid #102a43); outline-offset: 2px; }
   .owner-act {
     display: grid;
     place-items: center;

@@ -62,7 +62,9 @@ import {
 import { SITE_URL } from '~/config/site.mjs';
 import { eur, formatDate } from '~/lib/format';
 import { paymentGatesPublishing } from '~/config/flags';
-import { listingCatalog, packageOf } from '~/lib/listing-packages';
+import { listingCatalog, packageOf, sellingPackages } from '~/lib/listing-packages';
+import { isPackageKey } from '~/lib/listing-pricing';
+import { monthsForListing, termColumns } from '~/lib/portal/package-terms';
 import { addMonths } from '~/lib/listing-rules';
 
 export const prerender = false;
@@ -220,13 +222,27 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // themselves a payment request.
     const adminOwned = owner?.role === 'admin';
     if (property.free_listing || adminOwned) {
+      const freeCatalog = listingCatalog((await getCompany()).services);
       const requested = String(body.order?.packageId ?? property.package);
-      const packageId = listingCatalog().packages.some((pkg) => pkg.id === requested) ? requested : property.package;
+      // Free listings get the Basic languages and the package length they always had (Q7); an admin can grant any package free.
+      const packageId = freeCatalog.pricingLive
+        ? (sellingPackages(freeCatalog).some((pkg) => pkg.id === requested) ? requested : 'basic')
+        : (freeCatalog.packages.some((pkg) => pkg.id === requested) ? requested : property.package);
+      const freeMonths = Number(body.order?.months);
       const { error } = await supabase
         .from('properties')
-        .update({ package: packageId, approved_at: new Date().toISOString(), approved_by: user!.id })
+        .update({
+          package: packageId,
+          approved_at: new Date().toISOString(),
+          approved_by: user!.id,
+          ...(freeCatalog.pricingLive && freeCatalog.pricing.durations.includes(freeMonths) ? { package_months: freeMonths } : {}),
+        })
         .eq('id', id);
       if (error) return json(500, { ok: false, error: error.message });
+      if (freeCatalog.pricingLive) {
+        // The package's languages follow the package (nothing before migration 0053).
+        await createSupabaseAdminClient().from('properties').update({ translation_package: isPackageKey(packageId) ? packageId : 'basic' }).eq('id', id).then(() => {}, () => {});
+      }
 
       // What the owner switched off in the wizard (Go: English stays, German may go) holds before the first publish.
       await safely('requested exclusions', async () => {
@@ -257,6 +273,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const selection: OrderSelection = body.order
       ? {
           packageId: String(body.order.packageId ?? property.package),
+          ...(Number.isFinite(Number(body.order.months)) ? { months: Number(body.order.months) } : {}),
           extras: Array.isArray(body.order.extras)
             ? body.order.extras.map((e: any) => ({
                 id: String(e.id),
@@ -435,6 +452,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         package: selection.packageId,
         approved_at: new Date().toISOString(),
         approved_by: user!.id,
+        // What was bought: the term and the value band, frozen (they are in the order line too).
+        ...(termColumns(lines, listing.pricing) ?? {}),
       })
       .eq('id', id);
     if (error) return json(500, { ok: false, error: error.message });
@@ -606,10 +625,17 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // 4. Online. From review the package the admin picked decides how long it runs.
     if (from === 'submitted') {
       const requested = String(body.packageId ?? property.package);
-      const packageId = listingCatalog((await getCompany()).services).packages.some((pkg) => pkg.id === requested) ? requested : property.package;
+      const onlineCatalog = listingCatalog((await getCompany()).services);
+      const packageId = onlineCatalog.packages.some((pkg) => pkg.id === requested) ? requested : property.package;
+      const onlineMonths = Number(body.months);
       const { error } = await supabase
         .from('properties')
-        .update({ package: packageId, approved_at: at, approved_by: user!.id })
+        .update({
+          package: packageId,
+          approved_at: at,
+          approved_by: user!.id,
+          ...(onlineCatalog.pricingLive && isPackageKey(packageId) && onlineCatalog.pricing.durations.includes(onlineMonths) ? { package_months: onlineMonths } : {}),
+        })
         .eq('id', id);
       if (error) {
         await restoreOrders(admin, waiver.waived, at);
@@ -906,7 +932,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     const { data: row } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
     const now = new Date();
     const running = row?.expires_at && new Date(row.expires_at) > now;
-    const months = packageOf(listingCatalog((await getCompany()).services), property.package).months;
+    const months = monthsForListing(row ?? property, listingCatalog((await getCompany()).services));
     const base = {
       status: 'published',
       ...(running ? {} : { expires_at: addMonths(now, months).toISOString() }),

@@ -15,7 +15,8 @@
 import { SITE_URL } from '~/config/site.mjs';
 import { ROUTES } from '~/i18n/ui';
 import { getTaxonomy, getCompany } from '~/lib/runtime-config';
-import { listingCatalog, packageOf } from '~/lib/listing-packages';
+import { listingCatalog } from '~/lib/listing-packages';
+import { monthsForListing } from '~/lib/portal/package-terms';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { intlTag } from '~/lib/format';
 import type { Locale } from '~/i18n/ui';
@@ -34,9 +35,12 @@ export async function publicUrl(
   return `${SITE_URL}/${locale}/${ROUTES[locale].detail(slug, property.ref)}/`;
 }
 
-/** How long a package buys, as the admin set it (Csomagok → Hirdetési csomagok). */
-export async function monthsForPackage(packageId: string): Promise<number> {
-  return packageOf(listingCatalog((await getCompany()).services), packageId).months;
+/**
+ * How long a listing runs: the term that was bought (`package_months`, Basic/Europe/World), else the length of its older
+ * package. A free listing has no term and gets the longest the package offers, as it always did.
+ */
+export async function monthsForOrder(row: { package?: string | null; package_months?: number | null }): Promise<number> {
+  return monthsForListing(row, listingCatalog((await getCompany()).services));
 }
 
 export type PublishResult =
@@ -61,7 +65,7 @@ export async function publishProperty(
 ): Promise<PublishResult> {
   const { data: property, error } = await client
     .from('properties')
-    .select('id, ref, category, status, owner_id, package, price_eur, floor_m2, building_m2, plot_m2')
+    .select('*')
     .eq('id', propertyId)
     .maybeSingle();
 
@@ -75,7 +79,7 @@ export async function publishProperty(
   if (placeholder) return { ok: false, error: placeholder };
 
   const now = new Date();
-  const expires = addMonths(now, await monthsForPackage(property.package));
+  const expires = addMonths(now, await monthsForOrder(property));
 
   const { error: updateError } = await client
     .from('properties')
@@ -241,6 +245,12 @@ export async function renewProperty(
 }
 
 /** True when an order is a listing renewal rather than a first publication. */
-export function isRenewalOrder(lines: { id?: string }[] | null | undefined): boolean {
-  return (lines ?? []).some((line) => line.id === 'renewal-6m');
+export function isRenewalOrder(lines: { id?: string; renewal?: boolean }[] | null | undefined): boolean {
+  return (lines ?? []).some((line) => line.id === 'renewal-6m' || line.renewal === true);
+}
+
+/** How many months a paid renewal order extends the listing by: the term on its package line, else the old six. */
+export function renewalMonthsOf(lines: { id?: string; renewal?: boolean; months?: number }[] | null | undefined): number {
+  const line = (lines ?? []).find((entry) => entry.renewal === true && typeof entry.months === 'number');
+  return line?.months && line.months >= 1 && line.months <= 24 ? line.months : 6;
 }

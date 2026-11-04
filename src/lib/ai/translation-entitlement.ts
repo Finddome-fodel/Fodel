@@ -47,14 +47,22 @@ export async function loadEntitlement(client: Client, propertyId: string): Promi
 const hasText = (rows: Entitlement['rows'], locale: string): boolean =>
   rows.some((row) => row.locale === locale && (row.title.trim() || row.description.trim()));
 
-/** What an order bought: the package (if any), the single languages, and the languages the package line says it covers. */
-export type Purchase = { packageId: TranslationPackageId | null; singles: string[]; packageLocalesPaid?: string[] };
+/**
+ * What an order bought: the package (if any), the single languages, the languages the package line covers, and the
+ * languages the buyer switched off WHEN THEY ORDERED (`excludedAtOrder`, written on the frozen line). `orderId` makes
+ * applying it one-shot. An older order without the field switched nothing off.
+ */
+export type Purchase = { packageId: TranslationPackageId | null; singles: string[]; packageLocalesPaid?: string[]; excludedAtOrder?: string[]; orderId?: string };
 
 /**
  * A settled payment becomes entitlement: the package (never a smaller one than the listing already has), the
- * single languages, and the languages the buyer switched off when they chose the package (the package line lists
- * the ones that stay). Idempotent: the same order applied twice leaves the same result. Returns whether anything
- * was stored.
+ * single languages, and the languages the buyer switched off when they ordered (the order line's own snapshot, so a
+ * package an admin changed in between never excludes a language the buyer never saw).
+ *
+ * The package and the single languages only ever grow, so applying them again is harmless. Switching languages OFF is
+ * not: a Stripe retry, a second "Fizetve" click or the publish path calling again must not switch off a language the
+ * owner has since switched back on. So the exclusion step runs once per order: the first caller claims the order in
+ * the activity log (`translation.entitlement_applied`, unique per order) and only that caller excludes.
  */
 export async function applyPurchase(client: Client, propertyId: string, purchase: Purchase, cfg: TranslationPricing): Promise<boolean> {
   const current = await loadEntitlement(client, propertyId);
@@ -63,16 +71,36 @@ export async function applyPurchase(client: Client, propertyId: string, purchase
   const nextPackage = purchase.packageId && (RANK[purchase.packageId] ?? 0) > (RANK[have] ?? 0) ? purchase.packageId : have;
   const covered = new Set(packageLocales(packageById(cfg, nextPackage), TARGETS));
   const extras = [...new Set([...(current.listing.extraLocales ?? []), ...purchase.singles])].filter((code) => TARGETS.includes(code) && !covered.has(code));
-  // What the buyer switched off before paying: in the package, not on the line, never English or the original.
-  const switchedOff = purchase.packageId && purchase.packageLocalesPaid
-    ? packageLocales(packageById(cfg, purchase.packageId), TARGETS).filter((code) => !purchase.packageLocalesPaid!.includes(code) && code !== current.listing.sourceLocale && code !== 'en')
+
+  let firstTime = true;
+  let claimed = false;
+  const claimKey = purchase.orderId ? `entitlement-${purchase.orderId}` : null;
+  if (claimKey) {
+    const { error: claimError } = await client.from('activity_events').insert({
+      kind: 'translation.entitlement_applied', subject_type: 'payment', subject_id: purchase.orderId, property_id: propertyId,
+      source: 'system', payload: { package: purchase.packageId, excluded: purchase.excludedAtOrder ?? [] }, dedupe_key: claimKey,
+    });
+    // Only a duplicate key (23505) means this order was applied before: nothing may be switched off a second time.
+    // Any other error (the log table is missing, an outage) is not proof of an earlier application, so the order is
+    // treated as the first one, without a claim. The package and the languages are (re)stored below either way.
+    if (claimError?.code === '23505') firstTime = false;
+    else if (!claimError) claimed = true;
+  }
+
+  // What the buyer switched off before paying: never English, never the original, only languages the package has.
+  const snapshot = firstTime && purchase.packageId
+    ? (purchase.excludedAtOrder ?? []).filter((code) => TARGETS.includes(code) && code !== current.listing.sourceLocale && code !== 'en' && covered.has(code))
     : [];
   // A language bought on its own is on, whatever it was before.
-  const excluded = [...new Set([...(current.listing.excludedLocales ?? []), ...switchedOff])].filter((code) => !purchase.singles.includes(code));
+  const excluded = [...new Set([...(current.listing.excludedLocales ?? []), ...snapshot])].filter((code) => !purchase.singles.includes(code));
   const { error } = await client
     .from('properties')
     .update({ translation_package: nextPackage, extra_locales: extras, excluded_locales: excluded })
     .eq('id', propertyId);
+  if (error && claimKey && claimed) {
+    // Not applied: release the claim so the next delivery can try again.
+    await client.from('activity_events').delete().eq('dedupe_key', claimKey).then(() => {}, () => {});
+  }
   return !error;
 }
 
