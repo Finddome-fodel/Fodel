@@ -39,7 +39,8 @@ const hufPerEur = rates?.rates.HUF ?? null;
 type Item = { anchor: string; key: string; title: string; sub: string; unit: string; tiers: PriceTier[]; kind: 'pkg' | 'extra'; id: string };
 const items: Item[] = [
   ...catalog.extras
-    .filter((extra) => !extra.retired && extra.id !== 'translation')
+    // Once the 2026 prices are live a renewal is the package's own price; the old flat renewal price is not offered for editing.
+    .filter((extra) => !extra.retired && extra.id !== 'translation' && !(catalog.pricingLive && extra.id === 'renewal-6m'))
     .map((extra): Item => ({
       anchor: `extra-${extra.id}`,
       key: tierKey('extra', extra.id),

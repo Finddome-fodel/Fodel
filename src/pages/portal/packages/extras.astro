@@ -24,7 +24,8 @@ if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
 const migrated = Boolean(row && 'services' in row);
 const catalog = listingCatalog(row?.services);
-const selling = catalog.extras.filter((extra) => !extra.retired && extra.id !== 'translation');
+// Once the 2026 prices are live a renewal is the package's own price for 1, 3 or 6 months; the old flat renewal price is then unused.
+const selling = catalog.extras.filter((extra) => !extra.retired && extra.id !== 'translation' && !(catalog.pricingLive && extra.id === 'renewal-6m'));
 const retired = catalog.extras.filter((extra) => extra.retired);
 const tiersHref = packageTab('tiers').href;
 const singles = catalog.pricing.singleLanguages;
@@ -78,6 +79,12 @@ const singles = catalog.pricing.singleLanguages;
             <div class="ex-name"><strong>Utólagos képfeltöltés</strong><span>Élő hirdetéshez is feltölthető új kép; az ügyfélszolgálat jóváhagyása után jelenik meg.</span></div>
             <div class="pk-sum"><b>Ingyenes</b></div>
           </div>
+          {catalog.pricingLive && (
+            <div class="ex">
+              <div class="ex-name"><strong>Hosszabbítás</strong><span>A hirdetés csomagjának ára 1, 3 vagy 6 hónapra, az ingatlan mostani ársávjában.</span></div>
+              <div class="pk-sum"><a href={packageTab('listing').href}>Az ára a Hirdetési csomagok (árak) fülön állítható →</a></div>
+            </div>
+          )}
           <div class="ex">
             <div class="ex-name"><strong>Fordítás egyedi nyelvre</strong><span>{singles.enabled ? 'Be van kapcsolva.' : 'Ki van kapcsolva: a nyelvek a csomaggal járnak.'}</span></div>
             <div class="pk-sum"><a href={packageTab('languages').href}>Az ára az Egyedi nyelvek fülön állítható →</a></div>

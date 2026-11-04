@@ -3,6 +3,7 @@
  * integer cents everywhere, upgrades, the admin save rules.
  */
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import * as P from '../src/lib/listing-pricing.ts';
 import { eurPrice } from '../src/lib/format.ts';
 
@@ -160,6 +161,13 @@ test('money is shown from integer cents: 8,90 € in Hungarian and German, €8.
   assert.equal(eurPrice(123456, 'hu'), `1${nb}234,56${nb}€`);
   const ar = eurPrice(890, 'ar');
   assert.ok(ar.startsWith('\u2066') && ar.endsWith('\u2069') && ar.includes('8') && ar.includes('90'), 'right-to-left pages isolate the figure: ' + ar);
+});
+
+test('with the 2026 prices live the old flat renewal price is not offered for editing on Kiegészítők or Ársávok', () => {
+  for (const page of ['extras', 'tiers']) {
+    const source = fs.readFileSync(new URL(`../src/pages/portal/packages/${page}.astro`, import.meta.url), 'utf8');
+    assert.ok(source.includes("catalog.pricingLive && extra.id === 'renewal-6m'"), page);
+  }
 });
 
 if (failed) { console.error(`\n${failed} pricing check(s) failed.`); process.exit(1); }
