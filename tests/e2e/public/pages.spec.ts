@@ -3,6 +3,7 @@
  * sideways, in all nine languages, at the widths the brief names.
  */
 import { test, expect, expectNoHorizontalOverflow } from '../support/fixtures';
+import { listingFixture } from '../support/env';
 import { LOCALES, path as routePath, type RouteKey } from '../../../src/i18n/ui';
 
 const KEYS: RouteKey[] = [
@@ -31,7 +32,9 @@ for (const path of PATHS) {
   });
 }
 
+// The map is drawn only when there is at least one listing to show: on the empty test site there is nothing to draw, so this runs with the one-listing stand-in (`npm run test:e2e:listing`).
 test('the map starts in Safari too (a WebGL canvas appears, no script errors)', async ({ page, consoleErrors }) => {
+  test.skip(!listingFixture(), 'needs a listing on the map: run with E2E_LISTING_FIXTURE=1');
   await page.goto(routePath('en', 'map'));
   await expect(page.locator('canvas.maplibregl-canvas, .maplibregl-map canvas').first()).toBeVisible({ timeout: 20_000 });
   expect(consoleErrors).toEqual([]);
