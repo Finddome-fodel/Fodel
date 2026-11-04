@@ -26,7 +26,7 @@ import { ownerLink, RENEW_LINK_DAYS } from '~/lib/owner-links';
 import { logEvent } from '~/lib/activity';
 import { eur } from '~/lib/format';
 import { formatCents } from '~/lib/orders';
-import { renewalPriceCents } from '~/lib/portal/renewal';
+import { renewalPricer } from '~/lib/portal/renewal';
 
 export const prerender = false;
 
@@ -42,7 +42,8 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const admin = createSupabaseAdminClient();
-  const RENEWAL_CENTS = await renewalPriceCents();
+  // Renewals are tiered by the listing's own price (Csomagok → Ársávok).
+  const renewalCents = await renewalPricer();
   const now = new Date();
   const company = await getCompany();
   const rules = listingRules(company.services);
@@ -94,7 +95,7 @@ export const GET: APIRoute = async ({ request }) => {
           ref: row.ref,
           title: await listingTitle(admin, row.id, locale, row.ref),
           renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-          price: formatCents(RENEWAL_CENTS, locale),
+          price: formatCents(renewalCents(row.price_huf), locale),
         }));
         counts.emails++;
       }
@@ -116,7 +117,7 @@ export const GET: APIRoute = async ({ request }) => {
         expiresOn: new Date(row.expires_at).toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }),
         days: Math.max(1, daysLeft(row.expires_at, now)),
         renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-        price: formatCents(RENEWAL_CENTS, locale),
+        price: formatCents(renewalCents(row.price_huf), locale),
       }));
       counts.emails++;
       counts[action === 'first-reminder' ? 'firstReminder' : 'lastReminder']++;
@@ -160,7 +161,7 @@ export const GET: APIRoute = async ({ request }) => {
       ref: row.ref,
       title: await listingTitle(admin, row.id, locale, row.ref),
       renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-      price: formatCents(RENEWAL_CENTS, locale),
+      price: formatCents(renewalCents(row.price_huf), locale),
     }));
     counts.emails++;
   }

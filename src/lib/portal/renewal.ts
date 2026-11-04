@@ -13,16 +13,26 @@ import { getStripe } from '~/lib/stripe';
 import { getCompany } from '~/lib/runtime-config';
 import { listingCatalog, extraPrice } from '~/lib/listing-packages';
 
-/** The 6-month renewal's price, as the admin set it (Szolgáltatások → Hirdetési csomagok). */
-export async function renewalPriceCents(): Promise<number> {
-  return extraPrice(listingCatalog((await getCompany()).services), 'renewal-6m') * 100;
+/**
+ * The 6-month renewal's price, as the admin set it (Csomagok → Kiegészítők / Ársávok),
+ * for a listing priced `priceHuf` forints — renewals are tiered by the listing's
+ * price at renewal time (§9.2). Without a price: the first tier.
+ */
+export async function renewalPriceCents(priceHuf?: number | null): Promise<number> {
+  return extraPrice(listingCatalog((await getCompany()).services), 'renewal-6m', priceHuf) * 100;
+}
+
+/** One catalogue read for many listings (the daily cron): `priceHuf → cents`. */
+export async function renewalPricer(): Promise<(priceHuf?: number | null) => number> {
+  const catalog = listingCatalog((await getCompany()).services);
+  return (priceHuf) => extraPrice(catalog, 'renewal-6m', priceHuf) * 100;
 }
 
 export type RenewalOrder = { id: string; amount_cents: number; line_items: OrderLine[]; stripe_session_id: string | null };
 
 export async function openRenewalOrder(
   admin: any,
-  property: { id: string; owner_id: string | null },
+  property: { id: string; owner_id: string | null; price_huf?: number | null },
   locale: Locale,
   contactEmail?: string | null
 ): Promise<RenewalOrder> {
@@ -38,7 +48,7 @@ export async function openRenewalOrder(
   // The package line is required by buildOrderLines' shape but not charged:
   // only the renewal extra goes on the order.
   const catalog = listingCatalog((await getCompany()).services);
-  const lines = buildOrderLines({ packageId: catalog.packages[0].id, extras: [{ id: 'renewal-6m', quantity: 1 }] }, locale, catalog).filter((line) => line.id === 'renewal-6m');
+  const lines = buildOrderLines({ packageId: catalog.packages[0].id, priceHuf: property.price_huf ?? null, extras: [{ id: 'renewal-6m', quantity: 1 }] }, locale, catalog).filter((line) => line.id === 'renewal-6m');
   const base = {
     property_id: property.id,
     owner_id: property.owner_id,

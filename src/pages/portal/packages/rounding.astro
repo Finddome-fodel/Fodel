@@ -1,0 +1,113 @@
+---
+/**
+ * Csomagok → Kerekítés (spec §8): when an owner gives the price in forints
+ * (or another currency), the euro price shown on the site is converted at
+ * the ECB rate and rounded to this step — €100 by default (587.896,40 →
+ * 587.900). A price typed in euro is never rounded. Applies to prices saved
+ * from now on; stored listings are not recalculated.
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+import { exchangeRates, readPriceRounding, roundEur, PRICE_ROUNDING_STEPS, PRICE_ROUNDING_DEFAULT } from '~/lib/exchange-rates';
+import { fmtEur, fmtHuf, fmtDecimal } from '~/lib/portal/num';
+import { packageTab } from '~/lib/portal/package-admin';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const current = readPriceRounding((row?.services as { priceRounding?: unknown } | null)?.priceRounding);
+
+const rates = await Promise.race([
+  exchangeRates().catch(() => null),
+  new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500)),
+]);
+// Without today's rate the examples use a typical one, and say so.
+const hufPerEur = rates?.rates.HUF ?? 400;
+const samples = [24_900_000, 59_900_000, 145_000_000, 235_158_560];
+const exact = (huf: number) => Math.round((huf / hufPerEur) * 100) / 100;
+
+const stepLabel = (step: number) => (step === 1 ? 'Egész euró' : `${fmtEur(step)}`);
+const stepHint: Record<number, string> = {
+  1: 'Nincs kerekítés, csak a centek maradnak el.',
+  10: 'Pontos, de kevésbé kerek számok.',
+  50: '',
+  100: 'Ajánlott: kerek, mégis pontos ár.',
+  500: '',
+  1000: 'Nagyon kerek, de akár 500 € eltérés.',
+};
+---
+
+<PackagesShell tab="rounding" migrated={migrated}>
+  <form method="POST" action={packageTab('rounding').api} id="rounding-form" class="pk-form" data-pk-form data-rate={hufPerEur}>
+    <fieldset disabled={!migrated}>
+      <section class="set-card">
+        <h2>Forintár átváltása euróra</h2>
+        <p class="set-sub">Ha a hirdető forintban (vagy más pénznemben) adja meg az árat, az euróárat a napi ECB-árfolyamon számoljuk, és erre a lépésre kerekítjük — fél lépéstől felfelé. Az euróban megadott ár sosem változik. Csak az ezután mentett árakra vonatkozik; a meglévő hirdetések ára nem számolódik újra.</p>
+
+        <div class="rd-steps" role="radiogroup" aria-label="Kerekítési lépés">
+          {PRICE_ROUNDING_STEPS.map((step) => (
+            <label class="rd-step">
+              <input type="radio" name="step" value={step} checked={current.step === step} />
+              <span>
+                <b>{stepLabel(step)}</b>
+                {step === PRICE_ROUNDING_DEFAULT.step && <em>alapértelmezett</em>}
+                {stepHint[step] && <small>{stepHint[step]}</small>}
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section class="set-card">
+        <h2>Példák</h2>
+        <p class="set-sub">{rates ? `Mai ECB-árfolyam: 1 € = ${fmtDecimal(hufPerEur, { digits: 2, fixed: true })} Ft (${rates.date}).` : 'A mai árfolyam most nem érhető el; a példák 1 € = 400 Ft-tal számolnak.'}</p>
+        <table class="list rd-table">
+          <thead><tr><th scope="col">Megadott ár</th><th scope="col">Pontos euróérték</th><th scope="col">Megjelenő ár</th></tr></thead>
+          <tbody>
+            {samples.map((huf) => (
+              <tr data-exact={exact(huf)}>
+                <td>{fmtHuf(huf)}</td>
+                <td>{fmtEur(exact(huf))}</td>
+                <td><b data-rounded>{fmtEur(roundEur(exact(huf), current))}</b></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn">Mentés</button></div></div>
+    </fieldset>
+  </form>
+</PackagesShell>
+
+<script>
+  import { roundEur } from '~/lib/exchange-rates';
+  import { fmtEur } from '~/lib/portal/num';
+
+  const form = document.getElementById('rounding-form');
+  form?.addEventListener('change', () => {
+    const step = Number(form.querySelector<HTMLInputElement>('input[name="step"]:checked')?.value) || 100;
+    form.querySelectorAll<HTMLElement>('[data-exact]').forEach((row) => {
+      row.querySelector('[data-rounded]')!.textContent = fmtEur(roundEur(Number(row.dataset.exact), { step }));
+    });
+  });
+</script>
+
+<style>
+  .rd-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .rd-step { position: relative; cursor: pointer; }
+  .rd-step input { position: absolute; opacity: 0; pointer-events: none; }
+  .rd-step > span { display: grid; gap: 4px; height: 100%; padding: 16px 18px; border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); transition: background-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out), color 0.25s var(--ease-out); }
+  .rd-step b { font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; letter-spacing: var(--ls-heading); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .rd-step em { font-style: normal; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-quiet); }
+  .rd-step small { font-size: 13.5px; line-height: 1.5; color: var(--ink-quiet); }
+  .rd-step input:checked + span { background: var(--ink); box-shadow: none; }
+  .rd-step input:checked + span :is(b, em, small) { color: var(--cream); }
+  .rd-step input:focus-visible + span { outline: var(--focus-ring); outline-offset: 3px; }
+  .rd-table { width: 100%; }
+  .rd-table td, .rd-table th { font-variant-numeric: tabular-nums; }
+  @media (max-width: 720px) { .rd-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

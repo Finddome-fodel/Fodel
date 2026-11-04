@@ -1,0 +1,49 @@
+---
+/**
+ * A money field for the admin portal (spec §7): shows „1.500.000” as you
+ * type, posts the raw integer (or cents with `allowCents`) under `name`.
+ * Works without JavaScript too — then the formatted text is posted and the
+ * server reads it with readMoney() from src/lib/portal/num.ts, which every
+ * endpoint receiving a MoneyInput must use (never Number()).
+ *
+ * Any other attribute (id, data-*, aria-*, required, disabled) goes onto the
+ * visible input.
+ */
+import { formatMoneyText } from '~/lib/portal/num';
+
+interface Props {
+  name?: string;
+  /** Whole units, or cents with allowCents. */
+  value?: number | null;
+  min?: number;
+  max?: number;
+  suffix?: string;
+  allowCents?: boolean;
+  class?: string;
+  [attr: string]: unknown;
+}
+
+const { name, value = null, min, max, suffix = '€', allowCents = false, class: className, ...rest } = Astro.props;
+
+function initial(): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '';
+  if (!allowCents) return formatMoneyText(String(Math.round(value)));
+  const whole = Math.floor(value / 100);
+  const fraction = String(value % 100).padStart(2, '0');
+  return formatMoneyText(fraction === '00' ? String(whole) : `${whole},${fraction}`, true);
+}
+---
+
+<span class:list={['unit money', className]} data-money data-cents={allowCents ? '1' : undefined} data-min={min} data-max={max}>
+  <input type="text" inputmode={allowCents ? 'decimal' : 'numeric'} autocomplete="off" spellcheck="false" name={name} value={initial()} data-money-text {...rest} />
+  {suffix && <i>{suffix}</i>}
+</span>
+
+<script>
+  import { initMoneyInputs } from '~/scripts/money-input';
+  initMoneyInputs(document);
+</script>
+
+<style>
+  .money input { font-variant-numeric: tabular-nums; }
+</style>

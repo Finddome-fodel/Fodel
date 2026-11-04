@@ -24,7 +24,9 @@ import type { Locale } from '~/i18n/ui';
 import { eurCents, intlTag } from '~/lib/format';
 import type { RequestedExtras } from '~/lib/portal/requested-extras';
 import { OWNER_TARGETS } from '~/lib/ai/translate-core';
-import { listingCatalog, packageOf, isAboveThreshold as tierApplies, type ListingCatalog } from '~/lib/listing-packages';
+import { extraSoldIn, listingCatalog, packageOf, type ListingCatalog } from '~/lib/listing-packages';
+import { flatTiers, tierFor, tierRange, type PriceTier } from '~/lib/price-tiers';
+import { tierPhrase } from '~/lib/tier-phrase';
 
 /**
  * Everything that can be a line after the package: the listing extras plus
@@ -36,9 +38,10 @@ import { listingCatalog, packageOf, isAboveThreshold as tierApplies, type Listin
  * Prices come from the admin-edited catalogue (src/lib/listing-packages.ts);
  * every function below takes it, defaulting to the published tariff.
  */
-const orderExtras = (cat: ListingCatalog): readonly { id: string; priceEur: number; unit?: string; minMonths?: number }[] => [
+type OrderExtra = { id: string; tiers: PriceTier[]; priceEur: number; unit?: string; minMonths?: number; retired?: boolean; countries?: readonly string[] };
+const orderExtras = (cat: ListingCatalog): readonly OrderExtra[] => [
   ...cat.extras,
-  ...ONSITE_SERVICES.map((service) => ({ id: service.id, priceEur: service.priceEur, unit: 'once' })),
+  ...ONSITE_SERVICES.map((service) => ({ id: service.id, tiers: flatTiers(service.priceEur), priceEur: service.priceEur, unit: 'once' })),
 ];
 
 /** The on-site services exclude each other: one visit per listing. */
@@ -56,13 +59,33 @@ export type OrderLine = {
   label: string;
   /** Translation lines only: the languages bought, so paying is enough to know what to translate. */
   locales?: string[];
+  /**
+   * The price tier the line was charged at, for audit — only when the item has
+   * more than one tier (§9.2). `toHuf` null is the open last tier.
+   */
+  tier?: { index: number; fromHuf: number; toHuf: number | null };
 };
 
 /** What the admin's review form sends: ids and counts, never money. */
 export type OrderSelection = {
   packageId: string;
-  /** The €179 tier applies above 150M HUF — decided from the listing, not typed in. */
+  /**
+   * The listing's forint price when the order is made; it picks the price tier
+   * of the package and of every extra (src/lib/price-tiers.ts). Decided from
+   * the listing on the server, never typed in. Missing: the first tier.
+   */
+  priceHuf?: number | null;
+  /**
+   * @deprecated The single-threshold flag from before tiers (a form open
+   * during the deploy may still post it). Ignored when `priceHuf` is set;
+   * otherwise `true` means "the tier just above the first bound".
+   */
   aboveThreshold?: boolean;
+  /**
+   * The property's country (ISO). When given, an extra sold only elsewhere
+   * (the Hungary-only video) is refused.
+   */
+  country?: string | null;
   extras: { id: string; quantity: number; /** Translation: the languages. The quantity is then their count. */ locales?: string[] }[];
 };
 
@@ -76,11 +99,18 @@ const EXTRA_LABEL: Record<string, Record<OrderLocale, string>> = {
   translation: { hu: 'Fordítás', nl: 'Vertaling', en: 'Translation', de: 'Übersetzung', fr: 'Traduction', es: 'Traducción', pl: 'Tłumaczenie', ro: 'Traducere', sk: 'Preklad', it: 'Traduzione', pt: 'Tradução', el: 'Μετάφραση', cs: 'Překlad', sl: 'Prevod', sv: 'Översättning', da: 'Oversættelse', no: 'Oversettelse', fi: 'Käännös', et: 'Tõlge', lv: 'Tulkojums', lt: 'Vertimas' },
   'category-highlight': { hu: 'Kiemelés a kategóriában', nl: 'Uitgelicht in de categorie', en: 'Highlighting in the category', de: 'Hervorhebung in der Kategorie', fr: 'Mise en avant dans la catégorie', es: 'Destacado en la categoría', pl: 'Wyróżnienie w kategorii', ro: 'Evidențiere în categorie', sk: 'Zvýraznenie v kategórii', it: 'Messa in evidenza nella categoria', pt: 'Destaque na categoria', el: 'Προβολή στην κατηγορία', cs: 'Zvýraznění v kategorii', sl: 'Izpostavitev v kategoriji', sv: 'Framhävning i kategorin', da: 'Fremhævning i kategorien', no: 'Fremheving i kategorien', fi: 'Korostus kategoriassa', et: 'Esiletõstmine kategoorias', lv: 'Izcelšana kategorijā', lt: 'Išskyrimas kategorijoje' },
   'homepage-highlight': { hu: 'Kiemelés a főoldalon', nl: 'Uitgelicht op de homepage', en: 'Highlighting on the homepage', de: 'Hervorhebung auf der Startseite', fr: 'Mise en avant sur la page d’accueil', es: 'Destacado en la página de inicio', pl: 'Wyróżnienie na stronie głównej', ro: 'Evidențiere pe prima pagină', sk: 'Zvýraznenie na úvodnej stránke', it: 'Messa in evidenza in homepage', pt: 'Destaque na página inicial', el: 'Προβολή στην αρχική σελίδα', cs: 'Zvýraznění na úvodní stránce', sl: 'Izpostavitev na domači strani', sv: 'Framhävning på startsidan', da: 'Fremhævning på forsiden', no: 'Fremheving på forsiden', fi: 'Korostus etusivulla', et: 'Esiletõstmine avalehel', lv: 'Izcelšana sākumlapā', lt: 'Išskyrimas pagrindiniame puslapyje' },
-  video: { hu: 'Videós bemutató', nl: 'Videopresentatie', en: 'Video presentation', de: 'Videopräsentation', fr: 'Présentation vidéo', es: 'Presentación en vídeo', pl: 'Prezentacja wideo', ro: 'Prezentare video', sk: 'Videoprezentácia', it: 'Presentazione video', pt: 'Apresentação em vídeo', el: 'Παρουσίαση με βίντεο', cs: 'Videoprezentace', sl: 'Video predstavitev', sv: 'Videopresentation', da: 'Videopræsentation', no: 'Videopresentasjon', fi: 'Videoesittely', et: 'Videotutvustus', lv: 'Video prezentācija', lt: 'Vaizdo pristatymas' },
-  'retro-images': { hu: 'Fotóretusálás', nl: 'Fotobewerking', en: 'Photo editing', de: 'Bildbearbeitung', fr: 'Retouche photo', es: 'Retoque fotográfico', pl: 'Retusz zdjęć', ro: 'Retușare foto', sk: 'Úprava fotografií', it: 'Elaborazione delle foto', pt: 'Edição de fotografias', el: 'Επεξεργασία φωτογραφιών', cs: 'Úprava fotografií', sl: 'Obdelava fotografij', sv: 'Bildredigering', da: 'Billedredigering', no: 'Bilderedigering', fi: 'Kuvankäsittely', et: 'Fotode töötlemine', lv: 'Fotoattēlu apstrāde', lt: 'Nuotraukų apdorojimas' },
+  // Since November 2026 `video` is FINDDOME filming the property (spec §4b). An old order keeps the label it was written with.
+  video: { hu: 'Magyarországon ingatlan videó készítése, drónos felvétel, profi vágással', nl: 'Vastgoedvideo opgenomen in Hongarije, met drone-opnames en professionele montage', en: 'Property video filmed in Hungary, with drone footage and professional editing', de: 'Immobilienvideo, in Ungarn gedreht, mit Drohnenaufnahmen und professionellem Schnitt', fr: 'Vidéo du bien tournée en Hongrie, avec prises de vue par drone et montage professionnel', es: 'Vídeo del inmueble grabado en Hungría, con tomas de dron y edición profesional', pl: 'Film o nieruchomości nagrany na Węgrzech, z ujęciami z drona i profesjonalnym montażem', ro: 'Videoclip al proprietății filmat în Ungaria, cu imagini din dronă și montaj profesionist', sk: 'Video nehnuteľnosti natočené v Maďarsku, so zábermi z dronu a profesionálnym strihom', it: 'Video dell’immobile girato in Ungheria, con riprese da drone e montaggio professionale', pt: 'Vídeo do imóvel filmado na Hungria, com imagens de drone e edição profissional', el: 'Βίντεο ακινήτου στην Ουγγαρία, με λήψεις από drone και επαγγελματικό μοντάζ', cs: 'Video nemovitosti natočené v Maďarsku, se záběry z dronu a profesionálním střihem', sl: 'Video nepremičnine, posnet na Madžarskem, s posnetki iz drona in profesionalno montažo', sv: 'Fastighetsvideo inspelad i Ungern, med drönarbilder och professionell redigering', da: 'Ejendomsvideo optaget i Ungarn, med droneoptagelser og professionel redigering', no: 'Eiendomsvideo filmet i Ungarn, med droneopptak og profesjonell redigering', fi: 'Kiinteistövideo Unkarissa, droonikuvauksella ja ammattimaisella editoinnilla', et: 'Kinnisvaravideo Ungaris, droonivõtete ja professionaalse montaažiga', lv: 'Īpašuma video, filmēts Ungārijā, ar drona kadriem un profesionālu montāžu', lt: 'Turto vaizdo įrašas Vengrijoje, su drono kadrais ir profesionaliu montažu' },
+  // Retired November 2026 (later photo upload is free now). Bought as „Utólagos képfeltöltés”; the old „Fotóretusálás” wording was wrong.
+  'retro-images': { hu: 'Utólagos képfeltöltés', nl: 'Foto’s later toevoegen', en: 'Adding photos later', de: 'Fotos nachträglich hinzufügen', fr: 'Ajout ultérieur de photos', es: 'Añadir fotos más tarde', pl: 'Późniejsze dodanie zdjęć', ro: 'Adăugarea ulterioară de fotografii', sk: 'Dodatočné pridanie fotografií', it: 'Aggiunta successiva di foto', pt: 'Adicionar fotografias mais tarde', el: 'Προσθήκη φωτογραφιών αργότερα', cs: 'Dodatečné přidání fotografií', sl: 'Naknadno dodajanje fotografij', sv: 'Lägga till bilder i efterhand', da: 'Tilføjelse af billeder senere', no: 'Legge til bilder senere', fi: 'Kuvien lisääminen myöhemmin', et: 'Fotode hilisem lisamine', lv: 'Fotoattēlu pievienošana vēlāk', lt: 'Nuotraukų pridėjimas vėliau' },
   'renewal-6m': { hu: 'Hosszabbítás — 6 hónap', nl: 'Verlenging — 6 maanden', en: 'Renewal, 6 months', de: 'Verlängerung, 6 Monate', fr: 'Prolongation, 6 mois', es: 'Prórroga, 6 meses', pl: 'Przedłużenie, 6 miesięcy', ro: 'Prelungire, 6 luni', sk: 'Predĺženie, 6 mesiacov', it: 'Rinnovo, 6 mesi', pt: 'Renovação, 6 meses', el: 'Ανανέωση, 6 μήνες', cs: 'Obnovení, 6 měsíců', sl: 'Podaljšanje, 6 mesecev', sv: 'Förnyelse, 6 månader', da: 'Fornyelse, 6 måneder', no: 'Fornyelse, 6 måneder', fi: 'Uusiminen, 6 kuukautta', et: 'Uuendamine, 6 kuud', lv: 'Atjaunošana, 6 mēneši', lt: 'Atnaujinimas, 6 mėnesiai' },
   ...Object.fromEntries(ONSITE_SERVICES.map((service) => [service.id, service.names])),
 };
+
+/** The invoice wording of an extra, e.g. for an information list on a public page. */
+export function extraLabel(id: string, locale: OrderLocale): string {
+  return EXTRA_LABEL[id]?.[locale] ?? EXTRA_LABEL[id]?.en ?? id;
+}
 
 /**
  * The unit a quantity is counted in.
@@ -215,32 +245,60 @@ export function formatCents(cents: number, locale?: Locale): string {
  * What an admin can put on an order, with today's prices. Drives the review
  * screen's checkboxes; `minMonths` is surfaced so the form can enforce
  * FODEL's own three-month minimum on highlighting rather than reinventing it.
+ *
+ * Retired extras are left out, and so is an extra not sold in the property's
+ * `country` (when one is given). `priceEur` is the "from" price; `tiers`
+ * carries the whole list so the screen can price the listing itself.
  */
-export function catalogue(locale: OrderLocale, cat: ListingCatalog = listingCatalog()) {
+export function catalogue(locale: OrderLocale, cat: ListingCatalog = listingCatalog(), opts: { country?: string | null; includeRetired?: boolean } = {}) {
   return {
     packages: cat.packages.map((pkg) => ({
       id: pkg.id,
       label: pkg.names[locale],
       priceEur: pkg.priceEur,
-      priceEurAbove: pkg.priceEurAbove ?? undefined,
-      thresholdHuf: pkg.thresholdHuf ?? undefined,
+      tiers: pkg.tiers,
       months: pkg.months,
       video: pkg.video,
     })),
-    extras: orderExtras(cat).map((extra) => ({
-      id: extra.id,
-      label: EXTRA_LABEL[extra.id]?.[locale] ?? extra.id,
-      unit: EXTRA_UNIT[extra.id]?.[locale]?.one ?? '',
-      priceEur: extra.priceEur,
-      minMonths: 'minMonths' in extra ? extra.minMonths : undefined,
-      exclusive: EXCLUSIVE.has(extra.id),
-    })),
+    extras: orderExtras(cat)
+      .filter((extra) => (opts.includeRetired || !extra.retired) && (opts.country === undefined || !extra.countries || extraSoldIn(extra, opts.country)))
+      .map((extra) => ({
+        id: extra.id,
+        label: EXTRA_LABEL[extra.id]?.[locale] ?? extra.id,
+        unit: EXTRA_UNIT[extra.id]?.[locale]?.one ?? '',
+        priceEur: extra.priceEur,
+        tiers: extra.tiers,
+        minMonths: 'minMonths' in extra ? extra.minMonths : undefined,
+        exclusive: EXCLUSIVE.has(extra.id),
+        retired: Boolean(extra.retired),
+      })),
   };
 }
 
+/* ── Tier wording on an order line: src/lib/tier-phrase.ts (shared with the package cards) ── */
+export { tierPhrase };
+
+/** The forint price an order is tiered by; see `OrderSelection.priceHuf`. */
+function selectionPriceHuf(selection: OrderSelection, tiers: readonly PriceTier[]): number {
+  if (typeof selection.priceHuf === 'number' && Number.isFinite(selection.priceHuf)) return selection.priceHuf;
+  // Legacy flag only: one forint above the first bound.
+  if (selection.aboveThreshold && tiers.length > 1 && tiers[0].upToHuf !== null) return tiers[0].upToHuf + 1;
+  return 0;
+}
+
+/** The tier a line is charged at, plus its audit record and label suffix when the item is tiered. */
+function priced(tiers: readonly PriceTier[], priceHuf: number, locale: OrderLocale) {
+  const { tier, index } = tierFor(tiers, priceHuf);
+  if (tiers.length < 2) return { priceEur: tier.priceEur };
+  return { priceEur: tier.priceEur, tier: { index, ...tierRange(tiers, index) }, suffix: ` (${tierPhrase(tiers, index, locale)})` };
+}
+
+/** `retired-extra`: no longer sold (§4); `not-sold-here`: an extra sold only in other countries (§4b). */
+export type OrderErrorCode = 'unknown-package' | 'unknown-extra' | 'retired-extra' | 'not-sold-here' | 'bad-quantity' | 'exclusive' | 'bad-locale';
+
 export class OrderError extends Error {
-  code: 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive' | 'bad-locale';
-  constructor(code: 'unknown-package' | 'unknown-extra' | 'bad-quantity' | 'exclusive' | 'bad-locale') {
+  code: OrderErrorCode;
+  constructor(code: OrderErrorCode) {
     super(code);
     this.code = code;
   }
@@ -256,16 +314,18 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
   const pkg = cat.packages.find((p) => p.id === selection.packageId);
   if (!pkg) throw new OrderError('unknown-package');
 
-  const packagePriceEur =
-    pkg.priceEurAbove !== null && selection.aboveThreshold ? pkg.priceEurAbove : pkg.priceEur;
+  // One forint price tiers the package and every extra alike.
+  const priceHuf = selectionPriceHuf(selection, pkg.tiers);
+  const packagePrice = priced(pkg.tiers, priceHuf, locale);
 
   const lines: OrderLine[] = [
     {
       kind: 'package',
       id: pkg.id,
       quantity: 1,
-      unitCents: packagePriceEur * 100,
-      label: pkg.names[locale],
+      unitCents: packagePrice.priceEur * 100,
+      label: `${pkg.names[locale]}${packagePrice.suffix ?? ''}`,
+      ...(packagePrice.tier ? { tier: packagePrice.tier } : {}),
     },
   ];
 
@@ -276,6 +336,9 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
   for (const chosen of selection.extras) {
     const extra = orderExtras(cat).find((e) => e.id === chosen.id);
     if (!extra) throw new OrderError('unknown-extra');
+    // A retired extra is never sold again (old orders keep their lines; this only guards new ones).
+    if (extra.retired) throw new OrderError('retired-extra');
+    if (extra.countries && selection.country !== undefined && !extra.countries.includes(String(selection.country ?? '').toUpperCase())) throw new OrderError('not-sold-here');
 
     // A translation line that names its languages is priced by their count and
     // remembers them: that list, read back from the stored order, is what the
@@ -296,13 +359,15 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
     const unit =
       form === 'one' ? units?.one : form === 'two' ? (units?.two ?? units?.few ?? units?.many) : form === 'few' ? (units?.few ?? units?.many) : units?.many;
 
+    const price = priced(extra.tiers, priceHuf, locale);
     lines.push({
       kind: 'extra',
       id: extra.id,
       quantity,
-      unitCents: extra.priceEur * 100,
-      label: quantity > 1 && unit ? `${base}${locale === 'hu' || locale === 'nl' ? ' — ' : ': '}${quantity} ${unit}` : base,
+      unitCents: price.priceEur * 100,
+      label: `${quantity > 1 && unit ? `${base}${locale === 'hu' || locale === 'nl' ? ' — ' : ': '}${quantity} ${unit}` : base}${price.suffix ?? ''}`,
       ...(locales ? { locales } : {}),
+      ...(price.tier ? { tier: price.tier } : {}),
     });
   }
 
@@ -338,23 +403,22 @@ export function linesForEmail(lines: OrderLine[], locale?: Locale): { label: str
 }
 
 /**
- * Whether a listing falls in the higher 12-month tier.
- *
- * Derived from the listing's own forint price against the published threshold,
- * so the admin never has to remember where the line sits — and so two admins
- * reviewing similar listings can't price them differently.
+ * @deprecated Two-tier wording from before price tiers; use `tierFor(pkg.tiers, priceHuf)`.
+ * Whether a listing's forint price is above its package's first tier.
  */
 export function isAboveThreshold(priceHuf: number, cat: ListingCatalog = listingCatalog(), packageId?: string): boolean {
-  const tiered = packageId ? packageOf(cat, packageId) : cat.packages.find((p) => p.thresholdHuf !== null);
-  return tiered ? tierApplies(tiered, priceHuf) : false;
+  const tiered = packageId ? packageOf(cat, packageId) : cat.packages.find((p) => p.tiers.length > 1);
+  return tiered ? tierFor(tiered.tiers, priceHuf).index > 0 : false;
 }
 
 /**
  * A default order for a listing that has just been approved.
  *
  * Pre-ticks what the listing itself already tells us — the package the owner
- * chose, the languages they asked to have translated, the video
- * extra if they supplied a URL, homepage highlighting if it is switched on.
+ * chose, the languages they asked to have translated, the video shoot if they
+ * asked for one (Hungary only), category highlighting if it is on. The
+ * homepage highlight is no longer sold (§4a): a stale request for it is
+ * ignored, and the editorial homepage pick costs nothing.
  * The admin adjusts and confirms; this only saves them the typing, it never
  * charges anything on its own.
  */
@@ -368,6 +432,8 @@ export type SuggestInput = {
   locales: string[];
   /** What the owner asked for when placing the ad (brief 3 item 14). */
   requested?: RequestedExtras;
+  /** ISO country; the video shoot is suggested only where it is sold. */
+  country?: string | null;
 };
 
 export function suggestSelection(property: SuggestInput, cat: ListingCatalog = listingCatalog()): OrderSelection {
@@ -379,16 +445,18 @@ export function suggestSelection(property: SuggestInput, cat: ListingCatalog = l
   const extras: { id: string; quantity: number; locales?: string[] }[] = [];
 
   if (languages.length > 0) extras.push({ id: 'translation', quantity: languages.length, locales: languages });
-  // A package with video included charges nothing for it; one without video offers none.
-  if ((property.video_url || requested.video) && packageOf(cat, property.package).video === 'extra') extras.push({ id: 'video', quantity: 1 });
+  // The owner's own video link is free; the paid line is FINDDOME filming it, where that is sold.
+  const shoot = cat.extras.find((extra) => extra.id === 'video');
+  if (requested.video && shoot && extraSoldIn(shoot, property.country)) extras.push({ id: 'video', quantity: 1 });
   // FODEL's own minimum for highlighting is three months.
-  if (property.homepage_featured || requested.homepageHighlight) extras.push({ id: 'homepage-highlight', quantity: 3 });
-  if (property.featured || requested.categoryHighlight) extras.push({ id: 'category-highlight', quantity: 3 });
+  const highlight = cat.extras.find((extra) => extra.id === 'category-highlight');
+  if ((property.featured || requested.categoryHighlight) && highlight && !highlight.retired) extras.push({ id: 'category-highlight', quantity: highlight.minMonths ?? 3 });
   if (requested.service) extras.push({ id: requested.service, quantity: 1 });
 
   return {
     packageId: property.package,
-    aboveThreshold: isAboveThreshold(property.price_huf, cat, property.package),
+    priceHuf: property.price_huf,
+    ...(property.country !== undefined ? { country: property.country } : {}),
     extras,
   };
 }

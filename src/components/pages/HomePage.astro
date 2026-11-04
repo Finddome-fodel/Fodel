@@ -84,7 +84,8 @@ const valuation = company.services.valuationEntry
         : x('Mennyit ér az ingatlanom?', 'Wat is mijn woning waard?', 'What is my property worth?', 'Was ist meine Immobilie wert?', 'Que vaut mon bien\u202f?', '¿Cuánto vale mi inmueble?', 'Ile jest warta moja nieruchomość?', 'Cât valorează proprietatea mea?', 'Koľko má moja nehnuteľnosť hodnotu?', 'Quanto vale il mio immobile?', 'Quanto vale o meu imóvel?', 'Πόσο αξίζει το ακίνητό μου;', 'Kolik má moje nemovitost hodnotu?', 'Koliko je vredna moja nepremičnina?', 'Vad är min fastighet värd?', 'Hvad er min ejendom værd?', 'Hva er eiendommen min verdt?', 'Paljonko kiinteistöni on arvoltaan?', 'Kui palju on minu kinnisvara väärt?', 'Cik vērts ir mans īpašums?', 'Kiek vertas mano turtas?'),
     }
   : null;
-// The three packages, named and priced in Beállítások → Szolgáltatások. The free
+// The three valuation packages, named and priced in Beállítások → Szolgáltatások
+// (listing packages live in the Csomagok menu). The free
 // estimate's price is spoken only once the free launch is confirmed.
 const valuationTiers = valuationPackages(company.services)
   .filter((pkg) => pkg.enabled)

@@ -26,6 +26,10 @@ export interface ValidationCopy {
   consent: string;
   /** The referral form: the person nominated is the person nominating. */
   selfReferral: string;
+  /** A value that must come from a fixed list (e.g. the county select) did not. */
+  choose: string;
+  /** Free listings: the text contains contact details (src/lib/contact-detect.ts). */
+  contact: (kind: 'email' | 'phone' | 'link', match: string) => string;
   /** The heading above a form that failed to submit. */
   summary: (count: number) => string;
 }

@@ -34,7 +34,7 @@ export async function publicUrl(
   return `${SITE_URL}/${locale}/${ROUTES[locale].detail(slug, property.ref)}/`;
 }
 
-/** How long a package buys, as the admin set it (Szolgáltatások → Hirdetési csomagok). */
+/** How long a package buys, as the admin set it (Csomagok → Hirdetési csomagok). */
 export async function monthsForPackage(packageId: string): Promise<number> {
   return packageOf(listingCatalog((await getCompany()).services), packageId).months;
 }

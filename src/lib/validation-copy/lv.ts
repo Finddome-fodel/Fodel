@@ -28,6 +28,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Vismaz ${chars(limit)}.`,
   consent: 'Lai turpinātu, lūdzu, piekrītiet privātuma politikai.',
   selfReferral: 'Jūs nevarat ieteikt sevi: norādiet citu e-pasta adresi.',
+  choose: "Lūdzu, izvēlieties no saraksta.",
+  contact: (kind, match) => (kind === 'email' ? `Tekstā nedrīkst būt e-pasta adrese (“${match}”). Pircēji ar jums sazinās caur FINDDOME.` : kind === 'phone' ? `Tekstā nedrīkst būt tālruņa numurs (“${match}”). Pircēji ar jums sazinās caur FINDDOME.` : `Tekstā nedrīkst būt tīmekļa vietne, sociālie tīkli vai ziņapmaiņas lietotne (“${match}”).`),
   summary: (count) =>
     count === 1
       ? 'Jāpārbauda viens lauks:'

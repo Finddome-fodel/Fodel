@@ -21,9 +21,9 @@ import { portalLang } from '~/lib/portal/auth-copy';
 import { getProperty, STATUS_LABEL } from '~/lib/portal/properties';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { resolveImage } from '~/lib/property-images';
-import { catalogue, suggestSelection, isAboveThreshold, REFERRAL_DISCOUNT_PERCENT } from '~/lib/orders';
+import { catalogue, suggestSelection, tierPhrase, REFERRAL_DISCOUNT_PERCENT } from '~/lib/orders';
 import { getCompany } from '~/lib/runtime-config';
-import { listingCatalog, packageOf, isAboveThreshold as tierApplies } from '~/lib/listing-packages';
+import { listingCatalog, packageOf, priceEurFor, tierFor } from '~/lib/listing-packages';
 import { eur, huf, placeLabel } from '~/lib/format';
 import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM, fieldRules, detailGaps, gapLabel } from '~/lib/listing-details';
 import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS } from '~/lib/listing-catalogue';
@@ -38,6 +38,7 @@ import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/reque
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { paymentGatesPublishing } from '~/config/flags';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
+import { fmtDecimal, fmtEur } from '~/lib/portal/num';
 
 function mediaSrc(storagePath: string): string {
   if (storagePath.startsWith('http')) return storagePath;
@@ -92,7 +93,8 @@ const requestLines = describeRequestedExtras(requested);
 // The order the owner will be asked to pay. Prices come from the admin's
 // package settings (src/lib/listing-packages.ts) — never typed in here.
 const listing = listingCatalog((await getCompany()).services);
-const cat = catalogue('hu', listing);
+// Only what is still sold, and only where it is sold (the video shoot is Hungary only).
+const cat = catalogue('hu', listing, { country: property.country ?? null });
 const suggested = suggestSelection({
   requested,
   package: property.package,
@@ -100,6 +102,7 @@ const suggested = suggestSelection({
   video_url: property.video_url,
   homepage_featured: property.homepage_featured,
   featured: property.featured,
+  country: property.country ?? null,
   locales: property.translations.map((t) => t.locale),
 }, listing);
 const suggestedExtras = new Map(suggested.extras.map((e) => [e.id, e.quantity]));
@@ -109,13 +112,16 @@ const aiOn = isAiEnabled();
 const trSource = pickSource(property.translations);
 const trPerLanguage = estimateCostMicroEur(trSource ? listingChars(listingText(trSource)) : 0, translationModel());
 const trPresent = property.translations.filter((row) => row.title?.trim() || row.description?.trim()).map((row) => row.locale);
-const trPrice = cat.extras.find((e) => e.id === 'translation')?.priceEur ?? 0;
+const priceAt = (item: { tiers: { upToHuf: number | null; priceEur: number }[] } | undefined) => (item ? priceEurFor(item, property.price_huf) : 0);
+const trPrice = priceAt(cat.extras.find((e) => e.id === 'translation'));
 const trSuggested = suggested.extras.find((e) => e.id === 'translation')?.locales ?? [];
 // A free-link owner's requests wait here for the admin's decision.
 const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
 const trOpen = trJobs.filter((job) => job.status === 'requested');
-const aboveThreshold = isAboveThreshold(property.price_huf, listing, suggested.packageId);
-const tieredPackage = listing.packages.find((pkg) => tierApplies(pkg, property.price_huf));
+// Every price below is the tier this listing's own forint price falls in (Csomagok → Ársávok).
+const tierNotes = listing.packages
+  .filter((pkg) => pkg.tiers.length > 1)
+  .map((pkg) => ({ name: pkg.names.hu, index: tierFor(pkg.tiers, property.price_huf).index, count: pkg.tiers.length, range: tierPhrase(pkg.tiers, tierFor(pkg.tiers, property.price_huf).index, 'hu') }));
 
 const reviewable = property.status === 'submitted';
 // Build-time policy, the same flag status.ts reads: the wording must match what approval actually does.
@@ -157,7 +163,7 @@ const { data: freeEvent } = freeApprovedAt
 const freeNote = typeof freeEvent?.payload?.note === 'string' ? freeEvent.payload.note : null;
 const freeWaivedCents = Number(freeEvent?.payload?.waivedCents ?? 0);
 const freeFeeLine = freeWaivedCents > 0
-  ? ` A kiküldött ${(freeWaivedCents / 100).toLocaleString('de-DE')} €-s díjbekérőt érvénytelenítettük;`
+  ? ` A kiküldött ${fmtEur(freeWaivedCents / 100)}-s díjbekérőt érvénytelenítettük;`
   : ' Díjbekérő nem készült hozzá;';
 const canApproveFree = freeApprovalReady && !isFree && (reviewable || awaitingPayment);
 const openFee = openOrder?.status === 'pending' ? openOrder.amount_cents : null;
@@ -232,7 +238,7 @@ const { data: creditableReferral } = property.owner_id
 
   {awaitingPayment && (
     <p class="notice warn">
-      Ez a hirdetés jóváhagyva, fizetésre vár{openOrder ? ` — ${(openOrder.amount_cents / 100).toLocaleString('de-DE')} €` : ''}.
+      Ez a hirdetés jóváhagyva, fizetésre vár{openOrder ? ` — ${fmtEur(openOrder.amount_cents / 100)}` : ''}.
       Ha az átutalás megérkezett, alább élesítheti.
     </p>
   )}
@@ -252,7 +258,7 @@ const { data: creditableReferral } = property.owner_id
         const rules = fieldRules(group, subtype), shown = (k: keyof typeof rules) => rules[k] !== 'hidden';
         const d = readDetails(property.details, property);
         const term = (g: 'heating' | 'wall' | 'condition', key: string) => { const t = taxonomy[g].find((v) => v.key === key); return t ? labelIn(DETAIL_OPTIONS[g].find((v) => v.key === key)?.labels || t.labels, 'hu') : key; };
-        const m2 = (v: number | null | undefined) => v != null && v > 1 ? `${v.toLocaleString('hu')} m²` : null;
+        const m2 = (v: number | null | undefined) => v != null && v > 1 ? `${fmtDecimal(v)} m²` : null;
         const areas = [shown('floor_m2') && m2(property.floor_m2) && `${m2(property.floor_m2)} lakóegység`, shown('building_m2') && m2(property.building_m2) && `${m2(property.building_m2)} épület`, shown('plot_m2') && m2(property.plot_m2) && `${m2(property.plot_m2)} telek`].filter(Boolean);
         const counts = shown('rooms') ? ([['szoba', d.rooms], ['szint', d.floors], ['fürdőszoba', property.bathrooms ?? undefined], ['konyha', d.kitchens], ['különálló WC', d.toilets]] as [string, number | undefined][]).filter(([, n]) => n !== undefined).map(([k, n]) => `${n} ${k}`) : [];
         const energy = readEnergy(property.epc_class);
@@ -413,7 +419,7 @@ const { data: creditableReferral } = property.owner_id
       <fieldset class="pkg">
         <legend>Csomag</legend>
         {cat.packages.map((pkg) => {
-          const price = tierApplies(packageOf(listing, pkg.id), property.price_huf) ? pkg.priceEurAbove! : pkg.priceEur;
+          const price = priceEurFor(packageOf(listing, pkg.id), property.price_huf);
           return (
             <label class="radio">
               <input
@@ -427,11 +433,11 @@ const { data: creditableReferral } = property.owner_id
             </label>
           );
         })}
-        {tieredPackage && (
+        {tierNotes.map((note) => (
           <p class="threshold">
-            Az irányár meghaladja a {Math.round(tieredPackage.thresholdHuf! / 1_000_000)} M Ft-ot, ezért a(z) {tieredPackage.names.hu} a magasabb sávba esik.
+            {note.name}: {note.index + 1}. ársáv a {note.count}-ból ({note.range}).
           </p>
-        )}
+        ))}
       </fieldset>
 
       <fieldset class="extras tr-extra" id="tr-extra">
@@ -455,10 +461,10 @@ const { data: creditableReferral } = property.owner_id
                 name="extra"
                 value={extra.id}
                 checked={suggestedExtras.has(extra.id)}
-                data-price={extra.priceEur}
+                data-price={priceAt(extra)}
                 data-exclusive={extra.exclusive ? 'onsite' : undefined}
               />
-              <span>{extra.label} — {eur(extra.priceEur)}{extra.unit ? ` / ${extra.unit}` : ''}</span>
+              <span>{extra.label} — {eur(priceAt(extra))}{extra.unit ? ` / ${extra.unit}` : ''}</span>
             </label>
             {extra.unit && (
               <input
@@ -522,7 +528,7 @@ const { data: creditableReferral } = property.owner_id
             class="btn ghost"
             id="free-btn"
             data-from={property.status}
-            data-fee={openFee != null ? `${(openFee / 100).toLocaleString('de-DE')} €` : undefined}
+            data-fee={openFee != null ? fmtEur(openFee / 100) : undefined}
             data-service={requested.service ? 'yes' : undefined}
           >
             {awaitingPayment ? 'Jóváhagyás ingyen — díj elengedése' : 'Jóváhagyás ingyen'}
@@ -613,7 +619,7 @@ const { data: creditableReferral } = property.owner_id
   })();
 </script>
 
-<script define:vars={{ propertyId: property.id, aboveThreshold, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, translationPrice: trPrice, perLanguageMicro: trPerLanguage }}>
+<script define:vars={{ propertyId: property.id, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, translationPrice: trPrice, perLanguageMicro: trPerLanguage }}>
   const statusEl = document.getElementById('action-status');
   const totalEl = document.getElementById('order-total');
   const discountNoteEl = document.getElementById('discount-note');
@@ -633,7 +639,6 @@ const { data: creditableReferral } = property.owner_id
     if (languages.length) extras.unshift({ id: 'translation', quantity: languages.length, locales: languages });
     return {
       packageId: pkg.value,
-      aboveThreshold,
       extras,
       referralDiscountId: discountBox?.checked ? discountBox.dataset.referralId : null,
       referralCreditId: creditBox?.checked ? creditBox.dataset.referralId : null,
@@ -706,6 +711,8 @@ const { data: creditableReferral } = property.owner_id
         'note-required': 'Írjon megjegyzést / indoklást.',
         'not-reviewable': 'Ez a hirdetés ebben az állapotban nem bírálható el — frissítse az oldalt.',
         'unknown-extra': 'Ismeretlen kiegészítő — frissítse az oldalt.',
+        'retired-extra': 'Ez a kiegészítő már nem rendelhető — vegye ki a rendelésből.',
+        'not-sold-here': 'A videókészítés csak magyarországi ingatlanhoz rendelhető.',
         'bad-quantity': 'A mennyiség 1 és 60 között lehet.',
         'bad-locale': 'Ismeretlen vagy nem fordítható nyelv — frissítse az oldalt.',
         exclusive: 'A két helyszíni szolgáltatás közül csak az egyik választható.',

@@ -14,6 +14,7 @@ import { isAiEnabled } from '~/lib/ai/client';
 import { HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL, ORIGIN_HU, formatCostHu } from '~/lib/ai/translate-core';
 import { dailyCapMicroEur, spentTodayMicroEur, isMissingTranslationSchema } from '~/lib/ai/translation-jobs';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { fmtEur } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -74,7 +75,7 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
 
   {migrated && (
     <div class="spend">
-      <p>Ma elköltve: <b>{formatCostHu(spent)}</b> <span>(napi keret: €{(cap / 1_000_000).toLocaleString('hu-HU')}; a keret elérése után a fordítások másnapig várnak)</span></p>
+      <p>Ma elköltve: <b>{formatCostHu(spent)}</b> <span>(napi keret: {fmtEur(cap / 1_000_000)}; a keret elérése után a fordítások másnapig várnak)</span></p>
       {counts.active > 0 && aiOn && <button type="button" class="btn ghost small" id="continue-now">Folytatás most</button>}
     </div>
   )}

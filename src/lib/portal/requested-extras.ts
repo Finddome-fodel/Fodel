@@ -20,6 +20,10 @@ export type RequestedExtras = {
   /** Language codes the owner wants FODEL to translate into (nl, de, en, fr). */
   translations?: string[];
   categoryHighlight?: boolean;
+  /**
+   * @deprecated The homepage highlight is no longer sold (§4a, migration 0048 removes the key).
+   * Still read from older rows so nothing breaks; never written, never priced.
+   */
   homepageHighlight?: boolean;
   topicHighlight?: boolean;
   /** Wants a Dutch-speaking agent; the price is always agreed personally, so none is stored. */
@@ -45,8 +49,8 @@ export function extrasFromForm(values: Record<string, string>): RequestedExtras 
     at: new Date().toISOString(),
     package: values.package === 'normal-12m' || values.package === 'cheap-6m' ? values.package : undefined,
     translations,
+    // 'both' from a form cached before the homepage highlight was retired still means the category one.
     categoryHighlight: highlight === 'category' || highlight === 'both',
-    homepageHighlight: highlight === 'homepage' || highlight === 'both',
     video: values.video === 'yes',
     service: isOnsiteServiceId(values.service) ? values.service : null,
   };
@@ -62,7 +66,6 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
     package: typeof raw.package === 'string' ? raw.package : undefined,
     translations: Array.isArray(raw.translations) ? raw.translations.filter((code): code is string => typeof code === 'string' && LANGS.includes(code)) : [],
     categoryHighlight: raw.categoryHighlight === true,
-    homepageHighlight: raw.homepageHighlight === true,
     topicHighlight: raw.topicHighlight === true,
     dutchAgent: raw.dutchAgent === true,
     video: raw.video === true,
@@ -73,7 +76,7 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
 /** True when the owner asked for anything beyond the package. */
 export function hasRequests(extras: RequestedExtras): boolean {
   return Boolean(
-    (extras.translations?.length ?? 0) > 0 || extras.categoryHighlight || extras.homepageHighlight || extras.topicHighlight || extras.dutchAgent || extras.video || extras.service
+    (extras.translations?.length ?? 0) > 0 || extras.categoryHighlight || extras.topicHighlight || extras.dutchAgent || extras.video || extras.service
   );
 }
 
@@ -83,7 +86,6 @@ export function describeRequestedExtras(extras: RequestedExtras): string[] {
   const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván' };
   if (extras.translations?.length) lines.push(`Fordítás: ${extras.translations.map((code) => LANG_HU[code] ?? code).join(', ')}`);
   if (extras.categoryHighlight) lines.push('Kiemelés a kategóriában');
-  if (extras.homepageHighlight) lines.push('Kiemelés a főoldalon');
   if (extras.topicHighlight) lines.push('Témakörön belüli kiemelés: altípus, egyedi áregyeztetéssel');
   if (extras.dutchAgent) lines.push('Holland nyelvű ingatlanos: egyedi áron, személyes egyeztetéssel');
   if (extras.video) lines.push('Videós bemutató (saját videó elhelyezése)');

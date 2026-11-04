@@ -11,6 +11,7 @@ import { eur } from '~/lib/format';
 import { VALUATION_STATUS_LABEL as STATUS_LABEL } from '~/lib/portal/labels';
 import { getTaxonomy, getCompany, termLabel } from '~/lib/runtime-config';
 import { valuationPackages } from '~/lib/valuation/packages';
+import { fmtHuf } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -28,9 +29,9 @@ if (filter) query = query.eq('status', filter);
 
 const { data: valuations } = await query;
 const shown = (valuations ?? []).filter((v) => !kindFilter || (v.request_kind ?? 'indicative') === kindFilter);
-// Names come from the packages an admin edits in Beállítások → Szolgáltatások.
+// Names come from the valuation packages an admin edits in Beállítások → Szolgáltatások (not the Csomagok menu, which prices listings).
 const kindLabel: Record<string, string> = Object.fromEntries(valuationPackages((await getCompany()).services).map((pkg) => [pkg.kind, pkg.names.hu]));
-const huf = (amount: number) => new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 }).format(amount);
+const huf = (amount: number) => fmtHuf(amount);
 
 // The form stores the category key; an admin reads its Hungarian name.
 const taxonomy = await getTaxonomy();

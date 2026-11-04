@@ -13,10 +13,11 @@
  *
  * The packages stay on the page as information — real catalogue prices from
  * listingCatalog()/packageCard(), the recommended one badged — so nobody has
- * to register to find out what it costs. The €179 tier is still decided
- * server-side from the listing's own forint price (isAboveThreshold()).
+ * to register to find out what it costs. The price tier is still decided
+ * server-side from the listing's own forint price (tierFor() in src/lib/price-tiers.ts).
  */
 import Base from '~/layouts/Base.astro';
+import { extraLabel } from '~/lib/orders';
 import Eyebrow from '~/components/Eyebrow.astro';
 import Button from '~/components/Button.astro';
 import PackageCard from '~/components/PackageCard.astro';
@@ -72,8 +73,6 @@ const copies = {
       extraTranslation: 'Fordítás',
       extraTranslationUnit: 'nyelvenként',
       extraCategoryHighlight: 'Kiemelés a kategóriában',
-      extraHomepageHighlight: 'Kiemelés a főoldalon',
-      extraVideo: 'Videós bemutató',
       perMonth: '/ hó',
       minMonths: (n: number) => `min. ${n} hó`,
       once: 'egyszeri',
@@ -109,8 +108,6 @@ const copies = {
       extraTranslation: 'Vertaling',
       extraTranslationUnit: 'per taal',
       extraCategoryHighlight: 'Uitlichten in de categorie',
-      extraHomepageHighlight: 'Uitlichten op de homepage',
-      extraVideo: 'Video plaatsen',
       perMonth: '/ mnd',
       minMonths: (n: number) => `min. ${n} mnd`,
       once: 'eenmalig',
@@ -145,8 +142,6 @@ const copies = {
     extraTranslation: 'Translation',
     extraTranslationUnit: 'per language',
     extraCategoryHighlight: 'Highlighting in the category',
-    extraHomepageHighlight: 'Highlighting on the homepage',
-    extraVideo: 'Video placement',
     perMonth: '/ month',
     minMonths: (n: number) => `min. ${n} months`,
     once: 'one-off',
@@ -181,8 +176,6 @@ const copies = {
     extraTranslation: 'Übersetzung',
     extraTranslationUnit: 'pro Sprache',
     extraCategoryHighlight: 'Hervorhebung in der Kategorie',
-    extraHomepageHighlight: 'Hervorhebung auf der Startseite',
-    extraVideo: 'Video einbinden',
     perMonth: '/ Monat',
     minMonths: (n: number) => `mind. ${n} Monate`,
     once: 'einmalig',
@@ -217,8 +210,6 @@ const copies = {
     extraTranslation: 'Traduction',
     extraTranslationUnit: 'par langue',
     extraCategoryHighlight: 'Mise en avant dans la catégorie',
-    extraHomepageHighlight: 'Mise en avant sur la page d’accueil',
-    extraVideo: 'Mise en ligne d’une vidéo',
     perMonth: '/ mois',
     minMonths: (n: number) => `min. ${n} mois`,
     once: 'unique',
@@ -253,8 +244,6 @@ const copies = {
     extraTranslation: 'Traducción',
     extraTranslationUnit: 'por idioma',
     extraCategoryHighlight: 'Destacado en la categoría',
-    extraHomepageHighlight: 'Destacado en la página de inicio',
-    extraVideo: 'Publicación de un vídeo',
     perMonth: '/ mes',
     minMonths: (n: number) => `mín. ${n} meses`,
     once: 'pago único',
@@ -289,8 +278,6 @@ const copies = {
     extraTranslation: 'Tłumaczenie',
     extraTranslationUnit: 'za język',
     extraCategoryHighlight: 'Wyróżnienie w kategorii',
-    extraHomepageHighlight: 'Wyróżnienie na stronie głównej',
-    extraVideo: 'Zamieszczenie filmu',
     perMonth: '/ miesiąc',
     minMonths: (n: number) => `min. ${nOf('pl', n, 'miesiąc', 'miesiące', 'miesięcy')}`,
     once: 'jednorazowo',
@@ -325,8 +312,6 @@ const copies = {
     extraTranslation: 'Traducere',
     extraTranslationUnit: 'per limbă',
     extraCategoryHighlight: 'Evidențiere în categorie',
-    extraHomepageHighlight: 'Evidențiere pe prima pagină',
-    extraVideo: 'Publicarea unui videoclip',
     perMonth: '/ lună',
     minMonths: (n: number) => `min. ${nOf('ro', n, 'lună', 'luni', 'de luni')}`,
     once: 'o singură dată',
@@ -361,8 +346,6 @@ const copies = {
     extraTranslation: 'Preklad',
     extraTranslationUnit: 'za jazyk',
     extraCategoryHighlight: 'Zvýraznenie v kategórii',
-    extraHomepageHighlight: 'Zvýraznenie na úvodnej stránke',
-    extraVideo: 'Zverejnenie videa',
     perMonth: '/ mesiac',
     minMonths: (n: number) => `min. ${nOf('sk', n, 'mesiac', 'mesiace', 'mesiacov')}`,
     once: 'jednorazovo',
@@ -397,8 +380,6 @@ const copies = {
     extraTranslation: 'Traduzione',
     extraTranslationUnit: 'per lingua',
     extraCategoryHighlight: 'Messa in evidenza nella categoria',
-    extraHomepageHighlight: 'Messa in evidenza in homepage',
-    extraVideo: 'Inserimento di un video',
     perMonth: '/ mese',
     minMonths: (n: number) => `min. ${n} mesi`,
     once: 'una tantum',
@@ -433,8 +414,6 @@ const copies = {
     extraTranslation: 'Tradução',
     extraTranslationUnit: 'por idioma',
     extraCategoryHighlight: 'Destaque na categoria',
-    extraHomepageHighlight: 'Destaque na página inicial',
-    extraVideo: 'Inclusão de vídeo',
     perMonth: '/ mês',
     minMonths: (n: number) => `mín. ${n} meses`,
     once: 'pagamento único',
@@ -469,8 +448,6 @@ const copies = {
     extraTranslation: 'Μετάφραση',
     extraTranslationUnit: 'ανά γλώσσα',
     extraCategoryHighlight: 'Προβολή στην κατηγορία',
-    extraHomepageHighlight: 'Προβολή στην αρχική σελίδα',
-    extraVideo: 'Ανάρτηση βίντεο',
     perMonth: '/ μήνα',
     minMonths: (n: number) => `ελάχ. ${n} μήνες`,
     once: 'εφάπαξ',
@@ -505,8 +482,6 @@ const copies = {
     extraTranslation: 'Překlad',
     extraTranslationUnit: 'za jazyk',
     extraCategoryHighlight: 'Zvýraznění v kategorii',
-    extraHomepageHighlight: 'Zvýraznění na úvodní stránce',
-    extraVideo: 'Umístění videa',
     perMonth: '/ měsíc',
     minMonths: (n: number) => `min. ${nOf('cs', n, 'měsíc', 'měsíce', 'měsíců')}`,
     once: 'jednorázově',
@@ -541,8 +516,6 @@ const copies = {
     extraTranslation: 'Prevod',
     extraTranslationUnit: 'na jezik',
     extraCategoryHighlight: 'Izpostavitev v kategoriji',
-    extraHomepageHighlight: 'Izpostavitev na domači strani',
-    extraVideo: 'Objava videa',
     perMonth: '/ mesec',
     minMonths: (n: number) => `najmanj ${nOf('sl', n, 'mesec', 'meseci', 'mesecev', 'meseca')}`,
     once: 'enkratno',
@@ -577,8 +550,6 @@ const copies = {
     extraTranslation: 'Översättning',
     extraTranslationUnit: 'per språk',
     extraCategoryHighlight: 'Framhävning i kategorin',
-    extraHomepageHighlight: 'Framhävning på startsidan',
-    extraVideo: 'Placering av video',
     perMonth: '/ månad',
     minMonths: (n: number) => `minst ${n} månader`,
     once: 'engångsavgift',
@@ -613,8 +584,6 @@ const copies = {
     extraTranslation: 'Oversættelse',
     extraTranslationUnit: 'pr. sprog',
     extraCategoryHighlight: 'Fremhævning i kategorien',
-    extraHomepageHighlight: 'Fremhævning på forsiden',
-    extraVideo: 'Indsættelse af video',
     perMonth: '/ måned',
     minMonths: (n: number) => `min. ${n} måneder`,
     once: 'engangsbeløb',
@@ -649,8 +618,6 @@ const copies = {
     extraTranslation: 'Oversettelse',
     extraTranslationUnit: 'per språk',
     extraCategoryHighlight: 'Fremheving i kategorien',
-    extraHomepageHighlight: 'Fremheving på forsiden',
-    extraVideo: 'Innlegging av video',
     perMonth: '/ måned',
     minMonths: (n: number) => `min. ${n} måneder`,
     once: 'engangsbeløp',
@@ -685,8 +652,6 @@ const copies = {
     extraTranslation: 'Käännös',
     extraTranslationUnit: 'kieltä kohden',
     extraCategoryHighlight: 'Korostus kategoriassa',
-    extraHomepageHighlight: 'Korostus etusivulla',
-    extraVideo: 'Videon lisääminen',
     perMonth: '/ kk',
     minMonths: (n: number) => `väh. ${nOf('fi', n, 'kuukausi', 'kuukautta')}`,
     once: 'kertamaksu',
@@ -721,8 +686,6 @@ const copies = {
     extraTranslation: 'Tõlge',
     extraTranslationUnit: 'keele kohta',
     extraCategoryHighlight: 'Esiletõstmine kategoorias',
-    extraHomepageHighlight: 'Esiletõstmine avalehel',
-    extraVideo: 'Video lisamine',
     perMonth: '/ kuu',
     minMonths: (n: number) => `vähemalt ${nOf('et', n, 'kuu', 'kuud')}`,
     once: 'ühekordne',
@@ -757,8 +720,6 @@ const copies = {
     extraTranslation: 'Tulkojums',
     extraTranslationUnit: 'par valodu',
     extraCategoryHighlight: 'Izcelšana kategorijā',
-    extraHomepageHighlight: 'Izcelšana sākumlapā',
-    extraVideo: 'Video ievietošana',
     perMonth: '/ mēnesī',
     minMonths: (n: number) => `vismaz ${nOf('lv', n, 'mēnesis', 'mēneši', 'mēnešu')}`,
     once: 'vienreizēji',
@@ -793,8 +754,6 @@ const copies = {
     extraTranslation: 'Vertimas',
     extraTranslationUnit: 'už kalbą',
     extraCategoryHighlight: 'Išskyrimas kategorijoje',
-    extraHomepageHighlight: 'Išskyrimas pagrindiniame puslapyje',
-    extraVideo: 'Vaizdo įrašo įdėjimas',
     perMonth: '/ mėn.',
     minMonths: (n: number) => `ne trumpiau kaip ${nOf('lt', n, 'mėnesį', 'mėnesius', 'mėnesių')}`,
     once: 'vienkartinis',
@@ -827,11 +786,10 @@ const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, loc
 
 const extra = (id: string) => catalog.extras.find((e) => e.id === id)!;
 const categoryHighlight = extra('category-highlight');
-const homepageHighlight = extra('homepage-highlight');
 const videoExtra = extra('video');
 const translationExtra = extra('translation');
-// Video is listed only when some package sells it as an extra.
-const videoSold = catalog.packages.some((pkg) => pkg.video === 'extra');
+// The video shoot (Hungary only, §4b) is listed while it is sold; its name says where.
+const videoSold = !videoExtra.retired;
 // Read-only list of what can be added later, in the setup's first step.
 const extrasInfo = [
   {
@@ -843,11 +801,7 @@ const extrasInfo = [
     name: t.extraCategoryHighlight,
     price: `${money(categoryHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(categoryHighlight.minMonths!)}`,
   },
-  {
-    name: t.extraHomepageHighlight,
-    price: `${money(homepageHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(homepageHighlight.minMonths!)}`,
-  },
-  ...(videoSold ? [{ name: t.extraVideo, price: `${money(videoExtra.priceEur * 100)} ${t.once}` }] : []),
+  ...(videoSold ? [{ name: extraLabel('video', locale), price: `${money(videoExtra.priceEur * 100)} ${t.once}` }] : []),
 ];
 
 const packageSchema = listingServiceSchema(locale, {

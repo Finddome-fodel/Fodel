@@ -78,6 +78,10 @@ const editable = isAdmin || OWNER_EDITABLE.includes(property.status);
 
 const saved = Astro.url.searchParams.get('saved') === '1';
 const err = Astro.url.searchParams.get('error');
+/** Free listings: the field the contact check refused (update.ts), so an admin is offered „Tudatosan benne hagyom”. */
+const contactField = Astro.url.searchParams.get('contact_field');
+/** A free listing shows FINDDOME's contact only (spec §5.1); the owner is not asked. */
+const freeContactOnly = Boolean(property.free_listing) && !isAdmin;
 const payment = Astro.url.searchParams.get('payment');
 
 const trByLocale = Object.fromEntries(property.translations.map((t) => [t.locale, t]));
@@ -119,7 +123,7 @@ if (property.media.length === 0) blockers.push('Legalább egy fényképet fel ke
 if (!trByLocale.hu?.title?.trim()) blockers.push('A magyar cím kitöltése kötelező.');
 if (!trByLocale.hu?.description?.trim()) blockers.push('A magyar rövid leírás kitöltése kötelező.');
 if (!property.country || !Number.isFinite(property.lat) || !Number.isFinite(property.lng) || property.location_confirmed===false) blockers.push('Adja meg az országot és a helyet.');
-if (!(property.original_price && property.original_price>0) && (property.price_eur <= 1 || property.price_huf <= 1)) blockers.push('Adja meg az irányárat.');
+if (!(property.original_price && property.original_price>0) && (property.price_eur <= 1 || property.price_huf <= 1)) blockers.push('Adja meg az árat.');
 
 const openService = serviceResult.data;
 const servicesAvailable = !serviceResult.error;
@@ -130,7 +134,7 @@ const checks = [
   { label: 'Magyar cím', done: Boolean(trByLocale.hu?.title?.trim()) },
   { label: 'Rövid leírás', done: Boolean(trByLocale.hu?.description?.trim()) },
   { label: 'Ország és térképi hely', done: Boolean(property.country && Number.isFinite(property.lat) && Number.isFinite(property.lng) && property.location_confirmed!==false) },
-  { label: 'Irányár', done: Boolean(property.original_price && property.original_price>0) || (property.price_eur > 1 && property.price_huf > 1) },
+  { label: 'Ár', done: Boolean(property.original_price && property.original_price>0) || (property.price_eur > 1 && property.price_huf > 1) },
   { label: 'Legalább egy fénykép', done: property.media.length > 0 },
 ];
 const doneCount = checks.filter((check) => check.done).length;
@@ -284,14 +288,20 @@ const trPaid = Astro.url.searchParams.get('translations');
         <header class="card-head"><div><h2>{isAdmin ? 'Kapcsolattartó a hirdetésen' : 'Eladó elérhetősége'}</h2><p>{isAdmin ? 'Kit lásson a vevő kapcsolattartóként, és mik a tulajdonos saját adatai.' : 'Ha engedi, a vevő közvetlenül is felveheti Önnel a kapcsolatot.'}</p></div></header>
         {isAdmin && <ContactChoice mode={property.public_contact} staffName={property.public_contact_name} staffPhone={property.public_contact_phone} ownerAgreed={property.seller_contact_visible} ownerHasPhone={Boolean(property.seller_phone?.trim())} packageAllowsPhone={listingRules(company.services).packagePhone[property.package as 'cheap-6m' | 'normal-12m'] ?? false} />}
         {isAdmin && <h3>A tulajdonos adatai</h3>}
-        <p class="hint">
-          A FINDDOME egyedi modellje: ha ehhez hozzájárul, a neve és telefonszáma megjelenik a
-          hirdetésen, hogy a vevő közvetlenül is felvehesse Önnel a kapcsolatot.
-        </p>
-        <label class="checkbox">
-          <input type="checkbox" name="seller_contact_visible" value="yes" checked={property.seller_contact_visible} />
-          Nevem és telefonszámom megjelenítése a hirdetésben
-        </label>
+        {freeContactOnly ? (
+          <p class="hint">A hirdetésen a FINDDOME elérhetőségei jelennek meg; az érdeklődőket mi kapcsoljuk Önhöz.</p>
+        ) : (
+          <>
+            <p class="hint">
+              A FINDDOME egyedi modellje: ha ehhez hozzájárul, a neve és telefonszáma megjelenik a
+              hirdetésen, hogy a vevő közvetlenül is felvehesse Önnel a kapcsolatot.
+            </p>
+            <label class="checkbox">
+              <input type="checkbox" name="seller_contact_visible" value="yes" checked={property.seller_contact_visible} />
+              Nevem és telefonszámom megjelenítése a hirdetésben
+            </label>
+          </>
+        )}
         <div class="grid-2">
           <Field locale="hu" name="seller_name" label="Név" value={property.seller_name ?? ''} />
           <Field locale="hu" name="seller_phone" label="Telefonszám" type="tel" value={property.seller_phone ?? ''} />
@@ -302,6 +312,17 @@ const trPaid = Astro.url.searchParams.get('translations');
 
       <section id="translations" class="ed-card">
         <header class="card-head"><div><h2>Szövegek</h2><p>Minden nyelven külön szöveg. A magyar kötelező, a többi bővíti az elérést.</p></div></header>
+        {property.free_listing && (
+          <p class={contactField ? 'notice warn' : 'notice contact-rule'} id="contact-rule">
+            Ingyenes hirdetés: a szövegekben nem szerepelhet e-mail-cím, telefonszám, weboldal vagy üzenetküldő-elérhetőség. Az érdeklődők a FINDDOME-on keresztül érik el a tulajdonost.
+          </p>
+        )}
+        {property.free_listing && isAdmin && contactField && (
+          <label class="checkbox contact-override">
+            <input type="checkbox" name="contact_override" value="yes" />
+            Tudatosan benne hagyom <span class="hint">(a mentés naplózásra kerül)</span>
+          </label>
+        )}
         {isAdmin && (
           <div class="tr-bar" id="tr-bar">
             <button type="button" class="btn small" id="tr-missing" disabled={!aiOn || trMissing.length === 0}>Hiányzó nyelvek fordítása ({trMissing.length})</button>
@@ -1159,6 +1180,7 @@ const trPaid = Astro.url.searchParams.get('translations');
   .review-note blockquote { margin: 0 0 12px; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--ink); white-space: pre-line; }
   .review-note-foot { font-size: 14.5px; line-height: 1.7; color: var(--ink-quiet); }
   .notice { margin-bottom: 16px; }
+  .contact-rule { background: rgba(16, 42, 67, 0.05); color: var(--ink); font-size: var(--fs-small); }
 
   /* ── Payment ─────────────────────────────────────────────────────────── */
   .pay h3 { margin: 30px 0 12px; }

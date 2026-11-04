@@ -45,6 +45,11 @@ const ADMIN_ONLY_PREFIXES = [
   '/portal/services',
   '/portal/settings/estimate',
   '/portal/settings/invoicing',
+  // The Csomagok menu (§9.0), and its old home for the redirect period.
+  '/portal/packages',
+  '/api/portal/packages',
+  '/portal/settings/packages',
+  '/api/portal/settings/packages',
   '/portal/invoices/new',
   '/portal/newsletter',
   '/portal/email',

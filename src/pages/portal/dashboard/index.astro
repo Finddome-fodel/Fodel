@@ -24,6 +24,7 @@ import { greeting, longDate, hoursSince, listingName, newestFirst } from '~/lib/
 import { getCompany } from '~/lib/runtime-config';
 import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
 import { toListItem } from '~/lib/invoicing/store';
+import { fmtInt } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
@@ -219,7 +220,7 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
                           <b>{listingName(p)}</b>
                           <span>
                             {p.settlement || '—'} · {(p.owner_id && ownerName.get(p.owner_id)) || 'Ismeretlen hirdető'} · €
-                            {Number(p.price_eur).toLocaleString('de-DE')}
+                            {fmtInt(Number(p.price_eur))}
                           </span>
                         </span>
                         <Ago class:list={['q-when', late && 'late']} iso={p.submitted_at ?? p.created_at} />

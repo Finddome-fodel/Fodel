@@ -3,9 +3,12 @@
  * Price list — FODEL's published tariff, which the prototype omitted entirely
  * (its Sellers page ended at "Árlista kérése" → a generic contact form).
  *
- * Figures are exactly those on fodel.hu/arlista: €69 / €129 / €179, €25 per
- * language, €15 and €25 per month for highlighting, €36 video, €30 retro
- * photos, €25 renewal. All prices include 21% Dutch VAT.
+ * Every figure comes from the admin's Csomagok menu (listingCatalog): the
+ * package tiers (€129 / €179 by the listing's forint price), €25 per
+ * language, €15 per month for the category highlight, the €180 video shoot
+ * (Hungary only) and the €25 renewal. Since November 2026 the homepage is an
+ * editorial choice and adding photos later is free, so neither is priced here.
+ * All prices include 21% Dutch VAT.
  */
 import Base from '~/layouts/Base.astro';
 import PageHeader from '~/components/PageHeader.astro';
@@ -16,6 +19,7 @@ import { path, localizer, type L10n, type Locale } from '~/i18n/ui';
 import { COMMISSION, CONTRACT_PRICES, ONSITE_SERVICES, LISTING_VAT_PERCENT } from '~/config/company';
 import { listingCatalog, packageCard, priceFacts, extraPrice, eurText, type ExtraId } from '~/lib/listing-packages';
 import { alternatesFor } from '~/lib/page';
+import { extraLabel } from '~/lib/orders';
 import { approvedWording } from '~/lib/approved-text';
 import { listingServiceSchema } from '~/lib/seo';
 import { getCompany } from '~/lib/runtime-config';
@@ -35,7 +39,7 @@ const refund = approvedWording(company.services.refundPolicy, locale);
 const refundPolicy = refund?.text;
 const refundLang = refund?.lang ?? locale;
 // Package content and every price below come from the admin's settings
-// (Szolgáltatások → Hirdetési csomagok), so this page always matches checkout.
+// (Csomagok menü), so this page always matches checkout.
 const catalog = listingCatalog(company.services);
 const from = priceFacts(catalog).from;
 const fmt = (n: number) => eurText(locale, n);
@@ -44,12 +48,18 @@ const vat = LISTING_VAT_PERCENT;
 const pct = (n: number) => (locale === 'de' || locale === 'fr' || locale === 'es' || locale === 'sk' ? `${n}\u00a0%` : `${n}%`);
 const pkgSummary = catalog.packages
   .map((p) => {
-    const price = p.priceEurAbove !== null ? `${fmt(p.priceEur)} ${x('vagy', 'of', 'or', 'oder', 'ou', 'o', 'lub', 'sau', 'alebo', 'o', 'ou', 'ή', 'nebo', 'ali', 'eller', 'eller', 'eller', 'tai', 'või', 'vai', 'arba')} ${fmt(p.priceEurAbove)}` : fmt(p.priceEur);
+    // "€ 129 vagy € 179" — every tier price, the last joined with "or".
+    const prices = p.tiers.map((tier) => fmt(tier.priceEur));
+    const or = x('vagy', 'of', 'or', 'oder', 'ou', 'o', 'lub', 'sau', 'alebo', 'o', 'ou', 'ή', 'nebo', 'ali', 'eller', 'eller', 'eller', 'tai', 'või', 'vai', 'arba');
+    const price = prices.length > 1 ? `${prices.slice(0, -1).join(', ')} ${or} ${prices[prices.length - 1]}` : prices[0];
     return x(`${p.months} hónapos ${price}`, `${p.months} maanden ${price}`, `${p.months}-month listing ${price}`, `${p.months}-monatiges Inserat ${price}`, `annonce de ${p.months} mois à ${price}`, `anuncio de ${p.months} meses por ${price}`, `ogłoszenie na ${nOf('pl', p.months, 'miesiąc', 'miesiące', 'miesięcy')} za ${price}`, `anunț pe ${nOf('ro', p.months, 'lună', 'luni', 'de luni')} la ${price}`, `inzerát na ${nOf('sk', p.months, 'mesiac', 'mesiace', 'mesiacov')} za ${price}`, `annuncio di ${p.months} mesi a ${price}`, `anúncio de ${p.months} meses por ${price}`, `αγγελία ${p.months} μηνών στα ${price}`, `${p.months}měsíční inzerát za ${price}`, `${p.months}-mesečni oglas za ${price}`, `annons i ${p.months} månader för ${price}`, `annonce i ${p.months} måneder til ${price}`, `annonse i ${p.months} måneder for ${price}`, `${p.months} kuukauden ilmoitus hintaan ${price}`, `${p.months}-kuuline kuulutus hinnaga ${price}`, `${nOf('lv', p.months, 'mēneša', 'mēnešu')} sludinājums par ${price}`, `${nOf('lt', p.months, 'mėnesio', 'mėnesių', 'mėnesių')} skelbimas už ${price}`);
   })
   .join(', ');
-const hl = [extraPrice(catalog, 'category-highlight'), extraPrice(catalog, 'homepage-highlight')].sort((a, b) => a - b);
-const hlRange = hl[0] === hl[1] ? `${hl[0]}` : `${hl[0]}–${hl[1]}`;
+// Only the category highlight is sold now (the homepage is an editorial choice).
+const hlRange = `${extraPrice(catalog, 'category-highlight')}`;
+const videoExtra = catalog.extras.find((extra) => extra.id === 'video');
+const videoSold = Boolean(videoExtra && !videoExtra.retired);
+const videoName = extraLabel('video', locale);
 const translationPrice = extraPrice(catalog, 'translation');
 
 const copies = {
@@ -72,9 +82,7 @@ const copies = {
       extras: [
         { name: 'Idegen nyelvű szöveg (holland, német, angol, francia)', price: xp('translation'), unit: '/ nyelv' },
         { name: 'Kategórián belüli kiemelés (min. 3 hónap)', price: xp('category-highlight'), unit: '/ hó' },
-        { name: 'Főoldali kiemelés (min. 3 hónap)', price: xp('homepage-highlight'), unit: '/ hó' },
-        { name: 'Videó megjelenítése (az Ön által készített videó elhelyezése)', price: xp('video'), unit: 'egyszeri' },
-        { name: 'Utólagos képfeltöltés', price: xp('retro-images'), unit: 'egyszeri' },
+        ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'egyszeri' }] : []),
         { name: 'Standard hirdetés megújítása 6 hónapra', price: xp('renewal-6m'), unit: 'egyszeri' },
       ],
       // Professional photography and drone now have fixed prices — see the
@@ -106,9 +114,7 @@ const copies = {
       extras: [
         { name: 'Vertaling (Nederlands, Duits, Engels, Frans)', price: xp('translation'), unit: '/ taal' },
         { name: 'Uitlichten binnen de categorie (min. 3 maanden)', price: xp('category-highlight'), unit: '/ maand' },
-        { name: 'Uitlichten op de homepage (min. 3 maanden)', price: xp('homepage-highlight'), unit: '/ maand' },
-        { name: 'Video plaatsen (uw eigen video)', price: xp('video'), unit: 'eenmalig' },
-        { name: 'Foto’s achteraf toevoegen', price: xp('retro-images'), unit: 'eenmalig' },
+        ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'eenmalig' }] : []),
         { name: 'Verlenging standaard advertentie, 6 maanden', price: xp('renewal-6m'), unit: 'eenmalig' },
       ],
       services: ['Aanvragen van het energieprestatiecertificaat'],
@@ -136,9 +142,7 @@ const copies = {
     extras: [
       { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
       { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
-      { name: 'Highlighting on the homepage (min. 3 months)', price: xp('homepage-highlight'), unit: '/ month' },
-      { name: 'Video placement (your own video)', price: xp('video'), unit: 'one-off' },
-      { name: 'Adding photos later', price: xp('retro-images'), unit: 'one-off' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
       { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
     ],
     services: ['Applying for the energy performance certificate'],
@@ -169,9 +173,7 @@ const copies = {
     extras: [
       { name: 'Übersetzung (Niederländisch, Deutsch, Englisch, Französisch)', price: xp('translation'), unit: '/ Sprache' },
       { name: 'Hervorhebung innerhalb der Kategorie (mind. 3 Monate)', price: xp('category-highlight'), unit: '/ Monat' },
-      { name: 'Hervorhebung auf der Startseite (mind. 3 Monate)', price: xp('homepage-highlight'), unit: '/ Monat' },
-      { name: 'Video einbinden (Ihr eigenes Video)', price: xp('video'), unit: 'einmalig' },
-      { name: 'Fotos nachträglich hinzufügen', price: xp('retro-images'), unit: 'einmalig' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'einmalig' }] : []),
       { name: 'Verlängerung eines Standard-Inserats, 6 Monate', price: xp('renewal-6m'), unit: 'einmalig' },
     ],
     services: ['Beantragung des Energieausweises'],
@@ -202,9 +204,7 @@ const copies = {
     extras: [
       { name: 'Traduction (néerlandais, allemand, anglais, français)', price: xp('translation'), unit: '/ langue' },
       { name: 'Mise en avant dans la catégorie (min. 3 mois)', price: xp('category-highlight'), unit: '/ mois' },
-      { name: 'Mise en avant sur la page d’accueil (min. 3 mois)', price: xp('homepage-highlight'), unit: '/ mois' },
-      { name: 'Mise en ligne d’une vidéo (la vôtre)', price: xp('video'), unit: 'unique' },
-      { name: 'Ajout de photos après coup', price: xp('retro-images'), unit: 'unique' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'unique' }] : []),
       { name: 'Renouvellement d’une annonce standard, 6 mois', price: xp('renewal-6m'), unit: 'unique' },
     ],
     services: ['Obtention du certificat de performance énergétique'],
@@ -235,9 +235,7 @@ const copies = {
     extras: [
       { name: 'Traducción (neerlandés, alemán, inglés, francés)', price: xp('translation'), unit: '/ idioma' },
       { name: 'Destacado en la categoría (mín. 3 meses)', price: xp('category-highlight'), unit: '/ mes' },
-      { name: 'Destacado en la página de inicio (mín. 3 meses)', price: xp('homepage-highlight'), unit: '/ mes' },
-      { name: 'Publicación de un vídeo (el suyo)', price: xp('video'), unit: 'pago único' },
-      { name: 'Añadir fotos más adelante', price: xp('retro-images'), unit: 'pago único' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'pago único' }] : []),
       { name: 'Renovación de un anuncio estándar, 6 meses', price: xp('renewal-6m'), unit: 'pago único' },
     ],
     services: ['Obtención del certificado de eficiencia energética'],
@@ -268,9 +266,7 @@ const copies = {
     extras: [
       { name: 'Tłumaczenie (niderlandzki, niemiecki, angielski, francuski)', price: xp('translation'), unit: '/ język' },
       { name: 'Wyróżnienie w kategorii (min. 3 miesiące)', price: xp('category-highlight'), unit: '/ miesiąc' },
-      { name: 'Wyróżnienie na stronie głównej (min. 3 miesiące)', price: xp('homepage-highlight'), unit: '/ miesiąc' },
-      { name: 'Zamieszczenie filmu (własnego)', price: xp('video'), unit: 'jednorazowo' },
-      { name: 'Dodanie zdjęć później', price: xp('retro-images'), unit: 'jednorazowo' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'jednorazowo' }] : []),
       { name: 'Przedłużenie standardowego ogłoszenia, 6 miesięcy', price: xp('renewal-6m'), unit: 'jednorazowo' },
     ],
     services: ['Uzyskanie świadectwa charakterystyki energetycznej'],
@@ -301,9 +297,7 @@ const copies = {
     extras: [
       { name: 'Traducere (neerlandeză, germană, engleză, franceză)', price: xp('translation'), unit: '/ limbă' },
       { name: 'Evidențiere în categorie (min. 3 luni)', price: xp('category-highlight'), unit: '/ lună' },
-      { name: 'Evidențiere pe prima pagină (min. 3 luni)', price: xp('homepage-highlight'), unit: '/ lună' },
-      { name: 'Publicarea unui videoclip (al dumneavoastră)', price: xp('video'), unit: 'o singură dată' },
-      { name: 'Adăugarea ulterioară de fotografii', price: xp('retro-images'), unit: 'o singură dată' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'o singură dată' }] : []),
       { name: 'Prelungirea unui anunț standard, 6 luni', price: xp('renewal-6m'), unit: 'o singură dată' },
     ],
     services: ['Obținerea certificatului de performanță energetică'],
@@ -334,9 +328,7 @@ const copies = {
     extras: [
       { name: 'Preklad (holandčina, nemčina, angličtina, francúzština)', price: xp('translation'), unit: '/ jazyk' },
       { name: 'Zvýraznenie v kategórii (min. 3 mesiace)', price: xp('category-highlight'), unit: '/ mesiac' },
-      { name: 'Zvýraznenie na úvodnej stránke (min. 3 mesiace)', price: xp('homepage-highlight'), unit: '/ mesiac' },
-      { name: 'Zverejnenie videa (vlastného)', price: xp('video'), unit: 'jednorazovo' },
-      { name: 'Dodatočné pridanie fotografií', price: xp('retro-images'), unit: 'jednorazovo' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'jednorazovo' }] : []),
       { name: 'Predĺženie štandardného inzerátu, 6 mesiacov', price: xp('renewal-6m'), unit: 'jednorazovo' },
     ],
     services: ['Vystavenie energetického certifikátu'],
@@ -367,9 +359,7 @@ const copies = {
     extras: [
       { name: 'Traduzione (olandese, tedesco, inglese, francese)', price: xp('translation'), unit: '/ lingua' },
       { name: 'Messa in evidenza nella categoria (min. 3 mesi)', price: xp('category-highlight'), unit: '/ mese' },
-      { name: 'Messa in evidenza in homepage (min. 3 mesi)', price: xp('homepage-highlight'), unit: '/ mese' },
-      { name: 'Inserimento di un video (il suo video)', price: xp('video'), unit: 'una tantum' },
-      { name: 'Aggiunta di foto in seguito', price: xp('retro-images'), unit: 'una tantum' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'una tantum' }] : []),
       { name: 'Rinnovo di un annuncio standard, 6 mesi', price: xp('renewal-6m'), unit: 'una tantum' },
     ],
     services: ['Richiesta dell’attestato di prestazione energetica'],
@@ -400,9 +390,7 @@ const copies = {
     extras: [
       { name: 'Tradução (neerlandês, alemão, inglês, francês)', price: xp('translation'), unit: '/ idioma' },
       { name: 'Destaque na categoria (mín. 3 meses)', price: xp('category-highlight'), unit: '/ mês' },
-      { name: 'Destaque na página inicial (mín. 3 meses)', price: xp('homepage-highlight'), unit: '/ mês' },
-      { name: 'Inclusão de vídeo (o seu próprio vídeo)', price: xp('video'), unit: 'pagamento único' },
-      { name: 'Adicionar fotografias mais tarde', price: xp('retro-images'), unit: 'pagamento único' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'pagamento único' }] : []),
       { name: 'Renovação de um anúncio normal, 6 meses', price: xp('renewal-6m'), unit: 'pagamento único' },
     ],
     services: ['Pedido do certificado energético'],
@@ -433,9 +421,7 @@ const copies = {
     extras: [
       { name: 'Μετάφραση (ολλανδικά, γερμανικά, αγγλικά, γαλλικά)', price: xp('translation'), unit: '/ γλώσσα' },
       { name: 'Προβολή στην κατηγορία (ελάχ. 3 μήνες)', price: xp('category-highlight'), unit: '/ μήνα' },
-      { name: 'Προβολή στην αρχική σελίδα (ελάχ. 3 μήνες)', price: xp('homepage-highlight'), unit: '/ μήνα' },
-      { name: 'Ανάρτηση βίντεο (δικό σας βίντεο)', price: xp('video'), unit: 'εφάπαξ' },
-      { name: 'Προσθήκη φωτογραφιών αργότερα', price: xp('retro-images'), unit: 'εφάπαξ' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'εφάπαξ' }] : []),
       { name: 'Ανανέωση τυπικής αγγελίας, 6 μήνες', price: xp('renewal-6m'), unit: 'εφάπαξ' },
     ],
     services: ['Αίτηση για πιστοποιητικό ενεργειακής απόδοσης'],
@@ -466,9 +452,7 @@ const copies = {
     extras: [
       { name: 'Překlad (nizozemština, němčina, angličtina, francouzština)', price: xp('translation'), unit: '/ jazyk' },
       { name: 'Zvýraznění v kategorii (min. 3 měsíce)', price: xp('category-highlight'), unit: '/ měsíc' },
-      { name: 'Zvýraznění na úvodní stránce (min. 3 měsíce)', price: xp('homepage-highlight'), unit: '/ měsíc' },
-      { name: 'Umístění videa (vaše vlastní video)', price: xp('video'), unit: 'jednorázově' },
-      { name: 'Dodatečné přidání fotografií', price: xp('retro-images'), unit: 'jednorázově' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'jednorázově' }] : []),
       { name: 'Prodloužení standardního inzerátu, 6 měsíců', price: xp('renewal-6m'), unit: 'jednorázově' },
     ],
     services: ['Vyřízení průkazu energetické náročnosti'],
@@ -499,9 +483,7 @@ const copies = {
     extras: [
       { name: 'Prevod (nizozemščina, nemščina, angleščina, francoščina)', price: xp('translation'), unit: '/ jezik' },
       { name: 'Izpostavitev v kategoriji (najmanj 3 meseci)', price: xp('category-highlight'), unit: '/ mesec' },
-      { name: 'Izpostavitev na domači strani (najmanj 3 meseci)', price: xp('homepage-highlight'), unit: '/ mesec' },
-      { name: 'Objava videa (vaš lasten video)', price: xp('video'), unit: 'enkratno' },
-      { name: 'Naknadno dodajanje fotografij', price: xp('retro-images'), unit: 'enkratno' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'enkratno' }] : []),
       { name: 'Podaljšanje standardnega oglasa, 6 mesecev', price: xp('renewal-6m'), unit: 'enkratno' },
     ],
     services: ['Pridobitev energetske izkaznice'],
@@ -532,9 +514,7 @@ const copies = {
     extras: [
       { name: 'Översättning (nederländska, tyska, engelska, franska)', price: xp('translation'), unit: '/ språk' },
       { name: 'Framhävning i kategorin (minst 3 månader)', price: xp('category-highlight'), unit: '/ månad' },
-      { name: 'Framhävning på startsidan (minst 3 månader)', price: xp('homepage-highlight'), unit: '/ månad' },
-      { name: 'Placering av video (din egen video)', price: xp('video'), unit: 'engångsavgift' },
-      { name: 'Lägga till foton i efterhand', price: xp('retro-images'), unit: 'engångsavgift' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'engångsavgift' }] : []),
       { name: 'Förnyelse av en standardannons, 6 månader', price: xp('renewal-6m'), unit: 'engångsavgift' },
     ],
     services: ['Beställning av energideklaration'],
@@ -565,9 +545,7 @@ const copies = {
     extras: [
       { name: 'Oversættelse (hollandsk, tysk, engelsk, fransk)', price: xp('translation'), unit: '/ sprog' },
       { name: 'Fremhævning i kategorien (min. 3 måneder)', price: xp('category-highlight'), unit: '/ måned' },
-      { name: 'Fremhævning på forsiden (min. 3 måneder)', price: xp('homepage-highlight'), unit: '/ måned' },
-      { name: 'Indsættelse af video (din egen video)', price: xp('video'), unit: 'engangsbeløb' },
-      { name: 'Tilføjelse af fotos senere', price: xp('retro-images'), unit: 'engangsbeløb' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'engangsbeløb' }] : []),
       { name: 'Fornyelse af en standardannonce, 6 måneder', price: xp('renewal-6m'), unit: 'engangsbeløb' },
     ],
     services: ['Bestilling af energimærke'],
@@ -598,9 +576,7 @@ const copies = {
     extras: [
       { name: 'Oversettelse (nederlandsk, tysk, engelsk, fransk)', price: xp('translation'), unit: '/ språk' },
       { name: 'Fremheving i kategorien (min. 3 måneder)', price: xp('category-highlight'), unit: '/ måned' },
-      { name: 'Fremheving på forsiden (min. 3 måneder)', price: xp('homepage-highlight'), unit: '/ måned' },
-      { name: 'Innlegging av video (din egen video)', price: xp('video'), unit: 'engangsbeløp' },
-      { name: 'Legge til bilder senere', price: xp('retro-images'), unit: 'engangsbeløp' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'engangsbeløp' }] : []),
       { name: 'Fornyelse av en standardannonse, 6 måneder', price: xp('renewal-6m'), unit: 'engangsbeløp' },
     ],
     services: ['Bestilling av energiattest'],
@@ -631,9 +607,7 @@ const copies = {
     extras: [
       { name: 'Käännös (hollanti, saksa, englanti, ranska)', price: xp('translation'), unit: '/ kieli' },
       { name: 'Korostus kategoriassa (väh. 3 kuukautta)', price: xp('category-highlight'), unit: '/ kk' },
-      { name: 'Korostus etusivulla (väh. 3 kuukautta)', price: xp('homepage-highlight'), unit: '/ kk' },
-      { name: 'Videon lisääminen (oma video)', price: xp('video'), unit: 'kertamaksu' },
-      { name: 'Kuvien lisääminen jälkikäteen', price: xp('retro-images'), unit: 'kertamaksu' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'kertamaksu' }] : []),
       { name: 'Perusilmoituksen uusiminen, 6 kuukautta', price: xp('renewal-6m'), unit: 'kertamaksu' },
     ],
     services: ['Energiatodistuksen hankinta'],
@@ -664,9 +638,7 @@ const copies = {
     extras: [
       { name: 'Tõlge (hollandi, saksa, inglise, prantsuse keel)', price: xp('translation'), unit: '/ keel' },
       { name: 'Esiletõstmine kategoorias (vähemalt 3 kuud)', price: xp('category-highlight'), unit: '/ kuu' },
-      { name: 'Esiletõstmine avalehel (vähemalt 3 kuud)', price: xp('homepage-highlight'), unit: '/ kuu' },
-      { name: 'Video lisamine (teie oma video)', price: xp('video'), unit: 'ühekordne' },
-      { name: 'Fotode hilisem lisamine', price: xp('retro-images'), unit: 'ühekordne' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'ühekordne' }] : []),
       { name: 'Tavakuulutuse pikendamine, 6 kuud', price: xp('renewal-6m'), unit: 'ühekordne' },
     ],
     services: ['Energiamärgise taotlemine'],
@@ -697,9 +669,7 @@ const copies = {
     extras: [
       { name: 'Tulkojums (nīderlandiešu, vācu, angļu, franču valodā)', price: xp('translation'), unit: '/ valoda' },
       { name: 'Izcelšana kategorijā (vismaz 3 mēneši)', price: xp('category-highlight'), unit: '/ mēnesī' },
-      { name: 'Izcelšana sākumlapā (vismaz 3 mēneši)', price: xp('homepage-highlight'), unit: '/ mēnesī' },
-      { name: 'Video ievietošana (jūsu video)', price: xp('video'), unit: 'vienreizēji' },
-      { name: 'Fotoattēlu pievienošana vēlāk', price: xp('retro-images'), unit: 'vienreizēji' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'vienreizēji' }] : []),
       { name: 'Standarta sludinājuma pagarināšana, 6 mēneši', price: xp('renewal-6m'), unit: 'vienreizēji' },
     ],
     services: ['Energoefektivitātes sertifikāta pieprasīšana'],
@@ -730,9 +700,7 @@ const copies = {
     extras: [
       { name: 'Vertimas (į olandų, vokiečių, anglų, prancūzų kalbas)', price: xp('translation'), unit: '/ kalba' },
       { name: 'Išskyrimas kategorijoje (ne trumpiau kaip 3 mėn.)', price: xp('category-highlight'), unit: '/ mėn.' },
-      { name: 'Išskyrimas pagrindiniame puslapyje (ne trumpiau kaip 3 mėn.)', price: xp('homepage-highlight'), unit: '/ mėn.' },
-      { name: 'Vaizdo įrašo įdėjimas (jūsų vaizdo įrašas)', price: xp('video'), unit: 'vienkartinis' },
-      { name: 'Nuotraukų pridėjimas vėliau', price: xp('retro-images'), unit: 'vienkartinis' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'vienkartinis' }] : []),
       { name: 'Standartinio skelbimo pratęsimas, 6 mėn.', price: xp('renewal-6m'), unit: 'vienkartinis' },
     ],
     services: ['Energinio naudingumo sertifikato užsakymas'],

@@ -74,7 +74,9 @@ export type Services = {
   ownerRefresh?: Partial<ListingRules['ownerRefresh']>;
   /** Listing package content and prices, and the extras' prices — see src/lib/listing-packages.ts. */
   listingPackages?: Partial<Record<'cheap-6m' | 'normal-12m', StoredListingPackage>>;
-  listingExtras?: Partial<Record<string, { priceEur?: number }>>;
+  listingExtras?: Partial<Record<string, { priceEur?: number; tiers?: unknown }>>;
+  /** HUF→EUR rounding of converted listing prices (Csomagok → Kerekítés); see roundEur() in src/lib/exchange-rates.ts. */
+  priceRounding?: { step?: number };
 };
 
 export type StoredValuationPackage = {
