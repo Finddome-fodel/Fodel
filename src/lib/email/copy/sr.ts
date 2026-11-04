@@ -279,4 +279,25 @@ export const SR = {
     body: 'Hvala, zabeležili smo da želite zvaničnu procenu (po nalogu suda) od strane veštaka. To nije isto što i okvirna tržišna procena na našem sajtu: sprovodi je ovlašćeni veštak, na osnovu ponude.',
     next: 'Neko iz našeg tima će Vas kontaktirati u vezi sa mogućnostima i ponudom.',
   },
+
+  photosReviewed: {
+    subject: (ref: string) => `Pregledali smo vaše nove fotografije (#${ref})`,
+    preheader: 'Odobrene fotografije se već prikazuju u vašem oglasu.',
+    heading: 'Pregledali smo vaše nove fotografije',
+    body: (title: string, ref: string) =>
+      `Hvala što ste dopunili galeriju oglasa „${title}“ (#${ref}). Naš tim je pregledao nove fotografije.`,
+    approvedLabel: 'Odobreno, već je objavljeno',
+    rejectedLabel: 'Nije objavljeno',
+    reasonsTitle: 'Zašto neke fotografije nisu objavljene?',
+    reasons: {
+      quality: 'Mutna, tamna ili slabog kvaliteta slika',
+      unrelated: 'Ne prikazuje ovu nekretninu',
+      personal: 'Prikazuje lične podatke (lica, registarske tablice, dokumenta)',
+      branding: 'Sadrži tekst, logotip, vodeni žig ili kontakt podatke',
+      duplicate: 'Ista slika je već u galeriji',
+      inappropriate: 'Sadržaj nije prikladan za oglas',
+    } as Record<string, string>,
+    after: 'Nove fotografije možete dodavati i dalje, bez naknade. Svaka nova slika se pojavljuje u oglasu nakon kratke provere.',
+    cta: 'Upravljanje fotografijama',
+  },
 } satisfies PublicEmailCopy;

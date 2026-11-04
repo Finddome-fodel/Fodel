@@ -281,4 +281,25 @@ export const TR = {
     body: 'Teşekkürler, bir bilirkişi tarafından resmî (mahkeme tarafından atanan) değerleme istediğinizi kaydettik. Bu, web sitemizdeki piyasa verilerine dayalı tahmini değerlemeyle aynı şey değildir: yetkili bir bilirkişi tarafından, fiyat teklifine dayalı olarak yapılır.',
     next: 'Ekibimizden biri seçenekler ve fiyat teklifi hakkında sizinle iletişime geçecek.',
   },
+
+  photosReviewed: {
+    subject: (ref: string) => `Yeni fotoğraflarınızı inceledik (#${ref})`,
+    preheader: 'Onaylanan fotoğraflar ilanınızda yayında.',
+    heading: 'Yeni fotoğraflarınızı inceledik',
+    body: (title: string, ref: string) =>
+      `“${title}” (#${ref}) ilanınızın galerisini güncellediğiniz için teşekkür ederiz. Ekibimiz yeni fotoğrafları inceledi.`,
+    approvedLabel: 'Onaylandı, yayında',
+    rejectedLabel: 'Yayınlanmadı',
+    reasonsTitle: 'Bazı fotoğraflar neden yayınlanmadı?',
+    reasons: {
+      quality: 'Bulanık, karanlık veya düşük kaliteli görsel',
+      unrelated: 'Bu mülkü göstermiyor',
+      personal: 'Kişisel veriler içeriyor (yüzler, plakalar, belgeler)',
+      branding: 'Metin, logo, filigran veya iletişim bilgisi içeriyor',
+      duplicate: 'Aynı görsel galeride zaten var',
+      inappropriate: 'İçerik bir ilan için uygun değil',
+    } as Record<string, string>,
+    after: 'Yeni fotoğrafları ücretsiz olarak eklemeye devam edebilirsiniz. Her yeni görsel kısa bir incelemenin ardından ilanınızda yayınlanır.',
+    cta: 'Fotoğrafları yönet',
+  },
 } satisfies PublicEmailCopy;

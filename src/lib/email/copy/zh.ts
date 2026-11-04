@@ -280,4 +280,25 @@ export const ZH = {
     body: '谢谢，我们已登记您希望由专家进行正式（司法）评估。这与我们网站上基于市场的参考估价不同：正式评估由具备资质的评估师根据报价进行。',
     next: '我们的团队成员将与您联系，介绍可选方案和报价。',
   },
+
+  photosReviewed: {
+    subject: (ref: string) => `我们已审核您的新照片（#${ref}）`,
+    preheader: '通过审核的照片已显示在您的房源中。',
+    heading: '我们已审核您的新照片',
+    body: (title: string, ref: string) =>
+      `感谢您更新房源“${title}”（#${ref}）的图库。我们的团队已审核了新照片。`,
+    approvedLabel: '已通过，现已上线',
+    rejectedLabel: '未发布',
+    reasonsTitle: '为什么有些照片未发布？',
+    reasons: {
+      quality: '图片模糊、过暗或画质较差',
+      unrelated: '未展示该房产',
+      personal: '包含个人信息（人脸、车牌、证件）',
+      branding: '包含文字、标志、水印或联系方式',
+      duplicate: '图库中已有相同的图片',
+      inappropriate: '内容不适合用于房源展示',
+    } as Record<string, string>,
+    after: '您可以继续免费添加新照片。每张新照片经简短审核后会显示在您的房源中。',
+    cta: '管理照片',
+  },
 } satisfies PublicEmailCopy;
