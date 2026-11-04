@@ -41,6 +41,16 @@ export function tierFor(tiers: readonly PriceTier[], priceHuf: number | null | u
   return { tier: list[list.length - 1], index: list.length - 1, fromHuf };
 }
 
+/**
+ * Which value band a property price falls in, for bands that carry no price themselves (the listing price matrix,
+ * src/lib/listing-pricing.ts). Same boundary rule as `tierFor`: a bound belongs to the band below it, so with the
+ * default bounds 24 999 999 and 100 000 000 a 25 000 000 Ft property is in the middle band, exactly 100 000 000 Ft
+ * is still in the middle band and 100 000 001 Ft is in the top one. A missing, zero or invalid price is band 0.
+ */
+export function valueTierIndex(upTo: readonly (number | null)[], priceHuf: number | null | undefined): number {
+  return tierFor(upTo.length ? upTo.map((upToHuf) => ({ upToHuf, priceEur: 0 })) : flatTiers(0), priceHuf).index;
+}
+
 /** The single price function: what `item` costs for a property priced `priceHuf` forints. */
 export function priceEurFor(item: Tiered, priceHuf: number | null | undefined): number {
   return tierFor(item.tiers, priceHuf).tier.priceEur;

@@ -150,6 +150,19 @@ export function eurCents(cents: number, locale: Locale = 'nl'): string {
   return eur(Math.round(cents) / 100, locale);
 }
 
+/**
+ * A fee from integer cents with two decimals always: "8,90 €" (hu, de), "€8.90" (en), RTL-safe. Hungarian puts
+ * the sign after the number for fees (the client's wording), unlike the listing prices ("€ 178 000").
+ */
+export function eurPrice(cents: number, locale: Locale = 'hu'): string {
+  const { group, decimal, euro } = STYLE[locale];
+  const fixed = (Math.abs(Math.round(cents)) / 100).toFixed(2);
+  const [whole, fraction] = fixed.split('.');
+  const body = `${cents < 0 ? '-' : ''}${whole.replace(/\B(?=(\d{3})+(?!\d))/g, group)}${decimal}${fraction}`;
+  const placement = locale === 'hu' ? 'suffix' : euro;
+  return ltr(placement === 'suffix' ? `${body}${NBSP}€` : placement === 'prefix-tight' ? `€${body}` : `€${NBSP}${body}`, locale);
+}
+
 export function huf(amount: number, locale: Locale): string {
   return ltr(`${grouped(amount, locale)}${NBSP}Ft`, locale);
 }
