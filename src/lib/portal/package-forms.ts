@@ -53,19 +53,31 @@ export function listingPatch(form: FormData, current: Record<string, unknown>): 
 }
 
 /**
+ * What `listingExtras` is saved as: the derived prices of every extra, except the single-language one. Its price
+ * lives in `translationPackages` (Egyedi nyelvek), so the derived value must never be written here as if it were
+ * the admin's: the stored value stays exactly as it was, for the old orders that read it.
+ */
+function extrasStored(next: ListingCatalog, current: Record<string, unknown>): Record<string, { priceEur: number; tiers: PriceTier[] }> {
+  const { translation: _derived, ...rest } = storedExtras(next);
+  const kept = (current.listingExtras as Record<string, any> | undefined)?.translation;
+  return kept === undefined ? rest : { ...rest, translation: kept };
+}
+
+/**
  * Kiegészítők: the price of every extra that has a single price. An extra
  * with tiers is edited on Ársávok (its card links there) and a retired one
- * is not editable; both stay as stored.
+ * is not editable; both stay as stored. The single-language price is not
+ * edited here at all (`extrasStored`).
  */
 export function extrasPatch(form: FormData, current: Record<string, unknown>): ServicesPatch {
   const catalog = listingCatalog(current as StoredServices);
   const extras = catalog.extras.map((extra) => {
-    if (extra.retired || extra.tiers.length > 1 || !form.has(`extra_${extra.id}`)) return extra;
+    if (extra.retired || extra.id === 'translation' || extra.tiers.length > 1 || !form.has(`extra_${extra.id}`)) return extra;
     const price = readMoney(form, `extra_${extra.id}`, { min: 0, max: PRICE_MAX, required: true });
     if (!price.ok) throw new PackageSaveError(`${extraName(extra.id)}: ${price.message}`);
     return { ...extra, tiers: [{ upToHuf: null, priceEur: price.value! }], priceEur: price.value! };
   });
-  return { listingExtras: storedExtras(listingCatalog({ ...current, listingExtras: storedExtras({ ...catalog, extras }) } as StoredServices)) };
+  return { listingExtras: extrasStored(listingCatalog({ ...current, listingExtras: storedExtras({ ...catalog, extras }) } as StoredServices), current) };
 }
 
 /** Hungarian names of the extras, for the admin. */
@@ -113,7 +125,7 @@ export function tiersPatch(form: FormData, current: Record<string, unknown>): Se
     return !extra.retired && form.has(`${key}_price`) ? { ...extra, tiers: readTierRows(form, key, extraName(extra.id)) } : extra;
   });
   const next = listingCatalog({ ...current, listingPackages: storedPackages({ ...catalog, packages, extras }), listingExtras: storedExtras({ ...catalog, packages, extras }) } as StoredServices);
-  return { listingPackages: storedPackages(next), listingExtras: storedExtras(next) };
+  return { listingPackages: storedPackages(next), listingExtras: extrasStored(next, current) };
 }
 
 /** Kerekítés: the euro step converted prices round to. */

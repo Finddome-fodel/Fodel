@@ -987,8 +987,8 @@ console.log('AI translation: the rules around the model');
   const companyCfg = await import('../src/config/company.ts');
   const WORLD_ONLY = ['tr', 'he', 'ar', 'zh', 'ru'];
   // The site as it will be once the seven new languages are added: 28 in all.
-  const T28 = [...LOCALES, 'sr', 'uk', ...WORLD_ONLY];
-  const T21 = [...LOCALES];
+  const T28 = [...LOCALES];
+  const T21 = LOCALES.filter((code) => !['sr', 'uk', ...WORLD_ONLY].includes(code));
   const pcfg = (stored) => tp.translationPricing(stored, companyCfg.TRANSLATION_PACKAGES, T28);
   const cfg0 = pcfg(undefined);
   const sel = (packageId, extraLocales = [], excludedLocales = []) => ({ packageId, extraLocales, excludedLocales, sourceLocale: 'hu' });
@@ -1191,7 +1191,7 @@ console.log('AI translation: the rules around the model');
     const items = inv.invoiceCatalogue();
     const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation: { packageId: 'europe', excludedLocales: ['pl'] } }, 'hu');
     const pkgInvoice = inv.invoiceLineFromOrder(lines.find((l) => l.id === 'translation-package'), items);
-    assert.match(pkgInvoice.description, /Európa \(20 nyelv, 1 kizárva\)/);
+    assert.match(pkgInvoice.description, /Európa \(22 nyelv, 1 kizárva\)/);
     assert.match(pkgInvoice.description, /A csomag ára nem változik, ha egyes nyelveket kizár\./);
     assert.match(pkgInvoice.descriptionNl, /De prijs van het pakket blijft gelijk/);
     assert.equal(pkgInvoice.unitCents, 1200);
@@ -1211,7 +1211,7 @@ console.log('AI translation: the rules around the model');
     assert.equal(line.unitCents, 1200);
     assert.equal(line.locales.includes('de'), false);
     assert.equal(line.locales.includes('en'), true);
-    assert.equal(line.locales.length, 19, '20 translation targets, German switched off');
+    assert.equal(line.locales.length, 21, 'Európa is 22 translation targets (28 languages, minus the five World-only ones and Hungarian), German switched off');
     assert.deepEqual(paid.translationPurchaseOf(lines), { packageId: 'europe', singles: [], packageLocalesPaid: line.locales });
     assert.deepEqual(paid.translationLocalesOf(lines), line.locales);
     assert.equal(paid.isTranslationOrder(lines.filter((l) => l.id === 'translation-package')), true);
@@ -1255,13 +1255,13 @@ console.log('AI translation: the rules around the model');
   });
 
 
-  test('a request can name any of the twenty languages, and nothing else', () => {
+  test('a request can name any of the twenty-seven languages, and nothing else', () => {
     const all = core.OWNER_TARGETS.join(' ');
-    assert.equal(requestedLib.extrasFromForm({ translations: `${all} hu xx DE` }).translations.length, 20);
+    assert.equal(requestedLib.extrasFromForm({ translations: `${all} hu xx DE` }).translations.length, 27);
     assert.deepEqual(requestedLib.extrasFromForm({ translations: 'lt, hu, nl, nl, zz' }).translations, ['lt', 'nl']);
     assert.deepEqual(requestedLib.readRequestedExtras({ translations: ['de', 'hu', 'zz', 7, 'lt'] }).translations, ['de', 'lt']);
     assert.ok(core.RECOMMENDED_TARGETS.every((code) => core.OWNER_TARGETS.includes(code)), 'the recommended four are among them');
-    assert.equal(core.OWNER_TARGETS.length, 20);
+    assert.equal(core.OWNER_TARGETS.length, 27);
   });
   const mock = (answer) => async ({ user }) => {
     const input = JSON.parse(user).translate;
