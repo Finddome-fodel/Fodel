@@ -113,9 +113,10 @@ const t = {
             </option>
           ))}
         </optgroup>
+        {/* A country outside the common list (RS, UA, TR, IL, AE, RU, CN …) is selected in the full list, or the field would silently start on the first option, Hungary. */}
         <optgroup label={t.all}>
           {all.map((c) => (
-            <option value={c.code} data-dial={c.dial} data-flag={c.flag} data-example={c.example}>
+            <option value={c.code} selected={c.code === selected && !common.some((common) => common.code === c.code)} data-dial={c.dial} data-flag={c.flag} data-example={c.example}>
               {c.flag} {c.name} ({c.dial})
             </option>
           ))}

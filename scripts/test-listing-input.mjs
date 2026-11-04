@@ -95,5 +95,15 @@ try{
  await test('stored details are read defensively',()=>{const empty={settings:[],heating:[],walls:[],utilities:[],parking:[]};assert.deepEqual(readDetails(null),empty);assert.deepEqual(readDetails({rooms:-1,setting:'moon',utilities:['water','x'],parking:'garage'}),{...empty,utilities:['water']});assert.deepEqual(readDetails({setting:'city'},{heating_key:'gas',wall_key:'tegla'}),{...empty,settings:['city'],heating:['gas'],walls:['tegla']});assert.deepEqual(readDetails({heating:['wood'],walls:[]},{heating_key:'gas',wall_key:'tegla'}).heating,['wood'],'the list wins over the column');assert.deepEqual(readDetails({rooms:3,half_rooms:1,parking:['own','garden-building','garage','enclosed','street']}),{...empty,rooms:3,parking:['garage','enclosed','street']},'retired answers: half rooms and "Saját parkolóban" dropped, "Kerti épületben" read as "Garázsban"');});
   await test('every choice has a label in all 28 languages',()=>{assert.deepEqual(PARKING.map(o=>o.labels.hu),['Garázsban','Mélygarázsban','Zárt parkolóban','Fedett kocsibeállóban (kertben)','Kertben (szabadtéri parkolás)','A ház körül','Utcán, közterületen']);for(const o of [...SETTINGS,...UTILITIES,...PARKING])for(const l of ['hu','nl','en','de','fr','es','pl','ro','sk','it','pt','el','cs','sl','sv','da','no','fi','et','lv','lt','sr','uk','tr','he','ar','ru','zh'])assert(o.labels[l]?.trim(),`${o.key} ${l}`);});
  }finally{globalThis.fetch=originalFetch;}
+ await test('a phone field starts on its language\'s country even when that country is not in the common list (RS, UA, TR, IL, AE, RU, CN)',async()=>{
+  const fs=await import('node:fs');
+  const markup=fs.readFileSync(new URL('../src/components/forms/PhoneField.astro',import.meta.url),'utf8');
+  assert.ok(markup.includes("selected={c.code === selected && !common.some((common) => common.code === c.code)}"),'the full list marks the selected country when the common list does not');
+  const V=await server.ssrLoadModule('/src/lib/validation.ts');
+  for(const [locale,country] of [['sr','RS'],['uk','UA'],['tr','TR'],['he','IL'],['ar','AE'],['ru','RU'],['zh','CN']]){
+    assert.equal(V.defaultPhoneCountry(locale),country,locale);
+    assert.equal(V.COMMON_PHONE_COUNTRIES.includes(country),false,country+' is outside the common list, which is why the full list must select it');
+  }
+ });
  console.log(`\n${passed} listing input checks passed.`);
 }finally{await server.close();}
