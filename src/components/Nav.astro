@@ -655,6 +655,19 @@ const isCurrent = (href: string) =>
     }
   }
 
+  /* Russian has the longest words of the bar ("Недвижимость", "Покупателям"): a little tighter, so it never touches the account and listing buttons. */
+  @media (max-width: 1440px) {
+    :global(html:lang(ru)) .nav-link {
+      padding-inline: 9px;
+    }
+  }
+  @media (max-width: 1200px) {
+    :global(html:lang(ru)) .nav-link {
+      padding-inline: 7px;
+      font-size: 0.92rem;
+    }
+  }
+
   @media (max-width: 1080px) {
     .nav-inner {
       grid-template-columns: minmax(0, 1fr) auto;
