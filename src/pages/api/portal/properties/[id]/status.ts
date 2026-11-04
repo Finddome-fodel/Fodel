@@ -774,6 +774,27 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     return json(200, { ok: true });
   }
 
+  // „Típus ellenőrzése”: an admin confirms the type migration 0057 chose for an old agricultural listing, or picks another.
+  if (action === 'confirm_subtype') {
+    if (!isAdmin) return json(403, { ok: false });
+    const { data: row } = await supabase.from('properties').select('details, property_group, property_subtype').eq('id', id).maybeSingle();
+    const details = (row?.details && typeof row.details === 'object' ? { ...(row.details as Record<string, unknown>) } : {}) as Record<string, any>;
+    const review = details.subtype_review;
+    if (!review) return json(409, { ok: false, error: 'nothing-to-confirm' });
+    const asked = String(body.subtype ?? '').trim();
+    // Only a real type of the listing's group, never the retired key.
+    if (asked && (asked === 'agricultural-estate' || !validSubtype(row?.property_group ?? '', asked))) return json(422, { ok: false, error: 'bad-subtype' });
+    const next = asked || row?.property_subtype || review.to;
+    delete details.subtype_review;
+    const { error } = await supabase.from('properties').update({ property_subtype: next, details }).eq('id', id);
+    if (error) return json(500, { ok: false, error: error.message });
+    await logEvent({
+      kind: 'listing.subtype_confirmed', actorId: user!.id, actorEmail: profile?.email ?? null, subjectType: 'property', subjectId: id, propertyId: id, source: 'portal',
+      payload: { from: review.from ?? 'agricultural-estate', chosenByMigration: review.to ?? null, now: next, changed: next !== (review.to ?? next) },
+    }).catch(() => {});
+    return json(200, { ok: true, subtype: next });
+  }
+
   if (action === 'request_changes') {
     if (!isAdmin) return json(403, { ok: false });
     if (!['submitted', 'awaiting_payment', 'published'].includes(property.status)) {

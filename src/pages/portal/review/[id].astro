@@ -26,7 +26,7 @@ import { getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf, priceEurFor, tierFor } from '~/lib/listing-packages';
 import { eur, huf, placeLabel } from '~/lib/format';
 import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM, fieldRules, detailGaps, gapLabel } from '~/lib/listing-details';
-import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS } from '~/lib/listing-catalogue';
+import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
 import FreeBadge from '~/components/portal/FreeBadge.astro';
 import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
@@ -128,6 +128,10 @@ const chooser = chooserModel({
   catalog: listing, lang: 'hu', priceHuf: property.price_huf, packageId: suggested.packageId, months: suggested.months ?? null,
   fx: await currentRate().catch(() => null), sourceLocale: trSource?.locale ?? 'hu', targets: ALL_LOCALES, names: (code) => languageName(code, 'hu'),
 });
+// „Típus ellenőrzése”: set by migration 0057 on an old „Mezőgazdasági üzem, birtok” listing until an admin confirms it.
+const subtypeReview = ((property as any).details as { subtype_review?: { from?: string; to: string; reason?: string } } | null)?.subtype_review ?? null;
+const agriSubtypes = PROPERTY_GROUPS.find((group) => group.key === 'agricultural')?.subtypes ?? [];
+const subtypeName = (key: string) => labelIn(agriSubtypes.find((sub) => sub.key === key)?.labels ?? {}, 'hu') || key;
 const categoryMin = listing.extras.find((extra) => extra.id === 'category-highlight')?.minMonths ?? 3;
 // A free-link owner's requests wait here for the admin's decision.
 const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
@@ -421,6 +425,28 @@ const { data: creditableReferral } = property.owner_id
       {trOpen.length > 1 && (
         <p><button type="button" class="btn ghost small" data-tr-act="approve" data-job={trOpen.map((job) => job.id).join(',')}>Mind jóváhagyása ({trOpen.length})</button></p>
       )}
+    </section>
+  )}
+
+  {subtypeReview && (
+    <section class="subtype-review card-block" id="subtype-review" aria-labelledby="subtype-review-h">
+      <h2 id="subtype-review-h">Típus ellenőrzése</h2>
+      <p class="hint">
+        A „Mezőgazdasági üzem, birtok” kategória három külön típusra bomlott. A rendszer ezt a hirdetést a szövege alapján
+        a(z) <strong>{subtypeName(subtypeReview.to)}</strong> típusba sorolta ({subtypeReview.reason === 'default' ? 'nem talált egyértelmű kulcsszót' : `kulcsszó: „${subtypeReview.reason}”`}).
+        Ha jó, nyomja meg a „Rendben” gombot, ha nem, válasszon másikat.
+      </p>
+      <div class="subtype-row">
+        <button type="button" class="btn" id="subtype-ok">Rendben</button>
+        <label class="subtype-pick">
+          <span class="sr-only">Másik típus</span>
+          <select id="subtype-select">
+            {agriSubtypes.map((sub) => <option value={sub.key} selected={sub.key === property.property_subtype}>{labelIn(sub.labels, 'hu')}</option>)}
+          </select>
+        </label>
+        <button type="button" class="btn ghost" id="subtype-change">Módosítás és rendben</button>
+      </div>
+      <p class="action-status" id="subtype-status" role="status"></p>
     </section>
   )}
 
@@ -900,6 +926,17 @@ const { data: creditableReferral } = property.owner_id
     doAction('approve_free', { note, ...(pkg ? { packageId: pkg.value } : {}) });
   });
 
+  const confirmSubtype = async (subtype) => {
+    const status = document.getElementById('subtype-status');
+    status.textContent = 'Mentés…';
+    const res = await fetch(`/api/portal/properties/${propertyId}/status`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'confirm_subtype', ...(subtype ? { subtype } : {}) }) });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok && json.ok) { status.textContent = 'Rendben, a típus megerősítve.'; setTimeout(() => location.reload(), 600); }
+    else status.textContent = 'A mentés nem sikerült. Kérjük, próbálja újra.';
+  };
+  document.getElementById('subtype-ok')?.addEventListener('click', () => confirmSubtype(''));
+  document.getElementById('subtype-change')?.addEventListener('click', () => confirmSubtype(document.getElementById('subtype-select').value));
+
   document.getElementById('publish-btn')?.addEventListener('click', async () => {
     if (await window.pf.confirm({ title: 'Megérkezett az átutalás?', body: 'A hirdetés azonnal élesedik, a rendelés fizetettre áll.', confirmLabel: 'Igen, beérkezett' })) {
       doAction('publish_manually');
@@ -1007,6 +1044,9 @@ const { data: creditableReferral } = property.owner_id
   .reject-form .inline-check { display: flex; gap: 12px; align-items: center; font-weight: var(--fw-regular); font-size: 14px; color: var(--ink); }
   .btn.danger { margin: 0; }
   .action-status { font-size: 14px; color: var(--ink-quiet); min-height: 0; }
+  .subtype-review { margin-bottom: 20px; }
+  .subtype-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
+  .subtype-pick select { min-height: 44px; padding: 0 14px; border-radius: var(--r-pill); border: 1px solid var(--pt-hair); background: var(--white); color: var(--ink); font: inherit; }
   .free-approve { display: grid; gap: 8px; padding-top: 18px; border-top: 1px solid var(--border); }
   .free-approve .btn { width: 100%; }
   .free-approve .hint, .free-missing { margin: 0; font-size: 13.5px; }

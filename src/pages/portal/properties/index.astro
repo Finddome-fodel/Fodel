@@ -176,7 +176,7 @@ const chips: [string, string][] = isAdmin
                   <td>{p.settlement}</td>
                   <td class="price">€{fmtInt(p.price_eur)}</td>
                   <td class="st">
-                    <span class:list={['pill', `pill-${p.status}`]}>{p.status === 'archived' && p.expired_at ? 'Lejárt' : STATUS_LABEL[p.status] ?? p.status}</span>
+                    <span class:list={['pill', `pill-${p.status}`]}>{p.status === 'archived' && p.expired_at ? 'Lejárt' : STATUS_LABEL[p.status] ?? p.status}</span>{isAdmin && (p as any).details?.subtype_review && <span class="pill pill-submitted" title="A típust a rendszer választotta; az áttekintő oldalon egy kattintással megerősíthető.">Típus ellenőrzése</span>}
                     {isAdmin && silent(p) && <span class="pill pill-bad">Nem válaszolt</span>}
                     {isAdmin && p.dutch_agent_requested && <DutchAgentBadge />}
                     {isAdmin && <FreeBadge property={p} />}

@@ -87,6 +87,14 @@ try {
     assert.deepEqual(D.detailGaps({ plot_m2: 20000, details: {} }, 'agricultural', 'agricultural-estate', '').includes('floor_m2'), true);
   });
 
+  await test('an old ?subtype=agricultural-estate link is redirected (301) to the estate, keeping the rest of the query', async () => {
+    const { legacySubtypeRedirect } = await server.ssrLoadModule('/src/middleware.ts');
+    assert.equal(legacySubtypeRedirect(new URL('https://finddome.com/hu/ingatlanok/?subtype=agricultural-estate&county=Pest')), '/hu/ingatlanok/?subtype=rural-estate&county=Pest');
+    assert.equal(legacySubtypeRedirect(new URL('https://finddome.com/en/properties/?subtype=rural-estate')), null);
+    assert.equal(legacySubtypeRedirect(new URL('https://finddome.com/en/properties/')), null);
+    assert.equal(legacySubtypeRedirect(new URL('https://finddome.com/api/x?subtype=agricultural-estate'), 'POST'), null, 'only a read is redirected');
+  });
+
   await test('the labels and the gap texts say „nettó hasznos alapterület” in the portal languages', () => {
     assert.match(D.GAP_LABELS.hu.floor_m2, /nettó hasznos alapterület/);
     assert.match(D.GAP_LABELS.nl.floor_m2, /netto gebruiksoppervlakte/);

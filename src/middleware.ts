@@ -168,7 +168,20 @@ function sendsSystemMail(pathname: string): boolean {
   return pathname.startsWith('/api/') || pathname.startsWith('/portal') || pathname.startsWith('/listing/') || pathname.startsWith('/dev/');
 }
 
+/**
+ * An old link to the split agricultural type („Mezőgazdasági üzem, birtok”) goes to its heir, the estate, with a permanent
+ * redirect: the search page, the sitemap and the filter only know the three new keys. Everything else in the query stays.
+ */
+export function legacySubtypeRedirect(url: URL, method = 'GET'): string | null {
+  if ((method !== 'GET' && method !== 'HEAD') || url.searchParams.get('subtype') !== 'agricultural-estate') return null;
+  const next = new URL(url);
+  next.searchParams.set('subtype', 'rural-estate');
+  return next.pathname + next.search;
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  const moved = legacySubtypeRedirect(context.url, context.request.method);
+  if (moved) return context.redirect(moved, 301);
   if (sendsSystemMail(context.url.pathname)) await primeSystemTexts();
   const response = (await guard(context, next)) as Response;
   const { pathname } = context.url;
