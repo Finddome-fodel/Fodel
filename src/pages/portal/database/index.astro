@@ -16,6 +16,7 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import { EVENT_LABEL, eventLabel } from '~/lib/portal/labels';
 import { icon } from '~/lib/portal/icons';
+import { fmtEur } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -178,7 +179,7 @@ const withParam = (key: string, value: string) => {
                     // Who let it through is the actor above; what was let go and why is in the payload.
                     const p = (e.payload ?? {}) as { waivedCents?: number; note?: string | null };
                     const parts = [
-                      p.waivedCents ? `elengedett díj: ${(p.waivedCents / 100).toLocaleString('de-DE')} €` : 'díjbekérő nem készült',
+                      p.waivedCents ? `elengedett díj: ${fmtEur(p.waivedCents / 100)}` : 'díjbekérő nem készült',
                       p.note ? `megjegyzés: „${p.note}”` : null,
                     ].filter(Boolean);
                     return <span class="ev-detail">{parts.join(' · ')}</span>;

@@ -20,12 +20,12 @@ import { CHROME } from '~/i18n/chrome';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { PROPERTY_GROUPS, labelIn, subtypeLabel, validSubtype, groupOf } from '~/lib/listing-catalogue';
 import { countryLabel as labelCountry } from '~/config/countries';
+import { canonicalCounty, countyFacet } from '~/lib/counties';
 import { alternatesFor, crumbs } from '~/lib/page';
 import {
   activeProperties,
   searchProperties,
   regionsOf,
-  countiesOf,
   countriesOf,
   PRICE_BANDS,
   priceBandLabel,
@@ -50,11 +50,10 @@ const params = Astro.url.searchParams;
 // Facet options always reflect the full active inventory, not just the
 // current result set, so a search that returns zero results still lets the
 // visitor pivot to a different filter instead of hitting a dead end.
-const facetSource = await activeProperties();
+const facetSource = await activeProperties(locale);
 // Nothing published at all (a new site): say so, instead of blaming the filters.
 const catalogueEmpty = facetSource.length === 0;
 const regions = regionsOf(facetSource);
-const counties = countiesOf(facetSource);
 const categories = PROPERTY_GROUPS.map(g=>g.key);
 const countries = countriesOf(facetSource);
 const taxonomy = await getTaxonomy();
@@ -66,8 +65,13 @@ const region = params.get('region') ?? '';
 // County was supported by search_properties() and searchProperties() from
 // Stage 6 but never had a control. Hungarian buyers navigate by county far
 // more naturally than by FODEL's larger marketing regions.
-const county = params.get('county') ?? '';
 const country = params.get('country') ?? '';
+// Every canonical county of the chosen country (Hungary by default), with how many listings are in each, so
+// the filter is never nearly empty and never offers "Pest" and "Pest vármegye" side by side (src/lib/counties.ts).
+const facetCountry = country || 'HU';
+const counties = countyFacet(facetCountry, facetSource.filter((p) => p.data.location.country === facetCountry).map((p) => p.data.location.county), locale);
+const rawCounty = params.get('county') ?? '';
+const county = rawCounty ? (canonicalCounty(facetCountry, rawCounty) ?? rawCounty) : '';
 const settlement = params.get('settlement') ?? '';
 const priceBandId = params.get('price') ?? '';
 // Minimum room count. `beds` is the old name, kept so saved links keep working.
@@ -128,30 +132,37 @@ const mapHref = (() => {
   return query ? `${path(locale, 'map')}?${query}` : path(locale, 'map');
 })();
 
-const title = heading ?? x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens', 'Nuestros inmuebles', 'Nasza oferta', 'Proprietățile noastre', 'Naše nehnuteľnosti', 'I nostri immobili', 'Os nossos imóveis', 'Τα ακίνητά μας', 'Naše nemovitosti', 'Naše nepremičnine', 'Våra fastigheter', 'Vores ejendomme', 'Våre eiendommer', 'Kohteemme', 'Meie kinnisvara', 'Mūsu īpašumi', 'Mūsų nekilnojamasis turtas');
-const defaultDescription = x(
-  `${total} magyar ingatlan eladó: házak, tanyák, kúriák, nyaralók és birtokok. Szűrjön típus, régió és ár szerint.`,
-  `${total} woningen in Hongarije: huizen, boerderijen, landhuizen en vakantiehuizen. Filter op type, regio en prijs.`,
-  `${total} properties in Hungary: houses, farms, manor houses and holiday homes. Filter by type, region and price.`,
-  `${total} Immobilien in Ungarn: Häuser, Höfe, Landhäuser und Ferienhäuser. Filtern Sie nach Typ, Region und Preis.`,
-  `${total} biens en Hongrie\u00a0: maisons, fermes, manoirs et maisons de vacances. Filtrez par type, région et prix.`,
-  `${total} inmuebles en Hungría: casas, fincas, casas señoriales y casas vacacionales. Filtre por tipo, región y precio.`,
-  `${nOf('pl', total, 'nieruchomość', 'nieruchomości')} na Węgrzech: domy, gospodarstwa, dwory i domy wakacyjne. Filtruj według rodzaju, regionu i ceny.`,
-  `${nOf('ro', total, 'proprietate', 'proprietăți', 'de proprietăți')} în Ungaria: case, ferme, conace și case de vacanță. Filtrați după tip, regiune și preț.`,
-  `${nOf('sk', total, 'nehnuteľnosť', 'nehnuteľnosti', 'nehnuteľností')} v Maďarsku: domy, farmy, kaštiele a rekreačné domy. Filtrujte podľa typu, regiónu a ceny.`,
-  `${total} immobili in Ungheria: case, fattorie, case padronali e case vacanza. Filtri per tipologia, regione e prezzo.`,
-  `${total} imóveis na Hungria: casas, quintas, solares e casas de férias. Filtre por tipo, região e preço.`,
-  `${total} ακίνητα στην Ουγγαρία: σπίτια, αγροκτήματα, αρχοντικά και εξοχικά. Φιλτράρετε ανά τύπο, περιφέρεια και τιμή.`,
-  `${nOf('cs', total, 'nemovitost', 'nemovitosti', 'nemovitostí')} v Maďarsku: domy, statky, panská sídla a rekreační domy. Filtrujte podle typu, regionu a ceny.`,
-  `${nOf('sl', total, 'nepremičnina', 'nepremičnine', 'nepremičnin', 'nepremičnini')} na Madžarskem: hiše, kmetije, dvorci in počitniške hiše. Filtrirajte po vrsti, regiji in ceni.`,
-  `${total} fastigheter i Ungern: hus, gårdar, herrgårdar och fritidshus. Filtrera efter typ, region och pris.`,
-  `${total} ejendomme i Ungarn: huse, landbrug, herregårde og feriehuse. Filtrér efter type, region og pris.`,
-  `${total} eiendommer i Ungarn: hus, gårdsbruk, herregårder og feriehus. Filtrer etter type, region og pris.`,
-  `${nOf('fi', total, 'kohde', 'kohdetta')} Unkarissa: taloja, maatiloja, kartanoita ja loma-asuntoja. Suodata tyypin, alueen ja hinnan mukaan.`,
-  `${nOf('et', total, 'kinnisvaraobjekt', 'kinnisvaraobjekti')} Ungaris: majad, talud, mõisad ja puhkemajad. Filtreerige tüübi, piirkonna ja hinna järgi.`,
-  `${nOf('lv', total, 'īpašums', 'īpašumi', 'īpašumu')} Ungārijā: mājas, lauku saimniecības, muižas un brīvdienu mājas. Atlasiet pēc veida, reģiona un cenas.`,
-  `${nOf('lt', total, 'objektas', 'objektai', 'objektų')} Vengrijoje: namai, ūkiai, dvarai ir poilsio namai. Filtruokite pagal tipą, regioną ir kainą.`
-);
+const title = heading ?? x({ hu: 'Ingatlanok', nl: 'Ons aanbod', en: 'Our properties', de: 'Unser Angebot', fr: 'Nos biens', es: 'Nuestros inmuebles', pl: 'Nasza oferta', ro: 'Proprietățile noastre', sk: 'Naše nehnuteľnosti', it: 'I nostri immobili', pt: 'Os nossos imóveis', el: 'Τα ακίνητά μας', cs: 'Naše nemovitosti', sl: 'Naše nepremičnine', sv: 'Våra fastigheter', da: 'Vores ejendomme', no: 'Våre eiendommer', fi: 'Kohteemme', et: 'Meie kinnisvara', lv: 'Mūsu īpašumi', lt: 'Mūsų nekilnojamasis turtas', sr: 'Naše nekretnine', uk: 'Наші об’єкти', tr: 'Mülklerimiz', he: 'הנכסים שלנו', ar: 'عقاراتنا', ru: 'Наши объекты', zh: '我们的房源' });
+const defaultDescription = x({
+  hu: `${total} magyar ingatlan eladó: házak, tanyák, kúriák, nyaralók és birtokok. Szűrjön típus, régió és ár szerint.`,
+  nl: `${total} woningen in Hongarije: huizen, boerderijen, landhuizen en vakantiehuizen. Filter op type, regio en prijs.`,
+  en: `${total} properties in Hungary: houses, farms, manor houses and holiday homes. Filter by type, region and price.`,
+  de: `${total} Immobilien in Ungarn: Häuser, Höfe, Landhäuser und Ferienhäuser. Filtern Sie nach Typ, Region und Preis.`,
+  fr: `${total} biens en Hongrie\u00a0: maisons, fermes, manoirs et maisons de vacances. Filtrez par type, région et prix.`,
+  es: `${total} inmuebles en Hungría: casas, fincas, casas señoriales y casas vacacionales. Filtre por tipo, región y precio.`,
+  pl: `${nOf('pl', total, 'nieruchomość', 'nieruchomości')} na Węgrzech: domy, gospodarstwa, dwory i domy wakacyjne. Filtruj według rodzaju, regionu i ceny.`,
+  ro: `${nOf('ro', total, 'proprietate', 'proprietăți', 'de proprietăți')} în Ungaria: case, ferme, conace și case de vacanță. Filtrați după tip, regiune și preț.`,
+  sk: `${nOf('sk', total, 'nehnuteľnosť', 'nehnuteľnosti', 'nehnuteľností')} v Maďarsku: domy, farmy, kaštiele a rekreačné domy. Filtrujte podľa typu, regiónu a ceny.`,
+  it: `${total} immobili in Ungheria: case, fattorie, case padronali e case vacanza. Filtri per tipologia, regione e prezzo.`,
+  pt: `${total} imóveis na Hungria: casas, quintas, solares e casas de férias. Filtre por tipo, região e preço.`,
+  el: `${total} ακίνητα στην Ουγγαρία: σπίτια, αγροκτήματα, αρχοντικά και εξοχικά. Φιλτράρετε ανά τύπο, περιφέρεια και τιμή.`,
+  cs: `${nOf('cs', total, 'nemovitost', 'nemovitosti', 'nemovitostí')} v Maďarsku: domy, statky, panská sídla a rekreační domy. Filtrujte podle typu, regionu a ceny.`,
+  sl: `${nOf('sl', total, 'nepremičnina', 'nepremičnine', 'nepremičnin', 'nepremičnini')} na Madžarskem: hiše, kmetije, dvorci in počitniške hiše. Filtrirajte po vrsti, regiji in ceni.`,
+  sv: `${total} fastigheter i Ungern: hus, gårdar, herrgårdar och fritidshus. Filtrera efter typ, region och pris.`,
+  da: `${total} ejendomme i Ungarn: huse, landbrug, herregårde og feriehuse. Filtrér efter type, region og pris.`,
+  no: `${total} eiendommer i Ungarn: hus, gårdsbruk, herregårder og feriehus. Filtrer etter type, region og pris.`,
+  fi: `${nOf('fi', total, 'kohde', 'kohdetta')} Unkarissa: taloja, maatiloja, kartanoita ja loma-asuntoja. Suodata tyypin, alueen ja hinnan mukaan.`,
+  et: `${nOf('et', total, 'kinnisvaraobjekt', 'kinnisvaraobjekti')} Ungaris: majad, talud, mõisad ja puhkemajad. Filtreerige tüübi, piirkonna ja hinna järgi.`,
+  lv: `${nOf('lv', total, 'īpašums', 'īpašumi', 'īpašumu')} Ungārijā: mājas, lauku saimniecības, muižas un brīvdienu mājas. Atlasiet pēc veida, reģiona un cenas.`,
+  lt: `${nOf('lt', total, 'objektas', 'objektai', 'objektų')} Vengrijoje: namai, ūkiai, dvarai ir poilsio namai. Filtruokite pagal tipą, regioną ir kainą.`,
+  sr: `Nekretnine u Mađarskoj (${total}): kuće, salaši, kurije i kuće za odmor. Filtrirajte po vrsti, regionu i ceni.`,
+  uk: `Нерухомість в Угорщині (${total}): будинки, хутори, садиби та будинки для відпочинку. Фільтруйте за типом, регіоном і ціною.`,
+  tr: `Macaristan’da ${total} mülk: evler, çiftlik evleri, malikâneler ve tatil evleri. Türe, bölgeye ve fiyata göre filtreleyin.`,
+  he: `${total} נכסים בהונגריה: בתים, משקים חקלאיים, אחוזות ובתי נופש. סננו לפי סוג, אזור ומחיר.`,
+  ar: `عقارات في المجر (${total}): منازل ومزارع ريفية وقصور ريفية وبيوت عطلات. صفِّ النتائج حسب النوع والمنطقة والسعر.`,
+  ru: `Недвижимость в Венгрии (${total}): дома, хутора, усадьбы и дома для отдыха. Фильтруйте по типу, региону и цене.`,
+  zh: `匈牙利 ${total} 套房产：住宅、农庄、庄园和度假屋。可按类型、地区和价格筛选。`,
+});
 
 const trail = crumbs(locale, [{ name: title, url: currentPath }]);
 
@@ -172,21 +183,21 @@ function withParam(key: string, value: string): string {
 
 /** The filters in force, each with a link that removes just that one. */
 const active = [
-  q && { key: 'q', label: x(`„${q}”`, `“${q}”`, `“${q}”`, `„${q}“`, `«\u00a0${q}\u00a0»`, `«${q}»`, `„${q}”`, `„${q}”`, `„${q}“`, `“${q}”`, `«${q}»`, `«${q}»`, `„${q}“`, `„${q}“`, `”${q}”`, `“${q}”`, `«${q}»`, `”${q}”`, `„${q}“`, `„${q}“`, `„${q}“`) },
+  q && { key: 'q', label: x({ hu: `„${q}”`, nl: `“${q}”`, en: `“${q}”`, de: `„${q}“`, fr: `«\u00a0${q}\u00a0»`, es: `«${q}»`, pl: `„${q}”`, ro: `„${q}”`, sk: `„${q}“`, it: `“${q}”`, pt: `«${q}»`, el: `«${q}»`, cs: `„${q}“`, sl: `„${q}“`, sv: `”${q}”`, da: `“${q}”`, no: `«${q}»`, fi: `”${q}”`, et: `„${q}“`, lv: `„${q}“`, lt: `„${q}“`, sr: `„${q}”`, uk: `«${q}»`, tr: `“${q}”`, he: `״${q}״`, ar: `«${q}»`, ru: `«${q}»`, zh: `“${q}”` }) },
   type && { key: 'type', label: categoryLabel(type) },
   country && { key: 'country', label: labelCountry(country, locale) },
   region && { key: 'region', label: region },
   county && { key: 'county', label: county },
   settlement && { key: 'settlement', label: settlement },
   priceBand && { key: 'price', label: priceBandLabel(priceBand) },
-  rooms && { key: 'rooms', label: x(`${rooms}+ szoba`, `${rooms}+ kamers`, `${rooms}+ rooms`, `${rooms}+ Zimmer`, `${rooms}+ pièces`, `${rooms}+ habitaciones`, `min. ${nOf('pl', Number(rooms), 'pokój', 'pokoje', 'pokoi')}`, `${rooms}+ camere`, `min. ${nOf('sk', Number(rooms), 'izba', 'izby', 'izieb')}`, `${rooms}+ locali`, `${rooms}+ divisões`, `${rooms}+ δωμάτια`, `min. ${nOf('cs', Number(rooms), 'pokoj', 'pokoje', 'pokojů')}`, `vsaj ${nOf('sl', Number(rooms), 'soba', 'sobe', 'sob', 'sobi')}`, `${rooms}+ rum`, `${rooms}+ værelser`, `${rooms}+ rom`, `vähintään ${nOf('fi', Number(rooms), 'huone', 'huonetta')}`, `vähemalt ${rooms} tuba`, `vismaz ${nOf('lv', Number(rooms), 'istaba', 'istabas', 'istabu')}`, `ne mažiau kaip ${nOf('lt', Number(rooms), 'kambarys', 'kambariai', 'kambarių')}`) },
+  rooms && { key: 'rooms', label: x({ hu: `${rooms}+ szoba`, nl: `${rooms}+ kamers`, en: `${rooms}+ rooms`, de: `${rooms}+ Zimmer`, fr: `${rooms}+ pièces`, es: `${rooms}+ habitaciones`, pl: `min. ${nOf('pl', Number(rooms), 'pokój', 'pokoje', 'pokoi')}`, ro: `${rooms}+ camere`, sk: `min. ${nOf('sk', Number(rooms), 'izba', 'izby', 'izieb')}`, it: `${rooms}+ locali`, pt: `${rooms}+ divisões`, el: `${rooms}+ δωμάτια`, cs: `min. ${nOf('cs', Number(rooms), 'pokoj', 'pokoje', 'pokojů')}`, sl: `vsaj ${nOf('sl', Number(rooms), 'soba', 'sobe', 'sob', 'sobi')}`, sv: `${rooms}+ rum`, da: `${rooms}+ værelser`, no: `${rooms}+ rom`, fi: `vähintään ${nOf('fi', Number(rooms), 'huone', 'huonetta')}`, et: `vähemalt ${rooms} tuba`, lv: `vismaz ${nOf('lv', Number(rooms), 'istaba', 'istabas', 'istabu')}`, lt: `ne mažiau kaip ${nOf('lt', Number(rooms), 'kambarys', 'kambariai', 'kambarių')}`, sr: `Soba: ${rooms}+`, uk: `Кімнат: ${rooms}+`, tr: `${rooms}+ oda`, he: `${rooms}+ חדרים`, ar: `الغرف: ${rooms}+`, ru: `Комнат: ${rooms}+`, zh: `${rooms} 室以上` }) },
   floorMin && { key: 'floor_min', label: `${ui.filters.area} ≥ ${floorMin} m²` },
   floorMax && { key: 'floor_max', label: `${ui.filters.area} ≤ ${floorMax} m²` },
   plotMin && { key: 'plot_min', label: `${ui.filters.land} ≥ ${plotMin} m²` },
   plotMax && { key: 'plot_max', label: `${ui.filters.land} ≤ ${plotMax} m²` },
   subtype && { key:'subtype',label:subtypeLabel(type,subtype,locale)||subtype },
   excludeAdobe && { key: 'no_adobe', label: ui.filters.excludeAdobe },
-  bbox && { key: 'bbox', label: x('Térképterület', 'Kaartgebied', 'Map area', 'Kartenausschnitt', 'Zone de la carte', 'Zona del mapa', 'Obszar mapy', 'Zona hărții', 'Oblasť mapy', 'Area della mappa', 'Área do mapa', 'Περιοχή χάρτη', 'Oblast na mapě', 'Območje na zemljevidu', 'Kartområde', 'Kortområde', 'Kartområde', 'Kartta-alue', 'Kaardiala', 'Kartes apgabals', 'Žemėlapio sritis') },
+  bbox && { key: 'bbox', label: x({ hu: 'Térképterület', nl: 'Kaartgebied', en: 'Map area', de: 'Kartenausschnitt', fr: 'Zone de la carte', es: 'Zona del mapa', pl: 'Obszar mapy', ro: 'Zona hărții', sk: 'Oblasť mapy', it: 'Area della mappa', pt: 'Área do mapa', el: 'Περιοχή χάρτη', cs: 'Oblast na mapě', sl: 'Območje na zemljevidu', sv: 'Kartområde', da: 'Kortområde', no: 'Kartområde', fi: 'Kartta-alue', et: 'Kaardiala', lv: 'Kartes apgabals', lt: 'Žemėlapio sritis', sr: 'Područje na mapi', uk: 'Область на мапі', tr: 'Harita alanı', he: 'אזור במפה', ar: 'منطقة الخريطة', ru: 'Область на карте', zh: '地图区域' }) },
 ].filter(Boolean) as { key: string; label: string }[];
 
 /** A category page's own category is where the visitor is, not a filter
@@ -213,16 +224,16 @@ const pageItems = (() => {
 
 const countWord = ui.filters.results(total).replace(String(total), '').trim();
 const labels = {
-  filters: x('Szűrés', 'Filters', 'Filters', 'Filter', 'Filtres', 'Filtros', 'Filtry', 'Filtre', 'Filtre', 'Filtri', 'Filtros', 'Φίλτρα', 'Filtry', 'Filtri', 'Filter', 'Filtre', 'Filtre', 'Suodattimet', 'Filtrid', 'Filtri', 'Filtrai'),
-  openFilters: x('Szűrők', 'Filters', 'Filters', 'Filter', 'Filtres', 'Filtros', 'Filtry', 'Filtre', 'Filtre', 'Filtri', 'Filtros', 'Φίλτρα', 'Filtry', 'Filtri', 'Filter', 'Filtre', 'Filtre', 'Suodattimet', 'Filtrid', 'Filtri', 'Filtrai'),
-  location: x('Elhelyezkedés', 'Locatie', 'Location', 'Lage', 'Localisation', 'Ubicación', 'Lokalizacja', 'Localizare', 'Lokalita', 'Posizione', 'Localização', 'Τοποθεσία', 'Lokalita', 'Lokacija', 'Plats', 'Beliggenhed', 'Beliggenhet', 'Sijainti', 'Asukoht', 'Atrašanās vieta', 'Vieta'),
-  keyword: x('Szabad szavas keresés', 'Vrij zoeken', 'Free-text search', 'Freitextsuche', 'Recherche libre', 'Búsqueda libre', 'Wyszukiwanie dowolne', 'Căutare liberă', 'Voľné vyhľadávanie', 'Ricerca libera', 'Pesquisa livre', 'Ελεύθερη αναζήτηση', 'Fulltextové hledání', 'Prosto iskanje', 'Fritextsökning', 'Fritekstsøgning', 'Fritekstsøk', 'Vapaa haku', 'Vabatekstiotsing', 'Brīvā teksta meklēšana', 'Laisvo teksto paieška'),
+  filters: x({ hu: 'Szűrés', nl: 'Filters', en: 'Filters', de: 'Filter', fr: 'Filtres', es: 'Filtros', pl: 'Filtry', ro: 'Filtre', sk: 'Filtre', it: 'Filtri', pt: 'Filtros', el: 'Φίλτρα', cs: 'Filtry', sl: 'Filtri', sv: 'Filter', da: 'Filtre', no: 'Filtre', fi: 'Suodattimet', et: 'Filtrid', lv: 'Filtri', lt: 'Filtrai', sr: 'Filteri', uk: 'Фільтри', tr: 'Filtreler', he: 'מסננים', ar: 'عوامل التصفية', ru: 'Фильтры', zh: '筛选' }),
+  openFilters: x({ hu: 'Szűrők', nl: 'Filters', en: 'Filters', de: 'Filter', fr: 'Filtres', es: 'Filtros', pl: 'Filtry', ro: 'Filtre', sk: 'Filtre', it: 'Filtri', pt: 'Filtros', el: 'Φίλτρα', cs: 'Filtry', sl: 'Filtri', sv: 'Filter', da: 'Filtre', no: 'Filtre', fi: 'Suodattimet', et: 'Filtrid', lv: 'Filtri', lt: 'Filtrai', sr: 'Filteri', uk: 'Фільтри', tr: 'Filtreler', he: 'מסננים', ar: 'عوامل التصفية', ru: 'Фильтры', zh: '筛选' }),
+  location: x({ hu: 'Elhelyezkedés', nl: 'Locatie', en: 'Location', de: 'Lage', fr: 'Localisation', es: 'Ubicación', pl: 'Lokalizacja', ro: 'Localizare', sk: 'Lokalita', it: 'Posizione', pt: 'Localização', el: 'Τοποθεσία', cs: 'Lokalita', sl: 'Lokacija', sv: 'Plats', da: 'Beliggenhed', no: 'Beliggenhet', fi: 'Sijainti', et: 'Asukoht', lv: 'Atrašanās vieta', lt: 'Vieta', sr: 'Lokacija', uk: 'Розташування', tr: 'Konum', he: 'מיקום', ar: 'الموقع', ru: 'Расположение', zh: '位置' }),
+  keyword: x({ hu: 'Szabad szavas keresés', nl: 'Vrij zoeken', en: 'Free-text search', de: 'Freitextsuche', fr: 'Recherche libre', es: 'Búsqueda libre', pl: 'Wyszukiwanie dowolne', ro: 'Căutare liberă', sk: 'Voľné vyhľadávanie', it: 'Ricerca libera', pt: 'Pesquisa livre', el: 'Ελεύθερη αναζήτηση', cs: 'Fulltextové hledání', sl: 'Prosto iskanje', sv: 'Fritextsökning', da: 'Fritekstsøgning', no: 'Fritekstsøk', fi: 'Vapaa haku', et: 'Vabatekstiotsing', lv: 'Brīvā teksta meklēšana', lt: 'Laisvo teksto paieška', sr: 'Slobodna pretraga', uk: 'Пошук за текстом', tr: 'Serbest metin araması', he: 'חיפוש חופשי', ar: 'بحث نصي حر', ru: 'Поиск по тексту', zh: '关键词搜索' }),
   min: 'min.',
   max: 'max.',
-  prev: x('Előző oldal', 'Vorige pagina', 'Previous page', 'Vorherige Seite', 'Page précédente', 'Página anterior', 'Poprzednia strona', 'Pagina anterioară', 'Predchádzajúca strana', 'Pagina precedente', 'Página anterior', 'Προηγούμενη σελίδα', 'Předchozí stránka', 'Prejšnja stran', 'Föregående sida', 'Forrige side', 'Forrige side', 'Edellinen sivu', 'Eelmine lehekülg', 'Iepriekšējā lapa', 'Ankstesnis puslapis'),
-  next: x('Következő oldal', 'Volgende pagina', 'Next page', 'Nächste Seite', 'Page suivante', 'Página siguiente', 'Następna strona', 'Pagina următoare', 'Nasledujúca strana', 'Pagina successiva', 'Página seguinte', 'Επόμενη σελίδα', 'Další stránka', 'Naslednja stran', 'Nästa sida', 'Næste side', 'Neste side', 'Seuraava sivu', 'Järgmine lehekülg', 'Nākamā lapa', 'Kitas puslapis'),
-  pages: x('Lapozás', 'Paginering', 'Pagination', 'Seitennavigation', 'Pagination', 'Paginación', 'Paginacja', 'Paginare', 'Stránkovanie', 'Paginazione', 'Paginação', 'Σελιδοποίηση', 'Stránkování', 'Številčenje strani', 'Sidnavigering', 'Sidenavigation', 'Sidenavigasjon', 'Sivutus', 'Lehekülgede navigeerimine', 'Lappušu navigācija', 'Puslapiai'),
-  remove: x('Szűrő eltávolítása', 'Filter verwijderen', 'Remove filter', 'Filter entfernen', 'Retirer le filtre', 'Quitar el filtro', 'Usuń filtr', 'Eliminați filtrul', 'Odstrániť filter', 'Rimuovi filtro', 'Remover filtro', 'Αφαίρεση φίλτρου', 'Odebrat filtr', 'Odstrani filter', 'Ta bort filter', 'Fjern filter', 'Fjern filter', 'Poista suodatin', 'Eemalda filter', 'Noņemt filtru', 'Pašalinti filtrą'),
+  prev: x({ hu: 'Előző oldal', nl: 'Vorige pagina', en: 'Previous page', de: 'Vorherige Seite', fr: 'Page précédente', es: 'Página anterior', pl: 'Poprzednia strona', ro: 'Pagina anterioară', sk: 'Predchádzajúca strana', it: 'Pagina precedente', pt: 'Página anterior', el: 'Προηγούμενη σελίδα', cs: 'Předchozí stránka', sl: 'Prejšnja stran', sv: 'Föregående sida', da: 'Forrige side', no: 'Forrige side', fi: 'Edellinen sivu', et: 'Eelmine lehekülg', lv: 'Iepriekšējā lapa', lt: 'Ankstesnis puslapis', sr: 'Prethodna stranica', uk: 'Попередня сторінка', tr: 'Önceki sayfa', he: 'העמוד הקודם', ar: 'الصفحة السابقة', ru: 'Предыдущая страница', zh: '上一页' }),
+  next: x({ hu: 'Következő oldal', nl: 'Volgende pagina', en: 'Next page', de: 'Nächste Seite', fr: 'Page suivante', es: 'Página siguiente', pl: 'Następna strona', ro: 'Pagina următoare', sk: 'Nasledujúca strana', it: 'Pagina successiva', pt: 'Página seguinte', el: 'Επόμενη σελίδα', cs: 'Další stránka', sl: 'Naslednja stran', sv: 'Nästa sida', da: 'Næste side', no: 'Neste side', fi: 'Seuraava sivu', et: 'Järgmine lehekülg', lv: 'Nākamā lapa', lt: 'Kitas puslapis', sr: 'Sledeća stranica', uk: 'Наступна сторінка', tr: 'Sonraki sayfa', he: 'העמוד הבא', ar: 'الصفحة التالية', ru: 'Следующая страница', zh: '下一页' }),
+  pages: x({ hu: 'Lapozás', nl: 'Paginering', en: 'Pagination', de: 'Seitennavigation', fr: 'Pagination', es: 'Paginación', pl: 'Paginacja', ro: 'Paginare', sk: 'Stránkovanie', it: 'Paginazione', pt: 'Paginação', el: 'Σελιδοποίηση', cs: 'Stránkování', sl: 'Številčenje strani', sv: 'Sidnavigering', da: 'Sidenavigation', no: 'Sidenavigasjon', fi: 'Sivutus', et: 'Lehekülgede navigeerimine', lv: 'Lappušu navigācija', lt: 'Puslapiai', sr: 'Stranice', uk: 'Сторінки', tr: 'Sayfalar', he: 'עימוד', ar: 'ترقيم الصفحات', ru: 'Страницы', zh: '分页' }),
+  remove: x({ hu: 'Szűrő eltávolítása', nl: 'Filter verwijderen', en: 'Remove filter', de: 'Filter entfernen', fr: 'Retirer le filtre', es: 'Quitar el filtro', pl: 'Usuń filtr', ro: 'Eliminați filtrul', sk: 'Odstrániť filter', it: 'Rimuovi filtro', pt: 'Remover filtro', el: 'Αφαίρεση φίλτρου', cs: 'Odebrat filtr', sl: 'Odstrani filter', sv: 'Ta bort filter', da: 'Fjern filter', no: 'Fjern filter', fi: 'Poista suodatin', et: 'Eemalda filter', lv: 'Noņemt filtru', lt: 'Pašalinti filtrą', sr: 'Uklonite filter', uk: 'Прибрати фільтр', tr: 'Filtreyi kaldır', he: 'הסרת המסנן', ar: 'إزالة عامل التصفية', ru: 'Убрать фильтр', zh: '移除筛选条件' }),
   apply: ui.filters.search,
 };
 ---
@@ -290,7 +301,7 @@ const labels = {
               type="search"
               name="q"
               value={q}
-              placeholder={x('Település, jellemző, azonosító…', 'Plaats, kenmerk, referentie…', 'Town, feature, reference…', 'Ort, Merkmal, Referenz…', 'Localité, caractéristique, référence…', 'Localidad, característica, referencia…', 'Miejscowość, cecha, numer referencyjny…', 'Localitate, caracteristică, referință…', 'Obec, vlastnosť, referenčné číslo…', 'Località, caratteristica, riferimento…', 'Localidade, característica, referência…', 'Τοποθεσία, χαρακτηριστικό, κωδικός…', 'Obec, vlastnost, číslo inzerátu…', 'Kraj, značilnost, referenca…', 'Ort, egenskap, referens…', 'By, egenskab, reference…', 'Sted, egenskap, referanse…', 'Paikkakunta, ominaisuus, viite…', 'Asula, omadus, viitenumber…', 'Apdzīvota vieta, īpašība, atsauce…', 'Gyvenvietė, ypatybė, nuoroda…')}
+              placeholder={x({ hu: 'Település, jellemző, azonosító…', nl: 'Plaats, kenmerk, referentie…', en: 'Town, feature, reference…', de: 'Ort, Merkmal, Referenz…', fr: 'Localité, caractéristique, référence…', es: 'Localidad, característica, referencia…', pl: 'Miejscowość, cecha, numer referencyjny…', ro: 'Localitate, caracteristică, referință…', sk: 'Obec, vlastnosť, referenčné číslo…', it: 'Località, caratteristica, riferimento…', pt: 'Localidade, característica, referência…', el: 'Τοποθεσία, χαρακτηριστικό, κωδικός…', cs: 'Obec, vlastnost, číslo inzerátu…', sl: 'Kraj, značilnost, referenca…', sv: 'Ort, egenskap, referens…', da: 'By, egenskab, reference…', no: 'Sted, egenskap, referanse…', fi: 'Paikkakunta, ominaisuus, viite…', et: 'Asula, omadus, viitenumber…', lv: 'Apdzīvota vieta, īpašība, atsauce…', lt: 'Gyvenvietė, ypatybė, nuoroda…', sr: 'Mesto, karakteristika, šifra…', uk: 'Населений пункт, характеристика, номер…', tr: 'Yerleşim yeri, özellik, ilan no…', he: 'יישוב, מאפיין, מספר מודעה…', ar: 'البلدة، الميزة، الرقم المرجعي…', ru: 'Населённый пункт, характеристика, номер…', zh: '城镇、特色、房源编号…' })}
               aria-label={labels.keyword}
               enterkeyhint="search"
             />
@@ -353,7 +364,7 @@ const labels = {
             </div>
           </fieldset>
 
-          {<div class="group"><label class="group-title" for="filter-subtype">{x('Altípus', 'Subtype', 'Subtype', 'Untertyp', 'Sous-type', 'Subtipo', 'Podtyp', 'Subtip', 'Podtyp', 'Sottotipo', 'Subtipo', 'Υποκατηγορία', 'Podtyp', 'Podvrsta', 'Undertyp', 'Undertype', 'Undertype', 'Alatyyppi', 'Alamtüüp', 'Apakštips', 'Potipis')}</label><select id="filter-subtype" name="subtype" disabled={!type} data-auto><option value="">{ui.filters.all}</option>{(PROPERTY_GROUPS.find(g=>g.key===groupOf(type))?.subtypes||[]).map(v=><option value={v.key} selected={v.key===subtype}>{labelIn(v.labels,locale)}</option>)}</select></div>}
+          {<div class="group"><label class="group-title" for="filter-subtype">{x({ hu: 'Altípus', nl: 'Subtype', en: 'Subtype', de: 'Untertyp', fr: 'Sous-type', es: 'Subtipo', pl: 'Podtyp', ro: 'Subtip', sk: 'Podtyp', it: 'Sottotipo', pt: 'Subtipo', el: 'Υποκατηγορία', cs: 'Podtyp', sl: 'Podvrsta', sv: 'Undertyp', da: 'Undertype', no: 'Undertype', fi: 'Alatyyppi', et: 'Alamtüüp', lv: 'Apakštips', lt: 'Potipis', sr: 'Podvrsta', uk: 'Підтип', tr: 'Alt tür', he: 'תת־סוג', ar: 'النوع الفرعي', ru: 'Подтип', zh: '子类型' })}</label><select id="filter-subtype" name="subtype" disabled={!type} data-auto><option value="">{ui.filters.all}</option>{(PROPERTY_GROUPS.find(g=>g.key===groupOf(type))?.subtypes||[]).map(v=><option value={v.key} selected={v.key===subtype}>{labelIn(v.labels,locale)}</option>)}</select></div>}
           {/* Location */}
           <details class="group group-fold" open={locationOpen}>
             <summary class="group-title">
@@ -366,7 +377,7 @@ const labels = {
                   <div class="field">
                     <label for="f-country">{ui.filters.country}</label>
                     <select id="f-country" name="country" data-auto>
-                      <option value="">{x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays', 'Todos los países', 'Wszystkie kraje', 'Toate țările', 'Všetky krajiny', 'Tutti i paesi', 'Todos os países', 'Όλες οι χώρες', 'Všechny země', 'Vse države', 'Alla länder', 'Alle lande', 'Alle land', 'Kaikki maat', 'Kõik riigid', 'Visas valstis', 'Visos šalys')}</option>
+                      <option value="">{x({ hu: 'Minden ország', nl: 'Alle landen', en: 'All countries', de: 'Alle Länder', fr: 'Tous les pays', es: 'Todos los países', pl: 'Wszystkie kraje', ro: 'Toate țările', sk: 'Všetky krajiny', it: 'Tutti i paesi', pt: 'Todos os países', el: 'Όλες οι χώρες', cs: 'Všechny země', sl: 'Vse države', sv: 'Alla länder', da: 'Alle lande', no: 'Alle land', fi: 'Kaikki maat', et: 'Kõik riigid', lv: 'Visas valstis', lt: 'Visos šalys', sr: 'Sve zemlje', uk: 'Усі країни', tr: 'Tüm ülkeler', he: 'כל המדינות', ar: 'كل الدول', ru: 'Все страны', zh: '所有国家/地区' })}</option>
                       {countries.map((code) => (
                         <option value={code} selected={code === country}>{labelCountry(code, locale)}</option>
                       ))}
@@ -385,7 +396,7 @@ const labels = {
                 <label for="f-county">{ui.filters.county}</label>
                 <select id="f-county" name="county" data-auto>
                   <option value="">{ui.filters.all}</option>
-                  {counties.map((c) => <option value={c} selected={c === county}>{c}</option>)}
+                  {counties.map((c) => <option value={c.name} selected={c.name === county} class:list={{ empty: c.count === 0 }}>{c.count ? `${c.name} (${c.count})` : c.name}</option>)}
                 </select>
               </div>
               <div class="field">
@@ -457,7 +468,7 @@ const labels = {
                 <input type="hidden" name="bbox" value={bboxParam} />
                 <p class="area-note">
                   {ui.filters.areaFiltered} ·{' '}
-                  <a href={withParam('bbox', '')}>{x('Szűrés törlése', 'Filter wissen', 'Clear filter', 'Filter löschen', 'Effacer le filtre', 'Borrar el filtro', 'Wyczyść filtr', 'Ștergeți filtrul', 'Zrušiť filter', 'Cancella filtro', 'Limpar filtro', 'Καθαρισμός φίλτρου', 'Zrušit filtr', 'Počisti filter', 'Rensa filter', 'Ryd filter', 'Nullstill filter', 'Tyhjennä suodatin', 'Tühjenda filter', 'Notīrīt filtru', 'Išvalyti filtrą')}</a>
+                  <a href={withParam('bbox', '')}>{x({ hu: 'Szűrés törlése', nl: 'Filter wissen', en: 'Clear filter', de: 'Filter löschen', fr: 'Effacer le filtre', es: 'Borrar el filtro', pl: 'Wyczyść filtr', ro: 'Ștergeți filtrul', sk: 'Zrušiť filter', it: 'Cancella filtro', pt: 'Limpar filtro', el: 'Καθαρισμός φίλτρου', cs: 'Zrušit filtr', sl: 'Počisti filter', sv: 'Rensa filter', da: 'Ryd filter', no: 'Nullstill filter', fi: 'Tyhjennä suodatin', et: 'Tühjenda filter', lv: 'Notīrīt filtru', lt: 'Išvalyti filtrą', sr: 'Obrišite filter', uk: 'Скинути фільтр', tr: 'Filtreyi temizle', he: 'ניקוי המסנן', ar: 'مسح عامل التصفية', ru: 'Сбросить фильтр', zh: '清除筛选' })}</a>
                 </p>
               </>
             )
@@ -467,7 +478,7 @@ const labels = {
         <div class="side-foot">
           <button type="submit" class="apply">
             <span>{labels.apply}</span>
-            <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
+            <svg class="icon-dir" width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
               <path d="M0 5h16.5M12.5 1l4 4-4 4" stroke="currentColor" stroke-width="1.1" />
             </svg>
           </button>
@@ -519,7 +530,7 @@ const labels = {
 
         {
           chips.length > 0 && (
-            <ul class="active" aria-label={x('Aktív szűrők', 'Actieve filters', 'Active filters', 'Aktive Filter', 'Filtres actifs', 'Filtros activos', 'Aktywne filtry', 'Filtre active', 'Aktívne filtre', 'Filtri attivi', 'Filtros ativos', 'Ενεργά φίλτρα', 'Aktivní filtry', 'Aktivni filtri', 'Aktiva filter', 'Aktive filtre', 'Aktive filtre', 'Aktiiviset suodattimet', 'Aktiivsed filtrid', 'Aktīvie filtri', 'Aktyvūs filtrai')}>
+            <ul class="active" aria-label={x({ hu: 'Aktív szűrők', nl: 'Actieve filters', en: 'Active filters', de: 'Aktive Filter', fr: 'Filtres actifs', es: 'Filtros activos', pl: 'Aktywne filtry', ro: 'Filtre active', sk: 'Aktívne filtre', it: 'Filtri attivi', pt: 'Filtros ativos', el: 'Ενεργά φίλτρα', cs: 'Aktivní filtry', sl: 'Aktivni filtri', sv: 'Aktiva filter', da: 'Aktive filtre', no: 'Aktive filtre', fi: 'Aktiiviset suodattimet', et: 'Aktiivsed filtrid', lv: 'Aktīvie filtri', lt: 'Aktyvūs filtrai', sr: 'Aktivni filteri', uk: 'Активні фільтри', tr: 'Etkin filtreler', he: 'מסננים פעילים', ar: 'عوامل التصفية النشطة', ru: 'Активные фильтры', zh: '已选筛选条件' })}>
               {chips.map((f) => (
                 <li>
                   <a href={withParam(f.key, '')} aria-label={`${labels.remove}: ${f.label}`}>
@@ -572,7 +583,7 @@ const labels = {
           <nav class="pagination" aria-label={labels.pages}>
             {page > 1 ? (
               <a class="page-step" href={withParam('page', String(page - 1))} aria-label={labels.prev}>
-                <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
+                <svg class="icon-dir" width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
                   <path d="M18 5H1.5M5.5 1l-4 4 4 4" stroke="currentColor" stroke-width="1.1" />
                 </svg>
               </a>
@@ -596,7 +607,7 @@ const labels = {
             </ol>
             {page < totalPages ? (
               <a class="page-step" href={withParam('page', String(page + 1))} aria-label={labels.next}>
-                <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
+                <svg class="icon-dir" width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true">
                   <path d="M0 5h16.5M12.5 1l4 4-4 4" stroke="currentColor" stroke-width="1.1" />
                 </svg>
               </a>
@@ -778,6 +789,8 @@ const labels = {
 </script>
 
 <style>
+  /* Counties with no listing stay selectable (a saved search may want them) but read as quieter. */
+  option.empty { color: var(--taupe, #7a7064); }
   /* ══ Head ═════════════════════════════════════════════════════════════ */
   .head {
     padding: 32px var(--pad-x) 48px;
@@ -879,7 +892,7 @@ const labels = {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-right: auto;
+    margin-inline-end: auto;
     font-family: var(--serif);
     font-weight: var(--fw-medium);
     font-size: 20px;
@@ -920,7 +933,7 @@ const labels = {
     place-items: center;
     width: 44px;
     height: 44px;
-    margin: -10px -10px -10px 0;
+    margin-block: -10px; margin-inline: 0 -10px;
     border-radius: 50%;
     background: rgba(16, 42, 67, 0.06);
     color: var(--ink);
@@ -949,7 +962,7 @@ const labels = {
   }
   .search-icon {
     position: absolute;
-    left: 14px;
+    inset-inline-start: 14px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--taupe);
@@ -959,7 +972,7 @@ const labels = {
     display: block;
     width: 100%;
     height: 48px;
-    padding: 0 16px 0 42px;
+    padding-block: 0; padding-inline: 42px 16px;
     border: 1px solid transparent;
     border-radius: var(--r-pill);
     background: var(--cream);
@@ -996,7 +1009,7 @@ const labels = {
   /* A floated legend behaves like an ordinary block; without it a legend
      keeps its special fieldset placement and ignores the spacing here. */
   .group-title {
-    float: left;
+    float: inline-start;
     width: 100%;
     margin-bottom: 14px;
     padding: 0;
@@ -1122,8 +1135,8 @@ const labels = {
   .fold-icon::after {
     content: '';
     position: absolute;
-    left: 8px;
-    right: 8px;
+    inset-inline-start: 8px;
+    inset-inline-end: 8px;
     top: 50%;
     height: 1.4px;
     margin-top: -0.7px;
@@ -1169,12 +1182,15 @@ const labels = {
   }
   .field select {
     appearance: none;
-    padding-right: 36px;
+    padding-inline-end: 36px;
     cursor: pointer;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23102a43' stroke-width='1.3'/%3E%3C/svg%3E");
     background-position: right 14px center;
     background-size: 10px 6px;
     background-repeat: no-repeat;
+  }
+  :global([dir='rtl']) .field select {
+    background-position: left 14px center;
   }
   .field select:hover,
   .field input:hover,
@@ -1205,7 +1221,7 @@ const labels = {
     display: block;
   }
   .range input {
-    padding-right: 38px;
+    padding-inline-end: 38px;
     font-variant-numeric: tabular-nums;
     appearance: textfield;
     -moz-appearance: textfield;
@@ -1221,7 +1237,7 @@ const labels = {
   }
   .unit {
     position: absolute;
-    right: 12px;
+    inset-inline-end: 12px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 13px;
@@ -1264,7 +1280,7 @@ const labels = {
     content: '';
     position: absolute;
     top: 3px;
-    left: 3px;
+    inset-inline-start: 3px;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -1283,7 +1299,7 @@ const labels = {
   }
   .switch-row input:checked + .switch::after {
     background: var(--cream);
-    transform: translateX(18px);
+    transform: translateX(calc(18px * var(--dir-x, 1)));
   }
   .switch-row input:focus-visible + .switch {
     outline: var(--focus-ring);
@@ -1329,7 +1345,7 @@ const labels = {
     transition: transform 0.5s var(--ease-out);
   }
   .apply:hover svg {
-    transform: translateX(5px);
+    transform: translateX(calc(5px * var(--dir-x, 1)));
   }
   .apply:hover,
   .filters[data-dirty] .apply {
@@ -1423,7 +1439,7 @@ const labels = {
     align-items: center;
     gap: 8px;
     height: 46px;
-    padding: 0 6px 0 18px;
+    padding-block: 0; padding-inline: 18px 6px;
     border-radius: var(--r-pill);
     background: var(--white);
     border: 1px solid rgba(16, 42, 67, 0.1);
@@ -1446,7 +1462,7 @@ const labels = {
     border: 0;
     border-radius: var(--r-pill);
     background: transparent;
-    padding: 0 34px 0 4px;
+    padding-block: 0; padding-inline: 4px 34px;
     font-size: 15px;
     font-weight: var(--fw-medium);
     color: var(--ink);
@@ -1456,6 +1472,9 @@ const labels = {
     background-size: 12px 8px;
     background-repeat: no-repeat;
   }
+  :global([dir='rtl']) .sort select {
+    background-position: left 12px center;
+  }
   .sort select:focus-visible {
     outline: none;
   }
@@ -1464,7 +1483,7 @@ const labels = {
     align-items: center;
     gap: 10px;
     height: 46px;
-    padding: 0 20px 0 16px;
+    padding-block: 0; padding-inline: 16px 20px;
     border-radius: var(--r-pill);
     background: var(--ink);
     font-size: 15px;
@@ -1490,7 +1509,7 @@ const labels = {
     align-items: center;
     gap: 10px;
     height: 36px;
-    padding: 0 12px 0 16px;
+    padding-block: 0; padding-inline: 16px 12px;
     border-radius: var(--r-pill);
     background: var(--white);
     border: 1px solid rgba(16, 42, 67, 0.12);
@@ -1523,8 +1542,8 @@ const labels = {
   /* While the next results load, a line runs along the toolbar's rule. */
   .loading-bar {
     position: absolute;
-    left: 0;
-    right: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     bottom: -1px;
     height: 2px;
     border-radius: 2px;
@@ -1532,6 +1551,9 @@ const labels = {
     transform: scaleX(0);
     transform-origin: left;
     opacity: 0;
+  }
+  :global([dir='rtl']) .loading-bar {
+    transform-origin: right;
   }
   :global([data-loading]) .loading-bar {
     opacity: 1;
@@ -1656,10 +1678,10 @@ const labels = {
       position: fixed;
       top: 8px;
       bottom: 8px;
-      left: 8px;
+      inset-inline-start: 8px;
       z-index: calc(var(--z-nav) + 20);
       width: min(420px, calc(100% - 16px));
-      transform: translateX(calc(-100% - 16px));
+      transform: translateX(calc((-100% - 16px) * var(--dir-x, 1)));
       visibility: hidden;
       animation: none;
       transition:
@@ -1681,7 +1703,7 @@ const labels = {
       border-radius: var(--r-xl);
     }
     .side-head {
-      padding: 14px 20px 14px 24px;
+      padding-block: 14px; padding-inline: 24px 20px;
     }
     .side-close {
       display: grid;
@@ -1758,7 +1780,7 @@ const labels = {
       justify-content: center;
     }
     .sort {
-      padding-left: 6px;
+      padding-inline-start: 6px;
     }
     .map-link {
       order: 4;

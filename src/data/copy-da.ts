@@ -22,13 +22,13 @@ export const DA = {
     meta: {
       title: 'FINDDOME Real Estates | Annoncér din ejendom i Europa',
       description:
-        'Upload din annonce i få trin. Efter onlinebetaling vises den på 21 sprog, uden eksklusivaftale.',
+        'Upload din annonce i få trin. Efter onlinebetaling vises den på 28 sprog, uden eksklusivaftale.',
     },
     hero: {
       eyebrow: `Siden 2013 · ${foundedInLabel(L)}`,
       title: ['Annoncér', 'din ejendom', 'i Europa'],
       emphasis: 1,
-      body: 'Upload din annonce i få trin. Vi gennemgår den, og efter onlinebetaling bliver den vist på vores hjemmeside på 21 sprog, uden eksklusivaftale. Interesserede kontakter dig direkte eller via os.',
+      body: 'Upload din annonce i få trin. Vi gennemgår den, og efter onlinebetaling bliver den vist på vores hjemmeside på 28 sprog, uden eksklusivaftale. Interesserede kontakter dig direkte eller via os.',
       primary: 'Se ejendomme',
       secondary: 'Gratis ejendomssøgning',
       featuredLabel: 'Udvalgte',

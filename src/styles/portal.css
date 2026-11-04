@@ -1631,6 +1631,15 @@ main.pm.pm .notice.warn,
 main.pm.pm .soft-warn {
   border-radius: var(--r-md);
 }
+/* Amber, as in the status pills. */
+main.pm.pm .notice.warn {
+  background: var(--pt-amber-bg);
+  color: var(--pt-amber);
+}
+main.pm.pm .notice > strong:first-child {
+  display: block;
+  margin-bottom: 2px;
+}
 
 /* Form controls */
 main.pm.pm
@@ -1812,3 +1821,20 @@ main.pm.pm table.mail-list {
     transform: translateY(-50%);
   }
 }
+
+/* MoneyInput (src/components/portal/MoneyInput.astro) anywhere in the portal: the unit sits inside the field, on the right.
+   The Csomagok pages (packages.css) size it their own way. */
+main.pm.pm .money[data-money] { position: relative; display: block; min-width: 0; }
+main.pm.pm .money[data-money] input { width: 100%; padding-right: 48px; font-variant-numeric: tabular-nums; }
+main.pm.pm .money[data-money] i {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-style: normal;
+  font-size: 14px;
+  color: var(--ink-quiet);
+  pointer-events: none;
+  white-space: nowrap;
+}
+main.pm.pm .money[data-money] input:disabled { opacity: 0.55; }

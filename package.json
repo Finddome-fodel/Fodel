@@ -12,7 +12,8 @@
     "check": "astro check",
     "verify:ssg": "node scripts/verify-ssg.mjs",
     "verify:contrast": "node scripts/verify-contrast.mjs",
-    "verify": "npm run build && npm run verify:ssg && npm run verify:contrast",
+    "verify": "npm run build && npm run verify:ssg && npm run verify:contrast && npm run check:portal-numbers",
+    "check:portal-numbers": "node scripts/check-portal-numbers.mjs",
     "verify:dev": "npm run build && node scripts/verify-ssg.mjs --allow-missing-kvk && npm run verify:contrast",
     "og": "node scripts/build-og.mjs",
     "build:pmtiles": "node scripts/build-pmtiles.mjs",
@@ -25,13 +26,23 @@
     "test:translation": "node --no-warnings scripts/test-translation-flow.mjs",
     "test:own-listing": "node --no-warnings scripts/test-admin-own-listing.mjs",
     "test:free-approval": "node --no-warnings scripts/test-free-approval.mjs",
+    "test:language-gate": "node --no-warnings scripts/test-language-gate.mjs",
+    "test:translation:packages": "node --no-warnings scripts/test-translation-packages.mjs",
     "test:upload": "node --no-warnings scripts/test-upload-link.mjs",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "test:e2e": "playwright test",
     "test:e2e:webkit": "playwright test --project=webkit --project=mobile-safari",
+    "test:e2e:listing": "E2E_LISTING_FIXTURE=1 playwright test tests/e2e/public/share.spec.ts && E2E_LISTING_FIXTURE=1 playwright test tests/e2e/public/pages.spec.ts -g \"the map starts\"",
     "test:listing:migration": "node scripts/test-listing-migration.mjs",
+    "test:migrations": "node scripts/test-migrations-sequence.mjs",
+    "test:field-rules": "node --no-warnings scripts/test-field-rules.mjs",
+    "test:chooser": "node --no-warnings scripts/test-package-chooser.mjs",
+    "test:pricing": "node --no-warnings scripts/test-pricing.mjs && node --no-warnings scripts/test-package-orders.mjs && node --no-warnings scripts/test-fx.mjs",
     "test:listing": "node scripts/test-listing-input.mjs",
-    "local:prepare": "python3 scripts/local-workspace.py"
+    "test:tiers": "node --no-warnings scripts/test-tiers.mjs",
+    "test:contacts": "node --no-warnings scripts/test-contact-detect.mjs",
+    "local:prepare": "python3 scripts/local-workspace.py",
+    "test:share": "node --no-warnings scripts/test-share.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -53,6 +64,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.10.2",
     "@electric-sql/pglite": "^0.5.11",
     "@playwright/test": "^1.64.1",
     "typescript": "^5.9.3"

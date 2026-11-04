@@ -35,8 +35,10 @@ for (const lang of LOCALES) {
         const rect = (e: Element) => { const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom }; };
         const nav = pick('.nav-link').map(rect);
         const others = [...pick('.nav-account'), ...pick('.nav-cta'), ...pick('.switcher')].map(rect);
-        const last = nav.reduce((m, r) => Math.max(m, r.r), 0);
-        const first = others.reduce((m, r) => Math.min(m, r.l), Infinity);
+        // Left to right the links come first and the account/CTA group after them; right to left it is the other way round.
+        const rtl = document.documentElement.dir === 'rtl';
+        const last = rtl ? -nav.reduce((m, r) => Math.min(m, r.l), Infinity) : nav.reduce((m, r) => Math.max(m, r.r), 0);
+        const first = rtl ? -others.reduce((m, r) => Math.max(m, r.r), -Infinity) : others.reduce((m, r) => Math.min(m, r.l), Infinity);
         return { last, first, scroll: document.documentElement.scrollWidth - document.documentElement.clientWidth };
       });
       expect(boxes.last, 'last link ends before the account/CTA group starts').toBeLessThanOrEqual(boxes.first + 0.5);

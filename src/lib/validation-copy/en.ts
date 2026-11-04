@@ -21,5 +21,7 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `At least ${limit} characters.`,
   consent: 'Please accept the privacy notice to continue.',
   selfReferral: 'You cannot refer yourself: enter a different email address.',
+  choose: "Please choose from the list.",
+  contact: (kind, match) => (kind === 'email' ? `The text must not contain an e-mail address (“${match}”). Buyers reach you through FINDDOME.` : kind === 'phone' ? `The text must not contain a phone number (“${match}”). Buyers reach you through FINDDOME.` : `The text must not contain a website, social media or messaging contact (“${match}”).`),
   summary: (count) => (count === 1 ? 'One field still needs checking:' : `${count} fields still need checking:`),
 };

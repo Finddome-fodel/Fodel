@@ -22,5 +22,7 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Al menos ${limit} ${limit === 1 ? 'carácter' : 'caracteres'}.`,
   consent: 'Acepte la política de privacidad para continuar.',
   selfReferral: 'No puede recomendarse a sí mismo: indique otra dirección de correo electrónico.',
+  choose: "Elija una opción de la lista.",
+  contact: (kind, match) => (kind === 'email' ? `El texto no puede contener una dirección de correo electrónico («${match}»). Los compradores le contactan a través de FINDDOME.` : kind === 'phone' ? `El texto no puede contener un número de teléfono («${match}»). Los compradores le contactan a través de FINDDOME.` : `El texto no puede contener una web, red social o aplicación de mensajería («${match}»).`),
   summary: (count) => (count === 1 ? 'Queda un campo por revisar:' : `Quedan ${count} campos por revisar:`),
 };

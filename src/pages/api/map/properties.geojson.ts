@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { canonicalCounty } from '~/lib/counties';
 import { activeProperties, text, url as propertyUrl } from '~/lib/properties';
 import { isLocale } from '~/i18n/ui';
 import { eur } from '~/lib/format';
@@ -18,11 +19,11 @@ export const GET: APIRoute = async ({ url }) => {
 
   const bbox = url.searchParams.get('bbox')?.split(',').map(Number);
   const type=url.searchParams.get('type'),subtype=url.searchParams.get('subtype'),country=url.searchParams.get('country'),county=url.searchParams.get('county'),region=url.searchParams.get('region');
-  const properties = (await activeProperties()).filter((property) =>
+  const properties = (await activeProperties(locale)).filter((property) =>
     (!type||property.data.propertyGroup===type||property.data.category===type)&&
     (!subtype||property.data.propertySubtype===subtype)&&
     (!country||property.data.location.country===country)&&
-    (!county||property.data.location.county===county)&&
+    (!county||(canonicalCounty(property.data.location.country,property.data.location.county)??property.data.location.county)===(canonicalCounty(property.data.location.country,county)??county))&&
     (!region||property.data.location.region===region)&&
     passesAdobeFilter(property.data.building.walls.map((w) => w.key), excludeAdobe) &&
     (!bbox || bbox.length !== 4 || (

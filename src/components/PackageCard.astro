@@ -21,8 +21,8 @@ interface PackageCardData {
   id?: string;
   name: string;
   price: string;
-  priceAlt?: string;
-  priceAltNote?: string;
+  /** The higher price tiers, one line each (src/lib/price-tiers.ts). */
+  priceTiers?: { price: string; note: string }[];
   duration: string;
   featured?: boolean;
   features: string[];
@@ -67,11 +67,15 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
         <p class="duration">{pkg.duration}</p>
       </header>
       <p class="price">{pkg.price}</p>
-      {pkg.priceAlt && (
-        <p class="price-alt">
-          <strong>{pkg.priceAlt}</strong> · {pkg.priceAltNote}
-        </p>
-      )}
+      {pkg.priceTiers?.length ? (
+        <div class="price-alts">
+          {pkg.priceTiers.map((tier) => (
+            <p class="price-alt">
+              <strong>{tier.price}</strong> · {tier.note}
+            </p>
+          ))}
+        </div>
+      ) : null}
       <span class="pkg-rule" aria-hidden="true" />
       <ul>
         {pkg.features.map((f) => (
@@ -107,11 +111,15 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
         <p class="duration">{pkg.duration}</p>
       </header>
       <p class="price">{pkg.price}</p>
-      {pkg.priceAlt && (
-        <p class="price-alt">
-          <strong>{pkg.priceAlt}</strong> · {pkg.priceAltNote}
-        </p>
-      )}
+      {pkg.priceTiers?.length ? (
+        <div class="price-alts">
+          {pkg.priceTiers.map((tier) => (
+            <p class="price-alt">
+              <strong>{tier.price}</strong> · {tier.note}
+            </p>
+          ))}
+        </div>
+      ) : null}
       <span class="pkg-rule" aria-hidden="true" />
       <ul>
         {pkg.features.map((f) => (
@@ -200,13 +208,15 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
     color: inherit;
     margin: 28px 0 10px;
   }
+  /* Reserved on every card so the rules and feature lists line up, whether
+     or not the package has higher price tiers. */
+  .price-alts {
+    min-height: 48px;
+  }
   .price-alt {
     font-size: var(--fs-small);
     line-height: 1.6;
     color: var(--taupe);
-    /* Reserved on both cards so the rules and feature lists line up, whether
-       or not the package has a second price tier. */
-    min-height: 48px;
   }
   .featured .price-alt {
     color: var(--on-dark-body);
@@ -218,7 +228,7 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
     background: currentColor;
     opacity: 0.12;
   }
-  .package:not(:has(.price-alt)) .pkg-rule {
+  .package:not(:has(.price-alts)) .pkg-rule {
     margin-top: calc(20px + 48px);
   }
   .package ul {
@@ -302,7 +312,7 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
   .select-state {
     position: absolute;
     top: 40px;
-    right: 40px;
+    inset-inline-end: 40px;
     display: grid;
     place-items: center;
     width: 26px;
@@ -358,7 +368,7 @@ const inputId = `pkg-${radioName}-${pkg.id ?? pkg.name}`;
     }
     .select-state {
       top: 28px;
-      right: 24px;
+      inset-inline-end: 24px;
     }
   }
 </style>

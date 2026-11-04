@@ -22,12 +22,17 @@ import { getSupabase } from '~/lib/supabase';
 import { resolveImage } from '~/lib/property-images';
 import type { Locale } from '~/i18n/ui';
 import { LOCALES, propertyPath } from '~/i18n/ui';
-import { getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
+import { getCompany, getTaxonomy, type Taxonomy, type TaxonomyTerm } from '~/lib/runtime-config';
 import type { ImageMetadata } from 'astro';
 import { PROPERTY_GROUPS, currentFeatures, groupOf, subtypeOf } from '~/lib/listing-catalogue';
 import { approximateCentre, isExpired } from '~/lib/listing-rules';
 import { contactModeOf, type ContactMode } from '~/lib/contact-display';
 import { readDetails, fieldRules, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
+import { listedIn, servingOf, switcherLocales, publishedLocales, textOrder, type ListingPolicy, type Serving } from '~/lib/listing-languages';
+import { listingCatalog } from '~/lib/listing-packages';
+import { packageLocales, type TranslationPricing } from '~/lib/translation-packages';
+import { unpurchasedListingLocales } from '~/config/flags';
+import { asciiSlug, safeCategorySlugs } from '~/lib/listing-slug';
 
 type LocalisedText = { hu: string } & Partial<Record<Exclude<Locale, 'hu'>, string>>;
 
@@ -86,7 +91,7 @@ export type Property = {
       videoUrl?: string;
     };
     listing: {
-      package: 'cheap-6m' | 'normal-12m';
+      package: 'cheap-6m' | 'normal-12m' | 'basic' | 'europe' | 'world';
       featured: boolean;
       topicFeatured?: boolean;
       homepageFeatured: boolean;
@@ -97,6 +102,8 @@ export type Property = {
       languages: Locale[];
       /** Languages whose text the AI wrote (migration 0043). Used for the optional "automatically translated" note. */
       machineLanguages: Locale[];
+      /** In which languages this listing is published (src/lib/listing-languages.ts). */
+      languagePolicy: ListingPolicy;
     };
     seller: { contactVisible: boolean; name?: string; phone?: string; speaks: string[]; contactMode: ContactMode; staffName?: string; staffPhone?: string };
     tag?: LocalisedText;
@@ -122,6 +129,8 @@ type MediaRow = {
   label: Record<string, string> | null;
   sort_order: number;
   is_hero: boolean;
+  /** Migration 0054: added to a live listing and not yet approved. RLS hides it from the public already. */
+  pending?: boolean;
 };
 
 type PropertyRow = {
@@ -168,7 +177,7 @@ type PropertyRow = {
   public_contact?: string | null;
   public_contact_name?: string | null;
   public_contact_phone?: string | null;
-  package: 'cheap-6m' | 'normal-12m';
+  package: 'cheap-6m' | 'normal-12m' | 'basic' | 'europe' | 'world';
   featured: boolean;
   homepage_featured: boolean;
   homepage_order: number;
@@ -178,6 +187,10 @@ type PropertyRow = {
   bargain_since: string | null;
   published_at: string | null;
   expires_at: string | null;
+  /** Migration 0053: the languages bought and switched off. Absent before it has been run. */
+  translation_package?: string | null;
+  extra_locales?: string[] | null;
+  excluded_locales?: string[] | null;
   property_translations: TranslationRow[];
   property_media: MediaRow[];
 };
@@ -196,7 +209,9 @@ function localisedField(
   const hu = byLocale.hu;
   if(!Object.values(byLocale).some(Boolean))return undefined;
   const out: LocalisedText = { hu:hu||'' };
-  for (const locale of ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const) {
+  // Every language of the site, so a language added later is read without touching this.
+  for (const locale of LOCALES) {
+    if (locale === 'hu') continue;
     const value = byLocale[locale];
     if (value) out[locale] = value;
   }
@@ -205,7 +220,8 @@ function localisedField(
 
 function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
   const translations = row.property_translations.filter(t=>t.title!=='Új hirdetés'||t.description?.trim()||t.body?.trim());
-  const media = [...row.property_media].sort((a, b) => a.sort_order - b.sort_order);
+  // A photo waiting for review never reaches a public page, whichever client read the row.
+  const media = row.property_media.filter((m) => m.pending !== true).sort((a, b) => a.sort_order - b.sort_order);
   const hero = media.find((m) => m.is_hero) ?? media[0];
   const gallery = media.filter((m) => m !== hero);
 
@@ -217,6 +233,19 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
     .filter((t) => (t as { machine?: boolean }).machine === true)
     .map((t) => t.locale)
     .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
+
+  // Where the original is: Hungarian when a person wrote it, otherwise the first language a person wrote.
+  const written = translations.filter((t) => !(t as { machine?: boolean }).machine && (t.title?.trim() || t.description?.trim()));
+  const languagePolicy: ListingPolicy = {
+    gated: 'translation_package' in row,
+    sourceLocale: written.find((t) => t.locale === 'hu')?.locale ?? written[0]?.locale ?? 'hu',
+    languagesWithText: languages,
+    // A text a person typed in that language (an original, not a translation of the listing's text).
+    writtenLocales: written.filter((t) => !(t as { translated_from?: string | null }).translated_from && !(t as { manual_override?: boolean }).manual_override).map((t) => t.locale),
+    translationPackage: row.translation_package ?? 'basic',
+    extraLocales: row.extra_locales ?? [],
+    excludedLocales: row.excluded_locales ?? [],
+  };
 
   const category: TaxonomyTerm | undefined = taxonomy.category.find((term) => term.key === row.category);
   // An approximate listing never carries its real point into a page, the map
@@ -252,7 +281,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
       propertyGroup: row.property_group || groupOf(row.category),
       propertySubtype: row.property_subtype,
       categoryLabels: (PROPERTY_GROUPS.find(g=>g.key===group)?.labels ?? category?.labels ?? fallbackLabels) as Property['data']['categoryLabels'],
-      categorySlugs: category?.slugs ?? { hu: row.category, nl: row.category },
+      categorySlugs: safeCategorySlugs(category?.slugs ?? { hu: row.category, nl: row.category }, row.category),
       categorySchema: category?.schemaType ?? 'Place',
       status: row.status === 'sold' ? 'sold' : row.reserved ? 'reserved' : 'active',
       title: localisedField(translations, 'title')!,
@@ -311,6 +340,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
         expiresAt: new Date(row.expires_at ?? row.price_asof),
         languages,
         machineLanguages,
+        languagePolicy,
       },
       seller: {
         contactVisible: row.seller_contact_visible,
@@ -332,16 +362,16 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
  * Sellers write Hungarian, and pay for a Dutch version (and, as an extra, for
  * more languages). FODEL never translates seller text on the fly. So:
  *   hu, nl      the visitor's language, then Hungarian;
- *   en, de, fr, es, pl, ro, sk, it, pt, el, cs, sl, sv, da, no, fi, et, lv, lt
+ *   every other language
  *               a translation the seller paid for, then English (the common
- *               second language — an English reader should not get Dutch
- *               while English exists), then the Dutch text, then Hungarian.
+ *               second language — a reader should not get Dutch while
+ *               English exists), then German, then the Dutch text, then Hungarian.
  *               `from` tells the page when it is not the visitor's own
  *               language, so it can say so.
  */
 export function resolveText(field: LocalisedText | undefined, locale: Locale): { text: string; from: Locale } {
   if (!field) return { text: '', from: locale };
-  const order: Locale[] = locale === 'hu' || locale === 'nl' ? [locale, 'hu'] : locale === 'en' ? [locale, 'nl', 'hu'] : [locale, 'en', 'nl', 'hu'];
+  const order = textOrder(locale);
   for (const candidate of order) {
     const value = field[candidate];
     if (value) return { text: value, from: candidate };
@@ -465,9 +495,18 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
     p_limit: perPage,
     p_offset: (page - 1) * perPage,
   };
-  const { data: matches, error: rpcError } = await getSupabase().rpc('search_european_properties', {
-    ...args, p_exclude_adobe: params.excludeAdobe ?? null,
-  });
+  // "Listed in this language" is part of the query (migration 0053), so a page is full, the total is exact and no listing
+  // moves between pages: the database gets the language and the packages that cover it (an admin edits those).
+  const languages = await translationConfig();
+  const listed = {
+    p_listed_locale: params.locale,
+    p_listed_packages: languages.packages.filter((pkg) => packageLocales(pkg, TARGETS).includes(params.locale)).map((pkg) => pkg.id),
+    p_listed_fallback: unpurchasedListingLocales() === 'fallback',
+  };
+  const call = (extra: Record<string, unknown>) => getSupabase().rpc('search_european_properties', { ...args, p_exclude_adobe: params.excludeAdobe ?? null, ...extra });
+  let { data: matches, error: rpcError } = await call(listed);
+  // Before migration 0053 the function has no such parameters (and no listing is gated yet): ask the way it always was.
+  if (rpcError && (rpcError.code === 'PGRST202' || /p_listed_/.test(rpcError.message))) ({ data: matches, error: rpcError } = await call({}));
   if (rpcError) throw new Error(`Search failed: ${rpcError.message}`);
 
   const ids = (matches ?? []).map((m: { id: string }) => m.id);
@@ -487,12 +526,19 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
     .filter((id: string) => live.has(id))
     .map((id: string) => byId.get(id))
     .filter((p: Property | undefined): p is Property => Boolean(p));
-
   return { properties, total: Number(total), page, perPage };
 }
 
-export async function activeProperties(): Promise<Property[]> {
-  return (await fetchAll()).filter((p) => p.data.status === 'active');
+/**
+ * Every active listing; with a `locale`, only the ones that appear in that language's lists: a listing that has no
+ * page in a language (not bought, switched off, not translated yet) is not listed there either
+ * (src/lib/listing-languages.ts). Without it: all of them, which is what a listing's own route needs to find its page.
+ */
+export async function activeProperties(locale?: Locale): Promise<Property[]> {
+  const active = (await fetchAll()).filter((p) => p.data.status === 'active');
+  if (!locale) return active;
+  const languages = await translationConfig();
+  return active.filter((p) => listedInLocale(p, locale, languages));
 }
 
 export async function soldProperties(): Promise<Property[]> {
@@ -500,16 +546,16 @@ export async function soldProperties(): Promise<Property[]> {
 }
 
 /** Editorial recommendations never fall back to paid or newest inventory. */
-export async function editorsPick(limit = 10): Promise<Property[]> {
-  return (await activeProperties())
+export async function editorsPick(limit = 10, locale?: Locale): Promise<Property[]> {
+  return (await activeProperties(locale))
     .filter((property) => property.data.listing.editorsPick)
     .sort((a, b) => a.data.listing.editorsPickOrder - b.data.listing.editorsPickOrder)
     .slice(0, limit);
 }
 
 /** Active homepage placements, ordered by publication date. */
-export async function homepageFeatured(limit=3):Promise<Property[]>{
-  const active=await activeProperties();
+export async function homepageFeatured(limit=3,locale?:Locale):Promise<Property[]>{
+  const active=await activeProperties(locale);
   const featured=active.filter(p=>p.data.listing.homepageFeatured);
   return (featured.length?featured:active).sort((a,b)=>b.data.listing.publishedAt.getTime()-a.data.listing.publishedAt.getTime()).slice(0,limit);
 }
@@ -576,14 +622,13 @@ export function countriesOf(properties: Property[]): string[] {
   return [...new Set(properties.map((p) => p.data.location.country))].sort();
 }
 
-/** URL-safe slug for a region or county name (handles Hungarian diacritics). */
-export function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+/**
+ * URL-safe slug for a region or county name (handles Hungarian diacritics; Cyrillic is transliterated). Text in
+ * a script with no Latin form (Hebrew, Arabic, Chinese) leaves nothing behind; `fallback` (an English slug or a
+ * reference) is used then.
+ */
+export function slugify(value: string, fallback = ''): string {
+  return asciiSlug(value) || fallback;
 }
 
 /** Price buckets used by the filter UI, in euro. */
@@ -603,4 +648,43 @@ export function priceBandLabel(band: (typeof PRICE_BANDS)[number]): string {
   if (!band.min) return `< ${f(band.max!)}`;
   if (!band.max) return `> ${f(band.min)}`;
   return `${f(band.min)} – ${f(band.max)}`;
+}
+
+/* ── In which languages is a listing published? (src/lib/listing-languages.ts) ───────────── */
+
+/** The package and single-language configuration the admin last saved. */
+export async function translationConfig(): Promise<TranslationPricing> {
+  try {
+    return listingCatalog((await getCompany()).services).translation;
+  } catch {
+    // A listing page must not depend on the settings being readable: the defaults are the published packages.
+    return listingCatalog().translation;
+  }
+}
+
+const TARGETS: readonly string[] = LOCALES;
+
+/** What a listing page does in this language: render it, render the fallback text (noindex), or send the visitor to English. */
+export function servingFor(p: Property, locale: Locale, cfg: TranslationPricing): Serving {
+  return servingOf(p.data.listing.languagePolicy, locale, cfg, TARGETS, unpurchasedListingLocales());
+}
+
+/** Languages whose page carries the listing's own text: hreflang and the sitemap. */
+export function publishedLocalesOf(p: Property, cfg: TranslationPricing): Locale[] {
+  return publishedLocales(p.data.listing.languagePolicy, cfg, TARGETS) as Locale[];
+}
+
+/** Languages the switcher may offer on a listing page. */
+export function switcherLocalesOf(p: Property, cfg: TranslationPricing): Locale[] {
+  return switcherLocales(p.data.listing.languagePolicy, cfg, TARGETS) as Locale[];
+}
+
+/** A listing appears in a language's lists only when its page there is not a redirect. */
+export function listedInLocale(p: Property, locale: Locale, cfg: TranslationPricing): boolean {
+  return listedIn(p.data.listing.languagePolicy, locale, cfg, TARGETS, unpurchasedListingLocales());
+}
+
+/** The English page of a listing: where a language that is not published sends the visitor. */
+export function englishUrl(p: Property): string {
+  return url(p, 'en');
 }

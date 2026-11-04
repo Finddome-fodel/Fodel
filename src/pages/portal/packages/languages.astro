@@ -1,0 +1,63 @@
+---
+/**
+ * Csomagok → Egyedi nyelvek: the old per-language sale (€1 a European language, €5 a language outside Europe).
+ * Since November 2026 languages come with the package, so this is OFF. The switch and the prices stay so single
+ * languages can come back without a deploy; while it is off nothing here is offered or accepted.
+ * Languages a listing already bought stay on that listing.
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+import MoneyInput from '~/components/portal/MoneyInput.astro';
+import { listingCatalog } from '~/lib/listing-packages';
+import { PRICE_CENTS_MAX } from '~/lib/listing-pricing';
+import { packageTab } from '~/lib/portal/package-admin';
+import { LOCALE_META, type Locale } from '~/i18n/ui';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const catalog = listingCatalog(row?.services);
+const singles = catalog.pricing.singleLanguages;
+const outside = catalog.translation.worldOnly.filter((code): code is Locale => code in LOCALE_META).map((code) => LOCALE_META[code].label);
+---
+
+<PackagesShell tab="languages" migrated={migrated}>
+  <form method="POST" action={packageTab('languages').api} id="sl-form" class="pk-form" data-pk-form>
+    <fieldset disabled={!migrated}>
+      <section class="set-card">
+        <h2>Nyelvek egyenként</h2>
+        <p class="set-sub">A nyelvek a csomaggal együtt járnak, a hirdető csomagot vált, ha többet szeretne. Ez a kapcsoló teszi lehetővé, hogy később egy-egy nyelv külön is megvásárolható legyen, új kiadás nélkül.</p>
+
+        <label class="sw">
+          <input type="checkbox" name="enabled" value="yes" checked={singles.enabled} data-sl-switch />
+          <span class="sw-ui" aria-hidden="true"></span>
+          <span><strong>Egyedi nyelvek árusítása</strong>{singles.enabled ? 'Be van kapcsolva: a hirdetők egyenként is vehetnek nyelvet.' : 'Ki van kapcsolva: egyedi nyelv nem rendelhető. A már megvásárolt nyelvek megmaradnak.'}</span>
+        </label>
+
+        <div class="sl-prices" data-sl-prices>
+          <label class="f"><span>Európai nyelv, darabja</span><MoneyInput name="european" value={singles.europeanCents} allowCents min={0} max={PRICE_CENTS_MAX} suffix="€" required /></label>
+          <label class="f"><span>Európán kívüli nyelv, darabja</span><MoneyInput name="world" value={singles.worldOnlyCents} allowCents min={0} max={PRICE_CENTS_MAX} suffix="€" required /></label>
+        </div>
+        <p class="set-sub">Európán kívüli nyelvnek számít: {outside.join(', ')}. Ezt a listát a Csomagok tartalma fül Europe csomagja követi.</p>
+      </section>
+
+      <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn">Mentés</button></div></div>
+    </fieldset>
+  </form>
+</PackagesShell>
+
+<script>
+  const toggle = document.querySelector<HTMLInputElement>('[data-sl-switch]');
+  const prices = document.querySelector<HTMLElement>('[data-sl-prices]');
+  const sync = () => { if (prices && toggle) prices.hidden = !toggle.checked; };
+  toggle?.addEventListener('change', sync);
+  sync();
+</script>
+
+<style is:global>
+  .sl-prices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 14px; margin-top: 18px; max-width: 560px; }
+  .sl-prices[hidden] { display: none; }
+</style>

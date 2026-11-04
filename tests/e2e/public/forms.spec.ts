@@ -20,6 +20,13 @@ const PHONE: Record<Locale, { country: string; prefix: string }> = {
   cs: { country: 'CZ', prefix: '+420' }, sl: { country: 'SI', prefix: '+386' }, sv: { country: 'SE', prefix: '+46' },
   da: { country: 'DK', prefix: '+45' }, no: { country: 'NO', prefix: '+47' }, fi: { country: 'FI', prefix: '+358' },
   et: { country: 'EE', prefix: '+372' }, lv: { country: 'LV', prefix: '+371' }, lt: { country: 'LT', prefix: '+370' },
+  sr: { country: 'RS', prefix: '+381' },
+  uk: { country: 'UA', prefix: '+380' },
+  tr: { country: 'TR', prefix: '+90' },
+  he: { country: 'IL', prefix: '+972' },
+  ar: { country: 'AE', prefix: '+971' },
+  ru: { country: 'RU', prefix: '+7' },
+  zh: { country: 'CN', prefix: '+86' },
 };
 
 const form = (page: Page) => page.locator('#listing-order');

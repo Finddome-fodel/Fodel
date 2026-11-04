@@ -11,20 +11,54 @@ import type { Locale } from '~/i18n/ui';
 import { buildOrderLines, orderTotalCents, type OrderLine } from '~/lib/orders';
 import { getStripe } from '~/lib/stripe';
 import { getCompany } from '~/lib/runtime-config';
-import { listingCatalog, extraPrice } from '~/lib/listing-packages';
+import { listingCatalog, extraPrice, type ListingCatalog } from '~/lib/listing-packages';
+import { renewalQuote } from '~/lib/portal/package-terms';
 
-/** The 6-month renewal's price, as the admin set it (Szolgáltatások → Hirdetési csomagok). */
-export async function renewalPriceCents(): Promise<number> {
-  return extraPrice(listingCatalog((await getCompany()).services), 'renewal-6m') * 100;
+/** The term the reminder e-mails and the renewal page quote first: six months when offered, else the longest. */
+export const defaultRenewalMonths = (catalog: ListingCatalog): number => (catalog.pricing.durations.includes(6) ? 6 : Math.max(...catalog.pricing.durations));
+
+type Renewable = { price_huf?: number | null; package?: string | null };
+
+function priceIn(catalog: ListingCatalog, property: Renewable, months?: number): number {
+  if (catalog.pricingLive) {
+    const quote = renewalQuote(catalog, property, months ?? defaultRenewalMonths(catalog));
+    if (quote) return quote.cents;
+  }
+  // Before the pricing migrations (or if the term is not sold): the flat six-month renewal, as it always was.
+  return extraPrice(catalog, 'renewal-6m', property.price_huf) * 100;
+}
+
+/**
+ * What renewing the listing costs, in cents: `months` more of its own package at today's matrix price in the band its
+ * price is in now (Q8). Before the pricing migrations, the old flat six months.
+ */
+export async function renewalPriceCents(property: Renewable, months?: number): Promise<number> {
+  return priceIn(listingCatalog((await getCompany()).services), property, months);
+}
+
+/** One catalogue read for many listings (the daily cron): `listing → cents` for the default term. */
+export async function renewalPricer(): Promise<(property: Renewable) => number> {
+  const catalog = listingCatalog((await getCompany()).services);
+  return (property) => priceIn(catalog, property);
+}
+
+/** The terms a renewal can be bought for, with today's price for this listing: the renewal page's choices. */
+export async function renewalOptions(property: Renewable): Promise<{ months: number; cents: number }[]> {
+  const catalog = listingCatalog((await getCompany()).services);
+  if (!catalog.pricingLive) return [];
+  return catalog.pricing.durations
+    .map((months) => { const quote = renewalQuote(catalog, property, months); return quote ? { months, cents: quote.cents } : null; })
+    .filter((option): option is { months: number; cents: number } => option !== null);
 }
 
 export type RenewalOrder = { id: string; amount_cents: number; line_items: OrderLine[]; stripe_session_id: string | null };
 
 export async function openRenewalOrder(
   admin: any,
-  property: { id: string; owner_id: string | null },
+  property: { id: string; owner_id: string | null; price_huf?: number | null; package?: string | null },
   locale: Locale,
-  contactEmail?: string | null
+  contactEmail?: string | null,
+  months?: number
 ): Promise<RenewalOrder> {
   const { data: open } = await admin
     .from('payments')
@@ -32,13 +66,23 @@ export async function openRenewalOrder(
     .eq('property_id', property.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false });
-  const existing = (open ?? []).find((row: any) => (row.line_items ?? []).some((line: OrderLine) => line.id === 'renewal-6m'));
+  const catalog = listingCatalog((await getCompany()).services);
+  const quote = catalog.pricingLive ? renewalQuote(catalog, property, months && catalog.pricing.durations.includes(months) ? months : defaultRenewalMonths(catalog)) : null;
+  // One open renewal per listing, but a different term is a different order: the old one is closed, never charged twice.
+  const isRenewal = (line: OrderLine) => line.id === 'renewal-6m' || line.renewal === true;
+  const openRenewals = (open ?? []).filter((row: any) => (row.line_items ?? []).some(isRenewal));
+  const existing = openRenewals.find((row: any) => !quote || (row.line_items ?? []).some((line: OrderLine) => line.renewal === true && line.months === quote.months));
   if (existing) return existing;
+  for (const stale of openRenewals) {
+    if (stale.stripe_session_id) await getStripe().checkout.sessions.expire(stale.stripe_session_id).catch(() => {});
+    await admin.from('payments').update({ status: 'cancelled' }).eq('id', stale.id).eq('status', 'pending');
+  }
 
   // The package line is required by buildOrderLines' shape but not charged:
   // only the renewal extra goes on the order.
-  const catalog = listingCatalog((await getCompany()).services);
-  const lines = buildOrderLines({ packageId: catalog.packages[0].id, extras: [{ id: 'renewal-6m', quantity: 1 }] }, locale, catalog).filter((line) => line.id === 'renewal-6m');
+  const lines = quote
+    ? buildOrderLines({ packageId: quote.packageId, months: quote.months, tierIndex: quote.tierIndex, priceHuf: property.price_huf ?? null, renewal: true, extras: [] }, locale, catalog)
+    : buildOrderLines({ packageId: catalog.packages.find((p) => p.legacy)!.id, priceHuf: property.price_huf ?? null, extras: [{ id: 'renewal-6m', quantity: 1 }] }, locale, catalog).filter((line) => line.id === 'renewal-6m');
   const base = {
     property_id: property.id,
     owner_id: property.owner_id,

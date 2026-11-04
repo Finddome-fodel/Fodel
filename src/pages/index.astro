@@ -8,7 +8,7 @@
  *
  * Order of preference: the language the visitor last picked in the switcher
  * (the `fodel_lang` cookie, set by LanguageSwitcher.astro), then the
- * browser's own languages (en-GB, de-AT, fr-BE, es-MX and the like all count; nb and nn count as Norwegian), then Dutch.
+ * browser's own languages (en-GB, de-AT, fr-BE, es-MX and the like all count; nb and nn count as Norwegian, iw as Hebrew; any zh-* goes to Simplified Chinese and any sr-* to Serbian in Latin script), then Dutch.
  * Without JavaScript the meta refresh sends everyone to Dutch, and the links
  * below the fold stay usable.
  */
@@ -27,7 +27,7 @@ const fallback = FALLBACK_LOCALE;
     <title>FINDDOME — Kies uw taal / Válasszon nyelvet / Choose your language</title>
     <meta
       name="description"
-      content="Kies uw taal om verder te gaan. Válasszon nyelvet a folytatáshoz. Choose your language to continue. Wählen Sie Ihre Sprache. Choisissez votre langue. Elija su idioma. Prosimy wybrać język. Alegeți limba. Vyberte si jazyk. Scelga la sua lingua. Escolha o seu idioma. Επιλέξτε γλώσσα. Zvolte jazyk. Izberite jezik. Välj språk. Vælg sprog. Velg språk. Valitse kieli. Valige keel. Izvēlieties valodu. Pasirinkite kalbą."
+      content="Kies uw taal om verder te gaan. Válasszon nyelvet a folytatáshoz. Choose your language to continue. Wählen Sie Ihre Sprache. Choisissez votre langue. Elija su idioma. Prosimy wybrać język. Alegeți limba. Vyberte si jazyk. Scelga la sua lingua. Escolha o seu idioma. Επιλέξτε γλώσσα. Zvolte jazyk. Izberite jezik. Välj språk. Vælg sprog. Velg språk. Valitse kieli. Valige keel. Izvēlieties valodu. Pasirinkite kalbą. Izaberite jezik. Оберіть мову. Dilinizi seçin. בחרו שפה. اختر لغتك. Выберите язык. 选择您的语言。"
     />
     <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href={`${SITE_URL}/${fallback}/`} />
@@ -49,6 +49,8 @@ const fallback = FALLBACK_LOCALE;
           var code = String(languages[i]).slice(0, 2).toLowerCase();
           // Norwegian browsers say nb (Bokmål), nn (Nynorsk) or no: all read Bokmål here.
           if (code === 'nb' || code === 'nn') code = 'no';
+          // Older Android and Java report Hebrew under its retired code.
+          if (code === 'iw') code = 'he';
           if (supported.indexOf(code) !== -1) {
             match = code;
             break;
@@ -64,7 +66,7 @@ const fallback = FALLBACK_LOCALE;
         LOCALES.map((code, index) => (
           <>
             {index > 0 && ' · '}
-            <a href={`/${code}/`} lang={LOCALE_META[code].htmlLang}>{LOCALE_META[code].label}</a>
+            <a href={`/${code}/`} lang={LOCALE_META[code].htmlLang} dir={LOCALE_META[code].dir}>{LOCALE_META[code].label}</a>
           </>
         ))
       }

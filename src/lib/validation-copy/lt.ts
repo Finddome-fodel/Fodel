@@ -28,6 +28,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Mažiausiai ${chars(limit)}.`,
   consent: 'Norėdami tęsti, sutikite su privatumo pranešimu.',
   selfReferral: 'Negalite rekomenduoti savęs: nurodykite kitą el. pašto adresą.',
+  choose: "Pasirinkite iš sąrašo.",
+  contact: (kind, match) => (kind === 'email' ? `Tekste negali būti el. pašto adreso („${match}“). Pirkėjai su jumis susisiekia per FINDDOME.` : kind === 'phone' ? `Tekste negali būti telefono numerio („${match}“). Pirkėjai su jumis susisiekia per FINDDOME.` : `Tekste negali būti svetainės, socialinių tinklų ar pokalbių programėlės kontakto („${match}“).`),
   summary: (count) =>
     count === 1
       ? 'Reikia patikrinti vieną laukelį:'

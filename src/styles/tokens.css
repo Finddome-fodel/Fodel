@@ -73,8 +73,11 @@
      optical-size files are deliberately NOT used: at display sizes they
      switch DM Sans to its condensed display cut, which reads as a different
      typeface from the one FINDDOME has always set. */
-  --serif: 'DM Sans Variable', 'DM Sans Fallback', 'DM Sans', 'Helvetica Neue', sans-serif;
-  --sans: 'Jost Variable', 'Jost Fallback', 'Jost', 'Helvetica Neue', sans-serif;
+  /* Hebrew, Arabic and Cyrillic come from unicode-range faces in global.css
+     (DM Sans has no Cyrillic, so headings fall through to Jost's). Chinese
+     overrides both stacks on html:lang(zh). */
+  --serif: 'DM Sans Variable', 'Jost Variable', 'Noto Sans Hebrew Variable', 'Noto Sans Arabic Variable', 'DM Sans Fallback', 'DM Sans', 'Helvetica Neue', sans-serif;
+  --sans: 'Jost Variable', 'Noto Sans Hebrew Variable', 'Noto Sans Arabic Variable', 'Jost Fallback', 'Jost', 'Helvetica Neue', sans-serif;
 
   /* ── Type scale ──
      ADJUSTED AGAIN in 1.2. The prototype used 13–14px body and 9.5–10.5px

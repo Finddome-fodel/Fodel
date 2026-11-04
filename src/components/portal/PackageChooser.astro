@@ -1,0 +1,273 @@
+---
+/**
+ * The package chooser: Basic / Europe / World as three calm cards, a 1 / 3 / 6 month control, the price in euro with
+ * the forint figure small underneath, the languages of each package (flags, expander) and a "Finomhangolás" list to
+ * switch languages off (English and the original stay on).
+ *
+ * It is only form fields, so it sits inside a form that is saved as a whole:
+ *   radio   `package`                 basic | europe | world
+ *   radio   `months`                  one of the configured terms
+ *   hidden  `translation_excluded`    the languages switched off, comma separated
+ *
+ * Every price of the current value band is in the markup, one block per term; CSS (:has) shows the chosen term, so it
+ * reads right with JavaScript off. The script only follows what the owner does next: a different package or term,
+ * a property price typed in the following step (which can move the band), the switches. It never computes a price of
+ * its own: it looks the cents up in the table the server sent (the same `priceFor` data checkout uses). The root
+ * element keeps `data-cents` (the chosen package at the chosen term) and dispatches `pch:change` for the host page.
+ * The forint figure is information only, from the day's ECB rate.
+ */
+import Flag from '~/components/Flag.astro';
+import { CHOOSER_COPY, type ChooserModel, type ChooserLang } from '~/lib/portal/package-chooser';
+import { LOCALE_META } from '~/i18n/ui';
+
+interface Props {
+  model: ChooserModel;
+  lang: ChooserLang;
+  /** Languages already switched off. */
+  excluded?: string[];
+}
+const { model, lang, excluded = [] } = Astro.props as Props;
+const t = CHOOSER_COPY[lang];
+const { client } = model;
+const chosen = model.packages.find((pkg) => pkg.id === model.packageId)!;
+const cap = (text: string) => text.replace(/^./, (c) => c.toLocaleUpperCase(lang));
+const flagOf = (code: string) => (LOCALE_META as Record<string, { flag: string }>)[code]?.flag;
+const NEVER_OFF = ['en'];
+const switchable = (code: string) => code !== client.sourceLocale && !NEVER_OFF.includes(code);
+const off = new Set(excluded.filter((code) => chosen.languages.includes(code) && switchable(code)));
+// One rule per configured term: the block of the chosen term is the one shown.
+const termCss = model.durations
+  .map((n) => `.pch:has(input[name="months"][value="${n}"]:checked) [data-pch-price="${n}"] { display: block; }`)
+  .join('\n');
+const fallbackCss = model.durations.map((n) => `.pch[data-months="${n}"] [data-pch-price="${n}"] { display: block; }`).join('\n');
+---
+
+<div class="pch" data-pch data-months={model.months} data-package={model.packageId} data-cents={chosen.prices[model.months]?.cents ?? 0} data-config={JSON.stringify(client)} data-excluded={[...off].join(',')}>
+  <p class="pch-intro">{t.intro}</p>
+
+  <fieldset class="pch-terms">
+    <legend>{t.termLegend}</legend>
+    <div class="pch-seg" role="radiogroup">
+      {model.durations.map((n) => (
+        <label class="pch-seg-opt">
+          <input type="radio" name="months" value={n} checked={n === model.months} />
+          <span>{t.months(n)}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="pch-cards" role="radiogroup" aria-label={t.legend}>
+    {model.packages.map((pkg) => (
+      <div class="pch-col">
+        <label class="pch-card" data-recommended={pkg.recommended ? '' : undefined}>
+          <input type="radio" name="package" value={pkg.id} checked={pkg.id === model.packageId} />
+          <span class="pch-body">
+            <span class="pch-top">
+              <span class="pch-name">{pkg.name}</span>
+              {pkg.recommended && <span class="pch-badge">{t.recommended}</span>}
+            </span>
+            <span class="pch-prices">
+              {model.durations.map((n) => pkg.prices[n] && (
+                <span class="pch-price" data-pch-price={n} data-cents={pkg.prices[n].cents}>
+                  <strong class="pch-eur num" data-pch-eur>{pkg.prices[n].eur}</strong>
+                  <small class="pch-huf num" data-pch-huf>{pkg.prices[n].huf}</small>
+                </span>
+              ))}
+            </span>
+            <span class="pch-count">{t.languages(pkg.languages.length)}</span>
+          </span>
+        </label>
+        <details class="pch-langs">
+          <summary>{t.showLanguages}</summary>
+          <ul>
+            {pkg.languages.map((code) => (
+              <li>
+                {flagOf(code) && <Flag code={flagOf(code) as never} />}
+                <span>{cap(client.names[code] ?? code)}</span>
+                {code === client.sourceLocale && <em>{t.original}</em>}
+              </li>
+            ))}
+          </ul>
+        </details>
+      </div>
+    ))}
+  </div>
+
+  <p class="pch-band" data-pch-band>{model.bandText}</p>
+
+  <details class="pch-fine" data-pch-fine>
+    <summary>{t.fineTitle}</summary>
+    <p class="pch-note">{t.fineLead}</p>
+    <div class="pch-toggles" data-pch-toggles>
+      {chosen.languages.map((code) => {
+        const locked = !switchable(code);
+        const on = !off.has(code);
+        return (
+          <label class:list={['pch-toggle', { 'is-locked': locked }]} title={code === 'en' ? t.lockedTip : undefined}>
+            <input type="checkbox" data-pch-locale={code} checked={on || locked} disabled={locked} />
+            <span class="pch-switch" aria-hidden="true"></span>
+            <span class="pch-tname">{cap(client.names[code] ?? code)}</span>
+            {code === client.sourceLocale && <span class="pch-tag">{t.original}</span>}
+            {!on && !locked && <span class="pch-tag">{t.excludedBadge}</span>}
+          </label>
+        );
+      })}
+    </div>
+    <p class="pch-note">{t.priceUnchanged}</p>
+  </details>
+  <input type="hidden" name="translation_excluded" value={[...off].join(',')} data-pch-excluded />
+
+  <p class="pch-summary" role="status" aria-live="polite" data-pch-summary>
+    {t.summary(chosen.name, model.months)}
+  </p>
+  {model.footnote && <p class="pch-foot" data-pch-foot>{model.footnote}</p>}
+</div>
+
+<style is:inline set:html={`.pch-price { display: none; }\n${termCss}\n@supports not selector(:has(*)) {\n${fallbackCss}\n}`}></style>
+
+<script>
+  import { tierIndexFor, tierLabel } from '~/lib/listing-pricing';
+  import { eurPrice, huf as hufText } from '~/lib/format';
+  import { formatHufHint } from '~/lib/fx';
+
+  type Config = {
+    bounds: (number | null)[]; durations: number[]; prices: Record<string, Record<number, Record<number, number>>>; bandLabels: string[];
+    rate: number | null; lang: 'hu' | 'nl' | 'en'; sourceLocale: string; languages: Record<string, string[]>; names: Record<string, string>; packageNames: Record<string, string>;
+    copy: { summaries: Record<number, string>; lines: Record<number, string>; bandWithPrice: string; bandNoPrice: string; excluded: string; original: string; locked: string };
+  };
+  const esc = (value: string) => value.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  function setUp(root: HTMLElement) {
+    if (root.dataset.ready) return;
+    root.dataset.ready = '1';
+    const cfg = JSON.parse(root.dataset.config || '{}') as Config;
+    const tiers = cfg.bounds.map((upToHuf) => ({ upToHuf }));
+    const split = (value?: string) => (value ? value.split(',').filter(Boolean) : []);
+    const state = { packageId: root.dataset.package || '', months: Number(root.dataset.months) || cfg.durations[cfg.durations.length - 1], excluded: new Set(split(root.dataset.excluded)) };
+    const hidden = root.querySelector<HTMLInputElement>('[data-pch-excluded]')!;
+    const togglesBox = root.querySelector<HTMLElement>('[data-pch-toggles]')!;
+    const cap = (text: string) => text.replace(/^./, (c) => c.toLocaleUpperCase(cfg.lang));
+    const summaryEl = root.querySelector<HTMLElement>('[data-pch-summary]')!;
+    const bandEl = root.querySelector<HTMLElement>('[data-pch-band]')!;
+
+    function renderToggles() {
+      const list = cfg.languages[state.packageId] ?? [];
+      togglesBox.innerHTML = list.map((code) => {
+        const locked = code === cfg.sourceLocale || code === 'en';
+        const on = !state.excluded.has(code);
+        return `<label class="pch-toggle${locked ? ' is-locked' : ''}"${code === 'en' ? ` title="${esc(cfg.copy.locked)}"` : ''}>` +
+          `<input type="checkbox" data-pch-locale="${code}"${on || locked ? ' checked' : ''}${locked ? ' disabled' : ''}>` +
+          `<span class="pch-switch" aria-hidden="true"></span><span class="pch-tname">${esc(cap(cfg.names[code] ?? code))}</span>` +
+          (code === cfg.sourceLocale ? `<span class="pch-tag">${esc(cfg.copy.original)}</span>` : '') +
+          (!on && !locked ? `<span class="pch-tag">${esc(cfg.copy.excluded)}</span>` : '') + `</label>`;
+      }).join('');
+    }
+
+    /** Priced from the table the server sent, in the band of this property's forint price. */
+    function applyBand(huf: number) {
+      const tierIndex = tierIndexFor({ valueTiers: tiers }, huf > 0 ? huf : null);
+      root.querySelectorAll<HTMLElement>('[data-pch-price]').forEach((cell) => {
+        const pkg = cell.closest('.pch-col')?.querySelector<HTMLInputElement>('input[name="package"]')?.value ?? '';
+        const months = Number(cell.dataset.pchPrice);
+        const cents = cfg.prices[pkg]?.[tierIndex]?.[months];
+        if (typeof cents !== 'number') return;
+        cell.dataset.cents = String(cents);
+        const eur = cell.querySelector<HTMLElement>('[data-pch-eur]');
+        const hint = cell.querySelector<HTMLElement>('[data-pch-huf]');
+        if (eur) eur.textContent = eurPrice(cents, cfg.lang);
+        if (hint) hint.textContent = formatHufHint(cents, cfg.rate === null ? null : { rate: cfg.rate }, cfg.lang);
+      });
+      const band = tierLabel(tiers, tierIndex, cfg.lang, (n) => hufText(n, 'hu'));
+      bandEl.textContent = huf > 0 ? cfg.copy.bandWithPrice.replace('@BAND', band).replace('@PRICE', hufText(huf, 'hu')) : cfg.copy.bandNoPrice;
+      update();
+    }
+
+    function update() {
+      const column = [...root.querySelectorAll<HTMLElement>('.pch-col')].find((col) => col.querySelector<HTMLInputElement>('input[name="package"]')?.value === state.packageId);
+      const cents = Number(column?.querySelector<HTMLElement>(`[data-pch-price="${state.months}"]`)?.dataset.cents || 0);
+      root.dataset.cents = String(cents);
+      root.dataset.package = state.packageId;
+      root.dataset.months = String(state.months);
+      const list = cfg.languages[state.packageId] ?? [];
+      state.excluded.forEach((code) => { if (!list.includes(code) || code === 'en' || code === cfg.sourceLocale) state.excluded.delete(code); });
+      hidden.value = [...state.excluded].join(',');
+      root.dataset.label = (cfg.copy.lines[state.months] ?? '').replace('@NAME', cfg.packageNames[state.packageId] ?? state.packageId);
+      summaryEl.textContent = (cfg.copy.summaries[state.months] ?? '').replace('@NAME', cfg.packageNames[state.packageId] ?? state.packageId);
+      root.dispatchEvent(new CustomEvent('pch:change', { bubbles: true, detail: { packageId: state.packageId, months: state.months, cents, excluded: [...state.excluded] } }));
+    }
+
+    root.addEventListener('change', (event) => {
+      const el = event.target as HTMLInputElement;
+      if (el.name === 'package') { state.packageId = el.value; renderToggles(); update(); return; }
+      if (el.name === 'months') { state.months = Number(el.value); update(); return; }
+      if (el.dataset.pchLocale) {
+        el.checked ? state.excluded.delete(el.dataset.pchLocale) : state.excluded.add(el.dataset.pchLocale);
+        renderToggles(); update();
+      }
+    });
+    // The host page tells the chooser when the property price (and with it the value band) changed.
+    root.addEventListener('pch:price', (event) => applyBand(Number((event as CustomEvent).detail?.huf) || 0));
+    update();
+  }
+  document.querySelectorAll<HTMLElement>('[data-pch]').forEach(setUp);
+</script>
+
+<style is:global>
+  .pch { margin: 0 0 24px; }
+  .pch-legend { font-family: var(--serif); font-weight: var(--fw-medium); font-size: 20px; color: var(--ink); margin: 0 0 6px; }
+  .pch-intro { margin: 0 0 20px; max-width: 64ch; font-size: var(--fs-small); line-height: 1.6; color: var(--ink-quiet); }
+  .pch-terms { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
+  .pch-terms legend { padding: 0; margin: 0 0 8px; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-quiet); }
+  .pch-seg { display: inline-flex; max-width: 100%; padding: 4px; gap: 2px; border-radius: var(--r-pill); background: var(--linen); }
+  .pch-seg-opt { position: relative; display: block; cursor: pointer; }
+  .pch .pch-seg-opt > input, main.pm.pm .pch .pch-seg-opt > input, main.pm.pm .pch .pch-seg-opt > input:is(:checked, :hover, :focus-visible) { position: absolute; opacity: 0; width: 1px; height: 1px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; appearance: none; -webkit-appearance: none; pointer-events: none; }
+  main.pm.pm .pch .pch-seg-opt > input::after { content: none; }
+  .pch-seg-opt > span { display: grid; place-items: center; min-width: 88px; min-height: 40px; padding: 0 18px; border-radius: var(--r-pill); font-size: var(--fs-small); color: var(--ink); white-space: nowrap; transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out); }
+  @media (hover: hover) { .pch-seg-opt:hover > span { background: rgba(16, 42, 67, 0.07); } }
+  .pch-seg-opt:has(input:checked) > span { background: var(--ink); color: var(--cream); }
+  .pch-seg-opt:has(input:focus-visible) > span { outline: var(--focus-ring); outline-offset: 2px; }
+  .pch-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 12px; align-items: start; }
+  .pch-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .pch-card { position: relative; display: block; cursor: pointer; }
+  .pch .pch-card > input[type='radio'], main.pm.pm .pch .pch-card > input[type='radio'], main.pm.pm .pch .pch-card > input[type='radio']:is(:checked, :disabled, :hover, :focus-visible) { position: absolute; opacity: 0; width: 1px; height: 1px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; appearance: none; -webkit-appearance: none; pointer-events: none; }
+  main.pm.pm .pch .pch-card > input[type='radio']::after { content: none; }
+  .pch-body { display: flex; flex-direction: column; gap: 10px; padding: 20px 20px 18px; background: var(--white); border: 1px solid var(--pt-hair); border-radius: var(--r-lg); transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out); }
+  @media (hover: hover) { .pch-card:hover .pch-body { border-color: rgba(16, 42, 67, 0.34); } }
+  .pch-card:has(input:checked) .pch-body { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  .pch-card:has(input:focus-visible) .pch-body { outline: var(--focus-ring); outline-offset: 3px; }
+  .pch-top { min-height: 28px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 10px; }
+  .pch-name { font-family: var(--serif); font-weight: var(--fw-medium); font-size: 24px; color: var(--ink); line-height: 1.15; }
+  .pch-badge { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: var(--r-pill); background: var(--linen); color: var(--ink); white-space: nowrap; }
+  .pch-prices { display: block; min-height: 3.1em; }
+  .pch-price strong { display: block; font-family: var(--serif); font-weight: var(--fw-medium); font-size: 30px; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .pch-price small { display: block; margin-top: 2px; font-size: 13px; color: var(--ink-quiet); min-height: 1.3em; font-variant-numeric: tabular-nums; }
+  .pch-count { font-size: var(--fs-small); color: var(--ink-quiet); }
+  .pch-langs > summary { cursor: pointer; display: inline-block; padding: 6px 4px; font-size: 13px; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(16, 42, 67, 0.3); list-style: none; }
+  .pch-langs > summary::-webkit-details-marker { display: none; }
+  .pch-langs > summary:focus-visible, .pch-fine > summary:focus-visible { outline: var(--focus-ring); outline-offset: 3px; border-radius: 4px; }
+  .pch-langs ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+  .pch-langs li { display: flex; align-items: center; gap: 10px; min-height: 32px; font-size: 13px; color: var(--ink); }
+  .pch-langs li em { font-style: normal; font-size: 12px; color: var(--ink-quiet); }
+  .pch-band { margin: 16px 0 0; max-width: 64ch; font-size: var(--fs-small); line-height: 1.6; color: var(--ink-quiet); }
+  .pch-fine { margin-top: 12px; }
+  .pch-fine > summary { cursor: pointer; display: inline-block; padding: 8px 0; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(16, 42, 67, 0.3); list-style: none; }
+  .pch-fine > summary::-webkit-details-marker { display: none; }
+  .pch-note { margin: 0 0 12px; max-width: 64ch; font-size: 13px; line-height: 1.55; color: var(--ink-quiet); }
+  .pch-toggles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 4px 20px; margin: 4px 0 12px; }
+  .pch-toggle { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; cursor: pointer; }
+  .pch-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .pch-switch { flex: none; position: relative; width: 36px; height: 20px; border-radius: 10px; background: rgba(16, 42, 67, 0.2); transition: background-color 0.3s var(--ease-out); }
+  .pch-switch::after { content: ''; position: absolute; top: 2px; inset-inline-start: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--white); transition: transform 0.25s var(--ease-out); }
+  .pch-toggle:has(input:checked) .pch-switch { background: var(--ink); }
+  .pch-toggle:has(input:checked) .pch-switch::after { transform: translateX(16px); }
+  .pch-toggle:has(input:focus-visible) .pch-switch { outline: var(--focus-ring); outline-offset: 3px; }
+  .pch-toggle.is-locked { cursor: default; }
+  .pch-toggle.is-locked .pch-switch { opacity: 0.55; }
+  .pch-tname { font-size: var(--fs-small); color: var(--ink); }
+  .pch-tag { font-size: 12px; color: var(--ink-quiet); }
+  .pch-summary { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--pt-hair); font-family: var(--serif); font-size: 18px; color: var(--ink); }
+  .pch-foot { margin: 6px 0 0; max-width: 64ch; font-size: 12px; line-height: 1.5; color: var(--ink-quiet); }
+  @media (max-width: 760px) { .pch-toggles { grid-template-columns: 1fr; } .pch-seg { display: flex; width: 100%; } .pch-seg-opt { flex: 1; } .pch-seg-opt > span { min-width: 0; padding: 0 8px; } }
+  @media (prefers-reduced-motion: reduce) { .pch-body, .pch-seg-opt > span, .pch-switch, .pch-switch::after { transition: none; } }
+</style>

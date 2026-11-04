@@ -85,6 +85,27 @@ export const LV = {
     cta: 'Labot sludinājumu',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Esam pārskatījuši jūsu jaunās fotogrāfijas (#${ref})`,
+    preheader: 'Apstiprinātās fotogrāfijas jau ir redzamas jūsu sludinājumā.',
+    heading: 'Esam pārskatījuši jūsu jaunās fotogrāfijas',
+    body: (title: string, ref: string) =>
+      `Paldies, ka atjauninājāt sludinājuma “${title}” (#${ref}) fotogaleriju. Mūsu komanda ir pārskatījusi jaunās fotogrāfijas.`,
+    approvedLabel: 'Apstiprinātas, jau redzamas',
+    rejectedLabel: 'Nav publicētas',
+    reasonsTitle: 'Kāpēc dažas fotogrāfijas netika publicētas?',
+    reasons: {
+      quality: 'Izplūdis, tumšs vai nekvalitatīvs attēls',
+      unrelated: 'Neattēlo šo īpašumu',
+      personal: 'Redzami personas dati (sejas, numura zīmes, dokumenti)',
+      branding: 'Satur tekstu, logotipu, ūdenszīmi vai kontaktinformāciju',
+      duplicate: 'Tāds pats attēls jau ir galerijā',
+      inappropriate: 'Sludinājumam nepiemērots saturs',
+    } as Record<string, string>,
+    after: 'Jūs joprojām varat bez maksas pievienot jaunas fotogrāfijas. Katrs jauns attēls sludinājumā parādās pēc īsas pārbaudes.',
+    cta: 'Pārvaldīt fotogrāfijas',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Apstiprināts (#${ref}): atlicis tikai maksājums`,
     preheader: 'Jūsu sludinājums ir apstiprināts un tiks publicēts, tiklīdz saņemsim maksājumu.',

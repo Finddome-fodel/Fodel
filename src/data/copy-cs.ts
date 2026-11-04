@@ -22,13 +22,13 @@ export const CS = {
     meta: {
       title: 'FINDDOME Real Estates | Inzerujte svou nemovitost v Evropě',
       description:
-        'Nahrajte inzerát v několika krocích. Po online platbě se zobrazí ve 21 jazycích, bez smlouvy o výhradním zastoupení.',
+        'Nahrajte inzerát v několika krocích. Po online platbě se zobrazí ve 28 jazycích, bez smlouvy o výhradním zastoupení.',
     },
     hero: {
       eyebrow: `Od roku 2013 · ${foundedInLabel(L)}`,
       title: ['Inzerujte', 'svou nemovitost', 'v Evropě'],
       emphasis: 1,
-      body: 'Nahrajte inzerát v několika krocích. Zkontrolujeme jej a po online platbě se zobrazí na našem webu ve 21 jazycích, bez smlouvy o výhradním zastoupení. Zájemci vás kontaktují přímo, nebo přes nás.',
+      body: 'Nahrajte inzerát v několika krocích. Zkontrolujeme jej a po online platbě se zobrazí na našem webu ve 28 jazycích, bez smlouvy o výhradním zastoupení. Zájemci vás kontaktují přímo, nebo přes nás.',
       primary: 'Prohlédnout nemovitosti',
       secondary: 'Bezplatné vyhledání nemovitosti',
       featuredLabel: 'Doporučujeme',

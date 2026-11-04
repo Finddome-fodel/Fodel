@@ -31,7 +31,7 @@ Typography: see `src/lib/format.ts` (numbers, prices, areas, dates) and `src/lib
 | search request (free search service) | kerestetés | zoekopdracht / zoekdienst | property search request | Suchauftrag | recherche personnalisée | búsqueda de inmueble | poszukiwanie nieruchomości | căutare de proprietate | hľadanie nehnuteľnosti |
 | callback | visszahívás | terugbellen | callback | Rückruf | rappel | devolución de llamada | oddzwonienie | apel înapoi | spätné zavolanie |
 | price list / rates | árlista | tarieven | prices | Preise | tarifs | tarifas | cennik | tarife | cenník |
-| asking price | irányár | vraagprijs | asking price | Angebotspreis | prix demandé | precio de venta | cena ofertowa | preț cerut | požadovaná cena |
+| asking price (the HU UI label is plain „Ár” since Nov 2026; „irányár” still appears in older listing texts) | ár / irányár | vraagprijs | asking price | Angebotspreis | prix demandé | precio de venta | cena ofertowa | preț cerut | požadovaná cena |
 | plot / land | telek | perceel | plot | Grundstück | terrain | terreno / parcela | działka | teren / parcelă | pozemok |
 | living area | alapterület | woonoppervlak | floor area | Wohnfläche | surface habitable | superficie habitable | powierzchnia użytkowa | suprafață utilă | úžitková plocha |
 | farm (tanya) | tanya | boerderij | farmstead | Hof | ferme (tanya) | finca (tanya) | gospodarstwo (tanya) | fermă (tanya) | farma (tanya) |

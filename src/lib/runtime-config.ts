@@ -9,7 +9,7 @@
  * blip must not turn every public page into a 500.
  */
 import { COMPANY } from '~/config/company';
-import { CATEGORY_FALLBACK, LOCALES, type Locale } from '~/i18n/ui';
+import { CATEGORY_FALLBACK, LATER_LOCALES, LOCALES, type Locale } from '~/i18n/ui';
 import { FEATURES, COUNTIES } from '~/data/features';
 import { overlayLabels } from '~/data/taxonomy-i18n';
 import { getSupabase } from '~/lib/supabase';
@@ -74,7 +74,9 @@ export type Services = {
   ownerRefresh?: Partial<ListingRules['ownerRefresh']>;
   /** Listing package content and prices, and the extras' prices — see src/lib/listing-packages.ts. */
   listingPackages?: Partial<Record<'cheap-6m' | 'normal-12m', StoredListingPackage>>;
-  listingExtras?: Partial<Record<string, { priceEur?: number }>>;
+  listingExtras?: Partial<Record<string, { priceEur?: number; tiers?: unknown }>>;
+  /** HUF→EUR rounding of converted listing prices (Csomagok → Kerekítés); see roundEur() in src/lib/exchange-rates.ts. */
+  priceRounding?: { step?: number };
 };
 
 export type StoredValuationPackage = {
@@ -279,7 +281,9 @@ export function categoryBySlug(taxonomy: Taxonomy, locale: Locale, slug: string)
  * same in every language anyway.
  */
 export function termLabel(term: TaxonomyTerm | undefined, locale: Locale): string {
-  return term?.labels[locale] ?? term?.labels.nl ?? term?.labels.hu ?? term?.key ?? '';
+  // The seven later languages (sr, uk, tr, he, ar, ru, zh) read English first, like the rest of their fallback text.
+  const english = LATER_LOCALES.includes(locale) ? term?.labels.en : undefined;
+  return term?.labels[locale] ?? english ?? term?.labels.nl ?? term?.labels.hu ?? term?.key ?? '';
 }
 
 /** Add new brief vocabulary without replacing admin edits or disabling old URLs. */
@@ -299,7 +303,7 @@ function completeListingTaxonomy(taxonomy: Taxonomy): Taxonomy {
       } else taxonomy[group].push({groupKey:group,key:term.key,labels:term.labels as TaxonomyTerm['labels'],slugs:{},enabled:true,sortOrder:100,propertyGroups:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.propertyGroups:undefined,subtypeKeys:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.subtypeKeys:undefined,sectionKey:group==='feature'?FEATURE_DEFINITIONS.find(f=>f.key===term.key)?.section:undefined});
     }
   }
-  for (const g of PROPERTY_GROUPS) if(!taxonomy.category.some(t=>t.key===g.key)) taxonomy.category.push({groupKey:'category',key:g.key,labels:g.labels as TaxonomyTerm['labels'],slugs:Object.keys(g.slugs).length?g.slugs:{hu:g.key,nl:g.key,en:g.key,de:g.key,fr:g.key,es:g.key,pl:g.key,ro:g.key,sk:g.key,it:g.key,pt:g.key,el:g.key,cs:g.key,sl:g.key,sv:g.key,da:g.key,no:g.key,fi:g.key,et:g.key,lv:g.key,lt:g.key},schemaType:'Place',enabled:true,sortOrder:100});
+  for (const g of PROPERTY_GROUPS) if(!taxonomy.category.some(t=>t.key===g.key)) taxonomy.category.push({groupKey:'category',key:g.key,labels:g.labels as TaxonomyTerm['labels'],slugs:Object.keys(g.slugs).length?g.slugs:{hu:g.key,nl:g.key,en:g.key,de:g.key,fr:g.key,es:g.key,pl:g.key,ro:g.key,sk:g.key,it:g.key,pt:g.key,el:g.key,cs:g.key,sl:g.key,sv:g.key,da:g.key,no:g.key,fi:g.key,et:g.key,lv:g.key,lt:g.key, sr: g.key, uk: g.key, tr: g.key, he: g.key, ar: g.key, ru: g.key, zh: g.key},schemaType:'Place',enabled:true,sortOrder:100});
   return taxonomy;
 }
 

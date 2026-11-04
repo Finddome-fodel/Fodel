@@ -22,7 +22,7 @@
 import type { APIRoute } from 'astro';
 import { isStripeEnabled, getStripe } from '~/lib/stripe';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
-import { publishProperty, listingTitle, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
+import { publishProperty, listingTitle, renewProperty, isRenewalOrder, renewalMonthsOf } from '~/lib/portal/publish';
 import { deliver, localeOf, templates } from '~/lib/email/send';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { intlTag } from '~/lib/format';
@@ -30,7 +30,7 @@ import { localeFrom } from '~/i18n/ui';
 import { officeInbox } from '~/lib/email/routing';
 import { SITE_URL } from '~/config/site.mjs';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
-import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
+import { applyPaidEntitlement, enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 import { logEvent } from '~/lib/activity';
 
 export const prerender = false;
@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request }) => {
       // the renewal is logged under the order's own key, checked first.
       const { data: done } = await admin.from('activity_events').select('id').eq('dedupe_key', `order-${order.id}:renewed`).maybeSingle();
       if (done) return new Response(null, { status: 200 });
-      const renewed = await renewProperty(admin, order.property_id, { months: 6, source: 'stripe-webhook', dedupeKey: `order-${order.id}`, notifyOwner: !alreadySettled });
+      const renewed = await renewProperty(admin, order.property_id, { months: renewalMonthsOf(order.line_items as OrderLine[]), source: 'stripe-webhook', dedupeKey: `order-${order.id}`, notifyOwner: !alreadySettled });
       if (!renewed.ok && renewed.error !== 'not-renewable') {
         console.error(`[stripe] renewal paid but not applied for ${order.property_id}`, renewed.error);
         return new Response('renewal failed', { status: 500 });
@@ -157,7 +157,9 @@ export const POST: APIRoute = async ({ request }) => {
     // Whether the listing is online now: it was, or this payment just put it there.
     let live = property?.status === 'published';
     if (property?.status === 'awaiting_payment') {
-      const result = await publishProperty(admin, order.property_id, { dedupeKey: event.id });
+      // What was bought is the listing's before it goes live, so a language the buyer switched off is never made first.
+      await applyPaidEntitlement(admin, order);
+      const result = await publishProperty(admin, order.property_id, { dedupeKey: event.id, kickOrigin: new URL(request.url).origin });
       if (!result.ok) {
         // The money is in and recorded; publication failed. A 500 makes
         // Stripe retry, and the retry skips straight to this publish.

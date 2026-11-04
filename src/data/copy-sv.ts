@@ -22,13 +22,13 @@ export const SV = {
     meta: {
       title: 'FINDDOME Real Estates | Annonsera din fastighet i Europa',
       description:
-        'Ladda upp din annons i några steg. Efter onlinebetalning publiceras den på 21 språk, utan exklusivitetsavtal.',
+        'Ladda upp din annons i några steg. Efter onlinebetalning publiceras den på 28 språk, utan exklusivitetsavtal.',
     },
     hero: {
       eyebrow: `Sedan 2013 · ${foundedInLabel(L)}`,
       title: ['Annonsera', 'din fastighet', 'i Europa'],
       emphasis: 1,
-      body: 'Ladda upp din annons i några steg. Vi granskar den, och efter onlinebetalning publiceras den på vår webbplats på 21 språk, utan exklusivitetsavtal. Intressenter kontaktar dig direkt eller via oss.',
+      body: 'Ladda upp din annons i några steg. Vi granskar den, och efter onlinebetalning publiceras den på vår webbplats på 28 språk, utan exklusivitetsavtal. Intressenter kontaktar dig direkt eller via oss.',
       primary: 'Bläddra bland objekt',
       secondary: 'Kostnadsfri objektsökning',
       featuredLabel: 'Utvalda',

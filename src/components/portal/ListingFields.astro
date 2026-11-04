@@ -1,11 +1,14 @@
 ---
 import Field from '~/components/forms/Field.astro';
-import { PROPERTY_GROUPS, groupOf, subtypeOf, labelIn, FEATURE_ALIASES, DETAIL_OPTIONS, FEATURE_DEFINITIONS, RETIRED_FEATURES, currentFeatures, readEnergy } from '~/lib/listing-catalogue';
-import { COUNTRIES, regionsFor, regionLabel } from '~/config/countries';
+import { formatAmount } from '~/lib/portal/num';
+import { PROPERTY_GROUPS, groupOf, subtypeOf, labelIn, livingAreaKind, FEATURE_ALIASES, DETAIL_OPTIONS, FEATURE_DEFINITIONS, RETIRED_FEATURES, currentFeatures, readEnergy } from '~/lib/listing-catalogue';
+import { COUNTRIES, regionLabel } from '~/config/countries';
+import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
 import { PRICE_CURRENCIES } from '~/lib/exchange-rates';
 import { readDetails, SETTINGS, UTILITIES, PARKING, detailLabel, fieldRules, parkingFits, HEATING_EXCLUSIVE, WALL_EXCLUSIVE, HEATING_RETIRED, WALL_RETIRED, type ListingField } from '~/lib/listing-details';
 import { UI } from '~/i18n/ui';
-import { termLabel, type Taxonomy } from '~/lib/runtime-config';
+import { termLabel, getCompany, type Taxonomy } from '~/lib/runtime-config';
+import { readPriceRounding } from '~/lib/exchange-rates';
 import type { PortalProperty } from '~/lib/portal/properties';
 import type { PortalLang } from '~/lib/portal/auth-copy';
 // Static on purpose: build.inlineStylesheets is 'always', so a dynamic import of this
@@ -14,6 +17,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 interface Props { property: PortalProperty; taxonomy: Taxonomy; locale?: PortalLang; section?: 'classification'|'location'|'details'|'features'|'all' }
 const {property:p,taxonomy,locale='hu',section='all'}=Astro.props;
 const x=(hu:string,nl:string,en:string)=>locale==='hu'?hu:locale==='nl'?nl:en;
+// The client preview rounds a converted price exactly as the server will store it (Csomagok → Kerekítés).
+const rounding=readPriceRounding((await getCompany()).services.priceRounding);
 // A new draft is stored with the country's middle as a stand-in point (the columns cannot be empty). Until
 // somebody places the pin, show the coordinate fields empty rather than as if they had been filled in.
 const placed=Boolean(p.location_confirmed)||(Boolean(p.settlement)&&!(p.lat===47.1625&&p.lng===19.5033));
@@ -24,11 +29,25 @@ const number=(v:number|null|undefined)=>v!=null&&v>0?String(v):'';
 const area=(v:number|null|undefined)=>v!=null&&v>1?String(v):'';
 // Every dropdown starts on the same prompt (client request, November 2026).
 const choose=x('Válasszon!','Maak een keuze','Please select');
+// County: canonical spelling for list countries; an old value that matches nothing stays selectable (so a
+// partial save never loses it) but is flagged, and the server refuses it on submit.
+const countyList=hasCountyList(p.country);
+const countyValue=countyList?(canonicalCounty(p.country,p.county)??''):'';
+const countyStray=countyList&&!countyValue&&Boolean(String(p.county||'').trim())?String(p.county).trim():'';
 const options=(g:'condition',blank=choose)=>[{value:'',label:blank},...taxonomy[g].filter(t=>t.enabled || t.key===p[`${g}_key`]).map(t=>({value:t.key,label:labelIn(DETAIL_OPTIONS[g].find(v=>v.key===t.key)?.labels||t.labels,locale)}))];
 const d=readDetails(p.details,p);
 // Which facts this kind of property has, and which of them are required (src/lib/listing-details.ts).
 // The client script applies the same rules again when the type changes in the form.
 const rules=fieldRules(group,subtype);
+// The living-area column (Q15): the home's net usable area, "if there is a home" on a farm business, or a building's net
+// usable area. The wording follows the type; the script (listing-fields.ts) switches it when the type changes.
+const subtypeHints:Record<string,string>=Object.fromEntries(PROPERTY_GROUPS.flatMap(g=>g.subtypes).filter((t:any)=>t.hint).map((t:any)=>[t.key,t.hint[locale]||t.hint.en||'']));
+const areaKind=livingAreaKind(group,subtype);
+const areaCopy={
+  living:{label:x('Lakóterület (nettó hasznos alapterület, m²)','Woonoppervlakte (netto gebruiksoppervlakte, m²)','Living area (net usable area, m²)'),hint:x('A lakóépület tényleges nettó hasznos alapterülete.','De daadwerkelijke netto gebruiksoppervlakte van de woning.','The actual net usable floor area of the home.')},
+  'optional-home':{label:x('Lakóterület (nettó hasznos alapterület, m²)','Woonoppervlakte (netto gebruiksoppervlakte, m²)','Living area (net usable area, m²)'),hint:x('Ha van lakóépület: annak tényleges nettó hasznos alapterülete.','Als er een woning is: de daadwerkelijke netto gebruiksoppervlakte ervan.','If there is a home: its actual net usable floor area.')},
+  net:{label:x('Nettó hasznos alapterület (m²)','Netto gebruiksoppervlakte (m²)','Net usable area (m²)'),hint:x('Az épület tényleges nettó hasznos alapterülete.','De daadwerkelijke netto gebruiksoppervlakte van het gebouw.','The actual net usable floor area of the building.')},
+};
 const hide=(k:ListingField)=>rules[k]==='hidden';
 const req=(k:ListingField)=>rules[k]==='required';
 const words={required:`(${UI[locale].form.required})`,optional:`(${UI[locale].form.optional})`};
@@ -47,7 +66,7 @@ const featureTerms=taxonomy.feature.filter(t=>(t.enabled||selected.has(t.key))&&
 const featureSections=[...new Set(featureTerms.map(t=>t.sectionKey||'other'))];
 const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin en omgeving','Garden and surroundings'),water:x('Vízparti adottságok','Voorzieningen aan het water','Waterfront features'),terrain:group==='agricultural'?x('A terület jellege','Kenmerken van het terrein','Land characteristics'):x('A telek jellege','Kenmerken van het perceel','Plot characteristics'),facilities:x('Épületek és létesítmények','Gebouwen en voorzieningen','Buildings and facilities'),technical:x('Műszaki adottságok','Technische voorzieningen','Technical features'),heritage:x('Történelmi értékek','Historisch karakter','Historic features'),access:x('Megközelítés és közművek','Bereikbaarheid en nutsvoorzieningen','Access and utilities'),investment:x('Befektetési jellemzők','Beleggingskenmerken','Investment features'),other:x('További jellemzők','Overige kenmerken','Other features')};
 ---
-<div class="listing-fields" data-listing-fields data-section={section} data-lang={locale} data-group={group} data-subtype={subtype} data-initial-price-huf={p.price_huf} data-word-required={words.required} data-word-optional={words.optional} data-choose={choose}>
+<div class="listing-fields" data-listing-fields data-section={section} data-lang={locale} data-group={group} data-subtype={subtype} data-initial-price-huf={p.price_huf} data-rounding={rounding.step} data-word-required={words.required} data-word-optional={words.optional} data-choose={choose}>
 {on('classification') && <section class="lf-section" id="basics">
   <header class="lf-heading"><span class="lf-number">01</span><div><h2>{x('Az ingatlan típusa','Het type vastgoed','Property type')}</h2><p>{x('Először fő kategóriát, majd azon belül altípust válasszon.','Kies eerst een hoofdcategorie en daarna het bijbehorende subtype.','Choose a category, then the subtype that describes your property.')}</p></div></header>
   <div class="lf-grid">
@@ -59,7 +78,18 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   <header class="lf-heading"><span class="lf-number">02</span><div><h2>{x('Elhelyezkedés','Locatie','Location')}</h2><p>{x('Cím nélküli ingatlant is megadhat: keressen helyet, kattintson a térképre, vagy írja be a koordinátákat.','Ook zonder adres: zoek een plaats, klik op de kaart of voer de coördinaten in.','No street address needed: search for a place, drop a pin, or enter coordinates.')}</p></div></header>
   <div class="lf-grid">
     <Field span="half" locale={locale} name="country" label={x('Ország','Land','Country')} type="select" required value={p.country} options={Object.keys(COUNTRIES).sort((a,b)=>COUNTRIES[a].labels[locale].localeCompare(COUNTRIES[b].labels[locale],locale)).map(c=>({value:c,label:COUNTRIES[c].labels[locale]}))}/>
-    <div class="field fld"><label for="f-county" data-region-label>{regionLabel(p.country,locale)}</label><input id="f-county" name="county" list="listing-regions" value={p.county} autocomplete="address-level1"/><datalist id="listing-regions">{regionsFor(p.country).map(r=><option value={r.name}/>)}</datalist><p class="hint">{x('Kereshető lista; ha szükséges, saját értéket is megadhat.','Doorzoekbare lijst; een eigen waarde is ook mogelijk.','Search the list, or enter the appropriate administrative area.')}</p></div>
+    {/* A real <select> wherever the country has a fixed list (Hungary: 19 counties + Budapest). The datalist it replaces showed nothing on click in Firefox and Safari, and only the current value in Chrome. Exactly one of the two controls carries name="county". */}
+    <div class="field fld" data-county-field>
+      <label for={countyList ? 'f-county' : 'f-county-text'}><span data-region-label>{regionLabel(p.country,locale)}</span> <span class="req" data-county-req data-required={words.required} data-optional={words.optional}>{countyList ? words.required : words.optional}</span></label>
+      <select id="f-county" name={countyList ? 'county' : undefined} hidden={!countyList} disabled={!countyList} autocomplete="off" data-county-select>
+        <option value="">{choose}</option>
+        {countyStray && <option value={countyStray} selected data-stray>{countyStray}</option>}
+        {countyOptions(countyList ? p.country : 'HU', locale).map(name=><option value={name} selected={name===countyValue}>{name}</option>)}
+      </select>
+      <input id="f-county-text" name={countyList ? undefined : 'county'} hidden={countyList} disabled={countyList} value={countyList ? '' : p.county} maxlength="120" autocomplete="off" data-county-text/>
+      <p class="hint" data-county-hint data-hint-list={x('Válassza ki a megyét (Budapest külön szerepel).','Kies de provincie (Boedapest staat apart).','Choose the county (Budapest is listed separately).')} data-hint-free={x('Írja be a közigazgatási egységet.','Vul de bestuurlijke regio in.','Enter the administrative area.')}>{countyList ? x('Válassza ki a megyét (Budapest külön szerepel).','Kies de provincie (Boedapest staat apart).','Choose the county (Budapest is listed separately).') : x('Írja be a közigazgatási egységet.','Vul de bestuurlijke regio in.','Enter the administrative area.')}</p>
+      <p class="hint warn" data-county-mismatch hidden={!countyStray}>{x('A megye nem egyezett a listával, kérjük, válassza ki.','De provincie kwam niet overeen met de lijst; kies er een.','The county did not match the list; please choose it.')}</p>
+    </div>
     <div class="field fld"><label for="f-settlement">{x('Település / hely megnevezése','Plaats / locatie','Town / locality')}</label><input id="f-settlement" name="settlement" list="listing-settlements" value={p.settlement} autocomplete="address-level2" maxlength="120"/><datalist id="listing-settlements"/><p class="hint">{x('Külterületnél a birtok vagy a közeli település neve is megadható.','Buiten de bebouwde kom kunt u de naam van het landgoed of een nabijgelegen plaats gebruiken.','For rural land, use the estate name or a nearby settlement.')}</p></div>
     <Field span="half" locale={locale} name="region" label={x('További területi egység','Aanvullende regio','Additional administrative area')} value={p.region} hint={x('Csak ha a helyszínhez értelmezhető.','Alleen indien van toepassing.','Only where applicable.')}/>
   </div>
@@ -76,6 +106,7 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   <div class="lf-map" data-location-map role="region" aria-label={x('Az ingatlan helyének megjelölése','Locatie van het vastgoed kiezen','Choose the property location')}><span data-map-loading>{x('Térkép betöltése…','Kaart laden…','Loading map…')}</span></div>
   <p class="lf-status" role="status" data-location-status></p>
   <div class="lf-grid lf-coordinates">
+    <p class="hint lf-subtype-hint" data-subtype-hint data-hints={JSON.stringify(subtypeHints)} hidden={!subtypeHints[subtype]}>{subtypeHints[subtype]||''}</p>
     <Field span="half" locale={locale} name="lat" required label={x('Szélesség','Breedtegraad','Latitude')} type="coordinate" value={placed ? String(p.lat) : ''} min={-90} max={90}/>
     <Field span="half" locale={locale} name="lng" required label={x('Hosszúság','Lengtegraad','Longitude')} type="coordinate" value={placed ? String(p.lng) : ''} min={-180} max={180}/>
   </div>
@@ -85,7 +116,7 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
 {on('details') && <section class="lf-section" id="details">
   <header class="lf-heading"><span class="lf-number">03</span><div><h2>{x('Ár és részletek','Prijs en gegevens','Price and details')}</h2><p>{x('Csak az ingatlan típusához illő adatokat kérdezzük. A kötelező mezőket a beküldés előtt kell kitölteni; a többit nyugodtan hagyja üresen, ha nem tudja.','We vragen alleen wat bij dit type vastgoed past. Verplichte velden vult u in vóór het indienen; de rest mag leeg blijven als u het niet weet.','We only ask what fits this kind of property. Required fields must be filled in before you submit; leave the rest blank if you do not know.')}</p></div></header>
   <div class="lf-price">
-    <div class="lf-grid"><Field span="half" locale={locale} name="original_price" label={x('Irányár','Vraagprijs','Asking price')} type="number" required min={0.01} value={number(p.original_price ?? (p.price_huf>1?p.price_huf:null))}/><Field span="half" locale={locale} name="original_currency" required label={x('Pénznem','Valuta','Currency')} type="select" value={p.original_currency||'HUF'} options={PRICE_CURRENCIES.map(c=>({value:c,label:c}))}/></div>
+    <div class="lf-grid"><Field span="half" locale={locale} name="original_price" label={x('Ár','Prijs','Price')} type="number" required min={0.01} value={formatAmount(p.original_price ?? (p.price_huf>1?p.price_huf:null),locale)}/><Field span="half" locale={locale} name="original_currency" required label={x('Pénznem','Valuta','Currency')} type="select" value={p.original_currency||'HUF'} options={PRICE_CURRENCIES.map(c=>({value:c,label:c}))}/></div>
     <output class="lf-conversion" data-price-conversion aria-live="polite">{p.price_eur>1 ? `≈ € ${p.price_eur.toLocaleString(locale)}` : x('Az euróban megjelenő árat automatikusan kiszámítjuk.','De prijs in euro wordt automatisch berekend.','The euro display price is calculated automatically.')}</output>
     <p class="hint" data-rate-note>{p.exchange_source && p.exchange_rate ? `${p.exchange_source} · ${p.price_asof} · 1 EUR = ${p.exchange_rate} ${p.original_currency}` : x('Az árfolyam forrását és dátumát automatikusan rögzítjük.','Bron en datum van de wisselkoers worden automatisch vastgelegd.','The exchange-rate source and date are recorded automatically.')}</p>
   </div>
@@ -94,8 +125,8 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   <div class="lf-block" data-field-block hidden={(['floor_m2','building_m2','plot_m2'] as ListingField[]).every(hide)}>
     <h3 class="lf-sub">{x('Területek','Oppervlakten','Areas')}</h3>
     <div class="lf-grid">
-      <div class="lf-area" data-field="floor_m2" hidden={hide('floor_m2')}><Field span="half" locale={locale} name="floor_m2" softRequired={req('floor_m2')} label={x('Lakóegység területe (m²)','Woonoppervlakte (m²)','Living area (m²)')} type="number" value={area(p.floor_m2)} min={0.000001} hint={x('A lakótér hasznos alapterülete.','De bruikbare woonoppervlakte.','The usable floor area of the home.')}/><input type="hidden" name="floor_m2_unit" value="m2"/></div>
-      <div class="lf-area" data-field="building_m2" hidden={hide('building_m2')}><Field span="half" locale={locale} name="building_m2" softRequired={req('building_m2')} label={x('Teljes épületterület (m²)','Totale gebouwoppervlakte (m²)','Total building area (m²)')} type="number" value={area(p.building_m2)} min={0.000001} hint={x('Az összes épület együtt, a melléképületekkel, gazdasági épületekkel, istállókkal, műhelyekkel és raktárakkal.','Alle gebouwen samen, inclusief bijgebouwen, agrarische gebouwen, stallen, werkplaatsen en opslagruimten.','All buildings together, including outbuildings, farm buildings, stables, workshops and warehouses.')}/><input type="hidden" name="building_m2_unit" value="m2"/></div>
+      <div class="lf-area" data-field="floor_m2" hidden={hide('floor_m2')} data-area-copy={JSON.stringify(areaCopy)}><Field span="half" locale={locale} name="floor_m2" softRequired={req('floor_m2')} label={areaCopy[areaKind].label} type="number" value={area(p.floor_m2)} min={0.000001} hint={areaCopy[areaKind].hint}/><input type="hidden" name="floor_m2_unit" value="m2"/></div>
+      <div class="lf-area" data-field="building_m2" hidden={hide('building_m2')}><Field span="half" locale={locale} name="building_m2" softRequired={req('building_m2')} label={x('Teljes épületterület (m²)','Totale gebouwoppervlakte (m²)','Total building area (m²)')} type="number" value={area(p.building_m2)} min={0.000001} hint={x('Opcionális. A lakóépületen felüli egyéb épületek és építmények összesített területe, például garázsok, ólak, istállók, műhelyek és egyéb gazdasági vagy melléképületek.','Optioneel. De samengevoegde oppervlakte van de overige gebouwen en bouwwerken naast de woning, zoals garages, stallen, werkplaatsen en overige bedrijfs- of bijgebouwen.','Optional. The combined area of the other buildings and structures besides the home, for example garages, sheds, stables, workshops and other farm or outbuildings.')}/><input type="hidden" name="building_m2_unit" value="m2"/></div>
       <div class="lf-area lf-area-unit" data-field="plot_m2" hidden={hide('plot_m2')}><Field span="half" locale={locale} name="plot_m2" softRequired={req('plot_m2')} label={x('Telekterület','Perceeloppervlakte','Plot area')} type="number" value={area(p.plot_m2)} min={0.000001} /><label class="lf-unit"><span class="sr-only">{x('Mértékegység','Eenheid','Unit')}</span><select name="plot_m2_unit" aria-label={x('A telekterület mértékegysége','Eenheid van de perceeloppervlakte','Plot area unit')} data-area-unit="plot_m2"><option value="m2">m²</option><option value="ha">ha</option></select></label><small data-area-equivalent></small><p class="lf-hint">{x('Négyzetméterben vagy hektárban; a másikat automatikusan kiszámítjuk.','In vierkante meters of hectare; de andere eenheid rekenen we uit.','In square metres or hectares; we work out the other unit.')}</p></div>
     </div>
   </div>
@@ -189,6 +220,8 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   .lf-number { display:grid;place-items:center;flex-shrink:0;width:34px;height:34px;border:1px solid var(--pt-hair,var(--border));border-radius:50%;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-quiet); }
   .lf-heading h2 { font-family:var(--serif);font-size:24px;font-weight:var(--fw-medium);letter-spacing:-.025em;line-height:1.2;color:var(--ink); }
   .lf-heading p { margin:7px 0 0;font-size:14px;line-height:1.65;color:var(--ink-quiet);max-width:66ch; }
+  .lf-subtype-hint { grid-column:1/-1;margin:-10px 0 0;font-size:var(--fs-small);color:var(--ink-quiet); }
+  .lf-subtype-hint[hidden] { display:none; }
   .lf-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 20px; }
   .lf-grid>* { min-width:0; }
   /* Paired fields line up even when only one of them has a hint: the hint takes up the slack, so both inputs sit on the same line. */

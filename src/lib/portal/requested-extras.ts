@@ -11,15 +11,26 @@
  * is ever read from here — prices come from the catalogue in company.ts.
  */
 import { isOnsiteServiceId, TRANSLATION_LANGUAGES, type OnsiteServiceId } from '~/config/company';
+import { ALL_LOCALES } from '~/lib/ai/translate-core';
 
 export type RequestedExtras = {
   source?: 'submit_form' | 'listing_editor';
   /** ISO timestamp of the request. */
   at?: string;
   package?: string;
+  /** Basic, Europe, World: how many months the owner chose (one of the configured durations; the server checks). */
+  months?: number;
   /** Language codes the owner wants FODEL to translate into (nl, de, en, fr). */
   translations?: string[];
+  /** The translation package the owner chose: basic, europe or world. Basic is free and automatic. */
+  translationPackage?: string;
+  /** Languages the owner switched off. Never English, whatever is sent. */
+  excludedLocales?: string[];
   categoryHighlight?: boolean;
+  /**
+   * @deprecated The homepage highlight is no longer sold (§4a, migration 0048 removes the key).
+   * Still read from older rows so nothing breaks; never written, never priced.
+   */
   homepageHighlight?: boolean;
   topicHighlight?: boolean;
   /** Wants a Dutch-speaking agent; the price is always agreed personally, so none is stored. */
@@ -28,7 +39,21 @@ export type RequestedExtras = {
   service?: OnsiteServiceId | null;
 };
 
-const LANGS: readonly string[] = TRANSLATION_LANGUAGES;
+// Only languages the site really has: a language added to the list ahead of the site is not a wish anyone can make yet.
+const LANGS: readonly string[] = TRANSLATION_LANGUAGES.filter((code) => ALL_LOCALES.includes(code));
+const PACKAGES: readonly string[] = ['basic', 'europe', 'world'];
+/** Every package id a listing can carry: the three sold today and the two older ones. */
+const PACKAGE_IDS: readonly string[] = [...PACKAGES, 'cheap-6m', 'normal-12m'];
+const monthsOf = (value: unknown): number | undefined => {
+  const n = typeof value === 'number' ? value : typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN;
+  return Number.isInteger(n) && n >= 1 && n <= 24 ? n : undefined;
+};
+
+/** A list of language codes from a form value or a stored array: known ones only, no repeats, and never English. */
+const excludable = (value: unknown): string[] =>
+  (Array.isArray(value) ? value : typeof value === 'string' ? value.split(/[\s,]+/) : [])
+    .map((code) => String(code).trim().toLowerCase())
+    .filter((code, index, all) => code !== 'en' && LANGS.includes(code) && all.indexOf(code) === index);
 
 /**
  * From the submit form's posted values. Everything is whitelisted: unknown
@@ -43,10 +68,13 @@ export function extrasFromForm(values: Record<string, string>): RequestedExtras 
   return {
     source: 'submit_form',
     at: new Date().toISOString(),
-    package: values.package === 'normal-12m' || values.package === 'cheap-6m' ? values.package : undefined,
+    package: PACKAGE_IDS.includes(values.package) ? values.package : undefined,
+    months: monthsOf(values.months),
     translations,
+    translationPackage: PACKAGES.includes(values.translation_package) ? values.translation_package : undefined,
+    excludedLocales: excludable(values.translation_excluded),
+    // 'both' from a form cached before the homepage highlight was retired still means the category one.
     categoryHighlight: highlight === 'category' || highlight === 'both',
-    homepageHighlight: highlight === 'homepage' || highlight === 'both',
     video: values.video === 'yes',
     service: isOnsiteServiceId(values.service) ? values.service : null,
   };
@@ -60,9 +88,11 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
     source: raw.source === 'listing_editor' ? 'listing_editor' : raw.source === 'submit_form' ? 'submit_form' : undefined,
     at: typeof raw.at === 'string' ? raw.at : undefined,
     package: typeof raw.package === 'string' ? raw.package : undefined,
+    months: monthsOf(raw.months),
     translations: Array.isArray(raw.translations) ? raw.translations.filter((code): code is string => typeof code === 'string' && LANGS.includes(code)) : [],
+    translationPackage: typeof raw.translationPackage === 'string' && PACKAGES.includes(raw.translationPackage) ? raw.translationPackage : undefined,
+    excludedLocales: excludable(raw.excludedLocales),
     categoryHighlight: raw.categoryHighlight === true,
-    homepageHighlight: raw.homepageHighlight === true,
     topicHighlight: raw.topicHighlight === true,
     dutchAgent: raw.dutchAgent === true,
     video: raw.video === true,
@@ -73,17 +103,20 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
 /** True when the owner asked for anything beyond the package. */
 export function hasRequests(extras: RequestedExtras): boolean {
   return Boolean(
-    (extras.translations?.length ?? 0) > 0 || extras.categoryHighlight || extras.homepageHighlight || extras.topicHighlight || extras.dutchAgent || extras.video || extras.service
+    (extras.translations?.length ?? 0) > 0 || (extras.translationPackage !== undefined && extras.translationPackage !== 'basic') || extras.categoryHighlight || extras.topicHighlight || extras.dutchAgent || extras.video || extras.service
   );
 }
 
 /** Hungarian summary lines for the admin (review screen, service list). */
 export function describeRequestedExtras(extras: RequestedExtras): string[] {
   const lines: string[] = [];
-  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván' };
+  const LANG_HU: Record<string, string> = { nl: 'holland', de: 'német', en: 'angol', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák', it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn', et: 'észt', lv: 'lett', lt: 'litván', sr: 'szerb', uk: 'ukrán', tr: 'török', he: 'héber', ar: 'arab', ru: 'orosz', zh: 'kínai' };
+  const PACKAGE_HU: Record<string, string> = { europe: 'Európa csomag', world: 'World csomag' };
+  if (extras.package && PACKAGES.includes(extras.package)) lines.push(`Csomag: ${extras.package[0].toUpperCase()}${extras.package.slice(1)}${extras.months ? `, ${extras.months} hónap` : ''}`);
+  if (extras.translationPackage && PACKAGE_HU[extras.translationPackage]) lines.push(`Fordítási csomag: ${PACKAGE_HU[extras.translationPackage]}`);
   if (extras.translations?.length) lines.push(`Fordítás: ${extras.translations.map((code) => LANG_HU[code] ?? code).join(', ')}`);
+  if (extras.excludedLocales?.length) lines.push(`Kizárt nyelvek: ${extras.excludedLocales.map((code) => LANG_HU[code] ?? code).join(', ')}`);
   if (extras.categoryHighlight) lines.push('Kiemelés a kategóriában');
-  if (extras.homepageHighlight) lines.push('Kiemelés a főoldalon');
   if (extras.topicHighlight) lines.push('Témakörön belüli kiemelés: altípus, egyedi áregyeztetéssel');
   if (extras.dutchAgent) lines.push('Holland nyelvű ingatlanos: egyedi áron, személyes egyeztetéssel');
   if (extras.video) lines.push('Videós bemutató (saját videó elhelyezése)');

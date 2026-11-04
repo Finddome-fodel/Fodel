@@ -68,7 +68,7 @@ const { items, class: className } = Astro.props;
   /* -0.05em takes out the numeral's side bearing. */
   .num {
     display: block;
-    margin: 0 0 64px -0.05em;
+    margin-block: 0 64px; margin-inline: -0.05em 0;
     font-family: var(--serif);
     font-weight: var(--fw-light);
     font-size: clamp(64px, 5.6vw, 96px);

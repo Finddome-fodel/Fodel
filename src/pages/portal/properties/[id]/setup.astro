@@ -39,10 +39,15 @@ import PhotoUploader from '~/components/portal/PhotoUploader.astro';
 import BillingForm from '~/components/BillingForm.astro';
 import { getProperty, OWNER_EDITABLE } from '~/lib/portal/properties';
 import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
-import { listingCatalog, packageCard, packageOf } from '~/lib/listing-packages';
+import { listingCatalog, packageCard, packageOf, priceEurFor, extraSoldIn, sellingPackages } from '~/lib/listing-packages';
+import PackageChooser from '~/components/portal/PackageChooser.astro';
+import { chooserModel, CHOOSER_COPY } from '~/lib/portal/package-chooser';
+import { currentRate } from '~/lib/fx-store';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { ONSITE_SERVICES } from '~/config/company';
-import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import { ALL_LOCALES, pickSource } from '~/lib/ai/translate-core';
+import { packageById, packageLocales } from '~/lib/translation-packages';
 import { LOCALE_META } from '~/i18n/ui';
 import { DESCRIPTION_MAX } from '~/lib/portal/setup';
 import { SETUP_COPY } from '~/lib/portal/setup-copy';
@@ -78,10 +83,11 @@ const [company, taxonomy, { data: billingRow }, serviceResult] = await Promise.a
 const catalog = listingCatalog(company.services);
 const requested = readRequestedExtras(property.requested_extras);
 // The package the seller chose here before; on a fresh draft, the recommended one.
-const chosenId = requested.source === 'listing_editor' ? property.package : (catalog.packages.find((p) => p.recommended) ?? catalog.packages[0]).id;
-const chosen = packageOf(catalog, chosenId);
+const selling = sellingPackages(catalog);
+const chosenId = requested.source === 'listing_editor' ? property.package : (selling.find((p) => p.recommended) ?? selling[0]).id;
+const chosen = selling.find((p) => p.id === chosenId) ?? selling.find((p) => p.recommended) ?? selling[0];
 const pkgAllowsPhone = Boolean(chosen.phone);
-const cards = catalog.packages.map((pkg) => ({ pkg, card: packageCard(pkg, catalog, lang) }));
+const cards = selling.map((pkg) => ({ pkg, card: packageCard(pkg, catalog, lang) }));
 const extra = (key: string) => catalog.extras.find((e) => e.id === key)!;
 const service = serviceResult.data?.service_id ?? requested.service ?? '';
 
@@ -96,6 +102,17 @@ const askedLocales: string[] = free
   ? ((await supabase.from('translation_jobs').select('locale').eq('property_id', property.id).eq('origin', 'free').in('status', ['requested', 'queued', 'running'])).data ?? []).map((job: { locale: string }) => job.locale)
   : [];
 const presentLocales = property.translations.filter((row) => row.title?.trim() && row.title !== 'Új hirdetés').map((row) => row.locale);
+// The translation choice the seller made before, or a fresh one: Basic, which every listing has.
+const trSourceLocale = pickSource(property.translations)?.locale ?? 'hu';
+const trPackageId = requested.translationPackage ?? 'basic';
+// The new chooser (Basic / Europe / World, term, value band). Null before the pricing migrations: the older cards then show.
+const chooser = chooserModel({
+  catalog, lang, priceHuf: property.price_huf, fx: await currentRate().catch(() => null), sourceLocale: trSourceLocale, targets: ALL_LOCALES,
+  packageId: requested.source === 'listing_editor' ? (requested.package ?? property.package) : null, months: requested.months ?? null,
+  names: (code) => languageName(code, lang),
+});
+const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackageId), ALL_LOCALES));
+const trExtras = (free ? askedLocales : requested.translations ?? []).filter((code) => !trIncluded.has(code));
 const ALL_STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
 const STEPS = ALL_STEPS.filter((step) => !free || (step !== 'package' && step !== 'billing'));
 const at = (step: (typeof ALL_STEPS)[number]) => ALL_STEPS.indexOf(step);
@@ -105,26 +122,29 @@ const t = SETUP_COPY[lang];
 
 const billing = (billingRow as any)?.billing ?? null;
 
-/** Everything the script needs to price and summarise, without a second request. */
+/**
+ * Everything the script needs to price and summarise, without a second request.
+ * Prices travel as tiers: the browser picks the tier from the listing's forint
+ * price with the same tierFor() checkout uses (src/lib/price-tiers.ts).
+ */
 const pricing = {
+  live: Boolean(chooser),
   packages: Object.fromEntries(
-    catalog.packages.map((p) => [
-      p.id,
-      { name: p.names[lang], cents: p.priceEur * 100, aboveCents: p.priceEurAbove !== null ? p.priceEurAbove * 100 : null, threshold: p.thresholdHuf, video: p.video, phone: p.phone },
-    ])
+    selling.map((p) => [p.id, { name: p.names[lang], tiers: p.tiers, video: p.video, phone: p.phone }])
   ),
-  translationCents: extra('translation').priceEur * 100,
-  categoryCents: extra('category-highlight').priceEur * 100 * (extra('category-highlight').minMonths ?? 1),
-  homepageCents: extra('homepage-highlight').priceEur * 100 * (extra('homepage-highlight').minMonths ?? 1),
-  videoCents: extra('video').priceEur * 100,
+  category: { tiers: extra('category-highlight').tiers, months: extra('category-highlight').minMonths ?? 1 },
+  video: { tiers: extra('video').tiers, countries: extra('video').countries ?? null },
   services: Object.fromEntries(ONSITE_SERVICES.map((s) => [s.id, { name: s.names[lang], cents: s.priceEur * 100 }])),
 };
+// The video shoot is Hungary only (§4b); on a draft without a country yet the chip stays, the server decides.
+const videoOffered = !extra('video').retired && (!property.country || extraSoldIn(extra('video'), property.country));
+const priceNow = property.price_huf;
 const strings = {
   gapsHint: lang === 'hu' ? 'Töltse ki a megjelölt kötelező mezőket.' : lang === 'nl' ? 'Vul de gemarkeerde verplichte velden in.' : 'Fill in the required fields marked below.',
   saving: t.saving, saved: t.saved, saveFailed: t.saveFailed, required: t.required, none: t.none,
   submitting: t.submitting, submitFailed: t.submitFailed, noPhotos: t.noPhotos,
   missing: t.missing, missingHead: t.missingHead, photosCount: t.photosCount(0).replace('0', '{n}'),
-  translation: t.translation, categoryHighlight: t.categoryHighlight, homepageHighlight: t.homepageHighlight, video: t.video, dutchAgent: CHROME[lang].dutchAgent.title,
+  translation: t.translation, categoryHighlight: t.categoryHighlight, video: t.video, priceLater: t.priceLater, dutchAgent: CHROME[lang].dutchAgent.title,
 };
 ---
 
@@ -136,6 +156,7 @@ const strings = {
     data-lang={lang}
     data-steps={STEPS.join(',')}
     data-free={free ? 'yes' : undefined}
+    data-country={property.country ?? ''}
     data-admin={isAdmin ? 'yes' : undefined}
     data-strings={JSON.stringify(strings)}
     data-pricing={JSON.stringify(pricing)}
@@ -176,44 +197,43 @@ const strings = {
       <h1 id="h-package">{t.steps[0]}</h1>
       <p class="su-intro">{t.intros[0]}</p>
       <form data-step-form="package" id="su-package" novalidate>
-        <div class="su-packages">
-          {cards.map(({ pkg, card }) => (
-            <PackageCard
-              pkg={card}
-              mode="select"
-              radioName="package"
-              checked={pkg.id === chosen.id}
-              priceCents={card.priceCents}
-              recommendedLabel={t.recommended}
-            />
-          ))}
-        </div>
+        {chooser ? (
+          <PackageChooser model={chooser} lang={lang} excluded={requested.excludedLocales ?? []} />
+        ) : (
+          <div class="su-packages">
+            {cards.map(({ pkg, card }) => (
+              <PackageCard
+                pkg={card}
+                mode="select"
+                radioName="package"
+                checked={pkg.id === chosen.id}
+                priceCents={card.priceCents}
+                recommendedLabel={t.recommended}
+              />
+            ))}
+          </div>
+        )}
 
         <fieldset class="su-extras">
           <legend>{t.extrasHead}</legend>
           <p class="su-note">{t.extrasNote}</p>
-          <TranslationPicker lang={lang} selected={requested.translations ?? []} present={presentLocales} priceEur={extra('translation').priceEur} />
+          {!chooser && <TranslationPackagePicker lang={lang} cfg={catalog.translation} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trPackageId} extras={trExtras} excluded={requested.excludedLocales ?? []} present={presentLocales} />}
           <div class="chips">
-            <label class="chip">
-              <input type="checkbox" name="categoryHighlight" value="yes" checked={requested.categoryHighlight} />
+            <label class="chip" data-category-chip hidden={chooser !== null && chooser.months < (extra('category-highlight').minMonths ?? 1)}>
+              <input type="checkbox" name="categoryHighlight" value="yes" checked={requested.categoryHighlight} disabled={chooser !== null && chooser.months < (extra('category-highlight').minMonths ?? 1)} />
               <span class="box" aria-hidden="true"></span>
               <span class="chip-name">{t.categoryHighlight}</span>
-              <span class="chip-price">€ {extra('category-highlight').priceEur} {t.perMonth} · {t.minMonths(extra('category-highlight').minMonths ?? 1)}</span>
-            </label>
-            <label class="chip">
-              <input type="checkbox" name="homepageHighlight" value="yes" checked={requested.homepageHighlight} />
-              <span class="box" aria-hidden="true"></span>
-              <span class="chip-name">{t.homepageHighlight}</span>
-              <span class="chip-price">€ {extra('homepage-highlight').priceEur} {t.perMonth} · {t.minMonths(extra('homepage-highlight').minMonths ?? 1)}</span>
+              <span class="chip-price">€ <span data-extra-price="category">{priceEurFor(extra('category-highlight'), priceNow)}</span> {t.perMonth} · {t.minMonths(extra('category-highlight').minMonths ?? 1)}</span>
             </label>
             <label class="chip"><input type="checkbox" name="topicHighlight" value="yes" checked={property.topic_highlight_requested||requested.topicHighlight}/><span class="box" aria-hidden="true"></span><span class="chip-name">{x('Témakörön belüli kiemelés','Uitlichting binnen het subtype','Highlight within the subtype')}</span><span class="chip-price">{x('Egyedi áregyeztetés','Prijs in overleg','Price by arrangement')}</span></label>
-            <label class="chip" data-video-chip>
-              <input type="checkbox" name="video" value="yes" checked={requested.video} />
+            <label class="chip chip-wide" data-video-chip hidden={!videoOffered}>
+              <input type="checkbox" name="video" value="yes" checked={videoOffered && requested.video} disabled={!videoOffered} />
               <span class="box" aria-hidden="true"></span>
-              <span class="chip-name">{t.video}</span>
-              <span class="chip-price">€ {extra('video').priceEur} {t.once}</span>
+              <span class="chip-name">{t.video}<small class="chip-note">{t.videoNote}</small></span>
+              <span class="chip-price">€ <span data-extra-price="video">{priceEurFor(extra('video'), priceNow)}</span> {t.once}</span>
             </label>
           </div>
+          <p class="su-note su-category-note" data-category-note hidden={chooser === null || chooser.months >= (extra('category-highlight').minMonths ?? 1)}>{CHOOSER_COPY[lang].categoryTermNote}</p>
         </fieldset>
 
         <div class="su-onsite">
@@ -222,7 +242,7 @@ const strings = {
         </div>
 
         <div class="su-total" aria-live="polite">
-          <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{t.totalNote}</span></p>
+          <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{t.totalNote}</span><span class="su-total-note" data-price-later hidden={priceNow > 0}>{t.priceLater}</span></p>
           <strong class="num" data-total>—</strong>
         </div>
       </form>
@@ -262,20 +282,35 @@ const strings = {
         {free && (
           <div class="su-fieldset">
             <input type="hidden" name="translations_present" value="yes" />
-            <TranslationPicker lang={lang} free selected={askedLocales} present={presentLocales} priceEur={null} />
+            <TranslationPackagePicker lang={lang} free cfg={catalog.translation} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trPackageId} extras={trExtras} excluded={requested.excludedLocales ?? []} present={presentLocales} />
           </div>
         )}
 
         {isAdmin && (
           <ContactChoice mode={property.public_contact} staffName={property.public_contact_name} staffPhone={property.public_contact_phone} ownerAgreed={property.seller_contact_visible} ownerHasPhone={Boolean(property.seller_phone?.trim())} packageAllowsPhone={pkgAllowsPhone} idPrefix="su-cc" />
         )}
-        <fieldset class="su-fieldset" data-contact-choice>
-          <legend>{t.contact}</legend>
-          <p class="su-note">{t.contactHint}</p>
-          <label class="su-radio"><input type="radio" name="contact" value="yes" checked={property.seller_contact_visible} /> {t.contactYes}</label>
-          <label class="su-radio"><input type="radio" name="contact" value="no" checked={!property.seller_contact_visible} /> {t.contactNo}</label>
-        </fieldset>
-        <p class="su-note su-contact-off" data-contact-off>{t.contactNotInPackage}</p>
+        {free ? (
+          <fieldset class="su-fieldset su-free-contact">
+            <legend>{t.contact}</legend>
+            <p class="su-note">{x('A hirdetésen a FINDDOME elérhetőségei jelennek meg; az érdeklődőket mi kapcsoljuk Önhöz. Ezért a címben és a leírásban ne szerepeljen e-mail-cím, telefonszám vagy weboldal.','Op de advertentie staan de contactgegevens van FINDDOME; wij brengen geïnteresseerden met u in contact. Vermeld daarom geen e-mailadres, telefoonnummer of website in de titel en de beschrijving.','The listing shows FINDDOME’s contact details, and we put interested buyers in touch with you. So please leave e-mail addresses, phone numbers and websites out of the title and the description.')}</p>
+            {isAdmin && (
+              <label class="su-radio su-override" data-contact-override hidden>
+                <input type="checkbox" name="contact_override" value="yes" />
+                {x('Tudatosan benne hagyom (naplózzuk)','Bewust laten staan (wordt gelogd)','Keep it deliberately (logged)')}
+              </label>
+            )}
+          </fieldset>
+        ) : (
+          <>
+            <fieldset class="su-fieldset" data-contact-choice>
+              <legend>{t.contact}</legend>
+              <p class="su-note">{t.contactHint}</p>
+              <label class="su-radio"><input type="radio" name="contact" value="yes" checked={property.seller_contact_visible} /> {t.contactYes}</label>
+              <label class="su-radio"><input type="radio" name="contact" value="no" checked={!property.seller_contact_visible} /> {t.contactNo}</label>
+            </fieldset>
+            <p class="su-note su-contact-off" data-contact-off>{t.contactNotInPackage}</p>
+          </>
+        )}
       </form>
     </section>
 
@@ -335,7 +370,7 @@ const strings = {
           </div>
         ) : (
         <div class="su-total">
-          <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{t.totalNote}</span></p>
+          <p><span class="su-total-label">{t.total}</span><span class="su-total-note">{t.totalNote}</span><span class="su-total-note" data-price-later hidden={priceNow > 0}>{t.priceLater}</span></p>
           <strong class="num" data-total>—</strong>
         </div>
         )}
@@ -369,13 +404,14 @@ const strings = {
 
 <script>
   import { formGaps, gapControl } from '~/lib/listing-details';
+  import { priceEurFor, type PriceTier } from '~/lib/price-tiers';
 
   type Pricing = {
-    packages: Record<string, { name: string; cents: number; aboveCents: number | null; threshold: number | null; video: string; phone: boolean }>;
-    translationCents: number;
-    categoryCents: number;
-    homepageCents: number;
-    videoCents: number;
+    live: boolean;
+    packages: Record<string, { name: string; tiers: PriceTier[]; video: string; phone: boolean }>;
+    translation: PriceTier[];
+    category: { tiers: PriceTier[]; months: number };
+    video: { tiers: PriceTier[]; countries: string[] | null };
     services: Record<string, { name: string; cents: number }>;
   };
 
@@ -394,7 +430,8 @@ const strings = {
   const submitBtn = root.querySelector<HTMLButtonElement>('[data-submit]')!;
   const form = (step: string) => root.querySelector<HTMLFormElement>(`[data-step-form="${step}"]`);
   const nf = new Intl.NumberFormat({ hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB' }[lang]);
-  const money = (cents: number) => `€ ${(cents / 100).toLocaleString('de-DE')}`;
+  // Whole euros stay whole (the extras); a package price has cents: always two decimals then (€ 59,90).
+  const money = (cents: number) => `€ ${(cents / 100).toLocaleString('de-DE', cents % 100 === 0 ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   let lib: typeof import('~/lib/validation') | null = null;
   const loadLib = async () => (lib ??= await import('~/lib/validation'));
@@ -405,7 +442,16 @@ const strings = {
     return (error: never) => errorMessageIn(copy, error);
   };
 
-  /* ── Steps ─────────────────────────────────────────────────────────── */
+  /**
+   * Free listings: no contact details in the public text (spec §5.2). The same detector as the server
+   * (src/lib/contact-detect.ts), loaded only for free listings; paid listings are never checked.
+   */
+  const CONTACT_FIELDS = ['title', 'description', 'body', 'street', 'region'];
+  let contactLib: typeof import('~/lib/contact-detect') | null = null;
+  const loadContacts = async () => (free ? (contactLib ??= await import('~/lib/contact-detect')) : null);
+  const overrideBox = () => root.querySelector<HTMLElement>('[data-contact-override]');
+  const overridden = () => Boolean(overrideBox()?.querySelector<HTMLInputElement>('input')?.checked);
+
 
   const show = (step: string, focus = true) => {
     const at = Math.max(0, steps.indexOf(step));
@@ -440,6 +486,20 @@ const strings = {
       (control) => !control.disabled && !control.closest('[hidden]') && !['radio', 'checkbox', 'hidden'].includes(control.type)
     );
 
+  /** The first contact detail in a checked field, as a validation error („contact-phone” …), or null. */
+  const contactError = (control: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) => {
+    if (!contactLib || !CONTACT_FIELDS.includes(control.name)) return null;
+    // The address fields are not checked for admins (the server agrees: setup.ts saveProperty).
+    if (admin && (control.name === 'street' || control.name === 'region')) return null;
+    const hit = contactLib.findContacts(control.value)[0];
+    if (!hit) return null;
+    // An admin may keep it deliberately; the box appears as soon as there is something to keep.
+    const box = overrideBox();
+    if (box) box.hidden = false;
+    if (overridden()) return null;
+    return { code: contactLib.contactCode(hit.kind), match: hit.match.length > 60 ? hit.match.slice(0, 57) + '…' : hit.match };
+  };
+
   /** Shows or clears one field's message from its current value; true when the value is acceptable. */
   const checkControl = (
     control: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
@@ -455,7 +515,7 @@ const strings = {
         maxLength: 'maxLength' in control && control.maxLength > 0 ? control.maxLength : undefined,
       },
       control.value
-    );
+    ) ?? contactError(control);
     const el = fieldError(control);
     if (error) {
       control.setAttribute('aria-invalid', 'true');
@@ -471,7 +531,7 @@ const strings = {
   };
 
   async function validate(scope: HTMLElement): Promise<HTMLElement | null> {
-    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording()]);
+    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
     let first: HTMLElement | null = null;
     for (const control of checkable(scope)) if (!checkControl(control, validateField, errorMessage)) first ??= control;
     return first;
@@ -486,7 +546,7 @@ const strings = {
   async function revalidateShown(scope: HTMLElement) {
     const shown = checkable(scope).filter((control) => control.getAttribute('aria-invalid') === 'true');
     if (!shown.length) return;
-    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording()]);
+    const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
     for (const control of shown) checkControl(control, validateField, errorMessage);
   }
 
@@ -548,6 +608,25 @@ const strings = {
     f.addEventListener('submit', (e) => e.preventDefault());
   });
 
+  // Free listings: contact details are pointed out while typing (300 ms after the last key), not only on „Tovább”.
+  if (free) {
+    let contactTimer: number | undefined;
+    root.addEventListener('input', (e) => {
+      const control = e.target as HTMLInputElement | HTMLTextAreaElement;
+      if (!CONTACT_FIELDS.includes(control?.name)) return;
+      window.clearTimeout(contactTimer);
+      contactTimer = window.setTimeout(async () => {
+        const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
+        checkControl(control, validateField, errorMessage);
+      }, 300);
+    });
+    overrideBox()?.addEventListener('change', async () => {
+      const [{ validateField }, errorMessage] = await Promise.all([loadLib(), wording(), loadContacts()]);
+      const scope = overrideBox()!.closest<HTMLElement>('[data-step]');
+      if (scope) for (const control of checkable(scope)) if (CONTACT_FIELDS.includes(control.name)) checkControl(control, validateField, errorMessage);
+    });
+  }
+
   /** The billing step saves through its own form (BillingForm.astro). */
   const saveBilling = async () => {
     const billing = root.querySelector<HTMLFormElement>('form[data-billing]');
@@ -604,19 +683,37 @@ const strings = {
   /* ── Step 1: price estimate, video and phone follow the package ────── */
 
   const priceHuf = () => Number(form('property')?.dataset.priceHuf||0);
+  const countryNow = () => ((form('property')?.elements.namedItem('country') as HTMLSelectElement | null)?.value || root.dataset.country || '').toUpperCase();
+  const videoOffered = () => {
+    const countries = pricing.video.countries;
+    const country = countryNow();
+    return !countries || !country || countries.includes(country);
+  };
   const selectedPackage = () => (form('package')?.querySelector<HTMLInputElement>('input[name="package"]:checked')?.value ?? '');
+
+  /** A category highlight needs a package at least as long as its minimum (Q10): a 1-month package hides it. */
+  const categoryAllowed = () => {
+    const chooser = form('package')?.querySelector<HTMLElement>('[data-pch]');
+    return !pricing.live || !chooser || Number(chooser.dataset.months || 0) >= pricing.category.months;
+  };
 
   function estimate(): { cents: number; lines: string[] } {
     const f = form('package');
     const pkg = pricing.packages[selectedPackage()];
     if (!f || !pkg) return { cents: 0, lines: [] };
-    const above = pkg.aboveCents !== null && pkg.threshold !== null && priceHuf() > pkg.threshold;
-    let cents = above ? pkg.aboveCents! : pkg.cents;
-    const lines = [pkg.name];
-    const translations = f.querySelectorAll<HTMLInputElement>('input[name="translations"]:checked');
-    if (translations.length) {
-      cents += translations.length * pricing.translationCents;
-      lines.push(`${s.translation} × ${translations.length}`);
+    // The same tier rule as checkout: a price on a bound belongs to the lower tier; no price yet → the first tier.
+    const huf = priceHuf();
+    const cents100 = (tiers: PriceTier[]) => priceEurFor({ tiers }, huf) * 100;
+    // The new chooser knows the package's price for the chosen term in this property's value band (integer cents).
+    const chooser = f.querySelector<HTMLElement>('[data-pch]');
+    let cents = pricing.live && chooser ? Number(chooser.dataset.cents || 0) : cents100(pkg.tiers);
+    const lines = [pricing.live && chooser?.dataset.label ? chooser.dataset.label : pkg.name];
+    // The translation picker keeps its own total (the package plus single languages), in cents.
+    const picker = f.querySelector<HTMLElement>('[data-tpk]');
+    const translationCents = Number(picker?.dataset.cents || 0);
+    if (translationCents > 0) {
+      cents += translationCents;
+      lines.push(picker?.querySelector('[data-tpk-summary]')?.textContent?.split(' · ')[0] || s.translation);
     }
     const flag = (name: string) => Boolean(f.querySelector<HTMLInputElement>(`input[name="${name}"]`)?.checked);
     const add = (when: boolean, amount: number, label: string) => {
@@ -624,9 +721,8 @@ const strings = {
       cents += amount;
       lines.push(label);
     };
-    add(flag('categoryHighlight'), pricing.categoryCents, s.categoryHighlight);
-    add(flag('homepageHighlight'), pricing.homepageCents, s.homepageHighlight);
-    add(pkg.video === 'extra' && flag('video'), pricing.videoCents, s.video);
+    add(flag('categoryHighlight') && categoryAllowed(), cents100(pricing.category.tiers) * pricing.category.months, s.categoryHighlight);
+    add(videoOffered() && flag('video'), cents100(pricing.video.tiers), s.video);
     const service = f.querySelector<HTMLInputElement>('input[name="service"]:checked')?.value ?? '';
     add(Boolean(pricing.services[service]), pricing.services[service]?.cents ?? 0, pricing.services[service]?.name ?? '');
     // No amount: the price is agreed personally, so it joins the summary but not the total.
@@ -634,23 +730,55 @@ const strings = {
     return { cents, lines };
   }
 
+  let lastChooserHuf = priceHuf();
   function syncPackage() {
     const pkg = pricing.packages[selectedPackage()];
+    // The video shoot follows the property's country (Hungary only), not the package.
     const videoChip = root.querySelector<HTMLElement>('[data-video-chip]');
-    if (videoChip) videoChip.hidden = pkg?.video !== 'extra';
+    const offered = videoOffered();
+    if (videoChip) {
+      videoChip.hidden = !offered;
+      const box = videoChip.querySelector<HTMLInputElement>('input');
+      if (box) { box.disabled = !offered; if (!offered) box.checked = false; }
+    }
+    // Tiered extras show the price for this listing's tier.
+    const huf = priceHuf();
+    // The chooser follows a price typed in the next step (it can move the value band); only when it really changed.
+    if (huf !== lastChooserHuf) {
+      lastChooserHuf = huf;
+      form('package')?.querySelector('[data-pch]')?.dispatchEvent(new CustomEvent('pch:price', { detail: { huf } }));
+    }
+    const categoryChip = root.querySelector<HTMLElement>('[data-category-chip]');
+    if (categoryChip) {
+      const ok = categoryAllowed();
+      categoryChip.hidden = !ok;
+      const box = categoryChip.querySelector<HTMLInputElement>('input');
+      if (box) { box.disabled = !ok; if (!ok) box.checked = false; }
+      const note = root.querySelector<HTMLElement>('[data-category-note]');
+      if (note) note.hidden = ok;
+    }
+    const show = (key: string, tiers: PriceTier[]) => root.querySelectorAll<HTMLElement>(`[data-extra-price="${key}"]`).forEach((el) => (el.textContent = String(priceEurFor({ tiers }, huf))));
+    show('category', pricing.category.tiers);
+    show('video', pricing.video.tiers);
+    const later = root.querySelector<HTMLElement>('[data-price-later]');
+    if (later) later.hidden = huf > 0;
     const contact = root.querySelector<HTMLElement>('[data-contact-choice]');
     const off = root.querySelector<HTMLElement>('[data-contact-off]');
-    // A free listing has no package; the seller's phone choice is always offered.
-    const phone = free || Boolean(pkg?.phone);
+    // A free listing has neither the question nor the note (FINDDOME's contact only, §5.1).
+    const phone = Boolean(pkg?.phone);
     if (contact) contact.hidden = !phone;
     if (off) off.hidden = phone;
     const total = money(estimate().cents);
     root.querySelectorAll<HTMLElement>('[data-total]').forEach((el) => (el.textContent = total));
   }
   form('package')?.addEventListener('change', syncPackage);
+  form('package')?.addEventListener('tp:change', syncPackage);
+  form('package')?.addEventListener('pch:change', syncPackage);
   form('property')?.addEventListener('change', syncPackage);
   form('property')?.addEventListener('listing:price',syncPackage);
   syncPackage();
+  // The translation picker sets itself up in its own script; this catches the case where it ran second.
+  window.addEventListener('load', syncPackage);
 
   /* ── Step 3: character counter ─────────────────────────────────────── */
 
@@ -864,6 +992,11 @@ const strings = {
   .chip:has(input:focus-visible) { outline: var(--focus-ring); outline-offset: 3px; }
   .chip-name { font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
   .chip-price { font-size: 13px; color: var(--ink-quiet); white-space: nowrap; }
+  /* The video shoot names what it is in full, so it gets a soft card instead of a pill. */
+  .chip-wide { flex-basis: 100%; border-radius: var(--r-lg, 18px); padding: 12px 20px 12px 12px; }
+  .chip-wide .chip-name { flex: 1; line-height: 1.45; }
+  .chip-note { display: block; margin-top: 3px; font-size: 12.5px; font-weight: var(--fw-regular, 400); color: var(--ink-quiet); }
+  .chip:has(input:checked) .chip-note { color: color-mix(in srgb, var(--cream) 78%, transparent); }
 
   .su-total { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 20px 26px; border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-sm), 0 0 0 1px var(--pt-hair); }
   .su-total p { display: flex; flex-direction: column; gap: 3px; }
@@ -874,7 +1007,6 @@ const strings = {
 
   .su-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
   @media (max-width: 620px) { .su-grid { grid-template-columns: 1fr; } .su-grid :global(.fld.span-half) { grid-column: 1 / -1; } }
-  .su-settlement datalist { display: none; }
 
   .su-good { margin-bottom: 22px; padding: 18px 22px; border-radius: var(--r-lg); background: rgba(16, 42, 67, 0.04); }
   .su-good-head { font-weight: var(--fw-medium); color: var(--ink); margin-bottom: 8px; }

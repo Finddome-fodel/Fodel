@@ -16,6 +16,7 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import { STATUS_LABEL } from '~/lib/portal/properties';
 import { icon } from '~/lib/portal/icons';
+import { fmtInt } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -41,7 +42,7 @@ const selected = (rows ?? [])
   .sort((a, b) => a.editors_pick_order - b.editors_pick_order);
 const candidates = (rows ?? []).filter((row) => !row.editors_pick && isLive(row));
 const liveCount = selected.filter(isLive).length;
-const price = (n: number) => `€${n.toLocaleString('de-DE')}`;
+const price = (n: number) => `€${fmtInt(n)}`;
 ---
 
 <Portal title="Top 10">

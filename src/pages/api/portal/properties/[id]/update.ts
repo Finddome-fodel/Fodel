@@ -17,7 +17,9 @@
 import type { APIRoute } from 'astro';
 import { portalLang } from '~/lib/portal/auth-copy';
 import { LOCALE_OPTIONS } from '~/lib/portal/properties';
+import { LIMITS, TARGET_LIMITS, pickSource } from '~/lib/ai/translate-core';
 import { getProperty } from '~/lib/portal/properties';
+import { readPriceRounding } from '~/lib/exchange-rates';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
 import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { logEvent } from '~/lib/activity';
@@ -27,7 +29,13 @@ import { friendlyError } from '~/lib/portal/labels';
 import { getTaxonomy, getCompany } from '~/lib/runtime-config';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
 import { syncDutchAgent } from '~/lib/portal/dutch-agent';
+import { guardContacts } from '~/lib/portal/contact-guard';
+import { errorMessage } from '~/lib/validation-server';
+
 import { saveSetupStep, SETUP_STEPS, type SetupStep } from '~/lib/portal/setup';
+
+/** Field names in the editor's error line (free listings' contact check). */
+const CONTACT_FIELD_HU: Record<string, string> = { title: 'Hirdetés címe', description: 'Rövid leírás', body: 'Részletes leírás', street: 'Az ingatlan címe', region: 'További területi egység' };
 
 export const prerender = false;
 
@@ -54,7 +62,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
 
   const { data: existing, error: fetchError } = await supabase
     .from('properties')
-    .select('id, owner_id, status, package, free_listing')
+    .select('id, owner_id, status, package, free_listing, country')
     .eq('id', id)
     .maybeSingle();
   if (fetchError || !existing) return back('error=not-found');
@@ -70,7 +78,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   // One step of the guided setup: only that step's fields, answered in JSON.
   if (step) {
     if (!(SETUP_STEPS as readonly string[]).includes(step)) return Response.json({ ok: false, error: 'unknown-step' }, { status: 400 });
-    const result = await saveSetupStep(supabase, existing, step as SetupStep, form, { isAdmin, locale: portalLang(profile?.locale) });
+    const result = await saveSetupStep(supabase, existing, step as SetupStep, form, { isAdmin, locale: portalLang(profile?.locale), actor: { id: user?.id ?? null, email: profile?.email ?? null } });
     if (result.ok) {
       await logEvent({
         kind: 'listing.edited',
@@ -90,28 +98,44 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   if (!current) return back('error=not-found');
   const taxonomy = await getTaxonomy();
   let values: Awaited<ReturnType<typeof listingInput>>;
-  try { values = await listingInput(form,current,taxonomy); }
+  try { values = await listingInput(form,current,taxonomy,{rounding:readPriceRounding((await getCompany()).services.priceRounding)}); }
   catch(error) {
     const message = error instanceof ListingInputError && error.message === 'rates-unavailable'
       ? 'Az árfolyam most nem érhető el. Próbálja újra később; a korábbi adatok változatlanul megmaradtak.'
       : error instanceof ListingInputError ? 'Ellenőrizze ezeket a mezőket: ' + Object.keys(error.errors).join(', ') : 'Nem sikerült menteni.';
     return back('error=' + encodeURIComponent(message));
   }
+  const withoutHomepage=(value:unknown)=>{const {homepageHighlight:_drop,...rest}=(value&&typeof value==='object'?value:{}) as Record<string,unknown>;return rest;};
   const patch: Record<string,unknown> = {...values.patch,
-    requested_extras:{...current.requested_extras,categoryHighlight:form.get('request_category')==='yes',homepageHighlight:form.get('request_homepage')==='yes',topicHighlight:form.get('topic_highlight_requested')==='yes',dutchAgent:form.get('dutch_agent_requested')==='yes'},
-    seller_contact_visible:form.get('seller_contact_visible')==='yes',seller_name:str(form,'seller_name').slice(0,160)||null,
+    // The homepage highlight is no longer requested (§4a); an old key is dropped on the next save.
+    requested_extras:{...withoutHomepage(current.requested_extras),categoryHighlight:form.get('request_category')==='yes',topicHighlight:form.get('topic_highlight_requested')==='yes',dutchAgent:form.get('dutch_agent_requested')==='yes'},
+    // A free listing shows FINDDOME's contact only (§5.1, trigger 0049); an admin may still decide otherwise.
+    seller_contact_visible:existing.free_listing&&!isAdmin?false:form.get('seller_contact_visible')==='yes',seller_name:str(form,'seller_name').slice(0,160)||null,
     seller_phone:sellerPhone(form),seller_speaks:contactLanguages(form),
     ...(existing.status==='published'?{reserved:form.get('reserved')==='yes'}:{}),
     topic_highlight_requested:form.get('topic_highlight_requested')==='yes',
     ...(isAdmin?{featured:form.get('featured')==='yes',homepage_featured:form.get('homepage_featured')==='yes',topic_featured:form.get('topic_featured')==='yes',...contactDisplayPatch(form)}:{}),
   };
   if(!isAdmin && values.patch.video_url && packageOf(listingCatalog((await getCompany()).services),existing.package).video==='none') return back('error='+encodeURIComponent('A választott csomag nem tartalmaz videót.'));
+  // Free listings: no contact details in any public text (§5.2). Paid listings are not checked.
+  const textFields:Record<string,string>={};
+  for(const {value:locale} of LOCALE_OPTIONS)for(const field of ['title','description','body'])if(form.has(`${field}_${locale}`))textFields[`${field}_${locale}`]=prose(form,`${field}_${locale}`);
+  if(!isAdmin)for(const field of ['street','region'])if(form.has(field))textFields[field]=str(form,field);
+  const contacts=await guardContacts(form,textFields,{free:existing.free_listing,isAdmin,propertyId:id!,actor:{id:user?.id??null,email:profile?.email??null},source:'portal'});
+  if(!contacts.ok){
+    const [field,error]=Object.entries(contacts.errors)[0];
+    return back('error='+encodeURIComponent(`${CONTACT_FIELD_HU[field.replace(/_[a-z]{2}$/,'')]??field}${/_[a-z]{2}$/.test(field)?` (${field.slice(-2).toUpperCase()})`:''}: ${errorMessage(error,'hu')}${isAdmin?' Ha szándékosan hagyja benne, jelölje be: „Tudatosan benne hagyom”.':''}`)+'&contact_field='+encodeURIComponent(field));
+  }
   const translations=[];
-  for(const {value:locale} of LOCALE_OPTIONS){
+  // The text a person wrote holds to LIMITS.title; a translation may be longer (translate-core.ts TARGET_LIMITS).
+  const sourceLocale=pickSource(current.translations)?.locale??'hu';
+  for(const {value:locale,label} of LOCALE_OPTIONS){
     const title=prose(form,`title_${locale}`),description=prose(form,`description_${locale}`);
     if(locale==='hu'&&(!title||!description))return back('error='+encodeURIComponent('A magyar cím és rövid leírás kötelező.'));
+    const titleLimit=locale===sourceLocale?LIMITS.title:TARGET_LIMITS.title;
+    if(title.length>titleLimit)return back('error='+encodeURIComponent(`A cím legfeljebb ${titleLimit} karakter lehet (${label.replace(/ \(kötelező\)$/,'')}: ${title.length} karakter). Rövidítse a címet; a mentés most nem történt meg.`));
     // Existing translations and legacy optional copy survive an empty/unoffered locale.
-    if(title||description)translations.push({locale,title:title.slice(0,160)||description.slice(0,60),description:description.slice(0,6000),body:prose(form,`body_${locale}`).slice(0,30000)});
+    if(title||description)translations.push({locale,title:title||description.slice(0,60),description:description.slice(0,6000),body:prose(form,`body_${locale}`).slice(0,30000)});
   }
   const {error:updateError}=await supabase.rpc('save_listing_editor',{
     p_id:id,p_patch:patch,p_private:{...values.privateData,internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations,

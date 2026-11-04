@@ -68,6 +68,14 @@ export function assertSafeToWrite(): void {
   }
 }
 
+/**
+ * E2E_LISTING_FIXTURE=1: the site talks to a stand-in that serves one published listing (support/public-listing-database.mjs),
+ * for the specs that need a real listing page. Read-only like the empty stand-in; never a real project.
+ */
+export function listingFixture(): boolean {
+  return process.env.E2E_LISTING_FIXTURE === '1' && !writesAllowed();
+}
+
 /** What the dev server under test is started with. */
 export function serverEnv(): Record<string, string> {
   const env = loadTestEnv();
@@ -97,7 +105,7 @@ export function serverEnv(): Record<string, string> {
   }
   return {
     ...common,
-    SUPABASE_URL: 'http://127.0.0.1:54399',
+    SUPABASE_URL: listingFixture() ? 'http://127.0.0.1:54402' : 'http://127.0.0.1:54399',
     SUPABASE_ANON_KEY: 'e2e-no-database',
     SUPABASE_SERVICE_ROLE_KEY: 'e2e-no-database',
   };

@@ -12,7 +12,7 @@
  * of them are compulsory, so the rules live in exactly one place.
  */
 import data from '../data/listing/details.json';
-import { isLandOnly, hasLivingArea, hasPlot, labelIn, type Labels } from '~/lib/listing-catalogue';
+import { isLandOnly, hasLivingArea, hasPlot, labelIn, livingAreaRule, canonicalSubtype, type Labels } from '~/lib/listing-catalogue';
 
 export type ListingDetails = {
   rooms?: number;
@@ -118,7 +118,8 @@ export type ListingField = (typeof LISTING_FIELDS)[number];
  * server keeps hidden fields as saved, the submit gate and the review screen check it, and
  * the public page shows only what applies.
  */
-export function fieldRules(group: string, subtype: string): Record<ListingField, FieldRule> {
+export function fieldRules(group: string, rawSubtype: string): Record<ListingField, FieldRule> {
+  const subtype = canonicalSubtype(rawSubtype);
   const home = hasLayout(group, subtype);
   const building = !isLandOnly(group, subtype);
   const plot = hasPlot(group, subtype);
@@ -129,9 +130,11 @@ export function fieldRules(group: string, subtype: string): Record<ListingField,
   return {
     street: is(true, home),
     settings: is(true, home),
-    floor_m2: is(home, true),
+    // The living area (net usable floor area of the home), required where there is a home; see livingAreaRule (Q15).
+    floor_m2: livingAreaRule(group, subtype),
     // Everything under a roof on the property, outbuildings included. A flat is measured by its living area.
-    building_m2: is(building && !flat, !loose),
+    // Optional for every type since November 2026 (client request): shown for buildings, never required.
+    building_m2: is(building && !flat, false),
     plot_m2: is(plot, group === 'land' || group === 'agricultural' || !(loose || PLOT_OPTIONAL.includes(subtype))),
     year_built: is(building, !loose),
     renovated_in: is(building, false),
@@ -202,16 +205,16 @@ export type DetailGap = (typeof GAP_FIELDS)[number];
 
 /** How each gap reads inside "To submit, you still need: …" (portal languages). */
 export const GAP_LABELS: Record<'hu' | 'nl' | 'en', Record<DetailGap, string>> = {
-  hu: { street: 'a cím', settings: 'a környezet', floor_m2: 'a lakóegység területe', building_m2: 'a teljes épületterület', plot_m2: 'a telekterület', year_built: 'az építés éve (vagy a „nem ismert” jelölés)', condition: 'az állapot', walls: 'a falazat', heating: 'a fűtés', rooms: 'a szobák száma', floors: 'a szintek száma', bathrooms: 'a fürdőszobák száma', kitchens: 'a konyhák száma', toilets: 'a különálló WC-k száma', parking: 'a parkolási lehetőség' },
-  nl: { street: 'het adres', settings: 'de omgeving', floor_m2: 'de woonoppervlakte', building_m2: 'de totale gebouwoppervlakte', plot_m2: 'de perceeloppervlakte', year_built: 'het bouwjaar (of „onbekend”)', condition: 'de staat', walls: 'het bouwmateriaal', heating: 'de verwarming', rooms: 'het aantal kamers', floors: 'het aantal woonlagen', bathrooms: 'het aantal badkamers', kitchens: 'het aantal keukens', toilets: 'het aantal aparte toiletten', parking: 'de parkeermogelijkheden' },
-  en: { street: 'the address', settings: 'the surroundings', floor_m2: 'the living area', building_m2: 'the total building area', plot_m2: 'the plot area', year_built: 'the year built (or “not known”)', condition: 'the condition', walls: 'the wall construction', heating: 'the heating', rooms: 'the number of rooms', floors: 'the number of levels', bathrooms: 'the number of bathrooms', kitchens: 'the number of kitchens', toilets: 'the number of separate toilets', parking: 'the parking' },
+  hu: { street: 'a cím', settings: 'a környezet', floor_m2: 'a nettó hasznos alapterület', building_m2: 'a teljes épületterület', plot_m2: 'a telekterület', year_built: 'az építés éve (vagy a „nem ismert” jelölés)', condition: 'az állapot', walls: 'a falazat', heating: 'a fűtés', rooms: 'a szobák száma', floors: 'a szintek száma', bathrooms: 'a fürdőszobák száma', kitchens: 'a konyhák száma', toilets: 'a különálló WC-k száma', parking: 'a parkolási lehetőség' },
+  nl: { street: 'het adres', settings: 'de omgeving', floor_m2: 'de netto gebruiksoppervlakte', building_m2: 'de totale gebouwoppervlakte', plot_m2: 'de perceeloppervlakte', year_built: 'het bouwjaar (of „onbekend”)', condition: 'de staat', walls: 'het bouwmateriaal', heating: 'de verwarming', rooms: 'het aantal kamers', floors: 'het aantal woonlagen', bathrooms: 'het aantal badkamers', kitchens: 'het aantal keukens', toilets: 'het aantal aparte toiletten', parking: 'de parkeermogelijkheden' },
+  en: { street: 'the address', settings: 'the surroundings', floor_m2: 'the net usable area', building_m2: 'the total building area', plot_m2: 'the plot area', year_built: 'the year built (or “not known”)', condition: 'the condition', walls: 'the wall construction', heating: 'the heating', rooms: 'the number of rooms', floors: 'the number of levels', bathrooms: 'the number of bathrooms', kitchens: 'the number of kitchens', toilets: 'the number of separate toilets', parking: 'the parking' },
 };
 /** The message shown under a compulsory field that was left empty (wizard step and editor). */
 export const GAP_ERRORS: Record<'hu' | 'nl' | 'en', Record<DetailGap, string>> = {
   hu: {
     street: 'Adja meg az ingatlan címét.',
     settings: 'Jelölje be, milyen környezetben van az ingatlan.',
-    floor_m2: 'Adja meg a lakóegység területét.',
+    floor_m2: 'Adja meg a nettó hasznos alapterületet.',
     building_m2: 'Adja meg a teljes épületterületet.',
     plot_m2: 'Adja meg a telek területét.',
     year_built: 'Adja meg az építés évét, vagy jelölje be, hogy nem ismert.',
@@ -228,7 +231,7 @@ export const GAP_ERRORS: Record<'hu' | 'nl' | 'en', Record<DetailGap, string>> =
   nl: {
     street: 'Vul het adres van de woning in.',
     settings: 'Geef aan in welke omgeving de woning ligt.',
-    floor_m2: 'Vul de woonoppervlakte in.',
+    floor_m2: 'Vul de netto gebruiksoppervlakte in.',
     building_m2: 'Vul de totale gebouwoppervlakte in.',
     plot_m2: 'Vul de perceeloppervlakte in.',
     year_built: 'Vul het bouwjaar in, of vink aan dat het onbekend is.',
@@ -245,7 +248,7 @@ export const GAP_ERRORS: Record<'hu' | 'nl' | 'en', Record<DetailGap, string>> =
   en: {
     street: 'Enter the address of the property.',
     settings: 'Tick the surroundings of the property.',
-    floor_m2: 'Enter the living area.',
+    floor_m2: 'Enter the net usable area.',
     building_m2: 'Enter the total building area.',
     plot_m2: 'Enter the plot area.',
     year_built: 'Enter the year built, or tick that it is not known.',

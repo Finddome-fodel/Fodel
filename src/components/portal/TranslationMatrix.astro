@@ -1,0 +1,105 @@
+---
+/**
+ * The overview: every listing as a row, every language as a column, one dot per language. The status is
+ * decided by translation-status.ts, so this only draws it. A dot opens the side-by-side editor.
+ */
+import { HU_NAME } from '~/lib/ai/translate-core';
+import { STATUS_HU, summaryLine, type OverviewRow, type TranslationStatus } from '~/lib/ai/translation-status';
+
+interface Props {
+  rows: OverviewRow[];
+  columns: string[];
+  groups: { europe: string[]; world: string[] };
+  totals: Record<string, Record<TranslationStatus, number>>;
+}
+const { rows, columns, groups, totals } = Astro.props as Props;
+const name = (code: string) => HU_NAME[code] ?? code.toUpperCase();
+const nameCap = (code: string) => name(code).replace(/^./, (c) => c.toUpperCase());
+const LEGEND: TranslationStatus[] = ['ok', 'review', 'stale', 'pending', 'failed', 'excluded', 'missing'];
+const groupOf = (code: string) => (groups.world.includes(code) ? 'world' : 'europe');
+const LISTING_STATUS: Record<string, string> = { published: 'Élő', awaiting_payment: 'Fizetésre vár', submitted: 'Jóváhagyásra vár', draft: 'Piszkozat', changes_requested: 'Módosítás kell', archived: 'Archív', sold: 'Eladva', rejected: 'Elutasítva' };
+---
+
+<ul class="legend" aria-label="Jelmagyarázat">
+  {LEGEND.map((status) => <li><span class={`dot s-${status}`} aria-hidden="true"></span>{STATUS_HU[status]}</li>)}
+</ul>
+
+<div class="mx-scroll" role="region" aria-label="Fordítások áttekintése" tabindex="0">
+  <table class="mx">
+    <thead>
+      <tr>
+        <th class="mx-first" scope="col">Hirdetés</th>
+        {columns.map((code) => (
+          <th scope="col" class:list={['mx-col', groupOf(code) === 'world' && 'is-world']} title={`${nameCap(code)}: ${summaryLine(totals[code]) || 'nincs adat'}`}>
+            <span class="mx-code">{code}</span>
+            <span class="mx-tot">
+              {totals[code].ok + totals[code].source > 0 && <b class="g">{totals[code].ok + totals[code].source}</b>}
+              {totals[code].failed + totals[code].stale + totals[code].review > 0 && <b class={totals[code].failed ? 'r' : 'a'}>{totals[code].failed + totals[code].stale + totals[code].review}</b>}
+            </span>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <th class="mx-first" scope="row">
+            <a href={`/portal/translations/${row.id}`} class="mx-title">{row.title}</a>
+            <span class="mx-meta">#{row.ref} · {row.settlement} · {LISTING_STATUS[row.status] ?? row.status}{row.packageName ? ` · ${row.packageName}` : ''}{row.free ? ' · ingyenes' : ''}</span>
+          </th>
+          {columns.map((code) => {
+            const cell = row.cells[code];
+            return (
+              <td class:list={[groupOf(code) === 'world' && 'is-world']}>
+                <a class={`dot s-${cell.status}`} href={`/portal/translations/${row.id}?lang=${code}`} title={`${nameCap(code)}: ${cell.label}${cell.reason ? ` – ${cell.reason}` : ''}`}>
+                  <span class="sr">{nameCap(code)}: {cell.label}</span>
+                </a>
+              </td>
+            );
+          })}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; list-style: none; margin: 0 0 14px; padding: 0; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .legend li { display: inline-flex; align-items: center; gap: 7px; }
+  .mx-scroll { overflow-x: auto; border-radius: var(--r-lg); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); }
+  .mx-scroll:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .mx { border-collapse: separate; border-spacing: 0; width: 100%; font-size: var(--fs-small); }
+  .mx th, .mx td { padding: 0; border-bottom: 1px solid var(--pt-hair); text-align: center; vertical-align: middle; }
+  .mx thead th { position: sticky; top: 0; background: var(--white); z-index: 2; padding: 10px 0 8px; }
+  .mx tbody tr:last-child > * { border-bottom: 0; }
+  .mx-first { position: sticky; left: 0; z-index: 1; background: var(--white); text-align: left !important; min-width: 250px; max-width: 320px; padding: 11px 16px !important; box-shadow: 1px 0 0 var(--pt-hair); font-weight: var(--fw-regular, 400); }
+  .mx thead .mx-first { z-index: 3; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-quiet); }
+  .mx-col { min-width: 38px; font-weight: var(--fw-medium); }
+  .mx-code { display: block; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); }
+  .mx-tot { display: flex; justify-content: center; gap: 3px; min-height: 14px; margin-top: 2px; font-size: 11px; font-variant-numeric: tabular-nums; }
+  .mx-tot b { font-weight: var(--fw-medium); }
+  .mx-tot .g { color: var(--pt-green); }
+  .mx-tot .a { color: var(--pt-amber); }
+  .mx-tot .r { color: var(--pt-red); }
+  .is-world { background: rgba(16, 42, 67, 0.025); }
+  .mx thead .is-world { background: var(--linen); }
+  .mx-title { display: block; font-family: var(--serif); font-size: 16px; font-weight: var(--fw-display); color: var(--ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mx-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .mx-meta { display: block; margin-top: 2px; font-size: 12px; color: var(--ink-quiet); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dot { display: inline-block; position: relative; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle; box-sizing: border-box; }
+  a.dot { margin: 12px 12px; transition: transform 0.2s var(--ease-out); }
+  a.dot:hover { transform: scale(1.25); }
+  a.dot:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .s-ok { background: var(--pt-green); }
+  .s-review { background: var(--pt-amber); }
+  .s-stale { background: var(--white); box-shadow: inset 0 0 0 2.5px var(--pt-amber); }
+  .s-pending { background: var(--white); box-shadow: inset 0 0 0 2.5px #2f5f9e; }
+  .s-pending::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: #2f5f9e; }
+  .s-failed { background: var(--pt-red); }
+  .s-failed::after { content: '×'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--white); font-size: 12px; font-weight: 700; line-height: 1; }
+  .s-excluded { background: repeating-linear-gradient(135deg, #9aa5b1 0 2px, #e2e6ea 2px 4px); }
+  .s-missing { background: transparent; box-shadow: inset 0 0 0 1.5px #c3cad1; }
+  .s-source { border-radius: 3px; background: var(--ink); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 640px) { .mx-first { min-width: 170px; max-width: 190px; padding: 10px 12px !important; } }
+</style>

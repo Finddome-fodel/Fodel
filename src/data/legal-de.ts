@@ -10,6 +10,7 @@
  * Widerrufsrecht, OS-Plattform), stehen in Fodel-forditasok-atadas.md.
  */
 import type { ContentPageData } from '~/lib/content-sections';
+import { legacyTiers } from '~/lib/price-tiers';
 import { COMPANY, COMMISSION, addressLine, LISTING_EXTRAS, LISTING_PACKAGES, LISTING_VAT_PERCENT } from '~/config/company';
 import { SITE_HOST } from '~/config/site.mjs';
 import { eur } from '~/lib/format';
@@ -23,7 +24,11 @@ const notice =
   'Dies ist eine Übersetzung zur Orientierung. Bei Abweichungen gilt das niederländische (in Fragen des niederländischen Rechts) oder das ungarische Original.';
 const extra = (id: (typeof LISTING_EXTRAS)[number]['id']) => LISTING_EXTRAS.find((entry) => entry.id === id)!;
 const [cheap, normal] = LISTING_PACKAGES;
-const minMonths = (extra('homepage-highlight') as { minMonths?: number }).minMonths ?? 3;
+/** Every tier price of a package, e.g. "€ 129 / € 179" (the tier is set by the listing's forint price). */
+const tierPrices = (pkg: typeof normal) =>
+  legacyTiers(pkg.priceEur, pkg.priceEurAbove, pkg.thresholdHuf).map((tier) => eur(tier.priceEur, L)).join(' / ');
+// Only the category highlight is sold since November 2026; the homepage is an editorial choice.
+const minMonths = (extra('category-highlight') as { minMonths?: number }).minMonths ?? 3;
 
 export const LEGAL_DE = {
   imprint: {
@@ -231,11 +236,11 @@ export const LEGAL_DE = {
         intro: `Alle Preise enthalten ${pct(LISTING_VAT_PERCENT)} niederländische USt. Die vollständige Übersicht finden Sie auf der Seite Preise.`,
         rows: [
           [`Günstiges Inserat (${cheap.months} Monate)`, eur(cheap.priceEur, L)],
-          [`Normales Inserat (${normal.months} Monate)`, `${eur(normal.priceEur, L)} / ${eur(normal.priceEurAbove, L)}`],
+          [`Normales Inserat (${normal.months} Monate)`, `${tierPrices(normal)}`],
           ['Übersetzung', `${eur(extra('translation').priceEur, L)} pro Sprache`],
           [
             'Hervorhebung',
-            `${extra('category-highlight').priceEur}–${eur(extra('homepage-highlight').priceEur, L)} pro Monat (mind. ${minMonths} Monate)`,
+            `${eur(extra('category-highlight').priceEur, L)} pro Monat (mind. ${minMonths} Monate)`,
           ],
         ],
       },

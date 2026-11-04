@@ -21,6 +21,10 @@ import { isPortrait, isLowResolution, photoHints } from '~/config/review-checkli
 import { resolveImage } from '~/lib/property-images';
 import { MAX_UPLOAD_MB, MAX_EDGE, LOW_RESOLUTION_EDGE } from '~/lib/media';
 import type { PortalMedia } from '~/lib/portal/properties';
+import { PENDING_PHOTOS_MAX } from '~/lib/portal/photo-moderation';
+
+/** A "these photos were not published" notice (migration 0054, property_media_rejections). */
+export type PhotoNotice = { id: string; photo_count: number; reason_code: string | null; reason: string; note: string | null; created_at: string };
 
 interface Props {
   propertyId: string;
@@ -33,9 +37,17 @@ interface Props {
   locale?: PortalLang;
   /** Show the card heading (the editor); the setup has its own step heading. */
   withHeading?: boolean;
+  /**
+   * The owner of a live listing (§4c part 2): adding photos is free, every new
+   * one waits for an admin; approved ones can be reordered, made the cover or
+   * removed, but not swapped or recaptioned unseen.
+   */
+  live?: boolean;
+  /** Rejections the owner has not closed yet. */
+  notices?: PhotoNotice[];
 }
 
-const { propertyId, media, photoLimit: packageLimit, packageName, editable, isAdmin, locale = 'hu', withHeading = true } = Astro.props;
+const { propertyId, media, photoLimit: packageLimit, packageName, editable, isAdmin, locale = 'hu', withHeading = true, live = false, notices = [] } = Astro.props;
 
 const photoLimit=packageLimit;
 const moveLabel={hu:"Kép áthelyezése",nl:"Foto verplaatsen",en:"Move photo"}[locale];
@@ -48,11 +60,20 @@ function mediaSrc(storagePath: string): string {
 }
 const captionOf = (m: PortalMedia) => (m.alt as Record<string, string> | null)?.[locale] ?? (m.alt as Record<string, string> | null)?.hu ?? '';
 
-const hero = media.find((m) => m.is_hero) ?? media[0];
+const isPending = (m: PortalMedia) => m.pending === true;
+// The cover is what the public sees: never a photo still waiting for review.
+const hero = media.find((m) => m.is_hero && !isPending(m)) ?? media.find((m) => !isPending(m)) ?? media[0];
 const ordered = media;
 const photoCount = media.length;
-const photosFull = photoLimit !== null && photoCount >= photoLimit;
+const pendingCount = media.filter(isPending).length;
+const approvedCount = photoCount - pendingCount;
+const pendingFull = live && pendingCount >= PENDING_PHOTOS_MAX;
+const photosFull = (photoLimit !== null && photoCount >= photoLimit) || pendingFull;
 const hints = photoHints(media);
+/** On a live listing the last approved photo stays: the listing would have no picture. */
+const canRemove = (m: PortalMedia) => editable && (!live || isPending(m) || approvedCount > 1);
+const canReplace = (m: PortalMedia) => editable && (!live || isPending(m));
+const canCaption = (m: PortalMedia) => editable && (!live || isPending(m));
 
 const t = {
   hu: {
@@ -77,6 +98,19 @@ const t = {
       full: 'Legfeljebb 20 fénykép tölthető fel. Új kép előtt töröljön vagy cseréljen egyet.',
       add: 'Fotók hozzáadása',
       addSub: 'Húzza ide a képeket, vagy kattintson',
+      pending: 'Jóváhagyásra vár',
+      pendingTitle: 'Csak Ön látja. Jóváhagyás után jelenik meg a hirdetésben.',
+      liveTitle: 'Új fotók díjmentesen',
+      liveBody: 'Élő hirdetéséhez bármikor tölthet fel új fotót, ingyen. Az új képek rövid jóváhagyás után jelennek meg a hirdetésben, addig csak Ön látja őket „Jóváhagyásra vár” jelöléssel. A sorrendet és a címlapképet azonnal módosíthatja.',
+      liveLocked: 'Jóváhagyott kép cseréjéhez töltsön fel újat, majd törölje a régit; a leírása a jóváhagyás után már nem módosítható.',
+      liveWaiting: (n: number) => `${n} kép vár jóváhagyásra.`,
+      pendingFull: `Egyszerre legfeljebb ${PENDING_PHOTOS_MAX} kép várhat jóváhagyásra. Amint átnéztük őket, újabbakat tölthet fel.`,
+      adminWaiting: (n: number) => `${n} kép vár jóváhagyásra ennél a hirdetésnél. A nyilvános oldalon még nem látszanak.`,
+      adminModerate: 'Moderálás',
+      noticeTitle: (n: number) => `${n} fotó nem került ki a hirdetésbe`,
+      noticeOk: 'Rendben',
+      noticeAgain: 'Helyettük bármikor feltölthet új képet.',
+      reasons: { quality: 'Elmosódott, sötét vagy rossz minőségű kép', unrelated: 'Nem ezt az ingatlant mutatja', personal: 'Személyes adat látható rajta (arc, rendszám, irat)', branding: 'Felirat, logó, vízjel vagy elérhetőség van rajta', duplicate: 'Ugyanez a kép már szerepel a galériában', inappropriate: 'Nem hirdetésbe illő tartalom' } as Record<string, string>,
     },
   nl: {
       heading: 'Foto’s',
@@ -100,6 +134,19 @@ const t = {
       full: 'U kunt maximaal 20 foto’s uploaden. Verwijder of vervang eerst een foto.',
       add: 'Foto’s toevoegen',
       addSub: 'Sleep foto’s hierheen of klik',
+      pending: 'Wacht op goedkeuring',
+      pendingTitle: 'Alleen u ziet deze foto. Na goedkeuring verschijnt hij in de advertentie.',
+      liveTitle: 'Nieuwe foto’s kosteloos',
+      liveBody: 'U kunt op elk moment kosteloos nieuwe foto’s aan uw live advertentie toevoegen. Nieuwe foto’s verschijnen na een korte controle; tot dan ziet alleen u ze, gemarkeerd met „Wacht op goedkeuring”. De volgorde en de hoofdfoto wijzigt u direct.',
+      liveLocked: 'Wilt u een goedgekeurde foto vervangen? Upload een nieuwe en verwijder de oude; de omschrijving ligt na goedkeuring vast.',
+      liveWaiting: (n: number) => `${n} ${n === 1 ? 'foto wacht' : 'foto’s wachten'} op goedkeuring.`,
+      pendingFull: `Er kunnen maximaal ${PENDING_PHOTOS_MAX} foto’s tegelijk op goedkeuring wachten. Zodra we ze hebben bekeken, kunt u nieuwe toevoegen.`,
+      adminWaiting: (n: number) => `${n} foto’s wachten op goedkeuring.`,
+      adminModerate: 'Beoordelen',
+      noticeTitle: (n: number) => `${n} ${n === 1 ? 'foto is' : 'foto’s zijn'} niet geplaatst`,
+      noticeOk: 'Begrepen',
+      noticeAgain: 'U kunt er altijd nieuwe foto’s voor in de plaats uploaden.',
+      reasons: { quality: 'Onscherpe, donkere of slechte foto', unrelated: 'Toont niet deze woning', personal: 'Er zijn persoonsgegevens zichtbaar (gezichten, kentekens, documenten)', branding: 'Bevat tekst, een logo, een watermerk of contactgegevens', duplicate: 'Dezelfde foto staat al in de galerij', inappropriate: 'Inhoud die niet in een advertentie past' } as Record<string, string>,
     },
   en: {
       heading: 'Photos',
@@ -123,6 +170,19 @@ const t = {
       full: 'You can upload up to 20 photos. Delete or replace a photo first.',
       add: 'Add photos',
       addSub: 'Drag photos here or click',
+      pending: 'Awaiting approval',
+      pendingTitle: 'Only you can see it. It appears in the listing once approved.',
+      liveTitle: 'New photos, free of charge',
+      liveBody: 'You can add new photos to your live listing at any time, free of charge. New photos appear after a short review; until then only you can see them, marked “Awaiting approval”. You can change the order and the cover photo straight away.',
+      liveLocked: 'To replace an approved photo, upload a new one and delete the old one; its description is fixed once approved.',
+      liveWaiting: (n: number) => `${n} ${n === 1 ? 'photo is' : 'photos are'} awaiting approval.`,
+      pendingFull: `Up to ${PENDING_PHOTOS_MAX} photos can await approval at a time. Once we have reviewed them, you can add more.`,
+      adminWaiting: (n: number) => `${n} photos are awaiting approval.`,
+      adminModerate: 'Review',
+      noticeTitle: (n: number) => `${n} ${n === 1 ? 'photo was' : 'photos were'} not published`,
+      noticeOk: 'Got it',
+      noticeAgain: 'You can upload new photos in their place at any time.',
+      reasons: { quality: 'Blurred, dark or low-quality image', unrelated: 'Does not show this property', personal: 'Shows personal data (faces, number plates, documents)', branding: 'Contains text, a logo, a watermark or contact details', duplicate: 'The same image is already in the gallery', inappropriate: 'Content not suitable for a listing' } as Record<string, string>,
     },
 }[locale];
 
@@ -138,6 +198,9 @@ const scriptStrings = {
       confirmTitle: 'Törli a képet?',
       confirmBody: 'A kép véglegesen eltűnik a hirdetésből.',
       confirmLabel: 'Törlés',
+      donePending: 'Feltöltve. Az új képek jóváhagyás után jelennek meg a hirdetésben; az oldal frissül…',
+      actionFailed: 'A módosítás nem sikerült',
+      noticeFailed: 'Nem sikerült bezárni az értesítést.',
       errors: {
         'unsupported-type': 'nem támogatott formátum (JPG, PNG vagy WebP lehet)',
         'too-large': 'túl nagy fájl',
@@ -146,6 +209,10 @@ const scriptStrings = {
         'not-editable': 'a hirdetés jelenleg nem szerkeszthető',
         'photo-limit': photoLimit ? `elérte a csomagban foglalt ${photoLimit} képet` : 'elérte a csomag képkeretét',
         forbidden: 'nincs jogosultsága',
+        'pending-limit': `egyszerre legfeljebb ${PENDING_PHOTOS_MAX} kép várhat jóváhagyásra`,
+        'approved-photo-locked': 'jóváhagyott kép nem cserélhető és a leírása sem módosítható; töltsön fel újat',
+        'last-photo': 'az élő hirdetésben legalább egy jóváhagyott képnek maradnia kell',
+        'pending-cover': 'jóváhagyásra váró kép nem lehet címlapkép',
       },
     },
   nl: {
@@ -158,6 +225,9 @@ const scriptStrings = {
       confirmTitle: 'Foto verwijderen?',
       confirmBody: 'De foto verdwijnt definitief uit de advertentie.',
       confirmLabel: 'Verwijderen',
+      donePending: 'Geüpload. De nieuwe foto’s verschijnen na goedkeuring in de advertentie; de pagina wordt vernieuwd…',
+      actionFailed: 'De wijziging is niet gelukt',
+      noticeFailed: 'De melding kon niet worden gesloten.',
       errors: {
         'unsupported-type': 'dit formaat wordt niet ondersteund (JPG, PNG of WebP)',
         'too-large': 'het bestand is te groot',
@@ -166,6 +236,10 @@ const scriptStrings = {
         'not-editable': 'de advertentie kan nu niet worden bewerkt',
         'photo-limit': photoLimit ? `het maximum van ${photoLimit} foto’s in uw pakket is bereikt` : 'het maximum aantal foto’s is bereikt',
         forbidden: 'geen toegang',
+        'pending-limit': `er kunnen maximaal ${PENDING_PHOTOS_MAX} foto’s tegelijk op goedkeuring wachten`,
+        'approved-photo-locked': 'een goedgekeurde foto kan niet worden vervangen of opnieuw omschreven; upload een nieuwe',
+        'last-photo': 'een live advertentie houdt minstens één goedgekeurde foto',
+        'pending-cover': 'een foto die op goedkeuring wacht, kan geen hoofdfoto zijn',
       },
     },
   en: {
@@ -178,6 +252,9 @@ const scriptStrings = {
       confirmTitle: 'Delete this photo?',
       confirmBody: 'The photo will be removed from the listing for good.',
       confirmLabel: 'Delete',
+      donePending: 'Uploaded. The new photos appear in the listing once approved; the page is refreshing…',
+      actionFailed: 'The change could not be saved',
+      noticeFailed: 'The notice could not be closed.',
       errors: {
         'unsupported-type': 'this format is not supported (use JPG, PNG or WebP)',
         'too-large': 'the file is too large',
@@ -186,6 +263,10 @@ const scriptStrings = {
         'not-editable': 'the listing cannot be edited right now',
         'photo-limit': photoLimit ? `you have reached the ${photoLimit} photos in your package` : 'you have reached the photo limit',
         forbidden: 'no access',
+        'pending-limit': `up to ${PENDING_PHOTOS_MAX} photos can await approval at a time`,
+        'approved-photo-locked': 'an approved photo cannot be replaced or redescribed; upload a new one',
+        'last-photo': 'a live listing keeps at least one approved photo',
+        'pending-cover': 'a photo awaiting approval cannot be the cover',
       },
     },
 }[locale];
@@ -212,6 +293,44 @@ const scriptStrings = {
     </p>
   </header>
   {!withHeading && <p class="pu-hint">{t.sub}</p>}
+
+  {notices.length > 0 && (
+    <ul class="pu-notices" data-photo-notices>
+      {notices.map((n) => (
+        <li class="pu-notice" data-notice={n.id}>
+          <span class="pu-notice-ic" aria-hidden="true">!</span>
+          <div>
+            <p class="pu-notice-t">{t.noticeTitle(n.photo_count)}</p>
+            <p class="pu-notice-r">{(n.reason_code && t.reasons[n.reason_code]) || n.note || n.reason}{n.reason_code && t.reasons[n.reason_code] && n.note ? <>: <q>{n.note}</q></> : null}</p>
+            <p class="pu-notice-s">{t.noticeAgain}</p>
+          </div>
+          <button type="button" class="pu-notice-ok" data-dismiss-notice={n.id}>{t.noticeOk}</button>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {live && editable && (
+    <aside class="pu-live" aria-label={t.liveTitle}>
+      <span class="pu-live-ic" aria-hidden="true">✦</span>
+      <div>
+        <p class="pu-live-t">{t.liveTitle}</p>
+        <p>{t.liveBody}</p>
+        <p class="pu-live-s">{t.liveLocked}</p>
+        {pendingCount > 0 && <p class="pu-live-w"><span class="dot" aria-hidden="true"></span>{t.liveWaiting(pendingCount)}</p>}
+      </div>
+    </aside>
+  )}
+  {isAdmin && pendingCount > 0 && (
+    <aside class="pu-live admin">
+      <span class="pu-live-ic" aria-hidden="true">◷</span>
+      <div>
+        <p class="pu-live-t">{t.adminWaiting(pendingCount)}</p>
+        <p><a class="pu-live-a" href={`/portal/photos#listing-${propertyId}`}>{t.adminModerate} →</a></p>
+      </div>
+    </aside>
+  )}
+
   <p class="pu-hint">{t.rules}</p>
 
   <details class="photo-advice"><summary>{t.tipsHeading}</summary><PhotoTips locale={locale} variant="portal" heading={t.tipsHeading} why={false}/></details>
@@ -222,21 +341,22 @@ const scriptStrings = {
 
   <div class="media-grid" data-media-grid>
     {ordered.map((m) => (
-      <figure class="media-item" data-media-id={m.id} data-hero={m === hero ? 'true' : undefined}>
+      <figure class:list={['media-item', { 'is-pending': isPending(m) }]} data-media-id={m.id} data-hero={m === hero ? 'true' : undefined} data-pending={isPending(m) ? 'true' : undefined}>
         <div class="media-thumb">
           <img src={mediaSrc(m.storage_path)} alt={captionOf(m)} loading="lazy" decoding="async" />
           {m === hero && <span class="hero-badge">{t.cover}</span>}
+          {isPending(m) && <span class="pending-badge" title={t.pendingTitle}><span class="dot" aria-hidden="true"></span>{t.pending}</span>}
           {(isPortrait(m) || isLowResolution(m)) && (
             <span class="photo-flags">
               {isPortrait(m) && <span title={t.portraitTitle}>{t.portrait}</span>}
               {isLowResolution(m) && <span title={t.lowTitle}>{t.low}</span>}
             </span>
           )}
-          {m !== hero && editable && <button type="button" class="set-hero" data-set-hero={m.id}>{t.makeCover}</button>}
-          {editable && <button type="button" class="remove" data-remove-media={m.id} aria-label={t.remove}>×</button>}
+          {m !== hero && editable && !isPending(m) && <button type="button" class="set-hero" data-set-hero={m.id}>{t.makeCover}</button>}
+          {canRemove(m) && <button type="button" class="remove" data-remove-media={m.id} aria-label={t.remove}>×</button>}
         </div>
         <figcaption>
-          {editable && <div class="photo-controls"><button type="button" data-photo-move="-1" aria-label={`${moveLabel}: ←`}>←</button><button type="button" data-photo-move="1" aria-label={`${moveLabel}: →`}>→</button><label class="photo-replace">{replaceLabel}<input type="file" accept="image/jpeg,image/png,image/webp" data-replace-photo={m.id}/></label><span class="photo-grip" draggable="true" data-photo-drag aria-label={moveLabel} title={moveLabel}>⠿</span></div>}
+          {editable && <div class="photo-controls"><button type="button" data-photo-move="-1" aria-label={`${moveLabel}: ←`}>←</button><button type="button" data-photo-move="1" aria-label={`${moveLabel}: →`}>→</button>{canReplace(m) && <label class="photo-replace">{replaceLabel}<input type="file" accept="image/jpeg,image/png,image/webp" data-replace-photo={m.id}/></label>}<span class="photo-grip" draggable="true" data-photo-drag aria-label={moveLabel} title={moveLabel}>⠿</span></div>}
 
           <label class="sr-only" for={`caption-${m.id}`}>{t.captionLabel}</label>
           <input
@@ -248,14 +368,14 @@ const scriptStrings = {
             value={captionOf(m)}
             data-caption-for={m.id}
             enterkeyhint="done"
-            disabled={!editable}
+            disabled={!canCaption(m)}
           />
         </figcaption>
       </figure>
     ))}
   </div>
 
-  {photosFull && <p class="pu-warn" data-photo-full>{t.full}</p>}
+  {photosFull && <p class="pu-warn" data-photo-full>{pendingFull ? t.pendingFull : t.full}</p>}
   {editable && (
     <label class="dropzone" data-dropzone hidden={photosFull}>
       <input type="file" accept="image/jpeg,image/png,image/webp" multiple class="dz-input" data-file-input />
@@ -279,6 +399,9 @@ const scriptStrings = {
     confirmTitle: string;
     confirmBody: string;
     confirmLabel: string;
+    donePending: string;
+    actionFailed: string;
+    noticeFailed: string;
     errors: Record<string, string>;
   };
 
@@ -291,11 +414,43 @@ const scriptStrings = {
     const status = root.querySelector<HTMLElement>('[data-upload-status]')!;
     const fill = (text: string, values: Record<string, string>) => text.replace(/\{(\w+)\}/g, (_, k) => values[k] ?? '');
 
+    /** "The change failed: <why>", from the API's error code when it has one. */
+    async function failure(response: Response): Promise<string> {
+      const code = (await response.json().catch(() => ({})))?.error;
+      const reason = typeof code === 'string' ? s.errors[code] : undefined;
+      return reason ? `${s.actionFailed}: ${reason}.` : `${s.actionFailed}.`;
+    }
+
+    root.querySelectorAll<HTMLButtonElement>('[data-dismiss-notice]').forEach((button) =>
+      button.addEventListener('click', async () => {
+        const id = button.dataset.dismissNotice!;
+        const item = button.closest<HTMLElement>('[data-notice]');
+        button.disabled = true;
+        const response = await fetch(`/api/portal/properties/${propertyId}/photo-notices`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ ids: [id] }),
+        }).catch(() => null);
+        if (response?.ok) {
+          item?.classList.add('leaving');
+          setTimeout(() => {
+            const list = item?.parentElement;
+            item?.remove();
+            if (list && !list.children.length) list.remove();
+          }, 260);
+        } else {
+          button.disabled = false;
+          status.textContent = s.noticeFailed;
+        }
+      })
+    );
+
     let uploading=false;
     async function uploadFiles(files: File[],replaceId?:string) {
       if(uploading)return;uploading=true;
       try{
       const soft: string[] = [];
+      let queued = false;
       for (const file of files) {
         status.textContent = fill(s.uploading, { name: file.name });
         // Large phone photos are scaled down in the browser first — the server
@@ -313,16 +468,17 @@ const scriptStrings = {
           const json = await res.json().catch(() => ({}));
           if (!res.ok || !json.ok) throw new Error(json.error ?? 'upload-failed');
           if (json.warning === 'low-resolution') soft.push(file.name);
+          if (json.pending) queued = true;
         } catch (error) {
           const reason = s.errors[(error as Error).message];
           status.textContent = `${fill(s.failed, { name: file.name })}${reason ? `: ${reason}` : ''}`;
           root.dispatchEvent(new CustomEvent('photos:error', { bubbles: true, detail: (error as Error).message }));
-          if ((error as Error).message === 'photo-limit') setTimeout(() => location.reload(), 2500);
+          if (['photo-limit', 'pending-limit'].includes((error as Error).message)) setTimeout(() => location.reload(), 2500);
           return;
         }
       }
-      status.textContent = soft.length ? fill(s.lowRes, { names: soft.join(', ') }) : s.done;
-      setTimeout(() => location.reload(), soft.length ? 4000 : 0);
+      status.textContent = soft.length ? fill(s.lowRes, { names: soft.join(', ') }) : queued ? s.donePending : s.done;
+      setTimeout(() => location.reload(), soft.length ? 4000 : queued ? 2200 : 0);
       }catch{status.textContent=s.failed.replace('{name}',files[0]?.name||'');}finally{uploading=false;}
     }
 
@@ -379,7 +535,7 @@ const scriptStrings = {
       try{
         const response=await fetch(`/api/portal/properties/${propertyId}/media`,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({ids:items.map(item=>item.dataset.mediaId)})});
         if(!response.ok)throw new Error('save-failed');
-      }catch{before.forEach(item=>grid.append(item));status.textContent=s.captionFailed;}
+      }catch{before.forEach(item=>grid.append(item));status.textContent=`${s.actionFailed}.`;}
       finally{reordering=false;}
     }
     grid?.addEventListener('click',e=>{
@@ -405,7 +561,7 @@ const scriptStrings = {
           : window.confirm(s.confirmTitle);
         if (!ok) return;
         const response=await fetch(`/api/portal/properties/${propertyId}/media/${removeId}`, { method: 'DELETE' });
-        if(response.ok)location.reload();else status.textContent=s.captionFailed;
+        if(response.ok)location.reload();else status.textContent=await failure(response);
         return;
       }
 
@@ -416,7 +572,7 @@ const scriptStrings = {
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ isHero: true }),
         });
-        if(response.ok)location.reload();else status.textContent=s.captionFailed;
+        if(response.ok)location.reload();else status.textContent=await failure(response);
       }
     });
   });
@@ -472,7 +628,34 @@ const scriptStrings = {
   .dz-ic { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 8px; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 24px; line-height: 1; transition: transform 0.4s var(--ease-out); }
   .dz-t { font-size: var(--fs-body); font-weight: var(--fw-medium); color: var(--ink); }
   .dz-s { font-size: 14px; color: var(--ink-quiet); }
+  /* Live listing (§4c): a photo waiting for review, the banner, and rejection notices. */
+  .media-item.is-pending .media-thumb { box-shadow: 0 0 0 1.5px var(--pt-amber); }
+  .media-item.is-pending img { filter: saturate(0.82); }
+  .pending-badge { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px 4px 9px; border-radius: var(--r-pill); background: rgba(255, 247, 224, 0.97); color: var(--pt-amber); font-size: 12px; letter-spacing: 0.02em; box-shadow: var(--shadow-sm); }
+  .hero-badge + .pending-badge { top: 42px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; animation: pu-pulse 2.4s var(--ease-out) infinite; }
+  @keyframes pu-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .pu-live { display: flex; gap: 14px; align-items: flex-start; max-width: 76ch; margin: 0 0 18px; padding: 16px 18px; border-radius: var(--r-lg); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); }
+  .pu-live-ic { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 15px; }
+  .pu-live p { font-size: 14px; line-height: 1.65; color: var(--ink-quiet); }
+  .pu-live .pu-live-t { margin-bottom: 4px; font-size: 15px; font-weight: var(--fw-medium); color: var(--ink); }
+  .pu-live .pu-live-s { margin-top: 6px; font-size: 13px; }
+  .pu-live .pu-live-w { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 4px 12px; border-radius: var(--r-pill); background: var(--pt-amber-bg); color: var(--pt-amber); font-size: 13px; }
+  .pu-live.admin { background: var(--pt-amber-bg); box-shadow: none; }
+  .pu-live.admin .pu-live-ic { background: var(--pt-amber); color: var(--white); }
+  .pu-live-a { color: var(--ink); font-weight: var(--fw-medium); text-decoration: underline; text-underline-offset: 3px; }
+  .pu-notices { display: grid; gap: 10px; max-width: 76ch; margin: 0 0 18px; padding: 0; list-style: none; }
+  .pu-notice { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r-lg); background: var(--white); box-shadow: inset 0 0 0 1px var(--pt-hair), var(--shadow-sm); transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out); }
+  .pu-notice.leaving { opacity: 0; transform: translateY(-4px); }
+  .pu-notice-ic { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--pt-red); color: var(--white); font-size: 14px; font-weight: var(--fw-medium); }
+  .pu-notice > div { flex: 1; min-width: 0; }
+  .pu-notice-t { font-size: 14.5px; font-weight: var(--fw-medium); color: var(--ink); }
+  .pu-notice-r { margin-top: 2px; font-size: 14px; line-height: 1.6; color: var(--ink); overflow-wrap: anywhere; }
+  .pu-notice-s { margin-top: 4px; font-size: 13px; color: var(--ink-quiet); }
+  .pu-notice-ok { flex: none; min-height: 36px; padding: 6px 14px; border: 1px solid var(--pt-hair); border-radius: var(--r-pill); background: var(--white); color: var(--ink); font-size: 13px; cursor: pointer; }
+  @media (hover: hover) { .pu-notice-ok:hover { border-color: var(--ink); } }
+  @media (max-width: 560px) { .pu-notice { flex-wrap: wrap; } .pu-notice-ok { margin-inline-start: 42px; } }
   .upload-status { min-height: 1.5em; margin-top: 12px; font-size: 14px; color: var(--ink-quiet); }
   @media (max-width: 720px) { .media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; } }
-  @media (prefers-reduced-motion: reduce) { .media-item img, .dz-ic { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .media-item img, .dz-ic, .pu-notice { transition: none; } .dot { animation: none; } }
 </style>

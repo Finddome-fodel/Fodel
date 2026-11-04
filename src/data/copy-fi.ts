@@ -22,13 +22,13 @@ export const FI = {
     meta: {
       title: 'FINDDOME Real Estates | Ilmoita kiinteistösi Euroopassa',
       description:
-        'Lataa ilmoituksesi muutamassa vaiheessa. Verkkomaksun jälkeen se julkaistaan 21 kielellä ilman yksinoikeussopimusta.',
+        'Lataa ilmoituksesi muutamassa vaiheessa. Verkkomaksun jälkeen se julkaistaan 28 kielellä ilman yksinoikeussopimusta.',
     },
     hero: {
       eyebrow: `Vuodesta 2013 · ${foundedInLabel(L)}`,
       title: ['Ilmoita', 'kiinteistösi', 'Euroopassa'],
       emphasis: 1,
-      body: 'Lataa ilmoituksesi muutamassa vaiheessa. Tarkistamme sen, ja verkkomaksun jälkeen se julkaistaan sivustollamme 21 kielellä ilman yksinoikeussopimusta. Kiinnostuneet ottavat yhteyttä suoraan sinuun tai meidän kauttamme.',
+      body: 'Lataa ilmoituksesi muutamassa vaiheessa. Tarkistamme sen, ja verkkomaksun jälkeen se julkaistaan sivustollamme 28 kielellä ilman yksinoikeussopimusta. Kiinnostuneet ottavat yhteyttä suoraan sinuun tai meidän kauttamme.',
       primary: 'Selaa kohteita',
       secondary: 'Maksuton kohdehaku',
       featuredLabel: 'Nostot',

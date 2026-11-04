@@ -25,13 +25,13 @@ export const DE = {
     meta: {
       title: 'FINDDOME Immobilien | Inserieren Sie Ihre Immobilie in Europa',
       description:
-        'Laden Sie Ihr Inserat in wenigen Schritten hoch. Nach der Online-Zahlung erscheint es in 21 Sprachen, ohne Exklusivvertrag.',
+        'Laden Sie Ihr Inserat in wenigen Schritten hoch. Nach der Online-Zahlung erscheint es in 28 Sprachen, ohne Exklusivvertrag.',
     },
     hero: {
       eyebrow: `Seit 2013 · ${foundedInLabel(L)}`,
       title: ['Inserieren Sie', 'Ihre Immobilie', 'in Europa'],
       emphasis: 1,
-      body: 'Laden Sie Ihr Inserat in wenigen Schritten hoch. Wir prüfen es, und nach der Online-Zahlung erscheint es auf unserer Website in 21 Sprachen, ohne Exklusivvertrag. Interessenten wenden sich direkt an Sie oder an uns.',
+      body: 'Laden Sie Ihr Inserat in wenigen Schritten hoch. Wir prüfen es, und nach der Online-Zahlung erscheint es auf unserer Website in 28 Sprachen, ohne Exklusivvertrag. Interessenten wenden sich direkt an Sie oder an uns.',
       primary: 'Immobilien ansehen',
       secondary: 'Kostenloser Suchauftrag',
       featuredLabel: 'Empfohlen',

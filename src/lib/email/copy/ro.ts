@@ -89,6 +89,27 @@ export const RO = {
     cta: 'Modificați anunțul',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Am verificat fotografiile dumneavoastră noi (#${ref})`,
+    preheader: 'Fotografiile aprobate se văd deja în anunț.',
+    heading: 'Am verificat fotografiile dumneavoastră noi',
+    body: (title: string, ref: string) =>
+      `Vă mulțumim că ați actualizat galeria anunțului „${title}” (#${ref}). Echipa noastră a verificat fotografiile noi.`,
+    approvedLabel: 'Aprobate, deja vizibile',
+    rejectedLabel: 'Nepublicate',
+    reasonsTitle: 'De ce nu au fost publicate unele fotografii?',
+    reasons: {
+      quality: 'Imagine neclară, întunecată sau de calitate slabă',
+      unrelated: 'Nu prezintă această proprietate',
+      personal: 'Sunt vizibile date personale (fețe, numere de înmatriculare, documente)',
+      branding: 'Conține text, un logo, un filigran sau date de contact',
+      duplicate: 'Aceeași imagine există deja în galerie',
+      inappropriate: 'Conținut nepotrivit pentru un anunț',
+    } as Record<string, string>,
+    after: 'Puteți adăuga în continuare fotografii noi, gratuit. Fiecare imagine nouă apare în anunț după o scurtă verificare.',
+    cta: 'Gestionați fotografiile',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Aprobat (#${ref}): mai rămâne doar plata`,
     preheader: 'Anunțul dumneavoastră este aprobat și va fi publicat imediat ce primim plata.',

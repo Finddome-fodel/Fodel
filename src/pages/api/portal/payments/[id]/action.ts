@@ -14,8 +14,8 @@ import { deliver, localeOf, templates } from '~/lib/email/send';
 import { createDraftFromPayment } from '~/lib/invoicing/store';
 import { linesForEmail, formatCents, type OrderLine } from '~/lib/orders';
 import { intlTag } from '~/lib/format';
-import { listingTitle, publishProperty, publicUrl, renewProperty, isRenewalOrder } from '~/lib/portal/publish';
-import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
+import { listingTitle, publishProperty, publicUrl, renewProperty, isRenewalOrder, renewalMonthsOf } from '~/lib/portal/publish';
+import { applyPaidEntitlement, enqueuePaidTranslations } from '~/lib/ai/translation-orders';
 import { logEvent } from '~/lib/activity';
 import { SITE_URL } from '~/config/site.mjs';
 
@@ -105,10 +105,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       const { data: property } = await admin.from('properties').select('ref, status').eq('id', order.property_id).maybeSingle();
       if (isRenewalOrder(order.line_items as OrderLine[])) {
         // A renewal paid by transfer: extend (and, if expired, republish).
-        const renewed = await renewProperty(admin, order.property_id, { months: 6, source: 'portal', actorId: user?.id, actorEmail: profile?.email, dedupeKey: `order-${order.id}` });
+        const renewed = await renewProperty(admin, order.property_id, { months: renewalMonthsOf(order.line_items as any[]), source: 'portal', actorId: user?.id, actorEmail: profile?.email, dedupeKey: `order-${order.id}` });
         if (!renewed.ok && renewed.error !== 'not-renewable') return json(500, { ok: false, error: renewed.error });
       } else if (property?.status === 'awaiting_payment') {
-        const published = await publishProperty(admin, order.property_id);
+        await applyPaidEntitlement(admin, order);
+        const published = await publishProperty(admin, order.property_id, { kickOrigin: new URL(request.url).origin });
         if (!published.ok) return json(500, { ok: false, error: published.error });
         await enqueuePaidTranslations(admin, order, new URL(request.url).origin);
       } else if (property?.status === 'published') {

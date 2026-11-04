@@ -1,8 +1,10 @@
-import { PROPERTY_GROUPS, labelIn } from '~/lib/listing-catalogue';
+import { PROPERTY_GROUPS, labelIn, livingAreaKind, canonicalSubtype } from '~/lib/listing-catalogue';
 import { fieldRules, parkingFits, gapError, gapControl, type ListingField } from '~/lib/listing-details';
-import { regionsFor, regionLabel } from '~/config/countries';
+import { regionLabel } from '~/config/countries';
+import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
 import { parseLocaleNumber } from '~/lib/validation';
-import type { RateSnapshot } from '~/lib/exchange-rates';
+import { roundEur, type RateSnapshot } from '~/lib/exchange-rates';
+import { groupAmountTyping } from '~/lib/portal/num';
 
 const coordinate = (s:string) => s.trim() ? Number(s.replace(/\s/g,'').replace(',','.')) : NaN;
 const roots=[...document.querySelectorAll<HTMLElement>('[data-listing-fields]')];
@@ -31,6 +33,20 @@ for(const form of forms){
       const tag=wrapper.querySelector<HTMLElement>('.req');
       if(tag&&words.required)tag.textContent=rule==='required'?words.required:words.optional;
     }
+    // The living-area column is worded for the type: the home's net usable area, "if there is a home", or a building's.
+    const areaBox=form.querySelector<HTMLElement>('[data-area-copy]');
+    if(areaBox){
+      const copy=JSON.parse(areaBox.dataset.areaCopy||'{}') as Record<string,{label:string;hint:string}>;
+      const kind=livingAreaKind(group(),subtype());
+      const text=copy[kind];
+      const label=areaBox.querySelector('label');
+      if(text&&label&&label.firstChild)label.firstChild.nodeValue=`${text.label}\n    `;
+      const hint=areaBox.querySelector<HTMLElement>('.hint');
+      if(text&&hint)hint.textContent=text.hint;
+    }
+    // A short hint under the subtype where the types are easy to mix up (the three agricultural ones).
+    const typeHint=form.querySelector<HTMLElement>('[data-subtype-hint]');
+    if(typeHint){const hints=JSON.parse(typeHint.dataset.hints||'{}') as Record<string,string>;typeHint.textContent=hints[canonicalSubtype(subtype())]||'';typeHint.hidden=!typeHint.textContent;}
     // Street has no wrapper of its own; it is always shown and required only for a home.
     const street=control('street')?.closest('.fld')?.querySelector<HTMLElement>('.req');
     if(street&&words.required)street.textContent=rules.street==='required'?words.required:words.optional;
@@ -127,13 +143,34 @@ for(const form of forms){
     try{
       const snapshot=await rates();if(seq!==priceSequence)return;
       const rate=snapshot.rates[get('original_currency')];if(!rate)throw new Error('rates');
-      const eur=Math.round(amount/rate*100)/100;
-      form.dataset.priceHuf=String(Math.round(eur*snapshot.rates.HUF));
-      out.textContent=`≈ ${new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(eur)}`;
+      // Same rule as convertPrice() on the server: a converted price is rounded to the admin's step (default €100),
+      // a euro price is kept; the forint figure (which decides the package tier) is never rounded.
+      const currency=get('original_currency');
+      const exact=Math.round(amount/rate*100)/100;
+      const step=Number(roots.find(r=>r.closest('form')===form)?.dataset.rounding)||100;
+      const eur=currency==='EUR'?exact:roundEur(exact,{step});
+      form.dataset.priceHuf=String(currency==='HUF'?Math.round(amount):Math.round(exact*snapshot.rates.HUF));
+      out.textContent=`≈ ${new Intl.NumberFormat(locale,{style:'currency',currency:'EUR',maximumFractionDigits:currency==='EUR'?2:0}).format(eur)}`;
       if(note)note.textContent=`${snapshot.source} · ${snapshot.date} · 1 EUR = ${rate} ${get('original_currency')}`;
       form.dispatchEvent(new CustomEvent('listing:price'));
     }catch{if(seq===priceSequence)out.textContent=x('Az árfolyam most nem érhető el. Próbálja újra a mentést később; korábbi árfolyamát megőrizzük.','De wisselkoers is nu niet beschikbaar. Probeer later opnieuw; de vorige koers blijft bewaard.','Exchange rates are unavailable. Try saving again later; the existing rate is preserved.');}
   }
+  // The price shows its grouping while typed („1.500.000”; en „1,500,000”), caret kept after the same digit (spec §7.4).
+  const priceInput=control('original_price') as HTMLInputElement|null;
+  priceInput?.addEventListener('input',()=>{
+    const before=priceInput.value,caret=priceInput.selectionStart??before.length;
+    const next=groupAmountTyping(before,locale);
+    if(next===before)return;
+    priceInput.value=next;
+    if(document.activeElement!==priceInput)return;
+    // Same number of digits left of the caret; right after the decimal mark if that was just typed.
+    const decimal=locale==='en'?'.':',';
+    const digits=before.slice(0,caret).replace(/\D/g,'').length;
+    let at=0;
+    for(let seen=0;at<next.length&&seen<digits;at++)if(/\d/.test(next[at]))seen++;
+    if(before[caret-1]===decimal&&next[at]===decimal)at++;
+    priceInput.setSelectionRange(at,at);
+  });
   control('original_price')?.addEventListener('change',()=>void showPrice());
   control('original_currency')?.addEventListener('change',()=>void showPrice());
   // The first estimate is needed for the package tier; stored prices remain unchanged until the amount/currency changes.
@@ -173,13 +210,41 @@ for(const form of forms){
   control('settlement')?.addEventListener('change',()=>{
     if(country.value!=='HU')return;
     const match=places.find(p=>p[3]!==0&&p[1].localeCompare(get('settlement'),'hu',{sensitivity:'base'})===0);
-    const county=places.find(p=>p[3]===0&&p[0]===match?.[2])?.[1].replace(/ vármegye$/,'');
-    if(county)set('county',county);
+    const county=places.find(p=>p[3]===0&&p[0]===match?.[2])?.[1];
+    if(county)fillCounty(county);
   });
+  // County: a <select> for countries with a fixed list, a plain input otherwise. Both are in the HTML; exactly one
+  // is enabled and named "county", so FormData and form.elements.namedItem('county') always see a single control.
+  const countySelect=form.querySelector<HTMLSelectElement>('[data-county-select]');
+  const countyText=form.querySelector<HTMLInputElement>('[data-county-text]');
+  const countyMismatch=form.querySelector<HTMLElement>('[data-county-mismatch]');
+  const countyHint=form.querySelector<HTMLElement>('[data-county-hint]');
+  function swapCounty(){
+    if(!countySelect||!countyText)return;
+    const list=hasCountyList(country.value);
+    if(list){
+      const keep=countySelect.options[0];
+      countySelect.replaceChildren(keep,...countyOptions(country.value,locale).map(n=>new Option(n,n)));
+    }
+    countySelect.hidden=countySelect.disabled=!list;countyText.hidden=countyText.disabled=list;
+    if(list){countySelect.name='county';countyText.removeAttribute('name');}else{countyText.name='county';countySelect.removeAttribute('name');}
+    const label=form.querySelector<HTMLElement>('[data-region-label]');
+    if(label){label.textContent=regionLabel(country.value,locale);const host=label.closest('label');if(host)host.htmlFor=list?'f-county':'f-county-text';}
+    const req=form.querySelector<HTMLElement>('[data-county-req]');if(req)req.textContent=(list?req.dataset.required:req.dataset.optional)||'';
+    if(countyHint)countyHint.textContent=(list?countyHint.dataset.hintList:countyHint.dataset.hintFree)||'';
+    if(countyMismatch)countyMismatch.hidden=true;
+  }
+  /** Fill the county from a lookup (settlement list, map). For list countries only a canonical match is selected. */
+  function fillCounty(raw:string){
+    const canonical=canonicalCounty(country.value,raw);
+    if(!hasCountyList(country.value)){set('county',canonical||raw);return true;}
+    if(canonical){set('county',canonical);if(countyMismatch)countyMismatch.hidden=true;return true;}
+    if(countyMismatch)countyMismatch.hidden=false;
+    return false;
+  }
+  countySelect?.addEventListener('change',()=>{if(countyMismatch)countyMismatch.hidden=true;countySelect.querySelector('[data-stray]')?.remove();});
   function refreshCountry(clear=false){
-    const datalist=form.querySelector<HTMLDataListElement>('#listing-regions');
-    datalist?.replaceChildren(...regionsFor(country.value).map(r=>new Option(r.name)));
-    const label=form.querySelector<HTMLElement>('[data-region-label]');if(label)label.textContent=regionLabel(country.value,locale);
+    swapCounty();
     if(clear){set('county','');set('region','');set('settlement','');set('lat','');set('lng','');set('location_confirmed','');marker?.remove();void localPlaces();}
   }
   country.addEventListener('change',()=>{reverseSequence++;refreshCountry(true);});
@@ -189,13 +254,14 @@ for(const form of forms){
   type Hit={lat:number;lng:number;country:string;settlement:string;county:string;label:string};
   // Place fields the owner typed are theirs: a pin click may only fill what is empty or what an earlier lookup filled.
   const filled=new Set<string>();
-  for(const name of ['settlement','county'])control(name)?.addEventListener('input',()=>filled.delete(name));
+  control('settlement')?.addEventListener('input',()=>filled.delete('settlement'));
+  for(const el of [countySelect,countyText])el?.addEventListener('input',()=>filled.delete('county'));
   const writable=(name:string)=>!get(name).trim()||filled.has(name);
   function applyPlace(hit:Hit,move:boolean,keepTyped=false){
     if(hit.country!==country.value){set('country',hit.country);refreshCountry();set('region','');}
     const fill=(name:string,value:string)=>{if(value&&(!keepTyped||writable(name))){set(name,value);filled.add(name);}};
     fill('settlement',hit.settlement);
-    fill('county',hit.county.replace(/ (vármegye|County)$/,''));
+    if(hit.county&&(!keepTyped||writable('county'))&&fillCounty(hit.county))filled.add('county');
     if(move){set('lat',String(hit.lat));set('lng',String(hit.lng));}
     control('lng')?.dispatchEvent(new Event('change',{bubbles:true}));
   }

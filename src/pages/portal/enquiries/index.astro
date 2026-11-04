@@ -24,6 +24,7 @@ import { LOCALE_LABEL } from '~/lib/portal/labels';
 import Ago from '~/components/portal/Ago.astro';
 import { icon } from '~/lib/portal/icons';
 import { hoursSince } from '~/lib/portal/time';
+import { fmtInt } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
@@ -35,7 +36,7 @@ const tab = show === 'handled' ? 'handled' : 'open';
 
 type OtherRow = { id: string; name: string; email: string | null; phone: string | null; when: string; locale: string | null; lines: [string, string][] };
 const budget = (min: number | null, max: number | null) =>
-  min != null && max != null ? `€ ${min.toLocaleString('hu-HU')} – € ${max.toLocaleString('hu-HU')}` : min != null ? `€ ${min.toLocaleString('hu-HU')}-tól` : max != null ? `€ ${max.toLocaleString('hu-HU')}-ig` : '';
+  min != null && max != null ? `€ ${fmtInt(min)} – € ${fmtInt(max)}` : min != null ? `€ ${fmtInt(min)}-tól` : max != null ? `€ ${fmtInt(max)}-ig` : '';
 const present = (lines: [string, string | null | undefined][]) => lines.filter(([, value]) => value && String(value).trim()) as [string, string][];
 
 // Read only for the tab being shown; RLS lets admins read all three sources.

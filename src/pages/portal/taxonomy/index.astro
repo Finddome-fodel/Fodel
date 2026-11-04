@@ -36,6 +36,7 @@ function counts(term: any) {
   <nav class="tabs" aria-label="Szótár csoportok">{groups.map((group) => <a href={`#${group}`}>{GROUP_LABEL[group] ?? group}</a>)}</nav>
   {groups.map((group) => <section id={group} class="set-card">
     <h2>{GROUP_LABEL[group] ?? group}</h2>
+    {group === 'county' && <p class="scope" style="margin:-6px 0 18px">A hirdetésűrlap és a keresőszűrő a megyéket a beépített, rögzített listából veszi (src/data/listing/regions.json, 19 megye + Budapest). Ez a csoport csak címkézésre szolgál, a választható megyéket nem változtatja.</p>}
     <div class="rows">
       {(terms ?? []).filter((term: any) => term.group_key === group).map((term: any) => {
         const use = counts(term); return <form class="term" data-id={term.id} data-live={use.live}>

@@ -21,23 +21,31 @@ import { portalLang } from '~/lib/portal/auth-copy';
 import { getProperty, STATUS_LABEL } from '~/lib/portal/properties';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { resolveImage } from '~/lib/property-images';
-import { catalogue, suggestSelection, isAboveThreshold, REFERRAL_DISCOUNT_PERCENT } from '~/lib/orders';
+import { catalogue, suggestSelection, tierPhrase, REFERRAL_DISCOUNT_PERCENT } from '~/lib/orders';
 import { getCompany } from '~/lib/runtime-config';
-import { listingCatalog, packageOf, isAboveThreshold as tierApplies } from '~/lib/listing-packages';
+import { listingCatalog, packageOf, priceEurFor, tierFor } from '~/lib/listing-packages';
 import { eur, huf, placeLabel } from '~/lib/format';
 import { readDetails, settingLabel, utilityLabel, parkingLabel, HEARD_FROM, fieldRules, detailGaps, gapLabel } from '~/lib/listing-details';
-import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS } from '~/lib/listing-catalogue';
+import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTIONS, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
 import FreeBadge from '~/components/portal/FreeBadge.astro';
-import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import PackageChooser from '~/components/portal/PackageChooser.astro';
+import { chooserModel } from '~/lib/portal/package-chooser';
+import { currentRate } from '~/lib/fx-store';
+import { languageName } from '~/lib/listing-catalogue';
+import { loadEntitlement } from '~/lib/ai/translation-entitlement';
 import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
-import { estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL } from '~/lib/ai/translate-core';
+import { ALL_LOCALES, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL } from '~/lib/ai/translate-core';
 import { jobsForProperty } from '~/lib/ai/translation-jobs';
+import { publishLanguageProblems } from '~/lib/ai/translation-overview';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { readRequestedExtras, describeRequestedExtras } from '~/lib/portal/requested-extras';
 import { CHECKLIST, CHECKLIST_GROUP_LABEL, CHECKLIST_WRAP, MIN_PHOTOS, isPortrait, isLowResolution, photoHints } from '~/config/review-checklist';
 import { paymentGatesPublishing } from '~/config/flags';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
+import { fmtDecimal, fmtEur } from '~/lib/portal/num';
 
 function mediaSrc(storagePath: string): string {
   if (storagePath.startsWith('http')) return storagePath;
@@ -92,7 +100,8 @@ const requestLines = describeRequestedExtras(requested);
 // The order the owner will be asked to pay. Prices come from the admin's
 // package settings (src/lib/listing-packages.ts) — never typed in here.
 const listing = listingCatalog((await getCompany()).services);
-const cat = catalogue('hu', listing);
+// Only what is still sold, and only where it is sold (the video shoot is Hungary only).
+const cat = catalogue('hu', listing, { country: property.country ?? null });
 const suggested = suggestSelection({
   requested,
   package: property.package,
@@ -100,6 +109,7 @@ const suggested = suggestSelection({
   video_url: property.video_url,
   homepage_featured: property.homepage_featured,
   featured: property.featured,
+  country: property.country ?? null,
   locales: property.translations.map((t) => t.locale),
 }, listing);
 const suggestedExtras = new Map(suggested.extras.map((e) => [e.id, e.quantity]));
@@ -109,13 +119,29 @@ const aiOn = isAiEnabled();
 const trSource = pickSource(property.translations);
 const trPerLanguage = estimateCostMicroEur(trSource ? listingChars(listingText(trSource)) : 0, translationModel());
 const trPresent = property.translations.filter((row) => row.title?.trim() || row.description?.trim()).map((row) => row.locale);
-const trPrice = cat.extras.find((e) => e.id === 'translation')?.priceEur ?? 0;
-const trSuggested = suggested.extras.find((e) => e.id === 'translation')?.locales ?? [];
+const priceAt = (item: { tiers: { upToHuf: number | null; priceEur: number }[] } | undefined) => (item ? priceEurFor(item, property.price_huf) : 0);
+// What the listing already holds (migration 0053): an upgrade costs the difference. Null before the migration.
+const trHeld = await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null);
+const trChoice = suggested.translation ?? { packageId: 'basic', extraLocales: [], excludedLocales: [] };
+// The three packages: the same chooser the owner saw (term, band, languages, switch-offs), priced by priceFor(). Null before the migrations.
+const chooser = chooserModel({
+  catalog: listing, lang: 'hu', priceHuf: property.price_huf, packageId: suggested.packageId, months: suggested.months ?? null,
+  fx: await currentRate().catch(() => null), sourceLocale: trSource?.locale ?? 'hu', targets: ALL_LOCALES, names: (code) => languageName(code, 'hu'),
+});
+// „Típus ellenőrzése”: set by migration 0057 on an old „Mezőgazdasági üzem, birtok” listing until an admin confirms it.
+const subtypeReview = ((property as any).details as { subtype_review?: { from?: string; to: string; reason?: string } } | null)?.subtype_review ?? null;
+const agriSubtypes = PROPERTY_GROUPS.find((group) => group.key === 'agricultural')?.subtypes ?? [];
+const subtypeName = (key: string) => labelIn(agriSubtypes.find((sub) => sub.key === key)?.labels ?? {}, 'hu') || key;
+const categoryMin = listing.extras.find((extra) => extra.id === 'category-highlight')?.minMonths ?? 3;
 // A free-link owner's requests wait here for the admin's decision.
 const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
 const trOpen = trJobs.filter((job) => job.status === 'requested');
-const aboveThreshold = isAboveThreshold(property.price_huf, listing, suggested.packageId);
-const tieredPackage = listing.packages.find((pkg) => tierApplies(pkg, property.price_huf));
+// Every price below is the tier this listing's own forint price falls in (Csomagok → Ársávok).
+const tierNotes = listing.packages
+  .filter((pkg) => pkg.tiers.length > 1)
+  .map((pkg) => ({ name: pkg.names.hu, index: tierFor(pkg.tiers, property.price_huf).index, count: pkg.tiers.length, range: tierPhrase(pkg.tiers, tierFor(pkg.tiers, property.price_huf).index, 'hu') }));
+// Bought languages a visitor could not read yet: the admin has to say they know before approving.
+const langProblems = await publishLanguageProblems(createSupabaseAdminClient(), property.id);
 
 const reviewable = property.status === 'submitted';
 // Build-time policy, the same flag status.ts reads: the wording must match what approval actually does.
@@ -157,7 +183,7 @@ const { data: freeEvent } = freeApprovedAt
 const freeNote = typeof freeEvent?.payload?.note === 'string' ? freeEvent.payload.note : null;
 const freeWaivedCents = Number(freeEvent?.payload?.waivedCents ?? 0);
 const freeFeeLine = freeWaivedCents > 0
-  ? ` A kiküldött ${(freeWaivedCents / 100).toLocaleString('de-DE')} €-s díjbekérőt érvénytelenítettük;`
+  ? ` A kiküldött ${fmtEur(freeWaivedCents / 100)}-s díjbekérőt érvénytelenítettük;`
   : ' Díjbekérő nem készült hozzá;';
 const canApproveFree = freeApprovalReady && !isFree && (reviewable || awaitingPayment);
 const openFee = openOrder?.status === 'pending' ? openOrder.amount_cents : null;
@@ -232,7 +258,7 @@ const { data: creditableReferral } = property.owner_id
 
   {awaitingPayment && (
     <p class="notice warn">
-      Ez a hirdetés jóváhagyva, fizetésre vár{openOrder ? ` — ${(openOrder.amount_cents / 100).toLocaleString('de-DE')} €` : ''}.
+      Ez a hirdetés jóváhagyva, fizetésre vár{openOrder ? ` — ${fmtEur(openOrder.amount_cents / 100)}` : ''}.
       Ha az átutalás megérkezett, alább élesítheti.
     </p>
   )}
@@ -252,8 +278,8 @@ const { data: creditableReferral } = property.owner_id
         const rules = fieldRules(group, subtype), shown = (k: keyof typeof rules) => rules[k] !== 'hidden';
         const d = readDetails(property.details, property);
         const term = (g: 'heating' | 'wall' | 'condition', key: string) => { const t = taxonomy[g].find((v) => v.key === key); return t ? labelIn(DETAIL_OPTIONS[g].find((v) => v.key === key)?.labels || t.labels, 'hu') : key; };
-        const m2 = (v: number | null | undefined) => v != null && v > 1 ? `${v.toLocaleString('hu')} m²` : null;
-        const areas = [shown('floor_m2') && m2(property.floor_m2) && `${m2(property.floor_m2)} lakóegység`, shown('building_m2') && m2(property.building_m2) && `${m2(property.building_m2)} épület`, shown('plot_m2') && m2(property.plot_m2) && `${m2(property.plot_m2)} telek`].filter(Boolean);
+        const m2 = (v: number | null | undefined) => v != null && v > 1 ? `${fmtDecimal(v)} m²` : null;
+        const areas = [shown('floor_m2') && m2(property.floor_m2) && `${m2(property.floor_m2)} lakóterület`, shown('building_m2') && m2(property.building_m2) && `${m2(property.building_m2)} épület`, shown('plot_m2') && m2(property.plot_m2) && `${m2(property.plot_m2)} telek`].filter(Boolean);
         const counts = shown('rooms') ? ([['szoba', d.rooms], ['szint', d.floors], ['fürdőszoba', property.bathrooms ?? undefined], ['konyha', d.kitchens], ['különálló WC', d.toilets]] as [string, number | undefined][]).filter(([, n]) => n !== undefined).map(([k, n]) => `${n} ${k}`) : [];
         const energy = readEnergy(property.epc_class);
         const features = currentFeatures(property.features, group).features.map((k) => termLabel(taxonomy.feature.find((t) => t.key === k), 'hu') || k);
@@ -402,6 +428,28 @@ const { data: creditableReferral } = property.owner_id
     </section>
   )}
 
+  {subtypeReview && (
+    <section class="subtype-review card-block" id="subtype-review" aria-labelledby="subtype-review-h">
+      <h2 id="subtype-review-h">Típus ellenőrzése</h2>
+      <p class="hint">
+        A „Mezőgazdasági üzem, birtok” kategória három külön típusra bomlott. A rendszer ezt a hirdetést a szövege alapján
+        a(z) <strong>{subtypeName(subtypeReview.to)}</strong> típusba sorolta ({subtypeReview.reason === 'default' ? 'nem talált egyértelmű kulcsszót' : `kulcsszó: „${subtypeReview.reason}”`}).
+        Ha jó, nyomja meg a „Rendben” gombot, ha nem, válasszon másikat.
+      </p>
+      <div class="subtype-row">
+        <button type="button" class="btn" id="subtype-ok">Rendben</button>
+        <label class="subtype-pick">
+          <span class="sr-only">Másik típus</span>
+          <select id="subtype-select">
+            {agriSubtypes.map((sub) => <option value={sub.key} selected={sub.key === property.property_subtype}>{labelIn(sub.labels, 'hu')}</option>)}
+          </select>
+        </label>
+        <button type="button" class="btn ghost" id="subtype-change">Módosítás és rendben</button>
+      </div>
+      <p class="action-status" id="subtype-status" role="status"></p>
+    </section>
+  )}
+
   {reviewable && !isFree && (
     <section class="order card-block" id="order">
       <h2>Fizetendő díj</h2>
@@ -410,40 +458,46 @@ const { data: creditableReferral } = property.owner_id
         a hirdető ezt az összeget kapja meg e-mailben, és ezt fizeti bankkártyával vagy átutalással.
       </p>
 
+      {chooser ? (
+        <PackageChooser model={chooser} lang="hu" excluded={trChoice.excludedLocales ?? []} />
+      ) : (
       <fieldset class="pkg">
-        <legend>Csomag</legend>
-        {cat.packages.map((pkg) => {
-          const price = tierApplies(packageOf(listing, pkg.id), property.price_huf) ? pkg.priceEurAbove! : pkg.priceEur;
-          return (
-            <label class="radio">
-              <input
-                type="radio"
-                name="package"
-                value={pkg.id}
-                checked={pkg.id === suggested.packageId}
-                data-price={price}
-              />
-              <span>{pkg.label} — {eur(price)}</span>
-            </label>
-          );
-        })}
-        {tieredPackage && (
-          <p class="threshold">
-            Az irányár meghaladja a {Math.round(tieredPackage.thresholdHuf! / 1_000_000)} M Ft-ot, ezért a(z) {tieredPackage.names.hu} a magasabb sávba esik.
-          </p>
-        )}
-      </fieldset>
+          <legend>Csomag</legend>
+          {cat.packages.map((pkg) => {
+            const price = priceEurFor(packageOf(listing, pkg.id), property.price_huf);
+            return (
+              <label class="radio">
+                <input
+                  type="radio"
+                  name="package"
+                  value={pkg.id}
+                  checked={pkg.id === suggested.packageId}
+                  data-price={price}
+                />
+                <span>{pkg.label} — {eur(price)}</span>
+              </label>
+            );
+          })}
+          {tierNotes.map((note) => (
+            <p class="threshold">
+              {note.name}: {note.index + 1}. ársáv a {note.count}-ból ({note.range}).
+            </p>
+          ))}
+        </fieldset>
+      )}
 
+      {!chooser && (
       <fieldset class="extras tr-extra" id="tr-extra">
-        <legend>Fordítás <span class="ai-badge">AI fordítás</span></legend>
-        <p class="hint">
-          {aiOn
-            ? 'A fordításokat a rendszer automatikusan, OpenAI-val készíti el, miután a hirdető kifizette a díjat. Gép készíti, ember nem nézi át.'
-            : 'Az AI fordítás jelenleg nincs bekapcsolva. A nyelvek a fizetés után sorba állnak, és amint bekapcsolja, elkészülnek; addig a szerkesztőben kézzel is fordíthat.'}
-        </p>
-        <TranslationPicker lang="hu" bare name="translation_locale" selected={trSuggested} present={trPresent} priceEur={trPrice} />
-        <p class="tr-cost">Becsült AI-költség: <strong data-tr-cost>—</strong> <span>(a szöveg hosszából; nyelvenként {formatCostHu(trPerLanguage)})</span></p>
-      </fieldset>
+          <legend>Fordítás <span class="ai-badge">AI fordítás</span></legend>
+          <p class="hint">
+            {aiOn
+              ? 'A fordításokat a rendszer automatikusan, OpenAI-val készíti el, miután a hirdető kifizette a díjat. Gép készíti, ember nem nézi át.'
+              : 'Az AI fordítás jelenleg nincs bekapcsolva. A nyelvek a fizetés után sorba állnak, és amint bekapcsolja, elkészülnek; addig a szerkesztőben kézzel is fordíthat.'}
+          </p>
+          <TranslationPackagePicker lang="hu" bare cfg={listing.translation} targets={ALL_LOCALES} sourceLocale={trSource?.locale ?? 'hu'} packageId={trChoice.packageId} extras={trChoice.extraLocales ?? []} excluded={trChoice.excludedLocales ?? []} present={trPresent} currentPackageId={trHeld?.listing.translationPackage ?? null} />
+          <p class="tr-cost">Becsült AI-költség: <strong data-tr-cost>—</strong> <span>(a szöveg hosszából; nyelvenként {formatCostHu(trPerLanguage)})</span></p>
+        </fieldset>
+      )}
 
       <fieldset class="extras">
         <legend>Kiegészítők</legend>
@@ -455,10 +509,11 @@ const { data: creditableReferral } = property.owner_id
                 name="extra"
                 value={extra.id}
                 checked={suggestedExtras.has(extra.id)}
-                data-price={extra.priceEur}
+                data-price={priceAt(extra)}
                 data-exclusive={extra.exclusive ? 'onsite' : undefined}
+                data-min-months={extra.id === 'category-highlight' ? extra.minMonths ?? 1 : undefined}
               />
-              <span>{extra.label} — {eur(extra.priceEur)}{extra.unit ? ` / ${extra.unit}` : ''}</span>
+              <span>{extra.label} — {eur(priceAt(extra))}{extra.unit ? ` / ${extra.unit}` : ''}</span>
             </label>
             {extra.unit && (
               <input
@@ -505,6 +560,28 @@ const { data: creditableReferral } = property.owner_id
     </section>
   )}
 
+  {(reviewable || awaitingPayment) && (langProblems.blocking.length > 0 || langProblems.waiting.length > 0) && (
+    <section class="card-block lang-check" id="lang-check">
+      <h2>Fordítások <span class="ai-badge">Ellenőrzés</span></h2>
+      <ul class="tr-list">
+        {[...langProblems.blocking, ...langProblems.waiting].map((item) => (
+          <li>
+            <span class="tr-lang">{HU_NAME[item.locale] ?? item.locale}</span>
+            <span class={`pill ${item.status === 'pending' ? 'pill-pending' : 'pill-bad'}`}>{item.status === 'failed' ? 'Hibás' : item.status === 'stale' ? 'Elavult' : item.status === 'pending' ? 'Folyamatban' : 'Hiányzik'}</span>
+            <span class="tr-err" style={item.status === 'pending' ? 'color: var(--ink-quiet)' : undefined}>{item.reason}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="hint"><a class="hint-link" href={`/portal/translations/${property.id}`}>Megnyitás egymás mellett</a>: itt kézzel is javíthatja.</p>
+      {langProblems.blocking.length > 0 && (
+        <label class="lang-ack">
+          <input type="checkbox" id="ack-languages" />
+          <span>Tudomásul veszem, hogy a(z) {langProblems.blocking.map((item) => HU_NAME[item.locale] ?? item.locale).join(', ')} fordítás hiányzik vagy hibás; a nyelv később automatikusan élesedik.</span>
+        </label>
+      )}
+    </section>
+  )}
+
   {(reviewable || awaitingPayment) && (
     <section class="actions card-block">
       {reviewable && (
@@ -522,7 +599,7 @@ const { data: creditableReferral } = property.owner_id
             class="btn ghost"
             id="free-btn"
             data-from={property.status}
-            data-fee={openFee != null ? `${(openFee / 100).toLocaleString('de-DE')} €` : undefined}
+            data-fee={openFee != null ? fmtEur(openFee / 100) : undefined}
             data-service={requested.service ? 'yes' : undefined}
           >
             {awaitingPayment ? 'Jóváhagyás ingyen — díj elengedése' : 'Jóváhagyás ingyen'}
@@ -613,7 +690,7 @@ const { data: creditableReferral } = property.owner_id
   })();
 </script>
 
-<script define:vars={{ propertyId: property.id, aboveThreshold, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, translationPrice: trPrice, perLanguageMicro: trPerLanguage }}>
+<script define:vars={{ propertyId: property.id, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, presentLocales: trPresent, perLanguageMicro: trPerLanguage, categoryMin }}>
   const statusEl = document.getElementById('action-status');
   const totalEl = document.getElementById('order-total');
   const discountNoteEl = document.getElementById('discount-note');
@@ -628,13 +705,24 @@ const { data: creditableReferral } = property.owner_id
       const qtyInput = document.querySelector(`[data-qty-for="${box.value}"]`);
       return { id: box.value, quantity: qtyInput ? Number(qtyInput.value) || 1 : 1 };
     });
-    // The AI translation languages: one line that names them. The server prices it and keeps the list.
-    const languages = [...document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)')].map((box) => box.value);
-    if (languages.length) extras.unshift({ id: 'translation', quantity: languages.length, locales: languages });
+    // The translation choice: ids only (the package, the single languages, what is switched off). The server prices it.
+    const chooser = document.querySelector('[data-pch]');
+    const picker = chooser ? null : document.querySelector('[data-tpk]');
+    // The three packages: the package, its term and what is switched off. The server prices all of it with priceFor().
+    const translation = chooser
+      ? { packageId: pkg.value, extraLocales: [], excludedLocales: (chooser.querySelector('[data-pch-excluded]')?.value ?? '').split(',').filter(Boolean) }
+      : picker
+      ? {
+          packageId: picker.querySelector('input[name="translation_package"]:checked')?.value ?? 'basic',
+          extraLocales: [...picker.querySelectorAll('input[name="translations"]:checked')].map((box) => box.value),
+          excludedLocales: (picker.querySelector('[data-tpk-excluded]')?.value ?? '').split(',').filter(Boolean),
+        }
+      : undefined;
     return {
       packageId: pkg.value,
-      aboveThreshold,
+      ...(chooser ? { months: Number(chooser.dataset.months) || undefined } : {}),
       extras,
+      ...(translation ? { translation } : {}),
       referralDiscountId: discountBox?.checked ? discountBox.dataset.referralId : null,
       referralCreditId: creditBox?.checked ? creditBox.dataset.referralId : null,
     };
@@ -644,16 +732,32 @@ const { data: creditableReferral } = property.owner_id
   function renderTotal() {
     if (!totalEl) return;
     const pkg = document.querySelector('input[name="package"]:checked');
-    const pkgPrice = pkg ? Number(pkg.dataset.price) : 0;
+    const chooser = document.querySelector('[data-pch]');
+    // Live pricing: the package is in integer cents (the chooser's table); the extras are whole euros.
+    const pkgPrice = chooser ? Number(chooser.dataset.cents || 0) / 100 : pkg ? Number(pkg.dataset.price) : 0;
     let sum = pkgPrice;
+    if (chooser) {
+      // A highlight needs a package at least as long as its minimum and cannot outlast it (Q10).
+      const months = Number(chooser.dataset.months) || 0;
+      document.querySelectorAll('input[name="extra"][data-min-months]').forEach((box) => {
+        const ok = months >= Number(box.dataset.minMonths);
+        box.disabled = !ok;
+        if (!ok) box.checked = false;
+        const qty = document.querySelector(`[data-qty-for="${box.value}"]`);
+        if (qty) { qty.max = String(months); if (Number(qty.value) > months) qty.value = String(months); qty.disabled = !ok; }
+      });
+    }
     document.querySelectorAll('input[name="extra"]:checked').forEach((box) => {
       const qtyInput = document.querySelector(`[data-qty-for="${box.value}"]`);
       const qty = qtyInput ? Number(qtyInput.value) || 1 : 1;
       sum += Number(box.dataset.price) * qty;
     });
 
-    const picked = document.querySelectorAll('input[name="translation_locale"]:checked:not(:disabled)').length;
-    sum += picked * translationPrice;
+    // The picker keeps its own total (package plus single languages) and the languages it will produce.
+    const picker = document.querySelector('[data-tpk]');
+    sum += Number(picker?.dataset.cents || 0) / 100;
+    const have = new Set(presentLocales);
+    const picked = (picker?.dataset.languages || '').split(',').filter((code) => code && !have.has(code)).length;
     const costEl = document.querySelector('[data-tr-cost]');
     if (costEl) {
       const euros = (picked * perLanguageMicro) / 1e6;
@@ -662,21 +766,31 @@ const { data: creditableReferral } = property.owner_id
 
     const discountApplied = Boolean(discountBox?.checked) || Boolean(creditBox?.checked);
     if (discountApplied) {
-      sum -= Math.round((pkgPrice * referralDiscountPercent) / 100);
+      // Whole cents, half up: the same rule as the server (percentOfCents).
+      sum -= Math.floor((Math.round(pkgPrice * 100) * referralDiscountPercent * 2 + 100) / 200) / 100;
     }
     if (discountNoteEl) discountNoteEl.hidden = !discountApplied;
 
-    totalEl.textContent = `€ ${sum.toLocaleString('de-DE')}`;
+    const cents = Math.round(sum * 100);
+    totalEl.textContent = `€ ${(cents / 100).toLocaleString('de-DE', cents % 100 === 0 ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
   document.getElementById('order')?.addEventListener('input', renderTotal);
   document.getElementById('order')?.addEventListener('tp:change', renderTotal);
+  document.getElementById('order')?.addEventListener('pch:change', renderTotal);
   renderTotal();
 
   let busy = false;
   async function doAction(action, payload) {
     // One request at a time: a second click while the first is on its way does nothing.
     if (busy) return;
+    // A bought language that is failed or missing: say it before anything is sent, instead of after.
+    const ack = document.getElementById('ack-languages');
+    if (ack && !ack.checked && (action === 'approve' || action === 'approve_free')) {
+      statusEl.textContent = 'Előbb jelölje be a fordításokról szóló tudomásulvételt.';
+      ack.focus();
+      return;
+    }
     busy = true;
     document.querySelectorAll('.actions button').forEach((button) => { button.disabled = true; });
     let leaving = false;
@@ -696,7 +810,7 @@ const { data: creditableReferral } = property.owner_id
     const res = await fetch(`/api/portal/properties/${propertyId}/status`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ action, ...payload }),
+      body: JSON.stringify({ action, ...payload, ...(document.getElementById('ack-languages')?.checked ? { acknowledgeLanguages: true } : {}) }),
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok || !json.ok) {
@@ -706,11 +820,16 @@ const { data: creditableReferral } = property.owner_id
         'note-required': 'Írjon megjegyzést / indoklást.',
         'not-reviewable': 'Ez a hirdetés ebben az állapotban nem bírálható el — frissítse az oldalt.',
         'unknown-extra': 'Ismeretlen kiegészítő — frissítse az oldalt.',
+        'retired-extra': 'Ez a kiegészítő már nem rendelhető — vegye ki a rendelésből.',
+        'not-sold-here': 'A videókészítés csak magyarországi ingatlanhoz rendelhető.',
         'bad-quantity': 'A mennyiség 1 és 60 között lehet.',
         'bad-locale': 'Ismeretlen vagy nem fordítható nyelv — frissítse az oldalt.',
+        'exclude-en': 'Az angol nyelv nem zárható ki – ez a hirdetés alapnyelve a többi nyelvhez.',
+        'unknown-package': 'Ez a csomag nem választható — frissítse az oldalt.',
         exclusive: 'A két helyszíni szolgáltatás közül csak az egyik választható.',
         forbidden: 'Ezt csak admin teheti meg.',
         'not-approvable': 'Ez a hirdetés ebben az állapotban nem hagyható jóvá ingyen — frissítse az oldalt.',
+        'languages-incomplete': 'Egy megvásárolt nyelv fordítása hiányzik vagy hibás — frissítse az oldalt, és jelölje be a tudomásulvételt.',
       };
       statusEl.textContent = messages[json.error] || json.message || 'Nem sikerült végrehajtani.';
       return false;
@@ -807,6 +926,17 @@ const { data: creditableReferral } = property.owner_id
     doAction('approve_free', { note, ...(pkg ? { packageId: pkg.value } : {}) });
   });
 
+  const confirmSubtype = async (subtype) => {
+    const status = document.getElementById('subtype-status');
+    status.textContent = 'Mentés…';
+    const res = await fetch(`/api/portal/properties/${propertyId}/status`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'confirm_subtype', ...(subtype ? { subtype } : {}) }) });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok && json.ok) { status.textContent = 'Rendben, a típus megerősítve.'; setTimeout(() => location.reload(), 600); }
+    else status.textContent = 'A mentés nem sikerült. Kérjük, próbálja újra.';
+  };
+  document.getElementById('subtype-ok')?.addEventListener('click', () => confirmSubtype(''));
+  document.getElementById('subtype-change')?.addEventListener('click', () => confirmSubtype(document.getElementById('subtype-select').value));
+
   document.getElementById('publish-btn')?.addEventListener('click', async () => {
     if (await window.pf.confirm({ title: 'Megérkezett az átutalás?', body: 'A hirdetés azonnal élesedik, a rendelés fizetettre áll.', confirmLabel: 'Igen, beérkezett' })) {
       doAction('publish_manually');
@@ -890,6 +1020,8 @@ const { data: creditableReferral } = property.owner_id
   .tr-lang { min-width: 90px; font-weight: var(--fw-medium); color: var(--ink); text-transform: capitalize; }
   .tr-actions { margin-left: auto; display: inline-flex; gap: 8px; }
   .tr-err { flex-basis: 100%; color: var(--pt-red); }
+  .lang-ack { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; font-size: var(--fs-small); line-height: 1.6; cursor: pointer; }
+  .lang-ack input { margin-top: 4px; }
   .qty { width: 76px; padding: 10px 12px; font-size: var(--fs-small); color: var(--ink); font-variant-numeric: tabular-nums; }
   .referral { padding: 14px 16px; border-radius: var(--r-md); background: rgba(16, 42, 67, 0.05); margin-bottom: 20px; }
   .referral .checkbox { margin-bottom: 8px; background: transparent; padding: 6px 0; }
@@ -912,6 +1044,9 @@ const { data: creditableReferral } = property.owner_id
   .reject-form .inline-check { display: flex; gap: 12px; align-items: center; font-weight: var(--fw-regular); font-size: 14px; color: var(--ink); }
   .btn.danger { margin: 0; }
   .action-status { font-size: 14px; color: var(--ink-quiet); min-height: 0; }
+  .subtype-review { margin-bottom: 20px; }
+  .subtype-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
+  .subtype-pick select { min-height: 44px; padding: 0 14px; border-radius: var(--r-pill); border: 1px solid var(--pt-hair); background: var(--white); color: var(--ink); font: inherit; }
   .free-approve { display: grid; gap: 8px; padding-top: 18px; border-top: 1px solid var(--border); }
   .free-approve .btn { width: 100%; }
   .free-approve .hint, .free-missing { margin: 0; font-size: 13.5px; }

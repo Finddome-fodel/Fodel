@@ -7,4 +7,4 @@ export async function deliver(to: string, email: { subject: string; text?: strin
   return true;
 }
 export const localeOf = (profile: { locale?: string | null } | null | undefined) => localeFrom(profile?.locale) as any;
-export async function adminRecipients() { return []; }
+export async function adminRecipients() { return (world as any).admins ?? []; }

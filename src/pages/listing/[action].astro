@@ -26,8 +26,11 @@ import { lifecycleEmails } from '~/lib/email/lifecycle';
 import { eur, huf } from '~/lib/format';
 import { formatCents } from '~/lib/orders';
 import { isStripeEnabled } from '~/lib/stripe';
-import { openRenewalOrder, renewalCheckoutUrl, renewalPriceCents } from '~/lib/portal/renewal';
+import { openRenewalOrder, renewalCheckoutUrl, renewalPriceCents, renewalOptions } from '~/lib/portal/renewal';
+import { monthsText } from '~/lib/orders';
+import { eurPrice } from '~/lib/format';
 import { getCompany } from '~/lib/runtime-config';
+import { readPriceRounding, roundEur } from '~/lib/exchange-rates';
 import { SITE_URL } from '~/config/site.mjs';
 import { ownerLink, RENEW_LINK_DAYS } from '~/lib/owner-links';
 import { localeFrom, localizer, type Locale } from '~/i18n/ui';
@@ -57,7 +60,7 @@ const COPY = {
     goneBody: 'A hirdetés közben eladottként, lejártként vagy levéve szerepel, ezért ezt a lépést nem lehet elvégezni.',
     stillTitle: 'Köszönjük, rögzítettük!',
     stillBody: 'A hirdetés továbbra is aktívként szerepel. Egy hónap múlva ismét rákérdezünk.',
-    priceTitle: 'Új irányár',
+    priceTitle: 'Új ár',
     priceBody: 'Adja meg az új árat. A hirdetésben azonnal frissül, újbóli elbírálás nélkül.',
     priceLabel: 'Új ár (Ft)',
     current: 'Jelenlegi ár',
@@ -806,6 +809,258 @@ const COPY = {
     notRenewable: 'Šio skelbimo pratęsti negalima (parduotas arba nerodomas). Turite klausimų? Parašykite mums.',
     error: 'Kažkas nepavyko. Bandykite dar kartą arba parašykite mums.',
   },
+  sr: {
+    invalidTitle: 'Ovaj link više nije važeći',
+    invalidBody: 'Link je istekao ili je nepotpun. Odgovorite na imejl u kojem ste ga dobili i pomoći ćemo vam.',
+    goneTitle: 'Ovaj oglas više nije aktivan',
+    goneBody: 'Oglas je sada označen kao prodat, istekao ili van mreže, pa ovaj korak više nije moguć.',
+    stillTitle: 'Hvala, zabeleženo',
+    stillBody: 'Oglas ostaje aktivan. Ponovo ćemo pitati za mesec dana.',
+    priceTitle: 'Nova tražena cena',
+    priceBody: 'Unesite novu cenu. Oglas se ažurira odmah, bez nove provere.',
+    priceLabel: 'Nova cena (€)',
+    current: 'Trenutna cena',
+    priceSave: 'Sačuvajte novu cenu',
+    priceDone: 'Nova cena je sada u oglasu',
+    priceBad: 'Unesite pozitivan ceo broj.',
+    soldTitle: 'Da li ste prodali nekretninu',
+    soldBody: 'Kada potvrdite, oglas izlazi iz naše ponude i prelazi među prodate nekretnine. Čestitamo.',
+    soldConfirm: 'Da, prodata je',
+    soldDone: 'Čestitamo na prodaji',
+    soldDoneBody: 'Oglas je sada među prodatim nekretninama. Član našeg tima će vam se javiti ako još nešto treba srediti.',
+    view: 'Pogledajte oglas',
+    renewTitle: 'Produžite oglas',
+    renewBody: (price: string) => `Još 6 meseci vidljivosti: ${price}. Produženje počinje od datuma isteka; ako je oglas već istekao, ponovo je na sajtu odmah nakon plaćanja.`,
+    expires: 'Datum isteka',
+    expired: 'Isteklo',
+    payCard: 'Platite karticom',
+    payBank: 'Platite bankovnim prenosom',
+    bankTitle: 'Podaci za uplatu',
+    bankBody: 'Čim iznos stigne, produžavamo oglas i šaljemo vam imejl. Iste podatke imate i u prijemnom sandučetu.',
+    amount: 'Iznos',
+    account: 'Račun',
+    reference: 'Poziv na broj',
+    paidTitle: 'Hvala na uplati',
+    paidBody: 'Produženje se obrađuje u roku od nekoliko minuta i potvrđuje imejlom.',
+    notRenewable: 'Ovaj oglas se ne može produžiti (prodat ili van mreže). Imate pitanja? Pišite nam.',
+    error: 'Nešto nije u redu. Pokušajte ponovo ili nam pišite.',
+  },
+  uk: {
+    invalidTitle: 'Це посилання вже недійсне',
+    invalidBody: 'Термін дії посилання сплив або воно неповне. Дайте відповідь на лист, у якому ви його отримали, і ми допоможемо.',
+    goneTitle: 'Це оголошення вже неактивне',
+    goneBody: 'Оголошення тепер позначене як продане, прострочене або зняте з сайту, тож цей крок уже неможливий.',
+    stillTitle: 'Дякуємо, зафіксовано',
+    stillBody: 'Оголошення залишається активним. Ми запитаємо знову за місяць.',
+    priceTitle: 'Нова ціна',
+    priceBody: 'Вкажіть нову ціну. Оголошення оновиться одразу, без повторної перевірки.',
+    priceLabel: 'Нова ціна (€)',
+    current: 'Поточна ціна',
+    priceSave: 'Зберегти нову ціну',
+    priceDone: 'Нова ціна вже в оголошенні',
+    priceBad: 'Вкажіть додатне ціле число.',
+    soldTitle: 'Ви продали нерухомість',
+    soldBody: 'Після підтвердження оголошення зникне з нашої пропозиції й перейде до проданих об’єктів. Вітаємо!',
+    soldConfirm: 'Так, продано',
+    soldDone: 'Вітаємо з продажем',
+    soldDoneBody: 'Оголошення тепер серед проданих об’єктів. Якщо ще щось потрібно владнати, співробітник нашої команди зв’яжеться з вами.',
+    view: 'Переглянути оголошення',
+    renewTitle: 'Продовжте оголошення',
+    renewBody: (price: string) => `Ще 6 місяців показу: ${price}. Продовження починається з дати закінчення; якщо термін дії оголошення вже сплив, воно знову з’явиться на сайті одразу після оплати.`,
+    expires: 'Дата закінчення',
+    expired: 'Термін дії сплив',
+    payCard: 'Оплатити карткою',
+    payBank: 'Оплатити банківським переказом',
+    bankTitle: 'Реквізити для переказу',
+    bankBody: 'Щойно кошти надійдуть, ми продовжимо оголошення й надішлемо вам лист. Ті самі реквізити є у вашій пошті.',
+    amount: 'Сума',
+    account: 'Рахунок',
+    reference: 'Призначення платежу',
+    paidTitle: 'Дякуємо за оплату',
+    paidBody: 'Продовження буде оброблено протягом кількох хвилин і підтверджено листом.',
+    notRenewable: 'Це оголошення не можна продовжити (продане або зняте з сайту). Маєте запитання? Напишіть нам.',
+    error: 'Щось пішло не так. Спробуйте ще раз або напишіть нам.',
+  },
+  tr: {
+    invalidTitle: 'Bu bağlantı artık geçerli değil',
+    invalidBody: 'Bağlantının süresi dolmuş veya bağlantı eksik. Bağlantıyı aldığınız e-postayı yanıtlayın, size yardımcı olalım.',
+    goneTitle: 'Bu ilan artık aktif değil',
+    goneBody: 'İlan artık satıldı, süresi doldu veya yayından kaldırıldı olarak görünüyor; bu nedenle bu adım artık atılamaz.',
+    stillTitle: 'Teşekkürler, not edildi',
+    stillBody: 'İlan aktif kalmaya devam ediyor. Bir ay sonra tekrar soracağız.',
+    priceTitle: 'Yeni satış fiyatı',
+    priceBody: 'Yeni fiyatı girin. İlan, yeniden incelemeye gerek kalmadan hemen güncellenir.',
+    priceLabel: 'Yeni fiyat (€)',
+    current: 'Mevcut fiyat',
+    priceSave: 'Yeni fiyatı kaydet',
+    priceDone: 'Yeni fiyat artık ilanda',
+    priceBad: 'Pozitif bir tam sayı girin.',
+    soldTitle: 'Mülkü sattınız mı',
+    soldBody: 'Onayladığınızda ilan portföyümüzden çıkar ve satılan mülklere taşınır. Tebrikler.',
+    soldConfirm: 'Evet, satıldı',
+    soldDone: 'Satış için tebrikler',
+    soldDoneBody: 'İlan artık satılan mülkler arasında. Halledilmesi gereken bir şey kalırsa ekibimizden biri sizinle iletişime geçecek.',
+    view: 'İlanı görüntüle',
+    renewTitle: 'İlanınızı uzatın',
+    renewBody: (price: string) => `6 ay daha görünürlük: ${price}. Uzatma, süre bitiş tarihinden itibaren başlar; ilanın süresi zaten dolduysa ödemeden hemen sonra yeniden yayına girer.`,
+    expires: 'Bitiş tarihi',
+    expired: 'Süresi doldu',
+    payCard: 'Kartla öde',
+    payBank: 'Banka havalesiyle öde',
+    bankTitle: 'Havale bilgileri',
+    bankBody: 'Tutar ulaşır ulaşmaz ilanı uzatır ve size e-posta göndeririz. Aynı bilgiler gelen kutunuzda da var.',
+    amount: 'Tutar',
+    account: 'Hesap',
+    reference: 'Açıklama',
+    paidTitle: 'Ödemeniz için teşekkür ederiz',
+    paidBody: 'Uzatma birkaç dakika içinde işlenir ve e-postayla onaylanır.',
+    notRenewable: 'Bu ilan uzatılamaz (satıldı veya yayından kaldırıldı). Sorularınız mı var? Bize yazın.',
+    error: 'Bir sorun oluştu. Lütfen tekrar deneyin veya bize yazın.',
+  },
+  he: {
+    invalidTitle: 'קישור זה כבר אינו תקף',
+    invalidBody: 'תוקף הקישור פג או שהוא חלקי. השיבו למייל שבו קיבלתם אותו ואנחנו נעזור.',
+    goneTitle: 'מודעה זו כבר אינה פעילה',
+    goneBody: 'המודעה מסומנת כעת כנמכרה, כפגת תוקף או כלא מקוונת, ולכן לא ניתן עוד לבצע שלב זה.',
+    stillTitle: 'תודה, נרשם',
+    stillBody: 'המודעה נשארת פעילה. נשאל שוב בעוד חודש.',
+    priceTitle: 'מחיר מבוקש חדש',
+    priceBody: 'הזינו את המחיר החדש. המודעה מתעדכנת מיד, ללא בדיקה נוספת.',
+    priceLabel: 'מחיר חדש (€)',
+    current: 'המחיר הנוכחי',
+    priceSave: 'שמירת המחיר החדש',
+    priceDone: 'המחיר החדש מופיע כעת במודעה',
+    priceBad: 'הזינו מספר שלם חיובי.',
+    soldTitle: 'מכרתם את הנכס',
+    soldBody: 'לאחר האישור, המודעה יוצאת מההיצע שלנו ועוברת לנכסים שנמכרו. מזל טוב.',
+    soldConfirm: 'כן, הנכס נמכר',
+    soldDone: 'מזל טוב על המכירה',
+    soldDoneBody: 'המודעה נמצאת כעת בין הנכסים שנמכרו. אחד מאנשי הצוות שלנו ייצור איתכם קשר אם נותר משהו להסדיר.',
+    view: 'צפייה במודעה',
+    renewTitle: 'הארכת המודעה',
+    renewBody: (price: string) => `עוד 6 חודשי חשיפה: ${price}. ההארכה מתחילה בתאריך פקיעת התוקף; אם תוקף המודעה כבר פג, היא חוזרת לאתר מיד לאחר התשלום.`,
+    expires: 'תאריך פקיעת תוקף',
+    expired: 'פג תוקף',
+    payCard: 'תשלום בכרטיס אשראי',
+    payBank: 'תשלום בהעברה בנקאית',
+    bankTitle: 'פרטי ההעברה',
+    bankBody: 'ברגע שהסכום יתקבל נאריך את המודעה ונשלח לכם מייל. אותם פרטים נמצאים גם בתיבת הדואר שלכם.',
+    amount: 'סכום',
+    account: 'חשבון',
+    reference: 'אסמכתה',
+    paidTitle: 'תודה על התשלום',
+    paidBody: 'ההארכה מעובדת תוך כמה דקות ומאושרת במייל.',
+    notRenewable: 'לא ניתן להאריך מודעה זו (נמכרה או אינה מקוונת). יש לכם שאלות? כתבו לנו.',
+    error: 'משהו השתבש. נסו שוב או כתבו לנו.',
+  },
+  ar: {
+    invalidTitle: 'لم يعد هذا الرابط صالحًا',
+    invalidBody: 'انتهت صلاحية الرابط أو أنه غير مكتمل. رُدّ على الرسالة التي وصلك فيها وسنساعدك.',
+    goneTitle: 'لم يعد هذا الإعلان نشطًا',
+    goneBody: 'يظهر الإعلان الآن على أنه مُباع أو منتهي الصلاحية أو غير منشور، لذا لم يعد من الممكن تنفيذ هذه الخطوة.',
+    stillTitle: 'شكرًا لك، تم التسجيل',
+    stillBody: 'يبقى الإعلان نشطًا. سنسألك مجددًا بعد شهر.',
+    priceTitle: 'السعر المطلوب الجديد',
+    priceBody: 'أدخل السعر الجديد. يُحدَّث الإعلان فورًا، دون مراجعة جديدة.',
+    priceLabel: 'السعر الجديد (€)',
+    current: 'السعر الحالي',
+    priceSave: 'حفظ السعر الجديد',
+    priceDone: 'أصبح السعر الجديد ظاهرًا في الإعلان',
+    priceBad: 'أدخل عددًا صحيحًا موجبًا.',
+    soldTitle: 'هل بعت العقار',
+    soldBody: 'بمجرد تأكيدك، يُسحب الإعلان من عروضنا ويُنقل إلى العقارات المُباعة. تهانينا.',
+    soldConfirm: 'نعم، تم البيع',
+    soldDone: 'تهانينا على إتمام البيع',
+    soldDoneBody: 'أصبح الإعلان الآن ضمن العقارات المُباعة. سيتواصل معك أحد أعضاء فريقنا إذا بقي أي أمر يحتاج إلى ترتيب.',
+    view: 'عرض الإعلان',
+    renewTitle: 'تمديد إعلانك',
+    renewBody: (price: string) => `6 أشهر إضافية من الظهور: ${price}. يبدأ التمديد من تاريخ انتهاء الصلاحية؛ وإذا كانت صلاحية الإعلان قد انتهت بالفعل، فإنه يعود إلى الموقع فور الدفع.`,
+    expires: 'تاريخ انتهاء الصلاحية',
+    expired: 'منتهي الصلاحية',
+    payCard: 'الدفع بالبطاقة',
+    payBank: 'الدفع بالتحويل المصرفي',
+    bankTitle: 'بيانات التحويل',
+    bankBody: 'فور وصول المبلغ نمدّد الإعلان ونرسل إليك رسالة. البيانات نفسها موجودة في بريدك الوارد.',
+    amount: 'المبلغ',
+    account: 'الحساب',
+    reference: 'المرجع',
+    paidTitle: 'شكرًا على الدفع',
+    paidBody: 'تتم معالجة التمديد خلال بضع دقائق ويُؤكَّد عبر البريد الإلكتروني.',
+    notRenewable: 'لا يمكن تمديد هذا الإعلان (مُباع أو غير منشور). لديك أسئلة؟ راسلنا.',
+    error: 'حدث خطأ. يُرجى المحاولة مجددًا أو مراسلتنا.',
+  },
+  ru: {
+    invalidTitle: 'Эта ссылка уже недействительна',
+    invalidBody: 'Срок действия ссылки истёк, или она неполная. Ответьте на письмо, в котором вы её получили, и мы поможем.',
+    goneTitle: 'Это объявление уже неактивно',
+    goneBody: 'Объявление теперь отмечено как проданное, истёкшее или снятое с сайта, поэтому этот шаг уже невозможен.',
+    stillTitle: 'Спасибо, учтено',
+    stillBody: 'Объявление остаётся активным. Мы спросим снова через месяц.',
+    priceTitle: 'Новая цена',
+    priceBody: 'Укажите новую цену. Объявление обновится сразу, без повторной проверки.',
+    priceLabel: 'Новая цена (€)',
+    current: 'Текущая цена',
+    priceSave: 'Сохранить новую цену',
+    priceDone: 'Новая цена уже в объявлении',
+    priceBad: 'Укажите положительное целое число.',
+    soldTitle: 'Вы продали недвижимость',
+    soldBody: 'После подтверждения объявление исчезнет из нашего предложения и перейдёт в проданные объекты. Поздравляем!',
+    soldConfirm: 'Да, продано',
+    soldDone: 'Поздравляем с продажей',
+    soldDoneBody: 'Объявление теперь среди проданных объектов. Если ещё что-то нужно уладить, сотрудник нашей команды свяжется с вами.',
+    view: 'Посмотреть объявление',
+    renewTitle: 'Продлите объявление',
+    renewBody: (price: string) => `Ещё 6 месяцев показа: ${price}. Продление начинается с даты окончания; если срок действия объявления уже истёк, оно снова появится на сайте сразу после оплаты.`,
+    expires: 'Дата окончания',
+    expired: 'Срок истёк',
+    payCard: 'Оплатить картой',
+    payBank: 'Оплатить банковским переводом',
+    bankTitle: 'Реквизиты для перевода',
+    bankBody: 'Как только деньги поступят, мы продлим объявление и отправим вам письмо. Те же реквизиты есть в вашей почте.',
+    amount: 'Сумма',
+    account: 'Счёт',
+    reference: 'Назначение платежа',
+    paidTitle: 'Спасибо за оплату',
+    paidBody: 'Продление будет обработано в течение нескольких минут и подтверждено письмом.',
+    notRenewable: 'Это объявление нельзя продлить (продано или снято с сайта). Есть вопросы? Напишите нам.',
+    error: 'Что-то пошло не так. Попробуйте ещё раз или напишите нам.',
+  },
+  zh: {
+    invalidTitle: '此链接已失效',
+    invalidBody: '链接已过期或不完整。请回复您收到链接的那封邮件，我们会协助您。',
+    goneTitle: '此房源已不再有效',
+    goneBody: '该房源目前显示为已售出、已到期或已下线，因此无法再执行此步骤。',
+    stillTitle: '谢谢，已记录',
+    stillBody: '房源保持有效。我们将在一个月后再次询问。',
+    priceTitle: '新的报价',
+    priceBody: '请输入新价格。房源将立即更新，无需重新审核。',
+    priceLabel: '新价格（€）',
+    current: '当前价格',
+    priceSave: '保存新价格',
+    priceDone: '新价格已显示在房源中',
+    priceBad: '请输入正整数。',
+    soldTitle: '您已售出该房产',
+    soldBody: '确认后，该房源将从在售房源中移除，并转入已售房产。恭喜您。',
+    soldConfirm: '是的，已售出',
+    soldDone: '恭喜成交',
+    soldDoneBody: '该房源现已列入已售房产。如还有需要处理的事项，我们的团队成员会与您联系。',
+    view: '查看房源',
+    renewTitle: '延长您的房源',
+    renewBody: (price: string) => `再展示 6 个月：${price}。延期从到期日起算；如果房源已到期，付款后将立即重新上线。`,
+    expires: '到期日',
+    expired: '已到期',
+    payCard: '银行卡付款',
+    payBank: '银行转账付款',
+    bankTitle: '转账信息',
+    bankBody: '款项到账后，我们将立即延长房源并发送邮件通知您。相同的信息也已发送到您的邮箱。',
+    amount: '金额',
+    account: '账户',
+    reference: '付款附言',
+    paidTitle: '感谢您的付款',
+    paidBody: '延期将在几分钟内处理完毕，并通过邮件确认。',
+    notRenewable: '此房源无法延期（已售出或已下线）。如有疑问，请写信给我们。',
+    error: '出了点问题。请重试或写信给我们。',
+  },
 };
 const T = COPY[locale];
 
@@ -842,7 +1097,7 @@ if (valid) {
   const owner = property?.owner_id
     ? (await admin.from('profiles').select('full_name, email').eq('id', property.owner_id).maybeSingle()).data
     : null;
-  const ownerName = owner?.full_name || owner?.email || x('A tulajdonos', 'De eigenaar', 'The owner', 'Der Eigentümer', 'Le propriétaire', 'El propietario', 'Właściciel', 'Proprietarul', 'Majiteľ', 'Il proprietario', 'O proprietário', 'Ο ιδιοκτήτης', 'Majitel', 'Lastnik', 'Ägaren', 'Ejeren', 'Eieren', 'Omistaja', 'Omanik', 'Īpašnieks', 'Savininkas');
+  const ownerName = owner?.full_name || owner?.email || x({ hu: 'A tulajdonos', nl: 'De eigenaar', en: 'The owner', de: 'Der Eigentümer', fr: 'Le propriétaire', es: 'El propietario', pl: 'Właściciel', ro: 'Proprietarul', sk: 'Majiteľ', it: 'Il proprietario', pt: 'O proprietário', el: 'Ο ιδιοκτήτης', cs: 'Majitel', sl: 'Lastnik', sv: 'Ägaren', da: 'Ejeren', no: 'Eieren', fi: 'Omistaja', et: 'Omanik', lv: 'Īpašnieks', lt: 'Savininkas', sr: 'Vlasnik', uk: 'Власник', tr: 'Mülk sahibi', he: 'בעל הנכס', ar: 'المالك', ru: 'Владелец', zh: '业主' });
 
   if (!property) {
     view = { kind: 'message', title: T.invalidTitle, body: T.invalidBody, tone: 'warn' };
@@ -853,7 +1108,7 @@ if (valid) {
       view = { kind: 'message', title: T.goneTitle, body: T.notRenewable, tone: 'warn' };
     } else if (post) {
       try {
-        const order = await openRenewalOrder(admin, property, locale, owner?.email);
+        const order = await openRenewalOrder(admin, property, locale, owner?.email, Number(post.get('months')) || undefined);
         if (post.get('method') === 'card' && isStripeEnabled()) {
           const back = ownerLink('renew', id, locale, RENEW_LINK_DAYS).replace(SITE_URL, url.origin);
           return Astro.redirect(await renewalCheckoutUrl(admin, order, property, back), 303);
@@ -862,7 +1117,7 @@ if (valid) {
         const bank = {
           amount: formatCents(order.amount_cents, locale),
           account: `${company.banks.nl.iban} · BIC ${company.banks.nl.bic}`,
-          reference: `#${property.ref} ${x('hosszabbítás', 'verlenging', 'extension', 'Verlängerung', 'prolongation', 'prórroga', 'przedłużenie', 'prelungire', 'predĺženie', 'proroga', 'prorrogação', 'παράταση', 'prodloužení', 'podaljšanje', 'förlängning', 'forlængelse', 'forlengelse', 'jatko', 'pikendus', 'pagarinājums', 'pratęsimas')}`,
+          reference: `#${property.ref} ${x({ hu: 'hosszabbítás', nl: 'verlenging', en: 'extension', de: 'Verlängerung', fr: 'prolongation', es: 'prórroga', pl: 'przedłużenie', ro: 'prelungire', sk: 'predĺženie', it: 'proroga', pt: 'prorrogação', el: 'παράταση', cs: 'prodloužení', sl: 'podaljšanje', sv: 'förlängning', da: 'forlængelse', no: 'forlengelse', fi: 'jatko', et: 'pikendus', lv: 'pagarinājums', lt: 'pratęsimas', sr: 'produženje', uk: 'продовження', tr: 'uzatma', he: 'הארכה', ar: 'التمديد', ru: 'продление', zh: '延期' })}`,
         };
         if (post.get('method') === 'bank' && owner?.email) {
           await deliver(owner.email, lifecycleEmails.renewalTransfer(locale, { ref: property.ref, title, ...bank, payUrl: ownerLink('renew', id, locale, RENEW_LINK_DAYS) }));
@@ -908,8 +1163,10 @@ if (valid) {
         // Hungarian owners type forints, Dutch owners euros; the other
         // currency follows at the listing's own existing ratio — no new rate.
         const ratio = property.price_huf / property.price_eur;
+        // A converted euro price is rounded like every other conversion (Csomagok → Kerekítés, default €100).
+        const rounding = readPriceRounding((await getCompany()).services.priceRounding);
         const next = hu
-          ? { price_huf: Math.round(amount), price_eur: Math.max(1, Math.round(amount / ratio)) }
+          ? { price_huf: Math.round(amount), price_eur: Math.max(1, roundEur(amount / ratio, rounding)) }
           : { price_eur: Math.round(amount), price_huf: Math.max(1, Math.round(amount * ratio)) };
         const { error } = await admin
           .from('properties')
@@ -941,7 +1198,10 @@ if (valid) {
 const currentPrice = property ? (hu ? `${huf(property.price_huf, 'hu')} · ${eur(property.price_eur, 'hu')}` : `${eur(property.price_eur, locale)} · ${huf(property.price_huf, locale)}`) : '';
 const expiry = property?.expires_at ? new Date(property.expires_at) : null;
 const expiryText = expiry ? expiry.toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
-const renewalPrice = formatCents(await renewalPriceCents(), locale);
+const renewalPrice = formatCents(await renewalPriceCents(property ?? {}), locale);
+// Since November 2026 a renewal is 1, 3 or 6 more months of the listing's own package, at today's price.
+const renewalTerms = property ? await renewalOptions(property).catch(() => []) : [];
+const defaultTerm = renewalTerms.some((option) => option.months === 6) ? 6 : renewalTerms.at(-1)?.months;
 const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ? T.priceTitle : view.kind === 'sold' ? T.soldTitle : T.renewTitle;
 ---
 
@@ -1012,6 +1272,17 @@ const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ?
             </div>
           ) : (
             <form method="POST" class="act-choices">
+              {renewalTerms.length > 1 && (
+                <fieldset class="act-terms">
+                  {renewalTerms.map((option) => (
+                    <label>
+                      <input type="radio" name="months" value={option.months} checked={option.months === defaultTerm} />
+                      <span>{monthsText(option.months, locale)}</span>
+                      <b class="num">{eurPrice(option.cents, locale)}</b>
+                    </label>
+                  ))}
+                </fieldset>
+              )}
               {isStripeEnabled() && <button class="act-btn" type="submit" name="method" value="card">{T.payCard}<ArrowChip /></button>}
               <button class:list={['act-btn', isStripeEnabled() && 'ghost']} type="submit" name="method" value="bank">{T.payBank}{!isStripeEnabled() && <ArrowChip />}</button>
             </form>
@@ -1023,6 +1294,11 @@ const pageTitle = view.kind === 'message' ? view.title : view.kind === 'price' ?
 </Base>
 
 <style>
+  .act-terms { display: grid; gap: 8px; margin: 0 0 12px; padding: 0; border: 0; min-width: 0; }
+  .act-terms label { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 12px 16px; border-radius: var(--r-md, 12px); background: var(--white, #fff); box-shadow: inset 0 0 0 1px var(--pt-hair, rgba(16,42,67,.14)); cursor: pointer; }
+  .act-terms input { position: absolute; opacity: 0; pointer-events: none; }
+  .act-terms label:has(input:checked) { box-shadow: inset 0 0 0 2px var(--ink, #102a43); }
+  .act-terms label:has(input:focus-visible) { outline: var(--focus-ring, 2px solid #102a43); outline-offset: 2px; }
   .owner-act {
     display: grid;
     place-items: center;

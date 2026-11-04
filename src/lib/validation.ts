@@ -28,6 +28,7 @@ import {
 import examples from 'libphonenumber-js/mobile/examples';
 
 import type { Locale } from '~/i18n/ui';
+import { parseLocaleNumber } from './parse-number.ts';
 
 /** Every language a form can be filled in in. The wording lives in validation-copy/. */
 export type FormLocale = Locale;
@@ -44,9 +45,13 @@ export type ErrorCode =
   | 'too-long'
   | 'min-length'
   | 'consent'
-  | 'self-referral';
+  | 'self-referral'
+  | 'choose'
+  | 'contact-email'
+  | 'contact-phone'
+  | 'contact-link';
 
-export type FieldError = { code: ErrorCode; country?: string; example?: string; limit?: number };
+export type FieldError = { code: ErrorCode; country?: string; example?: string; limit?: number; /** contact-*: the offending snippet. */ match?: string };
 
 /* ── Phone ─────────────────────────────────────────────────────────────── */
 
@@ -96,6 +101,22 @@ export function defaultPhoneCountry(locale: string): CountryCode {
       return 'LV';
     case 'lt':
       return 'LT';
+    case 'sr':
+      return 'RS';
+    case 'uk':
+      return 'UA';
+    case 'tr':
+      return 'TR';
+    case 'he':
+      return 'IL';
+    // Arabic is spoken in many countries; the Emirates are where most of
+    // FINDDOME's Arabic-speaking enquiries are expected to come from.
+    case 'ar':
+      return 'AE';
+    case 'ru':
+      return 'RU';
+    case 'zh':
+      return 'CN';
     default:
       return 'HU';
   }
@@ -205,23 +226,7 @@ export type FieldSpec = {
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
-/**
- * Parses a number the way people write it in Hungary and the Netherlands (and
- * in German and French, which group the same way): spaces, dots or narrow
- * spaces group thousands ("1 200 000", "1.200.000"), a comma or dot followed
- * by one or two digits at the end is a decimal. English "1,200,000" reads the
- * same way: the commas are dropped.
- */
-export function parseLocaleNumber(value: string): number | null {
-  const raw = value.trim();
-  if (!raw) return null;
-  if (!/^[\d\s.,]+$/.test(raw)) return null;
-  const decimal = raw.match(/[.,](\d{1,2})$/);
-  const whole = (decimal ? raw.slice(0, decimal.index) : raw).replace(/[\s.,]/g, '');
-  if (!/^\d+$/.test(whole)) return null;
-  const n = Number(decimal ? `${whole}.${decimal[1]}` : whole);
-  return Number.isFinite(n) ? n : null;
-}
+export { parseLocaleNumber };
 
 /** The number as the machine reads it ("250.000" and "250 000" are both 250000); unreadable input comes back unchanged. */
 export function normalizeNumber(raw: string): string {

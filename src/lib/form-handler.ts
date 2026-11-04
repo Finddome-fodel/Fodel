@@ -433,6 +433,62 @@ const ACK = {
     body: (name: string, phones: string, hours: string) =>
       `<p>${name ? `Laba diena, ${escapeHtml(name)},` : 'Laba diena,'}</p>\n       <p>dėkojame už jūsų žinutę. Ją gavome, ir mūsų komandos narys netrukus su jumis susisieks. ${escapeHtml(hours)}</p>\n       <p>Skubate? Skambinkite mums ${escapeHtml(phones)}.</p>\n       <p>Pagarbiai<br>FINDDOME Nekilnojamasis turtas</p>`,
   },
+  sr: {
+    subject: 'Hvala na poruci | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Poštovani/a ${escapeHtml(name || 'posetioče')},</p>
+       <p>Hvala na poruci. Primili smo je i član našeg tima će vam se uskoro javiti. ${escapeHtml(hours)}</p>
+       <p>Žurite? Pozovite nas: ${escapeHtml(phones)}.</p>
+       <p>Srdačan pozdrav,<br>FINDDOME Nekretnine</p>`,
+  },
+  uk: {
+    subject: 'Дякуємо за повідомлення | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Вітаємо, ${escapeHtml(name || 'шановний відвідувачу')}!</p>
+       <p>Дякуємо за повідомлення. Ми його отримали, і співробітник нашої команди незабаром зв’яжеться з вами. ${escapeHtml(hours)}</p>
+       <p>Поспішаєте? Зателефонуйте нам: ${escapeHtml(phones)}.</p>
+       <p>З повагою,<br>FINDDOME НЕРУХОМІСТЬ</p>`,
+  },
+  tr: {
+    subject: 'Mesajınız için teşekkürler | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Sayın ${escapeHtml(name || 'ziyaretçimiz')},</p>
+       <p>Mesajınız için teşekkür ederiz. Mesajınızı aldık; ekibimizden biri kısa süre içinde sizinle iletişime geçecek. ${escapeHtml(hours)}</p>
+       <p>Acele mi ediyorsunuz? Bizi arayın: ${escapeHtml(phones)}.</p>
+       <p>Saygılarımızla,<br>FINDDOME EMLAK</p>`,
+  },
+  he: {
+    subject: 'תודה על פנייתכם | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>שלום ${escapeHtml(name || 'וברוכים הבאים')},</p>
+       <p>תודה על פנייתכם. קיבלנו אותה, ואחד מאנשי הצוות שלנו ייצור איתכם קשר בקרוב. ${escapeHtml(hours)}</p>
+       <p>ממהרים? התקשרו אלינו: ${escapeHtml(phones)}.</p>
+       <p>בברכה,<br>FINDDOME נדל״ן</p>`,
+  },
+  ar: {
+    subject: 'شكرًا على رسالتك | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>عزيزي/عزيزتي ${escapeHtml(name || 'الزائر')}،</p>
+       <p>شكرًا على رسالتك. لقد تلقّيناها، وسيتواصل معك أحد أعضاء فريقنا قريبًا. ${escapeHtml(hours)}</p>
+       <p>هل أنت مستعجل؟ اتصل بنا على ${escapeHtml(phones)}.</p>
+       <p>مع أطيب التحيات،<br>FINDDOME العقارية</p>`,
+  },
+  ru: {
+    subject: 'Спасибо за сообщение | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>Здравствуйте, ${escapeHtml(name || 'уважаемый посетитель')}!</p>
+       <p>Спасибо за сообщение. Мы его получили, и сотрудник нашей команды вскоре свяжется с вами. ${escapeHtml(hours)}</p>
+       <p>Торопитесь? Позвоните нам: ${escapeHtml(phones)}.</p>
+       <p>С уважением,<br>FINDDOME НЕДВИЖИМОСТЬ</p>`,
+  },
+  zh: {
+    subject: '感谢您的留言 | FINDDOME',
+    body: (name: string, phones: string, hours: string) =>
+      `<p>${escapeHtml(name || '访客')}，您好：</p>
+       <p>感谢您的留言。我们已收到，团队成员将很快与您联系。${escapeHtml(hours)}</p>
+       <p>着急吗？请致电 ${escapeHtml(phones)}。</p>
+       <p>此致<br>FINDDOME 房产</p>`,
+  },
 } as const;
 
 /**

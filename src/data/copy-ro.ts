@@ -27,13 +27,13 @@ export const RO = {
     meta: {
       title: 'FINDDOME Imobiliare | Promovați-vă proprietatea în Europa',
       description:
-        'Încărcați anunțul în câțiva pași. După plata online apare în 21 de limbi, fără contract de exclusivitate.',
+        'Încărcați anunțul în câțiva pași. După plata online apare în 28 de limbi, fără contract de exclusivitate.',
     },
     hero: {
       eyebrow: `Din 2013 · ${foundedInLabel(L)}`,
       title: ['Promovați', 'proprietatea dvs.', 'în Europa'],
       emphasis: 1,
-      body: 'Încărcați anunțul în câțiva pași. Îl verificăm, iar după plata online apare pe site-ul nostru în 21 de limbi, fără contract de exclusivitate. Interesații vă contactează direct sau prin noi.',
+      body: 'Încărcați anunțul în câțiva pași. Îl verificăm, iar după plata online apare pe site-ul nostru în 28 de limbi, fără contract de exclusivitate. Interesații vă contactează direct sau prin noi.',
       primary: 'Vedeți proprietățile',
       secondary: 'Căutare gratuită',
       featuredLabel: 'Recomandat',

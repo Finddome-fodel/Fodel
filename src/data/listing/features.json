@@ -22,7 +22,14 @@
       "fi": "Tasainen tontti",
       "et": "Tasane maa",
       "lv": "Līdzens zemes gabals",
-      "lt": "Lygus sklypas"
+      "lt": "Lygus sklypas",
+      "sr": "Ravan plac",
+      "uk": "Рівнинна ділянка",
+      "tr": "Düz arsa",
+      "he": "מגרש מישורי",
+      "ar": "أرض مستوية",
+      "ru": "Ровный участок",
+      "zh": "平坦地块"
     },
     "propertyGroups": [
       "house",
@@ -53,6 +60,9 @@
       "forest-pasture",
       "livestock",
       "agricultural-estate",
+      "agricultural-business",
+      "rural-estate",
+      "manor-farmstead",
       "fish-farm",
       "agricultural-other",
       "residential-plot",
@@ -86,7 +96,14 @@
       "fi": "Rinnetontti",
       "et": "Kaldu maa",
       "lv": "Slīps zemes gabals",
-      "lt": "Nuožulnus sklypas"
+      "lt": "Nuožulnus sklypas",
+      "sr": "Blago nagnut ili strm plac",
+      "uk": "Полога або схилова ділянка",
+      "tr": "Hafif eğimli veya eğimli arsa",
+      "he": "מגרש משופע",
+      "ar": "أرض منحدرة",
+      "ru": "Пологий или склоновый участок",
+      "zh": "缓坡或坡地"
     },
     "propertyGroups": [
       "house",
@@ -117,6 +134,9 @@
       "forest-pasture",
       "livestock",
       "agricultural-estate",
+      "agricultural-business",
+      "rural-estate",
+      "manor-farmstead",
       "fish-farm",
       "agricultural-other",
       "residential-plot",
@@ -150,7 +170,14 @@
       "fi": "Metsäinen ympäristö",
       "et": "Metsane ümbrus",
       "lv": "Mežaina apkārtne",
-      "lt": "Miškinga aplinka"
+      "lt": "Miškinga aplinka",
+      "sr": "Šumovito okruženje",
+      "uk": "Лісове оточення",
+      "tr": "Ormanlık çevre",
+      "he": "סביבה מיוערת",
+      "ar": "محيط حرجي",
+      "ru": "Лесное окружение",
+      "zh": "林木环绕"
     },
     "propertyGroups": [
       "house",
@@ -198,7 +225,14 @@
       "fi": "Panoraamanäkymät",
       "et": "Panoraamvaade",
       "lv": "Panorāmas skats",
-      "lt": "Panoraminis vaizdas"
+      "lt": "Panoraminis vaizdas",
+      "sr": "Panoramski pogled",
+      "uk": "Панорамний краєвид",
+      "tr": "Panoramik manzara",
+      "he": "נוף פנורמי",
+      "ar": "إطلالة بانورامية",
+      "ru": "Панорамный вид",
+      "zh": "全景视野"
     },
     "propertyGroups": [
       "house",
@@ -231,7 +265,14 @@
       "fi": "Suoraan rannalla",
       "et": "Otse vee ääres",
       "lv": "Tieši pie ūdens",
-      "lt": "Tiesiai prie vandens"
+      "lt": "Tiesiai prie vandens",
+      "sr": "Direktno na obali",
+      "uk": "Безпосередньо біля води",
+      "tr": "Doğrudan su kenarında",
+      "he": "על קו המים",
+      "ar": "على الواجهة المائية مباشرة",
+      "ru": "Непосредственно у воды",
+      "zh": "紧邻水岸"
     },
     "propertyGroups": [
       "house",
@@ -264,7 +305,14 @@
       "fi": "Terassi tai parveke",
       "et": "Terrass või rõdu",
       "lv": "Terase vai balkons",
-      "lt": "Terasa ar balkonas"
+      "lt": "Terasa ar balkonas",
+      "sr": "Terasa ili balkon",
+      "uk": "Тераса або балкон",
+      "tr": "Teras veya balkon",
+      "he": "מרפסת או מרפסת שמש",
+      "ar": "تراس أو شرفة",
+      "ru": "Терраса или балкон",
+      "zh": "露台或阳台"
     },
     "propertyGroups": [
       "house",
@@ -297,7 +345,14 @@
       "fi": "Uima-allas",
       "et": "Bassein",
       "lv": "Peldbaseins",
-      "lt": "Baseinas"
+      "lt": "Baseinas",
+      "sr": "Bazen",
+      "uk": "Басейн",
+      "tr": "Yüzme havuzu",
+      "he": "בריכת שחייה",
+      "ar": "مسبح",
+      "ru": "Бассейн",
+      "zh": "游泳池"
     },
     "propertyGroups": [
       "house",
@@ -329,7 +384,14 @@
       "fi": "Sauna tai poreallas",
       "et": "Saun või mullivann",
       "lv": "Pirts vai burbuļvanna",
-      "lt": "Pirtis ar sūkurinė vonia"
+      "lt": "Pirtis ar sūkurinė vonia",
+      "sr": "Sauna ili đakuzi",
+      "uk": "Сауна або джакузі",
+      "tr": "Sauna veya jakuzi",
+      "he": "סאונה או ג׳קוזי",
+      "ar": "ساونا أو جاكوزي",
+      "ru": "Сауна или джакузи",
+      "zh": "桑拿或按摩浴缸"
     },
     "propertyGroups": [
       "house",
@@ -361,7 +423,14 @@
       "fi": "Takka",
       "et": "Kamin",
       "lv": "Kamīns",
-      "lt": "Židinys"
+      "lt": "Židinys",
+      "sr": "Kamin",
+      "uk": "Камін",
+      "tr": "Şömine",
+      "he": "אח",
+      "ar": "مدفأة",
+      "ru": "Камин",
+      "zh": "壁炉"
     },
     "propertyGroups": [
       "house",
@@ -393,7 +462,14 @@
       "fi": "Aurinkopaneelit",
       "et": "Päikesepaneelid",
       "lv": "Saules paneļi",
-      "lt": "Saulės baterijos"
+      "lt": "Saulės baterijos",
+      "sr": "Solarni paneli",
+      "uk": "Сонячні панелі",
+      "tr": "Güneş panelleri",
+      "he": "פאנלים סולאריים",
+      "ar": "ألواح شمسية",
+      "ru": "Солнечные панели",
+      "zh": "太阳能板"
     },
     "propertyGroups": [
       "house",
@@ -425,7 +501,14 @@
       "fi": "Kellari tai varasto",
       "et": "Kelder või panipaik",
       "lv": "Pagrabs vai noliktava",
-      "lt": "Rūsys ar sandėliukas"
+      "lt": "Rūsys ar sandėliukas",
+      "sr": "Podrum ili ostava",
+      "uk": "Погріб або комора",
+      "tr": "Kiler veya depo",
+      "he": "מרתף או מחסן",
+      "ar": "قبو أو مخزن",
+      "ru": "Погреб или кладовая",
+      "zh": "地窖或储藏室"
     },
     "propertyGroups": [
       "house",
@@ -458,7 +541,14 @@
       "fi": "Hoidettu puutarha",
       "et": "Hooldatud aed",
       "lv": "Labiekārtots dārzs",
-      "lt": "Sutvarkytas sodas"
+      "lt": "Sutvarkytas sodas",
+      "sr": "Uređena bašta",
+      "uk": "Упорядкований сад",
+      "tr": "Peyzajlı bahçe",
+      "he": "גינה מטופחת",
+      "ar": "حديقة منسقة",
+      "ru": "Ландшафтный сад",
+      "zh": "景观花园"
     },
     "propertyGroups": [
       "house",
@@ -500,7 +590,14 @@
       "fi": "Koristepuutarha tai puisto",
       "et": "Iluaed või park",
       "lv": "Dekoratīvais dārzs vai parks",
-      "lt": "Dekoratyvinis sodas arba parkas"
+      "lt": "Dekoratyvinis sodas arba parkas",
+      "sr": "Ukrasna bašta ili park",
+      "uk": "Декоративний сад або парк",
+      "tr": "Süs bahçesi veya park",
+      "he": "גן נוי או פארק",
+      "ar": "حديقة تزيينية أو منتزه",
+      "ru": "Декоративный сад или парк",
+      "zh": "观赏花园或园林"
     },
     "propertyGroups": [
       "mansion"
@@ -530,7 +627,14 @@
       "fi": "Koirankoppi tai koiratarha",
       "et": "Koerakuut või koeraaedik",
       "lv": "Suņu būda vai voljērs",
-      "lt": "Šunų būda ar voljeras"
+      "lt": "Šunų būda ar voljeras",
+      "sr": "Kućica ili boks za pse",
+      "uk": "Будка або вольєр для собак",
+      "tr": "Köpek kulübesi veya barınağı",
+      "he": "מלונה או כלבייה",
+      "ar": "بيت أو حظيرة للكلاب",
+      "ru": "Будка или вольер для собак",
+      "zh": "狗屋或犬舍"
     },
     "propertyGroups": [
       "house",
@@ -560,6 +664,9 @@
       "forest-pasture",
       "livestock",
       "agricultural-estate",
+      "agricultural-business",
+      "rural-estate",
+      "manor-farmstead",
       "fish-farm",
       "agricultural-other"
     ]
@@ -587,7 +694,14 @@
       "fi": "Oma ranta",
       "et": "Oma kallas",
       "lv": "Privāts krasts",
-      "lt": "Privati pakrantė"
+      "lt": "Privati pakrantė",
+      "sr": "Sopstveni deo obale",
+      "uk": "Власна ділянка берега",
+      "tr": "Özel kıyı şeridi",
+      "he": "קו חוף פרטי",
+      "ar": "شاطئ خاص",
+      "ru": "Собственный участок берега",
+      "zh": "私人岸线"
     },
     "propertyGroups": [
       "holiday"
@@ -617,7 +731,14 @@
       "fi": "Oma laituri tai kiinnityspaikka",
       "et": "Oma kai või sildumiskoht",
       "lv": "Privāta laivu piestātne vai piestāšanas vieta",
-      "lt": "Privati prieplauka ar švartavimo vieta"
+      "lt": "Privati prieplauka ar švartavimo vieta",
+      "sr": "Sopstveni mol ili vez",
+      "uk": "Власний причал або пристань",
+      "tr": "Özel iskele veya bağlama yeri",
+      "he": "מזח או מעגן פרטי",
+      "ar": "رصيف أو مرسى خاص",
+      "ru": "Собственный причал или пристань",
+      "zh": "私人码头或泊位"
     },
     "propertyGroups": [
       "holiday"
@@ -647,7 +768,14 @@
       "fi": "Venevaja",
       "et": "Paadikuur",
       "lv": "Laivu novietne",
-      "lt": "Valčių laikymo vieta"
+      "lt": "Valčių laikymo vieta",
+      "sr": "Spremište za čamce",
+      "uk": "Сховище для човнів",
+      "tr": "Tekne deposu",
+      "he": "מחסן סירות",
+      "ar": "مخزن للقوارب",
+      "ru": "Хранилище для лодок",
+      "zh": "船库"
     },
     "propertyGroups": [
       "holiday"
@@ -677,7 +805,14 @@
       "fi": "Vuoristomaasto",
       "et": "Mägine maastik",
       "lv": "Kalnains apvidus",
-      "lt": "Kalnuota vietovė"
+      "lt": "Kalnuota vietovė",
+      "sr": "Planinski teren",
+      "uk": "Гірська місцевість",
+      "tr": "Dağlık arazi",
+      "he": "שטח הררי",
+      "ar": "أرض جبلية",
+      "ru": "Горная местность",
+      "zh": "山地"
     },
     "propertyGroups": [
       "agricultural",
@@ -708,7 +843,14 @@
       "fi": "Metsämaa",
       "et": "Metsamaa",
       "lv": "Meža zeme",
-      "lt": "Miškas"
+      "lt": "Miškas",
+      "sr": "Šumsko zemljište",
+      "uk": "Лісова ділянка",
+      "tr": "Ormanlık arazi",
+      "he": "שטח מיוער",
+      "ar": "أرض حرجية",
+      "ru": "Лесной участок",
+      "zh": "林地"
     },
     "propertyGroups": [
       "agricultural",
@@ -739,7 +881,14 @@
       "fi": "Osittain metsäinen maa",
       "et": "Osaliselt metsane maa",
       "lv": "Daļēji apmežota zeme",
-      "lt": "Iš dalies apaugusi mišku žemė"
+      "lt": "Iš dalies apaugusi mišku žemė",
+      "sr": "Delimično pošumljeno zemljište",
+      "uk": "Частково залісена ділянка",
+      "tr": "Kısmen ormanlık arazi",
+      "he": "שטח מיוער בחלקו",
+      "ar": "أرض حرجية جزئيًا",
+      "ru": "Частично лесистый участок",
+      "zh": "部分林地"
     },
     "propertyGroups": [
       "agricultural",
@@ -770,7 +919,14 @@
       "fi": "Peltomaa",
       "et": "Põllumaa",
       "lv": "Aramzeme",
-      "lt": "Ariama žemė"
+      "lt": "Ariama žemė",
+      "sr": "Oranica",
+      "uk": "Рілля",
+      "tr": "Tarla",
+      "he": "קרקע חקלאית לעיבוד",
+      "ar": "أرض صالحة للزراعة",
+      "ru": "Пашня",
+      "zh": "耕地"
     },
     "propertyGroups": [
       "agricultural",
@@ -801,7 +957,14 @@
       "fi": "Laidun tai niitty",
       "et": "Karjamaa või niit",
       "lv": "Ganības vai pļava",
-      "lt": "Ganykla ar pieva"
+      "lt": "Ganykla ar pieva",
+      "sr": "Pašnjak ili livada",
+      "uk": "Пасовище або сінокіс",
+      "tr": "Mera veya çayır",
+      "he": "שטח מרעה או אחו",
+      "ar": "مرعى أو مرج",
+      "ru": "Пастбище или сенокос",
+      "zh": "牧场或草地"
     },
     "propertyGroups": [
       "agricultural",
@@ -832,7 +995,14 @@
       "fi": "Hedelmätarha tai viinitarha",
       "et": "Viljapuuaed või viinamarjaistandus",
       "lv": "Augļu dārzs vai vīna dārzs",
-      "lt": "Sodas ar vynuogynas"
+      "lt": "Sodas ar vynuogynas",
+      "sr": "Voćnjak ili vinograd",
+      "uk": "Сад або виноградник",
+      "tr": "Meyve bahçesi veya bağ",
+      "he": "מטע או כרם",
+      "ar": "بستان أو كرم عنب",
+      "ru": "Фруктовый сад или виноградник",
+      "zh": "果园或葡萄园"
     },
     "propertyGroups": [
       "agricultural",
@@ -863,7 +1033,14 @@
       "fi": "Kalalammikko tai ranta",
       "et": "Kalatiik või veekogu kallas",
       "lv": "Zivju dīķis vai krasts",
-      "lt": "Tvenkinys ar pakrantė"
+      "lt": "Tvenkinys ar pakrantė",
+      "sr": "Ribnjak ili obala",
+      "uk": "Ставок або берег водойми",
+      "tr": "Balık göleti veya su kenarı",
+      "he": "בריכת דגים או קו מים",
+      "ar": "بركة أسماك أو واجهة مائية",
+      "ru": "Рыбный пруд или берег водоёма",
+      "zh": "鱼塘或水岸"
     },
     "propertyGroups": [
       "agricultural",
@@ -894,7 +1071,14 @@
       "fi": "Maatalousrakennukset",
       "et": "Põllumajandushooned",
       "lv": "Saimniecības ēkas",
-      "lt": "Ūkiniai pastatai"
+      "lt": "Ūkiniai pastatai",
+      "sr": "Ekonomski objekti",
+      "uk": "Господарські будівлі",
+      "tr": "Tarımsal yapılar",
+      "he": "מבני משק",
+      "ar": "مبانٍ زراعية",
+      "ru": "Хозяйственные постройки",
+      "zh": "农用建筑"
     },
     "propertyGroups": [
       "agricultural",
@@ -925,7 +1109,14 @@
       "fi": "Sivurakennukset",
       "et": "Kõrvalhooned",
       "lv": "Palīgēkas",
-      "lt": "Pagalbiniai pastatai"
+      "lt": "Pagalbiniai pastatai",
+      "sr": "Pomoćni objekti",
+      "uk": "Допоміжні будівлі",
+      "tr": "Müştemilat",
+      "he": "מבני עזר",
+      "ar": "مبانٍ ملحقة",
+      "ru": "Вспомогательные постройки",
+      "zh": "附属建筑"
     },
     "propertyGroups": [
       "mansion"
@@ -955,7 +1146,14 @@
       "fi": "Eläinsuojat",
       "et": "Loomapidamishooned",
       "lv": "Dzīvnieku novietnes",
-      "lt": "Gyvulių pastatai"
+      "lt": "Gyvulių pastatai",
+      "sr": "Objekti za držanje životinja",
+      "uk": "Приміщення для утримання тварин",
+      "tr": "Hayvan barınakları",
+      "he": "מבנים לגידול בעלי חיים",
+      "ar": "حظائر للحيوانات",
+      "ru": "Помещения для содержания животных",
+      "zh": "畜舍"
     },
     "propertyGroups": [
       "agricultural"
@@ -985,7 +1183,14 @@
       "fi": "Talli tai tarha",
       "et": "Tall või koppel",
       "lv": "Stallis vai aploks",
-      "lt": "Arklidė ar aptvaras"
+      "lt": "Arklidė ar aptvaras",
+      "sr": "Štala ili obor",
+      "uk": "Стайня або загін",
+      "tr": "Ahır veya padok",
+      "he": "אורווה או מכלאה",
+      "ar": "إسطبل أو حظيرة",
+      "ru": "Конюшня или загон",
+      "zh": "马厩或围场"
     },
     "propertyGroups": [
       "agricultural",
@@ -1016,7 +1221,14 @@
       "fi": "Maneesi",
       "et": "Maneež",
       "lv": "Jāšanas manēža",
-      "lt": "Jojimo maniežas"
+      "lt": "Jojimo maniežas",
+      "sr": "Jahalište",
+      "uk": "Манеж",
+      "tr": "Binicilik alanı",
+      "he": "מגרש רכיבה",
+      "ar": "ساحة للفروسية",
+      "ru": "Манеж",
+      "zh": "马术场"
     },
     "propertyGroups": [
       "agricultural",
@@ -1047,7 +1259,14 @@
       "fi": "Kone- ja työkaluvarasto",
       "et": "Masina- ja tööriistakuur",
       "lv": "Tehnikas un darbarīku noliktava",
-      "lt": "Technikos ir įrankių sandėlis"
+      "lt": "Technikos ir įrankių sandėlis",
+      "sr": "Spremište za mašine i alat",
+      "uk": "Сховище для техніки та інструментів",
+      "tr": "Makine ve ekipman deposu",
+      "he": "מחסן למכונות ולכלים",
+      "ar": "مخزن للآلات والمعدات",
+      "ru": "Хранилище для техники и инструментов",
+      "zh": "机械和工具库房"
     },
     "propertyGroups": [
       "agricultural"
@@ -1077,7 +1296,14 @@
       "fi": "Rehuvarasto",
       "et": "Söödahoidla",
       "lv": "Lopbarības noliktava",
-      "lt": "Pašarų sandėlis"
+      "lt": "Pašarų sandėlis",
+      "sr": "Skladište stočne hrane",
+      "uk": "Сховище для кормів",
+      "tr": "Yem deposu",
+      "he": "מחסן מספוא",
+      "ar": "مخزن للأعلاف",
+      "ru": "Хранилище кормов",
+      "zh": "饲料仓库"
     },
     "propertyGroups": [
       "agricultural"
@@ -1107,7 +1333,14 @@
       "fi": "Kastelujärjestelmä",
       "et": "Niisutussüsteem",
       "lv": "Apūdeņošanas sistēma",
-      "lt": "Drėkinimo sistema"
+      "lt": "Drėkinimo sistema",
+      "sr": "Sistem za navodnjavanje",
+      "uk": "Зрошувальна система",
+      "tr": "Sulama sistemi",
+      "he": "מערכת השקיה",
+      "ar": "نظام ري",
+      "ru": "Система орошения",
+      "zh": "灌溉系统"
     },
     "propertyGroups": [
       "agricultural"
@@ -1137,7 +1370,14 @@
       "fi": "Oma kaivo",
       "et": "Oma kaev",
       "lv": "Sava aka",
-      "lt": "Nuosavas šulinys"
+      "lt": "Nuosavas šulinys",
+      "sr": "Sopstveni bunar",
+      "uk": "Власна криниця",
+      "tr": "Özel kuyu",
+      "he": "באר פרטית",
+      "ar": "بئر خاصة",
+      "ru": "Собственный колодец",
+      "zh": "私人水井"
     },
     "propertyGroups": [
       "agricultural"
@@ -1167,7 +1407,14 @@
       "fi": "Vierasmaja",
       "et": "Külalistemaja",
       "lv": "Viesu māja",
-      "lt": "Svečių namelis"
+      "lt": "Svečių namelis",
+      "sr": "Kuća za goste",
+      "uk": "Гостьовий будинок",
+      "tr": "Misafir evi",
+      "he": "בית אירוח",
+      "ar": "بيت ضيافة",
+      "ru": "Гостевой дом",
+      "zh": "客房"
     },
     "propertyGroups": [
       "agricultural",
@@ -1198,7 +1445,14 @@
       "fi": "Viinikellari",
       "et": "Veinikelder",
       "lv": "Vīna pagrabs",
-      "lt": "Vyno rūsys"
+      "lt": "Vyno rūsys",
+      "sr": "Vinski podrum",
+      "uk": "Винний погріб",
+      "tr": "Şarap mahzeni",
+      "he": "מרתף יין",
+      "ar": "قبو نبيذ",
+      "ru": "Винный погреб",
+      "zh": "酒窖"
     },
     "propertyGroups": [
       "agricultural",
@@ -1230,7 +1484,14 @@
       "fi": "Katujulkisivu",
       "et": "Tänavapoolne fassaad",
       "lv": "Fasāde uz ielu",
-      "lt": "Fasadas į gatvę"
+      "lt": "Fasadas į gatvę",
+      "sr": "Na uličnom frontu",
+      "uk": "Розташування на першій лінії вулиці",
+      "tr": "Cadde cepheli konum",
+      "he": "חזית לרחוב",
+      "ar": "واجهة على الشارع",
+      "ru": "Расположение на красной линии улицы",
+      "zh": "临街位置"
     },
     "propertyGroups": [
       "commercial"
@@ -1260,7 +1521,14 @@
       "fi": "Näyteikkunat",
       "et": "Vaateaknad",
       "lv": "Skatlogi",
-      "lt": "Vitrinos"
+      "lt": "Vitrinos",
+      "sr": "Lokal sa izlogom",
+      "uk": "Приміщення з вітринами",
+      "tr": "Vitrinli dükkân",
+      "he": "חנות עם חלונות ראווה",
+      "ar": "محل بواجهات عرض",
+      "ru": "Помещение с витринами",
+      "zh": "带橱窗的商铺"
     },
     "propertyGroups": [
       "commercial"
@@ -1290,7 +1558,14 @@
       "fi": "Lastausmahdollisuus",
       "et": "Laadimisjuurdepääs",
       "lv": "Piekļuve iekraušanai",
-      "lt": "Privažiavimas pakrovimui"
+      "lt": "Privažiavimas pakrovimui",
+      "sr": "Mogućnost utovara",
+      "uk": "Можливість завантаження",
+      "tr": "Yükleme imkânı",
+      "he": "אפשרות פריקה וטעינה",
+      "ar": "إمكانية التحميل",
+      "ru": "Возможность погрузки",
+      "zh": "可装卸货"
     },
     "propertyGroups": [
       "commercial"
@@ -1320,7 +1595,14 @@
       "fi": "Soveltuu ravintolakäyttöön",
       "et": "Sobib toitlustuseks",
       "lv": "Piemērots ēdināšanai",
-      "lt": "Tinka maitinimo verslui"
+      "lt": "Tinka maitinimo verslui",
+      "sr": "Pogodno za ugostiteljstvo",
+      "uk": "Придатне для закладу харчування",
+      "tr": "Yeme-içme işletmesine uygun",
+      "he": "מתאים להסעדה ולאירוח",
+      "ar": "مناسب للضيافة",
+      "ru": "Подходит для общепита",
+      "zh": "适合餐饮经营"
     },
     "propertyGroups": [
       "commercial"
@@ -1350,7 +1632,14 @@
       "fi": "Varusteltu keittiö",
       "et": "Sisustatud köök",
       "lv": "Aprīkota virtuve",
-      "lt": "Įrengta virtuvė"
+      "lt": "Įrengta virtuvė",
+      "sr": "Opremljena kuhinja",
+      "uk": "Обладнана кухня",
+      "tr": "Donanımlı mutfak",
+      "he": "מטבח מאובזר",
+      "ar": "مطبخ مجهز",
+      "ru": "Оборудованная кухня",
+      "zh": "厨房设施齐全"
     },
     "propertyGroups": [
       "commercial"
@@ -1380,7 +1669,14 @@
       "fi": "Esteetön",
       "et": "Ligipääsetav",
       "lv": "Piekļūstams",
-      "lt": "Pritaikyta neįgaliesiems"
+      "lt": "Pritaikyta neįgaliesiems",
+      "sr": "Prilagođeno osobama sa invaliditetom",
+      "uk": "Безбар’єрний доступ",
+      "tr": "Engelsiz erişim",
+      "he": "נגיש",
+      "ar": "مُهيّأ لذوي الإعاقة",
+      "ru": "Безбарьерный доступ",
+      "zh": "无障碍设施"
     },
     "propertyGroups": [
       "commercial"
@@ -1410,7 +1706,14 @@
       "fi": "Säilytystilaa",
       "et": "Hoiuruum",
       "lv": "Uzglabāšanas telpa",
-      "lt": "Sandėliavimo patalpa"
+      "lt": "Sandėliavimo patalpa",
+      "sr": "Magacinski prostor",
+      "uk": "Складське приміщення",
+      "tr": "Depo alanı",
+      "he": "שטח אחסון",
+      "ar": "مساحة تخزين",
+      "ru": "Складское помещение",
+      "zh": "仓储空间"
     },
     "propertyGroups": [
       "commercial"
@@ -1440,7 +1743,14 @@
       "fi": "Korkeat huoneet",
       "et": "Kõrged laed",
       "lv": "Augsti griesti",
-      "lt": "Aukštos lubos"
+      "lt": "Aukštos lubos",
+      "sr": "Visoki plafoni",
+      "uk": "Високі стелі",
+      "tr": "Yüksek tavan",
+      "he": "תקרות גבוהות",
+      "ar": "أسقف عالية",
+      "ru": "Высокие потолки",
+      "zh": "层高较高"
     },
     "propertyGroups": [
       "industrial"
@@ -1470,7 +1780,14 @@
       "fi": "Teollisuussähköliittymä",
       "et": "Tööstuslik elektriühendus",
       "lv": "Rūpnieciska elektroapgāde",
-      "lt": "Pramoninis elektros tiekimas"
+      "lt": "Pramoninis elektros tiekimas",
+      "sr": "Industrijsko napajanje",
+      "uk": "Промислове електропостачання",
+      "tr": "Endüstriyel elektrik",
+      "he": "אספקת חשמל תעשייתית",
+      "ar": "تغذية كهربائية صناعية",
+      "ru": "Промышленное электроснабжение",
+      "zh": "工业用电"
     },
     "propertyGroups": [
       "industrial"
@@ -1500,7 +1817,14 @@
       "fi": "Lastauslaituri",
       "et": "Laadimisramp",
       "lv": "Iekraušanas rampa",
-      "lt": "Pakrovimo rampa"
+      "lt": "Pakrovimo rampa",
+      "sr": "Utovarna rampa",
+      "uk": "Вантажна рампа",
+      "tr": "Yükleme rampası",
+      "he": "רמפת העמסה",
+      "ar": "رصيف تحميل",
+      "ru": "Погрузочная рампа",
+      "zh": "装卸平台"
     },
     "propertyGroups": [
       "industrial"
@@ -1530,7 +1854,14 @@
       "fi": "Kuorma-auton lastauspaikka",
       "et": "Veoki laadimiskoht",
       "lv": "Kravas auto iekraušanas vieta",
-      "lt": "Sunkvežimių pakrovimo vieta"
+      "lt": "Sunkvežimių pakrovimo vieta",
+      "sr": "Mesto za kamione",
+      "uk": "Місце для вантажівки",
+      "tr": "Kamyon park yeri",
+      "he": "מפרץ למשאיות",
+      "ar": "موقف للشاحنات",
+      "ru": "Место для грузовика",
+      "zh": "货车车位"
     },
     "propertyGroups": [
       "industrial"
@@ -1560,7 +1891,14 @@
       "fi": "Kuorma-autojen pysäköinti",
       "et": "Veokite parkla",
       "lv": "Kravas auto stāvvieta",
-      "lt": "Sunkvežimių stovėjimo aikštelė"
+      "lt": "Sunkvežimių stovėjimo aikštelė",
+      "sr": "Parking za šlepere",
+      "uk": "Стоянка для фур",
+      "tr": "Tır parkı",
+      "he": "חניית משאיות",
+      "ar": "موقف للشاحنات الكبيرة",
+      "ru": "Стоянка для фур",
+      "zh": "重型卡车停车场"
     },
     "propertyGroups": [
       "industrial"
@@ -1590,7 +1928,14 @@
       "fi": "Nosturi tai nosturirata",
       "et": "Kraana või kraanatee",
       "lv": "Celtnis vai celtņa sliedes",
-      "lt": "Kranas ar krano bėgiai"
+      "lt": "Kranas ar krano bėgiai",
+      "sr": "Kran ili kranska staza",
+      "uk": "Кран або кранова колія",
+      "tr": "Vinç veya vinç yolu",
+      "he": "עגורן או מסילת עגורן",
+      "ar": "رافعة أو مسار رافعة",
+      "ru": "Кран или крановый путь",
+      "zh": "起重机或吊车轨道"
     },
     "propertyGroups": [
       "industrial"
@@ -1620,7 +1965,14 @@
       "fi": "Raskaan kuormituksen lattia",
       "et": "Suure kandevõimega põrand",
       "lv": "Grīda lielām slodzēm",
-      "lt": "Didelės apkrovos grindys"
+      "lt": "Didelės apkrovos grindys",
+      "sr": "Pod velike nosivosti",
+      "uk": "Підлога з високою несучою здатністю",
+      "tr": "Yüksek taşıma kapasiteli zemin",
+      "he": "רצפה לעומס כבד",
+      "ar": "أرضية عالية التحمل",
+      "ru": "Пол высокой несущей способности",
+      "zh": "重型承重地面"
     },
     "propertyGroups": [
       "industrial"
@@ -1650,7 +2002,14 @@
       "fi": "Varastopinta-ala",
       "et": "Laopind",
       "lv": "Noliktavas platība",
-      "lt": "Sandėlio plotas"
+      "lt": "Sandėlio plotas",
+      "sr": "Skladišna površina",
+      "uk": "Складська площа",
+      "tr": "Depolama alanı",
+      "he": "שטח מחסנים",
+      "ar": "مساحة مستودعات",
+      "ru": "Складская площадь",
+      "zh": "仓库面积"
     },
     "propertyGroups": [
       "industrial"
@@ -1680,7 +2039,14 @@
       "fi": "Korjaamo",
       "et": "Töökoda",
       "lv": "Darbnīca",
-      "lt": "Dirbtuvės"
+      "lt": "Dirbtuvės",
+      "sr": "Radionica",
+      "uk": "Майстерня",
+      "tr": "Atölye",
+      "he": "סדנה",
+      "ar": "ورشة",
+      "ru": "Мастерская",
+      "zh": "车间"
     },
     "propertyGroups": [
       "industrial"
@@ -1710,7 +2076,14 @@
       "fi": "Toimistotilaa",
       "et": "Büroopind",
       "lv": "Biroja telpas",
-      "lt": "Biuro patalpos"
+      "lt": "Biuro patalpos",
+      "sr": "Kancelarijski prostor",
+      "uk": "Офісне приміщення",
+      "tr": "Ofis alanı",
+      "he": "שטח משרדים",
+      "ar": "مساحة مكتبية",
+      "ru": "Офисное помещение",
+      "zh": "办公空间"
     },
     "propertyGroups": [
       "industrial"
@@ -1740,7 +2113,14 @@
       "fi": "Henkilöstötilat",
       "et": "Personaliruumid",
       "lv": "Personāla telpas",
-      "lt": "Personalo patalpos"
+      "lt": "Personalo patalpos",
+      "sr": "Prostorije za zaposlene",
+      "uk": "Побутові приміщення для персоналу",
+      "tr": "Personel tesisleri",
+      "he": "מתקנים לעובדים",
+      "ar": "مرافق للموظفين",
+      "ru": "Бытовые помещения для персонала",
+      "zh": "员工设施"
     },
     "propertyGroups": [
       "industrial"
@@ -1770,7 +2150,14 @@
       "fi": "Kuorma-autoliikenne mahdollinen",
       "et": "Juurdepääs veokitele",
       "lv": "Piekļuve kravas auto",
-      "lt": "Privažiavimas sunkvežimiams"
+      "lt": "Privažiavimas sunkvežimiams",
+      "sr": "Pristup za šlepere",
+      "uk": "Під’їзд для фур",
+      "tr": "Tır erişimi",
+      "he": "גישה למשאיות",
+      "ar": "إمكانية وصول الشاحنات الكبيرة",
+      "ru": "Подъезд для фур",
+      "zh": "重型卡车可达"
     },
     "propertyGroups": [
       "industrial"
@@ -1800,7 +2187,14 @@
       "fi": "Suojeltu tai kulttuurihistoriallisesti arvokas",
       "et": "Kaitstav või pärandiväärtusega",
       "lv": "Aizsargājams vai ar vēsturisku vērtību",
-      "lt": "Saugomas ar paveldo vertės"
+      "lt": "Saugomas ar paveldo vertės",
+      "sr": "Spomenik kulture ili istorijski karakter",
+      "uk": "Пам’ятка архітектури або історичний характер",
+      "tr": "Tescilli yapı veya tarihî nitelik",
+      "he": "מבנה לשימור או בעל אופי היסטורי",
+      "ar": "مبنى أثري أو ذو طابع تراثي",
+      "ru": "Памятник архитектуры или исторический характер",
+      "zh": "文物保护建筑或历史风貌"
     },
     "propertyGroups": [
       "mansion"
@@ -1830,7 +2224,14 @@
       "fi": "Historialliset arkkitehtoniset yksityiskohdat",
       "et": "Ajaloolised arhitektuurielemendid",
       "lv": "Vēsturiski arhitektūras elementi",
-      "lt": "Istoriniai architektūros elementai"
+      "lt": "Istoriniai architektūros elementai",
+      "sr": "Istorijski arhitektonski elementi",
+      "uk": "Історичні архітектурні елементи",
+      "tr": "Tarihî mimari öğeler",
+      "he": "אלמנטים אדריכליים היסטוריים",
+      "ar": "عناصر معمارية تاريخية",
+      "ru": "Исторические архитектурные элементы",
+      "zh": "历史建筑元素"
     },
     "propertyGroups": [
       "mansion"
@@ -1860,7 +2261,14 @@
       "fi": "Metsätila",
       "et": "Metsamõis",
       "lv": "Meža īpašums",
-      "lt": "Miškingas dvaras"
+      "lt": "Miškingas dvaras",
+      "sr": "Šumovito imanje",
+      "uk": "Лісовий маєток",
+      "tr": "Ormanlık arazi mülkü",
+      "he": "אחוזה מיוערת",
+      "ar": "عقار حرجي",
+      "ru": "Лесное поместье",
+      "zh": "林地庄园"
     },
     "propertyGroups": [
       "mansion"
@@ -1890,7 +2298,14 @@
       "fi": "Oma kappeli",
       "et": "Erakabel",
       "lv": "Privāta kapela",
-      "lt": "Privati koplyčia"
+      "lt": "Privati koplyčia",
+      "sr": "Sopstvena kapela",
+      "uk": "Власна каплиця",
+      "tr": "Özel şapel",
+      "he": "קפלה פרטית",
+      "ar": "كنيسة صغيرة خاصة",
+      "ru": "Собственная часовня",
+      "zh": "私人小教堂"
     },
     "propertyGroups": [
       "mansion"
@@ -1920,7 +2335,14 @@
       "fi": "Jyrkkä maasto",
       "et": "Järsk maa",
       "lv": "Stāvs zemes gabals",
-      "lt": "Statūs šlaitai"
+      "lt": "Statūs šlaitai",
+      "sr": "Strm teren",
+      "uk": "Крута ділянка",
+      "tr": "Dik arazi",
+      "he": "שטח תלול",
+      "ar": "أرض شديدة الانحدار",
+      "ru": "Крутой участок",
+      "zh": "陡坡地"
     },
     "propertyGroups": [
       "agricultural",
@@ -1951,7 +2373,14 @@
       "fi": "Nurmimaa",
       "et": "Rohumaa",
       "lv": "Zālāji",
-      "lt": "Žolynai"
+      "lt": "Žolynai",
+      "sr": "Travnato zemljište",
+      "uk": "Трав’яниста ділянка",
+      "tr": "Çayırlık arazi",
+      "he": "שטח עשבוני",
+      "ar": "أرض عشبية",
+      "ru": "Травянистый участок",
+      "zh": "草地"
     },
     "propertyGroups": [
       "land"
@@ -1981,7 +2410,14 @@
       "fi": "Kulku yleiseltä tieltä",
       "et": "Juurdepääs avalikult teelt",
       "lv": "Piekļuve no koplietošanas ceļa",
-      "lt": "Privažiavimas viešuoju keliu"
+      "lt": "Privažiavimas viešuoju keliu",
+      "sr": "Pristup sa javnog puta",
+      "uk": "Під’їзд з дороги загального користування",
+      "tr": "Kamu yolundan erişim",
+      "he": "גישה מכביש ציבורי",
+      "ar": "وصول من طريق عام",
+      "ru": "Подъезд с дороги общего пользования",
+      "zh": "可经公共道路到达"
     },
     "propertyGroups": [
       "land"
@@ -2011,7 +2447,14 @@
       "fi": "Päällystetty tie",
       "et": "Kõvakattega tee",
       "lv": "Asfaltēts ceļš",
-      "lt": "Asfaltuotas kelias"
+      "lt": "Asfaltuotas kelias",
+      "sr": "Asfaltni put",
+      "uk": "Асфальтована дорога",
+      "tr": "Asfalt yol",
+      "he": "כביש סלול",
+      "ar": "طريق معبّد",
+      "ru": "Асфальтированная дорога",
+      "zh": "柏油路"
     },
     "propertyGroups": [
       "land"
@@ -2041,7 +2484,14 @@
       "fi": "Päällystämätön tie",
       "et": "Kruusatee",
       "lv": "Grants ceļš",
-      "lt": "Žvyrkelis"
+      "lt": "Žvyrkelis",
+      "sr": "Zemljani put",
+      "uk": "Ґрунтова дорога",
+      "tr": "Toprak yol",
+      "he": "דרך עפר",
+      "ar": "طريق ترابي",
+      "ru": "Грунтовая дорога",
+      "zh": "土路"
     },
     "propertyGroups": [
       "land"
@@ -2071,7 +2521,14 @@
       "fi": "Sähkö saatavilla",
       "et": "Elekter olemas",
       "lv": "Elektrība pieejama",
-      "lt": "Yra elektra"
+      "lt": "Yra elektra",
+      "sr": "Struja dostupna",
+      "uk": "Електроенергія доступна",
+      "tr": "Elektrik mevcut",
+      "he": "חשמל זמין",
+      "ar": "الكهرباء متوفرة",
+      "ru": "Электричество доступно",
+      "zh": "已通电"
     },
     "propertyGroups": [
       "land",
@@ -2102,7 +2559,14 @@
       "fi": "Vesi saatavilla",
       "et": "Vesi olemas",
       "lv": "Ūdensapgāde pieejama",
-      "lt": "Yra vandentiekis"
+      "lt": "Yra vandentiekis",
+      "sr": "Vodosnabdevanje dostupno",
+      "uk": "Водопостачання доступне",
+      "tr": "Su mevcut",
+      "he": "אספקת מים זמינה",
+      "ar": "إمدادات المياه متوفرة",
+      "ru": "Водоснабжение доступно",
+      "zh": "已通水"
     },
     "propertyGroups": [
       "land",
@@ -2133,7 +2597,14 @@
       "fi": "Viemäriliittymä saatavilla",
       "et": "Kanalisatsioon olemas",
       "lv": "Kanalizācija pieejama",
-      "lt": "Yra kanalizacija"
+      "lt": "Yra kanalizacija",
+      "sr": "Kanalizacija dostupna",
+      "uk": "Каналізація доступна",
+      "tr": "Kanalizasyon mevcut",
+      "he": "חיבור לביוב זמין",
+      "ar": "الصرف الصحي متوفر",
+      "ru": "Канализация доступна",
+      "zh": "已通下水道"
     },
     "propertyGroups": [
       "land"
@@ -2163,7 +2634,14 @@
       "fi": "Kaasu saatavilla",
       "et": "Gaas olemas",
       "lv": "Gāze pieejama",
-      "lt": "Yra dujos"
+      "lt": "Yra dujos",
+      "sr": "Gas dostupan",
+      "uk": "Газ доступний",
+      "tr": "Doğalgaz mevcut",
+      "he": "גז זמין",
+      "ar": "الغاز متوفر",
+      "ru": "Газ доступен",
+      "zh": "已通燃气"
     },
     "propertyGroups": [
       "land"
@@ -2193,7 +2671,14 @@
       "fi": "Tietoliikenneyhteydet saatavilla",
       "et": "Sideühendus olemas",
       "lv": "Telekomunikācijas pieejamas",
-      "lt": "Yra ryšio linijos"
+      "lt": "Yra ryšio linijos",
+      "sr": "Telekomunikacije dostupne",
+      "uk": "Телекомунікації доступні",
+      "tr": "Telekomünikasyon mevcut",
+      "he": "תקשורת זמינה",
+      "ar": "الاتصالات متوفرة",
+      "ru": "Телекоммуникации доступны",
+      "zh": "已通电信"
     },
     "propertyGroups": [
       "land"
@@ -2223,7 +2708,14 @@
       "fi": "Vuokrattu",
       "et": "Üüritud",
       "lv": "Izīrēts",
-      "lt": "Išnuomota"
+      "lt": "Išnuomota",
+      "sr": "Izdato",
+      "uk": "Зданий в оренду",
+      "tr": "Kiracılı",
+      "he": "מושכר",
+      "ar": "مؤجَّر",
+      "ru": "Сдан в аренду",
+      "zh": "已出租"
     },
     "propertyGroups": [
       "investment"
@@ -2253,7 +2745,14 @@
       "fi": "Myydään vuokralaisineen",
       "et": "Müüakse koos üürnikuga",
       "lv": "Pārdod kopā ar īrnieku",
-      "lt": "Parduodama su nuomininku"
+      "lt": "Parduodama su nuomininku",
+      "sr": "Prodaje se sa zakupcem",
+      "uk": "Продається разом з орендарем",
+      "tr": "Kiracısıyla birlikte satılık",
+      "he": "נמכר עם השוכר",
+      "ar": "يُباع مع المستأجر",
+      "ru": "Продаётся вместе с арендатором",
+      "zh": "带租约出售"
     },
     "propertyGroups": [
       "investment"
@@ -2283,7 +2782,14 @@
       "fi": "Useita vuokrayksiköitä",
       "et": "Mitu üüriüksust",
       "lv": "Vairākas īres vienības",
-      "lt": "Keli nuomojami vienetai"
+      "lt": "Keli nuomojami vienetai",
+      "sr": "Više jedinica za izdavanje",
+      "uk": "Кілька орендних приміщень",
+      "tr": "Birden fazla kiralık birim",
+      "he": "מספר יחידות להשכרה",
+      "ar": "عدة وحدات للإيجار",
+      "ru": "Несколько арендных помещений",
+      "zh": "多个出租单元"
     },
     "propertyGroups": [
       "investment"
@@ -2313,7 +2819,14 @@
       "fi": "Useita rakennuksia",
       "et": "Mitu hoonet",
       "lv": "Vairākas ēkas",
-      "lt": "Keli pastatai"
+      "lt": "Keli pastatai",
+      "sr": "Više objekata",
+      "uk": "Кілька будівель",
+      "tr": "Birden fazla bina",
+      "he": "מספר מבנים",
+      "ar": "عدة مبانٍ",
+      "ru": "Несколько зданий",
+      "zh": "多栋建筑"
     },
     "propertyGroups": [
       "investment"
@@ -2343,7 +2856,14 @@
       "fi": "Myydään toimivan liiketoiminnan kanssa",
       "et": "Müüakse koos toimiva ettevõttega",
       "lv": "Pārdod kopā ar darbojošos uzņēmumu",
-      "lt": "Parduodama su veikiančiu verslu"
+      "lt": "Parduodama su veikiančiu verslu",
+      "sr": "Prodaje se sa aktivnim poslovanjem",
+      "uk": "Продається разом з діючим бізнесом",
+      "tr": "Faal işletmesiyle birlikte satılık",
+      "he": "נמכר עם עסק פעיל",
+      "ar": "يُباع مع نشاط تجاري قائم",
+      "ru": "Продаётся вместе с действующим бизнесом",
+      "zh": "连同在营业务一并出售"
     },
     "propertyGroups": [
       "investment"
@@ -2373,7 +2893,14 @@
       "fi": "Tuottava",
       "et": "Tulu teeniv",
       "lv": "Ienākumus nesošs",
-      "lt": "Duoda pajamų"
+      "lt": "Duoda pajamų",
+      "sr": "Donosi prihod",
+      "uk": "Прибуткова нерухомість",
+      "tr": "Gelir getiren",
+      "he": "מניב הכנסה",
+      "ar": "مدرّ للدخل",
+      "ru": "Доходная недвижимость",
+      "zh": "可产生收益"
     },
     "propertyGroups": [
       "investment"
@@ -2403,7 +2930,14 @@
       "fi": "Kehityspotentiaalia",
       "et": "Arenduspotentsiaal",
       "lv": "Attīstības potenciāls",
-      "lt": "Plėtros potencialas"
+      "lt": "Plėtros potencialas",
+      "sr": "Razvojni potencijal",
+      "uk": "Потенціал для розвитку",
+      "tr": "Geliştirme potansiyeli",
+      "he": "פוטנציאל פיתוח",
+      "ar": "إمكانات تطوير",
+      "ru": "Потенциал для развития",
+      "zh": "开发潜力"
     },
     "propertyGroups": [
       "investment"

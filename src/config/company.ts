@@ -36,6 +36,13 @@ export const COMPANY = {
     et: 'FINDDOME',
     lv: 'FINDDOME',
     lt: 'FINDDOME',
+    sr: 'FINDDOME',
+    uk: 'FINDDOME',
+    tr: 'FINDDOME',
+    he: 'FINDDOME',
+    ar: 'FINDDOME',
+    ru: 'FINDDOME',
+    zh: 'FINDDOME',
   },
 
   founded: 2013,
@@ -75,7 +82,7 @@ export const COMPANY = {
 
   phones: [
     {
-      label: { hu: 'Holland szám', nl: 'Nederlands nummer', en: 'Dutch number', de: 'Niederländische Nummer', fr: 'Numéro néerlandais', es: 'Número neerlandés', pl: 'Numer holenderski', ro: 'Număr olandez', sk: 'Holandské číslo', it: 'Numero olandese', pt: 'Número neerlandês', el: 'Ολλανδικός αριθμός', cs: 'Nizozemské číslo', sl: 'Nizozemska številka', sv: 'Nederländskt nummer', da: 'Hollandsk nummer', no: 'Nederlandsk nummer', fi: 'Alankomaalainen numero', et: 'Madalmaade number', lv: 'Nīderlandes numurs', lt: 'Nyderlandų numeris' },
+      label: { hu: 'Holland szám', nl: 'Nederlands nummer', en: 'Dutch number', de: 'Niederländische Nummer', fr: 'Numéro néerlandais', es: 'Número neerlandés', pl: 'Numer holenderski', ro: 'Număr olandez', sk: 'Holandské číslo', it: 'Numero olandese', pt: 'Número neerlandês', el: 'Ολλανδικός αριθμός', cs: 'Nizozemské číslo', sl: 'Nizozemska številka', sv: 'Nederländskt nummer', da: 'Hollandsk nummer', no: 'Nederlandsk nummer', fi: 'Alankomaalainen numero', et: 'Madalmaade number', lv: 'Nīderlandes numurs', lt: 'Nyderlandų numeris', sr: 'Holandski broj', uk: 'Нідерландський номер', tr: 'Hollanda numarası', he: 'מספר הולנדי', ar: 'الرقم الهولندي', ru: 'Нидерландский номер', zh: '荷兰号码' },
       /** Dutch mobile 06 44005550. The old build mis-grouped this as +31-644-005-550. */
       display: '+31 6 4400 5550',
       href: 'tel:+31644005550',
@@ -101,19 +108,26 @@ export const COMPANY = {
         et: 'Ka ungari keelt kõnelevatele helistajatele',
         lv: 'Arī zvanītājiem ungāru valodā',
         lt: 'Taip pat skambinantiems vengriškai',
+        sr: 'Možete nas pozvati i na mađarskom',
+        uk: 'Можна телефонувати й угорською',
+        tr: 'Macarca arayanlar da ulaşabilir',
+        he: 'אפשר להתקשר גם בהונגרית',
+        ar: 'يمكن الاتصال باللغة المجرية أيضًا',
+        ru: 'Можно звонить и на венгерском',
+        zh: '也可使用匈牙利语来电',
       },
     },
     {
-      label: { hu: 'Magyar szám', nl: 'Hongaars nummer', en: 'Hungarian number', de: 'Ungarische Nummer', fr: 'Numéro hongrois', es: 'Número húngaro', pl: 'Numer węgierski', ro: 'Număr maghiar', sk: 'Maďarské číslo', it: 'Numero ungherese', pt: 'Número húngaro', el: 'Ουγγρικός αριθμός', cs: 'Maďarské číslo', sl: 'Madžarska številka', sv: 'Ungerskt nummer', da: 'Ungarsk nummer', no: 'Ungarsk nummer', fi: 'Unkarilainen numero', et: 'Ungari number', lv: 'Ungārijas numurs', lt: 'Vengrijos numeris' },
+      label: { hu: 'Magyar szám', nl: 'Hongaars nummer', en: 'Hungarian number', de: 'Ungarische Nummer', fr: 'Numéro hongrois', es: 'Número húngaro', pl: 'Numer węgierski', ro: 'Număr maghiar', sk: 'Maďarské číslo', it: 'Numero ungherese', pt: 'Número húngaro', el: 'Ουγγρικός αριθμός', cs: 'Maďarské číslo', sl: 'Madžarska številka', sv: 'Ungerskt nummer', da: 'Ungarsk nummer', no: 'Ungarsk nummer', fi: 'Unkarilainen numero', et: 'Ungari number', lv: 'Ungārijas numurs', lt: 'Vengrijos numeris', sr: 'Mađarski broj', uk: 'Угорський номер', tr: 'Macaristan numarası', he: 'מספר הונגרי', ar: 'الرقم المجري', ru: 'Венгерский номер', zh: '匈牙利号码' },
       display: '+36 70 225 5255',
       href: 'tel:+36702255255',
-      note: { hu: 'Ingatlanos munkatárs', nl: 'Makelaar', en: 'Estate agent', de: 'Makler', fr: 'Agent immobilier', es: 'Agente inmobiliario', pl: 'Pośrednik nieruchomości', ro: 'Agent imobiliar', sk: 'Realitný maklér', it: 'Agente immobiliare', pt: 'Consultor imobiliário', el: 'Μεσίτης ακινήτων', cs: 'Realitní makléř', sl: 'Nepremičninski posrednik', sv: 'Fastighetsmäklare', da: 'Ejendomsmægler', no: 'Eiendomsmegler', fi: 'Kiinteistönvälittäjä', et: 'Kinnisvaramaakler', lv: 'Nekustamā īpašuma aģents', lt: 'Nekilnojamojo turto agentas' },
+      note: { hu: 'Ingatlanos munkatárs', nl: 'Makelaar', en: 'Estate agent', de: 'Makler', fr: 'Agent immobilier', es: 'Agente inmobiliario', pl: 'Pośrednik nieruchomości', ro: 'Agent imobiliar', sk: 'Realitný maklér', it: 'Agente immobiliare', pt: 'Consultor imobiliário', el: 'Μεσίτης ακινήτων', cs: 'Realitní makléř', sl: 'Nepremičninski posrednik', sv: 'Fastighetsmäklare', da: 'Ejendomsmægler', no: 'Eiendomsmegler', fi: 'Kiinteistönvälittäjä', et: 'Kinnisvaramaakler', lv: 'Nekustamā īpašuma aģents', lt: 'Nekilnojamojo turto agentas', sr: 'Agent za nekretnine', uk: 'Агент з нерухомості', tr: 'Emlak danışmanı', he: 'סוכן נדל״ן', ar: 'وكيل عقاري', ru: 'Агент по недвижимости', zh: '房产经纪人' },
     },
     {
-      label: { hu: 'Magyar információs vonal', nl: 'Hongaarse infolijn', en: 'Hungarian information line', de: 'Ungarische Infoleitung', fr: 'Ligne d’information hongroise', es: 'Línea de información húngara', pl: 'Węgierska infolinia', ro: 'Linie de informații din Ungaria', sk: 'Maďarská informačná linka', it: 'Linea informativa ungherese', pt: 'Linha de informação húngara', el: 'Ουγγρική γραμμή πληροφοριών', cs: 'Maďarská informační linka', sl: 'Madžarska informacijska linija', sv: 'Ungersk informationslinje', da: 'Ungarsk informationslinje', no: 'Ungarsk informasjonslinje', fi: 'Unkarinkielinen neuvontanumero', et: 'Ungari infoliin', lv: 'Ungārijas informatīvā līnija', lt: 'Vengrijos informacinė linija' },
+      label: { hu: 'Magyar információs vonal', nl: 'Hongaarse infolijn', en: 'Hungarian information line', de: 'Ungarische Infoleitung', fr: 'Ligne d’information hongroise', es: 'Línea de información húngara', pl: 'Węgierska infolinia', ro: 'Linie de informații din Ungaria', sk: 'Maďarská informačná linka', it: 'Linea informativa ungherese', pt: 'Linha de informação húngara', el: 'Ουγγρική γραμμή πληροφοριών', cs: 'Maďarská informační linka', sl: 'Madžarska informacijska linija', sv: 'Ungersk informationslinje', da: 'Ungarsk informationslinje', no: 'Ungarsk informasjonslinje', fi: 'Unkarinkielinen neuvontanumero', et: 'Ungari infoliin', lv: 'Ungārijas informatīvā līnija', lt: 'Vengrijos informacinė linija', sr: 'Informativna linija na mađarskom', uk: 'Інформаційна лінія угорською', tr: 'Macarca bilgi hattı', he: 'קו מידע בהונגרית', ar: 'خط المعلومات باللغة المجرية', ru: 'Информационная линия на венгерском', zh: '匈牙利语咨询热线' },
       display: '+36 70 231 0031',
       href: 'tel:+36702310031',
-      note: { hu: 'Általános információ', nl: 'Algemene informatie', en: 'General information', de: 'Allgemeine Informationen', fr: 'Informations générales', es: 'Información general', pl: 'Informacje ogólne', ro: 'Informații generale', sk: 'Všeobecné informácie', it: 'Informazioni generali', pt: 'Informações gerais', el: 'Γενικές πληροφορίες', cs: 'Obecné informace', sl: 'Splošne informacije', sv: 'Allmän information', da: 'Generel information', no: 'Generell informasjon', fi: 'Yleiset tiedot', et: 'Üldine teave', lv: 'Vispārīga informācija', lt: 'Bendra informacija' },
+      note: { hu: 'Általános információ', nl: 'Algemene informatie', en: 'General information', de: 'Allgemeine Informationen', fr: 'Informations générales', es: 'Información general', pl: 'Informacje ogólne', ro: 'Informații generale', sk: 'Všeobecné informácie', it: 'Informazioni generali', pt: 'Informações gerais', el: 'Γενικές πληροφορίες', cs: 'Obecné informace', sl: 'Splošne informacije', sv: 'Allmän information', da: 'Generel information', no: 'Generell informasjon', fi: 'Yleiset tiedot', et: 'Üldine teave', lv: 'Vispārīga informācija', lt: 'Bendra informacija', sr: 'Opšte informacije', uk: 'Загальна інформація', tr: 'Genel bilgi', he: 'מידע כללי', ar: 'معلومات عامة', ru: 'Общая информация', zh: '一般咨询' },
     },
   ],
 
@@ -179,7 +193,7 @@ export const LISTING_VAT_PERCENT = 21;
 export const LISTING_PACKAGES = [
   {
     id: 'cheap-6m',
-    names: { hu: 'Standard hirdetés', nl: 'Standaard advertentie', en: 'Standard listing', de: 'Standard-Inserat', fr: 'Annonce standard', es: 'Anuncio estándar', pl: 'Ogłoszenie standardowe', ro: 'Anunț standard', sk: 'Štandardný inzerát', it: 'Annuncio standard', pt: 'Anúncio normal', el: 'Τυπική αγγελία', cs: 'Standardní inzerát', sl: 'Standardni oglas', sv: 'Standardannons', da: 'Standardannonce', no: 'Standardannonse', fi: 'Perusilmoitus', et: 'Tavakuulutus', lv: 'Standarta sludinājums', lt: 'Standartinis skelbimas' },
+    names: { hu: 'Standard hirdetés', nl: 'Standaard advertentie', en: 'Standard listing', de: 'Standard-Inserat', fr: 'Annonce standard', es: 'Anuncio estándar', pl: 'Ogłoszenie standardowe', ro: 'Anunț standard', sk: 'Štandardný inzerát', it: 'Annuncio standard', pt: 'Anúncio normal', el: 'Τυπική αγγελία', cs: 'Standardní inzerát', sl: 'Standardni oglas', sv: 'Standardannons', da: 'Standardannonce', no: 'Standardannonse', fi: 'Perusilmoitus', et: 'Tavakuulutus', lv: 'Standarta sludinājums', lt: 'Standartinis skelbimas', sr: 'Standardni oglas', uk: 'Стандартне оголошення', tr: 'Standart ilan', he: 'מודעה רגילה', ar: 'إعلان قياسي', ru: 'Стандартное объявление', zh: '标准房源' },
     priceEur: 69,
     months: 6,
     maxImages: 20,
@@ -188,7 +202,7 @@ export const LISTING_PACKAGES = [
   },
   {
     id: 'normal-12m',
-    names: { hu: 'Kiemelt hirdetés', nl: 'Uitgelichte advertentie', en: 'Featured listing', de: 'Hervorgehobenes Inserat', fr: 'Annonce mise en avant', es: 'Anuncio destacado', pl: 'Ogłoszenie wyróżnione', ro: 'Anunț evidențiat', sk: 'Zvýraznený inzerát', it: 'Annuncio in evidenza', pt: 'Anúncio em destaque', el: 'Προβεβλημένη αγγελία', cs: 'Zvýrazněný inzerát', sl: 'Izpostavljeni oglas', sv: 'Framhävd annons', da: 'Fremhævet annonce', no: 'Fremhevet annonse', fi: 'Korostettu ilmoitus', et: 'Esiletõstetud kuulutus', lv: 'Izcelts sludinājums', lt: 'Išskirtinis skelbimas' },
+    names: { hu: 'Kiemelt hirdetés', nl: 'Uitgelichte advertentie', en: 'Featured listing', de: 'Hervorgehobenes Inserat', fr: 'Annonce mise en avant', es: 'Anuncio destacado', pl: 'Ogłoszenie wyróżnione', ro: 'Anunț evidențiat', sk: 'Zvýraznený inzerát', it: 'Annuncio in evidenza', pt: 'Anúncio em destaque', el: 'Προβεβλημένη αγγελία', cs: 'Zvýrazněný inzerát', sl: 'Izpostavljeni oglas', sv: 'Framhävd annons', da: 'Fremhævet annonce', no: 'Fremhevet annonse', fi: 'Korostettu ilmoitus', et: 'Esiletõstetud kuulutus', lv: 'Izcelts sludinājums', lt: 'Išskirtinis skelbimas', sr: 'Istaknuti oglas', uk: 'Виділене оголошення', tr: 'Öne çıkan ilan', he: 'מודעה מובלטת', ar: 'إعلان مميز', ru: 'Выделенное объявление', zh: '精选房源' },
     priceEur: 129,
     priceEurAbove: 179,
     /** The €179 tier applies above 150M HUF. */
@@ -200,12 +214,19 @@ export const LISTING_PACKAGES = [
   },
 ] as const;
 
+/**
+ * Extras. November 2026 (spec §4): the homepage highlight and the paid later
+ * photo upload are no longer sold (`retired`: the ids stay so old orders and
+ * invoices still name their lines); `video` is now FINDDOME filming the
+ * property — drone footage and professional editing — for €180, in Hungary
+ * only. An owner's own video link is free.
+ */
 export const LISTING_EXTRAS = [
   { id: 'translation', priceEur: 25, unit: 'language' },
   { id: 'category-highlight', priceEur: 15, unit: 'month', minMonths: 3 },
-  { id: 'homepage-highlight', priceEur: 25, unit: 'month', minMonths: 3 },
-  { id: 'video', priceEur: 36, unit: 'once' },
-  { id: 'retro-images', priceEur: 30, unit: 'once' },
+  { id: 'homepage-highlight', priceEur: 25, unit: 'month', minMonths: 3, retired: true },
+  { id: 'video', priceEur: 180, unit: 'once', countries: ['HU'] },
+  { id: 'retro-images', priceEur: 30, unit: 'once', retired: true },
   { id: 'renewal-6m', priceEur: 25, unit: 'once' },
 ] as const;
 
@@ -219,9 +240,10 @@ export const LISTING_EXTRAS = [
  * `onsite-visit` is also the "personal valuation by Gábor" offered on the
  * valuation result — one catalogue item, never two prices (brief 3 §D.5).
  *
- * Not to be confused with the €36 `video` extra above, which is FODEL placing
- * a video the owner supplies (a YouTube/Vimeo link) on the listing; these two
- * send someone to the property to shoot it.
+ * Not to be confused with the €180 `video` extra above (November 2026), which
+ * is a listing extra — FINDDOME filming a Hungarian property with drone shots
+ * and an edited cut — ordered with the listing package. The owner's own video
+ * link stays free in every package.
  */
 export const ONSITE_SERVICES = [
   {
@@ -249,6 +271,13 @@ export const ONSITE_SERVICES = [
       et: 'Professionaalsed fotod, video ja droonivõtted kohapeal',
       lv: 'Profesionāli fotoattēli, video un drona uzņēmumi uz vietas',
       lt: 'Profesionalios nuotraukos, vaizdo įrašas ir filmavimas dronu vietoje',
+      sr: 'Profesionalne fotografije, video i snimci dronom na licu mesta',
+      uk: 'Професійні фото, відео й зйомка з дрона на місці',
+      tr: 'Yerinde profesyonel fotoğraf, video ve drone çekimi',
+      he: 'צילום מקצועי, וידאו וצילומי רחפן בנכס',
+      ar: 'صور احترافية وفيديو وتصوير بالطائرة المسيّرة في الموقع',
+      ru: 'Профессиональные фото, видео и съёмка с дрона на месте',
+      zh: '上门拍摄专业照片、视频和无人机航拍',
     },
     includes: {
       hu: ['Profi fotók az ingatlanról', 'Videós bemutató', 'Drónfelvétel'],
@@ -272,6 +301,13 @@ export const ONSITE_SERVICES = [
       et: ['Professionaalsed fotod kinnisvarast', 'Videotutvustus', 'Droonivõtted'],
       lv: ['Profesionāli īpašuma fotoattēli', 'Video prezentācija', 'Drona uzņēmumi'],
       lt: ['Profesionalios turto nuotraukos', 'Vaizdo pristatymas', 'Filmavimas dronu'],
+      sr: ['Profesionalne fotografije nekretnine', 'Video prezentacija', 'Snimci dronom'],
+      uk: ['Професійні фото нерухомості', 'Відеопрезентація', 'Зйомка з дрона'],
+      tr: ['Mülkün profesyonel fotoğrafları', 'Video tanıtım', 'Drone çekimi'],
+      he: ['צילומים מקצועיים של הנכס', 'סרטון תדמית', 'צילומי רחפן'],
+      ar: ['صور احترافية للعقار', 'عرض بالفيديو', 'تصوير بالطائرة المسيّرة'],
+      ru: ['Профессиональные фото недвижимости', 'Видеопрезентация', 'Съёмка с дрона'],
+      zh: ['房产专业照片', '视频展示', '无人机航拍'],
     },
   },
   {
@@ -299,6 +335,13 @@ export const ONSITE_SERVICES = [
       et: 'Gábori külastus kohapeal: professionaalsed fotod ja video ning põhjalik isiklik hinnang',
       lv: 'Gábora apmeklējums uz vietas: profesionāli fotoattēli un video, kā arī detalizēts personīgs novērtējums',
       lt: 'Gáboro apsilankymas vietoje: profesionalios nuotraukos ir vaizdo įrašas bei išsamus asmeninis vertinimas',
+      sr: 'Gaborova poseta na licu mesta: profesionalne fotografije i video, uz detaljnu ličnu procenu vrednosti',
+      uk: 'Виїзд Габора на об’єкт: професійні фото й відео, а також детальна особиста оцінка вартості',
+      tr: 'Gábor’un yerinde ziyareti: profesyonel fotoğraf ve video ile ayrıntılı kişisel değerleme',
+      he: 'ביקור של גאבור בנכס: צילומים מקצועיים ווידאו, והערכת שווי אישית מפורטת',
+      ar: 'زيارة من غابور إلى الموقع: صور وفيديو احترافيان، وتقييم شخصي مفصّل',
+      ru: 'Выезд Габора на объект: профессиональные фото и видео, а также подробная личная оценка стоимости',
+      zh: 'Gábor 上门拍摄：专业照片和视频，以及详细的个人估价',
     },
     includes: {
       hu: ['Profi fotók az ingatlanról', 'Videós bemutató', 'Részletes, személyes értékbecslés'],
@@ -322,6 +365,13 @@ export const ONSITE_SERVICES = [
       et: ['Professionaalsed fotod kinnisvarast', 'Videotutvustus', 'Põhjalik isiklik hinnang'],
       lv: ['Profesionāli īpašuma fotoattēli', 'Video prezentācija', 'Detalizēts personīgs novērtējums'],
       lt: ['Profesionalios turto nuotraukos', 'Vaizdo pristatymas', 'Išsamus asmeninis vertinimas'],
+      sr: ['Profesionalne fotografije nekretnine', 'Video prezentacija', 'Detaljna lična procena vrednosti'],
+      uk: ['Професійні фото нерухомості', 'Відеопрезентація', 'Детальна особиста оцінка вартості'],
+      tr: ['Mülkün profesyonel fotoğrafları', 'Video tanıtım', 'Ayrıntılı kişisel değerleme'],
+      he: ['צילומים מקצועיים של הנכס', 'סרטון תדמית', 'הערכת שווי אישית מפורטת'],
+      ar: ['صور احترافية للعقار', 'عرض بالفيديو', 'تقييم شخصي مفصّل'],
+      ru: ['Профессиональные фото недвижимости', 'Видеопрезентация', 'Подробная личная оценка стоимости'],
+      zh: ['房产专业照片', '视频展示', '详细的个人估价'],
     },
   },
 ] as const;
@@ -336,11 +386,64 @@ export function isOnsiteServiceId(value: unknown): value is OnsiteServiceId {
 export const RECOMMENDED_TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr'] as const;
 
 /**
- * Every language a listing can be translated into: the site's 21 minus
- * Hungarian, which is what sellers write. The translation is made by AI
- * (src/lib/ai/translate.ts) at the same price per language.
+ * Every language a listing can be translated into: the site's languages minus
+ * Hungarian, which is what sellers write. The last seven (sr uk tr he ar ru zh) are offered only once the
+ * site itself has them (ALL_LOCALES in src/lib/ai/translate-core.ts follows the site's LOCALES). The
+ * translation is made by AI (src/lib/ai/translate.ts).
  */
-export const TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt'] as const;
+export const TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt', 'sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh'] as const;
+
+/**
+ * Translation packages (decided by Marci, 2026-11-03). What a listing is published in beyond the language it
+ * was written in:
+ *   Basic      free with every listing: the source language, English and German
+ *   Európa  every language except the World-only ones
+ *   World   every language
+ * Single languages cost `singleEur`: European ones €1, the World-only ones (`worldOnly`) €5. English is the
+ * universal fallback and can never be switched off. All of this is editable in the admin (Csomagok, Fordítási
+ * csomagok / Egyedi nyelvek); these are the defaults and the fallback when nothing is stored. Packages are
+ * defined by rules, not lists, so a language added to the site joins Európa or World by itself.
+ *
+ * The pitch texts may use {count} (languages in the package, the original included), {europe} {world}
+ * (prices), {worldOnlySum} (all World-only languages bought one by one), {europePlus} (Európa plus those) and
+ * {singleEuropean} {singleWorld}.
+ */
+export const TRANSLATION_PACKAGES = {
+  singleEur: { european: 1, world: 5 },
+  worldOnly: ['tr', 'he', 'ar', 'zh', 'ru'],
+  packages: [
+    {
+      id: 'basic', priceEur: 0, rule: { include: ['hu', 'en', 'de'] }, recommended: false, active: true,
+      names: { hu: 'Basic', en: 'Basic', nl: 'Basic' },
+      badge: { hu: '', en: '', nl: '' },
+      pitch: {
+        hu: 'Hirdetése magyarul, angolul és németül is megjelenik, automatikusan, felár nélkül. További európai nyelvek nyelvenként {singleEuropean} €-ért, a török, héber, arab, kínai és orosz nyelv nyelvenként {singleWorld} €-ért.',
+        en: 'Your listing appears in Hungarian, English and German automatically, at no extra cost. Add any other European language for €{singleEuropean} each, or Turkish, Hebrew, Arabic, Chinese or Russian for €{singleWorld} each.',
+        nl: 'Uw advertentie verschijnt automatisch in het Hongaars, Engels en Duits, zonder extra kosten. Elke andere Europese taal kost € {singleEuropean}; Turks, Hebreeuws, Arabisch, Chinees en Russisch kosten € {singleWorld} per taal.',
+      },
+    },
+    {
+      id: 'europe', priceEur: 12, rule: { excludeFromAll: ['tr', 'he', 'ar', 'zh', 'ru'] }, recommended: true, active: true,
+      names: { hu: 'Európa', en: 'Europe', nl: 'Europa' },
+      badge: { hu: 'Legnépszerűbb', en: 'Most popular', nl: 'Meest gekozen' },
+      pitch: {
+        hu: 'Érje el Európa vevőit a saját nyelvükön. {count} nyelven jelenik meg hirdetése, Hollandiától Lengyelországon át Skandináviáig, és a vevők ott találják meg, ahol keresnek. Nyelvenként kevesebb mint 1 €.',
+        en: 'Reach European buyers in their own language. Your listing goes live in {count} languages, from Dutch and Polish to Scandinavian, so buyers find it where they actually search. Less than €1 per language.',
+        nl: 'Bereik Europese kopers in hun eigen taal. Uw advertentie staat in {count} talen online, van Nederlands en Pools tot Scandinavisch, zodat kopers haar vinden waar ze zoeken. Minder dan € 1 per taal.',
+      },
+    },
+    {
+      id: 'world', priceEur: 25, rule: {}, recommended: false, active: true,
+      names: { hu: 'World', en: 'World', nl: 'World' },
+      badge: { hu: 'Maximális elérés', en: 'Widest reach', nl: 'Maximaal bereik' },
+      pitch: {
+        hu: 'A teljes világ, egyetlen döntéssel. Mind a {count} nyelven, köztük törökül, oroszul, arabul, héberül és kínaiul is, így az Európán kívüli vevők is elsőként az Ön ingatlanát látják. Egyenként a török, héber, arab, kínai és orosz nyelv önmagában {worldOnlySum} €, az Európa csomaggal együtt {europePlus} € lenne. A World mindezt és még az összes európai nyelvet {world} €-ért adja: a legnagyobb elérés, a legjobb ár nyelvenként, és nem kell nyelvenként döntenie.',
+        en: 'The whole world, in one decision. All {count} languages, including Turkish, Russian, Arabic, Hebrew and Chinese, so buyers from beyond Europe see your property first. Bought one by one, those five languages alone would cost €{worldOnlySum}, and €{europePlus} together with the Europe package; World gives you all of them plus every European language for €{world}. The widest reach, the lowest price per language, and nothing to decide language by language.',
+        nl: 'De hele wereld, in één beslissing. Alle {count} talen, ook Turks, Russisch, Arabisch, Hebreeuws en Chinees, zodat ook kopers van buiten Europa uw woning als eerste zien. Die vijf talen apart zouden € {worldOnlySum} kosten, samen met het pakket Europa € {europePlus}; World geeft u ze allemaal plus alle Europese talen voor € {world}. Het grootste bereik, de laagste prijs per taal en u hoeft niet per taal te kiezen.',
+      },
+    },
+  ],
+} as const;
 
 export const COMMISSION = {
   percent: 4,
@@ -396,6 +499,13 @@ export function formatHours(locale: Locale, hours: { weekdays: { from: string; t
     et: 'Esmaspäev–reede',
     lv: 'Pirmdiena–piektdiena',
     lt: 'Pirmadienis–penktadienis',
+    sr: 'Ponedeljak–petak',
+    uk: 'Понеділок–п’ятниця',
+    tr: 'Pazartesi–Cuma',
+    he: 'שני–שישי',
+    ar: 'الاثنين–الجمعة',
+    ru: 'Понедельник–пятница',
+    zh: '周一至周五',
   };
   return `${days[locale]} · ${from}–${to}`;
 }
@@ -416,7 +526,7 @@ export function fillShortHours(text: string, hours: { weekdays: { from: string; 
  * field's own comment for the 1.3 background).
  */
 const CITY_NAMES: Record<string, Record<Locale, string>> = {
-  'Den Haag': { hu: 'Hága', nl: 'Den Haag', en: 'The Hague', de: 'Den Haag', fr: 'La Haye', es: 'La Haya', pl: 'Haga', ro: 'Haga', sk: 'Haag', it: 'L’Aia', pt: 'Haia', el: 'Χάγη', cs: 'Haag', sl: 'Haag', sv: 'Haag', da: 'Haag', no: 'Haag', fi: 'Haag', et: 'Haag', lv: 'Hāga', lt: 'Haga' },
+  'Den Haag': { hu: 'Hága', nl: 'Den Haag', en: 'The Hague', de: 'Den Haag', fr: 'La Haye', es: 'La Haya', pl: 'Haga', ro: 'Haga', sk: 'Haag', it: 'L’Aia', pt: 'Haia', el: 'Χάγη', cs: 'Haag', sl: 'Haag', sv: 'Haag', da: 'Haag', no: 'Haag', fi: 'Haag', et: 'Haag', lv: 'Hāga', lt: 'Haga', sr: 'Hag', uk: 'Гаага', tr: 'Lahey', he: 'האג', ar: 'لاهاي', ru: 'Гаага', zh: '海牙' },
 };
 const COUNTRY_NAMES: Record<Locale, string> = {
   hu: 'Hollandia',
@@ -440,6 +550,13 @@ const COUNTRY_NAMES: Record<Locale, string> = {
   et: 'Madalmaad',
   lv: 'Nīderlande',
   lt: 'Nyderlandai',
+  sr: 'Holandija',
+  uk: 'Нідерланди',
+  tr: 'Hollanda',
+  he: 'הולנד',
+  ar: 'هولندا',
+  ru: 'Нидерланды',
+  zh: '荷兰',
 };
 export function foundedInLabel(locale: Locale): string {
   const city = CITY_NAMES[COMPANY.foundedIn]?.[locale] ?? COMPANY.foundedIn;

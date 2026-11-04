@@ -26,6 +26,10 @@ const { world } = await import('./lib/stubs/world.ts');
 const webhook = await import('../src/pages/api/stripe/webhook.ts');
 const checkout = await import('../src/pages/api/stripe/checkout.ts');
 const translations = await import('../src/pages/api/portal/properties/[id]/translations.ts');
+const ordersLib = await import('../src/lib/orders.ts');
+const catalogLib = await import('../src/lib/listing-packages.ts');
+const rules = await import('../src/lib/listing-rules.ts');
+const runtime = await import('../src/lib/runtime-config.ts');
 
 const signer = new Stripe('sk_test_offline');
 console.error = () => {}; // runtime-config reports its (expected) fallback to the checked-in defaults
@@ -51,7 +55,9 @@ function freshWorld(overrides = {}) {
     translation_jobs: [],
     payments: [{ id: 'o1', property_id: 'p1', owner_id: 'u1', status: 'pending', amount_cents: 12900, discount_cents: 0, line_items: LINES, stripe_session_id: 'cs_1', ...overrides.payment }],
     activity_events: [],
+    ...(overrides.services ? { site_settings: [{ id: 1, services: overrides.services }] } : {}),
   });
+  runtime.clearRuntimeConfigCache();
   return world.db;
 }
 const row = (table, id) => world.db.table(table).find((r) => r.id === id);
@@ -327,23 +333,24 @@ const noOrders = { payments: [] };
 test('an owner buys languages for their live listing: one order from the catalogue, then Stripe', async () => {
   freshWorld({ property: live });
   world.db.table('payments').length = 0;
-  const res = await buy({ id: 'u1' }, { action: 'order', locales: ['de', 'fr', 'de', 'hu', 'xx'], amount: 1, price: 1 });
+  // German is part of Go, so it is free and not on the order; Dutch and French are €1 each.
+  const res = await buy({ id: 'u1' }, { action: 'order', locales: ['nl', 'de', 'fr', 'nl', 'hu', 'xx'], amount: 1, price: 1 });
   assert.equal(res.status, 200);
   const out = await body(res);
-  assert.deepEqual(out.locales, ['de', 'fr']);
-  assert.equal(out.amountCents, 5000);
+  assert.deepEqual(out.locales, ['nl', 'fr']);
+  assert.equal(out.amountCents, 200);
   const order = world.db.table('payments')[0];
   assert.equal(order.status, 'pending');
-  assert.equal(order.amount_cents, 5000);
-  assert.deepEqual(order.line_items.map((l) => [l.id, l.quantity, l.unitCents, l.locales]), [['translation', 2, 2500, ['de', 'fr']]]);
+  assert.equal(order.amount_cents, 200);
+  assert.deepEqual(order.line_items.map((l) => [l.id, l.quantity, l.unitCents, l.locales]), [['translation', 2, 100, ['nl', 'fr']]]);
   const { create } = world.stripeCalls.find((c) => c.create);
-  assert.equal(create.line_items[0].price_data.unit_amount, 2500);
+  assert.equal(create.line_items[0].price_data.unit_amount, 100);
   assert.equal(create.line_items[0].quantity, 2);
   assert.equal(create.metadata.orderId, order.id);
   assert.equal(jobs().length, 0, 'nothing is translated before the money is in');
   // …and paying it queues exactly those two.
   await deliverEvent('checkout.session.completed', paidSession({ id: order.stripe_session_id, metadata: { orderId: order.id, propertyId: 'p1' } }));
-  assert.deepEqual(jobs().map((j) => [j.locale, j.origin]).sort(), [['de', 'after_publish_paid'], ['fr', 'after_publish_paid']]);
+  assert.deepEqual(jobs().map((j) => [j.locale, j.origin]).sort(), [['fr', 'after_publish_paid'], ['nl', 'after_publish_paid']]);
   assert.equal(events('listing.published').length, 0);
 });
 
@@ -363,12 +370,12 @@ test('languages the listing already has, or is already getting, are not sold aga
 test('changing your mind replaces the open translation order and closes its payment link', async () => {
   freshWorld({ property: live });
   world.db.table('payments').length = 0;
-  await buy({ id: 'u1' }, { action: 'order', locales: ['de'] });
+  await buy({ id: 'u1' }, { action: 'order', locales: ['nl'] });
   const first = world.db.table('payments')[0];
-  await buy({ id: 'u1' }, { action: 'order', locales: ['de', 'es'] });
+  await buy({ id: 'u1' }, { action: 'order', locales: ['nl', 'es'] });
   assert.equal(first.status, 'cancelled');
   assert.ok(world.stripeCalls.some((c) => c.expire === first.stripe_session_id));
-  assert.deepEqual(world.db.table('payments').filter((p) => p.status === 'pending').map((p) => p.amount_cents), [5000]);
+  assert.deepEqual(world.db.table('payments').filter((p) => p.status === 'pending').map((p) => p.amount_cents), [200]);
 });
 
 test('only the owner or an admin can buy; a free-link listing requests instead; a listing that is not live cannot', async () => {
@@ -386,16 +393,17 @@ test('only the owner or an admin can buy; a free-link listing requests instead; 
 
 test('a free-link owner\'s request waits for an admin; the admin approves one language and declines another', async () => {
   freshWorld({ property: { ...live, free_listing: true } });
-  const res = await buy({ id: 'u1' }, { action: 'request', locales: ['de', 'es', 'hu'] });
-  assert.deepEqual((await body(res)).created, ['de', 'es']);
+  // German is part of Go: it comes with the listing and is not a request.
+  const res = await buy({ id: 'u1' }, { action: 'request', locales: ['de', 'nl', 'es', 'hu'] });
+  assert.deepEqual((await body(res)).created, ['nl', 'es']);
   assert.ok(jobs().every((j) => j.status === 'requested' && j.origin === 'free'));
   assert.equal(world.db.table('payments').filter((p) => p.id !== 'o1').length, 0, 'free means no order');
-  const de = jobs().find((j) => j.locale === 'de').id;
+  const nl = jobs().find((j) => j.locale === 'nl').id;
   const es = jobs().find((j) => j.locale === 'es').id;
-  assert.equal((await buy({ id: 'u1' }, { action: 'approve', jobIds: [de] })).status, 403, 'the owner cannot approve their own request');
-  assert.equal((await body(await buy({ id: 'a1' }, { action: 'approve', jobIds: [de] }, 'admin'))).changed, 1);
+  assert.equal((await buy({ id: 'u1' }, { action: 'approve', jobIds: [nl] })).status, 403, 'the owner cannot approve their own request');
+  assert.equal((await body(await buy({ id: 'a1' }, { action: 'approve', jobIds: [nl] }, 'admin'))).changed, 1);
   assert.equal((await body(await buy({ id: 'a1' }, { action: 'decline', jobIds: [es, 'not-mine'] }, 'admin'))).changed, 1);
-  assert.deepEqual(jobs().map((j) => [j.locale, j.status]), [['de', 'queued'], ['es', 'declined']]);
+  assert.deepEqual(jobs().map((j) => [j.locale, j.status]), [['nl', 'queued'], ['es', 'declined']]);
 });
 
 test('a paying owner cannot use the free request, and an admin\'s free run needs the AI switched on', async () => {
@@ -405,6 +413,191 @@ test('a paying owner cannot use the free request, and an admin\'s free run needs
   assert.equal(res.status, 409);
   assert.equal((await body(res)).error, 'ai-disabled');
   assert.equal(jobs().length, 0);
+});
+
+test('a free-link owner can ask for a whole package: Go\'s languages and the ones they switched off are not asked for', async () => {
+  freshWorld({ property: { ...live, free_listing: true } });
+  const res = await buy({ id: 'u1' }, { action: 'request', packageId: 'europe', locales: [], excluded: ['pl', 'fr'] });
+  const created = (await body(res)).created;
+  assert.equal(created.includes('de') || created.includes('en'), false, 'Go comes with the listing');
+  assert.equal(created.includes('pl') || created.includes('fr'), false, 'switched off');
+  assert.equal(created.includes('nl') && created.includes('lt'), true);
+  assert.ok(jobs().every((j) => j.status === 'requested' && j.origin === 'free'), 'requests, never run by themselves');
+  assert.equal(world.db.table('payments').filter((p) => p.id !== 'o1').length, 0, 'no price, no order');
+});
+
+test('an owner buys the Európa package for a live listing: one order from the catalogue; paying it makes the entitlement and queues the languages', async () => {
+  freshWorld({ property: { ...live, translation_package: 'basic', extra_locales: [], excluded_locales: [] } });
+  world.db.table('payments').length = 0;
+  const res = await buy({ id: 'u1' }, { action: 'order', packageId: 'europe', locales: [], excluded: ['pl'], amount: 1, price: 1 });
+  assert.equal(res.status, 200);
+  const out = await body(res);
+  assert.equal(out.amountCents, 1200);
+  const order = world.db.table('payments')[0];
+  assert.deepEqual(order.line_items.map((l) => [l.id, l.packageId, l.unitCents]), [['translation-package', 'europe', 1200]]);
+  assert.equal(order.line_items[0].locales.includes('pl'), false, 'switched off, and the price is the same');
+  assert.equal(order.line_items[0].locales.includes('hu'), false);
+  const { create } = world.stripeCalls.find((c) => c.create);
+  assert.equal(create.line_items[0].price_data.unit_amount, 1200);
+  assert.equal(jobs().length, 0, 'nothing is translated before the money is in');
+  await deliverEvent('checkout.session.completed', paidSession({ id: order.stripe_session_id, metadata: { orderId: order.id, propertyId: 'p1' } }));
+  const property = world.db.table('properties')[0];
+  assert.equal(property.translation_package, 'europe');
+  assert.deepEqual(property.excluded_locales, ['pl']);
+  assert.equal(jobs().some((j) => j.locale === 'pl'), false);
+  assert.equal(jobs().some((j) => j.locale === 'fr'), true);
+  assert.equal(events('listing.published').length, 0);
+});
+
+test('an upgrade costs the difference, a package already held costs nothing, and English can never be switched off in an order', async () => {
+  freshWorld({ property: { ...live, translation_package: 'europe', extra_locales: [], excluded_locales: [] } });
+  world.db.table('payments').length = 0;
+  const up = await buy({ id: 'u1' }, { action: 'order', packageId: 'world', locales: [] });
+  assert.equal((await body(up)).amountCents, 1300, 'World €25 minus the Európa €12 already paid');
+  assert.match(world.db.table('payments')[0].line_items[0].label, /bővítés|upgrade|uitbreiding/);
+  const same = await buy({ id: 'u1' }, { action: 'order', packageId: 'europe', locales: [] });
+  assert.equal(same.status, 422, 'nothing to buy');
+  assert.equal((await body(same)).error, 'nothing-to-order');
+  const forged = await buy({ id: 'u1' }, { action: 'order', packageId: 'world', locales: [], excluded: ['en'] });
+  assert.equal(forged.status, 422);
+  assert.equal((await body(forged)).error, 'exclude-en');
+  freshWorld({ property: { ...live, translation_package: 'basic', extra_locales: [], excluded_locales: [] } });
+  world.db.table('payments').length = 0;
+  const ghost = await buy({ id: 'u1' }, { action: 'order', packageId: 'platinum', locales: ['nl'] });
+  assert.equal((await body(ghost)).amountCents, 100, 'an unknown package is Go; the single language is still a single language');
+});
+
+
+/* ── The live pricing model (Basic / Europe / World, term and band) ───── */
+
+// Gábor's table, typed out here on purpose: a typo in the code cannot also be a typo in the test. [package][band][term 1,3,6] in cents.
+const TABLE = {
+  basic: [[890, 1890, 2990], [1090, 2490, 3890], [1390, 2990, 4690]],
+  europe: [[1290, 2790, 4390], [1690, 3800, 5990], [2090, 4600, 7190]],
+  world: [[1690, 3800, 5990], [2190, 4990, 7690], [2790, 6290, 9590]],
+};
+const TERMS = [1, 3, 6];
+const BAND_HUF = [10_000_000, 48_000_000, 250_000_000];
+const LIVE = { pricingLive: true };
+const liveCat = () => catalogLib.listingCatalog(LIVE);
+const withTerm = (pkg, months) => ({ package: pkg, package_months: months, translation_package: 'basic', extra_locales: [], excluded_locales: [] });
+const liveOrder = (selection, extra = {}) => {
+  const lines = ordersLib.buildOrderLines({ extras: [], ...selection }, 'hu', liveCat());
+  return { lines, payment: { stripe_session_id: null, line_items: lines, amount_cents: ordersLib.orderTotalCents(lines), ...extra } };
+};
+
+test('every one of the 27 cells reaches Stripe as exactly the table price in euro cents', async () => {
+  for (const pkg of Object.keys(TABLE)) for (let band = 0; band < 3; band++) for (let t = 0; t < 3; t++) {
+    const { payment } = liveOrder({ packageId: pkg, months: TERMS[t], priceHuf: BAND_HUF[band] });
+    freshWorld({ property: withTerm(pkg, TERMS[t]), payment, services: LIVE });
+    const res = await pay({ id: 'u1' });
+    assert.equal(res.status, 200, `${pkg} ${TERMS[t]} band ${band}`);
+    const { create } = world.stripeCalls.find((c) => c.create);
+    assert.equal(create.line_items.length, 1);
+    assert.equal(create.line_items[0].price_data.unit_amount, TABLE[pkg][band][t], `${pkg}, ${TERMS[t]} months, band ${band}`);
+    assert.equal(Number.isInteger(create.line_items[0].price_data.unit_amount), true);
+    assert.equal(create.line_items[0].price_data.currency, 'eur');
+    assert.equal(create.line_items[0].quantity, 1);
+    world.stripeCalls.length = 0;
+  }
+});
+
+test('a paid Basic, Europe or World order publishes for the bought term, sets the package and entitlement, and a retry changes nothing', async () => {
+  for (const pkg of ['basic', 'europe', 'world']) for (const months of TERMS) {
+    const { payment } = liveOrder({ packageId: pkg, months, priceHuf: 48_000_000 });
+    freshWorld({ property: withTerm(pkg, months), payment: { ...payment, stripe_session_id: 'cs_1' }, services: LIVE });
+    const res = await deliverEvent('checkout.session.completed', paidSession(), `evt_${pkg}${months}`);
+    assert.equal(res.status, 200);
+    const property = row('properties', 'p1');
+    assert.equal(property.status, 'published');
+    assert.equal(property.package, pkg);
+    assert.equal(property.package_months, months);
+    assert.equal(property.translation_package, pkg, 'the paid package is the language package');
+    const published = new Date(property.published_at);
+    assert.equal(new Date(property.expires_at).toISOString(), rules.addMonths(published, months).toISOString(), `${pkg}: ${months} months from publishing, not the older package's length`);
+    assert.equal(events('listing.published').length, 1);
+    const before = JSON.stringify(property);
+    await deliverEvent('checkout.session.completed', paidSession(), `evt_${pkg}${months}`);
+    await deliverEvent('checkout.session.completed', paidSession(), `evt_again_${pkg}${months}`);
+    assert.equal(JSON.stringify(row('properties', 'p1')), before, 'retries change nothing');
+    assert.equal(events('listing.published').length, 1);
+  }
+});
+
+test('languages the buyer switched off are on the listing before anything is translated, and never translated', async () => {
+  const { payment } = liveOrder({ packageId: 'europe', months: 3, priceHuf: 48_000_000, translation: { packageId: 'europe', excludedLocales: ['fr', 'es'] } });
+  freshWorld({ property: withTerm('europe', 3), payment: { ...payment, stripe_session_id: 'cs_1' }, services: LIVE });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.deepEqual(row('properties', 'p1').excluded_locales.sort(), ['es', 'fr']);
+  const queued = world.db.table('translation_jobs').map((j) => j.locale);
+  assert.equal(queued.includes('fr') || queued.includes('es'), false);
+  assert.equal(queued.includes('en') && queued.includes('de') && queued.includes('sr'), true, 'the rest of Europe is queued');
+  assert.equal(queued.includes('ar') || queued.includes('zh') || queued.includes('hu'), false, 'not the World-only languages, not the original');
+});
+
+test('a World listing is entitled to every language except the original', async () => {
+  const { payment } = liveOrder({ packageId: 'world', months: 6, priceHuf: 250_000_000 });
+  freshWorld({ property: withTerm('world', 6), payment: { ...payment, stripe_session_id: 'cs_1' }, services: LIVE });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(new Set(world.db.table('translation_jobs').map((j) => j.locale)).size, 27);
+});
+
+test('an upgrade publishes nothing and renews nothing: it moves the package and the languages, and the expiry stays', async () => {
+  const expires = new Date(Date.now() + 60 * 86400000).toISOString();
+  const { payment } = liveOrder({ packageId: 'world', upgradeFrom: 'basic', months: 3, tierIndex: 1 });
+  freshWorld({ property: { ...live, ...withTerm('basic', 3), expires_at: expires, price_tier_index: 1 }, payment: { ...payment, stripe_session_id: 'cs_1' }, services: LIVE });
+  assert.equal(payment.amount_cents, 4990 - 2490, 'the difference inside the band and the term');
+  await deliverEvent('checkout.session.completed', paidSession());
+  const property = row('properties', 'p1');
+  assert.equal(property.package, 'world');
+  assert.equal(property.translation_package, 'world');
+  assert.equal(property.package_months, 3, 'the term is the one originally bought');
+  assert.equal(property.expires_at, expires, 'the expiry date is unchanged');
+  assert.equal(events('listing.published').length, 0);
+  assert.equal(world.db.table('translation_jobs').some((j) => j.locale === 'ar'), true, 'the new languages are queued');
+  await deliverEvent('checkout.session.completed', paidSession(), 'evt_up_2');
+  assert.equal(row('properties', 'p1').expires_at, expires);
+  assert.equal(world.db.table('translation_jobs').filter((j) => j.locale === 'ar').length, 1, 'once');
+});
+
+test('a renewal extends from the old expiry for the bought term; after the expiry it starts now; a retry adds nothing', async () => {
+  const future = new Date(Date.now() + 20 * 86400000);
+  const { payment } = liveOrder({ packageId: 'europe', months: 3, tierIndex: 1, renewal: true });
+  freshWorld({ property: { ...live, ...withTerm('europe', 6), expires_at: future.toISOString() }, payment: { ...payment, stripe_session_id: 'cs_1' }, services: LIVE });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(new Date(row('properties', 'p1').expires_at).toISOString(), rules.addMonths(future, 3).toISOString(), 'three months from the old expiry');
+  const once = row('properties', 'p1').expires_at;
+  await deliverEvent('checkout.session.completed', paidSession(), 'evt_renew_2');
+  assert.equal(row('properties', 'p1').expires_at, once, 'a retry adds nothing');
+  // Expired a month ago: the new term starts now.
+  const past = new Date(Date.now() - 30 * 86400000);
+  freshWorld({ property: { status: 'archived', expired_at: past.toISOString(), expires_at: past.toISOString(), published_at: '2026-01-01T00:00:00Z', ...withTerm('europe', 6) }, payment: { ...payment, stripe_session_id: 'cs_1' }, services: LIVE });
+  const before = Date.now();
+  await deliverEvent('checkout.session.completed', paidSession());
+  const renewed = new Date(row('properties', 'p1').expires_at).getTime();
+  assert.equal(row('properties', 'p1').status, 'published');
+  assert.ok(renewed >= rules.addMonths(new Date(before), 3).getTime() - 5000 && renewed <= rules.addMonths(new Date(), 3).getTime() + 5000, 'three months from now');
+});
+
+test('a referral discount equals referralDiscountCents of the package line and reaches Stripe as one coupon', async () => {
+  const { lines } = liveOrder({ packageId: 'world', months: 6, priceHuf: 48_000_000 });
+  const discount = ordersLib.referralDiscountCents(lines);
+  assert.equal(discount, 769, '10% of 76,90 €');
+  const { payment } = liveOrder({ packageId: 'world', months: 6, priceHuf: 48_000_000 });
+  freshWorld({ property: withTerm('world', 6), payment: { ...payment, discount_cents: discount, amount_cents: 7690 - discount }, services: LIVE });
+  await pay({ id: 'u1' });
+  const { create } = world.stripeCalls.find((c) => c.create);
+  assert.equal(create.line_items[0].price_data.unit_amount, 7690, 'the line keeps its price');
+  assert.equal(world.stripeCalls.find((c) => c.coupon).coupon.amount_off, 769);
+  assert.equal(create.discounts.length, 1);
+});
+
+test('an unpaid pro-forma on an older package stays payable and still publishes for that package\'s length', async () => {
+  freshWorld({ services: LIVE });
+  await deliverEvent('checkout.session.completed', paidSession());
+  assert.equal(row('properties', 'p1').status, 'published');
+  const months = (new Date(row('properties', 'p1').expires_at).getFullYear() - new Date().getFullYear()) * 12 + new Date(row('properties', 'p1').expires_at).getMonth() - new Date().getMonth();
+  assert.equal(months, 12, 'normal-12m is twelve months');
 });
 
 /* ── The wiring ──────────────────────────────────────────────────────── */

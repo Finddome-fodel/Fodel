@@ -1,15 +1,18 @@
 import type { APIRoute } from 'astro';
 import { deleteImage } from '~/lib/media';
 import { isLocale } from '~/i18n/ui';
-import { OWNER_EDITABLE } from '~/lib/portal/properties';
+import { photoAccess, nextCover } from '~/lib/portal/photo-moderation';
 
 export const prerender = false;
 
 /**
- * An owner may change photos only while the listing is theirs to edit (draft
- * or changes requested) — the same rule as every other field. A live or
- * submitted listing's photos change only through review (brief §7). RLS
- * enforces the same rule independently since migration 0014.
+ * An owner may change photos freely while the listing is theirs to edit
+ * (draft or changes requested) — the same rule as every other field. On a
+ * live listing (§4c, migration 0054) they may remove photos, reorder them and
+ * pick an approved cover; a photo still waiting for review can be recaptioned
+ * or removed, an approved one is not rewritten unseen. A submitted listing's
+ * photos change only through review (brief §7). RLS and the 0054 triggers
+ * enforce the same rules independently.
  */
 async function authorize(locals: App.Locals, propertyId: string) {
   const { supabase, profile, user } = locals;
@@ -23,10 +26,9 @@ async function authorize(locals: App.Locals, propertyId: string) {
   if (!isAdmin && property.owner_id !== user?.id) {
     return { ok: false as const, status: 403 };
   }
-  if (!isAdmin && !OWNER_EDITABLE.includes(property.status)) {
-    return { ok: false as const, status: 409, error: 'not-editable' };
-  }
-  return { ok: true as const, supabase };
+  const access = photoAccess(property.status, { isAdmin, isOwner: property.owner_id === user?.id });
+  if (access === 'none') return { ok: false as const, status: 409, error: 'not-editable' };
+  return { ok: true as const, supabase, live: access === 'live' };
 }
 
 const json = (status: number, body: Record<string, unknown>) =>
@@ -39,29 +41,38 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 
   const { data: media } = await auth.supabase
     .from('property_media')
-    .select('storage_path, is_hero')
+    .select('storage_path, is_hero, pending')
     .eq('id', mediaId)
     .eq('property_id', id)
     .maybeSingle();
   if (!media) return json(404, { ok: false, error: 'not-found' });
+  // A live listing keeps at least one photo on the site (0054 enforces it too).
+  if (auth.live && !media.pending) {
+    const { count } = await auth.supabase
+      .from('property_media')
+      .select('id', { count: 'exact', head: true })
+      .eq('property_id', id)
+      .eq('pending', false)
+      .neq('id', mediaId);
+    if ((count ?? 0) === 0) return json(409, { ok: false, error: 'last-photo' });
+  }
   const { error } = await auth.supabase.from('property_media').delete().eq('id', mediaId).eq('property_id', id);
-  if (error) return json(500, { ok: false, error: error.message });
+  if (error) return json(error.message.includes('last-photo') ? 409 : 500, { ok: false, error: error.message.includes('last-photo') ? 'last-photo' : 'save-failed' });
   await deleteImage(auth.supabase, media.storage_path);
 
   // Deleting the cover photo must not leave a listing with none. Promote the
   // next one by sort order, or the public page falls back to `media[0]`
   // anyway and the portal's "cover" badge silently disagrees with what the
   // website shows.
+  // A photo still waiting for review is never the cover, so it is skipped.
   if (media.is_hero) {
-    const { data: next } = await auth.supabase
+    const { data: rest } = await auth.supabase
       .from('property_media')
-      .select('id')
-      .eq('property_id', id)
-      .order('sort_order', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+      .select('id, pending, is_hero, sort_order')
+      .eq('property_id', id);
+    const next = nextCover(rest ?? []);
     if (next) {
-      await auth.supabase.from('property_media').update({ is_hero: true }).eq('id', next.id);
+      await auth.supabase.from('property_media').update({ is_hero: true }).eq('id', next);
     }
   }
 
@@ -84,6 +95,17 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
   const body = await request.json().catch(() => ({}));
   const patch: Record<string, unknown> = {};
+
+  const { data: photo } = await auth.supabase
+    .from('property_media')
+    .select('id, pending')
+    .eq('id', mediaId)
+    .eq('property_id', id)
+    .maybeSingle();
+  if (!photo) return json(404, { ok: false, error: 'not-found' });
+  // On a live listing an approved caption is on the site; changing it would skip the review.
+  if (auth.live && typeof body.alt === 'string' && !photo.pending) return json(409, { ok: false, error: 'approved-photo-locked' });
+  if (body.isHero && photo.pending) return json(422, { ok: false, error: 'pending-cover' });
 
   if (typeof body.alt === 'string') {
     const alt = body.alt.trim().slice(0, 160);

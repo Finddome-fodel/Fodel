@@ -7,10 +7,10 @@
 import { templates } from '~/lib/email/templates';
 import type { BuiltEmail } from '~/lib/email/templates';
 import { SITE_URL } from '~/config/site.mjs';
-import { buildInvite } from '~/lib/portal/invites';
+import { buildInvite, isInviteLocale } from '~/lib/portal/invites';
 import { HU_OWNER_INVITE } from '~/data/invite-letter';
 import { lifecycleEmails } from '~/lib/email/lifecycle';
-import { localizer, path, type Locale } from '~/i18n/ui';
+import { LOCALES, localizer, path, type Locale } from '~/i18n/ui';
 
 const SAMPLE_REF = '7213';
 const SAMPLE_TITLE = 'Felújított parasztház a Balaton-felvidéken';
@@ -25,7 +25,12 @@ const sampleUrl = (l: Locale) => `${SITE_URL}/${l}/${l === 'hu' ? 'haz-elado' : 
  */
 const say = (locale: Locale) => {
   const pick = localizer(locale);
-  return (...nine: string[]) => (pick as (...all: string[]) => string)(...nine, ...Array<string>(12).fill(nine[2]));
+  const codes = ['hu', 'nl', 'en', 'de', 'fr', 'es', 'pl', 'ro', 'sk'] as const;
+  return (...nine: string[]) => {
+    const values = Object.fromEntries(LOCALES.map((code) => [code, nine[2]])) as Record<Locale, string>;
+    codes.forEach((code, index) => (values[code] = nine[index]));
+    return pick(values);
+  };
 };
 export const TITLES: Record<Locale, string> = {
   hu: SAMPLE_TITLE,
@@ -49,6 +54,13 @@ export const TITLES: Record<Locale, string> = {
   et: 'Renoveeritud talumaja Balatoni kõrgustikul',
   lv: 'Renovēta lauku māja Balatona augstienē',
   lt: 'Renovuota sodyba Balatono aukštumose',
+  sr: 'Renovirana seoska kuća u brdima iznad Balatona',
+  uk: 'Відремонтований селянський будинок на пагорбах біля Балатону',
+  tr: 'Balaton tepelerinde yenilenmiş çiftlik evi',
+  he: 'בית חווה משופץ בגבעות שמעל אגם בלטון',
+  ar: 'بيت ريفي مُجدَّد في مرتفعات بحيرة بالاتون',
+  ru: 'Отремонтированный крестьянский дом на холмах у Балатона',
+  zh: '巴拉顿高地翻新农舍',
 };
 
 /**
@@ -163,6 +175,41 @@ const SAMPLE_ORDER: Record<Locale, { label: string; amount: string }[]> = {
     { label: 'Vertimas — 2 kalbos', amount: '50 €' },
     { label: 'Vaizdo pristatymas', amount: '36 €' },
   ],
+  sr: [
+    { label: 'Oglas — 12 meseci', amount: '€129' },
+    { label: 'Prevod — 2 jezika', amount: '€50' },
+    { label: 'Video prezentacija', amount: '€36' },
+  ],
+  uk: [
+    { label: 'Оголошення — 12 міс.', amount: '€129' },
+    { label: 'Переклад — 2 мови', amount: '€50' },
+    { label: 'Відеопрезентація', amount: '€36' },
+  ],
+  tr: [
+    { label: 'İlan — 12 ay', amount: '€129' },
+    { label: 'Çeviri — 2 dil', amount: '€50' },
+    { label: 'Video tanıtım', amount: '€36' },
+  ],
+  he: [
+    { label: 'מודעה — 12 חודשים', amount: '€129' },
+    { label: 'תרגום — 2 שפות', amount: '€50' },
+    { label: 'סרטון תדמית', amount: '€36' },
+  ],
+  ar: [
+    { label: 'إعلان — 12 شهرًا', amount: '€129' },
+    { label: 'ترجمة — لغتان', amount: '€50' },
+    { label: 'فيديو تعريفي', amount: '€36' },
+  ],
+  ru: [
+    { label: 'Объявление — 12 мес.', amount: '€129' },
+    { label: 'Перевод — 2 языка', amount: '€50' },
+    { label: 'Видеопрезентация', amount: '€36' },
+  ],
+  zh: [
+    { label: '房源发布 — 12 个月', amount: '€129' },
+    { label: '翻译 — 2 种语言', amount: '€50' },
+    { label: '视频展示', amount: '€36' },
+  ],
 };
 
 /** A stand-in Supabase client whose email_templates hold the approved HU owner letter. */
@@ -218,6 +265,17 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
       title: TITLES[l],
       note: say(l)('A fényképek nagy része sötét, kérjük napos időben készítse el őket újra.\n\nAz alapterület sem stimmel: a leírásban 140 m² szerepel, a mezőben 104 m².', 'Veel foto’s zijn donker. Maak ze alstublieft opnieuw bij zonnig weer.\n\nDe woonoppervlakte klopt ook niet: de omschrijving noemt 140 m², het veld 104 m².', 'Many of the photos are dark. Please retake them in sunny weather.\n\nThe floor area does not match either: the description says 140 m², the field says 104 m².', 'Viele Fotos sind dunkel. Bitte nehmen Sie sie bei sonnigem Wetter neu auf.\n\nAuch die Wohnfläche stimmt nicht: Die Beschreibung nennt 140 m², das Feld 104 m².', 'Beaucoup de photos sont sombres. Veuillez les reprendre par temps ensoleillé.\n\nLa surface habitable ne correspond pas non plus : la description indique 140 m², le champ 104 m².', 'Muchas fotos están oscuras. Vuelva a hacerlas en un día soleado.\n\nLa superficie habitable tampoco coincide: la descripción indica 140 m² y el campo, 104 m².', 'Wiele zdjęć jest ciemnych. Prosimy zrobić je ponownie w słoneczny dzień.\n\nNie zgadza się też powierzchnia użytkowa: w opisie jest 140 m², a w polu 104 m².', 'Multe fotografii sunt întunecate. Vă rugăm să le refaceți pe vreme însorită.\n\nNici suprafața utilă nu corespunde: descrierea indică 140 m², iar câmpul 104 m².', 'Mnohé fotografie sú tmavé. Nafoťte ich, prosím, znova za slnečného počasia.\n\nNezhoduje sa ani obytná plocha: v popise je 140 m², v poli 104 m².'),
       editUrl: `${SITE_URL}/portal/properties/sample`,
+    }),
+  photosReviewed: (l) =>
+    templates.photosReviewed(l, {
+      ref: SAMPLE_REF,
+      title: TITLES[l],
+      approved: 4,
+      rejected: [
+        { code: 'quality', count: 2 },
+        { code: 'personal', count: 1, note: say(l)('Az autó rendszáma olvasható.', 'Het kenteken van de auto is leesbaar.', 'The car’s number plate is readable.', 'Das Kennzeichen des Autos ist lesbar.', 'La plaque d’immatriculation de la voiture est lisible.', 'La matrícula del coche es legible.', 'Tablica rejestracyjna samochodu jest czytelna.', 'Numărul de înmatriculare al mașinii se poate citi.', 'ŠPZ auta je čitateľná.') },
+      ],
+      url: `${SITE_URL}/portal/properties/sample#media`,
     }),
   approvedAwaitingPayment: (l) =>
     templates.approvedAwaitingPayment(l, {
@@ -360,6 +418,10 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
     }),
   serviceRequested: (l) => templates.serviceRequested(l, { service: say(l)('Gábor helyszíni látogatása', 'Bezoek van Gábor', 'Visit by Gábor', 'Besuch durch Gábor', 'Visite de Gábor', 'Visita de Gábor', 'Wizyta Gábora', 'Vizita lui Gábor', 'Návšteva Gábora'), price: say(l)('200 €', '€ 200', '€200', '200 €', '200 €', '200 €', '200 €', '200 €', '200 €') }),
   judicialRequested: (l) => templates.judicialRequested(l),
+  adminPhotosPending: (l) => templates.adminPhotosPending(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, owner: 'Kovács Anna (anna.kovacs@example.com)',
+    url: `${SITE_URL}/portal/photos`,
+  }),
   adminServiceRequested: (l) => templates.adminServiceRequested(l, {
     service: 'Helyszíni fotózás, videó és drónfelvétel', name: 'Kovács Anna',
     email: 'anna.kovacs@example.com', phone: '+36 20 123 4567',
@@ -375,7 +437,7 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
   // What buildInvite() actually sends once that letter is approved: the owner
   // gets it, an admin still gets the built-in admin wording (the role bug).
   inviteOwnerAfterApproval: () => buildInvite(approvedStub, 'hu', 'owner', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
-  inviteAdminAfterApproval: (l) => buildInvite(approvedStub, l, 'admin', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
+  inviteAdminAfterApproval: (l) => buildInvite(approvedStub, isInviteLocale(l) ? l : 'en', 'admin', `${SITE_URL}/portal/invite/${SAMPLE_TOKEN}`),
   // Quote completion (0019): expiry, renewal, the monthly owner check, newsletter.
   expiryReminder: (l) => lifecycleEmails.expiryReminder(l, {
     ref: SAMPLE_REF, title: TITLES[l], url: sampleUrl(l), days: 14, price: say(l)('25 €', '€ 25', '€25', '25 €', '25 €', '25 €', '25 €', '25 €', '25 €'),

@@ -70,7 +70,7 @@ const label = CHROME[locale].whatsapp;
 
   .wa-inline {
     min-height: 44px;
-    padding: 0 18px 0 14px;
+    padding-block: 0; padding-inline: 14px 18px;
     border-radius: var(--r-pill);
     border: 1px solid rgba(16, 42, 67, 0.18);
     font-size: 15px;
@@ -105,7 +105,7 @@ const label = CHROME[locale].whatsapp;
   /* Between the grain film (900) and the nav/mobile menu (1000). */
   .wa-floating {
     position: fixed;
-    right: 24px;
+    inset-inline-end: 24px;
     bottom: 24px;
     z-index: 950;
     width: 58px;
@@ -126,7 +126,7 @@ const label = CHROME[locale].whatsapp;
   }
   @media (max-width: 640px) {
     .wa-floating {
-      right: 14px;
+      inset-inline-end: 14px;
       bottom: 14px;
       width: 54px;
       height: 54px;

@@ -1,0 +1,163 @@
+---
+/**
+ * Csomagok → Csomagok tartalma: for each package (Basic, Europe, World) its name, whether it is on sale, which
+ * one is recommended, what it includes (images, phone, editing, video) and WHICH LANGUAGES it publishes the
+ * listing in. Languages are a rule until an admin picks a list: Basic is the original language plus English and
+ * German, Europe is every language except the five outside Europe, World is all of them, so a language added to
+ * the site later joins by itself. English is always in; the owner's own language is always shown.
+ *
+ * Prices are not here: they are the matrix of the first tab. Saved by /api/portal/packages/translations.
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+import { listingCatalog } from '~/lib/listing-packages';
+import { PACKAGE_KEYS } from '~/lib/listing-pricing';
+import { ALL_LOCALES } from '~/lib/ai/translate-core';
+import { LOCALE_META, type Locale } from '~/i18n/ui';
+import { packageLocales, MANDATORY_LOCALES } from '~/lib/translation-packages';
+import { packageTab } from '~/lib/portal/package-admin';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const catalog = listingCatalog(row?.services);
+const { pricing, translation } = catalog;
+const languages = (ALL_LOCALES as readonly string[]).filter((code) => code in LOCALE_META) as Locale[];
+const OUTSIDE_EUROPE = new Set(translation.worldOnly);
+---
+
+<PackagesShell tab="translations" migrated={migrated}>
+  <form method="POST" action={packageTab('translations').api} id="pc-form" class="pk-form pc" data-pk-form>
+    <fieldset disabled={!migrated}>
+      <p class="set-sub pc-lede">A három csomag csak a nyelvekben és az árban különbözik, ha Ön másképp nem dönt. A nyelvek szabályok: ha új nyelv kerül az oldalra, a Europe és a World magától megkapja. Az angol minden csomagban benne van, és az ingatlan eredeti nyelve mindig látszik.</p>
+
+      <div class="pc-grid">
+        {PACKAGE_KEYS.map((key) => {
+          const setting = pricing.packages[key];
+          const rule = translation.packages.find((pkg) => pkg.id === key)!;
+          const included = new Set(packageLocales(rule, ALL_LOCALES));
+          const f = setting.features;
+          const k = (field: string) => `${key}_${field}`;
+          return (
+            <section class="set-card pc-card" data-pc={key}>
+              <header class="pc-head">
+                <h2>{setting.names.hu}</h2>
+                <label class="pc-rec">
+                  <input type="radio" name="recommended" value={key} checked={setting.recommended} />
+                  <span>Ajánlott</span>
+                </label>
+              </header>
+
+              <label class="sw">
+                <input type="checkbox" name={k('enabled')} value="yes" checked={setting.enabled} />
+                <span class="sw-ui" aria-hidden="true"></span>
+                <span><strong>Értékesítésben</strong>Kikapcsolva a csomag nem rendelhető; a régi hirdetések megtartják.</span>
+              </label>
+
+              <div class="pc-block">
+                <p class="pk-label">Név</p>
+                <div class="pc-row two">
+                  <label class="f"><span>Magyar</span><input type="text" name={k('name_hu')} maxlength="40" value={setting.names.hu} required /></label>
+                  <label class="f"><span>Angol</span><input type="text" name={k('name_en')} maxlength="40" value={setting.names.en} required /></label>
+                </div>
+              </div>
+
+              <div class="pc-block">
+                <p class="pk-label">Tartalom</p>
+                <div class="pc-row two">
+                  <label class="f"><span>Képek száma legfeljebb</span>
+                    <span class="unit"><input type="number" name={k('images')} min="1" max="200" step="1" inputmode="numeric" value={f.maxImages ?? ''} disabled={f.maxImages === null} data-pc-images /><i>kép</i></span>
+                  </label>
+                  <label class="sw compact">
+                    <input type="checkbox" name={k('unlimited')} value="yes" checked={f.maxImages === null} data-pc-unlimited />
+                    <span class="sw-ui" aria-hidden="true"></span>
+                    <span><strong>Korlátlan</strong></span>
+                  </label>
+                </div>
+                <div class="f">
+                  <span id={`video-${key}`}>Videó</span>
+                  <div class="seg" role="radiogroup" aria-labelledby={`video-${key}`}>
+                    <label><input type="radio" name={k('video')} value="included" checked={f.video === 'included'} /><span>Saját videó linkje</span></label>
+                    <label><input type="radio" name={k('video')} value="none" checked={f.video === 'none'} /><span>Nincs videó</span></label>
+                  </div>
+                </div>
+                <div class="sw-list">
+                  <label class="sw"><input type="checkbox" name={k('phone')} value="yes" checked={f.phone} /><span class="sw-ui" aria-hidden="true"></span><span><strong>Telefonszám a hirdetésben</strong>Csak ha a hirdető is hozzájárult. Különben visszahívás-űrlap.</span></label>
+                  <label class="sw"><input type="checkbox" name={k('edited_images')} value="yes" checked={f.editedImages} /><span class="sw-ui" aria-hidden="true"></span><span><strong>Képek szakszerű feldolgozása</strong>Mi javítjuk a fényképeket.</span></label>
+                  <label class="sw"><input type="checkbox" name={k('edited_text')} value="yes" checked={f.editedText} /><span class="sw-ui" aria-hidden="true"></span><span><strong>Szöveg szerkesztése</strong>Mi szerkesztjük a leírást.</span></label>
+                </div>
+              </div>
+
+              <div class="pc-block">
+                <p class="pk-label">Nyelvek <span class="pc-count" data-pc-count>{included.size} nyelv</span></p>
+                <input type="hidden" name={`lang_${key}__present`} value="1" />
+                <ul class="pc-langs" role="group" aria-label={`${setting.names.hu}: nyelvek`}>
+                  {languages.map((code) => {
+                    const locked = (MANDATORY_LOCALES as readonly string[]).includes(code);
+                    return (
+                      <li>
+                        <label class:list={['pc-lang', { outside: OUTSIDE_EUROPE.has(code) }]}>
+                          <input type="checkbox" name={`lang_${key}`} value={code} checked={included.has(code) || locked} data-locked={locked ? '1' : undefined} />
+                          <span class="pc-lang-name" lang={LOCALE_META[code].htmlLang}>{LOCALE_META[code].label}</span>
+                          <span class="pc-lang-code" aria-hidden="true">{LOCALE_META[code].short}</span>
+                          {locked && <span class="pc-lang-note">mindig</span>}
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </section>
+          );
+        })}
+      </div>
+
+      <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn">Mentés</button></div></div>
+    </fieldset>
+  </form>
+</PackagesShell>
+
+<script>
+  const form = document.getElementById('pc-form');
+  form?.querySelectorAll<HTMLElement>('[data-pc]').forEach((card) => {
+    const images = card.querySelector<HTMLInputElement>('[data-pc-images]');
+    const unlimited = card.querySelector<HTMLInputElement>('[data-pc-unlimited]');
+    const count = card.querySelector<HTMLElement>('[data-pc-count]');
+    const boxes = [...card.querySelectorAll<HTMLInputElement>('.pc-lang input')];
+    const sync = () => {
+      if (images && unlimited) images.disabled = unlimited.checked;
+      if (count) count.textContent = `${boxes.filter((box) => box.checked).length} nyelv`;
+    };
+    // English is always in: it cannot be unticked.
+    boxes.filter((box) => box.dataset.locked).forEach((box) => box.addEventListener('click', (event) => { event.preventDefault(); box.checked = true; }));
+    card.addEventListener('input', sync);
+    sync();
+  });
+</script>
+
+<style is:global>
+  .pc .pc-lede { max-width: 70ch; margin: 0; }
+  .pc .pc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); gap: 20px; align-items: start; }
+  .pc .pc-card { display: grid; gap: 20px; }
+  .pc .pc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .pc .pc-head h2 { margin: 0; font-family: var(--serif); font-weight: var(--fw-display); font-size: 24px; letter-spacing: var(--ls-heading); color: var(--ink); }
+  .pc .pc-rec { position: relative; cursor: pointer; }
+  .pc .pc-rec input { position: absolute; opacity: 0; pointer-events: none; }
+  .pc .pc-rec span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: var(--r-pill); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); font-size: 14px; font-weight: var(--fw-medium); color: var(--ink-quiet); }
+  .pc .pc-rec input:checked + span { background: var(--ink); color: var(--cream); box-shadow: none; }
+  .pc .pc-rec input:focus-visible + span { outline: var(--focus-ring); outline-offset: 3px; }
+  .pc .pc-block { display: grid; gap: 14px; padding-top: 18px; border-top: 1px solid var(--pt-hair); }
+  .pc .pc-row.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 14px; align-items: end; }
+  .pc .pc-count { margin-inline-start: 8px; text-transform: none; letter-spacing: 0; font-weight: var(--fw-body); color: var(--ink-quiet); }
+  .pc .pc-langs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .pc .pc-lang { position: relative; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px; border-radius: var(--r-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--pt-hair); cursor: pointer; font-size: 14px; color: var(--ink); }
+  .pc .pc-lang input { position: absolute; opacity: 0; pointer-events: none; }
+  .pc .pc-lang-code { margin-inline-start: auto; font-size: 11.5px; letter-spacing: 0.06em; color: var(--ink-quiet); }
+  .pc .pc-lang-note { font-size: 11.5px; color: var(--ink-quiet); }
+  .pc .pc-lang:has(input:checked) { background: var(--white); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .pc .pc-lang:has(input:focus-visible) { outline: var(--focus-ring); outline-offset: 2px; }
+  .pc .pc-lang.outside .pc-lang-code::after { content: ' · Európán kívül'; letter-spacing: 0; }
+</style>

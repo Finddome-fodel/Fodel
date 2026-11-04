@@ -42,6 +42,13 @@ const LOCALE_TAG: Record<Locale, string> = {
   et: 'et-EE',
   lv: 'lv-LV',
   lt: 'lt-LT',
+  sr: 'sr-Latn-RS',
+  uk: 'uk-UA',
+  tr: 'tr-TR',
+  he: 'he-IL',
+  ar: 'ar-u-nu-latn',
+  ru: 'ru-RU',
+  zh: 'zh-Hans-CN',
 };
 
 /** The BCP 47 tag Intl wants for each page language. */
@@ -76,7 +83,23 @@ const STYLE: Record<Locale, NumberStyle> = {
   et: { group: NBSP, decimal: ',', euro: 'suffix' },
   lv: { group: NBSP, decimal: ',', euro: 'suffix' },
   lt: { group: NBSP, decimal: ',', euro: 'suffix' },
+  sr: { group: '.', decimal: ',', euro: 'suffix' },
+  uk: { group: NBSP, decimal: ',', euro: 'suffix' },
+  tr: { group: '.', decimal: ',', euro: 'prefix-tight' },
+  he: { group: ',', decimal: '.', euro: 'suffix' },
+  ar: { group: ',', decimal: '.', euro: 'suffix' },
+  ru: { group: NBSP, decimal: ',', euro: 'suffix' },
+  zh: { group: ',', decimal: '.', euro: 'prefix-tight' },
 };
+
+/**
+ * Hebrew and Arabic pages: a price or an area is a left-to-right island
+ * ("178,000 €" stays in that order inside right-to-left text). The Unicode
+ * isolates LRI…PDI do that in HTML, e-mail and plain text alike and are
+ * invisible.
+ */
+const RTL: ReadonlySet<Locale> = new Set<Locale>(['he', 'ar']);
+const ltr = (text: string, locale: Locale): string => (RTL.has(locale) ? `\u2066${text}\u2069` : text);
 
 /** Decimal separator and thousands separator for a language, for client scripts and tests. */
 export const separators = (locale: Locale) => ({ group: STYLE[locale].group, decimal: STYLE[locale].decimal });
@@ -114,11 +137,11 @@ export function eur(amount: number, locale: Locale = 'nl'): string {
   const body = grouped(amount, locale);
   switch (STYLE[locale].euro) {
     case 'prefix-spaced':
-      return `€${NBSP}${body}`;
+      return ltr(`€${NBSP}${body}`, locale);
     case 'prefix-tight':
-      return `€${body}`;
+      return ltr(`€${body}`, locale);
     case 'suffix':
-      return `${body}${NBSP}€`;
+      return ltr(`${body}${NBSP}€`, locale);
   }
 }
 
@@ -127,21 +150,34 @@ export function eurCents(cents: number, locale: Locale = 'nl'): string {
   return eur(Math.round(cents) / 100, locale);
 }
 
+/**
+ * A fee from integer cents with two decimals always: "8,90 €" (hu, de), "€8.90" (en), RTL-safe. Hungarian puts
+ * the sign after the number for fees (the client's wording), unlike the listing prices ("€ 178 000").
+ */
+export function eurPrice(cents: number, locale: Locale = 'hu'): string {
+  const { group, decimal, euro } = STYLE[locale];
+  const fixed = (Math.abs(Math.round(cents)) / 100).toFixed(2);
+  const [whole, fraction] = fixed.split('.');
+  const body = `${cents < 0 ? '-' : ''}${whole.replace(/\B(?=(\d{3})+(?!\d))/g, group)}${decimal}${fraction}`;
+  const placement = locale === 'hu' ? 'suffix' : euro;
+  return ltr(placement === 'suffix' ? `${body}${NBSP}€` : placement === 'prefix-tight' ? `€${body}` : `€${NBSP}${body}`, locale);
+}
+
 export function huf(amount: number, locale: Locale): string {
-  return `${grouped(amount, locale)}${NBSP}Ft`;
+  return ltr(`${grouped(amount, locale)}${NBSP}Ft`, locale);
 }
 
 /** Plots switch to hectares above 1 ha, matching the prototype's threshold. */
 export function area(m2: number, locale: Locale): string {
   if (m2 >= 10000) {
     const ha = (m2 / 10000).toFixed(2).replace('.', STYLE[locale].decimal);
-    return `${ha}${NBSP}ha`;
+    return ltr(`${ha}${NBSP}ha`, locale);
   }
-  return `${grouped(m2, locale)}${NBSP}m²`;
+  return ltr(`${grouped(m2, locale)}${NBSP}m²`, locale);
 }
 
 export function floorArea(m2: number, locale: Locale = 'nl'): string {
-  return `${grouped(m2, locale)}${NBSP}m²`;
+  return ltr(`${grouped(m2, locale)}${NBSP}m²`, locale);
 }
 
 /**
@@ -154,7 +190,7 @@ export function areaWithAlternates(m2: number, locale: Locale): string {
   if (m2 >= 10000) {
     const hold = (m2 / 5754.6).toFixed(1).replace('.', STYLE[locale].decimal);
     if (locale === 'hu') parts.push(`${hold}${NBSP}hold`);
-    else parts.push(`${grouped(m2, locale)}${NBSP}m²`);
+    else parts.push(ltr(`${grouped(m2, locale)}${NBSP}m²`, locale));
   }
   return parts.join(' · ');
 }

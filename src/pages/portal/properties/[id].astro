@@ -20,7 +20,8 @@ import PromotionChoices from '~/components/portal/PromotionChoices.astro';
 import ContactChoice from '~/components/portal/ContactChoice.astro';
 import ContactLanguages from '~/components/portal/ContactLanguages.astro';
 import Field from '~/components/forms/Field.astro';
-import PhotoUploader from '~/components/portal/PhotoUploader.astro';
+import PhotoUploader, { type PhotoNotice } from '~/components/portal/PhotoUploader.astro';
+import { photoAccess } from '~/lib/portal/photo-moderation';
 import { ONSITE_SERVICES } from '~/config/company';
 import { serviceName, servicePrice, SERVICE_STATUS_LABEL, type ServiceStatus } from '~/lib/portal/service-requests';
 import { getProperty, STATUS_LABEL, LOCALE_OPTIONS, OWNER_EDITABLE } from '~/lib/portal/properties';
@@ -30,9 +31,19 @@ import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
 import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
-import { ALL_LOCALES, HU_NAME, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
+import { ALL_LOCALES, HU_NAME, LIMITS, TARGET_LIMITS, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
 import { jobsForProperty, latestPerLocale } from '~/lib/ai/translation-jobs';
-import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import PackageUpgrade from '~/components/portal/PackageUpgrade.astro';
+import { upgradeQuotes } from '~/lib/portal/package-terms';
+import { packageLocales, packageById } from '~/lib/translation-packages';
+import { UPGRADE_COPY } from '~/lib/portal/package-chooser';
+import { currentRate } from '~/lib/fx-store';
+import { languageName } from '~/lib/listing-catalogue';
+import ListingLanguages from '~/components/portal/ListingLanguages.astro';
+import { loadEntitlement } from '~/lib/ai/translation-entitlement';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { grantedLocales } from '~/lib/translation-packages';
 import { TRANSLATION_COPY, type PortalCopyLang } from '~/lib/ai/translation-copy';
 import { COMPANY } from '~/config/company';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
@@ -75,9 +86,28 @@ const [taxonomy, suggestionsResult, notesResult, orderResult, company, serviceRe
   supabase.from('service_requests').select('id, service_id, status, scheduled_for').eq('property_id', property.id).in('status', ['requested', 'scheduled']).order('created_at', { ascending: false }).limit(1).maybeSingle(),
 ]);
 const editable = isAdmin || OWNER_EDITABLE.includes(property.status);
+// §4c part 2: the owner of a live listing may still add, reorder and remove
+// photos (free); new ones wait for an admin. The rest of the form stays locked.
+const photoMode = photoAccess(property.status, { isAdmin, isOwner: isOwnProperty });
+const photosLive = photoMode === 'live';
+let photoNotices: PhotoNotice[] = [];
+if (isOwnProperty && !isAdmin) {
+  const { data: rejections } = await supabase
+    .from('property_media_rejections')
+    .select('id, photo_count, reason_code, reason, note, created_at')
+    .eq('property_id', property.id)
+    .is('dismissed_at', null)
+    .order('created_at', { ascending: false })
+    .limit(20);
+  photoNotices = (rejections ?? []) as PhotoNotice[];
+}
 
 const saved = Astro.url.searchParams.get('saved') === '1';
 const err = Astro.url.searchParams.get('error');
+/** Free listings: the field the contact check refused (update.ts), so an admin is offered „Tudatosan benne hagyom”. */
+const contactField = Astro.url.searchParams.get('contact_field');
+/** A free listing shows FINDDOME's contact only (spec §5.1); the owner is not asked. */
+const freeContactOnly = Boolean(property.free_listing) && !isAdmin;
 const payment = Astro.url.searchParams.get('payment');
 
 const trByLocale = Object.fromEntries(property.translations.map((t) => [t.locale, t]));
@@ -119,7 +149,7 @@ if (property.media.length === 0) blockers.push('Legalább egy fényképet fel ke
 if (!trByLocale.hu?.title?.trim()) blockers.push('A magyar cím kitöltése kötelező.');
 if (!trByLocale.hu?.description?.trim()) blockers.push('A magyar rövid leírás kitöltése kötelező.');
 if (!property.country || !Number.isFinite(property.lat) || !Number.isFinite(property.lng) || property.location_confirmed===false) blockers.push('Adja meg az országot és a helyet.');
-if (!(property.original_price && property.original_price>0) && (property.price_eur <= 1 || property.price_huf <= 1)) blockers.push('Adja meg az irányárat.');
+if (!(property.original_price && property.original_price>0) && (property.price_eur <= 1 || property.price_huf <= 1)) blockers.push('Adja meg az árat.');
 
 const openService = serviceResult.data;
 const servicesAvailable = !serviceResult.error;
@@ -130,7 +160,7 @@ const checks = [
   { label: 'Magyar cím', done: Boolean(trByLocale.hu?.title?.trim()) },
   { label: 'Rövid leírás', done: Boolean(trByLocale.hu?.description?.trim()) },
   { label: 'Ország és térképi hely', done: Boolean(property.country && Number.isFinite(property.lat) && Number.isFinite(property.lng) && property.location_confirmed!==false) },
-  { label: 'Irányár', done: Boolean(property.original_price && property.original_price>0) || (property.price_eur > 1 && property.price_huf > 1) },
+  { label: 'Ár', done: Boolean(property.original_price && property.original_price>0) || (property.price_eur > 1 && property.price_huf > 1) },
   { label: 'Legalább egy fénykép', done: property.media.length > 0 },
 ];
 const doneCount = checks.filter((check) => check.done).length;
@@ -181,8 +211,25 @@ const tc = TRANSLATION_COPY[portalLocale];
 const listingLive = property.status === 'published';
 const trOwnerPanel = isOwnProperty && !isAdmin && listingLive;
 const trBusy = Object.fromEntries(trJobs.filter((job) => ['requested', 'queued', 'running'].includes(job.status)).map((job) => [job.locale, tc.statusLabels[job.status]]));
-const trCatalogPrice = listingCatalog(company.services).extras.find((e) => e.id === 'translation')?.priceEur ?? 0;
+const trConfig = listingCatalog(company.services).translation;
+// What the listing is published in (migration 0053); null before it ran, and then none of this is shown.
+const trEntitlement = (isAdmin || isOwnProperty) ? await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null) : null;
+const trGranted = trEntitlement ? grantedLocales(trEntitlement.listing, trConfig, ALL_LOCALES) : [];
 const trPaid = Astro.url.searchParams.get('translations');
+// A paying owner of a live listing on Basic / Europe: the bigger packages and their difference (not for free listings).
+const pkgCatalog = listingCatalog(company.services);
+const upgrades = trOwnerPanel && !property.free_listing && trEntitlement
+  ? upgradeQuotes(pkgCatalog, property as never).map((quote) => {
+      const have = new Set(packageLocales(packageById(pkgCatalog.translation, property.package), ALL_LOCALES));
+      return {
+        packageId: quote.packageId,
+        name: portalLocale === 'hu' ? pkgCatalog.pricing.packages[quote.packageId].names.hu : pkgCatalog.pricing.packages[quote.packageId].names.en,
+        cents: quote.cents,
+        added: packageLocales(packageById(pkgCatalog.translation, quote.packageId), ALL_LOCALES).filter((code) => !have.has(code) && code !== trSourceLocale),
+      };
+    })
+  : [];
+const upgradeFx = upgrades.length ? await currentRate().catch(() => null) : null;
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
@@ -255,6 +302,7 @@ const trPaid = Astro.url.searchParams.get('translations');
     <p class="notice warn">
       Ez a hirdetés jelenleg <strong>{STATUS_LABEL[property.status]}</strong> állapotban van, ezért
       a mezők nem szerkeszthetők.
+      {photosLive && <> Új fotókat viszont díjmentesen feltölthet: <a href="#media"><strong>Fotók ↓</strong></a></>}
       {property.status === 'submitted' && ' Amint elbírálásra kerül, ismét szerkesztheti, ha javítás szükséges.'}
       {awaitingPayment && ' A díj rendezése után a hirdetés automatikusan élesedik.'}
       {awaitingPayment && order && <> <a href="#pay"><strong>Ugrás a fizetéshez ↓</strong></a></>}
@@ -284,14 +332,20 @@ const trPaid = Astro.url.searchParams.get('translations');
         <header class="card-head"><div><h2>{isAdmin ? 'Kapcsolattartó a hirdetésen' : 'Eladó elérhetősége'}</h2><p>{isAdmin ? 'Kit lásson a vevő kapcsolattartóként, és mik a tulajdonos saját adatai.' : 'Ha engedi, a vevő közvetlenül is felveheti Önnel a kapcsolatot.'}</p></div></header>
         {isAdmin && <ContactChoice mode={property.public_contact} staffName={property.public_contact_name} staffPhone={property.public_contact_phone} ownerAgreed={property.seller_contact_visible} ownerHasPhone={Boolean(property.seller_phone?.trim())} packageAllowsPhone={listingRules(company.services).packagePhone[property.package as 'cheap-6m' | 'normal-12m'] ?? false} />}
         {isAdmin && <h3>A tulajdonos adatai</h3>}
-        <p class="hint">
-          A FINDDOME egyedi modellje: ha ehhez hozzájárul, a neve és telefonszáma megjelenik a
-          hirdetésen, hogy a vevő közvetlenül is felvehesse Önnel a kapcsolatot.
-        </p>
-        <label class="checkbox">
-          <input type="checkbox" name="seller_contact_visible" value="yes" checked={property.seller_contact_visible} />
-          Nevem és telefonszámom megjelenítése a hirdetésben
-        </label>
+        {freeContactOnly ? (
+          <p class="hint">A hirdetésen a FINDDOME elérhetőségei jelennek meg; az érdeklődőket mi kapcsoljuk Önhöz.</p>
+        ) : (
+          <>
+            <p class="hint">
+              A FINDDOME egyedi modellje: ha ehhez hozzájárul, a neve és telefonszáma megjelenik a
+              hirdetésen, hogy a vevő közvetlenül is felvehesse Önnel a kapcsolatot.
+            </p>
+            <label class="checkbox">
+              <input type="checkbox" name="seller_contact_visible" value="yes" checked={property.seller_contact_visible} />
+              Nevem és telefonszámom megjelenítése a hirdetésben
+            </label>
+          </>
+        )}
         <div class="grid-2">
           <Field locale="hu" name="seller_name" label="Név" value={property.seller_name ?? ''} />
           <Field locale="hu" name="seller_phone" label="Telefonszám" type="tel" value={property.seller_phone ?? ''} />
@@ -300,8 +354,25 @@ const trPaid = Astro.url.searchParams.get('translations');
         <ContactLanguages selected={property.seller_speaks} locale="hu"/>
       </section>
 
+    </fieldset>
+
       <section id="translations" class="ed-card">
         <header class="card-head"><div><h2>Szövegek</h2><p>Minden nyelven külön szöveg. A magyar kötelező, a többi bővíti az elérést.</p></div></header>
+        {property.free_listing && (
+          <p class={contactField ? 'notice warn' : 'notice contact-rule'} id="contact-rule">
+            Ingyenes hirdetés: a szövegekben nem szerepelhet e-mail-cím, telefonszám, weboldal vagy üzenetküldő-elérhetőség. Az érdeklődők a FINDDOME-on keresztül érik el a tulajdonost.
+          </p>
+        )}
+        {property.free_listing && isAdmin && contactField && (
+          <label class="checkbox contact-override">
+            <input type="checkbox" name="contact_override" value="yes" />
+            Tudatosan benne hagyom <span class="hint">(a mentés naplózásra kerül)</span>
+          </label>
+        )}
+        {trEntitlement && (
+          <ListingLanguages propertyId={property.id} lang={isAdmin ? 'hu' : portalLocale} sourceLocale={trSourceLocale} granted={trGranted} excluded={[...(trEntitlement.listing.excludedLocales ?? [])]} withText={ALL_LOCALES.filter(trHas)} busy={trBusy} />
+        )}
+        <fieldset disabled={!editable} class="tr-fields">
         {isAdmin && (
           <div class="tr-bar" id="tr-bar">
             <button type="button" class="btn small" id="tr-missing" disabled={!aiOn || trMissing.length === 0}>Hiányzó nyelvek fordítása ({trMissing.length})</button>
@@ -312,7 +383,8 @@ const trPaid = Astro.url.searchParams.get('translations');
                   : 'Minden nyelven van szöveg.'
                 : 'Az AI fordítás nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben).'}
             </p>
-            <p class="tr-progress" id="tr-progress" role="status" aria-live="polite"></p>
+            <p class="tr-progress" id="tr-progress" role="status"></p>
+            <p class="tr-bar-note"><a class="hint-link" href={`/portal/translations/${property.id}`}>Fordítások egymás mellett: eredeti és fordítás, kézi javítással</a></p>
           </div>
         )}
         <div class="locale-tabs" role="tablist">
@@ -328,7 +400,8 @@ const trPaid = Astro.url.searchParams.get('translations');
           const suggestion = suggestionByLocale[l.value];
           return (
             <div class="locale-panel" data-locale-panel={l.value} hidden={i !== 0}>
-              <Field locale="hu" name={`title_${l.value}`} label="Hirdetés címe" required={required} value={t?.title ?? ''} />
+              <Field locale="hu" name={`title_${l.value}`} label="Hirdetés címe" required={required} value={t?.title ?? ''} maxlength={l.value === trSourceLocale ? LIMITS.title : TARGET_LIMITS.title} />
+              <p class="title-count" data-title-count={`title_${l.value}`}></p>
               <Field locale="hu" name={`description_${l.value}`} label="Rövid leírás" type="textarea" rows={3} required={required} value={t?.description ?? ''} />
               <Field locale="hu" name={`body_${l.value}`} label="Részletes leírás" type="textarea" rows={8} value={t?.body ?? ''}
                 hint="Bekezdéseket üres sorral válasszon el." />
@@ -380,6 +453,7 @@ const trPaid = Astro.url.searchParams.get('translations');
         })}
         <Field locale="hu" name="heard_from" label="Honnan értesült a FINDDOME-ről?" type="select" value={property.heard_from||''} options={[{value:'',label:'Válasszon!'},...HEARD_FROM.map(o=>({value:o.key,label:o.labels.hu}))]} hint="Csak a FINDDOME munkatársai látják."/>
         <Field locale="hu" name="internal_note" label="Megjegyzés (belső használatra)" type="textarea" rows={3} value={property.internal_note||''} hint="Csak Ön és a FINDDOME munkatársai láthatják. A nyilvános hirdetésben soha nem jelenik meg." maxlength={10000}/>
+        </fieldset>
       </section>
 
       {editable && (
@@ -398,23 +472,28 @@ const trPaid = Astro.url.searchParams.get('translations');
           </div>
         </div>
       )}
-    </fieldset>
   </form>
 
   {trOwnerPanel && (
     <section class="tr-panel ed-card" id="translations-panel" data-free={property.free_listing ? 'yes' : undefined}>
-      <header class="card-head"><div><h2>{tc.panelTitle}</h2><p>{property.free_listing ? tc.panelLeadFree : tc.panelLead}</p></div></header>
+      <header class="card-head"><div><h2>{pkgCatalog.pricingLive && !property.free_listing ? UPGRADE_COPY[portalLocale].title : tc.panelTitle}</h2>{!(pkgCatalog.pricingLive && !property.free_listing) && <p>{property.free_listing ? tc.panelLeadFree : tc.panelLead}</p>}</div></header>
       {trPaid === 'paid' && <p class="notice ok">{tc.thanksPaid}</p>}
       {property.free_listing && !aiOn && <p class="notice warn">{tc.aiOffNote}</p>}
       <div class="tr-owner-progress" id="tr-owner-progress" aria-live="polite"></div>
-      {trMissing.length === 0 && trJobs.every((job) => !['requested', 'queued', 'running'].includes(job.status))
-        ? <p class="hint">{tc.nothingToAdd}</p>
+      {pkgCatalog.pricingLive && !property.free_listing
+        ? (upgrades.length > 0
+          ? <PackageUpgrade propertyId={property.id} lang={portalLocale} quotes={upgrades} fx={upgradeFx} names={Object.fromEntries(ALL_LOCALES.map((code) => [code, languageName(code, portalLocale)]))} />
+          : <p class="hint">{tc.nothingToAdd}</p>)
         : (
-          <>
-            <TranslationPicker lang={portalLocale} bare name="locales" present={ALL_LOCALES.filter(trHas)} busy={trBusy} priceEur={property.free_listing ? null : trCatalogPrice} free={Boolean(property.free_listing)} />
-            <p class="tr-owner-msg" id="tr-owner-msg" role="status"></p>
-            <button type="button" class="btn" id="tr-buy" disabled>{property.free_listing ? tc.request : tc.pay}</button>
-          </>
+      trMissing.length === 0 && trJobs.every((job) => !['requested', 'queued', 'running'].includes(job.status))
+          ? <p class="hint">{tc.nothingToAdd}</p>
+          : (
+            <>
+              <TranslationPackagePicker lang={portalLocale} bare cfg={trConfig} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trEntitlement?.listing.translationPackage ?? 'basic'} currentPackageId={trEntitlement?.listing.translationPackage ?? null} excluded={[...(trEntitlement?.listing.excludedLocales ?? [])]} present={ALL_LOCALES.filter(trHas)} busy={trBusy} free={Boolean(property.free_listing)} />
+              <p class="tr-owner-msg" id="tr-owner-msg" role="status"></p>
+              <button type="button" class="btn" id="tr-buy" disabled>{property.free_listing ? tc.request : tc.pay}</button>
+            </>
+          )
         )}
     </section>
   )}
@@ -548,9 +627,11 @@ const trPaid = Astro.url.searchParams.get('translations');
       media={property.media}
       photoLimit={photoLimit}
       packageName={listingPackage.names.hu}
-      editable={editable}
+      editable={photoMode !== 'none'}
       isAdmin={isAdmin}
       locale="hu"
+      live={photosLive}
+      notices={photoNotices}
     />
   </div>
 
@@ -639,6 +720,20 @@ const trPaid = Astro.url.searchParams.get('translations');
 
 
 <script>
+  /* ── Title length: a live count, so a long title is noticed before it is saved ── */
+  document.querySelectorAll<HTMLElement>('[data-title-count]').forEach((counter) => {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${counter.dataset.titleCount}"]`);
+    if (!input) return;
+    const max = input.maxLength;
+    const show = () => {
+      const length = input.value.length;
+      counter.textContent = length ? `${length} / ${max} karakter` : '';
+      counter.dataset.near = String(length >= max - 10);
+    };
+    input.addEventListener('input', show);
+    show();
+  });
+
   /* ── Section rail: the section being read lights up ─────────────────── */
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-rail]')];
   const targets = links.map((link) => document.getElementById(link.dataset.rail!)).filter((el): el is HTMLElement => Boolean(el));
@@ -873,7 +968,7 @@ const trPaid = Astro.url.searchParams.get('translations');
 
 </script>
 
-<script define:vars={{ tcStrings: { ...tc, progress: undefined, more: undefined, all: undefined, summary: undefined, summaryFree: undefined, perLanguage: undefined }, tcProgressOne: tc.progress(111, 1), tcProgressMany: tc.progress(111, 222), propertyIdForTranslations: property.id, isAdminView: isAdmin, isFree: Boolean(property.free_listing), trJobsInitial: trJobs.map((j) => ({ locale: j.locale, status: j.status, error: j.last_error })), perLanguageHu: formatCostHu(trPerLanguage), missingCount: trMissing.length, missingCostHu: formatCostHu(trMissing.length * trPerLanguage), jobStatusHu: JOB_STATUS_HU, huNames: HU_NAME }}>
+<script define:vars={{ tcStrings: { ...tc, progress: undefined, more: undefined, all: undefined, summary: undefined, summaryFree: undefined, perLanguage: undefined }, tcProgressOne: tc.progress(111, 1), tcProgressMany: tc.progress(111, 222), propertyIdForTranslations: property.id, heldPackage: trEntitlement?.listing.translationPackage ?? 'basic', isAdminView: isAdmin, isFree: Boolean(property.free_listing), trJobsInitial: trJobs.map((j) => ({ locale: j.locale, status: j.status, error: j.last_error })), perLanguageHu: formatCostHu(trPerLanguage), missingCount: trMissing.length, missingCostHu: formatCostHu(trMissing.length * trPerLanguage), jobStatusHu: JOB_STATUS_HU, huNames: HU_NAME }}>
   (() => {
     const url = `/api/portal/properties/${propertyIdForTranslations}/translations`;
     const toast = (message, kind = 'ok') => window.pf?.toast(message, kind);
@@ -991,16 +1086,24 @@ const trPaid = Astro.url.searchParams.get('translations');
     const buy = document.getElementById('tr-buy');
     const msg = document.getElementById('tr-owner-msg');
     const panel = document.getElementById('translations-panel');
-    const chosen = () => [...(panel?.querySelectorAll('input[name="locales"]:checked:not(:disabled)') ?? [])].map((box) => box.value);
-    panel?.addEventListener('tp:change', () => { if (buy) buy.disabled = chosen().length === 0; });
+    const picker = panel?.querySelector('[data-tpk]');
+    // The choice, as ids: the package, the single languages and what is switched off. The server prices it.
+    const choice = () => ({
+      packageId: picker?.querySelector('input[name="translation_package"]:checked')?.value ?? 'basic',
+      locales: [...(picker?.querySelectorAll('input[name="translations"]:checked') ?? [])].map((box) => box.value),
+      excluded: (picker?.querySelector('[data-tpk-excluded]')?.value ?? '').split(',').filter(Boolean),
+    });
+    // Something to buy or ask for: a bigger package than the one held, or at least one single language.
+    const anything = () => { const c = choice(); return c.locales.length > 0 || c.packageId !== heldPackage; };
+    panel?.addEventListener('tp:change', () => { if (buy) buy.disabled = !anything(); });
     buy?.addEventListener('click', async () => {
       buy.disabled = true;
       msg.textContent = isFree ? '' : tcStrings.paying;
-      const { ok, json } = await post({ action: isFree ? 'request' : 'order', locales: chosen() });
+      const { ok, json } = await post({ action: isFree ? 'request' : 'order', ...choice() });
       if (ok && json.url) { location.href = json.url; return; }
       if (ok) { msg.textContent = tcStrings.requested; await poll(); setTimeout(() => location.reload(), 1200); return; }
       msg.textContent = json.error === 'card-unavailable' ? tcStrings.cardUnavailable : json.error === 'nothing-to-order' ? tcStrings.nothingToAdd : tcStrings.errorGeneric;
-      buy.disabled = chosen().length === 0;
+      buy.disabled = !anything();
     });
 
     render(jobs, null);
@@ -1057,6 +1160,8 @@ const trPaid = Astro.url.searchParams.get('translations');
   .ed-body { display: grid; gap: 20px; min-width: 0; }
   .ed-body > form, fieldset { display: grid; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
   fieldset:disabled .ed-card { opacity: 0.72; }
+  fieldset.tr-fields { display: block; }
+  fieldset.tr-fields:disabled { opacity: 0.72; }
 
   /* ── Cards ───────────────────────────────────────────────────────────── */
   .ed-card { padding: clamp(22px, 3vw, 36px); border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); scroll-margin-top: 24px; transition: box-shadow 0.4s var(--ease-out); }
@@ -1092,6 +1197,9 @@ const trPaid = Astro.url.searchParams.get('translations');
   .tr-machine { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 10px; font-size: var(--fs-small); color: var(--ink-quiet); }
   .tr-machine .ai-badge { margin-left: 0; }
   .tr-stale { color: var(--pt-red); font-weight: var(--fw-medium); }
+  .title-count { margin: -4px 0 14px; font-size: var(--fs-small); color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+  .title-count:empty { display: none; }
+  .title-count[data-near='true'] { color: var(--pt-red); }
   .tr-state { margin: 8px 0 0; font-size: var(--fs-small); color: var(--ink-quiet); }
   .tr-state:empty { display: none; }
   .tr-state[data-state='failed'] { color: var(--pt-red); }
@@ -1159,6 +1267,7 @@ const trPaid = Astro.url.searchParams.get('translations');
   .review-note blockquote { margin: 0 0 12px; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--ink); white-space: pre-line; }
   .review-note-foot { font-size: 14.5px; line-height: 1.7; color: var(--ink-quiet); }
   .notice { margin-bottom: 16px; }
+  .contact-rule { background: rgba(16, 42, 67, 0.05); color: var(--ink); font-size: var(--fs-small); }
 
   /* ── Payment ─────────────────────────────────────────────────────────── */
   .pay h3 { margin: 30px 0 12px; }

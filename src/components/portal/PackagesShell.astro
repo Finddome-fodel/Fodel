@@ -1,0 +1,97 @@
+---
+/**
+ * The frame of every Csomagok tab (spec §9.0): the page head, the tab bar
+ * (from PACKAGE_TABS, so a new tab only needs an entry there), the saved /
+ * error notices and the unsaved-changes guard.
+ *
+ * The page itself checks that the visitor is an admin before rendering this
+ * (a component cannot redirect); the middleware already keeps everyone else
+ * out of /portal/packages.
+ *
+ * A tab's form opts into the save bar and the guard with `data-pk-form`; its
+ * save bar is the usual `#savebar` / `#savebar-txt`.
+ */
+import Portal from '~/layouts/Portal.astro';
+import { PACKAGE_TABS, packageTab, type PackageTabId } from '~/lib/portal/package-admin';
+import '~/styles/packages.css';
+
+interface Props {
+  tab: PackageTabId;
+  /** False before migration 0014 (no site_settings.services): the tab is read-only. */
+  migrated?: boolean;
+}
+
+const { tab, migrated = true } = Astro.props;
+const current = packageTab(tab);
+const saved = Astro.url.searchParams.has('saved');
+const err = Astro.url.searchParams.get('error');
+---
+
+<Portal title={`${current.label} · Csomagok`}>
+  <div class="pk-page" data-pk-page>
+    <header class="ph">
+      <div>
+        <p class="eyebrow">Értékesítés</p>
+        <h1>Csomagok</h1>
+        <p class="lede">Mit és mennyiért kínál a FINDDOME. Mentés után az árlista, a hirdetésfeladás, a jóváhagyás és a fizetés is ezeket használja — a már elkészült rendelések nem változnak.</p>
+      </div>
+    </header>
+
+    <nav class="tabs pk-tabs" aria-label="Csomagok">
+      {PACKAGE_TABS.map((item) => (
+        <a href={item.href} aria-current={item.id === tab ? 'page' : undefined} data-pk-tab>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    {!migrated && <p class="notice error">Ehhez a beállításhoz futtassa le a 0014-es migrációt.</p>}
+    {saved && <p class="notice ok" data-toast="ok">{current.rebuild ? 'Mentve. A nyilvános oldalak néhány percen belül frissülnek.' : 'Mentve. Az új beállítás a következő mentéstől érvényes.'}</p>}
+    {err && <p class="notice error" role="alert">{err}</p>}
+
+    <slot />
+  </div>
+</Portal>
+
+<script>
+  // Unsaved changes: the save bar says so, and leaving the tab asks first.
+  const forms = [...document.querySelectorAll<HTMLFormElement>('form[data-pk-form]')];
+  const bar = document.getElementById('savebar');
+  const txt = document.getElementById('savebar-txt');
+  let dirty = false;
+  let leaving = false;
+
+  const markDirty = () => {
+    dirty = true;
+    if (bar) bar.dataset.state = 'dirty';
+    if (txt) txt.textContent = 'Nem mentett módosítások';
+  };
+
+  forms.forEach((form) => {
+    form.addEventListener('input', markDirty);
+    form.addEventListener('change', markDirty);
+    form.addEventListener('submit', () => (leaving = true));
+  });
+
+  // Tab links and the rest of the portal: ask in the portal's own dialog.
+  document.addEventListener('click', async (event) => {
+    if (!dirty || leaving) return;
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]');
+    if (!link || link.target === '_blank' || link.hasAttribute('download')) return;
+    const mouse = event as MouseEvent;
+    if (mouse.metaKey || mouse.ctrlKey || mouse.shiftKey || mouse.button !== 0) return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
+    event.preventDefault();
+    const ok = await (window as any).pf?.confirm({ title: 'Elhagyja az oldalt?', body: 'Nem mentett módosítások vannak. Elveti őket?', confirmLabel: 'Elvetem', danger: true });
+    if (ok) {
+      leaving = true;
+      location.href = link.href;
+    }
+  });
+
+  // Anything else (reload, closing the tab, the back button): the browser's own prompt.
+  window.addEventListener('beforeunload', (event) => {
+    if (dirty && !leaving) event.preventDefault();
+  });
+</script>

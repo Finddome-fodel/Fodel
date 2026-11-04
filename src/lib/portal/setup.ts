@@ -19,7 +19,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { localeFrom } from '~/i18n/ui';
 import type { PortalLang } from '~/lib/portal/auth-copy';
 import { getCompany, getTaxonomy } from '~/lib/runtime-config';
-import { listingCatalog, packageOf } from '~/lib/listing-packages';
+import { listingCatalog, packageOf, extraSoldIn, sellingPackages, type ListingCatalog } from '~/lib/listing-packages';
 import { TRANSLATION_LANGUAGES, isOnsiteServiceId } from '~/config/company';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { createServiceRequest } from '~/lib/portal/service-requests';
@@ -27,17 +27,28 @@ import { syncDutchAgent } from '~/lib/portal/dutch-agent';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { type FieldError } from '~/lib/validation';
 import { getProperty } from '~/lib/portal/properties';
+import { readPriceRounding } from '~/lib/exchange-rates';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
 import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { contactDisplayPatch } from '~/lib/contact-display';
 import { syncFreeRequests } from '~/lib/ai/translation-jobs';
+import { guardContacts, type ContactActor } from '~/lib/portal/contact-guard';
+import { ALL_LOCALES, pickSource } from '~/lib/ai/translate-core';
+import { chosenExclusions } from '~/lib/portal/package-chooser';
+import { packageById, packageLocales } from '~/lib/translation-packages';
 
 export const SETUP_STEPS = ['package', 'property', 'description'] as const;
 export type SetupStep = (typeof SETUP_STEPS)[number];
 
 export type StepResult = { ok: true } | { ok: false; error: string; errors?: Record<string, FieldError> };
 
-type Existing = { id: string; owner_id: string | null; status: string; package: string; free_listing?: boolean | null };
+type Existing = { id: string; owner_id: string | null; status: string; package: string; free_listing?: boolean | null; country?: string | null };
+
+/** Whether the video shoot may be requested: sold in this country, or the country is not chosen yet. */
+const videoSold = (catalog: ListingCatalog, country?: string | null) => {
+  const shoot = catalog.extras.find((extra) => extra.id === 'video');
+  return Boolean(shoot) && (!country || extraSoldIn(shoot!, country));
+};
 
 /** The longest description the setup accepts — the same ceiling the 1.x form had. */
 export const DESCRIPTION_MAX = 6000;
@@ -49,11 +60,11 @@ export async function saveSetupStep(
   existing: Existing,
   step: SetupStep,
   form: FormData,
-  ctx: { isAdmin: boolean; locale: PortalLang }
+  ctx: { isAdmin: boolean; locale: PortalLang; actor?: ContactActor }
 ): Promise<StepResult> {
   if (step === 'package') return savePackage(supabase, existing, form);
-  if (step === 'property') return saveProperty(supabase, existing, form);
-  return saveDescription(supabase, existing, form, ctx.locale, ctx.isAdmin);
+  if (step === 'property') return saveProperty(supabase, existing, form, ctx);
+  return saveDescription(supabase, existing, form, ctx);
 }
 
 /* ── 1. Package, extras, on-site service ───────────────────────────────── */
@@ -61,13 +72,34 @@ export async function saveSetupStep(
 async function savePackage(supabase: SupabaseClient, existing: Existing, form: FormData): Promise<StepResult> {
   const company = await getCompany();
   const catalog = listingCatalog(company.services);
-  const chosen = catalog.packages.find((p) => p.id === str(form, 'package'));
+  // Only what is on sale: before the pricing migrations the two older packages, after them Basic, Europe and World.
+  const chosen = sellingPackages(catalog).find((p) => p.id === str(form, 'package'));
   if (!chosen) return { ok: false, error: 'invalid', errors: { package: { code: 'required' } } };
 
-  const translations = form
-    .getAll('translations')
-    .map(String)
-    .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && all.indexOf(code) === i);
+  // A listing package is also the language package: its term and the languages the owner switched off are the whole
+  // choice (single languages are no longer sold). The server prices all of it from the matrix at approval.
+  let months: number | undefined;
+  let trPackage = 'basic';
+  let trSingles: string[] = [];
+  let excluded: string[] = [];
+  if (catalog.pricingLive) {
+    months = Number(str(form, 'months'));
+    if (!catalog.pricing.durations.includes(months)) return { ok: false, error: 'invalid', errors: { months: { code: 'required' } } };
+    trPackage = chosen.id;
+    const { data: rows } = await supabase.from('property_translations').select('locale, title, description, machine, translated_from, manual_override').eq('property_id', existing.id);
+    excluded = chosenExclusions(str(form, 'translation_excluded').split(','), chosen.id, catalog, pickSource((rows ?? []) as never[])?.locale ?? 'hu', ALL_LOCALES);
+  } else {
+    const translations = form
+      .getAll('translations')
+      .map(String)
+      .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && ALL_LOCALES.includes(code) && all.indexOf(code) === i);
+    // Package and single languages are only ids: the server prices them (src/lib/orders.ts). A package that is not
+    // on sale falls back to Basic, and a single the chosen package already includes is not a single.
+    trPackage = catalog.translation.packages.find((p) => p.id === str(form, 'translation_package') && (p.active || p.id === 'basic'))?.id ?? 'basic';
+    const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackage), ALL_LOCALES));
+    trSingles = translations.filter((code) => !trIncluded.has(code));
+    excluded = str(form, 'translation_excluded').split(',');
+  }
   const service = isOnsiteServiceId(str(form, 'service')) ? (str(form, 'service') as never) : null;
 
   const { error } = await supabase.from('properties').update({ package: chosen.id }).eq('id', existing.id);
@@ -79,13 +111,17 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
     source: 'listing_editor',
     at: new Date().toISOString(),
     package: chosen.id,
-    translations,
-    categoryHighlight: form.get('categoryHighlight') === 'yes',
-    homepageHighlight: form.get('homepageHighlight') === 'yes',
+    ...(months ? { months } : {}),
+    translations: trSingles,
+    translationPackage: trPackage,
+    excludedLocales: excluded,
+    // A category highlight needs a package at least as long as its minimum (Q10): a 1-month package cannot carry it.
+    categoryHighlight: form.get('categoryHighlight') === 'yes' && (!months || months >= (catalog.extras.find((e) => e.id === 'category-highlight')?.minMonths ?? 1)),
     topicHighlight: form.get('topicHighlight') === 'yes',
     dutchAgent: form.get('dutchAgent') === 'yes',
-    // Only a package that sells video as an extra takes the request.
-    video: chosen.video === 'extra' && form.get('video') === 'yes',
+    // The video shoot is sold in Hungary only (§4b). A draft whose country is not chosen yet keeps
+    // the request; the approval screen offers it only for a Hungarian property.
+    video: form.get('video') === 'yes' && videoSold(catalog, existing.country),
     service,
   });
   const { error: extrasError } = await supabase.from('properties').update({ requested_extras: requested }).eq('id', existing.id);
@@ -143,10 +179,18 @@ async function syncService(supabase: SupabaseClient, existing: Existing, wanted:
 
 /* ── 2. The property ──────────────────────────────────────────────────── */
 
-async function saveProperty(supabase:SupabaseClient,existing:Existing,form:FormData):Promise<StepResult>{
+type StepCtx={isAdmin:boolean;locale:PortalLang;actor?:ContactActor};
+
+/** Free listings: no contact details in the public free-text fields (§5.2). Paid listings pass untouched. */
+const contactsIn=(form:FormData,existing:Existing,ctx:StepCtx,names:string[])=>guardContacts(form,Object.fromEntries(names.filter((name)=>form.has(name)).map((name)=>[name,str(form,name)])),{free:existing.free_listing,isAdmin:ctx.isAdmin,propertyId:existing.id,actor:ctx.actor,source:'setup'});
+
+async function saveProperty(supabase:SupabaseClient,existing:Existing,form:FormData,ctx:StepCtx):Promise<StepResult>{
   const current=await getProperty(supabase,existing.id);if(!current)return {ok:false,error:'not-found'};
+  // Address fields: owners only (an admin typing an address is not routing buyers around FINDDOME).
+  const contacts=ctx.isAdmin?{ok:true as const}:await contactsIn(form,existing,ctx,['street','region']);
+  if(!contacts.ok)return {ok:false,error:'invalid',errors:contacts.errors};
   try{
-    const values=await listingInput(form,current,await getTaxonomy(),{allowIncomplete:form.get('partial')==='yes'});
+    const values=await listingInput(form,current,await getTaxonomy(),{allowIncomplete:form.get('partial')==='yes',rounding:readPriceRounding((await getCompany()).services.priceRounding)});
     const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:values.patch,p_private:values.privateData});
     if(error){console.error('[setup] save_listing_editor failed (property)',existing.id,error.message);return {ok:false,error:'save-failed'};}
     return {ok:true};
@@ -159,7 +203,8 @@ async function saveProperty(supabase:SupabaseClient,existing:Existing,form:FormD
 
 /* ── 3. Description and contact ────────────────────────────────────────── */
 
-async function saveDescription(supabase:SupabaseClient,existing:Existing,form:FormData,locale:PortalLang,isAdmin=false):Promise<StepResult>{
+async function saveDescription(supabase:SupabaseClient,existing:Existing,form:FormData,ctx:StepCtx):Promise<StepResult>{
+  const {locale,isAdmin}=ctx;
   const title=str(form,'title'),description=str(form,'description'),body=str(form,'body');
   const errors:Record<string,FieldError>={};
   const partial=form.get('partial')==='yes';
@@ -167,16 +212,37 @@ async function saveDescription(supabase:SupabaseClient,existing:Existing,form:Fo
   if(!description&&!partial)errors.description={code:'required'};else if(description.length>DESCRIPTION_MAX)errors.description={code:'too-long',limit:DESCRIPTION_MAX};
   if(body.length>30000)errors.body={code:'too-long',limit:30000};
   if(Object.keys(errors).length)return {ok:false,error:'invalid',errors};
+  const contacts=await contactsIn(form,existing,ctx,['title','description','body']);
+  if(!contacts.ok)return {ok:false,error:'invalid',errors:contacts.errors};
   const current=await getProperty(supabase,existing.id);if(!current)return {ok:false,error:'not-found'};
   const pkg=packageOf(listingCatalog((await getCompany()).services),existing.package);
   const translations=[{locale,title,description,body}];
+  // A free listing shows FINDDOME's contact only (§5.1; 0049 enforces it in the database too). Its form has no
+  // contact question, so an admin's earlier choice is kept rather than cleared.
+  const contactVisible=existing.free_listing
+    ?(isAdmin&&(form.has('contact')?pkg.phone&&form.get('contact')==='yes':Boolean(current.seller_contact_visible)))
+    :pkg.phone&&form.get('contact')==='yes';
   // The office still prepares paid translations. A non-Hungarian original can be submitted without pretending it is a Hungarian translation.
-  const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:pkg.phone&&form.get('contact')==='yes',...(isAdmin?contactDisplayPatch(form):{})},p_private:{internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations});
+  const {error}=await supabase.rpc('save_listing_editor',{p_id:existing.id,p_patch:{seller_speaks:contactLanguages(form),seller_contact_visible:contactVisible,...(isAdmin?contactDisplayPatch(form):{})},p_private:{internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations});
   if(error){console.error('[setup] save_listing_editor failed (description)',existing.id,error.message);return {ok:false,error:'save-failed'};}
   // A free-link owner's translation wish list: kept as requests for the office to approve, never run by itself.
   // The text is saved first (a request needs something to translate), and a problem here never fails the save.
   if(existing.free_listing&&existing.owner_id&&form.get('translations_present')==='yes'){
-    try{await syncFreeRequests(createSupabaseAdminClient(),existing.id,form.getAll('translations').map(String),existing.owner_id);}
+    try{
+      const catalog=listingCatalog((await getCompany()).services);
+      const asked=form.getAll('translations').map(String);
+      const trPackage=catalog.translation.packages.find((p)=>p.id===str(form,'translation_package')&&(p.active||p.id==='basic'))?.id??'basic';
+      const excluded=(readRequestedExtras({excludedLocales:str(form,'translation_excluded')}).excludedLocales??[]);
+      // Basic (English, German) comes with every listing and is queued when it goes live. Everything beyond it, the
+      // package's languages and single ones, is a request the office approves. Languages switched off are not asked for.
+      const goLocales=new Set(packageLocales(packageById(catalog.translation,'basic'),ALL_LOCALES));
+      const wanted=[...new Set([...packageLocales(packageById(catalog.translation,trPackage),ALL_LOCALES),...asked])]
+        .filter((code)=>code!=='hu'&&!goLocales.has(code)&&!excluded.includes(code));
+      // Remembered with the draft, so the picker shows the same choice next time and approval can switch the languages off.
+      const {data:row}=await supabase.from('properties').select('requested_extras').eq('id',existing.id).maybeSingle();
+      await supabase.from('properties').update({requested_extras:readRequestedExtras({...(row?.requested_extras??{}),translationPackage:trPackage,translations:asked.filter((code)=>!packageLocales(packageById(catalog.translation,trPackage),ALL_LOCALES).includes(code)),excludedLocales:excluded})}).eq('id',existing.id);
+      await syncFreeRequests(createSupabaseAdminClient(),existing.id,wanted,existing.owner_id);
+    }
     catch(e){console.error('[setup] translation requests not kept',existing.id,e instanceof Error?e.message:e);}
   }
   return {ok:true};

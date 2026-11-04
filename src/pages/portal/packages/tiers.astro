@@ -1,0 +1,374 @@
+---
+/**
+ * Csomagok → Ársávok (spec §9.4): the price of every package and every
+ * extra by property price. Each item is a short table of ascending upper
+ * bounds in forints — the "from" column is computed, never typed — with
+ * the last tier open-ended. „+ Új sáv” splits the open tier, × merges a
+ * tier into the next one. A „Próbaár” shows what a property at that price
+ * would pay and highlights the tier it falls in.
+ *
+ * The same validateTiers() checks the rows here (live) and in
+ * /api/portal/packages/tiers (on save), so the save bar is only enabled
+ * when the server will accept the form.
+ */
+export const prerender = false;
+
+import PackagesShell from '~/components/portal/PackagesShell.astro';
+import MoneyInput from '~/components/portal/MoneyInput.astro';
+import { listingCatalog, PRICE_MAX } from '~/lib/listing-packages';
+import { tierRange, TIER_BOUND_MAX, TIERS_MAX, type PriceTier } from '~/lib/price-tiers';
+import { exchangeRates } from '~/lib/exchange-rates';
+import { fmtDecimal, fmtHuf } from '~/lib/portal/num';
+import { packageTab } from '~/lib/portal/package-admin';
+import { EXTRA_ADMIN, tierKey } from '~/lib/portal/package-forms';
+
+const { supabase, profile } = Astro.locals;
+if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
+
+const { data: row } = await supabase.from('site_settings').select('*').eq('id', 1).maybeSingle();
+const migrated = Boolean(row && 'services' in row);
+const catalog = listingCatalog(row?.services);
+
+// Today's ECB rate, for the "≈ € equivalent" of each bound — information only, never stored.
+const rates = await Promise.race([
+  exchangeRates().catch(() => null),
+  new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500)),
+]);
+const hufPerEur = rates?.rates.HUF ?? null;
+
+type Item = { anchor: string; key: string; title: string; sub: string; unit: string; tiers: PriceTier[]; kind: 'pkg' | 'extra'; id: string };
+const items: Item[] = [
+  ...catalog.extras
+    // Once the 2026 prices are live a renewal is the package's own price; the old flat renewal price is not offered for editing.
+    .filter((extra) => !extra.retired && extra.id !== 'translation' && !(catalog.pricingLive && extra.id === 'renewal-6m'))
+    .map((extra): Item => ({
+      anchor: `extra-${extra.id}`,
+      key: tierKey('extra', extra.id),
+      title: EXTRA_ADMIN[extra.id]?.label ?? extra.id,
+      sub: `Kiegészítő, ${EXTRA_ADMIN[extra.id]?.unit ?? '€'}`,
+      unit: EXTRA_ADMIN[extra.id]?.unit ?? '€',
+      tiers: extra.tiers,
+      kind: 'extra',
+      id: extra.id,
+    })),
+];
+const sample = 85_000_000;
+---
+
+<PackagesShell tab="tiers" migrated={migrated}>
+  <form method="POST" action={packageTab('tiers').api} id="tiers-form" class="pk-form tiers-form" data-pk-form data-rate={hufPerEur ?? ''} data-max={TIERS_MAX}>
+    <fieldset disabled={!migrated}>
+      <section class="set-card tr-probe" aria-labelledby="probe-title">
+        <div>
+          <h2 id="probe-title">Próbaár</h2>
+          <p class="set-sub">Írjon be egy ingatlanárat: minden tételnél kiemeljük a sávot, amelybe esik, és itt látja, mennyit fizetne érte a hirdető. Egy határon lévő ár az alsó sávba tartozik.</p>
+        </div>
+        <label class="f tr-probe-in">
+          <span>Példa ingatlanár</span>
+          <MoneyInput value={sample} min={0} max={TIER_BOUND_MAX} suffix="Ft" id="probe" data-probe aria-describedby="probe-out" />
+        </label>
+        <dl class="tr-probe-out" id="probe-out" aria-live="polite">
+          {items.map((item) => (
+            <div data-probe-for={item.key}><dt>{item.title}</dt><dd>–</dd></div>
+          ))}
+        </dl>
+        {hufPerEur && <p class="tr-rate">1 € ≈ {fmtDecimal(hufPerEur, { digits: 2, fixed: true })} Ft (ECB, {rates?.date}). A forinthatárok euróértéke csak tájékoztató.</p>}
+      </section>
+
+      {items.map((item) => (
+        <section class="set-card tr-item" id={item.anchor} data-tier-item data-key={item.key} data-unit={item.unit} data-title={item.title}>
+          <header class="tr-head">
+            <div>
+              <h2>{item.title}</h2>
+              <p class="set-sub">{item.sub}</p>
+            </div>
+            <span class="tr-count" data-count>{item.tiers.length === 1 ? 'Egységes ár' : `${item.tiers.length} sáv`}</span>
+          </header>
+
+          <div class="tr-table">
+            <div class="tr-cols" aria-hidden="true"><span>Ingatlan ára</span><span>Díj</span></div>
+            <ol class="tr-rows" data-rows>
+              {item.tiers.map((tier, index) => {
+                const { fromHuf } = tierRange(item.tiers, index);
+                const last = index === item.tiers.length - 1;
+                return (
+                  <li class="tr-row" data-row>
+                    <div class="tr-range">
+                      <span class="tr-from" data-from>{item.tiers.length === 1 ? 'Minden ingatlanár' : last ? `${fmtHuf(fromHuf - 1)} felett` : `${fmtHuf(fromHuf)} –`}</span>
+                      <span class="tr-bound" data-bound-wrap hidden={last}>
+                        <MoneyInput name={`${item.key}_bound`} value={tier.upToHuf} min={1} max={TIER_BOUND_MAX} suffix="Ft" disabled={last} data-bound aria-label="Felső határ (forint, a határ még ebbe a sávba tartozik)" />
+                        <small class="tr-eur" data-eur></small>
+                      </span>
+                    </div>
+                    <div class="tr-price">
+                      <MoneyInput name={`${item.key}_price`} value={tier.priceEur} min={0} max={PRICE_MAX} suffix={item.unit} required data-price aria-label="Díj" />
+                    </div>
+                    <button type="button" class="tr-x" data-remove hidden={last} aria-label="Sáv törlése (a tartománya a következő sávhoz kerül)" title="Sáv törlése">
+                      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+                    </button>
+                    <p class="tr-msg" data-row-msg></p>
+                  </li>
+                );
+              })}
+            </ol>
+            <template data-row-template>
+              <li class="tr-row tr-in" data-row>
+                <div class="tr-range">
+                  <span class="tr-from" data-from></span>
+                  <span class="tr-bound" data-bound-wrap hidden>
+                    <MoneyInput name={`${item.key}_bound`} min={1} max={TIER_BOUND_MAX} suffix="Ft" disabled data-bound aria-label="Felső határ (forint, a határ még ebbe a sávba tartozik)" />
+                    <small class="tr-eur" data-eur></small>
+                  </span>
+                </div>
+                <div class="tr-price">
+                  <MoneyInput name={`${item.key}_price`} min={0} max={PRICE_MAX} suffix={item.unit} required data-price aria-label="Díj" />
+                </div>
+                <button type="button" class="tr-x" data-remove hidden aria-label="Sáv törlése (a tartománya a következő sávhoz kerül)" title="Sáv törlése">
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+                </button>
+                <p class="tr-msg" data-row-msg></p>
+              </li>
+            </template>
+            <div class="tr-foot">
+              <button type="button" class="tr-add" data-add>{item.tiers.length === 1 ? '+ Ársávok hozzáadása' : '+ Új sáv'}</button>
+              <p class="tr-note" data-note role="status"></p>
+            </div>
+          </div>
+        </section>
+      ))}
+
+      <div class="pt-savebar" id="savebar" data-state="clean"><div class="pt-savebar-in"><p class="pt-savebar-msg"><span class="dot"></span><span id="savebar-txt">Minden módosítás mentve</span></p><button type="submit" class="btn" id="tiers-save">Mentés</button></div></div>
+    </fieldset>
+  </form>
+</PackagesShell>
+
+<script>
+  import { initMoneyInputs, moneyOf, setMoney } from '~/scripts/money-input';
+  import { tierFor, validateTiers, type PriceTier } from '~/lib/price-tiers';
+  import { fmtEur, fmtHuf } from '~/lib/portal/num';
+
+  const form = document.getElementById('tiers-form') as HTMLFormElement | null;
+  const save = document.getElementById('tiers-save') as HTMLButtonElement | null;
+  const probe = document.querySelector<HTMLInputElement>('[data-probe]');
+  const rate = Number(form?.dataset.rate) || 0;
+  const maxTiers = Number(form?.dataset.max) || 10;
+  const DEFAULT_FIRST_BOUND = 150_000_000;
+
+  const rowsOf = (item: HTMLElement) => [...item.querySelectorAll<HTMLElement>('[data-rows] > [data-row]:not(.tr-out)')];
+  const boundOf = (row: HTMLElement) => row.querySelector<HTMLInputElement>('[data-bound]')!;
+  const priceOf = (row: HTMLElement) => row.querySelector<HTMLInputElement>('[data-price]')!;
+  /** MoneyInput's hidden twin carries the posted name; it must follow the visible field's disabled state. */
+  const hiddenOf = (input: HTMLInputElement) => input.parentElement?.querySelector<HTMLInputElement>('input[type="hidden"]');
+
+  function read(item: HTMLElement): { upToHuf: number | null; priceEur: number | null }[] {
+    const rows = rowsOf(item);
+    return rows.map((row, index) => ({
+      upToHuf: index === rows.length - 1 ? null : moneyOf(boundOf(row)),
+      priceEur: moneyOf(priceOf(row)),
+    }));
+  }
+
+  /** Lays the rows out: from-labels, which row has a bound and a ×, the € hints, the errors. */
+  function layout(item: HTMLElement): boolean {
+    const rows = rowsOf(item);
+    const values = read(item);
+    const single = rows.length === 1;
+    let from = 0;
+    rows.forEach((row, index) => {
+      const last = index === rows.length - 1;
+      const bound = boundOf(row);
+      const wrap = row.querySelector<HTMLElement>('[data-bound-wrap]')!;
+      wrap.hidden = last;
+      bound.disabled = last;
+      const twin = hiddenOf(bound);
+      if (twin) twin.disabled = last;
+      row.querySelector<HTMLElement>('[data-remove]')!.hidden = last;
+      const fromLabel = row.querySelector<HTMLElement>('[data-from]')!;
+      fromLabel.textContent = single ? 'Minden ingatlanár' : last ? `${fmtHuf(Math.max(from - 1, 0))} felett` : `${fmtHuf(from)} –`;
+      const upTo = values[index].upToHuf;
+      const eur = row.querySelector<HTMLElement>('[data-eur]');
+      if (eur) eur.textContent = !last && upTo && rate ? `≈ ${fmtEur(Math.round(upTo / rate / 1000) * 1000)}` : '';
+      if (!last && upTo) from = upTo + 1;
+    });
+
+    // Validate exactly as the server will.
+    const checked = validateTiers(values.map((v) => ({ upToHuf: v.upToHuf ?? '', priceEur: v.priceEur ?? '' })));
+    rows.forEach((row, index) => {
+      const errors = checked.errors.filter((e) => e.row === index);
+      const warnings = checked.warnings.filter((w) => w.row === index);
+      boundOf(row).setAttribute('aria-invalid', String(errors.some((e) => e.field === 'upToHuf')));
+      priceOf(row).setAttribute('aria-invalid', String(errors.some((e) => e.field === 'priceEur')));
+      const msg = row.querySelector<HTMLElement>('[data-row-msg]')!;
+      const text = errors[0]?.message ?? warnings[0]?.message ?? '';
+      msg.textContent = text;
+      msg.dataset.tone = errors.length ? 'error' : warnings.length ? 'warn' : '';
+    });
+    item.querySelector<HTMLElement>('[data-count]')!.textContent = single ? 'Egységes ár' : `${rows.length} sáv`;
+    const add = item.querySelector<HTMLButtonElement>('[data-add]')!;
+    add.textContent = single ? '+ Ársávok hozzáadása' : '+ Új sáv';
+    add.disabled = rows.length >= maxTiers;
+    item.querySelector<HTMLElement>('[data-note]')!.textContent = rows.length >= maxTiers ? `Legfeljebb ${maxTiers} sáv adható meg.` : '';
+    item.dataset.valid = String(checked.ok);
+    return checked.ok;
+  }
+
+  function probeAll() {
+    const price = moneyOf(probe) ?? 0;
+    document.querySelectorAll<HTMLElement>('[data-tier-item]').forEach((item) => {
+      const values = read(item);
+      const tiers: PriceTier[] = values.map((v) => ({ upToHuf: v.upToHuf, priceEur: v.priceEur ?? 0 }));
+      const ok = item.dataset.valid === 'true';
+      const { index, tier } = tierFor(tiers, price);
+      rowsOf(item).forEach((row, i) => row.classList.toggle('active', ok && i === index));
+      const out = document.querySelector<HTMLElement>(`[data-probe-for="${item.dataset.key}"] dd`);
+      if (out) out.textContent = ok ? `${fmtEur(tier.priceEur)}${(item.dataset.unit ?? '€').replace(/^€/, '')}` : 'Javítsa a sávokat';
+    });
+  }
+
+  function refresh() {
+    let valid = true;
+    document.querySelectorAll<HTMLElement>('[data-tier-item]').forEach((item) => (valid = layout(item) && valid));
+    if (save) {
+      save.disabled = !valid;
+      save.title = valid ? '' : 'Javítsa a pirossal jelölt sávokat a mentéshez.';
+    }
+    probeAll();
+  }
+
+  /** „+ Új sáv”: the open tier gets a bound (double the previous one), a new open tier copies its price. */
+  function addTier(item: HTMLElement) {
+    const rows = rowsOf(item);
+    if (rows.length >= maxTiers) return;
+    const last = rows[rows.length - 1];
+    const previous = rows.length > 1 ? moneyOf(boundOf(rows[rows.length - 2])) : null;
+    const template = item.querySelector<HTMLTemplateElement>('[data-row-template]')!;
+    const fresh = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    item.querySelector('[data-rows]')!.append(fresh);
+    initMoneyInputs(fresh);
+    setMoney(priceOf(fresh), moneyOf(priceOf(last)));
+    layout(item);
+    setMoney(boundOf(last), previous ? Math.min(previous * 2, 100_000_000_000) : DEFAULT_FIRST_BOUND);
+    fresh.addEventListener('animationend', () => fresh.classList.remove('tr-in'), { once: true });
+    refresh();
+    form?.dispatchEvent(new Event('input', { bubbles: true }));
+    const bound = boundOf(last);
+    bound.focus();
+    bound.select();
+  }
+
+  /** ×: the tier goes, and its range joins the next tier (which keeps its own price). */
+  function removeTier(item: HTMLElement, row: HTMLElement) {
+    const rows = rowsOf(item);
+    if (rows.indexOf(row) === rows.length - 1) return;
+    const next = rows[rows.indexOf(row) + 1];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    row.classList.add('tr-out');
+    row.querySelectorAll('input').forEach((input) => (input.disabled = true));
+    const done = () => {
+      row.remove();
+      refresh();
+      priceOf(next)?.focus();
+    };
+    if (reduce) done();
+    else setTimeout(done, 150);
+    refresh();
+    form?.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  form?.addEventListener('click', (event) => {
+    const target = event.target as Element;
+    const item = target.closest<HTMLElement>('[data-tier-item]');
+    if (!item) return;
+    if (target.closest('[data-add]')) addTier(item);
+    const remove = target.closest<HTMLElement>('[data-remove]');
+    if (remove) removeTier(item, remove.closest<HTMLElement>('[data-row]')!);
+  });
+
+  // Enter in a bound field adds a tier (instead of submitting the form).
+  form?.addEventListener('keydown', (event) => {
+    const target = event.target as HTMLElement;
+    if (event.key !== 'Enter' || !(target instanceof HTMLInputElement)) return;
+    if (target.matches('[data-bound]')) {
+      event.preventDefault();
+      const item = target.closest<HTMLElement>('[data-tier-item]');
+      const rows = item ? rowsOf(item) : [];
+      if (item && target.closest('[data-row]') === rows[rows.length - 2]) addTier(item);
+    } else if (target.matches('[data-probe]')) event.preventDefault();
+  });
+
+  form?.addEventListener('input', refresh);
+  // The probe is not a setting: typing in it must not mark the form unsaved.
+  probe?.addEventListener('input', (event) => {
+    event.stopPropagation();
+    probeAll();
+  });
+  probe?.addEventListener('change', (event) => event.stopPropagation());
+
+  form?.addEventListener('submit', (event) => {
+    refresh();
+    if (save?.disabled) {
+      event.preventDefault();
+      document.querySelector<HTMLElement>('[data-tier-item][data-valid="false"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+
+  refresh();
+</script>
+
+<style>
+  .tr-probe { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 8px 32px; align-items: start; }
+  .tr-probe .set-sub { margin-bottom: 0; }
+  .tr-probe-in { max-width: 320px; }
+  .tr-probe-out { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin: 14px 0 0; }
+  .tr-probe-out div { display: grid; gap: 4px; padding: 14px 16px; border-radius: var(--r-md); background: var(--paper); }
+  .tr-probe-out dt { font-size: 13.5px; color: var(--ink-quiet); }
+  .tr-probe-out dd { margin: 0; font-family: var(--serif); font-weight: var(--fw-display); font-size: 22px; letter-spacing: var(--ls-heading); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tr-rate { grid-column: 1 / -1; margin: 6px 0 0; font-size: 13px; color: var(--ink-quiet); }
+
+  .tr-item { scroll-margin-top: 90px; }
+  .tr-item:target { box-shadow: var(--shadow-xs), 0 0 0 2px var(--ink); }
+  .tr-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .tr-head .set-sub { margin-bottom: 18px; }
+  .tr-count { flex: none; padding: 5px 12px; border-radius: var(--r-pill); background: var(--paper); font-size: 13px; font-weight: var(--fw-medium); color: var(--ink-quiet); }
+
+  .tr-table { display: grid; gap: 6px; }
+  .tr-cols, .tr-row { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(150px, 1fr) 40px; gap: 6px 14px; align-items: center; }
+  .tr-cols { padding: 0 12px 4px; font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: var(--fw-medium); color: var(--ink-quiet); }
+  .tr-rows { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .tr-row { padding: 10px 12px; border-radius: var(--r-md); transition: background-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out); }
+  .tr-row.active { background: var(--paper); box-shadow: inset 3px 0 0 var(--ink); }
+  .tr-range { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 50px; font-size: var(--fs-small); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tr-from { white-space: nowrap; }
+  .tr-bound { display: flex; align-items: center; gap: 10px; flex: 1 1 220px; min-width: 0; }
+  .tr-bound[hidden] { display: none; }
+  .tr-bound :global(.money) { flex: 1; min-width: 0; max-width: 260px; }
+  .tr-eur { font-size: 13px; color: var(--ink-quiet); white-space: nowrap; }
+  .tr-x { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink-quiet); cursor: pointer; transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out); }
+  .tr-x:hover { background: var(--paper); color: #b3261e; }
+  .tr-x:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+  .tr-x[hidden] { visibility: hidden; display: grid; }
+  .tr-msg { grid-column: 1 / -1; margin: 0; font-size: 13.5px; line-height: 1.5; }
+  .tr-msg:empty { display: none; }
+  .tr-msg[data-tone='error'] { color: #b3261e; }
+  .tr-msg[data-tone='warn'] { color: #8a6408; }
+
+  .tr-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 6px 12px 0; }
+  .tr-add { padding: 9px 16px; border: 1px dashed var(--pt-hair-strong, rgba(16, 42, 67, 0.25)); border-radius: var(--r-pill); background: transparent; font: inherit; font-size: 14px; font-weight: var(--fw-medium); color: var(--ink); cursor: pointer; transition: background-color 0.2s var(--ease-out), border-color 0.2s var(--ease-out); }
+  .tr-add:hover:not(:disabled) { background: var(--paper); border-style: solid; }
+  .tr-add:disabled { opacity: 0.45; cursor: not-allowed; }
+  .tr-note { margin: 0; font-size: 13px; color: var(--ink-quiet); }
+
+  .tr-in { animation: tr-in 150ms var(--ease-out) both; }
+  .tr-out { animation: tr-out 150ms var(--ease-out) both; pointer-events: none; }
+  @keyframes tr-in { from { opacity: 0; transform: translateY(-4px); } }
+  @keyframes tr-out { to { opacity: 0; transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { .tr-in, .tr-out { animation: none; } }
+
+  @media (max-width: 720px) {
+    .tr-probe { grid-template-columns: 1fr; }
+    .tr-cols { display: none; }
+    .tr-row { grid-template-columns: minmax(0, 1fr) 40px; padding: 12px 10px; border-bottom: 1px solid var(--pt-hair); border-radius: 0; }
+    .tr-range { grid-column: 1 / -1; }
+    .tr-price { grid-column: 1; }
+  }
+</style>

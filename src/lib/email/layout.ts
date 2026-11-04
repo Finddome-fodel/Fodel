@@ -37,7 +37,7 @@
  */
 import { SITE_URL } from '~/config/site.mjs';
 import { COMPANY, addressLine } from '~/config/company';
-import { BRAND, type Locale } from '~/i18n/ui';
+import { BRAND, LOCALE_META, type Locale } from '~/i18n/ui';
 
 /** The recipient's language: every email exists in all five. */
 export type EmailLocale = Locale;
@@ -268,6 +268,34 @@ const FOOTER_COPY = {
     why: 'Šį laišką gaunate, nes turite FINDDOME paskyrą arba pas mus įdėjote skelbimą.',
     contact: 'Kontaktai',
   },
+  sr: {
+    why: 'Ovaj imejl dobijate jer imate FINDDOME nalog ili ste kod nas postavili oglas.',
+    contact: 'Kontakt',
+  },
+  uk: {
+    why: 'Ви отримали цей лист, тому що маєте акаунт FINDDOME або розмістили в нас оголошення.',
+    contact: 'Контакти',
+  },
+  tr: {
+    why: 'Bu e-postayı, FINDDOME hesabınız olduğu veya bizde ilan verdiğiniz için alıyorsunuz.',
+    contact: 'İletişim',
+  },
+  he: {
+    why: 'קיבלתם מייל זה כי יש לכם חשבון ב־FINDDOME או שפרסמתם אצלנו מודעה.',
+    contact: 'צור קשר',
+  },
+  ar: {
+    why: 'تتلقى هذه الرسالة لأن لديك حسابًا لدى FINDDOME أو لأنك نشرت إعلانًا لدينا.',
+    contact: 'اتصل بنا',
+  },
+  ru: {
+    why: 'Вы получили это письмо, потому что у вас есть аккаунт FINDDOME или вы разместили у нас объявление.',
+    contact: 'Контакты',
+  },
+  zh: {
+    why: '您收到此邮件，是因为您拥有 FINDDOME 账户或曾在我们这里发布房源。',
+    contact: '联系我们',
+  },
 } as const;
 
 /**
@@ -298,6 +326,13 @@ const VISITOR_WHY: Record<ShellLocale, string> = {
   et: 'Saate selle kirja, sest võtsite meiega ühendust FINDDOME’i veebilehe kaudu.',
   lv: 'Jūs saņemat šo e-pastu, jo sazinājāties ar mums, izmantojot FINDDOME tīmekļa vietni.',
   lt: 'Šį laišką gaunate, nes susisiekėte su mumis per FINDDOME svetainę.',
+  sr: 'Ovaj imejl dobijate jer ste nam se obratili preko sajta FINDDOME.',
+  uk: 'Ви отримали цей лист, тому що зверталися до нас через сайт FINDDOME.',
+  tr: 'Bu e-postayı, FINDDOME web sitesi üzerinden bizimle iletişime geçtiğiniz için alıyorsunuz.',
+  he: 'קיבלתם מייל זה כי פניתם אלינו דרך אתר FINDDOME.',
+  ar: 'تتلقى هذه الرسالة لأنك تواصلت معنا عبر موقع FINDDOME.',
+  ru: 'Вы получили это письмо, потому что обращались к нам через сайт FINDDOME.',
+  zh: '您收到此邮件，是因为您曾通过 FINDDOME 网站联系我们。',
 };
 
 function wordmark(locale: ShellLocale): string {
@@ -331,7 +366,7 @@ export function shell(opts: {
   const mail = locale === 'hu' ? COMPANY.email.hu : COMPANY.email.primary;
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="${locale}">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${LOCALE_META[locale].htmlLang}" dir="${LOCALE_META[locale].dir}">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -349,12 +384,12 @@ export function shell(opts: {
   }
 </style>
 </head>
-<body style="margin:0;padding:0;background-color:${LINEN};-webkit-font-smoothing:antialiased;">
+<body dir="${LOCALE_META[locale].dir}" style="margin:0;padding:0;background-color:${LINEN};-webkit-font-smoothing:antialiased;">
 <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">${esc(preheader)}</div>
 <!-- Word-joiner run: stops clients padding the preview line with the first words of the body. -->
 <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;&#8288;&zwnj;&nbsp;</div>
 
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${LINEN};">
+<table role="presentation" dir="${LOCALE_META[locale].dir}" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${LINEN};">
   <tr>
     <td align="center" style="padding:32px 12px;">
 

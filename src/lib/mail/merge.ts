@@ -45,7 +45,7 @@ export const MERGE_FIELD_LABEL: Record<MergeFieldKey, string> = {
   email: 'Címzett e-mail-címe',
   property_title: 'Ingatlan címe',
   property_url: 'Hirdetés linkje (a sablon nyelvén)',
-  property_price: 'Irányár (EUR)',
+  property_price: 'Ár (EUR)',
   property_location: 'Település, megye',
   property_ref: 'Hirdetés azonosító',
   property_description: 'Ingatlan leírása (rövid kivonat, a sablon nyelvén)',

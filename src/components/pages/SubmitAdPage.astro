@@ -13,10 +13,11 @@
  *
  * The packages stay on the page as information — real catalogue prices from
  * listingCatalog()/packageCard(), the recommended one badged — so nobody has
- * to register to find out what it costs. The €179 tier is still decided
- * server-side from the listing's own forint price (isAboveThreshold()).
+ * to register to find out what it costs. The price tier is still decided
+ * server-side from the listing's own forint price (tierFor() in src/lib/price-tiers.ts).
  */
 import Base from '~/layouts/Base.astro';
+import { extraLabel } from '~/lib/orders';
 import Eyebrow from '~/components/Eyebrow.astro';
 import Button from '~/components/Button.astro';
 import PackageCard from '~/components/PackageCard.astro';
@@ -25,7 +26,10 @@ import RegisterForm from '~/components/forms/RegisterForm.astro';
 import { LOCALE_META, path, localizer, type Locale } from '~/i18n/ui';
 import { getCompany } from '~/lib/runtime-config';
 import { RECOMMENDED_TRANSLATION_LANGUAGES } from '~/config/company';
-import { listingCatalog, packageCard, priceFacts } from '~/lib/listing-packages';
+import { listingCatalog, packageCard, priceFacts, sellingPackages, eurText } from '~/lib/listing-packages';
+import PriceMatrix from '~/components/pages/PriceMatrix.astro';
+import { eurPrice } from '~/lib/format';
+import { fromCents, type PackageKey } from '~/lib/listing-pricing';
 import { alternatesFor } from '~/lib/page';
 import { approvedWording } from '~/lib/approved-text';
 import { eur, eurCents } from '~/lib/format';
@@ -45,13 +49,16 @@ const refundPolicy = refund?.text;
 const refundLang = refund?.lang ?? locale;
 const catalog = listingCatalog(COMPANY.services);
 const fromEur = priceFacts(catalog).from;
+const live = catalog.pricingLive;
+// The cheapest cell of the matrix with its cents when the three packages are on sale; whole euros before.
+const fromText = live ? eurPrice(Math.round(fromEur * 100), locale) : eurText(locale, fromEur);
 
 const R = COMPANY.reach;
 const copies = {
   hu: {
       metaTitle: 'Hirdetés feladása: hirdesse ingatlanát Nyugat-Európában',
       metaDescription:
-        `Adja fel ingatlanhirdetését ${fromEur} €-tól. Jóváhagyás után azonnal megjelenik ${COMPANY.reach.languages} nyelven, ${COMPANY.reach.countries} országban, előrefizetés és kizárólagosság nélkül.`,
+        `Adja fel ingatlanhirdetését ${fromText}-tól. Jóváhagyás után azonnal megjelenik ${COMPANY.reach.languages} nyelven, ${COMPANY.reach.countries} országban, előrefizetés és kizárólagosság nélkül.`,
       eyebrow: 'Hirdetésfeladás',
       title: 'Hirdesse ingatlanát',
       titleEm: 'Nyugat-Európában',
@@ -72,8 +79,6 @@ const copies = {
       extraTranslation: 'Fordítás',
       extraTranslationUnit: 'nyelvenként',
       extraCategoryHighlight: 'Kiemelés a kategóriában',
-      extraHomepageHighlight: 'Kiemelés a főoldalon',
-      extraVideo: 'Videós bemutató',
       perMonth: '/ hó',
       minMonths: (n: number) => `min. ${n} hó`,
       once: 'egyszeri',
@@ -88,7 +93,7 @@ const copies = {
   nl: {
       metaTitle: 'Advertentie plaatsen: uw woning in West-Europa',
       metaDescription:
-        `Plaats uw advertentie vanaf € ${fromEur}. Na goedkeuring verschijnt deze direct in ${COMPANY.reach.languages} talen en ${COMPANY.reach.countries} landen, zonder vooruitbetaling of exclusiviteit.`,
+        `Plaats uw advertentie vanaf ${fromText}. Na goedkeuring verschijnt deze direct in ${COMPANY.reach.languages} talen en ${COMPANY.reach.countries} landen, zonder vooruitbetaling of exclusiviteit.`,
       eyebrow: 'Adverteren',
       title: 'Plaats uw woning',
       titleEm: 'in West-Europa',
@@ -109,8 +114,6 @@ const copies = {
       extraTranslation: 'Vertaling',
       extraTranslationUnit: 'per taal',
       extraCategoryHighlight: 'Uitlichten in de categorie',
-      extraHomepageHighlight: 'Uitlichten op de homepage',
-      extraVideo: 'Video plaatsen',
       perMonth: '/ mnd',
       minMonths: (n: number) => `min. ${n} mnd`,
       once: 'eenmalig',
@@ -124,7 +127,7 @@ const copies = {
     },
   en: {
     metaTitle: 'Place a listing: advertise your property in Western Europe',
-    metaDescription: `Place your property listing from ${eur(fromEur, locale)}. Once approved it appears at once in ${R.languages} languages in ${R.countries} countries, with no upfront payment and no exclusivity.`,
+    metaDescription: `Place your property listing from ${fromText}. Once approved it appears at once in ${R.languages} languages in ${R.countries} countries, with no upfront payment and no exclusivity.`,
     eyebrow: 'Place a listing',
     title: 'Advertise your property',
     titleEm: 'in Western Europe',
@@ -145,8 +148,6 @@ const copies = {
     extraTranslation: 'Translation',
     extraTranslationUnit: 'per language',
     extraCategoryHighlight: 'Highlighting in the category',
-    extraHomepageHighlight: 'Highlighting on the homepage',
-    extraVideo: 'Video placement',
     perMonth: '/ month',
     minMonths: (n: number) => `min. ${n} months`,
     once: 'one-off',
@@ -160,7 +161,7 @@ const copies = {
   },
   de: {
     metaTitle: 'Inserat aufgeben: Ihre Immobilie in Westeuropa',
-    metaDescription: `Geben Sie Ihr Immobilieninserat ab ${eur(fromEur, locale)} auf. Nach der Freigabe erscheint es sofort in ${R.languages} Sprachen in ${R.countries} Ländern, ohne Vorauszahlung und ohne Exklusivität.`,
+    metaDescription: `Geben Sie Ihr Immobilieninserat ab ${fromText} auf. Nach der Freigabe erscheint es sofort in ${R.languages} Sprachen in ${R.countries} Ländern, ohne Vorauszahlung und ohne Exklusivität.`,
     eyebrow: 'Inserat aufgeben',
     title: 'Inserieren Sie Ihre Immobilie',
     titleEm: 'in Westeuropa',
@@ -181,8 +182,6 @@ const copies = {
     extraTranslation: 'Übersetzung',
     extraTranslationUnit: 'pro Sprache',
     extraCategoryHighlight: 'Hervorhebung in der Kategorie',
-    extraHomepageHighlight: 'Hervorhebung auf der Startseite',
-    extraVideo: 'Video einbinden',
     perMonth: '/ Monat',
     minMonths: (n: number) => `mind. ${n} Monate`,
     once: 'einmalig',
@@ -196,7 +195,7 @@ const copies = {
   },
   fr: {
     metaTitle: 'Déposer une annonce\u00a0: votre bien en Europe de l’Ouest',
-    metaDescription: `Déposez votre annonce dès ${eur(fromEur, locale)}. Une fois validée, elle paraît aussitôt en ${R.languages} langues dans ${R.countries} pays, sans paiement d’avance ni exclusivité.`,
+    metaDescription: `Déposez votre annonce dès ${fromText}. Une fois validée, elle paraît aussitôt en ${R.languages} langues dans ${R.countries} pays, sans paiement d’avance ni exclusivité.`,
     eyebrow: 'Déposer une annonce',
     title: 'Annoncez votre bien',
     titleEm: 'en Europe de l’Ouest',
@@ -217,8 +216,6 @@ const copies = {
     extraTranslation: 'Traduction',
     extraTranslationUnit: 'par langue',
     extraCategoryHighlight: 'Mise en avant dans la catégorie',
-    extraHomepageHighlight: 'Mise en avant sur la page d’accueil',
-    extraVideo: 'Mise en ligne d’une vidéo',
     perMonth: '/ mois',
     minMonths: (n: number) => `min. ${n} mois`,
     once: 'unique',
@@ -232,7 +229,7 @@ const copies = {
   },
   es: {
     metaTitle: 'Publicar un anuncio: su inmueble en Europa occidental',
-    metaDescription: `Publique su anuncio desde ${eur(fromEur, locale)}. Una vez aprobado, aparece de inmediato en ${R.languages} idiomas en ${R.countries} países, sin pago por adelantado ni exclusividad.`,
+    metaDescription: `Publique su anuncio desde ${fromText}. Una vez aprobado, aparece de inmediato en ${R.languages} idiomas en ${R.countries} países, sin pago por adelantado ni exclusividad.`,
     eyebrow: 'Publicar un anuncio',
     title: 'Anuncie su inmueble',
     titleEm: 'en Europa occidental',
@@ -253,8 +250,6 @@ const copies = {
     extraTranslation: 'Traducción',
     extraTranslationUnit: 'por idioma',
     extraCategoryHighlight: 'Destacado en la categoría',
-    extraHomepageHighlight: 'Destacado en la página de inicio',
-    extraVideo: 'Publicación de un vídeo',
     perMonth: '/ mes',
     minMonths: (n: number) => `mín. ${n} meses`,
     once: 'pago único',
@@ -268,7 +263,7 @@ const copies = {
   },
   pl: {
     metaTitle: 'Dodaj ogłoszenie: Państwa nieruchomość w Europie Zachodniej',
-    metaDescription: `Ogłoszenie można dodać już od ${eur(fromEur, locale)}. Po zatwierdzeniu od razu ukazuje się w ${nOf('pl', R.languages, 'języku', 'językach')} w ${nOf('pl', R.countries, 'kraju', 'krajach')}, bez przedpłaty i bez wyłączności.`,
+    metaDescription: `Ogłoszenie można dodać już od ${fromText}. Po zatwierdzeniu od razu ukazuje się w ${nOf('pl', R.languages, 'języku', 'językach')} w ${nOf('pl', R.countries, 'kraju', 'krajach')}, bez przedpłaty i bez wyłączności.`,
     eyebrow: 'Dodaj ogłoszenie',
     title: 'Ogłoś swoją nieruchomość',
     titleEm: 'w Europie Zachodniej',
@@ -289,8 +284,6 @@ const copies = {
     extraTranslation: 'Tłumaczenie',
     extraTranslationUnit: 'za język',
     extraCategoryHighlight: 'Wyróżnienie w kategorii',
-    extraHomepageHighlight: 'Wyróżnienie na stronie głównej',
-    extraVideo: 'Zamieszczenie filmu',
     perMonth: '/ miesiąc',
     minMonths: (n: number) => `min. ${nOf('pl', n, 'miesiąc', 'miesiące', 'miesięcy')}`,
     once: 'jednorazowo',
@@ -304,7 +297,7 @@ const copies = {
   },
   ro: {
     metaTitle: 'Publicați un anunț: proprietatea dumneavoastră în Europa de Vest',
-    metaDescription: `Publicați-vă anunțul de la ${eur(fromEur, locale)}. După aprobare, apare imediat în ${nOf('ro', R.languages, 'limbă', 'limbi', 'de limbi')} din ${nOf('ro', R.countries, 'țară', 'țări', 'de țări')}, fără plată în avans și fără exclusivitate.`,
+    metaDescription: `Publicați-vă anunțul de la ${fromText}. După aprobare, apare imediat în ${nOf('ro', R.languages, 'limbă', 'limbi', 'de limbi')} din ${nOf('ro', R.countries, 'țară', 'țări', 'de țări')}, fără plată în avans și fără exclusivitate.`,
     eyebrow: 'Publicați un anunț',
     title: 'Anunțați-vă proprietatea',
     titleEm: 'în Europa de Vest',
@@ -325,8 +318,6 @@ const copies = {
     extraTranslation: 'Traducere',
     extraTranslationUnit: 'per limbă',
     extraCategoryHighlight: 'Evidențiere în categorie',
-    extraHomepageHighlight: 'Evidențiere pe prima pagină',
-    extraVideo: 'Publicarea unui videoclip',
     perMonth: '/ lună',
     minMonths: (n: number) => `min. ${nOf('ro', n, 'lună', 'luni', 'de luni')}`,
     once: 'o singură dată',
@@ -340,7 +331,7 @@ const copies = {
   },
   sk: {
     metaTitle: 'Pridať inzerát: vaša nehnuteľnosť v západnej Európe',
-    metaDescription: `Inzerát pridáte už od ${eur(fromEur, locale)}. Po schválení sa hneď zobrazí v ${nOf('sk', R.languages, 'jazyku', 'jazykoch')} v ${nOf('sk', R.countries, 'krajine', 'krajinách')}, bez platby vopred a bez exkluzivity.`,
+    metaDescription: `Inzerát pridáte už od ${fromText}. Po schválení sa hneď zobrazí v ${nOf('sk', R.languages, 'jazyku', 'jazykoch')} v ${nOf('sk', R.countries, 'krajine', 'krajinách')}, bez platby vopred a bez exkluzivity.`,
     eyebrow: 'Pridať inzerát',
     title: 'Inzerujte svoju nehnuteľnosť',
     titleEm: 'v západnej Európe',
@@ -361,8 +352,6 @@ const copies = {
     extraTranslation: 'Preklad',
     extraTranslationUnit: 'za jazyk',
     extraCategoryHighlight: 'Zvýraznenie v kategórii',
-    extraHomepageHighlight: 'Zvýraznenie na úvodnej stránke',
-    extraVideo: 'Zverejnenie videa',
     perMonth: '/ mesiac',
     minMonths: (n: number) => `min. ${nOf('sk', n, 'mesiac', 'mesiace', 'mesiacov')}`,
     once: 'jednorazovo',
@@ -376,7 +365,7 @@ const copies = {
   },
   it: {
     metaTitle: 'Pubblica un annuncio: promuova il suo immobile in Europa occidentale',
-    metaDescription: `Pubblichi il suo annuncio da ${eur(fromEur, locale)}. Una volta approvato, appare subito in ${R.languages} lingue in ${R.countries} paesi, senza pagamento anticipato e senza esclusiva.`,
+    metaDescription: `Pubblichi il suo annuncio da ${fromText}. Una volta approvato, appare subito in ${R.languages} lingue in ${R.countries} paesi, senza pagamento anticipato e senza esclusiva.`,
     eyebrow: 'Pubblica un annuncio',
     title: 'Promuova il suo immobile',
     titleEm: 'in Europa occidentale',
@@ -397,8 +386,6 @@ const copies = {
     extraTranslation: 'Traduzione',
     extraTranslationUnit: 'per lingua',
     extraCategoryHighlight: 'Messa in evidenza nella categoria',
-    extraHomepageHighlight: 'Messa in evidenza in homepage',
-    extraVideo: 'Inserimento di un video',
     perMonth: '/ mese',
     minMonths: (n: number) => `min. ${n} mesi`,
     once: 'una tantum',
@@ -412,7 +399,7 @@ const copies = {
   },
   pt: {
     metaTitle: 'Publicar um anúncio: anuncie o seu imóvel na Europa Ocidental',
-    metaDescription: `Publique o seu anúncio a partir de ${eur(fromEur, locale)}. Depois de aprovado, aparece de imediato em ${R.languages} idiomas em ${R.countries} países, sem pagamento antecipado e sem exclusividade.`,
+    metaDescription: `Publique o seu anúncio a partir de ${fromText}. Depois de aprovado, aparece de imediato em ${R.languages} idiomas em ${R.countries} países, sem pagamento antecipado e sem exclusividade.`,
     eyebrow: 'Publicar um anúncio',
     title: 'Anuncie o seu imóvel',
     titleEm: 'na Europa Ocidental',
@@ -433,8 +420,6 @@ const copies = {
     extraTranslation: 'Tradução',
     extraTranslationUnit: 'por idioma',
     extraCategoryHighlight: 'Destaque na categoria',
-    extraHomepageHighlight: 'Destaque na página inicial',
-    extraVideo: 'Inclusão de vídeo',
     perMonth: '/ mês',
     minMonths: (n: number) => `mín. ${n} meses`,
     once: 'pagamento único',
@@ -448,7 +433,7 @@ const copies = {
   },
   el: {
     metaTitle: 'Δημοσίευση αγγελίας: διαφημίστε το ακίνητό σας στη Δυτική Ευρώπη',
-    metaDescription: `Δημοσιεύστε την αγγελία σας από ${eur(fromEur, locale)}. Μόλις εγκριθεί, εμφανίζεται αμέσως σε ${R.languages} γλώσσες σε ${R.countries} χώρες, χωρίς προκαταβολή και χωρίς αποκλειστικότητα.`,
+    metaDescription: `Δημοσιεύστε την αγγελία σας από ${fromText}. Μόλις εγκριθεί, εμφανίζεται αμέσως σε ${R.languages} γλώσσες σε ${R.countries} χώρες, χωρίς προκαταβολή και χωρίς αποκλειστικότητα.`,
     eyebrow: 'Δημοσίευση αγγελίας',
     title: 'Διαφημίστε το ακίνητό σας',
     titleEm: 'στη Δυτική Ευρώπη',
@@ -469,8 +454,6 @@ const copies = {
     extraTranslation: 'Μετάφραση',
     extraTranslationUnit: 'ανά γλώσσα',
     extraCategoryHighlight: 'Προβολή στην κατηγορία',
-    extraHomepageHighlight: 'Προβολή στην αρχική σελίδα',
-    extraVideo: 'Ανάρτηση βίντεο',
     perMonth: '/ μήνα',
     minMonths: (n: number) => `ελάχ. ${n} μήνες`,
     once: 'εφάπαξ',
@@ -484,7 +467,7 @@ const copies = {
   },
   cs: {
     metaTitle: 'Podat inzerát: nabídněte svou nemovitost v západní Evropě',
-    metaDescription: `Inzerát podáte již od ${eur(fromEur, locale)}. Po schválení se hned zobrazí v ${nOf('cs', R.languages, 'jazyce', 'jazycích')} v ${nOf('cs', R.countries, 'zemi', 'zemích')}, bez platby předem a bez výhradního zastoupení.`,
+    metaDescription: `Inzerát podáte již od ${fromText}. Po schválení se hned zobrazí v ${nOf('cs', R.languages, 'jazyce', 'jazycích')} v ${nOf('cs', R.countries, 'zemi', 'zemích')}, bez platby předem a bez výhradního zastoupení.`,
     eyebrow: 'Podat inzerát',
     title: 'Nabídněte svou nemovitost',
     titleEm: 'v západní Evropě',
@@ -505,8 +488,6 @@ const copies = {
     extraTranslation: 'Překlad',
     extraTranslationUnit: 'za jazyk',
     extraCategoryHighlight: 'Zvýraznění v kategorii',
-    extraHomepageHighlight: 'Zvýraznění na úvodní stránce',
-    extraVideo: 'Umístění videa',
     perMonth: '/ měsíc',
     minMonths: (n: number) => `min. ${nOf('cs', n, 'měsíc', 'měsíce', 'měsíců')}`,
     once: 'jednorázově',
@@ -520,7 +501,7 @@ const copies = {
   },
   sl: {
     metaTitle: 'Oddajte oglas: oglašujte svojo nepremičnino v zahodni Evropi',
-    metaDescription: `Oglas oddate že od ${eur(fromEur, locale)}. Po odobritvi se takoj prikaže v ${nOf('sl', R.languages, 'jeziku', 'jezikih', 'jezikih', 'jezikih')} v ${nOf('sl', R.countries, 'državi', 'državah', 'državah', 'državah')}, brez predplačila in brez izključnosti.`,
+    metaDescription: `Oglas oddate že od ${fromText}. Po odobritvi se takoj prikaže v ${nOf('sl', R.languages, 'jeziku', 'jezikih', 'jezikih', 'jezikih')} v ${nOf('sl', R.countries, 'državi', 'državah', 'državah', 'državah')}, brez predplačila in brez izključnosti.`,
     eyebrow: 'Oddajte oglas',
     title: 'Oglašujte svojo nepremičnino',
     titleEm: 'v zahodni Evropi',
@@ -541,8 +522,6 @@ const copies = {
     extraTranslation: 'Prevod',
     extraTranslationUnit: 'na jezik',
     extraCategoryHighlight: 'Izpostavitev v kategoriji',
-    extraHomepageHighlight: 'Izpostavitev na domači strani',
-    extraVideo: 'Objava videa',
     perMonth: '/ mesec',
     minMonths: (n: number) => `najmanj ${nOf('sl', n, 'mesec', 'meseci', 'mesecev', 'meseca')}`,
     once: 'enkratno',
@@ -556,7 +535,7 @@ const copies = {
   },
   sv: {
     metaTitle: 'Lägg in en annons: annonsera din fastighet i Västeuropa',
-    metaDescription: `Lägg in din fastighetsannons från ${eur(fromEur, locale)}. När den har godkänts syns den direkt på ${R.languages} språk i ${R.countries} länder, utan förskottsbetalning och utan ensamrätt.`,
+    metaDescription: `Lägg in din fastighetsannons från ${fromText}. När den har godkänts syns den direkt på ${R.languages} språk i ${R.countries} länder, utan förskottsbetalning och utan ensamrätt.`,
     eyebrow: 'Lägg in en annons',
     title: 'Annonsera din fastighet',
     titleEm: 'i Västeuropa',
@@ -577,8 +556,6 @@ const copies = {
     extraTranslation: 'Översättning',
     extraTranslationUnit: 'per språk',
     extraCategoryHighlight: 'Framhävning i kategorin',
-    extraHomepageHighlight: 'Framhävning på startsidan',
-    extraVideo: 'Placering av video',
     perMonth: '/ månad',
     minMonths: (n: number) => `minst ${n} månader`,
     once: 'engångsavgift',
@@ -592,7 +569,7 @@ const copies = {
   },
   da: {
     metaTitle: 'Opret en annonce: annoncér din ejendom i Vesteuropa',
-    metaDescription: `Opret din ejendomsannonce fra ${eur(fromEur, locale)}. Når den er godkendt, vises den straks på ${R.languages} sprog i ${R.countries} lande – uden forudbetaling og uden eneret.`,
+    metaDescription: `Opret din ejendomsannonce fra ${fromText}. Når den er godkendt, vises den straks på ${R.languages} sprog i ${R.countries} lande – uden forudbetaling og uden eneret.`,
     eyebrow: 'Opret en annonce',
     title: 'Annoncér din ejendom',
     titleEm: 'i Vesteuropa',
@@ -613,8 +590,6 @@ const copies = {
     extraTranslation: 'Oversættelse',
     extraTranslationUnit: 'pr. sprog',
     extraCategoryHighlight: 'Fremhævning i kategorien',
-    extraHomepageHighlight: 'Fremhævning på forsiden',
-    extraVideo: 'Indsættelse af video',
     perMonth: '/ måned',
     minMonths: (n: number) => `min. ${n} måneder`,
     once: 'engangsbeløb',
@@ -628,7 +603,7 @@ const copies = {
   },
   no: {
     metaTitle: 'Legg inn en annonse: annonser eiendommen din i Vest-Europa',
-    metaDescription: `Legg inn eiendomsannonsen din fra ${eur(fromEur, locale)}. Når den er godkjent, vises den med en gang på ${R.languages} språk i ${R.countries} land, uten forskuddsbetaling og uten enerett.`,
+    metaDescription: `Legg inn eiendomsannonsen din fra ${fromText}. Når den er godkjent, vises den med en gang på ${R.languages} språk i ${R.countries} land, uten forskuddsbetaling og uten enerett.`,
     eyebrow: 'Legg inn en annonse',
     title: 'Annonser eiendommen din',
     titleEm: 'i Vest-Europa',
@@ -649,8 +624,6 @@ const copies = {
     extraTranslation: 'Oversettelse',
     extraTranslationUnit: 'per språk',
     extraCategoryHighlight: 'Fremheving i kategorien',
-    extraHomepageHighlight: 'Fremheving på forsiden',
-    extraVideo: 'Innlegging av video',
     perMonth: '/ måned',
     minMonths: (n: number) => `min. ${n} måneder`,
     once: 'engangsbeløp',
@@ -664,7 +637,7 @@ const copies = {
   },
   fi: {
     metaTitle: 'Jätä ilmoitus: ilmoita kiinteistösi Länsi-Euroopassa',
-    metaDescription: `Jätä kiinteistöilmoitus alkaen ${eur(fromEur, locale)}. Hyväksynnän jälkeen se näkyy heti ${R.languages} kielellä ${R.countries} maassa ilman ennakkomaksua ja ilman yksinoikeutta.`,
+    metaDescription: `Jätä kiinteistöilmoitus alkaen ${fromText}. Hyväksynnän jälkeen se näkyy heti ${R.languages} kielellä ${R.countries} maassa ilman ennakkomaksua ja ilman yksinoikeutta.`,
     eyebrow: 'Jätä ilmoitus',
     title: 'Ilmoita kiinteistösi',
     titleEm: 'Länsi-Euroopassa',
@@ -685,8 +658,6 @@ const copies = {
     extraTranslation: 'Käännös',
     extraTranslationUnit: 'kieltä kohden',
     extraCategoryHighlight: 'Korostus kategoriassa',
-    extraHomepageHighlight: 'Korostus etusivulla',
-    extraVideo: 'Videon lisääminen',
     perMonth: '/ kk',
     minMonths: (n: number) => `väh. ${nOf('fi', n, 'kuukausi', 'kuukautta')}`,
     once: 'kertamaksu',
@@ -700,7 +671,7 @@ const copies = {
   },
   et: {
     metaTitle: 'Lisage kuulutus: reklaamige oma kinnisvara Lääne-Euroopas',
-    metaDescription: `Lisage oma kinnisvarakuulutus alates ${eur(fromEur, locale)}. Pärast heakskiitmist ilmub see kohe ${R.languages} keeles ${R.countries} riigis, ilma ettemaksu ja ainuõiguseta.`,
+    metaDescription: `Lisage oma kinnisvarakuulutus alates ${fromText}. Pärast heakskiitmist ilmub see kohe ${R.languages} keeles ${R.countries} riigis, ilma ettemaksu ja ainuõiguseta.`,
     eyebrow: 'Lisage kuulutus',
     title: 'Reklaamige oma kinnisvara',
     titleEm: 'Lääne-Euroopas',
@@ -721,8 +692,6 @@ const copies = {
     extraTranslation: 'Tõlge',
     extraTranslationUnit: 'keele kohta',
     extraCategoryHighlight: 'Esiletõstmine kategoorias',
-    extraHomepageHighlight: 'Esiletõstmine avalehel',
-    extraVideo: 'Video lisamine',
     perMonth: '/ kuu',
     minMonths: (n: number) => `vähemalt ${nOf('et', n, 'kuu', 'kuud')}`,
     once: 'ühekordne',
@@ -736,7 +705,7 @@ const copies = {
   },
   lv: {
     metaTitle: 'Ievietojiet sludinājumu: reklamējiet savu īpašumu Rietumeiropā',
-    metaDescription: `Ievietojiet sava īpašuma sludinājumu no ${eur(fromEur, locale)}. Pēc apstiprināšanas tas uzreiz parādās ${nOf('lv', R.languages, 'valodā', 'valodās')} ${nOf('lv', R.countries, 'valstī', 'valstīs')} – bez priekšapmaksas un bez ekskluzivitātes.`,
+    metaDescription: `Ievietojiet sava īpašuma sludinājumu no ${fromText}. Pēc apstiprināšanas tas uzreiz parādās ${nOf('lv', R.languages, 'valodā', 'valodās')} ${nOf('lv', R.countries, 'valstī', 'valstīs')} – bez priekšapmaksas un bez ekskluzivitātes.`,
     eyebrow: 'Ievietot sludinājumu',
     title: 'Reklamējiet savu īpašumu',
     titleEm: 'Rietumeiropā',
@@ -757,8 +726,6 @@ const copies = {
     extraTranslation: 'Tulkojums',
     extraTranslationUnit: 'par valodu',
     extraCategoryHighlight: 'Izcelšana kategorijā',
-    extraHomepageHighlight: 'Izcelšana sākumlapā',
-    extraVideo: 'Video ievietošana',
     perMonth: '/ mēnesī',
     minMonths: (n: number) => `vismaz ${nOf('lv', n, 'mēnesis', 'mēneši', 'mēnešu')}`,
     once: 'vienreizēji',
@@ -772,7 +739,7 @@ const copies = {
   },
   lt: {
     metaTitle: 'Įdėkite skelbimą: reklamuokite savo turtą Vakarų Europoje',
-    metaDescription: `Savo turto skelbimą įdėkite nuo ${eur(fromEur, locale)}. Patvirtintas jis iš karto paskelbiamas ${nOf('lt', R.languages, 'kalba', 'kalbomis', 'kalbomis')} ${nOf('lt', R.countries, 'šalyje', 'šalyse', 'šalyse')} – be išankstinio mokėjimo ir be išimtinių teisių.`,
+    metaDescription: `Savo turto skelbimą įdėkite nuo ${fromText}. Patvirtintas jis iš karto paskelbiamas ${nOf('lt', R.languages, 'kalba', 'kalbomis', 'kalbomis')} ${nOf('lt', R.countries, 'šalyje', 'šalyse', 'šalyse')} – be išankstinio mokėjimo ir be išimtinių teisių.`,
     eyebrow: 'Įdėti skelbimą',
     title: 'Reklamuokite savo turtą',
     titleEm: 'Vakarų Europoje',
@@ -793,8 +760,6 @@ const copies = {
     extraTranslation: 'Vertimas',
     extraTranslationUnit: 'už kalbą',
     extraCategoryHighlight: 'Išskyrimas kategorijoje',
-    extraHomepageHighlight: 'Išskyrimas pagrindiniame puslapyje',
-    extraVideo: 'Vaizdo įrašo įdėjimas',
     perMonth: '/ mėn.',
     minMonths: (n: number) => `ne trumpiau kaip ${nOf('lt', n, 'mėnesį', 'mėnesius', 'mėnesių')}`,
     once: 'vienkartinis',
@@ -806,14 +771,252 @@ const copies = {
     bankHead: 'Mūsų banko sąskaitos',
     bankNote: 'Patvirtintas skelbimas iš karto paskelbiamas; tada pervedate sumą į vieną iš šių sąskaitų arba sumokate kortele savo paskyroje.',
   },
+  sr: {
+    metaTitle: 'Postavite oglas: oglasite svoju nekretninu u Zapadnoj Evropi',
+    metaDescription: `Postavite oglas za svoju nekretninu već od ${fromText}. Nakon odobrenja odmah se pojavljuje na ${R.languages} jezika u ${R.countries} zemalja, bez plaćanja unapred i bez ekskluzivnosti.`,
+    eyebrow: 'Postavite oglas',
+    title: 'Oglasite svoju nekretninu',
+    titleEm: 'u Zapadnoj Evropi',
+    body: 'Registrujte se uz nekoliko podataka. Dobićete imejl sa linkom za podešavanje lozinke, a zatim oglas korak po korak sastavljate u svom nalogu, zajedno sa fotografijama. Unapred ne plaćate ništa: pregledamo oglas i objavljujemo ga čim bude odobren.',
+    processHead: 'Postupak',
+    steps: [
+      { n: '01', t: 'Registracija', b: 'Unesite ime, imejl adresu i broj telefona. To je sve što vam je potrebno za početak.' },
+      { n: '02', t: 'Imejl i lozinka', b: 'Šaljemo vam link imejlom. Kliknite na njega da podesite lozinku.' },
+      { n: '03', t: 'Sastavljanje oglasa', b: 'Korak po korak: paket, podaci o nekretnini, opis, fotografije. Možete stati u bilo kom trenutku i nastaviti kasnije.' },
+      { n: '04', t: 'Provera', b: 'Član našeg tima pregleda oglas i po potrebi traži ispravku.' },
+      { n: '05', t: 'Objavljivanje', b: `Odobreni oglas odmah postaje vidljiv, na ${R.languages} jezika u ${R.countries} zemalja. Za odbijeni oglas nikada ne plaćate.` },
+      { n: '06', t: 'Plaćanje', b: 'Zatim plaćate karticom ili bankovnim prenosom; plaćanje ne odlaže objavljivanje.' },
+    ],
+    packagesHead: 'Paketi i cene',
+    packagesNote: 'Paket i dodatke birate nakon registracije, kada sastavljate oglas.',
+    recommended: 'Preporučeno',
+    extrasHead: 'Dodaci',
+    extraTranslation: 'Prevod',
+    extraTranslationUnit: 'po jeziku',
+    extraCategoryHighlight: 'Isticanje u kategoriji',
+    perMonth: '/ mes.',
+    minMonths: (n: number) => `najmanje ${n} mes.`,
+    once: 'jednokratno',
+    formHead: 'Registracija',
+    formNote: 'Tri podatka i možete da počnete. Ako zapnete, pozovite nas; rado ćemo pomoći.',
+    already: 'Već se oglašavate kod nas?',
+    alreadyLink: 'Prijavite se na portal za oglašivače',
+    alreadyTail: ', gde možete i da započnete novi oglas.',
+    bankHead: 'Naši bankovni računi',
+    bankNote: 'Nakon odobrenja oglas odmah postaje vidljiv; zatim iznos uplaćujete na jedan od ovih računa ili plaćate karticom u svom nalogu.',
+  },
+  uk: {
+    metaTitle: 'Розмістити оголошення: рекламуйте свою нерухомість у Західній Європі',
+    metaDescription: `Розмістіть оголошення про свою нерухомість від ${fromText}. Після схвалення воно одразу з’являється ${R.languages} мовами в ${R.countries} країнах, без передоплати й без ексклюзивного договору.`,
+    eyebrow: 'Розмістити оголошення',
+    title: 'Рекламуйте свою нерухомість',
+    titleEm: 'у Західній Європі',
+    body: 'Зареєструйтеся, указавши кілька даних. Ви отримаєте лист із посиланням для встановлення пароля, а потім крок за кроком складете оголошення у своєму кабінеті, разом із фото. Наперед ви нічого не платите: ми перевіряємо оголошення й публікуємо його одразу після схвалення.',
+    processHead: 'Як це працює',
+    steps: [
+      { n: '01', t: 'Реєстрація', b: 'Ви вказуєте ім’я, електронну пошту й номер телефону. Це все, що потрібно для початку.' },
+      { n: '02', t: 'Електронна пошта й пароль', b: 'Ми надсилаємо вам посилання листом. Перейдіть за ним, щоб установити пароль.' },
+      { n: '03', t: 'Складання оголошення', b: 'Крок за кроком: пакет, дані про нерухомість, опис, фото. Ви можете зупинитися будь-коли й продовжити пізніше.' },
+      { n: '04', t: 'Перевірка', b: 'Співробітник нашої команди перевіряє оголошення й за потреби просить внести виправлення.' },
+      { n: '05', t: 'Публікація', b: `Схвалене оголошення одразу з’являється на сайті, ${R.languages} мовами в ${R.countries} країнах. За відхилене оголошення ви ніколи не платите.` },
+      { n: '06', t: 'Оплата', b: 'Потім ви оплачуєте карткою або банківським переказом; оплата не затримує публікацію.' },
+    ],
+    packagesHead: 'Пакети й ціни',
+    packagesNote: 'Пакет і додаткові послуги ви обираєте після реєстрації, коли складаєте оголошення.',
+    recommended: 'Рекомендовано',
+    extrasHead: 'Додаткові послуги',
+    extraTranslation: 'Переклад',
+    extraTranslationUnit: 'за мову',
+    extraCategoryHighlight: 'Виділення в категорії',
+    perMonth: '/ міс.',
+    minMonths: (n: number) => `мін. ${n} міс.`,
+    once: 'одноразово',
+    formHead: 'Реєстрація',
+    formNote: 'Три поля — і можна починати. Якщо щось не виходить, зателефонуйте нам; ми з радістю допоможемо.',
+    already: 'Ви вже розміщуєте оголошення в нас?',
+    alreadyLink: 'Увійдіть на портал рекламодавців',
+    alreadyTail: ', де можна також створити нове оголошення.',
+    bankHead: 'Наші банківські рахунки',
+    bankNote: 'Після схвалення оголошення одразу з’являється на сайті; потім ви переказуєте суму на один із цих рахунків або оплачуєте карткою у своєму кабінеті.',
+  },
+  tr: {
+    metaTitle: 'İlan verin: mülkünüzü Batı Avrupa’da tanıtın',
+    metaDescription: `Mülkünüz için ilan verin, başlangıç fiyatı: ${fromText}. Onaylandıktan sonra ${R.countries} ülkede ${R.languages} dilde hemen yayına girer; peşin ödeme ve münhasırlık yoktur.`,
+    eyebrow: 'İlan verin',
+    title: 'Mülkünüzü tanıtın',
+    titleEm: 'Batı Avrupa’da',
+    body: 'Birkaç bilgiyle kaydolun. Şifrenizi belirlemeniz için bağlantı içeren bir e-posta alırsınız; ardından ilanınızı, fotoğraflar dâhil, kendi hesabınızda adım adım hazırlarsınız. Peşin hiçbir şey ödemezsiniz: ilanı inceler ve onaylanır onaylanmaz yayınlarız.',
+    processHead: 'Süreç',
+    steps: [
+      { n: '01', t: 'Kayıt', b: 'Adınızı, e-posta adresinizi ve telefon numaranızı girersiniz. Başlamak için gereken bu kadar.' },
+      { n: '02', t: 'E-posta ve şifre', b: 'Size e-postayla bir bağlantı göndeririz. Şifrenizi belirlemek için bağlantıya tıklayın.' },
+      { n: '03', t: 'İlanı hazırlama', b: 'Adım adım: paket, mülk bilgileri, açıklama, fotoğraflar. İstediğiniz an durup daha sonra devam edebilirsiniz.' },
+      { n: '04', t: 'İnceleme', b: 'Ekibimizden biri ilanı inceler ve gerekirse düzeltme ister.' },
+      { n: '05', t: 'Yayın', b: `Onaylanan ilan, ${R.countries} ülkede ${R.languages} dilde hemen yayına girer. Reddedilen bir ilan için asla ödeme yapmazsınız.` },
+      { n: '06', t: 'Ödeme', b: 'Ardından kartla veya banka havalesiyle ödersiniz; ödeme yayını geciktirmez.' },
+    ],
+    packagesHead: 'Paketler ve fiyatlar',
+    packagesNote: 'Paketi ve ek hizmetleri kaydolduktan sonra, ilanınızı hazırlarken seçersiniz.',
+    recommended: 'Önerilen',
+    extrasHead: 'Ek hizmetler',
+    extraTranslation: 'Çeviri',
+    extraTranslationUnit: 'dil başına',
+    extraCategoryHighlight: 'Kategoride öne çıkarma',
+    perMonth: '/ ay',
+    minMonths: (n: number) => `en az ${n} ay`,
+    once: 'tek seferlik',
+    formHead: 'Kayıt',
+    formNote: 'Üç bilgiyle başlayabilirsiniz. Takılırsanız bizi arayın; seve seve yardımcı oluruz.',
+    already: 'Zaten bizimle ilan mı veriyorsunuz?',
+    alreadyLink: 'İlan veren portalına giriş yapın',
+    alreadyTail: '; orada yeni bir ilan da başlatabilirsiniz.',
+    bankHead: 'Banka hesaplarımız',
+    bankNote: 'Onaylandıktan sonra ilanınız hemen yayına girer; ardından tutarı bu hesaplardan birine havale eder veya kendi hesabınızda kartla ödersiniz.',
+  },
+  he: {
+    metaTitle: 'פרסום מודעה: פרסמו את הנכס שלכם במערב אירופה',
+    metaDescription: `פרסמו מודעה לנכס שלכם החל מ־${fromText}. לאחר האישור היא עולה מיד ב־${R.languages} שפות ב־${R.countries} מדינות, ללא תשלום מראש וללא בלעדיות.`,
+    eyebrow: 'פרסום מודעה',
+    title: 'פרסמו את הנכס שלכם',
+    titleEm: 'במערב אירופה',
+    body: 'הירשמו עם כמה פרטים. תקבלו מייל עם קישור להגדרת סיסמה, ולאחר מכן תרכיבו את המודעה צעד אחר צעד באזור האישי שלכם, כולל תמונות. אין לשלם דבר מראש: אנחנו בודקים את המודעה ומפרסמים אותה ברגע שהיא מאושרת.',
+    processHead: 'התהליך',
+    steps: [
+      { n: '01', t: 'הרשמה', b: 'מזינים שם, כתובת מייל ומספר טלפון. זה כל מה שצריך כדי להתחיל.' },
+      { n: '02', t: 'מייל וסיסמה', b: 'אנחנו שולחים לכם קישור במייל. לחצו עליו כדי להגדיר סיסמה.' },
+      { n: '03', t: 'הרכבת המודעה', b: 'צעד אחר צעד: חבילה, פרטי הנכס, תיאור, תמונות. אפשר לעצור בכל רגע ולהמשיך מאוחר יותר.' },
+      { n: '04', t: 'בדיקה', b: 'אחד מאנשי הצוות שלנו בודק את המודעה ומבקש תיקון במידת הצורך.' },
+      { n: '05', t: 'פרסום', b: `מודעה שאושרה עולה לאוויר מיד, ב־${R.languages} שפות ב־${R.countries} מדינות. על מודעה שנדחתה לעולם לא משלמים.` },
+      { n: '06', t: 'תשלום', b: 'לאחר מכן משלמים בכרטיס אשראי או בהעברה בנקאית; התשלום אינו מעכב את הפרסום.' },
+    ],
+    packagesHead: 'חבילות ומחירים',
+    packagesNote: 'את החבילה והתוספות בוחרים אחרי ההרשמה, בזמן הרכבת המודעה.',
+    recommended: 'מומלץ',
+    extrasHead: 'תוספות',
+    extraTranslation: 'תרגום',
+    extraTranslationUnit: 'לשפה',
+    extraCategoryHighlight: 'הבלטה בקטגוריה',
+    perMonth: '/ חודש',
+    minMonths: (n: number) => `לפחות ${n} חודשים`,
+    once: 'חד־פעמי',
+    formHead: 'הרשמה',
+    formNote: 'שלושה פרטים ואפשר להתחיל. אם נתקעתם, התקשרו אלינו; נשמח לעזור.',
+    already: 'כבר מפרסמים אצלנו?',
+    alreadyLink: 'היכנסו לפורטל המפרסמים',
+    alreadyTail: ', שם אפשר גם להתחיל מודעה חדשה.',
+    bankHead: 'חשבונות הבנק שלנו',
+    bankNote: 'לאחר האישור המודעה שלכם עולה לאוויר מיד; לאחר מכן מעבירים את הסכום לאחד מהחשבונות האלה או משלמים בכרטיס אשראי באזור האישי.',
+  },
+  ar: {
+    metaTitle: 'أضف إعلانًا: اعرض عقارك في أوروبا الغربية',
+    metaDescription: `أضف إعلان عقارك ابتداءً من ${fromText}. بعد الموافقة يظهر فورًا بـ${R.languages} لغات في ${R.countries} دول، دون دفع مسبق ودون حصرية.`,
+    eyebrow: 'أضف إعلانًا',
+    title: 'اعرض عقارك',
+    titleEm: 'في أوروبا الغربية',
+    body: 'سجّل ببضع بيانات. ستتلقى بريدًا إلكترونيًا يتضمن رابطًا لتعيين كلمة المرور، ثم تُعدّ إعلانك خطوة بخطوة في حسابك، مع الصور. لا تدفع شيئًا مسبقًا: نراجع الإعلان وننشره فور الموافقة عليه.',
+    processHead: 'خطوات العمل',
+    steps: [
+      { n: '01', t: 'التسجيل', b: 'تُدخل اسمك وبريدك الإلكتروني ورقم هاتفك. هذا كل ما تحتاجه للبدء.' },
+      { n: '02', t: 'البريد وكلمة المرور', b: 'نرسل إليك رابطًا بالبريد الإلكتروني. انقر عليه لتعيين كلمة المرور.' },
+      { n: '03', t: 'إعداد الإعلان', b: 'خطوة بخطوة: الباقة وبيانات العقار والوصف والصور. يمكنك التوقف في أي وقت والمتابعة لاحقًا.' },
+      { n: '04', t: 'المراجعة', b: 'يراجع أحد أعضاء فريقنا الإعلان ويطلب تصحيحه عند الحاجة.' },
+      { n: '05', t: 'النشر', b: `يُنشر الإعلان المعتمد فورًا، بـ${R.languages} لغات في ${R.countries} دول. ولا تدفع أبدًا مقابل إعلان مرفوض.` },
+      { n: '06', t: 'الدفع', b: 'بعد ذلك تدفع بالبطاقة أو بالتحويل المصرفي؛ ولا يؤخر الدفع النشر.' },
+    ],
+    packagesHead: 'الباقات والأسعار',
+    packagesNote: 'تختار الباقة والإضافات بعد التسجيل، أثناء إعداد إعلانك.',
+    recommended: 'موصى به',
+    extrasHead: 'الإضافات',
+    extraTranslation: 'الترجمة',
+    extraTranslationUnit: 'لكل لغة',
+    extraCategoryHighlight: 'الإبراز ضمن الفئة',
+    perMonth: '/ شهر',
+    minMonths: (n: number) => `${n} أشهر على الأقل`,
+    once: 'مرة واحدة',
+    formHead: 'التسجيل',
+    formNote: 'ثلاث بيانات فقط وتبدأ. إذا واجهت صعوبة فاتصل بنا؛ يسعدنا مساعدتك.',
+    already: 'هل تعلن لدينا بالفعل؟',
+    alreadyLink: 'سجّل الدخول إلى بوابة المعلنين',
+    alreadyTail: '، حيث يمكنك أيضًا بدء إعلان جديد.',
+    bankHead: 'حساباتنا المصرفية',
+    bankNote: 'بعد الموافقة يُنشر إعلانك فورًا؛ ثم تحوّل المبلغ إلى أحد هذه الحسابات أو تدفع بالبطاقة من حسابك.',
+  },
+  ru: {
+    metaTitle: 'Разместить объявление: рекламируйте свою недвижимость в Западной Европе',
+    metaDescription: `Разместите объявление о своей недвижимости от ${fromText}. После одобрения оно сразу появляется на ${R.languages} языках в ${R.countries} странах, без предоплаты и без эксклюзивного договора.`,
+    eyebrow: 'Разместить объявление',
+    title: 'Рекламируйте свою недвижимость',
+    titleEm: 'в Западной Европе',
+    body: 'Зарегистрируйтесь, указав несколько данных. Вы получите письмо со ссылкой для установки пароля, а затем шаг за шагом составите объявление в личном кабинете, вместе с фотографиями. Заранее вы ничего не платите: мы проверяем объявление и публикуем его сразу после одобрения.',
+    processHead: 'Как это работает',
+    steps: [
+      { n: '01', t: 'Регистрация', b: 'Вы указываете имя, электронную почту и номер телефона. Это всё, что нужно для начала.' },
+      { n: '02', t: 'Электронная почта и пароль', b: 'Мы отправляем вам ссылку по почте. Перейдите по ней, чтобы установить пароль.' },
+      { n: '03', t: 'Составление объявления', b: 'Шаг за шагом: пакет, данные о недвижимости, описание, фотографии. Можно остановиться в любой момент и продолжить позже.' },
+      { n: '04', t: 'Проверка', b: 'Сотрудник нашей команды проверяет объявление и при необходимости просит внести исправления.' },
+      { n: '05', t: 'Публикация', b: `Одобренное объявление сразу появляется на сайте, на ${R.languages} языках в ${R.countries} странах. За отклонённое объявление вы никогда не платите.` },
+      { n: '06', t: 'Оплата', b: 'Затем вы оплачиваете картой или банковским переводом; оплата не задерживает публикацию.' },
+    ],
+    packagesHead: 'Пакеты и цены',
+    packagesNote: 'Пакет и дополнительные услуги вы выбираете после регистрации, когда составляете объявление.',
+    recommended: 'Рекомендуем',
+    extrasHead: 'Дополнительные услуги',
+    extraTranslation: 'Перевод',
+    extraTranslationUnit: 'за язык',
+    extraCategoryHighlight: 'Выделение в категории',
+    perMonth: '/ мес.',
+    minMonths: (n: number) => `мин. ${n} мес.`,
+    once: 'единоразово',
+    formHead: 'Регистрация',
+    formNote: 'Три поля — и можно начинать. Если что-то не получается, позвоните нам; мы с радостью поможем.',
+    already: 'Вы уже размещаете объявления у нас?',
+    alreadyLink: 'Войдите на портал рекламодателей',
+    alreadyTail: ', где можно также создать новое объявление.',
+    bankHead: 'Наши банковские счета',
+    bankNote: 'После одобрения объявление сразу появляется на сайте; затем вы переводите сумму на один из этих счетов или оплачиваете картой в личном кабинете.',
+  },
+  zh: {
+    metaTitle: '发布房源：在西欧推广您的房产',
+    metaDescription: `发布房源 ${fromText} 起。审核通过后即以 ${R.languages} 种语言在 ${R.countries} 个国家上线，无需预付，也无独家代理要求。`,
+    eyebrow: '发布房源',
+    title: '在西欧推广',
+    titleEm: '您的房产',
+    body: '只需填写几项信息即可注册。您会收到一封包含设置密码链接的电子邮件，之后可在个人账户中逐步完成房源信息（包括照片）。无需预付任何费用：我们审核房源，审核通过后立即发布。',
+    processHead: '流程',
+    steps: [
+      { n: '01', t: '注册', b: '填写姓名、电子邮箱和电话号码。只需这些即可开始。' },
+      { n: '02', t: '邮件与密码', b: '我们会通过电子邮件发送链接。点击链接设置密码。' },
+      { n: '03', t: '填写房源信息', b: '逐步完成：套餐、房产信息、描述、照片。您可以随时暂停，稍后继续。' },
+      { n: '04', t: '审核', b: '我们的团队成员会审核房源，必要时请您修改。' },
+      { n: '05', t: '发布', b: `审核通过的房源立即上线，以 ${R.languages} 种语言覆盖 ${R.countries} 个国家。被拒绝的房源永远无需付费。` },
+      { n: '06', t: '付款', b: '之后您可通过银行卡或银行转账付款；付款不会影响发布。' },
+    ],
+    packagesHead: '套餐与价格',
+    packagesNote: '注册后，在填写房源信息时选择套餐和附加服务。',
+    recommended: '推荐',
+    extrasHead: '附加服务',
+    extraTranslation: '翻译',
+    extraTranslationUnit: '每种语言',
+    extraCategoryHighlight: '类别内置顶推广',
+    perMonth: '/ 每月',
+    minMonths: (n: number) => `至少 ${n} 个月`,
+    once: '一次性',
+    formHead: '注册',
+    formNote: '只需三项信息即可开始。如遇问题，请致电我们，我们乐意为您提供帮助。',
+    already: '已经在我们这里发布房源？',
+    alreadyLink: '登录发布者门户',
+    alreadyTail: '，也可以在那里新建房源。',
+    bankHead: '我们的银行账户',
+    bankNote: '审核通过后，您的房源会立即上线；之后您可将款项转入以下任一账户，或在个人账户中用银行卡支付。',
+  },
 };
 const t = copies[locale];
 const misc = {
-  refund: x('Visszatérítési szabály', 'Terugbetalingsbeleid', 'Refund policy', 'Erstattungsregel', 'Politique de remboursement', 'Política de reembolso', 'Zasady zwrotów', 'Politica de rambursare', 'Pravidlá vrátenia platieb', 'Politica di rimborso', 'Política de reembolso', 'Πολιτική επιστροφής χρημάτων', 'Pravidla pro vrácení peněz', 'Pravila o vračilu kupnine', 'Återbetalningsvillkor', 'Refusionspolitik', 'Refusjonsvilkår', 'Hyvityskäytäntö', 'Raha tagastamise tingimused', 'Naudas atmaksas noteikumi', 'Pinigų grąžinimo taisyklės'),
-  help: x('Segítségre van szüksége?', 'Hulp nodig?', 'Need help?', 'Brauchen Sie Hilfe?', 'Besoin d’aide\u00a0?', '¿Necesita ayuda?', 'Potrzebują Państwo pomocy?', 'Aveți nevoie de ajutor?', 'Potrebujete pomoc?', 'Serve aiuto?', 'Precisa de ajuda?', 'Χρειάζεστε βοήθεια;', 'Potřebujete pomoc?', 'Potrebujete pomoč?', 'Behöver du hjälp?', 'Brug for hjælp?', 'Trenger du hjelp?', 'Tarvitsetko apua?', 'Vajate abi?', 'Nepieciešama palīdzība?', 'Reikia pagalbos?'),
-  faq: x('Gyakori kérdések', 'Veelgestelde vragen', 'Frequently asked questions', 'Häufige Fragen', 'Questions fréquentes', 'Preguntas frecuentes', 'Najczęściej zadawane pytania', 'Întrebări frecvente', 'Časté otázky', 'Domande frequenti', 'Perguntas frequentes', 'Συχνές ερωτήσεις', 'Časté dotazy', 'Pogosta vprašanja', 'Vanliga frågor', 'Ofte stillede spørgsmål', 'Ofte stilte spørsmål', 'Usein kysytyt kysymykset', 'Korduma kippuvad küsimused', 'Biežāk uzdotie jautājumi', 'Dažnai užduodami klausimai'),
-  bankNl: x('Hollandia', 'Nederland', 'Netherlands', 'Niederlande', 'Pays-Bas', 'Países Bajos', 'Holandia', 'Țările de Jos', 'Holandsko', 'Paesi Bassi', 'Países Baixos', 'Ολλανδία', 'Nizozemsko', 'Nizozemska', 'Nederländerna', 'Holland', 'Nederland', 'Alankomaat', 'Madalmaad', 'Nīderlande', 'Nyderlandai'),
-  bankHu: x('Magyarország', 'Hongarije', 'Hungary', 'Ungarn', 'Hongrie', 'Hungría', 'Węgry', 'Ungaria', 'Maďarsko', 'Ungheria', 'Hungria', 'Ουγγαρία', 'Maďarsko', 'Madžarska', 'Ungern', 'Ungarn', 'Ungarn', 'Unkari', 'Ungari', 'Ungārija', 'Vengrija'),
+  refund: x({ hu: 'Visszatérítési szabály', nl: 'Terugbetalingsbeleid', en: 'Refund policy', de: 'Erstattungsregel', fr: 'Politique de remboursement', es: 'Política de reembolso', pl: 'Zasady zwrotów', ro: 'Politica de rambursare', sk: 'Pravidlá vrátenia platieb', it: 'Politica di rimborso', pt: 'Política de reembolso', el: 'Πολιτική επιστροφής χρημάτων', cs: 'Pravidla pro vrácení peněz', sl: 'Pravila o vračilu kupnine', sv: 'Återbetalningsvillkor', da: 'Refusionspolitik', no: 'Refusjonsvilkår', fi: 'Hyvityskäytäntö', et: 'Raha tagastamise tingimused', lv: 'Naudas atmaksas noteikumi', lt: 'Pinigų grąžinimo taisyklės', sr: 'Pravila o povraćaju novca', uk: 'Правила повернення коштів', tr: 'İade politikası', he: 'מדיניות החזרים', ar: 'سياسة الاسترداد', ru: 'Правила возврата средств', zh: '退款政策' }),
+  help: x({ hu: 'Segítségre van szüksége?', nl: 'Hulp nodig?', en: 'Need help?', de: 'Brauchen Sie Hilfe?', fr: 'Besoin d’aide\u00a0?', es: '¿Necesita ayuda?', pl: 'Potrzebują Państwo pomocy?', ro: 'Aveți nevoie de ajutor?', sk: 'Potrebujete pomoc?', it: 'Serve aiuto?', pt: 'Precisa de ajuda?', el: 'Χρειάζεστε βοήθεια;', cs: 'Potřebujete pomoc?', sl: 'Potrebujete pomoč?', sv: 'Behöver du hjälp?', da: 'Brug for hjælp?', no: 'Trenger du hjelp?', fi: 'Tarvitsetko apua?', et: 'Vajate abi?', lv: 'Nepieciešama palīdzība?', lt: 'Reikia pagalbos?', sr: 'Treba vam pomoć?', uk: 'Потрібна допомога?', tr: 'Yardım mı gerekiyor?', he: 'צריכים עזרה?', ar: 'هل تحتاج إلى مساعدة؟', ru: 'Нужна помощь?', zh: '需要帮助？' }),
+  faq: x({ hu: 'Gyakori kérdések', nl: 'Veelgestelde vragen', en: 'Frequently asked questions', de: 'Häufige Fragen', fr: 'Questions fréquentes', es: 'Preguntas frecuentes', pl: 'Najczęściej zadawane pytania', ro: 'Întrebări frecvente', sk: 'Časté otázky', it: 'Domande frequenti', pt: 'Perguntas frequentes', el: 'Συχνές ερωτήσεις', cs: 'Časté dotazy', sl: 'Pogosta vprašanja', sv: 'Vanliga frågor', da: 'Ofte stillede spørgsmål', no: 'Ofte stilte spørsmål', fi: 'Usein kysytyt kysymykset', et: 'Korduma kippuvad küsimused', lv: 'Biežāk uzdotie jautājumi', lt: 'Dažnai užduodami klausimai', sr: 'Česta pitanja', uk: 'Поширені запитання', tr: 'Sık sorulan sorular', he: 'שאלות נפוצות', ar: 'الأسئلة الشائعة', ru: 'Частые вопросы', zh: '常见问题' }),
+  bankNl: x({ hu: 'Hollandia', nl: 'Nederland', en: 'Netherlands', de: 'Niederlande', fr: 'Pays-Bas', es: 'Países Bajos', pl: 'Holandia', ro: 'Țările de Jos', sk: 'Holandsko', it: 'Paesi Bassi', pt: 'Países Baixos', el: 'Ολλανδία', cs: 'Nizozemsko', sl: 'Nizozemska', sv: 'Nederländerna', da: 'Holland', no: 'Nederland', fi: 'Alankomaat', et: 'Madalmaad', lv: 'Nīderlande', lt: 'Nyderlandai', sr: 'Holandija', uk: 'Нідерланди', tr: 'Hollanda', he: 'הולנד', ar: 'هولندا', ru: 'Нидерланды', zh: '荷兰' }),
+  bankHu: x({ hu: 'Magyarország', nl: 'Hongarije', en: 'Hungary', de: 'Ungarn', fr: 'Hongrie', es: 'Hungría', pl: 'Węgry', ro: 'Ungaria', sk: 'Maďarsko', it: 'Ungheria', pt: 'Hungria', el: 'Ουγγαρία', cs: 'Maďarsko', sl: 'Madžarska', sv: 'Ungern', da: 'Ungarn', no: 'Ungarn', fi: 'Unkari', et: 'Ungari', lv: 'Ungārija', lt: 'Vengrija', sr: 'Mađarska', uk: 'Угорщина', tr: 'Macaristan', he: 'הונגריה', ar: 'المجر', ru: 'Венгрия', zh: '匈牙利' }),
 };
 // Money here is shown the way the page's own language writes it.
 const money = (cents: number) => eurCents(cents, locale === 'hu' ? 'nl' : locale);
@@ -823,15 +1026,14 @@ const money = (cents: number) => eurCents(cents, locale === 'hu' ? 'nl' : locale
  * old id bug impossible: the value posted by the radio input can only ever
  * be a real package id (src/lib/listing-packages.ts), never a hand-typed string.
  */
-const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale));
+const packageCards = sellingPackages(catalog).map((pkg) => packageCard(pkg, catalog, locale));
 
 const extra = (id: string) => catalog.extras.find((e) => e.id === id)!;
 const categoryHighlight = extra('category-highlight');
-const homepageHighlight = extra('homepage-highlight');
 const videoExtra = extra('video');
 const translationExtra = extra('translation');
-// Video is listed only when some package sells it as an extra.
-const videoSold = catalog.packages.some((pkg) => pkg.video === 'extra');
+// The video shoot (Hungary only, §4b) is listed while it is sold; its name says where.
+const videoSold = !videoExtra.retired;
 // Read-only list of what can be added later, in the setup's first step.
 const extrasInfo = [
   {
@@ -843,18 +1045,14 @@ const extrasInfo = [
     name: t.extraCategoryHighlight,
     price: `${money(categoryHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(categoryHighlight.minMonths!)}`,
   },
-  {
-    name: t.extraHomepageHighlight,
-    price: `${money(homepageHighlight.priceEur * 100)} ${t.perMonth} · ${t.minMonths(homepageHighlight.minMonths!)}`,
-  },
-  ...(videoSold ? [{ name: t.extraVideo, price: `${money(videoExtra.priceEur * 100)} ${t.once}` }] : []),
+  ...(videoSold ? [{ name: extraLabel('video', locale), price: `${money(videoExtra.priceEur * 100)} ${t.once}` }] : []),
 ];
 
 const packageSchema = listingServiceSchema(locale, {
   name: t.packagesHead,
   description: t.metaDescription,
   url: path(locale, 'submitAd'),
-  packages: packageCards.map((p) => ({ name: p.name, priceEur: p.priceCents / 100 })),
+  packages: live ? sellingPackages(catalog).map((pkg) => ({ name: pkg.names[locale], priceEur: (fromCents(catalog.pricing, pkg.id as PackageKey) ?? 0) / 100 })) : packageCards.map((p) => ({ name: p.name, priceEur: p.priceCents / 100 })),
 });
 ---
 
@@ -899,9 +1097,11 @@ const packageSchema = listingServiceSchema(locale, {
       <section class="packages">
         <Eyebrow space="20px">{t.packagesHead}</Eyebrow>
         <p class="packages-note">{t.packagesNote}</p>
+        {live ? <PriceMatrix catalog={catalog} locale={locale} /> : (
         <div class="package-grid">
           {packageCards.map((card) => <PackageCard pkg={card} mode="info" recommendedLabel={t.recommended} />)}
         </div>
+        )}
       </section>
 
       <section class="extras">
@@ -1002,6 +1202,9 @@ const packageSchema = listingServiceSchema(locale, {
     transform-origin: left;
     animation: fx-draw 1.2s var(--ease-out) 0.4s both;
   }
+  :global([dir='rtl']) .s-eyebrow-rule {
+    transform-origin: right;
+  }
   .intro h1 {
     font-family: var(--serif);
     font-weight: var(--fw-hero);
@@ -1039,7 +1242,7 @@ const packageSchema = listingServiceSchema(locale, {
     display: grid;
     grid-template-columns: 40px minmax(0, 1fr);
     column-gap: 16px;
-    padding: 22px 24px 24px 20px;
+    padding-block: 22px 24px; padding-inline: 20px 24px;
     border-radius: var(--r-lg);
     background: var(--white);
     border: 1px solid rgba(16, 42, 67, 0.07);

@@ -46,6 +46,8 @@ export function createFakeDb(seed = {}, options = {}) {
     is(col, value) { this.touch([col]); this.tests.push((row) => (row[col] ?? null) === value); return this; }
     lt(col, value) { this.tests.push((row) => row[col] < value); return this; }
     gte(col, value) { this.tests.push((row) => row[col] >= value); return this; }
+    // A filter written as an OR string is not interpreted: tests seed only the rows they want back.
+    or() { return this; }
     not(col, op, value) { this.touch([col]); if (op === 'is') this.tests.push((row) => (row[col] ?? null) !== value); return this; }
     order(col, { ascending = true } = {}) { this.sort.push([col, ascending]); return this; }
     limit(n) { this.limitTo = n; return this; }
@@ -62,7 +64,7 @@ export function createFakeDb(seed = {}, options = {}) {
         for (const input of this.rows) {
           const row = { id: `${this.name}-${++seq}`, ...input };
           if (this.name === 'activity_events' && row.dedupe_key && rows.some((r) => r.dedupe_key === row.dedupe_key)) {
-            return { data: null, error: { message: 'duplicate key value violates unique constraint "activity_events_dedupe_key"' } };
+            return { data: null, error: { code: '23505', message: 'duplicate key value violates unique constraint "activity_events_dedupe_key"' } };
           }
           // The partial unique index of migration 0043: one live job per listing and language.
           if (this.name === 'translation_jobs' && ['requested', 'queued', 'running'].includes(row.status ?? 'queued')

@@ -18,18 +18,48 @@ export const categoryFor = (current: { category: string; status?: string }, grou
   ['published', 'sold'].includes(current.status ?? '') && groupOf(current.category) === group
     ? current.category
     : subtype === 'apartment' ? 'apartment' : subtype === 'farm' ? 'farm' : group;
-export const subtypeOf = (category: string, subtype?: string | null) => subtype || ({ house: 'house-villa', apartment: 'apartment', farm: 'farm', holiday: 'holiday-house', land: 'residential-plot', commercial: 'commercial-other', industrial: 'industrial-other', agricultural: 'agricultural-other', mansion: 'castle-manor' }[category] ?? '');
-export const validSubtype = (group: string, subtype: string) => groups.some(g => g.key === group && g.subtypes.some(s => s.key === subtype));
+/**
+ * "Mezőgazdasági üzem, birtok" was split in November 2026 into three types. The old key stays readable everywhere (old
+ * URLs, drafts, orders, saved searches) but is never offered: it reads as the estate until the owner or an admin picks
+ * one of the three (migration 0057 moves each listing by keyword and flags it for a one-click check).
+ */
+export const SUBTYPE_ALIASES: Record<string, string> = { 'agricultural-estate': 'rural-estate' };
+export const canonicalSubtype = (subtype: string | null | undefined): string => (subtype ? SUBTYPE_ALIASES[subtype] ?? subtype : '');
+/** Every key a search for this subtype must match: an old saved search for the old key is widened, never lost. */
+export const subtypeSearchKeys = (subtype: string): string[] => (subtype === 'agricultural-estate' || subtype === 'rural-estate' ? ['rural-estate', 'agricultural-business', 'agricultural-estate'] : [subtype]);
+export const subtypeOf = (category: string, subtype?: string | null) => canonicalSubtype(subtype) || ({ house: 'house-villa', apartment: 'apartment', farm: 'farm', holiday: 'holiday-house', land: 'residential-plot', commercial: 'commercial-other', industrial: 'industrial-other', agricultural: 'agricultural-other', mansion: 'castle-manor' }[category] ?? '');
+export const validSubtype = (group: string, subtype: string) => groups.some(g => g.key === group && g.subtypes.some(s => s.key === canonicalSubtype(subtype)));
 export const subtypeLabel = (group: string, subtype: string, locale: string) => {
-  const s = groups.find(g => g.key === group)?.subtypes.find(s => s.key === subtype);
+  const s = groups.find(g => g.key === group)?.subtypes.find(s => s.key === canonicalSubtype(subtype));
   return s ? labelIn(s.labels, locale) : '';
 };
 export const isLandOnly = (group: string, subtype: string) => group === 'land' || (group === 'agricultural' && ['arable', 'forest-pasture', 'orchard-vineyard', 'fish-farm'].includes(subtype));
-export const hasLivingArea = (group: string, subtype: string) => ['house', 'holiday', 'mansion'].includes(group) || (group === 'agricultural' && subtype === 'farm') || (group === 'investment' && ['rented-home', 'investment-building'].includes(subtype));
+/** Types with a home on them: the living area is theirs, and so are rooms, floors, bathrooms (Q15). */
+export const hasLivingArea = (group: string, subtype: string) => {
+  const s = canonicalSubtype(subtype);
+  return ['house', 'holiday', 'mansion'].includes(group) || (group === 'agricultural' && ['farm', 'manor-farmstead', 'rural-estate'].includes(s)) || (group === 'investment' && ['rented-home', 'investment-building'].includes(s));
+};
+export type AreaRule = 'required' | 'optional' | 'hidden';
+/**
+ * What the "living area" column of a type is (Q15): required for every type with a home, optional on a farm business, an
+ * animal farm, a fish farm and "other agricultural" (the home, if there is one), hidden on land-only types, and for
+ * commercial and industrial buildings the same column is their required net usable floor area; other buildings may give
+ * it. Every building has some area to give now that the total building area is optional.
+ */
+export function livingAreaRule(group: string, subtype: string): AreaRule {
+  const s = canonicalSubtype(subtype);
+  if (hasLivingArea(group, s)) return 'required';
+  if (group === 'agricultural' && ['agricultural-business', 'livestock', 'fish-farm', 'agricultural-other'].includes(s)) return 'optional';
+  if (isLandOnly(group, s)) return 'hidden';
+  return group === 'commercial' || group === 'industrial' ? 'required' : 'optional';
+}
+/** Which wording the column gets: the home's living area, "if there is a home" (optional), or a building's net usable area. */
+export const livingAreaKind = (group: string, subtype: string): 'living' | 'optional-home' | 'net' =>
+  hasLivingArea(group, subtype) ? 'living' : group === 'agricultural' ? 'optional-home' : 'net';
 export const hasPlot = (_group: string, subtype: string) => !['apartment', 'penthouse', 'holiday-apartment', 'retail', 'office', 'garage-parking', 'storage-cellar'].includes(subtype);
 export const CONTACT_LANGUAGES = 'hu nl en de fr sq hy az eu be bs bg ca hr cs da et fi ka el is ga it lv lt lb mk mt cnr no pl pt ro rm ru sr sk sl es sv tr uk cy yi'.split(' ');
 export function languageName(code: string, locale: string): string {
-  if(code==='cnr')return ({hu:'montenegrói',nl:'Montenegrijns',en:'Montenegrin',de:'Montenegrinisch',fr:'monténégrin',es:'montenegrino',pl:'czarnogórski',ro:'muntenegreană',sk:'čiernohorčina', it: 'montenegrino', pt: 'montenegrino', el: 'μαυροβουνιακά', cs: 'černohorština', sl: 'črnogorščina', sv: 'montenegrinska', da: 'montenegrinsk', no: 'montenegrinsk', fi: 'montenegro', et: 'montenegro', lv: 'melnkalniešu', lt: 'juodkalniečių'} as Record<string,string>)[locale]||'Montenegrin';
+  if(code==='cnr')return ({hu:'montenegrói',nl:'Montenegrijns',en:'Montenegrin',de:'Montenegrinisch',fr:'monténégrin',es:'montenegrino',pl:'czarnogórski',ro:'muntenegreană',sk:'čiernohorčina', it: 'montenegrino', pt: 'montenegrino', el: 'μαυροβουνιακά', cs: 'černohorština', sl: 'črnogorščina', sv: 'montenegrinska', da: 'montenegrinsk', no: 'montenegrinsk', fi: 'montenegro', et: 'montenegro', lv: 'melnkalniešu', lt: 'juodkalniečių', sr: 'crnogorski', uk: 'чорногорська', tr: 'Karadağca', he: 'מונטנגרית', ar: 'الجبل الأسودية', ru: 'черногорский', zh: '黑山语'} as Record<string,string>)[locale]||'Montenegrin';
   try { return new Intl.DisplayNames([locale], { type: 'language' }).of(code) || code; } catch { return code; }
 }
 

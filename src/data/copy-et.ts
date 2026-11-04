@@ -22,13 +22,13 @@ export const ET = {
     meta: {
       title: 'FINDDOME Real Estates | Kuulutage oma kinnisvara Euroopas',
       description:
-        'Laadige kuulutus üles mõne sammuga. Pärast veebimakset ilmub see 21 keeles, ilma ainuõiguse lepinguta.',
+        'Laadige kuulutus üles mõne sammuga. Pärast veebimakset ilmub see 28 keeles, ilma ainuõiguse lepinguta.',
     },
     hero: {
       eyebrow: `Alates 2013 · ${foundedInLabel(L)}`,
       title: ['Kuulutage', 'oma kinnisvara', 'Euroopas'],
       emphasis: 1,
-      body: 'Laadige kuulutus üles mõne sammuga. Vaatame selle üle ja pärast veebimakset ilmub see meie saidil 21 keeles, ilma ainuõiguse lepinguta. Huvilised võtavad ühendust otse teiega või meie kaudu.',
+      body: 'Laadige kuulutus üles mõne sammuga. Vaatame selle üle ja pärast veebimakset ilmub see meie saidil 28 keeles, ilma ainuõiguse lepinguta. Huvilised võtavad ühendust otse teiega või meie kaudu.',
       primary: 'Sirvi kinnisvara',
       secondary: 'Tasuta kinnisvaraotsing',
       featuredLabel: 'Esiletõstetud',

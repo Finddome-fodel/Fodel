@@ -26,6 +26,7 @@ import Ago from '~/components/portal/Ago.astro';
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
 import { hoursSince, listingName, newestFirst } from '~/lib/portal/time';
 import { isSelfRegistration } from '~/lib/portal/registration';
+import { fmtInt } from '~/lib/portal/num';
 
 const { supabase } = Astro.locals;
 
@@ -191,7 +192,7 @@ const MOVABLE = COLUMNS.filter((c) => c.key !== 'rejected');
                     <div class="body">
                       <b class="t">{listingName(p)}</b>
                       <p class="m">
-                        {p.settlement || 'Település nélkül'} · €{Number(p.price_eur).toLocaleString('de-DE')}
+                        {p.settlement || 'Település nélkül'} · €{fmtInt(Number(p.price_eur))}
                       </p>
                       <p class="o">{(p.owner_id && ownerName.get(p.owner_id)) || 'Ismeretlen hirdető'}</p>
                       {p.dutch_agent_requested && <p class="badges"><DutchAgentBadge /></p>}

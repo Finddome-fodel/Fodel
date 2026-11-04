@@ -12,8 +12,19 @@ import dmLatin from '~/assets/fonts/dm-sans-latin-wght-normal.woff2?url';
 import dmLatinExt from '~/assets/fonts/dm-sans-latin-ext-wght-normal.woff2?url';
 import jostLatin from '~/assets/fonts/jost-latin-wght-normal.woff2?url';
 import jostLatinExt from '~/assets/fonts/jost-latin-ext-wght-normal.woff2?url';
+import jostCyrillic from '~/assets/fonts/jost-cyrillic-wght-normal.woff2?url';
+import notoHebrew from '~/assets/fonts/noto-sans-hebrew-hebrew-wght-normal.woff2?url';
+import notoArabic from '~/assets/fonts/noto-sans-arabic-arabic-wght-normal.woff2?url';
+import type { Locale } from '~/i18n/ui';
 
-const files = [dmLatin, dmLatinExt, jostLatin, jostLatinExt];
+interface Props {
+  /** The page language: Russian, Ukrainian, Hebrew and Arabic pages also preload their script's face. */
+  locale?: Locale;
+}
+const { locale } = Astro.props;
+const SCRIPT_FACE: Partial<Record<Locale, string>> = { ru: jostCyrillic, uk: jostCyrillic, he: notoHebrew, ar: notoArabic };
+const extra = locale ? SCRIPT_FACE[locale] : undefined;
+const files = [dmLatin, dmLatinExt, jostLatin, jostLatinExt, ...(extra ? [extra] : [])];
 ---
 
 {files.map((href) => <link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous" />)}

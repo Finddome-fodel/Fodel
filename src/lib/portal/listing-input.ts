@@ -1,8 +1,9 @@
 import { parseLocaleNumber, type FieldError } from '~/lib/validation';
 import { COUNTRIES } from '~/config/countries';
+import { canonicalCounty, hasCountyList } from '~/lib/counties';
 import { validSubtype, canonicalFeature, currentFeatures, CONTACT_LANGUAGES, categoryFor, PROPERTY_GROUPS } from '~/lib/listing-catalogue';
 import { energyRating } from '~/lib/energy';
-import { convertPrice, exchangeRates, PRICE_CURRENCIES } from '~/lib/exchange-rates';
+import { convertPrice, exchangeRates, PRICE_CURRENCIES, type PriceRounding } from '~/lib/exchange-rates';
 import { readDetails, fieldRules, parkingFits, exclusiveChoice, HEATING_EXCLUSIVE, WALL_EXCLUSIVE, SETTING_KEYS, UTILITY_KEYS, PARKING_KEYS, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
 import { extractYouTubeId } from '~/lib/video';
 import type { Taxonomy } from '~/lib/runtime-config';
@@ -28,7 +29,7 @@ export function parseArea(raw:string,unit:string):number|null {
   if(!Number.isFinite(result)||result>1e12)throw new Error('invalid-area');
   return Math.round(result*1e6)/1e6;
 }
-export async function listingInput(form:FormData,current:PortalProperty,taxonomy:Taxonomy,options:{allowIncomplete?:boolean}={}){
+export async function listingInput(form:FormData,current:PortalProperty,taxonomy:Taxonomy,options:{allowIncomplete?:boolean;/** Csomagok → Kerekítés (site_settings.services.priceRounding); default €100. */rounding?:PriceRounding}={}){
   const get=(key:string)=>formString(form,key);
   const errors:Record<string,FieldError>={};
   const group=get('property_group'),subtype=get('property_subtype');
@@ -39,6 +40,11 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   if(lat===null&&(!options.allowIncomplete||get('lat')))errors.lat={code:'number'};
   if(lng===null&&(!options.allowIncomplete||get('lng')))errors.lng={code:'number'};
   const settlement=get('settlement').slice(0,120);
+  // County: one canonical spelling per county (src/lib/counties.ts). Where the country has a fixed list the value
+  // must be on it when the listing is submitted; a partial save keeps whatever was there so a draft never loses data.
+  const rawCounty=get('county').slice(0,120);
+  const county=hasCountyList(country)?(canonicalCounty(country,rawCounty)??rawCounty):rawCounty;
+  if(hasCountyList(country)&&!options.allowIncomplete&&!canonicalCounty(country,rawCounty))errors.county={code:'choose'};
   if(!options.allowIncomplete&&form.get('location_confirmed')!=='yes')errors.lat={code:'required'};
   // A pin alone identifies rural land. Settlement and administrative areas are optional.
   // Which facts this kind of property has (src/lib/listing-details.ts). A fact that does not apply keeps
@@ -126,14 +132,14 @@ export async function listingInput(form:FormData,current:PortalProperty,taxonomy
   // Do not change a saved price/rate/date merely because somebody edited the description.
   if(amount&&(Number(current.original_price)!==amount||current.original_currency!==currency||!current.exchange_rate)){
     try{
-      const snapshot=await exchangeRates(),converted=convertPrice(amount!,currency,snapshot);
+      const snapshot=await exchangeRates(),converted=convertPrice(amount!,currency,snapshot,options.rounding);
       price={original_price:amount,original_currency:currency,price_eur:converted.eur,price_huf:converted.huf,exchange_rate:converted.rate,exchange_source:snapshot.source,price_asof:snapshot.date,price_calculated_at:new Date().toISOString()};
     }catch{throw new ListingInputError({original_price:{code:'number'}},'rates-unavailable');}
   }
   // The category follows the subtype; only a live or sold listing keeps its published URL.
   const category=categoryFor(current,group,subtype);
   return {
-    patch:{location_confirmed:form.get('location_confirmed')==='yes'&&lat!==null&&lng!==null,category,property_group:group,property_subtype:subtype||null,country,settlement,county:get('county').slice(0,120),region:get('region').slice(0,120),precision:showAddress||get('precision')==='exact'?'exact':'approximate',details,public_address:showAddress?street:null,public_postal_code:showAddress&&postalCode?postalCode:null,...price,...areas,
+    patch:{location_confirmed:form.get('location_confirmed')==='yes'&&lat!==null&&lng!==null,category,property_group:group,property_subtype:subtype||null,country,settlement,county,region:get('region').slice(0,120),precision:showAddress||get('precision')==='exact'?'exact':'approximate',details,public_address:showAddress?street:null,public_postal_code:showAddress&&postalCode?postalCode:null,...price,...areas,
       year_built:year,year_built_unknown:yearUnknown,renovated_in:renovated,condition_key:condition,heating_key:heatingKey,wall_key:wallKey,epc_class:epc,bathrooms,features,video_url:video||null,price_negotiable:form.get('price_negotiable')==='yes'},
     privateData:{lat:lat!==null&&lng!==null?lat:current.lat,lng:lat!==null&&lng!==null?lng:current.lng,street,postal_code:postalCode},
   };

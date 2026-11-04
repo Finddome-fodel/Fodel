@@ -3,9 +3,12 @@
  * Price list — FODEL's published tariff, which the prototype omitted entirely
  * (its Sellers page ended at "Árlista kérése" → a generic contact form).
  *
- * Figures are exactly those on fodel.hu/arlista: €69 / €129 / €179, €25 per
- * language, €15 and €25 per month for highlighting, €36 video, €30 retro
- * photos, €25 renewal. All prices include 21% Dutch VAT.
+ * Every figure comes from the admin's Csomagok menu (listingCatalog). Once the
+ * 2026 pricing is live (migration 0056) the page shows the Basic / Europe /
+ * World matrix (PriceMatrix); until then it shows the two older packages
+ * exactly as before. Since November 2026 the homepage is an editorial choice
+ * and adding photos later is free, so neither is priced here.
+ * All prices include 21% Dutch VAT.
  */
 import Base from '~/layouts/Base.astro';
 import PageHeader from '~/components/PageHeader.astro';
@@ -14,8 +17,12 @@ import Button from '~/components/Button.astro';
 import PackageCard from '~/components/PackageCard.astro';
 import { path, localizer, type L10n, type Locale } from '~/i18n/ui';
 import { COMMISSION, CONTRACT_PRICES, ONSITE_SERVICES, LISTING_VAT_PERCENT } from '~/config/company';
-import { listingCatalog, packageCard, priceFacts, extraPrice, eurText, type ExtraId } from '~/lib/listing-packages';
+import { listingCatalog, packageCard, priceFacts, extraPrice, eurText, sellingPackages, type ExtraId } from '~/lib/listing-packages';
+import PriceMatrix from '~/components/pages/PriceMatrix.astro';
+import { eurPrice } from '~/lib/format';
+import { fromCents, type PackageKey } from '~/lib/listing-pricing';
 import { alternatesFor } from '~/lib/page';
+import { extraLabel } from '~/lib/orders';
 import { approvedWording } from '~/lib/approved-text';
 import { listingServiceSchema } from '~/lib/seo';
 import { getCompany } from '~/lib/runtime-config';
@@ -35,26 +42,35 @@ const refund = approvedWording(company.services.refundPolicy, locale);
 const refundPolicy = refund?.text;
 const refundLang = refund?.lang ?? locale;
 // Package content and every price below come from the admin's settings
-// (Szolgáltatások → Hirdetési csomagok), so this page always matches checkout.
+// (Csomagok menü), so this page always matches checkout.
 const catalog = listingCatalog(company.services);
 const from = priceFacts(catalog).from;
+const live = catalog.pricingLive;
+// "8,90 €" / "€ 8,90": the cheapest cell of the matrix, with its cents (the older packages are whole euros).
+const fromText = live ? eurPrice(Math.round(from * 100), locale) : eurText(locale, from);
 const fmt = (n: number) => eurText(locale, n);
 const xp = (id: ExtraId) => fmt(extraPrice(catalog, id));
 const vat = LISTING_VAT_PERCENT;
 const pct = (n: number) => (locale === 'de' || locale === 'fr' || locale === 'es' || locale === 'sk' ? `${n}\u00a0%` : `${n}%`);
-const pkgSummary = catalog.packages
+const pkgSummary = live ? sellingPackages(catalog).map((p) => p.names[locale]).join(' / ') : catalog.packages
   .map((p) => {
-    const price = p.priceEurAbove !== null ? `${fmt(p.priceEur)} ${x('vagy', 'of', 'or', 'oder', 'ou', 'o', 'lub', 'sau', 'alebo', 'o', 'ou', 'ή', 'nebo', 'ali', 'eller', 'eller', 'eller', 'tai', 'või', 'vai', 'arba')} ${fmt(p.priceEurAbove)}` : fmt(p.priceEur);
-    return x(`${p.months} hónapos ${price}`, `${p.months} maanden ${price}`, `${p.months}-month listing ${price}`, `${p.months}-monatiges Inserat ${price}`, `annonce de ${p.months} mois à ${price}`, `anuncio de ${p.months} meses por ${price}`, `ogłoszenie na ${nOf('pl', p.months, 'miesiąc', 'miesiące', 'miesięcy')} za ${price}`, `anunț pe ${nOf('ro', p.months, 'lună', 'luni', 'de luni')} la ${price}`, `inzerát na ${nOf('sk', p.months, 'mesiac', 'mesiace', 'mesiacov')} za ${price}`, `annuncio di ${p.months} mesi a ${price}`, `anúncio de ${p.months} meses por ${price}`, `αγγελία ${p.months} μηνών στα ${price}`, `${p.months}měsíční inzerát za ${price}`, `${p.months}-mesečni oglas za ${price}`, `annons i ${p.months} månader för ${price}`, `annonce i ${p.months} måneder til ${price}`, `annonse i ${p.months} måneder for ${price}`, `${p.months} kuukauden ilmoitus hintaan ${price}`, `${p.months}-kuuline kuulutus hinnaga ${price}`, `${nOf('lv', p.months, 'mēneša', 'mēnešu')} sludinājums par ${price}`, `${nOf('lt', p.months, 'mėnesio', 'mėnesių', 'mėnesių')} skelbimas už ${price}`);
+    // "€ 129 vagy € 179" — every tier price, the last joined with "or".
+    const prices = p.tiers.map((tier) => fmt(tier.priceEur));
+    const or = x({ hu: 'vagy', nl: 'of', en: 'or', de: 'oder', fr: 'ou', es: 'o', pl: 'lub', ro: 'sau', sk: 'alebo', it: 'o', pt: 'ou', el: 'ή', cs: 'nebo', sl: 'ali', sv: 'eller', da: 'eller', no: 'eller', fi: 'tai', et: 'või', lv: 'vai', lt: 'arba', sr: 'ili', uk: 'або', tr: 'veya', he: 'או', ar: 'أو', ru: 'или', zh: '或' });
+    const price = prices.length > 1 ? `${prices.slice(0, -1).join(', ')} ${or} ${prices[prices.length - 1]}` : prices[0];
+    return x({ hu: `${p.months} hónapos ${price}`, nl: `${p.months} maanden ${price}`, en: `${p.months}-month listing ${price}`, de: `${p.months}-monatiges Inserat ${price}`, fr: `annonce de ${p.months} mois à ${price}`, es: `anuncio de ${p.months} meses por ${price}`, pl: `ogłoszenie na ${nOf('pl', p.months, 'miesiąc', 'miesiące', 'miesięcy')} za ${price}`, ro: `anunț pe ${nOf('ro', p.months, 'lună', 'luni', 'de luni')} la ${price}`, sk: `inzerát na ${nOf('sk', p.months, 'mesiac', 'mesiace', 'mesiacov')} za ${price}`, it: `annuncio di ${p.months} mesi a ${price}`, pt: `anúncio de ${p.months} meses por ${price}`, el: `αγγελία ${p.months} μηνών στα ${price}`, cs: `${p.months}měsíční inzerát za ${price}`, sl: `${p.months}-mesečni oglas za ${price}`, sv: `annons i ${p.months} månader för ${price}`, da: `annonce i ${p.months} måneder til ${price}`, no: `annonse i ${p.months} måneder for ${price}`, fi: `${p.months} kuukauden ilmoitus hintaan ${price}`, et: `${p.months}-kuuline kuulutus hinnaga ${price}`, lv: `${nOf('lv', p.months, 'mēneša', 'mēnešu')} sludinājums par ${price}`, lt: `${nOf('lt', p.months, 'mėnesio', 'mėnesių', 'mėnesių')} skelbimas už ${price}`, sr: `Oglas na ${p.months} mes. ${price}`, uk: `Оголошення на ${p.months} міс. ${price}`, tr: `${p.months} aylık ilan ${price}`, he: `מודעה ל־${p.months} חודשים ${price}`, ar: `إعلان (عدد الأشهر: ${p.months}) ${price}`, ru: `Объявление на ${p.months} мес. ${price}`, zh: `${p.months} 个月房源发布 ${price}` });
   })
   .join(', ');
-const hl = [extraPrice(catalog, 'category-highlight'), extraPrice(catalog, 'homepage-highlight')].sort((a, b) => a - b);
-const hlRange = hl[0] === hl[1] ? `${hl[0]}` : `${hl[0]}–${hl[1]}`;
+// Only the category highlight is sold now (the homepage is an editorial choice).
+const hlRange = `${extraPrice(catalog, 'category-highlight')}`;
+const videoExtra = catalog.extras.find((extra) => extra.id === 'video');
+const videoSold = Boolean(videoExtra && !videoExtra.retired);
+const videoName = extraLabel('video', locale);
 const translationPrice = extraPrice(catalog, 'translation');
 
 const copies = {
   hu: {
-      metaTitle: `Árlista: hirdetési díjak ${from} €-tól`,
+      metaTitle: `Árlista: hirdetési díjak ${fromText}-tól`,
       metaDescription:
         `FINDDOME hirdetési árlista: ${pkgSummary}. Fordítás ${extraPrice(catalog, 'translation')} €/nyelv, kiemelés ${hlRange} €/hó. Minden ár tartalmazza a 21% holland áfát.`,
       eyebrow: 'Árlista',
@@ -72,10 +88,8 @@ const copies = {
       extras: [
         { name: 'Idegen nyelvű szöveg (holland, német, angol, francia)', price: xp('translation'), unit: '/ nyelv' },
         { name: 'Kategórián belüli kiemelés (min. 3 hónap)', price: xp('category-highlight'), unit: '/ hó' },
-        { name: 'Főoldali kiemelés (min. 3 hónap)', price: xp('homepage-highlight'), unit: '/ hó' },
-        { name: 'Videó megjelenítése (az Ön által készített videó elhelyezése)', price: xp('video'), unit: 'egyszeri' },
-        { name: 'Utólagos képfeltöltés', price: xp('retro-images'), unit: 'egyszeri' },
-        { name: 'Standard hirdetés megújítása 6 hónapra', price: xp('renewal-6m'), unit: 'egyszeri' },
+        ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'egyszeri' }] : []),
+        { name: 'Standard hirdetés megújítása 6 hónapra', price: xp('renewal-6m'), renewal: true, unit: 'egyszeri' },
       ],
       // Professional photography and drone now have fixed prices — see the
       // on-site rows in the extras table (brief 3 §F).
@@ -88,7 +102,7 @@ const copies = {
         'Jutalékot kizárólag akkor számítunk fel, ha a vevőt a FINDDOME hozta, írásos adásvételi szerződés jött létre és a foglaló megfizetésre került. Ha a vevő közvetlenül Önnél jelentkezik és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie.',
     },
   nl: {
-      metaTitle: `Tarieven: adverteren vanaf € ${from}`,
+      metaTitle: `Tarieven: adverteren vanaf ${fromText}`,
       metaDescription:
         `Tarieven van FINDDOME: advertentie van ${pkgSummary}. Vertaling € ${extraPrice(catalog, 'translation')} per taal, uitlichten € ${hlRange} per maand. Alle prijzen inclusief 21% btw.`,
       eyebrow: 'Tarieven',
@@ -106,10 +120,8 @@ const copies = {
       extras: [
         { name: 'Vertaling (Nederlands, Duits, Engels, Frans)', price: xp('translation'), unit: '/ taal' },
         { name: 'Uitlichten binnen de categorie (min. 3 maanden)', price: xp('category-highlight'), unit: '/ maand' },
-        { name: 'Uitlichten op de homepage (min. 3 maanden)', price: xp('homepage-highlight'), unit: '/ maand' },
-        { name: 'Video plaatsen (uw eigen video)', price: xp('video'), unit: 'eenmalig' },
-        { name: 'Foto’s achteraf toevoegen', price: xp('retro-images'), unit: 'eenmalig' },
-        { name: 'Verlenging standaard advertentie, 6 maanden', price: xp('renewal-6m'), unit: 'eenmalig' },
+        ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'eenmalig' }] : []),
+        { name: 'Verlenging standaard advertentie, 6 maanden', price: xp('renewal-6m'), renewal: true, unit: 'eenmalig' },
       ],
       services: ['Aanvragen van het energieprestatiecertificaat'],
       onsiteUnit: 'eenmalig, ter plaatse',
@@ -136,10 +148,8 @@ const copies = {
     extras: [
       { name: 'Translation (Dutch, German, English, French)', price: xp('translation'), unit: '/ language' },
       { name: 'Highlighting within the category (min. 3 months)', price: xp('category-highlight'), unit: '/ month' },
-      { name: 'Highlighting on the homepage (min. 3 months)', price: xp('homepage-highlight'), unit: '/ month' },
-      { name: 'Video placement (your own video)', price: xp('video'), unit: 'one-off' },
-      { name: 'Adding photos later', price: xp('retro-images'), unit: 'one-off' },
-      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), unit: 'one-off' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'one-off' }] : []),
+      { name: 'Renewal of a standard listing, 6 months', price: xp('renewal-6m'), renewal: true, unit: 'one-off' },
     ],
     services: ['Applying for the energy performance certificate'],
     onsiteUnit: 'one-off, on site',
@@ -169,10 +179,8 @@ const copies = {
     extras: [
       { name: 'Übersetzung (Niederländisch, Deutsch, Englisch, Französisch)', price: xp('translation'), unit: '/ Sprache' },
       { name: 'Hervorhebung innerhalb der Kategorie (mind. 3 Monate)', price: xp('category-highlight'), unit: '/ Monat' },
-      { name: 'Hervorhebung auf der Startseite (mind. 3 Monate)', price: xp('homepage-highlight'), unit: '/ Monat' },
-      { name: 'Video einbinden (Ihr eigenes Video)', price: xp('video'), unit: 'einmalig' },
-      { name: 'Fotos nachträglich hinzufügen', price: xp('retro-images'), unit: 'einmalig' },
-      { name: 'Verlängerung eines Standard-Inserats, 6 Monate', price: xp('renewal-6m'), unit: 'einmalig' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'einmalig' }] : []),
+      { name: 'Verlängerung eines Standard-Inserats, 6 Monate', price: xp('renewal-6m'), renewal: true, unit: 'einmalig' },
     ],
     services: ['Beantragung des Energieausweises'],
     onsiteUnit: 'einmalig, vor Ort',
@@ -202,10 +210,8 @@ const copies = {
     extras: [
       { name: 'Traduction (néerlandais, allemand, anglais, français)', price: xp('translation'), unit: '/ langue' },
       { name: 'Mise en avant dans la catégorie (min. 3 mois)', price: xp('category-highlight'), unit: '/ mois' },
-      { name: 'Mise en avant sur la page d’accueil (min. 3 mois)', price: xp('homepage-highlight'), unit: '/ mois' },
-      { name: 'Mise en ligne d’une vidéo (la vôtre)', price: xp('video'), unit: 'unique' },
-      { name: 'Ajout de photos après coup', price: xp('retro-images'), unit: 'unique' },
-      { name: 'Renouvellement d’une annonce standard, 6 mois', price: xp('renewal-6m'), unit: 'unique' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'unique' }] : []),
+      { name: 'Renouvellement d’une annonce standard, 6 mois', price: xp('renewal-6m'), renewal: true, unit: 'unique' },
     ],
     services: ['Obtention du certificat de performance énergétique'],
     onsiteUnit: 'unique, sur place',
@@ -235,10 +241,8 @@ const copies = {
     extras: [
       { name: 'Traducción (neerlandés, alemán, inglés, francés)', price: xp('translation'), unit: '/ idioma' },
       { name: 'Destacado en la categoría (mín. 3 meses)', price: xp('category-highlight'), unit: '/ mes' },
-      { name: 'Destacado en la página de inicio (mín. 3 meses)', price: xp('homepage-highlight'), unit: '/ mes' },
-      { name: 'Publicación de un vídeo (el suyo)', price: xp('video'), unit: 'pago único' },
-      { name: 'Añadir fotos más adelante', price: xp('retro-images'), unit: 'pago único' },
-      { name: 'Renovación de un anuncio estándar, 6 meses', price: xp('renewal-6m'), unit: 'pago único' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'pago único' }] : []),
+      { name: 'Renovación de un anuncio estándar, 6 meses', price: xp('renewal-6m'), renewal: true, unit: 'pago único' },
     ],
     services: ['Obtención del certificado de eficiencia energética'],
     onsiteUnit: 'pago único, in situ',
@@ -268,10 +272,8 @@ const copies = {
     extras: [
       { name: 'Tłumaczenie (niderlandzki, niemiecki, angielski, francuski)', price: xp('translation'), unit: '/ język' },
       { name: 'Wyróżnienie w kategorii (min. 3 miesiące)', price: xp('category-highlight'), unit: '/ miesiąc' },
-      { name: 'Wyróżnienie na stronie głównej (min. 3 miesiące)', price: xp('homepage-highlight'), unit: '/ miesiąc' },
-      { name: 'Zamieszczenie filmu (własnego)', price: xp('video'), unit: 'jednorazowo' },
-      { name: 'Dodanie zdjęć później', price: xp('retro-images'), unit: 'jednorazowo' },
-      { name: 'Przedłużenie standardowego ogłoszenia, 6 miesięcy', price: xp('renewal-6m'), unit: 'jednorazowo' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'jednorazowo' }] : []),
+      { name: 'Przedłużenie standardowego ogłoszenia, 6 miesięcy', price: xp('renewal-6m'), renewal: true, unit: 'jednorazowo' },
     ],
     services: ['Uzyskanie świadectwa charakterystyki energetycznej'],
     onsiteUnit: 'jednorazowo, na miejscu',
@@ -301,10 +303,8 @@ const copies = {
     extras: [
       { name: 'Traducere (neerlandeză, germană, engleză, franceză)', price: xp('translation'), unit: '/ limbă' },
       { name: 'Evidențiere în categorie (min. 3 luni)', price: xp('category-highlight'), unit: '/ lună' },
-      { name: 'Evidențiere pe prima pagină (min. 3 luni)', price: xp('homepage-highlight'), unit: '/ lună' },
-      { name: 'Publicarea unui videoclip (al dumneavoastră)', price: xp('video'), unit: 'o singură dată' },
-      { name: 'Adăugarea ulterioară de fotografii', price: xp('retro-images'), unit: 'o singură dată' },
-      { name: 'Prelungirea unui anunț standard, 6 luni', price: xp('renewal-6m'), unit: 'o singură dată' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'o singură dată' }] : []),
+      { name: 'Prelungirea unui anunț standard, 6 luni', price: xp('renewal-6m'), renewal: true, unit: 'o singură dată' },
     ],
     services: ['Obținerea certificatului de performanță energetică'],
     onsiteUnit: 'o singură dată, la fața locului',
@@ -334,10 +334,8 @@ const copies = {
     extras: [
       { name: 'Preklad (holandčina, nemčina, angličtina, francúzština)', price: xp('translation'), unit: '/ jazyk' },
       { name: 'Zvýraznenie v kategórii (min. 3 mesiace)', price: xp('category-highlight'), unit: '/ mesiac' },
-      { name: 'Zvýraznenie na úvodnej stránke (min. 3 mesiace)', price: xp('homepage-highlight'), unit: '/ mesiac' },
-      { name: 'Zverejnenie videa (vlastného)', price: xp('video'), unit: 'jednorazovo' },
-      { name: 'Dodatočné pridanie fotografií', price: xp('retro-images'), unit: 'jednorazovo' },
-      { name: 'Predĺženie štandardného inzerátu, 6 mesiacov', price: xp('renewal-6m'), unit: 'jednorazovo' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'jednorazovo' }] : []),
+      { name: 'Predĺženie štandardného inzerátu, 6 mesiacov', price: xp('renewal-6m'), renewal: true, unit: 'jednorazovo' },
     ],
     services: ['Vystavenie energetického certifikátu'],
     onsiteUnit: 'jednorazovo, na mieste',
@@ -367,10 +365,8 @@ const copies = {
     extras: [
       { name: 'Traduzione (olandese, tedesco, inglese, francese)', price: xp('translation'), unit: '/ lingua' },
       { name: 'Messa in evidenza nella categoria (min. 3 mesi)', price: xp('category-highlight'), unit: '/ mese' },
-      { name: 'Messa in evidenza in homepage (min. 3 mesi)', price: xp('homepage-highlight'), unit: '/ mese' },
-      { name: 'Inserimento di un video (il suo video)', price: xp('video'), unit: 'una tantum' },
-      { name: 'Aggiunta di foto in seguito', price: xp('retro-images'), unit: 'una tantum' },
-      { name: 'Rinnovo di un annuncio standard, 6 mesi', price: xp('renewal-6m'), unit: 'una tantum' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'una tantum' }] : []),
+      { name: 'Rinnovo di un annuncio standard, 6 mesi', price: xp('renewal-6m'), renewal: true, unit: 'una tantum' },
     ],
     services: ['Richiesta dell’attestato di prestazione energetica'],
     onsiteUnit: 'una tantum, in loco',
@@ -400,10 +396,8 @@ const copies = {
     extras: [
       { name: 'Tradução (neerlandês, alemão, inglês, francês)', price: xp('translation'), unit: '/ idioma' },
       { name: 'Destaque na categoria (mín. 3 meses)', price: xp('category-highlight'), unit: '/ mês' },
-      { name: 'Destaque na página inicial (mín. 3 meses)', price: xp('homepage-highlight'), unit: '/ mês' },
-      { name: 'Inclusão de vídeo (o seu próprio vídeo)', price: xp('video'), unit: 'pagamento único' },
-      { name: 'Adicionar fotografias mais tarde', price: xp('retro-images'), unit: 'pagamento único' },
-      { name: 'Renovação de um anúncio normal, 6 meses', price: xp('renewal-6m'), unit: 'pagamento único' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'pagamento único' }] : []),
+      { name: 'Renovação de um anúncio normal, 6 meses', price: xp('renewal-6m'), renewal: true, unit: 'pagamento único' },
     ],
     services: ['Pedido do certificado energético'],
     onsiteUnit: 'pagamento único, no local',
@@ -433,10 +427,8 @@ const copies = {
     extras: [
       { name: 'Μετάφραση (ολλανδικά, γερμανικά, αγγλικά, γαλλικά)', price: xp('translation'), unit: '/ γλώσσα' },
       { name: 'Προβολή στην κατηγορία (ελάχ. 3 μήνες)', price: xp('category-highlight'), unit: '/ μήνα' },
-      { name: 'Προβολή στην αρχική σελίδα (ελάχ. 3 μήνες)', price: xp('homepage-highlight'), unit: '/ μήνα' },
-      { name: 'Ανάρτηση βίντεο (δικό σας βίντεο)', price: xp('video'), unit: 'εφάπαξ' },
-      { name: 'Προσθήκη φωτογραφιών αργότερα', price: xp('retro-images'), unit: 'εφάπαξ' },
-      { name: 'Ανανέωση τυπικής αγγελίας, 6 μήνες', price: xp('renewal-6m'), unit: 'εφάπαξ' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'εφάπαξ' }] : []),
+      { name: 'Ανανέωση τυπικής αγγελίας, 6 μήνες', price: xp('renewal-6m'), renewal: true, unit: 'εφάπαξ' },
     ],
     services: ['Αίτηση για πιστοποιητικό ενεργειακής απόδοσης'],
     onsiteUnit: 'εφάπαξ, επιτόπου',
@@ -466,10 +458,8 @@ const copies = {
     extras: [
       { name: 'Překlad (nizozemština, němčina, angličtina, francouzština)', price: xp('translation'), unit: '/ jazyk' },
       { name: 'Zvýraznění v kategorii (min. 3 měsíce)', price: xp('category-highlight'), unit: '/ měsíc' },
-      { name: 'Zvýraznění na úvodní stránce (min. 3 měsíce)', price: xp('homepage-highlight'), unit: '/ měsíc' },
-      { name: 'Umístění videa (vaše vlastní video)', price: xp('video'), unit: 'jednorázově' },
-      { name: 'Dodatečné přidání fotografií', price: xp('retro-images'), unit: 'jednorázově' },
-      { name: 'Prodloužení standardního inzerátu, 6 měsíců', price: xp('renewal-6m'), unit: 'jednorázově' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'jednorázově' }] : []),
+      { name: 'Prodloužení standardního inzerátu, 6 měsíců', price: xp('renewal-6m'), renewal: true, unit: 'jednorázově' },
     ],
     services: ['Vyřízení průkazu energetické náročnosti'],
     onsiteUnit: 'jednorázově, na místě',
@@ -499,10 +489,8 @@ const copies = {
     extras: [
       { name: 'Prevod (nizozemščina, nemščina, angleščina, francoščina)', price: xp('translation'), unit: '/ jezik' },
       { name: 'Izpostavitev v kategoriji (najmanj 3 meseci)', price: xp('category-highlight'), unit: '/ mesec' },
-      { name: 'Izpostavitev na domači strani (najmanj 3 meseci)', price: xp('homepage-highlight'), unit: '/ mesec' },
-      { name: 'Objava videa (vaš lasten video)', price: xp('video'), unit: 'enkratno' },
-      { name: 'Naknadno dodajanje fotografij', price: xp('retro-images'), unit: 'enkratno' },
-      { name: 'Podaljšanje standardnega oglasa, 6 mesecev', price: xp('renewal-6m'), unit: 'enkratno' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'enkratno' }] : []),
+      { name: 'Podaljšanje standardnega oglasa, 6 mesecev', price: xp('renewal-6m'), renewal: true, unit: 'enkratno' },
     ],
     services: ['Pridobitev energetske izkaznice'],
     onsiteUnit: 'enkratno, na kraju samem',
@@ -532,10 +520,8 @@ const copies = {
     extras: [
       { name: 'Översättning (nederländska, tyska, engelska, franska)', price: xp('translation'), unit: '/ språk' },
       { name: 'Framhävning i kategorin (minst 3 månader)', price: xp('category-highlight'), unit: '/ månad' },
-      { name: 'Framhävning på startsidan (minst 3 månader)', price: xp('homepage-highlight'), unit: '/ månad' },
-      { name: 'Placering av video (din egen video)', price: xp('video'), unit: 'engångsavgift' },
-      { name: 'Lägga till foton i efterhand', price: xp('retro-images'), unit: 'engångsavgift' },
-      { name: 'Förnyelse av en standardannons, 6 månader', price: xp('renewal-6m'), unit: 'engångsavgift' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'engångsavgift' }] : []),
+      { name: 'Förnyelse av en standardannons, 6 månader', price: xp('renewal-6m'), renewal: true, unit: 'engångsavgift' },
     ],
     services: ['Beställning av energideklaration'],
     onsiteUnit: 'engångsavgift, på plats',
@@ -565,10 +551,8 @@ const copies = {
     extras: [
       { name: 'Oversættelse (hollandsk, tysk, engelsk, fransk)', price: xp('translation'), unit: '/ sprog' },
       { name: 'Fremhævning i kategorien (min. 3 måneder)', price: xp('category-highlight'), unit: '/ måned' },
-      { name: 'Fremhævning på forsiden (min. 3 måneder)', price: xp('homepage-highlight'), unit: '/ måned' },
-      { name: 'Indsættelse af video (din egen video)', price: xp('video'), unit: 'engangsbeløb' },
-      { name: 'Tilføjelse af fotos senere', price: xp('retro-images'), unit: 'engangsbeløb' },
-      { name: 'Fornyelse af en standardannonce, 6 måneder', price: xp('renewal-6m'), unit: 'engangsbeløb' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'engangsbeløb' }] : []),
+      { name: 'Fornyelse af en standardannonce, 6 måneder', price: xp('renewal-6m'), renewal: true, unit: 'engangsbeløb' },
     ],
     services: ['Bestilling af energimærke'],
     onsiteUnit: 'engangsbeløb, på stedet',
@@ -598,10 +582,8 @@ const copies = {
     extras: [
       { name: 'Oversettelse (nederlandsk, tysk, engelsk, fransk)', price: xp('translation'), unit: '/ språk' },
       { name: 'Fremheving i kategorien (min. 3 måneder)', price: xp('category-highlight'), unit: '/ måned' },
-      { name: 'Fremheving på forsiden (min. 3 måneder)', price: xp('homepage-highlight'), unit: '/ måned' },
-      { name: 'Innlegging av video (din egen video)', price: xp('video'), unit: 'engangsbeløp' },
-      { name: 'Legge til bilder senere', price: xp('retro-images'), unit: 'engangsbeløp' },
-      { name: 'Fornyelse av en standardannonse, 6 måneder', price: xp('renewal-6m'), unit: 'engangsbeløp' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'engangsbeløp' }] : []),
+      { name: 'Fornyelse av en standardannonse, 6 måneder', price: xp('renewal-6m'), renewal: true, unit: 'engangsbeløp' },
     ],
     services: ['Bestilling av energiattest'],
     onsiteUnit: 'engangsbeløp, på stedet',
@@ -631,10 +613,8 @@ const copies = {
     extras: [
       { name: 'Käännös (hollanti, saksa, englanti, ranska)', price: xp('translation'), unit: '/ kieli' },
       { name: 'Korostus kategoriassa (väh. 3 kuukautta)', price: xp('category-highlight'), unit: '/ kk' },
-      { name: 'Korostus etusivulla (väh. 3 kuukautta)', price: xp('homepage-highlight'), unit: '/ kk' },
-      { name: 'Videon lisääminen (oma video)', price: xp('video'), unit: 'kertamaksu' },
-      { name: 'Kuvien lisääminen jälkikäteen', price: xp('retro-images'), unit: 'kertamaksu' },
-      { name: 'Perusilmoituksen uusiminen, 6 kuukautta', price: xp('renewal-6m'), unit: 'kertamaksu' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'kertamaksu' }] : []),
+      { name: 'Perusilmoituksen uusiminen, 6 kuukautta', price: xp('renewal-6m'), renewal: true, unit: 'kertamaksu' },
     ],
     services: ['Energiatodistuksen hankinta'],
     onsiteUnit: 'kertamaksu, paikan päällä',
@@ -664,10 +644,8 @@ const copies = {
     extras: [
       { name: 'Tõlge (hollandi, saksa, inglise, prantsuse keel)', price: xp('translation'), unit: '/ keel' },
       { name: 'Esiletõstmine kategoorias (vähemalt 3 kuud)', price: xp('category-highlight'), unit: '/ kuu' },
-      { name: 'Esiletõstmine avalehel (vähemalt 3 kuud)', price: xp('homepage-highlight'), unit: '/ kuu' },
-      { name: 'Video lisamine (teie oma video)', price: xp('video'), unit: 'ühekordne' },
-      { name: 'Fotode hilisem lisamine', price: xp('retro-images'), unit: 'ühekordne' },
-      { name: 'Tavakuulutuse pikendamine, 6 kuud', price: xp('renewal-6m'), unit: 'ühekordne' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'ühekordne' }] : []),
+      { name: 'Tavakuulutuse pikendamine, 6 kuud', price: xp('renewal-6m'), renewal: true, unit: 'ühekordne' },
     ],
     services: ['Energiamärgise taotlemine'],
     onsiteUnit: 'ühekordne, kohapeal',
@@ -697,10 +675,8 @@ const copies = {
     extras: [
       { name: 'Tulkojums (nīderlandiešu, vācu, angļu, franču valodā)', price: xp('translation'), unit: '/ valoda' },
       { name: 'Izcelšana kategorijā (vismaz 3 mēneši)', price: xp('category-highlight'), unit: '/ mēnesī' },
-      { name: 'Izcelšana sākumlapā (vismaz 3 mēneši)', price: xp('homepage-highlight'), unit: '/ mēnesī' },
-      { name: 'Video ievietošana (jūsu video)', price: xp('video'), unit: 'vienreizēji' },
-      { name: 'Fotoattēlu pievienošana vēlāk', price: xp('retro-images'), unit: 'vienreizēji' },
-      { name: 'Standarta sludinājuma pagarināšana, 6 mēneši', price: xp('renewal-6m'), unit: 'vienreizēji' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'vienreizēji' }] : []),
+      { name: 'Standarta sludinājuma pagarināšana, 6 mēneši', price: xp('renewal-6m'), renewal: true, unit: 'vienreizēji' },
     ],
     services: ['Energoefektivitātes sertifikāta pieprasīšana'],
     onsiteUnit: 'vienreizēji, uz vietas',
@@ -730,10 +706,8 @@ const copies = {
     extras: [
       { name: 'Vertimas (į olandų, vokiečių, anglų, prancūzų kalbas)', price: xp('translation'), unit: '/ kalba' },
       { name: 'Išskyrimas kategorijoje (ne trumpiau kaip 3 mėn.)', price: xp('category-highlight'), unit: '/ mėn.' },
-      { name: 'Išskyrimas pagrindiniame puslapyje (ne trumpiau kaip 3 mėn.)', price: xp('homepage-highlight'), unit: '/ mėn.' },
-      { name: 'Vaizdo įrašo įdėjimas (jūsų vaizdo įrašas)', price: xp('video'), unit: 'vienkartinis' },
-      { name: 'Nuotraukų pridėjimas vėliau', price: xp('retro-images'), unit: 'vienkartinis' },
-      { name: 'Standartinio skelbimo pratęsimas, 6 mėn.', price: xp('renewal-6m'), unit: 'vienkartinis' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'vienkartinis' }] : []),
+      { name: 'Standartinio skelbimo pratęsimas, 6 mėn.', price: xp('renewal-6m'), renewal: true, unit: 'vienkartinis' },
     ],
     services: ['Energinio naudingumo sertifikato užsakymas'],
     onsiteUnit: 'vienkartinis, vietoje',
@@ -746,28 +720,255 @@ const copies = {
     commissionTitle: `${pct(COMMISSION.percent)} be PVM, ne mažiau kaip ${eurText(locale, COMMISSION.minimumEur)}`,
     contractFrom: (n: number) => `nuo ${eurText(locale, n)}`,
   },
+  sr: {
+    metaTitle: `Cene: oglašavanje od ${eurText(locale, from)}`,
+    metaDescription: `Cene oglasa na FINDDOME-u: ${pkgSummary}. Prevod ${eurText(locale, translationPrice)} po jeziku, isticanje €${hlRange} mesečno. Sve cene uključuju holandski PDV od ${pct(vat)}.`,
+    eyebrow: 'Cene',
+    title: 'Jasne cene,',
+    titleEm: 'bez skrivenih troškova',
+    body: `Sve cene uključuju holandski PDV od ${pct(vat)}. Cenu oglasa plaćate jednom, nakon odobrenja; odobreni oglas odmah se objavljuje. Proviziju naplaćujemo samo kada mi dovedemo kupca.`,
+    packagesHead: 'Paketi oglasa',
+    extrasHead: 'Dodatne opcije',
+    contractsHead: 'Dvojezični kupoprodajni ugovor',
+    commissionHead: 'Provizija',
+    vatNote: `Sve cene uključuju holandski PDV od ${pct(vat)}.`,
+    cta: 'Postavite oglas',
+    ctaNote: 'Nakon odobrenja odmah objavljujemo oglas, a zahtev za plaćanje dobijate imejlom.',
+    extras: [
+      { name: 'Prevod (holandski, nemački, engleski, francuski)', price: xp('translation'), unit: '/ jezik' },
+      { name: 'Isticanje u kategoriji (najmanje 3 meseca)', price: xp('category-highlight'), unit: '/ mesec' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'jednokratno' }] : []),
+      { name: 'Produženje standardnog oglasa, 6 meseci', price: xp('renewal-6m'), renewal: true, unit: 'jednokratno' },
+    ],
+    services: ['Pribavljanje energetskog sertifikata'],
+    onsiteUnit: 'jednokratno, na licu mesta',
+    servicesHead: 'Ostale usluge',
+    servicesNote: 'Za ove usluge pripremamo ponudu po meri. Slobodno pitajte.',
+    contractNote: 'Prevod kupoprodajnog ugovora po jezičkoj kombinaciji, početne cene.',
+    commissionBody:
+      'Proviziju naplaćujemo samo ako je FINDDOME doveo kupca, ako postoji pisani kupoprodajni ugovor i ako je kapara uplaćena. Ako vas kupac kontaktira direktno i ne treba vam naša pomoć, pored cene oglasa ne plaćate ništa.',
+    refundHead: 'Pravila o povraćaju novca',
+    commissionTitle: `${COMMISSION.percent}% neto, najmanje ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `od ${eurText(locale, n)}`,
+  },
+  uk: {
+    metaTitle: `Ціни: розміщення оголошень від ${eurText(locale, from)}`,
+    metaDescription: `Ціни на оголошення FINDDOME: ${pkgSummary}. Переклад ${eurText(locale, translationPrice)} за мову, виділення €${hlRange} на місяць. Усі ціни включають нідерландський ПДВ ${pct(vat)}.`,
+    eyebrow: 'Ціни',
+    title: 'Прозорі ціни,',
+    titleEm: 'без прихованих витрат',
+    body: `Усі ціни включають нідерландський ПДВ ${pct(vat)}. Вартість оголошення ви сплачуєте один раз, після схвалення; схвалене оголошення одразу публікується. Комісію ми беремо лише тоді, коли покупця знаходимо ми.`,
+    packagesHead: 'Пакети оголошень',
+    extrasHead: 'Додаткові опції',
+    contractsHead: 'Двомовний договір купівлі-продажу',
+    commissionHead: 'Комісія',
+    vatNote: `Усі ціни включають нідерландський ПДВ ${pct(vat)}.`,
+    cta: 'Розмістити оголошення',
+    ctaNote: 'Після схвалення ми одразу публікуємо оголошення, а рахунок на оплату ви отримуєте електронною поштою.',
+    extras: [
+      { name: 'Переклад (нідерландська, німецька, англійська, французька)', price: xp('translation'), unit: '/ мова' },
+      { name: 'Виділення в категорії (мін. 3 місяці)', price: xp('category-highlight'), unit: '/ місяць' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'одноразово' }] : []),
+      { name: 'Продовження стандартного оголошення, 6 місяців', price: xp('renewal-6m'), renewal: true, unit: 'одноразово' },
+    ],
+    services: ['Оформлення енергетичного сертифіката'],
+    onsiteUnit: 'одноразово, з виїздом на об’єкт',
+    servicesHead: 'Інші послуги',
+    servicesNote: 'Для цих послуг ми готуємо індивідуальну пропозицію. Звертайтеся.',
+    contractNote: 'Переклад договору купівлі-продажу для кожної мовної пари, ціни «від».',
+    commissionBody:
+      'Комісію ми беремо лише тоді, коли покупця привів FINDDOME, існує письмовий договір купівлі-продажу і сплачено завдаток. Якщо покупець зв’язується з вами напряму і наша допомога вам не потрібна, ви не платите нічого понад вартість оголошення.',
+    refundHead: 'Умови повернення коштів',
+    commissionTitle: `${COMMISSION.percent}% нетто, мін. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `від ${eurText(locale, n)}`,
+  },
+  tr: {
+    metaTitle: `Fiyatlar: ilan ücretleri ${eurText(locale, from)} başlangıçlı`,
+    metaDescription: `FINDDOME ilan fiyatları: ${pkgSummary}. Çeviri dil başına ${eurText(locale, translationPrice)}, öne çıkarma aylık €${hlRange}. Tüm fiyatlara ${pct(vat)} Hollanda KDV’si dahildir.`,
+    eyebrow: 'Fiyatlar',
+    title: 'Net fiyatlar,',
+    titleEm: 'gizli maliyet yok',
+    body: `Tüm fiyatlara ${pct(vat)} Hollanda KDV’si dahildir. İlan ücretini onaydan sonra bir kez ödersiniz; onaylanan ilan hemen yayına girer. Komisyonu yalnızca alıcıyı biz getirdiğimizde alırız.`,
+    packagesHead: 'İlan paketleri',
+    extrasHead: 'İsteğe bağlı ekstralar',
+    contractsHead: 'İki dilli satış sözleşmesi',
+    commissionHead: 'Komisyon',
+    vatNote: `Tüm fiyatlara ${pct(vat)} Hollanda KDV’si dahildir.`,
+    cta: 'İlan verin',
+    ctaNote: 'Onayın ardından ilanı hemen yayınlarız; ödeme talebi size e-postayla gelir.',
+    extras: [
+      { name: 'Çeviri (Felemenkçe, Almanca, İngilizce, Fransızca)', price: xp('translation'), unit: '/ dil' },
+      { name: 'Kategori içinde öne çıkarma (en az 3 ay)', price: xp('category-highlight'), unit: '/ ay' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'tek seferlik' }] : []),
+      { name: 'Standart ilanın uzatılması, 6 ay', price: xp('renewal-6m'), renewal: true, unit: 'tek seferlik' },
+    ],
+    services: ['Enerji kimlik belgesi başvurusu'],
+    onsiteUnit: 'tek seferlik, yerinde',
+    servicesHead: 'Diğer hizmetler',
+    servicesNote: 'Bu hizmetler için size özel teklif hazırlıyoruz. Sormaktan çekinmeyin.',
+    contractNote: 'Satış sözleşmesinin dil çifti başına çevirisi, başlangıç fiyatları.',
+    commissionBody:
+      'Komisyonu yalnızca alıcıyı FINDDOME tanıştırdıysa, yazılı bir satış sözleşmesi varsa ve kaparo ödendiyse alırız. Alıcı sizinle doğrudan iletişime geçer ve yardımımıza ihtiyacınız olmazsa ilan ücretinin üzerine hiçbir şey ödemezsiniz.',
+    refundHead: 'İade politikası',
+    commissionTitle: `Net %${COMMISSION.percent}, en az ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `${eurText(locale, n)} başlangıçlı`,
+  },
+  he: {
+    metaTitle: `מחירים: פרסום מודעות החל מ־${eurText(locale, from)}`,
+    metaDescription: `מחירי המודעות ב־FINDDOME: ${pkgSummary}. תרגום ${eurText(locale, translationPrice)} לשפה, הבלטה €${hlRange} לחודש. כל המחירים כוללים מע״מ הולנדי בשיעור ${pct(vat)}.`,
+    eyebrow: 'מחירים',
+    title: 'מחירים ברורים,',
+    titleEm: 'בלי עלויות נסתרות',
+    body: `כל המחירים כוללים מע״מ הולנדי בשיעור ${pct(vat)}. את דמי הפרסום משלמים פעם אחת, לאחר האישור; מודעה שאושרה עולה לאוויר מיד. אנחנו גובים דמי תיווך רק כשאנחנו מביאים את הקונה.`,
+    packagesHead: 'חבילות פרסום',
+    extrasHead: 'תוספות אופציונליות',
+    contractsHead: 'הסכם מכר דו־לשוני',
+    commissionHead: 'דמי תיווך',
+    vatNote: `כל המחירים כוללים מע״מ הולנדי בשיעור ${pct(vat)}.`,
+    cta: 'פרסום מודעה',
+    ctaNote: 'לאחר האישור אנחנו מפרסמים מיד, ובקשת התשלום נשלחת אליכם במייל.',
+    extras: [
+      { name: 'תרגום (הולנדית, גרמנית, אנגלית, צרפתית)', price: xp('translation'), unit: '/ שפה' },
+      { name: 'הבלטה בתוך הקטגוריה (לפחות 3 חודשים)', price: xp('category-highlight'), unit: '/ חודש' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'חד־פעמי' }] : []),
+      { name: 'חידוש מודעה רגילה, 6 חודשים', price: xp('renewal-6m'), renewal: true, unit: 'חד־פעמי' },
+    ],
+    services: ['הוצאת תעודת דירוג אנרגטי'],
+    onsiteUnit: 'חד־פעמי, בנכס',
+    servicesHead: 'שירותים נוספים',
+    servicesNote: 'לשירותים אלה אנחנו מכינים הצעת מחיר מותאמת. אל תהססו לשאול.',
+    contractNote: 'תרגום הסכם המכר לכל צמד שפות; המחירים הם מחירי התחלה.',
+    commissionBody:
+      'אנחנו גובים דמי תיווך רק אם FINDDOME הביאה את הקונה, קיים הסכם מכר בכתב והמקדמה שולמה. אם הקונה פונה אליכם ישירות ואינכם זקוקים לעזרתנו, אינכם משלמים דבר מעבר לדמי הפרסום.',
+    refundHead: 'מדיניות החזרים',
+    commissionTitle: `${COMMISSION.percent}% נטו, לפחות ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `החל מ־${eurText(locale, n)}`,
+  },
+  ar: {
+    metaTitle: `الأسعار: رسوم الإعلان ابتداءً من ${eurText(locale, from)}`,
+    metaDescription: `أسعار الإعلانات في FINDDOME: ${pkgSummary}. الترجمة ${eurText(locale, translationPrice)} لكل لغة، والإبراز €${hlRange} شهريًا. جميع الأسعار تشمل ضريبة القيمة المضافة الهولندية بنسبة ${pct(vat)}.`,
+    eyebrow: 'الأسعار',
+    title: 'أسعار واضحة،',
+    titleEm: 'بلا تكاليف خفية',
+    body: `جميع الأسعار تشمل ضريبة القيمة المضافة الهولندية بنسبة ${pct(vat)}. تدفع رسوم الإعلان مرة واحدة بعد الموافقة، ويُنشر الإعلان المعتمد فورًا. ولا نتقاضى عمولة إلا عندما نأتي نحن بالمشتري.`,
+    packagesHead: 'باقات الإعلان',
+    extrasHead: 'إضافات اختيارية',
+    contractsHead: 'عقد بيع وشراء ثنائي اللغة',
+    commissionHead: 'العمولة',
+    vatNote: `جميع الأسعار تشمل ضريبة القيمة المضافة الهولندية بنسبة ${pct(vat)}.`,
+    cta: 'أضف إعلانًا',
+    ctaNote: 'بعد الموافقة ننشر الإعلان فورًا، ويصلك طلب الدفع بالبريد الإلكتروني.',
+    extras: [
+      { name: 'الترجمة (الهولندية، الألمانية، الإنجليزية، الفرنسية)', price: xp('translation'), unit: '/ لغة' },
+      { name: 'الإبراز ضمن الفئة (3 أشهر على الأقل)', price: xp('category-highlight'), unit: '/ شهر' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'مرة واحدة' }] : []),
+      { name: 'تجديد إعلان قياسي، 6 أشهر', price: xp('renewal-6m'), renewal: true, unit: 'مرة واحدة' },
+    ],
+    services: ['استخراج شهادة أداء الطاقة'],
+    onsiteUnit: 'مرة واحدة، في الموقع',
+    servicesHead: 'خدمات أخرى',
+    servicesNote: 'نُعدّ لهذه الخدمات عرض سعر مخصصًا. لا تتردد في السؤال.',
+    contractNote: 'ترجمة عقد البيع والشراء لكل زوج لغات، أسعار ابتدائية.',
+    commissionBody:
+      'لا نتقاضى عمولة إلا إذا كانت FINDDOME هي من عرّفت بالمشتري، ووُجد عقد بيع وشراء مكتوب، ودُفع العربون. إذا تواصل معك المشتري مباشرة ولم تحتج إلى مساعدتنا، فلا تدفع شيئًا إضافة إلى رسوم الإعلان.',
+    refundHead: 'سياسة الاسترداد',
+    commissionTitle: `${COMMISSION.percent}% صافٍ، بحد أدنى ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `ابتداءً من ${eurText(locale, n)}`,
+  },
+  ru: {
+    metaTitle: `Цены: размещение объявлений от ${eurText(locale, from)}`,
+    metaDescription: `Цены на объявления FINDDOME: ${pkgSummary}. Перевод ${eurText(locale, translationPrice)} за язык, выделение €${hlRange} в месяц. Все цены включают нидерландский НДС ${pct(vat)}.`,
+    eyebrow: 'Цены',
+    title: 'Понятные цены,',
+    titleEm: 'без скрытых расходов',
+    body: `Все цены включают нидерландский НДС ${pct(vat)}. Стоимость объявления вы оплачиваете один раз, после одобрения; одобренное объявление сразу публикуется. Комиссию мы берём только тогда, когда покупателя находим мы.`,
+    packagesHead: 'Пакеты объявлений',
+    extrasHead: 'Дополнительные опции',
+    contractsHead: 'Двуязычный договор купли-продажи',
+    commissionHead: 'Комиссия',
+    vatNote: `Все цены включают нидерландский НДС ${pct(vat)}.`,
+    cta: 'Разместить объявление',
+    ctaNote: 'После одобрения мы сразу публикуем объявление, а счёт на оплату вы получаете по электронной почте.',
+    extras: [
+      { name: 'Перевод (нидерландский, немецкий, английский, французский)', price: xp('translation'), unit: '/ язык' },
+      { name: 'Выделение в категории (мин. 3 месяца)', price: xp('category-highlight'), unit: '/ месяц' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: 'единоразово' }] : []),
+      { name: 'Продление стандартного объявления, 6 месяцев', price: xp('renewal-6m'), renewal: true, unit: 'единоразово' },
+    ],
+    services: ['Оформление энергетического сертификата'],
+    onsiteUnit: 'единоразово, с выездом на объект',
+    servicesHead: 'Другие услуги',
+    servicesNote: 'Для этих услуг мы готовим индивидуальное предложение. Обращайтесь.',
+    contractNote: 'Перевод договора купли-продажи для каждой языковой пары, цены «от».',
+    commissionBody:
+      'Комиссию мы берём только тогда, когда покупателя привёл FINDDOME, существует письменный договор купли-продажи и внесён задаток. Если покупатель связывается с вами напрямую и наша помощь вам не нужна, вы ничего не платите сверх стоимости объявления.',
+    refundHead: 'Условия возврата средств',
+    commissionTitle: `${COMMISSION.percent}% нетто, мин. ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `от ${eurText(locale, n)}`,
+  },
+  zh: {
+    metaTitle: `价格：房源发布费 ${eurText(locale, from)} 起`,
+    metaDescription: `FINDDOME 房源发布价格：${pkgSummary}。翻译每种语言 ${eurText(locale, translationPrice)}，置顶推广每月 €${hlRange}。所有价格均含 ${pct(vat)} 荷兰增值税。`,
+    eyebrow: '价格',
+    title: '价格透明，',
+    titleEm: '无隐藏费用',
+    body: `所有价格均含 ${pct(vat)} 荷兰增值税。房源发布费在审核通过后一次性支付；审核通过的房源会立即上线。只有当买家由我们介绍时，我们才收取佣金。`,
+    packagesHead: '房源发布套餐',
+    extrasHead: '可选附加服务',
+    contractsHead: '双语买卖合同',
+    commissionHead: '佣金',
+    vatNote: `所有价格均含 ${pct(vat)} 荷兰增值税。`,
+    cta: '发布房源',
+    ctaNote: '审核通过后我们会立即发布，付款通知将通过电子邮件发送给您。',
+    extras: [
+      { name: '翻译（荷兰语、德语、英语、法语）', price: xp('translation'), unit: '/ 每种语言' },
+      { name: '类别内置顶推广（至少 3 个月）', price: xp('category-highlight'), unit: '/ 每月' },
+      ...(videoSold ? [{ name: videoName, price: xp('video'), unit: '一次性' }] : []),
+      { name: '标准房源续期，6 个月', price: xp('renewal-6m'), renewal: true, unit: '一次性' },
+    ],
+    services: ['申请建筑能效证书'],
+    onsiteUnit: '一次性，上门服务',
+    servicesHead: '其他服务',
+    servicesNote: '这些服务我们会为您单独报价，欢迎咨询。',
+    contractNote: '买卖合同按语言组合翻译，以下为起价。',
+    commissionBody:
+      '只有在买家由 FINDDOME 介绍、已签订书面买卖合同且已支付定金的情况下，我们才收取佣金。如果买家直接联系您，且您不需要我们的协助，那么除房源发布费外您无需支付任何费用。',
+    refundHead: '退款政策',
+    commissionTitle: `净额 ${COMMISSION.percent}%，最低 ${eurText(locale, COMMISSION.minimumEur)}`,
+    contractFrom: (n: number) => `${eurText(locale, n)} 起`,
+  },
 };
 
 type Copy = (typeof copies)['en'];
 const huExtra = { refundHead: 'Visszatérítési szabály', commissionTitle: `${COMMISSION.percent}% nettó, min. ${COMMISSION.minimumEur} €`, contractFrom: (n: number) => `${n} €-tól` };
 const nlExtra = { refundHead: 'Terugbetalingsbeleid', commissionTitle: `${COMMISSION.percent}% netto, min. € ${COMMISSION.minimumEur}`, contractFrom: (n: number) => `vanaf € ${n}` };
 const t = { ...copies[locale], ...(locale === 'hu' ? huExtra : locale === 'nl' ? nlExtra : {}) } as Copy;
+if (live) {
+  // Languages are part of the packages now: the per-language row and the sentence about it go. The description names
+  // the packages and the range of the matrix, the same in every language.
+  const translationRow = t.extras.findIndex((extra: any) => extra.price === xp('translation'));
+  if (translationRow >= 0) t.extras = t.extras.filter((_: unknown, index: number) => index !== translationRow);
+  // A renewal is the package's own price for 1, 3 or 6 months (shown in the matrix): the old flat renewal row goes too.
+  t.extras = t.extras.filter((extra: any) => extra.renewal !== true);
+  const cells = sellingPackages(catalog).flatMap((pkg) => Object.values(catalog.pricing.prices[pkg.id as PackageKey] ?? {}).flatMap((row) => Object.values(row)));
+  t.metaDescription = `FINDDOME: ${pkgSummary} (${eurPrice(Math.min(...cells), locale)} – ${eurPrice(Math.max(...cells), locale)}). ${t.vatNote}`;
+}
 
 const contractLabels: Record<string, L10n> = {
-  hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois', es: 'Húngaro', pl: 'Węgierski', ro: 'Maghiară', sk: 'Maďarčina', it: 'Ungherese', pt: 'Húngaro', el: 'Ουγγρικά', cs: 'Maďarština', sl: 'Madžarščina', sv: 'Ungerska', da: 'Ungarsk', no: 'Ungarsk', fi: 'Unkari', et: 'Ungari keel', lv: 'Ungāru valoda', lt: 'Vengrų kalba' },
-  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars', en: 'German–Hungarian', de: 'Deutsch–Ungarisch', fr: 'Allemand–hongrois', es: 'Alemán–húngaro', pl: 'Niemiecki–węgierski', ro: 'Germană–maghiară', sk: 'Nemčina–maďarčina', it: 'Tedesco–ungherese', pt: 'Alemão–húngaro', el: 'Γερμανικά–ουγγρικά', cs: 'Němčina–maďarština', sl: 'Nemščina–madžarščina', sv: 'Tyska–ungerska', da: 'Tysk–ungarsk', no: 'Tysk–ungarsk', fi: 'Saksa–unkari', et: 'Saksa–ungari', lv: 'Vācu–ungāru', lt: 'Vokiečių–vengrų' },
-  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois', es: 'Inglés–húngaro', pl: 'Angielski–węgierski', ro: 'Engleză–maghiară', sk: 'Angličtina–maďarčina', it: 'Inglese–ungherese', pt: 'Inglês–húngaro', el: 'Αγγλικά–ουγγρικά', cs: 'Angličtina–maďarština', sl: 'Angleščina–madžarščina', sv: 'Engelska–ungerska', da: 'Engelsk–ungarsk', no: 'Engelsk–ungarsk', fi: 'Englanti–unkari', et: 'Inglise–ungari', lv: 'Angļu–ungāru', lt: 'Anglų–vengrų' },
-  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois', es: 'Neerlandés–húngaro', pl: 'Niderlandzki–węgierski', ro: 'Neerlandeză–maghiară', sk: 'Holandčina–maďarčina', it: 'Olandese–ungherese', pt: 'Neerlandês–húngaro', el: 'Ολλανδικά–ουγγρικά', cs: 'Nizozemština–maďarština', sl: 'Nizozemščina–madžarščina', sv: 'Nederländska–ungerska', da: 'Hollandsk–ungarsk', no: 'Nederlandsk–ungarsk', fi: 'Hollanti–unkari', et: 'Hollandi–ungari', lv: 'Nīderlandiešu–ungāru', lt: 'Olandų–vengrų' },
+  hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois', es: 'Húngaro', pl: 'Węgierski', ro: 'Maghiară', sk: 'Maďarčina', it: 'Ungherese', pt: 'Húngaro', el: 'Ουγγρικά', cs: 'Maďarština', sl: 'Madžarščina', sv: 'Ungerska', da: 'Ungarsk', no: 'Ungarsk', fi: 'Unkari', et: 'Ungari keel', lv: 'Ungāru valoda', lt: 'Vengrų kalba', sr: 'Mađarski', uk: 'Угорська', tr: 'Macarca', he: 'הונגרית', ar: 'المجرية', ru: 'Венгерский', zh: '匈牙利语' },
+  'de-hu': { hu: 'Német–magyar', nl: 'Duits–Hongaars', en: 'German–Hungarian', de: 'Deutsch–Ungarisch', fr: 'Allemand–hongrois', es: 'Alemán–húngaro', pl: 'Niemiecki–węgierski', ro: 'Germană–maghiară', sk: 'Nemčina–maďarčina', it: 'Tedesco–ungherese', pt: 'Alemão–húngaro', el: 'Γερμανικά–ουγγρικά', cs: 'Němčina–maďarština', sl: 'Nemščina–madžarščina', sv: 'Tyska–ungerska', da: 'Tysk–ungarsk', no: 'Tysk–ungarsk', fi: 'Saksa–unkari', et: 'Saksa–ungari', lv: 'Vācu–ungāru', lt: 'Vokiečių–vengrų', sr: 'Nemačko-mađarski', uk: 'Німецька–угорська', tr: 'Almanca–Macarca', he: 'גרמנית–הונגרית', ar: 'الألمانية–المجرية', ru: 'Немецкий–венгерский', zh: '德语–匈牙利语' },
+  'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois', es: 'Inglés–húngaro', pl: 'Angielski–węgierski', ro: 'Engleză–maghiară', sk: 'Angličtina–maďarčina', it: 'Inglese–ungherese', pt: 'Inglês–húngaro', el: 'Αγγλικά–ουγγρικά', cs: 'Angličtina–maďarština', sl: 'Angleščina–madžarščina', sv: 'Engelska–ungerska', da: 'Engelsk–ungarsk', no: 'Engelsk–ungarsk', fi: 'Englanti–unkari', et: 'Inglise–ungari', lv: 'Angļu–ungāru', lt: 'Anglų–vengrų', sr: 'Englesko-mađarski', uk: 'Англійська–угорська', tr: 'İngilizce–Macarca', he: 'אנגלית–הונגרית', ar: 'الإنجليزية–المجرية', ru: 'Английский–венгерский', zh: '英语–匈牙利语' },
+  'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois', es: 'Neerlandés–húngaro', pl: 'Niderlandzki–węgierski', ro: 'Neerlandeză–maghiară', sk: 'Holandčina–maďarčina', it: 'Olandese–ungherese', pt: 'Neerlandês–húngaro', el: 'Ολλανδικά–ουγγρικά', cs: 'Nizozemština–maďarština', sl: 'Nizozemščina–madžarščina', sv: 'Nederländska–ungerska', da: 'Hollandsk–ungarsk', no: 'Nederlandsk–ungarsk', fi: 'Hollanti–unkari', et: 'Hollandi–ungari', lv: 'Nīderlandiešu–ungāru', lt: 'Olandų–vengrų', sr: 'Holandsko-mađarski', uk: 'Нідерландська–угорська', tr: 'Felemenkçe–Macarca', he: 'הולנדית–הונגרית', ar: 'الهولندية–المجرية', ru: 'Нидерландский–венгерский', zh: '荷兰语–匈牙利语' },
 };
-const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
+const packageCards = sellingPackages(catalog).map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
 
 const packageSchema = listingServiceSchema(locale, {
   name: t.packagesHead,
   description: t.metaDescription,
   url: path(locale, 'priceList'),
-  packages: catalog.packages.map((pkg) => ({
+  packages: sellingPackages(catalog).map((pkg) => ({
     name: pkg.names[locale],
-    priceEur: pkg.priceEur,
+    priceEur: live ? (fromCents(catalog.pricing, pkg.id as PackageKey) ?? 0) / 100 : pkg.priceEur,
   })),
 });
 ---
@@ -791,6 +992,7 @@ const packageSchema = listingServiceSchema(locale, {
   {/* ── Packages ── */}
   <section class="packages">
     <Eyebrow space="24px">{t.packagesHead}</Eyebrow>
+    {live ? <PriceMatrix catalog={catalog} locale={locale} /> : (
     <div class="package-grid">
       {
         packageCards.map((pkg: any) => (
@@ -798,6 +1000,7 @@ const packageSchema = listingServiceSchema(locale, {
         ))
       }
     </div>
+    )}
     <p class="vat">{t.vatNote}</p>
   </section>
 
@@ -913,7 +1116,7 @@ const packageSchema = listingServiceSchema(locale, {
   }
   th,
   td {
-    text-align: left;
+    text-align: start;
     padding: 18px 0;
     font-weight: var(--fw-body);
     font-size: var(--fs-body);
@@ -924,12 +1127,12 @@ const packageSchema = listingServiceSchema(locale, {
     transition: background-color 0.3s var(--ease-out);
   }
   tr > :first-child {
-    padding-left: 24px;
-    border-radius: var(--r-md) 0 0 var(--r-md);
+    padding-inline-start: 24px;
+    border-start-start-radius: var(--r-md); border-start-end-radius: 0; border-end-end-radius: 0; border-end-start-radius: var(--r-md);
   }
   tr > :last-child {
-    padding-right: 24px;
-    border-radius: 0 var(--r-md) var(--r-md) 0;
+    padding-inline-end: 24px;
+    border-start-start-radius: 0; border-start-end-radius: var(--r-md); border-end-end-radius: var(--r-md); border-end-start-radius: 0;
   }
   tr:hover > * {
     background: var(--white);
@@ -942,15 +1145,15 @@ const packageSchema = listingServiceSchema(locale, {
     font-weight: var(--fw-medium);
     font-size: var(--fs-lead);
     color: var(--ink);
-    text-align: right;
+    text-align: end;
     white-space: nowrap;
-    padding-left: 24px;
+    padding-inline-start: 24px;
   }
   .unit {
-    text-align: right;
+    text-align: end;
     white-space: nowrap;
     font-size: var(--fs-small);
-    padding-left: 12px;
+    padding-inline-start: 12px;
     width: 1%;
   }
 
@@ -971,7 +1174,7 @@ const packageSchema = listingServiceSchema(locale, {
   /* "à partir de 300 €" is longer than the Hungarian "300 €-tól": let it wrap on a phone. */
   .contracts .amount {
     white-space: normal;
-    padding-left: 12px;
+    padding-inline-start: 12px;
     font-size: var(--fs-body);
   }
   .contracts tr:hover > * {
@@ -1038,7 +1241,7 @@ const packageSchema = listingServiceSchema(locale, {
     flex-direction: column;
     align-items: flex-end;
     flex-shrink: 0;
-    text-align: right;
+    text-align: end;
   }
   .cta-note {
     font-size: 13.5px;
@@ -1060,10 +1263,10 @@ const packageSchema = listingServiceSchema(locale, {
       padding: 48px calc(var(--pad-x-mob) - var(--slab-x) + 4px);
     }
     tr > :first-child {
-      padding-left: 16px;
+      padding-inline-start: 16px;
     }
     tr > :last-child {
-      padding-right: 16px;
+      padding-inline-end: 16px;
     }
     .two-col .duo-panel {
       padding-block: 44px;
@@ -1076,15 +1279,15 @@ const packageSchema = listingServiceSchema(locale, {
     }
     .commission-cta {
       align-items: flex-start;
-      text-align: left;
+      text-align: start;
     }
     .unit {
       display: none;
     }
     /* With the unit hidden, the amount closes the row. */
     .extras .amount {
-      padding-right: 16px;
-      border-radius: 0 var(--r-md) var(--r-md) 0;
+      padding-inline-end: 16px;
+      border-start-start-radius: 0; border-start-end-radius: var(--r-md); border-end-end-radius: var(--r-md); border-end-start-radius: 0;
     }
   }
 </style>

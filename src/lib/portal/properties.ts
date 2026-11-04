@@ -9,6 +9,8 @@
  * touch a given property.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { canonicalCounty } from '~/lib/counties';
+import { roundEur, PRICE_ROUNDING_DEFAULT } from '~/lib/exchange-rates';
 import { getTaxonomy, termLabel } from '~/lib/runtime-config';
 import { readRequestedExtras, type RequestedExtras } from '~/lib/portal/requested-extras';
 
@@ -37,6 +39,9 @@ export type PortalMedia = {
   is_hero: boolean;
   width: number | null;
   height: number | null;
+  /** Migration 0054: added to a live listing, waiting for an admin; not on the public site. */
+  pending?: boolean;
+  submitted_at?: string | null;
 };
 
 export type PortalProperty = {
@@ -304,14 +309,15 @@ export async function applyIntake(
   if (category) patch.category = category;
 
   if (intake.settlement) patch.settlement = intake.settlement.slice(0, 120);
-  if (intake.county) patch.county = intake.county.slice(0, 60);
+  // Intake comes from the Hungarian valuation form: store the canonical county (src/lib/counties.ts).
+  if (intake.county) patch.county = (canonicalCounty('HU', intake.county) ?? intake.county).slice(0, 60);
 
   const priceHuf = toNumber(intake.priceHuf);
   if (priceHuf) {
     patch.price_huf = Math.round(priceHuf);
     // A working placeholder so the listing is coherent before an admin sets a
     // real rate. The editor requires both figures anyway before submission.
-    patch.price_eur = Math.max(1, Math.round(priceHuf / 400));
+    patch.price_eur = Math.max(1, roundEur(priceHuf / 400, PRICE_ROUNDING_DEFAULT));
   }
 
   const floor = toNumber(intake.floorM2);

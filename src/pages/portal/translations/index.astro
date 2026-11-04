@@ -1,9 +1,11 @@
 ---
 /**
- * Admin — translations at a glance: requests from free-link owners waiting for
- * a decision, what is being made, what got stuck, what is done. Approve or
- * decline a request, run a stuck job again, or push the queue along ("Folytatás
- * most"). The work itself is src/lib/ai/translation-jobs.ts.
+ * Admin — translations. Two tabs:
+ *  - Áttekintés: every listing x every language, one dot each (src/lib/ai/translation-status.ts decides
+ *    the colour); a dot opens the side-by-side editor.
+ *  - Kérések: requests from free-link owners waiting for a decision, what is being made, what got stuck,
+ *    what is done. Approve or decline a request, run a stuck job again, or push the queue along
+ *    ("Folytatás most"). The work itself is src/lib/ai/translation-jobs.ts.
  */
 export const prerender = false;
 
@@ -11,14 +13,21 @@ import Portal from '~/layouts/Portal.astro';
 import { icon } from '~/lib/portal/icons';
 import { timeAgo } from '~/lib/portal/time';
 import { isAiEnabled } from '~/lib/ai/client';
-import { HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL, ORIGIN_HU, formatCostHu } from '~/lib/ai/translate-core';
+import { ALL_LOCALES, HU_NAME, JOB_STATUS_HU, JOB_STATUS_PILL, ORIGIN_HU, formatCostHu, localeGroups } from '~/lib/ai/translate-core';
+import { STATUS_HU, STATUS_ORDER, blankFact, countStatuses, translationStatus, type OverviewRow, type StatusInfo, type TranslationStatus } from '~/lib/ai/translation-status';
+import { loadMatrix, loadSources } from '~/lib/ai/translation-overview';
+import TranslationMatrix from '~/components/portal/TranslationMatrix.astro';
 import { dailyCapMicroEur, spentTodayMicroEur, isMissingTranslationSchema } from '~/lib/ai/translation-jobs';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { fmtEur } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
 
-const filter = Astro.url.searchParams.get('status') ?? 'requested';
+const params = Astro.url.searchParams;
+// Old links (?status=failed) mean the request list.
+const tab = params.get('tab') === 'requests' || (!params.has('tab') && params.has('status')) ? 'requests' : 'overview';
+const filter = params.get('status') ?? 'requested';
 const FILTERS: [string, string, string[] | null][] = [
   ['requested', 'Jóváhagyásra vár', ['requested']],
   ['active', 'Folyamatban', ['queued', 'running']],
@@ -27,6 +36,57 @@ const FILTERS: [string, string, string[] | null][] = [
   ['all', 'Mind', null],
 ];
 const statuses = FILTERS.find(([key]) => key === filter)?.[2] ?? null;
+
+/* ── Áttekintés: every listing x every language ──────────────────────── */
+const OVERVIEW_STATUS_OPTIONS: [string, string][] = [['', 'Minden állapot'], ['attention', 'Figyelmet igényel'], ...STATUS_ORDER.filter((s) => s !== 'source').map((s): [string, string] => [s, STATUS_HU[s]])];
+const wantStatus = params.get('ostatus') ?? '';
+const wantLang = ALL_LOCALES.includes(params.get('lang') ?? '') ? (params.get('lang') as string) : '';
+const wantScope = params.get('scope') === 'all' ? 'all' : 'live';
+const wantPackage = params.get('package') ?? '';
+const columns = wantLang ? [wantLang] : [...ALL_LOCALES];
+const columnGroups = localeGroups(ALL_LOCALES);
+let overviewRows: OverviewRow[] = [];
+let overviewTotals: Record<string, Record<TranslationStatus, number>> = {};
+let overviewMigrated = true;
+let overviewPackages: string[] = [];
+let overviewCapped = false;
+let overviewListings = 0;
+if (tab === 'overview') {
+  let listingQuery = supabase.from('properties').select('id, ref, settlement, status, package, free_listing').order('created_at', { ascending: false }).limit(300);
+  if (wantScope === 'live') listingQuery = listingQuery.eq('status', 'published');
+  const { data: listings } = await listingQuery;
+  const all = (listings ?? []) as { id: string; ref: string; settlement: string; status: string; package: string | null; free_listing: boolean | null }[];
+  overviewPackages = [...new Set(all.map((row) => row.package).filter((value): value is string => Boolean(value)))].sort();
+  const shown = wantPackage ? all.filter((row) => row.package === wantPackage) : all;
+  overviewListings = shown.length;
+  const ids = shown.map((row) => row.id);
+  const [matrix, sources, spentNow] = await Promise.all([
+    loadMatrix(supabase, ids), loadSources(supabase, ids), spentTodayMicroEur(createSupabaseAdminClient()).catch(() => 0),
+  ]);
+  overviewMigrated = matrix.migrated;
+  overviewCapped = spentNow >= dailyCapMicroEur();
+  const factsBy = new Map<string, Map<string, (typeof matrix.facts)[number]>>();
+  for (const fact of matrix.facts) {
+    if (!factsBy.has(fact.property_id)) factsBy.set(fact.property_id, new Map());
+    factsBy.get(fact.property_id)!.set(fact.locale, fact);
+  }
+  const everyCell: Record<string, StatusInfo[]> = Object.fromEntries(ALL_LOCALES.map((code) => [code, []]));
+  const built: OverviewRow[] = shown.map((row) => {
+    const source = sources.get(row.id);
+    const ctx = { sourceLocale: source?.locale ?? 'hu', sourceHash: source?.hash ?? '', capped: overviewCapped };
+    const cells: Record<string, StatusInfo> = {};
+    for (const code of ALL_LOCALES) {
+      cells[code] = translationStatus(factsBy.get(row.id)?.get(code) ?? blankFact(row.id, code), ctx);
+      everyCell[code].push(cells[code]);
+    }
+    return { id: row.id, ref: row.ref, title: source?.title || 'Névtelen hirdetés', settlement: row.settlement, status: row.status, packageName: row.package ?? '', free: Boolean(row.free_listing), cells };
+  });
+  overviewTotals = Object.fromEntries(ALL_LOCALES.map((code) => [code, countStatuses(everyCell[code])]));
+  const wanted = (info: StatusInfo) => (wantStatus === 'attention' ? ['failed', 'stale', 'review'].includes(info.status) : info.status === wantStatus);
+  overviewRows = (wantStatus ? built.filter((row) => columns.some((code) => wanted(row.cells[code]))) : built)
+    // What needs a person first: the worst status in the visible columns decides the order.
+    .sort((a, b) => Math.min(...columns.map((c) => STATUS_ORDER.indexOf(a.cells[c].status))) - Math.min(...columns.map((c) => STATUS_ORDER.indexOf(b.cells[c].status))));
+}
 
 let query = supabase
   .from('translation_jobs')
@@ -58,10 +118,10 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
   <header class="ph">
     <div>
       <p class="eyebrow">Fordítások</p>
-      <h1>Mi készül <em>éppen?</em></h1>
+      <h1>Hol tartanak a <em>fordítások?</em></h1>
       <p class="lede">
-        Az ingyenes feltöltők kéréseit itt hagyja jóvá; a fizetett fordítások maguktól elindulnak a befizetés után.
-        Bármelyik hirdetést ingyen lefordíthatja a szerkesztőben, a Szövegek résznél.
+        Itt látja, melyik hirdetés melyik nyelven áll készen, és mi igényel figyelmet. Az ingyenes feltöltők kéréseit a Kérések fülön hagyja jóvá;
+        a fizetett fordítások maguktól elindulnak a befizetés után. Bármelyik fordítást kézzel is javíthatja.
       </p>
     </div>
     <p class="count"><b>{counts.requested}</b><span>jóváhagyásra vár</span></p>
@@ -74,11 +134,57 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
 
   {migrated && (
     <div class="spend">
-      <p>Ma elköltve: <b>{formatCostHu(spent)}</b> <span>(napi keret: €{(cap / 1_000_000).toLocaleString('hu-HU')}; a keret elérése után a fordítások másnapig várnak)</span></p>
-      {counts.active > 0 && aiOn && <button type="button" class="btn ghost small" id="continue-now">Folytatás most</button>}
+      <p>Ma elköltve: <b>{formatCostHu(spent)}</b> <span>(napi keret: {fmtEur(cap / 1_000_000)}; a keret elérése után a fordítások másnapig várnak)</span></p>
+      <span class="spend-tools">
+        {aiOn && <button type="button" class="btn ghost small" id="go-fill" title="Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást, a napi keret erejéig.">Basic nyelvek pótlása (EN, DE)</button>}
+        {counts.active > 0 && aiOn && <button type="button" class="btn ghost small" id="continue-now">Folytatás most</button>}
+      </span>
     </div>
   )}
+  <p class="pk-links">Csomagok és árak: <a href="/portal/packages/translations">Fordítási csomagok</a> · <a href="/portal/packages/languages">Egyedi nyelvek</a></p>
 
+  <nav class="tabs" aria-label="Fordítások">
+    <a href="/portal/translations" aria-current={tab === 'overview' ? 'page' : undefined}>Áttekintés</a>
+    <a href="/portal/translations?tab=requests" aria-current={tab === 'requests' ? 'page' : undefined}>Kérések{counts.requested ? <span class="n">{counts.requested}</span> : null}</a>
+  </nav>
+
+  {tab === 'overview' ? (
+    <>
+      {!overviewMigrated && (
+        <p class="notice warn">Az áttekintéshez futtassa le a 0052-es migrációt (a Supabase SQL Editorban). Addig a Kérések fülön látja a fordítási sort.</p>
+      )}
+      {overviewMigrated && (
+        <>
+          <form class="mx-filters" method="get" action="/portal/translations">
+            <label>Állapot
+              <select name="ostatus">{OVERVIEW_STATUS_OPTIONS.map(([value, label]) => <option value={value} selected={wantStatus === value}>{label}</option>)}</select>
+            </label>
+            <label>Nyelv
+              <select name="lang"><option value="">Minden nyelv</option>{ALL_LOCALES.map((code) => <option value={code} selected={wantLang === code}>{(HU_NAME[code] ?? code).replace(/^./, (c) => c.toUpperCase())}</option>)}</select>
+            </label>
+            <label>Csomag
+              <select name="package"><option value="">Minden csomag</option>{overviewPackages.map((value) => <option value={value} selected={wantPackage === value}>{value}</option>)}</select>
+            </label>
+            <label>Hirdetések
+              <select name="scope"><option value="live" selected={wantScope === 'live'}>Csak az élők</option><option value="all" selected={wantScope === 'all'}>Mind</option></select>
+            </label>
+            <button type="submit" class="btn ghost small">Szűrés</button>
+          </form>
+          {overviewCapped && <p class="notice warn">A mai AI-keret elfogyott: a sorban álló fordítások holnap készülnek el.</p>}
+          {overviewRows.length > 0 ? (
+            <TranslationMatrix rows={overviewRows} columns={columns} groups={columnGroups} totals={overviewTotals} />
+          ) : (
+            <div class="empty">
+              <span class="empty-ic" set:html={icon('globe', 26)} />
+              <p>{overviewListings === 0 ? 'Még nincs hirdetés ebben a szűrésben.' : 'Ehhez a szűréshez nincs tétel.'}</p>
+            </div>
+          )}
+          <p class="mx-note">Egy pontra kattintva megnyílik a szerkesztő: balra az eredeti szöveg, jobbra a fordítás. {overviewListings >= 300 && 'A lista a legújabb 300 hirdetést mutatja.'}</p>
+        </>
+      )}
+    </>
+  ) : (
+    <>
   <div class="filters">
     {FILTERS.map(([value, label]) => (
       <a href={`/portal/translations?status=${value}`} aria-current={filter === value ? 'page' : undefined}>{label}{counts[value] ? <span class="n">{counts[value]}</span> : null}</a>
@@ -129,6 +235,8 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
       </div>
     )
   )}
+    </>
+  )}
 </Portal>
 
 <script>
@@ -147,6 +255,17 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
       location.reload();
     });
   });
+  document.getElementById('go-fill')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget as HTMLButtonElement;
+    const ok = await window.pf!.confirm({ title: 'Basic nyelvek pótlása', body: 'Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást (régebbi hirdetésektől kezdve), a napi AI-keret erejéig. A keret elérése után a többi másnap pótolható.', confirmLabel: 'Pótlás indítása' });
+    if (!ok) return;
+    button.disabled = true;
+    const res = await fetch('/api/portal/translations/go-fill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) { window.pf!.toast(json.message || 'Nem sikerült.', 'error'); button.disabled = false; return; }
+    window.pf!.toast(json.languages === 0 ? 'Minden élő hirdetésnek megvan az angol és a német.' : `${json.listings} hirdetés, ${json.languages} nyelv sorba állítva.${json.budgetStopped ? ' A napi keret elfogyott, a többit holnap pótolhatja.' : ''}`, 'ok');
+    setTimeout(() => location.reload(), 1800);
+  });
   document.getElementById('continue-now')?.addEventListener('click', async (event) => {
     const button = event.currentTarget as HTMLButtonElement;
     button.disabled = true;
@@ -158,9 +277,21 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
 </script>
 
 <style>
+  .tabs { display: flex; gap: 6px; margin: 0 0 22px; border-bottom: 1px solid var(--pt-hair); }
+  .tabs a { padding: 10px 16px 12px; color: var(--ink-quiet); text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: 15px; }
+  .tabs a:hover { color: var(--ink); }
+  .tabs a[aria-current='page'] { color: var(--ink); border-bottom-color: var(--ink); font-weight: var(--fw-medium); }
+  .tabs .n { margin-left: 8px; padding: 1px 8px; border-radius: var(--r-pill); background: var(--ink); color: var(--cream); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .mx-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; margin: 0 0 18px; }
+  .mx-filters label { display: grid; gap: 4px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-quiet); }
+  .mx-filters select { min-width: 150px; padding: 9px 12px; border-radius: var(--r-md); border: 1px solid var(--pt-hair); background: var(--white); color: var(--ink); font: inherit; font-size: 14px; letter-spacing: 0; text-transform: none; }
+  .mx-note { margin: 14px 2px 0; font-size: var(--fs-small); color: var(--ink-quiet); }
   .count b { margin-right: 6px; }
   .spend { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 20px; font-size: var(--fs-small); color: var(--ink-quiet); }
   .spend p { margin: 0; }
+  .spend-tools { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+  .pk-links { margin: -8px 0 20px; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .pk-links a { color: var(--ink); }
   .spend b { color: var(--ink); font-variant-numeric: tabular-nums; }
   .tq { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
   .tq-card { padding: 20px 22px; border-radius: var(--r-lg); background: var(--white); box-shadow: 0 0 0 1px var(--pt-hair); }

@@ -133,7 +133,8 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
       const draftId = await createDraft(admin, created.user.id);
       if (payload.settlement || payload.description || payload.requestedExtras) await applyIntake(admin, draftId, payload as ListingIntake);
       if (invite.grants_free_listing) {
-        await admin.from('properties').update({ free_listing: true }).eq('id', draftId);
+        // Free listings show FINDDOME's contact only (spec §5.1), like the free upload link.
+        await admin.from('properties').update({ free_listing: true, public_contact: 'company', seller_contact_visible: false }).eq('id', draftId);
       }
 
       const referralId = (payload as { referralId?: string | null }).referralId;

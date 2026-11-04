@@ -27,6 +27,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Vähintään ${chars(limit)}.`,
   consent: 'Hyväksy tietosuojaseloste jatkaaksesi.',
   selfReferral: 'Et voi suositella itseäsi: anna toinen sähköpostiosoite.',
+  choose: "Valitse vaihtoehto luettelosta.",
+  contact: (kind, match) => (kind === 'email' ? `Teksti ei saa sisältää sähköpostiosoitetta (”${match}”). Ostajat tavoittavat sinut FINDDOMEn kautta.` : kind === 'phone' ? `Teksti ei saa sisältää puhelinnumeroa (”${match}”). Ostajat tavoittavat sinut FINDDOMEn kautta.` : `Teksti ei saa sisältää verkkosivua, sosiaalista mediaa tai viestisovellusta (”${match}”).`),
   summary: (count) =>
     count === 1
       ? 'Yksi kenttä on tarkistettava:'

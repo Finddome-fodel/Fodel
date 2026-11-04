@@ -12,6 +12,10 @@ import { type OrderLine } from '~/lib/orders';
 import { eventLabel, paymentStatusLabel, PAYMENT_METHOD_LABEL } from '~/lib/portal/labels';
 import { isListingFeeOrder } from '~/lib/portal/free-approval';
 import { money } from '~/lib/portal/payments';
+import { listingCatalog } from '~/lib/listing-packages';
+import { getCompany } from '~/lib/runtime-config';
+import { needsReview, retiredLines, tierDrift, legacyPackageLine } from '~/lib/portal/order-notices';
+import { fmtHuf } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -28,7 +32,7 @@ const { data: order } = await supabase
 if (!order) return new Response('Rendelés nem található.', { status: 404 });
 
 const { data: property } = order.property_id
-  ? await supabase.from('properties').select('id, ref, settlement, status, free_listing').eq('id', order.property_id).maybeSingle()
+  ? await supabase.from('properties').select('id, ref, settlement, status, free_listing, price_huf').eq('id', order.property_id).maybeSingle()
   : { data: null };
 const { data: owner } = order.owner_id
   ? await supabase.from('profiles').select('id, full_name, email').eq('id', order.owner_id).maybeSingle()
@@ -67,6 +71,15 @@ const dateTimeFmt = new Intl.DateTimeFormat('hu-HU', { year: 'numeric', month: '
 const currency = String(order.currency ?? 'eur').toUpperCase();
 const formatCents = (cents: number) => money(cents, currency);
 const lines = (Array.isArray(order.line_items) ? order.line_items : []) as OrderLine[];
+
+/* An unpaid order whose lines no longer match today's rules (§4a.6, §9.2). Nothing is repriced:
+   the admin decides — the pro-forma is valid as issued, or the order is withdrawn. */
+const reviewLines = needsReview(order.status);
+const retired = reviewLines ? retiredLines(lines, listingCatalog((await getCompany()).services)) : [];
+const oldPackage = reviewLines ? legacyPackageLine(lines, listingCatalog((await getCompany()).services).pricingLive) : null;
+const drift = reviewLines ? tierDrift(lines, property?.price_huf == null ? null : Number(property.price_huf)) : [];
+const band = (fromHuf: number, toHuf: number | null) =>
+  toHuf === null ? `${fmtHuf(fromHuf)} felett` : fromHuf <= 1 ? `${fmtHuf(toHuf)}-ig` : `${fmtHuf(fromHuf)} – ${fmtHuf(toHuf)}`;
 
 /* "Jóváhagyás ingyen" (migration 0045). A waived order is 'cancelled' with
    waived_at set: the fee was let go when an admin approved the listing free. */
@@ -117,6 +130,33 @@ const canWaive = order.status === 'pending'
           </tr>
         </tbody>
       </table>
+
+      {oldPackage && (
+        <div class="notice warn order-notice" role="note">
+          <strong>Elavult ár: régi csomag ({oldPackage.label})</strong>
+          2026 novembere óta a hirdetési csomagok a Basic, Europe és World, ingatlanértéktől és időtartamtól függő árakkal. Ez a díjbekérő
+          a kiállításkori áron marad érvényes, és kifizethető. Ha az új árakkal szeretne újat kiállítani, vonja vissza ezt a rendelést,
+          majd a hirdetés áttekintő oldalán állítson ki újat{order.property_id ? <> (<a href={`/portal/review/${order.property_id}`}>áttekintés</a>)</> : null}.
+        </div>
+      )}
+      {retired.length > 0 && (
+        <div class="notice warn order-notice" role="note">
+          <strong>Kivezetett tétel: {retired.map((l) => l.id === 'homepage-highlight' ? 'főoldali kiemelés' : l.label).join(', ')}</strong>
+          Ez a tétel 2026 novembere óta nem rendelhető. A díjbekérő a kiállításkori tételekkel érvényes: ha a hirdető kifizeti,
+          a kiemelés jár neki. Ha nem kívánja teljesíteni, vonja vissza a rendelést, és egyeztessen a hirdetővel.
+        </div>
+      )}
+      {drift.length > 0 && (
+        <div class="notice warn order-notice" role="note">
+          <strong>Az ingatlan ára azóta másik ársávba került</strong>
+          A díjbekérő a rendeléskori ár szerinti sávval készült; a hirdetés mostani ára {fmtHuf(Number(property!.price_huf))}.
+          <ul>
+            {drift.map((d) => <li>{d.line.label}: rendeléskor {band(d.fromHuf, d.toHuf)} sáv{d.direction === 'up' ? ' — most drágább sávba esne' : ' — most olcsóbb sávba esne'}</li>)}
+          </ul>
+          A rendelés nem árazódik át magától: a díjbekérő így is érvényes. Ha a mostani sáv szerint kell fizetni, vonja vissza
+          a rendelést, és egyeztessen a hirdetővel.
+        </div>
+      )}
 
       <dl class="facts">
         <div><dt>Hirdető</dt><dd>{owner?.full_name ?? owner?.email ?? '—'}</dd></div>
@@ -330,6 +370,8 @@ const canWaive = order.status === 'pending'
   .facts dt { font-size: 12.5px; color: var(--ink-quiet); margin-bottom: 3px; }
   .facts dd { font-size: var(--fs-small); color: var(--ink); overflow-wrap: anywhere; }
   .facts a { text-decoration: underline; text-underline-offset: 3px; }
+  .order-notice { margin: 18px 0 0; font-size: var(--fs-small); line-height: 1.65; }
+  .order-notice ul { margin: 6px 0; padding-left: 18px; }
   .refund-flag { padding: 14px 18px; border-radius: var(--r-md); background: var(--pt-red-bg); color: var(--pt-red); font-size: var(--fs-small); line-height: 1.65; }
 
   .billing { display: grid; gap: 4px; padding: 22px; border-radius: var(--r-lg); background: var(--paper); }

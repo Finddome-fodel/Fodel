@@ -85,6 +85,27 @@ export const SV = {
     cta: 'Redigera annons',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Vi har granskat dina nya foton (#${ref})`,
+    preheader: 'De godkända fotona syns redan i din annons.',
+    heading: 'Vi har granskat dina nya foton',
+    body: (title: string, ref: string) =>
+      `Tack för att du uppdaterade bildgalleriet i din annons ”${title}” (#${ref}). Vårt team har granskat de nya fotona.`,
+    approvedLabel: 'Godkända, syns nu',
+    rejectedLabel: 'Inte publicerade',
+    reasonsTitle: 'Varför publicerades inte vissa foton?',
+    reasons: {
+      quality: 'Suddig, mörk eller lågkvalitativ bild',
+      unrelated: 'Visar inte den här bostaden',
+      personal: 'Personuppgifter syns (ansikten, registreringsskyltar, dokument)',
+      branding: 'Innehåller text, en logotyp, en vattenstämpel eller kontaktuppgifter',
+      duplicate: 'Samma bild finns redan i galleriet',
+      inappropriate: 'Innehåll som inte passar i en annons',
+    } as Record<string, string>,
+    after: 'Du kan fortsätta lägga till nya foton kostnadsfritt. Varje ny bild visas i annonsen efter en kort granskning.',
+    cta: 'Hantera foton',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Godkänd (#${ref}): bara betalningen återstår`,
     preheader: 'Din annons är godkänd och publiceras så snart betalningen har kommit in.',

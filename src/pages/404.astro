@@ -37,31 +37,38 @@ const locale =
 const x = localizer(locale);
 const others = LOCALES.filter((code) => code !== locale);
 
-const title = x('Az oldal nem található', 'Pagina niet gevonden', 'Page not found', 'Seite nicht gefunden', 'Page introuvable', 'Página no encontrada', 'Nie znaleziono strony', 'Pagina nu a fost găsită', 'Stránka sa nenašla', 'Pagina non trovata', 'Página não encontrada', 'Η σελίδα δεν βρέθηκε', 'Stránka nenalezena', 'Stran ni bila najdena', 'Sidan hittades inte', 'Siden blev ikke fundet', 'Fant ikke siden', 'Sivua ei löytynyt', 'Lehte ei leitud', 'Lapa nav atrasta', 'Puslapis nerastas');
-const body = x(
-  'A keresett oldal nem létezik, vagy áthelyeztük. Nézze meg a kínálatunkat, vagy vegye fel velünk a kapcsolatot.',
-  'De pagina die u zocht bestaat niet of is verplaatst. Bekijk ons aanbod, of neem contact met ons op.',
-  'The page you were looking for does not exist or has moved. See our properties, or get in touch.',
-  'Die gesuchte Seite gibt es nicht oder sie wurde verschoben. Sehen Sie sich unser Angebot an oder nehmen Sie Kontakt mit uns auf.',
-  'La page que vous cherchez n’existe pas ou a été déplacée. Découvrez nos biens, ou contactez-nous.',
-  'La página que busca no existe o se ha trasladado. Descubra nuestros inmuebles o póngase en contacto con nosotros.',
-  'Strona, której Państwo szukają, nie istnieje lub została przeniesiona. Zapraszamy do przejrzenia naszych nieruchomości lub do kontaktu.',
-  'Pagina pe care o căutați nu există sau a fost mutată. Descoperiți proprietățile noastre sau contactați-ne.',
-  'Stránka, ktorú hľadáte, neexistuje alebo bola presunutá. Pozrite si naše nehnuteľnosti alebo nás kontaktujte.',
-  'La pagina che cercava non esiste o è stata spostata. Veda i nostri immobili o ci contatti.',
-  'A página que procurava não existe ou foi movida. Veja os nossos imóveis ou contacte-nos.',
-  'Η σελίδα που αναζητούσατε δεν υπάρχει ή έχει μετακινηθεί. Δείτε τα ακίνητά μας ή επικοινωνήστε μαζί μας.',
-  'Stránka, kterou hledáte, neexistuje nebo byla přesunuta. Prohlédněte si naše nemovitosti nebo nás kontaktujte.',
-  'Stran, ki ste jo iskali, ne obstaja ali je bila premaknjena. Oglejte si naše nepremičnine ali nas kontaktirajte.',
-  'Sidan du letade efter finns inte eller har flyttats. Se våra fastigheter eller kontakta oss.',
-  'Siden, du ledte efter, findes ikke eller er flyttet. Se vores ejendomme, eller kontakt os.',
-  'Siden du lette etter, finnes ikke eller er flyttet. Se eiendommene våre eller ta kontakt.',
-  'Etsimääsi sivua ei ole tai se on siirretty. Katso kiinteistömme tai ota yhteyttä.',
-  'Otsitud lehte ei ole olemas või see on teisaldatud. Vaadake meie kinnisvara või võtke ühendust.',
-  'Meklētā lapa neeksistē vai ir pārvietota. Apskatiet mūsu īpašumus vai sazinieties ar mums.',
-  'Ieškomo puslapio nėra arba jis perkeltas. Peržiūrėkite mūsų turtą arba susisiekite su mumis.'
-);
-const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another language', 'In einer anderen Sprache', 'Dans une autre langue', 'En otro idioma', 'W innym języku', 'În altă limbă', 'V inom jazyku', 'In un’altra lingua', 'Noutra língua', 'Σε άλλη γλώσσα', 'V jiném jazyce', 'V drugem jeziku', 'På ett annat språk', 'På et andet sprog', 'På et annet språk', 'Toisella kielellä', 'Teises keeles', 'Citā valodā', 'Kita kalba');
+const title = x({ hu: 'Az oldal nem található', nl: 'Pagina niet gevonden', en: 'Page not found', de: 'Seite nicht gefunden', fr: 'Page introuvable', es: 'Página no encontrada', pl: 'Nie znaleziono strony', ro: 'Pagina nu a fost găsită', sk: 'Stránka sa nenašla', it: 'Pagina non trovata', pt: 'Página não encontrada', el: 'Η σελίδα δεν βρέθηκε', cs: 'Stránka nenalezena', sl: 'Stran ni bila najdena', sv: 'Sidan hittades inte', da: 'Siden blev ikke fundet', no: 'Fant ikke siden', fi: 'Sivua ei löytynyt', et: 'Lehte ei leitud', lv: 'Lapa nav atrasta', lt: 'Puslapis nerastas', sr: 'Stranica nije pronađena', uk: 'Сторінку не знайдено', tr: 'Sayfa bulunamadı', he: 'הדף לא נמצא', ar: 'الصفحة غير موجودة', ru: 'Страница не найдена', zh: '页面未找到' });
+const body = x({
+  hu: 'A keresett oldal nem létezik, vagy áthelyeztük. Nézze meg a kínálatunkat, vagy vegye fel velünk a kapcsolatot.',
+  nl: 'De pagina die u zocht bestaat niet of is verplaatst. Bekijk ons aanbod, of neem contact met ons op.',
+  en: 'The page you were looking for does not exist or has moved. See our properties, or get in touch.',
+  de: 'Die gesuchte Seite gibt es nicht oder sie wurde verschoben. Sehen Sie sich unser Angebot an oder nehmen Sie Kontakt mit uns auf.',
+  fr: 'La page que vous cherchez n’existe pas ou a été déplacée. Découvrez nos biens, ou contactez-nous.',
+  es: 'La página que busca no existe o se ha trasladado. Descubra nuestros inmuebles o póngase en contacto con nosotros.',
+  pl: 'Strona, której Państwo szukają, nie istnieje lub została przeniesiona. Zapraszamy do przejrzenia naszych nieruchomości lub do kontaktu.',
+  ro: 'Pagina pe care o căutați nu există sau a fost mutată. Descoperiți proprietățile noastre sau contactați-ne.',
+  sk: 'Stránka, ktorú hľadáte, neexistuje alebo bola presunutá. Pozrite si naše nehnuteľnosti alebo nás kontaktujte.',
+  it: 'La pagina che cercava non esiste o è stata spostata. Veda i nostri immobili o ci contatti.',
+  pt: 'A página que procurava não existe ou foi movida. Veja os nossos imóveis ou contacte-nos.',
+  el: 'Η σελίδα που αναζητούσατε δεν υπάρχει ή έχει μετακινηθεί. Δείτε τα ακίνητά μας ή επικοινωνήστε μαζί μας.',
+  cs: 'Stránka, kterou hledáte, neexistuje nebo byla přesunuta. Prohlédněte si naše nemovitosti nebo nás kontaktujte.',
+  sl: 'Stran, ki ste jo iskali, ne obstaja ali je bila premaknjena. Oglejte si naše nepremičnine ali nas kontaktirajte.',
+  sv: 'Sidan du letade efter finns inte eller har flyttats. Se våra fastigheter eller kontakta oss.',
+  da: 'Siden, du ledte efter, findes ikke eller er flyttet. Se vores ejendomme, eller kontakt os.',
+  no: 'Siden du lette etter, finnes ikke eller er flyttet. Se eiendommene våre eller ta kontakt.',
+  fi: 'Etsimääsi sivua ei ole tai se on siirretty. Katso kiinteistömme tai ota yhteyttä.',
+  et: 'Otsitud lehte ei ole olemas või see on teisaldatud. Vaadake meie kinnisvara või võtke ühendust.',
+  lv: 'Meklētā lapa neeksistē vai ir pārvietota. Apskatiet mūsu īpašumus vai sazinieties ar mums.',
+  lt: 'Ieškomo puslapio nėra arba jis perkeltas. Peržiūrėkite mūsų turtą arba susisiekite su mumis.',
+  sr: 'Stranica koju ste tražili ne postoji ili je premeštena. Pogledajte naše nekretnine ili nam se obratite.',
+  uk: 'Сторінки, яку ви шукали, не існує або її переміщено. Перегляньте нашу нерухомість або зв’яжіться з нами.',
+  tr: 'Aradığınız sayfa mevcut değil veya taşınmış. Mülklerimize göz atın ya da bizimle iletişime geçin.',
+  he: 'הדף שחיפשתם אינו קיים או שהועבר. עיינו בנכסים שלנו או צרו איתנו קשר.',
+  ar: 'الصفحة التي تبحث عنها غير موجودة أو نُقلت. تصفّح عقاراتنا أو تواصل معنا.',
+  ru: 'Страница, которую вы искали, не существует или была перемещена. Посмотрите нашу недвижимость или свяжитесь с нами.',
+  zh: '您要查找的页面不存在或已被移动。请浏览我们的房产，或与我们联系。',
+});
+const otherLanguages = x({ hu: 'Más nyelven', nl: 'In een andere taal', en: 'In another language', de: 'In einer anderen Sprache', fr: 'Dans une autre langue', es: 'En otro idioma', pl: 'W innym języku', ro: 'În altă limbă', sk: 'V inom jazyku', it: 'In un’altra lingua', pt: 'Noutra língua', el: 'Σε άλλη γλώσσα', cs: 'V jiném jazyce', sl: 'V drugem jeziku', sv: 'På ett annat språk', da: 'På et andet sprog', no: 'På et annet språk', fi: 'Toisella kielellä', et: 'Teises keeles', lv: 'Citā valodā', lt: 'Kita kalba', sr: 'Na drugom jeziku', uk: 'Іншою мовою', tr: 'Başka bir dilde', he: 'בשפה אחרת', ar: 'بلغة أخرى', ru: 'На другом языке', zh: '其他语言版本' });
 ---
 
 <Base locale={locale} title={`404 | ${title}`} description={body} noindex>
@@ -75,8 +82,8 @@ const otherLanguages = x('Más nyelven', 'In een andere taal', 'In another langu
         <div class="col">
           <p class="col-body">{body}</p>
           <div class="actions">
-            <Button variant="dark" href={path(locale, 'properties')}>{x('Ingatlanok', 'Ons aanbod', 'Our properties', 'Unser Angebot', 'Nos biens', 'Nuestros inmuebles', 'Nasze nieruchomości', 'Proprietățile noastre', 'Naše nehnuteľnosti', 'I nostri immobili', 'Os nossos imóveis', 'Τα ακίνητά μας', 'Naše nemovitosti', 'Naše nepremičnine', 'Våra fastigheter', 'Vores ejendomme', 'Våre eiendommer', 'Kohteemme', 'Meie kinnisvara', 'Mūsu īpašumi', 'Mūsų nekilnojamasis turtas')}</Button>
-            <Button variant="text" href={path(locale, 'contact')}>{x('Kapcsolat', 'Contact', 'Contact', 'Kontakt', 'Contact', 'Contacto', 'Kontakt', 'Contact', 'Kontakt', 'Contatti', 'Contacto', 'Επικοινωνία', 'Kontakt', 'Kontakt', 'Kontakt', 'Kontakt', 'Kontakt', 'Yhteystiedot', 'Kontakt', 'Kontakti', 'Kontaktai')}</Button>
+            <Button variant="dark" href={path(locale, 'properties')}>{x({ hu: 'Ingatlanok', nl: 'Ons aanbod', en: 'Our properties', de: 'Unser Angebot', fr: 'Nos biens', es: 'Nuestros inmuebles', pl: 'Nasze nieruchomości', ro: 'Proprietățile noastre', sk: 'Naše nehnuteľnosti', it: 'I nostri immobili', pt: 'Os nossos imóveis', el: 'Τα ακίνητά μας', cs: 'Naše nemovitosti', sl: 'Naše nepremičnine', sv: 'Våra fastigheter', da: 'Vores ejendomme', no: 'Våre eiendommer', fi: 'Kohteemme', et: 'Meie kinnisvara', lv: 'Mūsu īpašumi', lt: 'Mūsų nekilnojamasis turtas', sr: 'Naše nekretnine', uk: 'Наші об’єкти', tr: 'Mülklerimiz', he: 'הנכסים שלנו', ar: 'عقاراتنا', ru: 'Наши объекты', zh: '我们的房源' })}</Button>
+            <Button variant="text" href={path(locale, 'contact')}>{x({ hu: 'Kapcsolat', nl: 'Contact', en: 'Contact', de: 'Kontakt', fr: 'Contact', es: 'Contacto', pl: 'Kontakt', ro: 'Contact', sk: 'Kontakt', it: 'Contatti', pt: 'Contacto', el: 'Επικοινωνία', cs: 'Kontakt', sl: 'Kontakt', sv: 'Kontakt', da: 'Kontakt', no: 'Kontakt', fi: 'Yhteystiedot', et: 'Kontakt', lv: 'Kontakti', lt: 'Kontaktai', sr: 'Kontakt', uk: 'Контакти', tr: 'İletişim', he: 'צור קשר', ar: 'اتصل بنا', ru: 'Контакты', zh: '联系我们' })}</Button>
           </div>
         </div>
 

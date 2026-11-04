@@ -25,6 +25,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Cel puțin ${chars(limit)}.`,
   consent: 'Pentru a continua, vă rugăm să acceptați politica de confidențialitate.',
   selfReferral: 'Nu vă puteți recomanda pe dvs. înșivă: introduceți altă adresă de e-mail.',
+  choose: "Vă rugăm să alegeți din listă.",
+  contact: (kind, match) => (kind === 'email' ? `Textul nu poate conține o adresă de e-mail („${match}”). Cumpărătorii vă contactează prin FINDDOME.` : kind === 'phone' ? `Textul nu poate conține un număr de telefon („${match}”). Cumpărătorii vă contactează prin FINDDOME.` : `Textul nu poate conține un site web, o rețea socială sau o aplicație de mesagerie („${match}”).`),
   summary: (count) =>
     count === 1
       ? 'Un câmp trebuie verificat:'

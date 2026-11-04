@@ -41,9 +41,9 @@ async function count(query: PromiseLike<{ count: number | null }>): Promise<numb
 }
 const head = { count: 'exact', head: true } as const;
 
-let waiting = { inbox: 0, enquiries: 0, valuations: 0, services: 0, payment: 0, invoices: 0, translations: 0 };
+let waiting = { inbox: 0, enquiries: 0, valuations: 0, services: 0, payment: 0, invoices: 0, translations: 0, photos: 0 };
 if (!bare && profile && supabase) {
-  const [enquiries, inbox, valuations, services, payment, invoiceDrafts, translations] = await Promise.all([
+  const [enquiries, inbox, valuations, services, payment, invoiceDrafts, translations, photos] = await Promise.all([
     count(supabase.from('enquiries').select('id', head).eq('handled', false)),
     isAdmin ? count(supabase.from('properties').select('id', head).eq('status', 'submitted')) : 0,
     isAdmin
@@ -52,10 +52,18 @@ if (!bare && profile && supabase) {
     isAdmin ? count(supabase.from('service_requests').select('id', head).eq('status', 'requested')) : 0,
     !isAdmin ? count(supabase.from('properties').select('id', head).eq('status', 'awaiting_payment')) : 0,
     isAdmin ? count(supabase.from('invoices').select('id', head).eq('status', 'draft')) : 0,
-    // Free-link owners' translation requests waiting for a decision (0 before migration 0043).
-    isAdmin ? count(supabase.from('translation_jobs').select('id', head).eq('status', 'requested')) : 0,
+    // Free-link owners' translation requests waiting for a decision (0 before migration 0043), plus the
+    // languages whose latest job failed and that have no text yet (0 before migration 0052).
+    isAdmin
+      ? Promise.all([
+          count(supabase.from('translation_jobs').select('id', head).eq('status', 'requested')),
+          count(supabase.from('translation_matrix').select('property_id', head).eq('job_status', 'failed').eq('has_text', false).eq('excluded', false)),
+        ]).then(([requested, failed]) => requested + failed)
+      : 0,
+    // Photos added to live listings, waiting for moderation (0 before migration 0054).
+    isAdmin ? count(supabase.from('property_media').select('id', head).eq('pending', true)) : 0,
   ]);
-  waiting = { inbox, enquiries, valuations, services, payment, invoices: invoiceDrafts, translations };
+  waiting = { inbox, enquiries, valuations, services, payment, invoices: invoiceDrafts, translations, photos };
 }
 
 type Item = { href: string; label: string; icon: IconName; count?: number; match?: string[] };
@@ -70,6 +78,7 @@ const GROUPS: Group[] = isAdmin
           { href: '/portal/inbox', label: 'Beérkező hirdetések', icon: 'inbox', count: waiting.inbox, match: ['/portal/review'] },
           { href: '/portal/enquiries', label: 'Érdeklődők', icon: 'phone', count: waiting.enquiries },
           { href: '/portal/valuations', label: 'Értékbecslések', icon: 'calc', count: waiting.valuations },
+          { href: '/portal/photos', label: 'Új fotók', icon: 'image', count: waiting.photos },
           { href: '/portal/services', label: 'Helyszíni szolgáltatások', icon: 'camera', count: waiting.services },
           { href: '/portal/translations', label: 'Fordítások', icon: 'globe', count: waiting.translations },
         ],
@@ -88,6 +97,8 @@ const GROUPS: Group[] = isAdmin
           { href: '/portal/top10', label: 'Top 10', icon: 'star' },
           { href: '/portal/content/blog', label: 'Blog', icon: 'pen' },
           { href: '/portal/email', label: 'E-mail', icon: 'mail', match: ['/portal/newsletter'] },
+          // What is sold, right before the money it brings in (§9.0).
+          { href: '/portal/packages', label: 'Csomagok', icon: 'tag', match: ['/portal/settings/packages'] },
           { href: '/portal/payments', label: 'Fizetések', icon: 'card' },
           { href: '/portal/invoices', label: 'Számlák', icon: 'invoice', count: waiting.invoices },
         ],
@@ -110,7 +121,7 @@ const current = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (item: Item) =>
   [item.href, ...(item.match ?? [])].some((p) => current === p || current.startsWith(`${p}/`));
 
-const urgent = waiting.inbox + waiting.enquiries + waiting.valuations + waiting.services + waiting.payment + waiting.translations;
+const urgent = waiting.inbox + waiting.enquiries + waiting.valuations + waiting.services + waiting.payment + waiting.translations + waiting.photos;
 const displayName = profile?.full_name || profile?.email || '';
 const initials =
   displayName
@@ -357,8 +368,16 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
     const below = rect.bottom + 6;
     const top = below + h > window.innerHeight - 12 ? Math.max(12, rect.top - h - 6) : below;
     const left = Math.min(Math.max(12, rect.right - w), window.innerWidth - w - 12);
-    pop.style.top = `${top}px`;
-    pop.style.left = `${left}px`;
+    // `position: fixed` is measured from the viewport, unless an ancestor has a transform, filter or similar (a row
+    // that lifts on hover does): then the popover is measured from that ancestor and would open far away. So find
+    // where this popover's (0, 0) really is on screen, and place it from there.
+    pop.style.animation = 'none';
+    pop.style.top = '0px';
+    pop.style.left = '0px';
+    const origin = pop.getBoundingClientRect();
+    pop.style.top = `${top - origin.top}px`;
+    pop.style.left = `${left - origin.left}px`;
+    pop.style.animation = '';
   }
 
   document.addEventListener('click', (event) => {

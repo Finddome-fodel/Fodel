@@ -24,6 +24,7 @@ import FreeUploadLink from '~/components/portal/FreeUploadLink.astro';
 import { listingName } from '~/lib/portal/time';
 import { getCompany } from '~/lib/runtime-config';
 import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
+import { fmtInt } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
@@ -173,9 +174,9 @@ const chips: [string, string][] = isAdmin
                   {isAdmin && <td class="owner">{(p.owner_id && ownerById.get(p.owner_id)) || '—'}</td>}
                   <td>{categoryLabel(p.category)}</td>
                   <td>{p.settlement}</td>
-                  <td class="price">€{p.price_eur.toLocaleString('de-DE')}</td>
+                  <td class="price">€{fmtInt(p.price_eur)}</td>
                   <td class="st">
-                    <span class:list={['pill', `pill-${p.status}`]}>{p.status === 'archived' && p.expired_at ? 'Lejárt' : STATUS_LABEL[p.status] ?? p.status}</span>
+                    <span class:list={['pill', `pill-${p.status}`]}>{p.status === 'archived' && p.expired_at ? 'Lejárt' : STATUS_LABEL[p.status] ?? p.status}</span>{isAdmin && (p as any).details?.subtype_review && <span class="pill pill-submitted" title="A típust a rendszer választotta; az áttekintő oldalon egy kattintással megerősíthető.">Típus ellenőrzése</span>}
                     {isAdmin && silent(p) && <span class="pill pill-bad">Nem válaszolt</span>}
                     {isAdmin && p.dutch_agent_requested && <DutchAgentBadge />}
                     {isAdmin && <FreeBadge property={p} />}
@@ -256,7 +257,7 @@ const chips: [string, string][] = isAdmin
                   <p>{p.settlement} · {categoryLabel(p.category)}</p>
                   {isAdmin && (p.dutch_agent_requested || p.free_listing || p.free_approved_at) && <p class="badges">{p.dutch_agent_requested && <DutchAgentBadge />}<FreeBadge property={p} /></p>}
                   <p class="row">
-                    <span class="price">€{p.price_eur.toLocaleString('de-DE')}</span>
+                    <span class="price">€{fmtInt(p.price_eur)}</span>
                     <span class="ref">#{p.ref}</span>
                   </p>
                   {isAdmin && (

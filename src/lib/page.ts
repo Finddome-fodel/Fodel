@@ -16,7 +16,10 @@ export function alternatesFor(key: RouteKey, ...rest: string[]): Record<Locale, 
   >;
 }
 
-/** Alternates for a property detail page. */
+/**
+ * Where the language menu and the hreflang set point from a property page: the same listing in every
+ * language. The page narrows this to the languages the listing is actually published in.
+ */
 export function propertyAlternates(
   categorySlugs: Partial<Record<Locale, string>>,
   ref: string

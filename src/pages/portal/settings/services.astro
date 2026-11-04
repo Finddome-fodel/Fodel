@@ -12,6 +12,7 @@ import Portal from '~/layouts/Portal.astro';
 import { valuationPackages } from '~/lib/valuation/packages';
 import { SERVICES_DEFAULT, AUTOMATION_DEFAULT, type Services, type Automation } from '~/lib/runtime-config';
 import { listingRules } from '~/lib/listing-rules';
+import MoneyInput from '~/components/portal/MoneyInput.astro';
 
 const { supabase, profile } = Astro.locals;
 if (profile?.role !== 'admin') return Astro.redirect('/portal/dashboard');
@@ -82,7 +83,7 @@ const err = Astro.url.searchParams.get('error');
           <div class="pkg-row">
             <label class="text">Név (magyar)<input type="text" name={`pkg_${pkg.kind}_name_hu`} maxlength="120" value={pkg.names.hu} /></label>
             <label class="text">Név (holland)<input type="text" name={`pkg_${pkg.kind}_name_nl`} maxlength="120" value={pkg.names.nl} /></label>
-            <label class="text">Ár (€)<input type="number" name={`pkg_${pkg.kind}_price`} min="0" max="100000" step="1" value={pkg.priceEur ?? ''} disabled={pkg.priceLocked} placeholder="árajánlat" /></label>
+            <label class="text">Ár (€)<MoneyInput name={`pkg_${pkg.kind}_price`} min={0} max={100000} value={pkg.priceEur ?? null} disabled={pkg.priceLocked} placeholder="árajánlat" /></label>
           </div>
           {pkg.kind !== 'indicative' && <label class="check"><input type="checkbox" name={`pkg_${pkg.kind}_enabled`} value="yes" checked={pkg.enabled} /><span><strong>Elérhető az űrlapon</strong></span></label>}
         </div>
@@ -98,10 +99,7 @@ const err = Astro.url.searchParams.get('error');
       </section>
       <section class="set-card" id="listing-rules">
       <h2>Hirdetések lejárata</h2>
-      <a class="pkg-link" href="/portal/settings/packages">
-        <span><strong>Hirdetési csomagok, árak és tartalom</strong>Név, ár, időtartam, képszám, videó, telefonszám és a kiegészítők árai — külön oldalon.</span>
-        <span aria-hidden="true">→</span>
-      </a>
+      <p class="hint">A csomagok árai és tartalma a <a href="/portal/packages"><strong>Csomagok</strong></a> menüben szerkeszthetők.</p>
 
       <h3>Lejárat és hosszabbítás</h3>
       <p class="hint">A napi ütemezett feladat két emlékeztetőt küld a lejárat előtt, és egy levelet a lejáratkor. Minden levélben ott a hosszabbítás linkje (6 hónap). Lejáratkor a hirdetés lekerül az oldalról, az admin kézzel is meghosszabbíthatja.</p>
@@ -198,10 +196,6 @@ const err = Astro.url.searchParams.get('error');
   .pkg .check { background: var(--white); }
   #listing-rules .pkg-row { grid-template-columns: 1fr 1fr; }
   #listing-rules .pkg-row.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .pkg-link { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-radius: var(--r-md); background: var(--paper); color: var(--ink-quiet); font-size: 14.5px; line-height: 1.6; text-decoration: none; transition: background-color 0.2s var(--ease-out); }
-  .pkg-link:hover { background: var(--linen); }
-  .pkg-link strong { display: block; color: var(--ink); font-size: var(--fs-small); font-weight: var(--fw-medium); }
-  .pkg-link > span:last-child { font-size: 20px; color: var(--ink); }
   .hint em { font-style: normal; font-weight: var(--fw-medium); color: var(--ink); }
   @media (max-width: 960px) { #listing-rules .pkg-row.four { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 720px) { .pkg-row, #listing-rules .pkg-row, #listing-rules .pkg-row.four { grid-template-columns: 1fr; } }

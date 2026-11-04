@@ -6,7 +6,8 @@
  *
  * GET   progress for the panel that is polling; it also starts a run if jobs are
  *       waiting and nobody is working on them (the net under the webhook's kick).
- * POST  { action: 'order' | 'request' | 'run' | 'approve' | 'decline' | 'retry' | 'cancel', … }
+ * POST  { action: 'order' | 'request' | 'run' | 'approve' | 'decline' | 'retry' | 'cancel'
+ *                 | 'override' | 'retranslate' | 'shorten', … }   (the last three: the side-by-side editor, admins only)
  */
 import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
@@ -15,14 +16,19 @@ import { portalLang } from '~/lib/portal/auth-copy';
 import { logEvent } from '~/lib/activity';
 import { isAiEnabled } from '~/lib/ai/client';
 import {
-  ALL_LOCALES, OWNER_TARGETS, estimateCostMicroEur, isTargetLocale, listingChars, listingText, pickSource, summarizeJobs,
+  ALL_LOCALES, OWNER_TARGETS, TARGET_LIMITS, estimateCostMicroEur, isTargetLocale, listingChars, listingText, pickSource, sourceHash, summarizeJobs,
 } from '~/lib/ai/translate-core';
-import { translationModel } from '~/lib/ai/translate';
+import { shortenListingTitle, translationModel } from '~/lib/ai/translate';
 import {
   approveRequests, cancelJob, declineRequests, enqueueTranslations, isMissingTranslationSchema, jobsForProperty, kickTranslation,
   latestPerLocale, retryJob, SKIP_REASON_HU, type SkipReason,
 } from '~/lib/ai/translation-jobs';
 import { openTranslationOrder, translationCheckoutUrl } from '~/lib/ai/translation-checkout';
+import { translationLocalesOf } from '~/lib/ai/translation-orders';
+import { getCompany } from '~/lib/runtime-config';
+import { listingCatalog } from '~/lib/listing-packages';
+import { OrderError } from '~/lib/orders';
+import { packageById, packageLocales, type TranslationPricing } from '~/lib/translation-packages';
 
 export const prerender = false;
 
@@ -35,7 +41,7 @@ async function load(locals: App.Locals, id: string | undefined): Promise<
 > {
   const { supabase, profile, user } = locals;
   if (!user || !id) return { response: json(401, { ok: false, error: 'unauthenticated' }) };
-  const { data: property } = await supabase.from('properties').select('id, ref, status, owner_id, free_listing').eq('id', id).maybeSingle();
+  const { data: property } = await supabase.from('properties').select('*').eq('id', id).maybeSingle();
   if (!property) return { response: json(404, { ok: false, error: 'not-found' }) };
   const isAdmin = profile?.role === 'admin';
   const isOwner = property.owner_id === user.id;
@@ -44,6 +50,13 @@ async function load(locals: App.Locals, id: string | undefined): Promise<
 }
 
 const clean = (value: unknown): string[] => (Array.isArray(value) ? [...new Set(value.map(String))] : []);
+
+/** The package and languages a person asked for: ids only. */
+function readChoice(body: Record<string, any>, cfg: TranslationPricing) {
+  // The package is only an id: whether it is on sale, and its price, are decided where the order is built.
+  const packageId = cfg.packages.some((p) => p.id === body.packageId) ? String(body.packageId) : 'basic';
+  return { packageId, extraLocales: clean(body.locales), excludedLocales: clean(body.excluded) };
+}
 
 export const GET: APIRoute = async ({ params, locals, request }) => {
   const got = await load(locals, params.id);
@@ -143,7 +156,12 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
   if (action === 'request') {
     if (!property.free_listing) return json(409, { ok: false, error: 'not-free' });
     if (got.isOwner === false && !isAdmin) return json(403, { ok: false, error: 'forbidden' });
-    const wanted = clean(body.locales).filter((code) => OWNER_TARGETS.includes(code) && !have.has(code));
+    // The package's languages and the single ones, minus what Go gives anyway, what is switched off, and what is there.
+    const cfg = listingCatalog((await getCompany()).services).translation;
+    const choice = readChoice(body, cfg);
+    const goLocales = new Set(packageLocales(packageById(cfg, 'basic'), ALL_LOCALES));
+    const wanted = [...new Set([...packageLocales(packageById(cfg, choice.packageId), ALL_LOCALES), ...choice.extraLocales])]
+      .filter((code) => OWNER_TARGETS.includes(code) && !goLocales.has(code) && !choice.excludedLocales.includes(code) && !have.has(code));
     if (wanted.length === 0) return json(422, { ok: false, error: 'nothing-to-order' });
     const result = await enqueueTranslations(admin, { propertyId: property.id, locales: wanted, origin: 'free', status: 'requested', requestedBy: user.id });
     if (result.created.length > 0) {
@@ -161,18 +179,88 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
     if (property.status !== 'published') return json(409, { ok: false, error: 'not-live' });
     if (!source) return json(409, { ok: false, error: 'no-source' });
     if (!isStripeEnabled()) return json(503, { ok: false, error: 'card-unavailable' });
-    // Languages the listing already has, or that are already being made, are not sold again.
+    // Languages the listing already has, or that are already being made, are not sold again (the order drops them).
     const { data: live } = await admin.from('translation_jobs').select('locale').eq('property_id', property.id).in('status', ['requested', 'queued', 'running']);
     const busy = new Set((live ?? []).map((job: { locale: string }) => job.locale));
-    const wanted = clean(body.locales).filter((code) => OWNER_TARGETS.includes(code) && !have.has(code) && !busy.has(code));
-    if (wanted.length === 0) return json(422, { ok: false, error: 'nothing-to-order' });
-    const order = await openTranslationOrder(admin, property, wanted, portalLang(profile?.locale));
+    const cfg = listingCatalog((await getCompany()).services).translation;
+    const choice = readChoice(body, cfg);
+    choice.extraLocales = choice.extraLocales.filter((code) => OWNER_TARGETS.includes(code) && !have.has(code) && !busy.has(code));
+    let order;
+    try {
+      order = await openTranslationOrder(admin, property, choice, portalLang(profile?.locale));
+    } catch (error) {
+      if (error instanceof OrderError) return json(422, { ok: false, error: error.code, message: error.code === 'exclude-en' ? 'Az angol nyelv nem zárható ki – ez a hirdetés alapnyelve a többi nyelvhez.' : undefined });
+      if (error instanceof Error && error.message === 'nothing-to-order') return json(422, { ok: false, error: 'nothing-to-order' });
+      throw error;
+    }
+    const wanted = translationLocalesOf(order.line_items);
     const url = await translationCheckoutUrl(admin, order, property, origin);
     await logEvent({
       kind: 'ai.translation_ordered', actorId: user.id, actorEmail: profile?.email ?? null, subjectType: 'payment', subjectId: order.id,
       propertyId: property.id, source: 'portal', payload: { locales: wanted, amountCents: order.amount_cents },
     }).catch(() => {});
     return json(200, { ok: true, url, amountCents: order.amount_cents, locales: wanted });
+  }
+
+  /* ── the side-by-side editor (admins) ──────────────────────────────── */
+  if (action === 'override' || action === 'retranslate' || action === 'shorten') {
+    if (!isAdmin) return json(403, { ok: false, error: 'forbidden' });
+    const locale = String(body.locale ?? '');
+    if (!isTargetLocale(locale)) return json(422, { ok: false, error: 'bad-locale', message: 'Ismeretlen nyelv.' });
+    if (source && locale === source.locale) return json(422, { ok: false, error: 'is-source', message: 'Ez az eredeti nyelv: a szerkesztőben módosítható.' });
+
+    if (action === 'shorten') {
+      if (!isAiEnabled()) return json(409, { ok: false, error: 'ai-disabled', message: 'Az AI nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY).' });
+      const title = listingText({ title: body.title }).title;
+      if (!title) return json(422, { ok: false, error: 'title-required', message: 'Nincs mit rövidíteni: a cím üres.' });
+      const shortened = await shortenListingTitle(title, locale).catch(() => null);
+      if (!shortened) return json(502, { ok: false, error: 'ai-failed', message: 'Az AI most nem érhető el, próbálja újra később.' });
+      return json(200, { ok: true, title: shortened.title, how: shortened.how, changed: shortened.title !== title });
+    }
+
+    if (action === 'override') {
+      const text = listingText({ title: body.title, description: body.description, body: body.body });
+      if (!text.title) return json(422, { ok: false, error: 'title-required', message: 'A cím nem lehet üres.' });
+      if (text.title.length > TARGET_LIMITS.title) return json(422, { ok: false, error: 'title-too-long', message: `A cím legfeljebb ${TARGET_LIMITS.title} karakter lehet (most ${text.title.length}).` });
+      if (text.description.length > TARGET_LIMITS.description) return json(422, { ok: false, error: 'description-too-long', message: `A rövid leírás legfeljebb ${TARGET_LIMITS.description} karakter lehet.` });
+      if (text.body.length > TARGET_LIMITS.body) return json(422, { ok: false, error: 'body-too-long', message: `A részletes leírás legfeljebb ${TARGET_LIMITS.body} karakter lehet.` });
+      // Through the admin's own session: the function checks is_admin() itself.
+      const { error } = await locals.supabase.rpc('save_translation_override', {
+        p_property: property.id, p_locale: locale, p_title: text.title, p_description: text.description, p_body: text.body,
+        p_hash: source ? sourceHash(listingText(source)) : null, p_from: source?.locale ?? null,
+      });
+      if (error) {
+        if (isMissingTranslationSchema(error)) return json(503, { ok: false, error: 'schema-missing', message: 'Futtassa le a 0052-es migrációt (a Supabase SQL Editorban).' });
+        console.error('[translations] override failed', property.id, locale, error.message);
+        return json(500, { ok: false, error: 'save-failed', message: 'Nem sikerült menteni.' });
+      }
+      await logEvent({
+        kind: 'translation.override', actorId: user.id, actorEmail: profile?.email ?? null, subjectType: 'property', subjectId: property.id,
+        propertyId: property.id, locale, source: 'portal', payload: { chars: listingChars(text) },
+      }).catch(() => {});
+      return json(200, { ok: true });
+    }
+
+    // retranslate: a hand-made text is replaced only when the admin has confirmed it.
+    if (!isAiEnabled()) return json(409, { ok: false, error: 'ai-disabled', message: 'Az AI fordítás nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY).' });
+    const existing = (rows ?? []).find((row: { locale: string }) => row.locale === locale);
+    const handMade = Boolean(existing && !existing.machine && (listingText(existing).title || listingText(existing).description));
+    if (handMade && body.confirmOverwrite !== true) {
+      return json(409, { ok: false, error: 'needs-confirmation', message: 'Ehhez a nyelvhez kézzel írt vagy javított szöveg tartozik. Az újrafordítás felülírná.' });
+    }
+    const result = await enqueueTranslations(admin, {
+      propertyId: property.id, locales: [locale], origin: 'admin', status: 'queued', requestedBy: user.id, approvedBy: user.id, overwrite: handMade,
+    });
+    if (result.created.length === 0) {
+      const reason = result.skipped[0]?.reason as SkipReason | undefined;
+      return json(409, { ok: false, error: reason ?? 'not-created', message: reason ? `Nem indítható: ${SKIP_REASON_HU[reason]}.` : 'Nem indítható.' });
+    }
+    await logEvent({
+      kind: 'translation.retranslate', actorId: user.id, actorEmail: profile?.email ?? null, subjectType: 'property', subjectId: property.id,
+      propertyId: property.id, locale, source: 'portal', payload: { replacedHandMade: handMade },
+    }).catch(() => {});
+    await kickTranslation(origin);
+    return json(200, { ok: true, created: result.created });
   }
 
   return json(400, { ok: false, error: 'unknown-action' });

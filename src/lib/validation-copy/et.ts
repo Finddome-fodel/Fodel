@@ -27,6 +27,8 @@ export const copy: ValidationCopy = {
   minLength: (limit) => `Vähemalt ${chars(limit)}.`,
   consent: 'Jätkamiseks nõustuge privaatsuspoliitikaga.',
   selfReferral: 'Iseennast ei saa soovitada: sisestage teine e-posti aadress.',
+  choose: "Valige loendist.",
+  contact: (kind, match) => (kind === 'email' ? `Tekst ei tohi sisaldada e-posti aadressi („${match}“). Ostjad võtavad teiega ühendust FINDDOME’i kaudu.` : kind === 'phone' ? `Tekst ei tohi sisaldada telefoninumbrit („${match}“). Ostjad võtavad teiega ühendust FINDDOME’i kaudu.` : `Tekst ei tohi sisaldada veebilehte, sotsiaalmeediat ega sõnumirakendust („${match}“).`),
   summary: (count) =>
     count === 1
       ? 'Üks väli vajab kontrollimist:'

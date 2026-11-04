@@ -33,6 +33,13 @@ import { LEGAL_FI } from '~/data/legal-fi';
 import { LEGAL_ET } from '~/data/legal-et';
 import { LEGAL_LV } from '~/data/legal-lv';
 import { LEGAL_LT } from '~/data/legal-lt';
+import { LEGAL_RU } from '~/data/legal-ru';
+import { LEGAL_UK } from '~/data/legal-uk';
+import { LEGAL_SR } from '~/data/legal-sr';
+import { LEGAL_TR } from '~/data/legal-tr';
+import { LEGAL_HE } from '~/data/legal-he';
+import { LEGAL_AR } from '~/data/legal-ar';
+import { LEGAL_ZH } from '~/data/legal-zh';
 
 const UPDATED = { hu: '2026. július 27.', nl: '27 juli 2026' };
 
@@ -649,4 +656,11 @@ export const LEGAL: Record<Locale, Record<LegalKey, ContentPageData>> = {
   et: LEGAL_ET,
   lv: LEGAL_LV,
   lt: LEGAL_LT,
+  sr: LEGAL_SR,
+  uk: LEGAL_UK,
+  tr: LEGAL_TR,
+  he: LEGAL_HE,
+  ar: LEGAL_AR,
+  ru: LEGAL_RU,
+  zh: LEGAL_ZH,
 };

@@ -10,7 +10,7 @@
  * iPhones and Macs.
  */
 import { defineConfig, devices } from '@playwright/test';
-import { loadTestEnv, serverEnv, writesAllowed } from './tests/e2e/support/env';
+import { listingFixture, loadTestEnv, serverEnv, writesAllowed } from './tests/e2e/support/env';
 
 loadTestEnv();
 const PORT = Number(process.env.E2E_PORT ?? 4400);
@@ -43,7 +43,9 @@ export default defineConfig({
         // Without a test database the site talks to an empty, read-only stand-in.
         ...(writesAllowed()
           ? []
-          : [{ command: 'node tests/e2e/support/empty-database.mjs 54399', url: 'http://127.0.0.1:54399/health', reuseExistingServer: true, timeout: 20_000 }]),
+          : listingFixture()
+            ? [{ command: 'node tests/e2e/support/public-listing-database.mjs 54402', url: 'http://127.0.0.1:54402/health', reuseExistingServer: true, timeout: 20_000 }]
+            : [{ command: 'node tests/e2e/support/empty-database.mjs 54399', url: 'http://127.0.0.1:54399/health', reuseExistingServer: true, timeout: 20_000 }]),
         {
           command: `npx astro dev --port ${PORT}`,
           url: `${baseURL}/hu/rolunk/`,
