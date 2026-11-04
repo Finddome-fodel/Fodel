@@ -44,6 +44,8 @@ async function pick(page: Page, code: string, how: 'pointer' | 'keyboard') {
 for (const how of ['pointer', 'keyboard'] as const) {
   test(`switches hu → nl → en → hu → de → … → lt → sr → uk → tr → he → ar → ru → zh → nl (${how})`, async ({ page, isMobile }) => {
     test.skip(how === 'keyboard' && isMobile, 'phones have no hardware keyboard');
+    // Twenty-eight languages, one page load each: more than the default 90 s on a phone profile.
+    test.setTimeout(240_000);
     await page.goto('/hu/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'hu');
     for (const code of ROUTE) await pick(page, code, how);
