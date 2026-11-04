@@ -170,5 +170,11 @@ test('with the 2026 prices live the old flat renewal price is not offered for ed
   }
 });
 
+test('the public price list drops the old flat renewal row (in all 28 languages) once the 2026 prices are live', () => {
+  const source = fs.readFileSync(new URL('../src/components/pages/PriceListPage.astro', import.meta.url), 'utf8');
+  assert.equal((source.match(/price: xp\('renewal-6m'\), renewal: true,/g) ?? []).length, 28);
+  assert.ok(source.includes('extra.renewal !== true'));
+});
+
 if (failed) { console.error(`\n${failed} pricing check(s) failed.`); process.exit(1); }
 console.log('\nPricing checks passed.');
