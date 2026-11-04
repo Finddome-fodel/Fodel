@@ -26,7 +26,10 @@ import RegisterForm from '~/components/forms/RegisterForm.astro';
 import { LOCALE_META, path, localizer, type Locale } from '~/i18n/ui';
 import { getCompany } from '~/lib/runtime-config';
 import { RECOMMENDED_TRANSLATION_LANGUAGES } from '~/config/company';
-import { listingCatalog, packageCard, priceFacts } from '~/lib/listing-packages';
+import { listingCatalog, packageCard, priceFacts, sellingPackages, eurText } from '~/lib/listing-packages';
+import PriceMatrix from '~/components/pages/PriceMatrix.astro';
+import { eurPrice } from '~/lib/format';
+import { fromCents, type PackageKey } from '~/lib/listing-pricing';
 import { alternatesFor } from '~/lib/page';
 import { approvedWording } from '~/lib/approved-text';
 import { eur, eurCents } from '~/lib/format';
@@ -46,13 +49,16 @@ const refundPolicy = refund?.text;
 const refundLang = refund?.lang ?? locale;
 const catalog = listingCatalog(COMPANY.services);
 const fromEur = priceFacts(catalog).from;
+const live = catalog.pricingLive;
+// The cheapest cell of the matrix with its cents when the three packages are on sale; whole euros before.
+const fromText = live ? eurPrice(Math.round(fromEur * 100), locale) : eurText(locale, fromEur);
 
 const R = COMPANY.reach;
 const copies = {
   hu: {
       metaTitle: 'Hirdetés feladása: hirdesse ingatlanát Nyugat-Európában',
       metaDescription:
-        `Adja fel ingatlanhirdetését ${fromEur} €-tól. Jóváhagyás után azonnal megjelenik ${COMPANY.reach.languages} nyelven, ${COMPANY.reach.countries} országban, előrefizetés és kizárólagosság nélkül.`,
+        `Adja fel ingatlanhirdetését ${fromText}-tól. Jóváhagyás után azonnal megjelenik ${COMPANY.reach.languages} nyelven, ${COMPANY.reach.countries} országban, előrefizetés és kizárólagosság nélkül.`,
       eyebrow: 'Hirdetésfeladás',
       title: 'Hirdesse ingatlanát',
       titleEm: 'Nyugat-Európában',
@@ -87,7 +93,7 @@ const copies = {
   nl: {
       metaTitle: 'Advertentie plaatsen: uw woning in West-Europa',
       metaDescription:
-        `Plaats uw advertentie vanaf € ${fromEur}. Na goedkeuring verschijnt deze direct in ${COMPANY.reach.languages} talen en ${COMPANY.reach.countries} landen, zonder vooruitbetaling of exclusiviteit.`,
+        `Plaats uw advertentie vanaf ${fromText}. Na goedkeuring verschijnt deze direct in ${COMPANY.reach.languages} talen en ${COMPANY.reach.countries} landen, zonder vooruitbetaling of exclusiviteit.`,
       eyebrow: 'Adverteren',
       title: 'Plaats uw woning',
       titleEm: 'in West-Europa',
@@ -121,7 +127,7 @@ const copies = {
     },
   en: {
     metaTitle: 'Place a listing: advertise your property in Western Europe',
-    metaDescription: `Place your property listing from ${eur(fromEur, locale)}. Once approved it appears at once in ${R.languages} languages in ${R.countries} countries, with no upfront payment and no exclusivity.`,
+    metaDescription: `Place your property listing from ${fromText}. Once approved it appears at once in ${R.languages} languages in ${R.countries} countries, with no upfront payment and no exclusivity.`,
     eyebrow: 'Place a listing',
     title: 'Advertise your property',
     titleEm: 'in Western Europe',
@@ -155,7 +161,7 @@ const copies = {
   },
   de: {
     metaTitle: 'Inserat aufgeben: Ihre Immobilie in Westeuropa',
-    metaDescription: `Geben Sie Ihr Immobilieninserat ab ${eur(fromEur, locale)} auf. Nach der Freigabe erscheint es sofort in ${R.languages} Sprachen in ${R.countries} Ländern, ohne Vorauszahlung und ohne Exklusivität.`,
+    metaDescription: `Geben Sie Ihr Immobilieninserat ab ${fromText} auf. Nach der Freigabe erscheint es sofort in ${R.languages} Sprachen in ${R.countries} Ländern, ohne Vorauszahlung und ohne Exklusivität.`,
     eyebrow: 'Inserat aufgeben',
     title: 'Inserieren Sie Ihre Immobilie',
     titleEm: 'in Westeuropa',
@@ -189,7 +195,7 @@ const copies = {
   },
   fr: {
     metaTitle: 'Déposer une annonce\u00a0: votre bien en Europe de l’Ouest',
-    metaDescription: `Déposez votre annonce dès ${eur(fromEur, locale)}. Une fois validée, elle paraît aussitôt en ${R.languages} langues dans ${R.countries} pays, sans paiement d’avance ni exclusivité.`,
+    metaDescription: `Déposez votre annonce dès ${fromText}. Une fois validée, elle paraît aussitôt en ${R.languages} langues dans ${R.countries} pays, sans paiement d’avance ni exclusivité.`,
     eyebrow: 'Déposer une annonce',
     title: 'Annoncez votre bien',
     titleEm: 'en Europe de l’Ouest',
@@ -223,7 +229,7 @@ const copies = {
   },
   es: {
     metaTitle: 'Publicar un anuncio: su inmueble en Europa occidental',
-    metaDescription: `Publique su anuncio desde ${eur(fromEur, locale)}. Una vez aprobado, aparece de inmediato en ${R.languages} idiomas en ${R.countries} países, sin pago por adelantado ni exclusividad.`,
+    metaDescription: `Publique su anuncio desde ${fromText}. Una vez aprobado, aparece de inmediato en ${R.languages} idiomas en ${R.countries} países, sin pago por adelantado ni exclusividad.`,
     eyebrow: 'Publicar un anuncio',
     title: 'Anuncie su inmueble',
     titleEm: 'en Europa occidental',
@@ -257,7 +263,7 @@ const copies = {
   },
   pl: {
     metaTitle: 'Dodaj ogłoszenie: Państwa nieruchomość w Europie Zachodniej',
-    metaDescription: `Ogłoszenie można dodać już od ${eur(fromEur, locale)}. Po zatwierdzeniu od razu ukazuje się w ${nOf('pl', R.languages, 'języku', 'językach')} w ${nOf('pl', R.countries, 'kraju', 'krajach')}, bez przedpłaty i bez wyłączności.`,
+    metaDescription: `Ogłoszenie można dodać już od ${fromText}. Po zatwierdzeniu od razu ukazuje się w ${nOf('pl', R.languages, 'języku', 'językach')} w ${nOf('pl', R.countries, 'kraju', 'krajach')}, bez przedpłaty i bez wyłączności.`,
     eyebrow: 'Dodaj ogłoszenie',
     title: 'Ogłoś swoją nieruchomość',
     titleEm: 'w Europie Zachodniej',
@@ -291,7 +297,7 @@ const copies = {
   },
   ro: {
     metaTitle: 'Publicați un anunț: proprietatea dumneavoastră în Europa de Vest',
-    metaDescription: `Publicați-vă anunțul de la ${eur(fromEur, locale)}. După aprobare, apare imediat în ${nOf('ro', R.languages, 'limbă', 'limbi', 'de limbi')} din ${nOf('ro', R.countries, 'țară', 'țări', 'de țări')}, fără plată în avans și fără exclusivitate.`,
+    metaDescription: `Publicați-vă anunțul de la ${fromText}. După aprobare, apare imediat în ${nOf('ro', R.languages, 'limbă', 'limbi', 'de limbi')} din ${nOf('ro', R.countries, 'țară', 'țări', 'de țări')}, fără plată în avans și fără exclusivitate.`,
     eyebrow: 'Publicați un anunț',
     title: 'Anunțați-vă proprietatea',
     titleEm: 'în Europa de Vest',
@@ -325,7 +331,7 @@ const copies = {
   },
   sk: {
     metaTitle: 'Pridať inzerát: vaša nehnuteľnosť v západnej Európe',
-    metaDescription: `Inzerát pridáte už od ${eur(fromEur, locale)}. Po schválení sa hneď zobrazí v ${nOf('sk', R.languages, 'jazyku', 'jazykoch')} v ${nOf('sk', R.countries, 'krajine', 'krajinách')}, bez platby vopred a bez exkluzivity.`,
+    metaDescription: `Inzerát pridáte už od ${fromText}. Po schválení sa hneď zobrazí v ${nOf('sk', R.languages, 'jazyku', 'jazykoch')} v ${nOf('sk', R.countries, 'krajine', 'krajinách')}, bez platby vopred a bez exkluzivity.`,
     eyebrow: 'Pridať inzerát',
     title: 'Inzerujte svoju nehnuteľnosť',
     titleEm: 'v západnej Európe',
@@ -359,7 +365,7 @@ const copies = {
   },
   it: {
     metaTitle: 'Pubblica un annuncio: promuova il suo immobile in Europa occidentale',
-    metaDescription: `Pubblichi il suo annuncio da ${eur(fromEur, locale)}. Una volta approvato, appare subito in ${R.languages} lingue in ${R.countries} paesi, senza pagamento anticipato e senza esclusiva.`,
+    metaDescription: `Pubblichi il suo annuncio da ${fromText}. Una volta approvato, appare subito in ${R.languages} lingue in ${R.countries} paesi, senza pagamento anticipato e senza esclusiva.`,
     eyebrow: 'Pubblica un annuncio',
     title: 'Promuova il suo immobile',
     titleEm: 'in Europa occidentale',
@@ -393,7 +399,7 @@ const copies = {
   },
   pt: {
     metaTitle: 'Publicar um anúncio: anuncie o seu imóvel na Europa Ocidental',
-    metaDescription: `Publique o seu anúncio a partir de ${eur(fromEur, locale)}. Depois de aprovado, aparece de imediato em ${R.languages} idiomas em ${R.countries} países, sem pagamento antecipado e sem exclusividade.`,
+    metaDescription: `Publique o seu anúncio a partir de ${fromText}. Depois de aprovado, aparece de imediato em ${R.languages} idiomas em ${R.countries} países, sem pagamento antecipado e sem exclusividade.`,
     eyebrow: 'Publicar um anúncio',
     title: 'Anuncie o seu imóvel',
     titleEm: 'na Europa Ocidental',
@@ -427,7 +433,7 @@ const copies = {
   },
   el: {
     metaTitle: 'Δημοσίευση αγγελίας: διαφημίστε το ακίνητό σας στη Δυτική Ευρώπη',
-    metaDescription: `Δημοσιεύστε την αγγελία σας από ${eur(fromEur, locale)}. Μόλις εγκριθεί, εμφανίζεται αμέσως σε ${R.languages} γλώσσες σε ${R.countries} χώρες, χωρίς προκαταβολή και χωρίς αποκλειστικότητα.`,
+    metaDescription: `Δημοσιεύστε την αγγελία σας από ${fromText}. Μόλις εγκριθεί, εμφανίζεται αμέσως σε ${R.languages} γλώσσες σε ${R.countries} χώρες, χωρίς προκαταβολή και χωρίς αποκλειστικότητα.`,
     eyebrow: 'Δημοσίευση αγγελίας',
     title: 'Διαφημίστε το ακίνητό σας',
     titleEm: 'στη Δυτική Ευρώπη',
@@ -461,7 +467,7 @@ const copies = {
   },
   cs: {
     metaTitle: 'Podat inzerát: nabídněte svou nemovitost v západní Evropě',
-    metaDescription: `Inzerát podáte již od ${eur(fromEur, locale)}. Po schválení se hned zobrazí v ${nOf('cs', R.languages, 'jazyce', 'jazycích')} v ${nOf('cs', R.countries, 'zemi', 'zemích')}, bez platby předem a bez výhradního zastoupení.`,
+    metaDescription: `Inzerát podáte již od ${fromText}. Po schválení se hned zobrazí v ${nOf('cs', R.languages, 'jazyce', 'jazycích')} v ${nOf('cs', R.countries, 'zemi', 'zemích')}, bez platby předem a bez výhradního zastoupení.`,
     eyebrow: 'Podat inzerát',
     title: 'Nabídněte svou nemovitost',
     titleEm: 'v západní Evropě',
@@ -495,7 +501,7 @@ const copies = {
   },
   sl: {
     metaTitle: 'Oddajte oglas: oglašujte svojo nepremičnino v zahodni Evropi',
-    metaDescription: `Oglas oddate že od ${eur(fromEur, locale)}. Po odobritvi se takoj prikaže v ${nOf('sl', R.languages, 'jeziku', 'jezikih', 'jezikih', 'jezikih')} v ${nOf('sl', R.countries, 'državi', 'državah', 'državah', 'državah')}, brez predplačila in brez izključnosti.`,
+    metaDescription: `Oglas oddate že od ${fromText}. Po odobritvi se takoj prikaže v ${nOf('sl', R.languages, 'jeziku', 'jezikih', 'jezikih', 'jezikih')} v ${nOf('sl', R.countries, 'državi', 'državah', 'državah', 'državah')}, brez predplačila in brez izključnosti.`,
     eyebrow: 'Oddajte oglas',
     title: 'Oglašujte svojo nepremičnino',
     titleEm: 'v zahodni Evropi',
@@ -529,7 +535,7 @@ const copies = {
   },
   sv: {
     metaTitle: 'Lägg in en annons: annonsera din fastighet i Västeuropa',
-    metaDescription: `Lägg in din fastighetsannons från ${eur(fromEur, locale)}. När den har godkänts syns den direkt på ${R.languages} språk i ${R.countries} länder, utan förskottsbetalning och utan ensamrätt.`,
+    metaDescription: `Lägg in din fastighetsannons från ${fromText}. När den har godkänts syns den direkt på ${R.languages} språk i ${R.countries} länder, utan förskottsbetalning och utan ensamrätt.`,
     eyebrow: 'Lägg in en annons',
     title: 'Annonsera din fastighet',
     titleEm: 'i Västeuropa',
@@ -563,7 +569,7 @@ const copies = {
   },
   da: {
     metaTitle: 'Opret en annonce: annoncér din ejendom i Vesteuropa',
-    metaDescription: `Opret din ejendomsannonce fra ${eur(fromEur, locale)}. Når den er godkendt, vises den straks på ${R.languages} sprog i ${R.countries} lande – uden forudbetaling og uden eneret.`,
+    metaDescription: `Opret din ejendomsannonce fra ${fromText}. Når den er godkendt, vises den straks på ${R.languages} sprog i ${R.countries} lande – uden forudbetaling og uden eneret.`,
     eyebrow: 'Opret en annonce',
     title: 'Annoncér din ejendom',
     titleEm: 'i Vesteuropa',
@@ -597,7 +603,7 @@ const copies = {
   },
   no: {
     metaTitle: 'Legg inn en annonse: annonser eiendommen din i Vest-Europa',
-    metaDescription: `Legg inn eiendomsannonsen din fra ${eur(fromEur, locale)}. Når den er godkjent, vises den med en gang på ${R.languages} språk i ${R.countries} land, uten forskuddsbetaling og uten enerett.`,
+    metaDescription: `Legg inn eiendomsannonsen din fra ${fromText}. Når den er godkjent, vises den med en gang på ${R.languages} språk i ${R.countries} land, uten forskuddsbetaling og uten enerett.`,
     eyebrow: 'Legg inn en annonse',
     title: 'Annonser eiendommen din',
     titleEm: 'i Vest-Europa',
@@ -631,7 +637,7 @@ const copies = {
   },
   fi: {
     metaTitle: 'Jätä ilmoitus: ilmoita kiinteistösi Länsi-Euroopassa',
-    metaDescription: `Jätä kiinteistöilmoitus alkaen ${eur(fromEur, locale)}. Hyväksynnän jälkeen se näkyy heti ${R.languages} kielellä ${R.countries} maassa ilman ennakkomaksua ja ilman yksinoikeutta.`,
+    metaDescription: `Jätä kiinteistöilmoitus alkaen ${fromText}. Hyväksynnän jälkeen se näkyy heti ${R.languages} kielellä ${R.countries} maassa ilman ennakkomaksua ja ilman yksinoikeutta.`,
     eyebrow: 'Jätä ilmoitus',
     title: 'Ilmoita kiinteistösi',
     titleEm: 'Länsi-Euroopassa',
@@ -665,7 +671,7 @@ const copies = {
   },
   et: {
     metaTitle: 'Lisage kuulutus: reklaamige oma kinnisvara Lääne-Euroopas',
-    metaDescription: `Lisage oma kinnisvarakuulutus alates ${eur(fromEur, locale)}. Pärast heakskiitmist ilmub see kohe ${R.languages} keeles ${R.countries} riigis, ilma ettemaksu ja ainuõiguseta.`,
+    metaDescription: `Lisage oma kinnisvarakuulutus alates ${fromText}. Pärast heakskiitmist ilmub see kohe ${R.languages} keeles ${R.countries} riigis, ilma ettemaksu ja ainuõiguseta.`,
     eyebrow: 'Lisage kuulutus',
     title: 'Reklaamige oma kinnisvara',
     titleEm: 'Lääne-Euroopas',
@@ -699,7 +705,7 @@ const copies = {
   },
   lv: {
     metaTitle: 'Ievietojiet sludinājumu: reklamējiet savu īpašumu Rietumeiropā',
-    metaDescription: `Ievietojiet sava īpašuma sludinājumu no ${eur(fromEur, locale)}. Pēc apstiprināšanas tas uzreiz parādās ${nOf('lv', R.languages, 'valodā', 'valodās')} ${nOf('lv', R.countries, 'valstī', 'valstīs')} – bez priekšapmaksas un bez ekskluzivitātes.`,
+    metaDescription: `Ievietojiet sava īpašuma sludinājumu no ${fromText}. Pēc apstiprināšanas tas uzreiz parādās ${nOf('lv', R.languages, 'valodā', 'valodās')} ${nOf('lv', R.countries, 'valstī', 'valstīs')} – bez priekšapmaksas un bez ekskluzivitātes.`,
     eyebrow: 'Ievietot sludinājumu',
     title: 'Reklamējiet savu īpašumu',
     titleEm: 'Rietumeiropā',
@@ -733,7 +739,7 @@ const copies = {
   },
   lt: {
     metaTitle: 'Įdėkite skelbimą: reklamuokite savo turtą Vakarų Europoje',
-    metaDescription: `Savo turto skelbimą įdėkite nuo ${eur(fromEur, locale)}. Patvirtintas jis iš karto paskelbiamas ${nOf('lt', R.languages, 'kalba', 'kalbomis', 'kalbomis')} ${nOf('lt', R.countries, 'šalyje', 'šalyse', 'šalyse')} – be išankstinio mokėjimo ir be išimtinių teisių.`,
+    metaDescription: `Savo turto skelbimą įdėkite nuo ${fromText}. Patvirtintas jis iš karto paskelbiamas ${nOf('lt', R.languages, 'kalba', 'kalbomis', 'kalbomis')} ${nOf('lt', R.countries, 'šalyje', 'šalyse', 'šalyse')} – be išankstinio mokėjimo ir be išimtinių teisių.`,
     eyebrow: 'Įdėti skelbimą',
     title: 'Reklamuokite savo turtą',
     titleEm: 'Vakarų Europoje',
@@ -767,7 +773,7 @@ const copies = {
   },
   sr: {
     metaTitle: 'Postavite oglas: oglasite svoju nekretninu u Zapadnoj Evropi',
-    metaDescription: `Postavite oglas za svoju nekretninu već od ${eur(fromEur, locale)}. Nakon odobrenja odmah se pojavljuje na ${R.languages} jezika u ${R.countries} zemalja, bez plaćanja unapred i bez ekskluzivnosti.`,
+    metaDescription: `Postavite oglas za svoju nekretninu već od ${fromText}. Nakon odobrenja odmah se pojavljuje na ${R.languages} jezika u ${R.countries} zemalja, bez plaćanja unapred i bez ekskluzivnosti.`,
     eyebrow: 'Postavite oglas',
     title: 'Oglasite svoju nekretninu',
     titleEm: 'u Zapadnoj Evropi',
@@ -801,7 +807,7 @@ const copies = {
   },
   uk: {
     metaTitle: 'Розмістити оголошення: рекламуйте свою нерухомість у Західній Європі',
-    metaDescription: `Розмістіть оголошення про свою нерухомість від ${eur(fromEur, locale)}. Після схвалення воно одразу з’являється ${R.languages} мовами в ${R.countries} країнах, без передоплати й без ексклюзивного договору.`,
+    metaDescription: `Розмістіть оголошення про свою нерухомість від ${fromText}. Після схвалення воно одразу з’являється ${R.languages} мовами в ${R.countries} країнах, без передоплати й без ексклюзивного договору.`,
     eyebrow: 'Розмістити оголошення',
     title: 'Рекламуйте свою нерухомість',
     titleEm: 'у Західній Європі',
@@ -835,7 +841,7 @@ const copies = {
   },
   tr: {
     metaTitle: 'İlan verin: mülkünüzü Batı Avrupa’da tanıtın',
-    metaDescription: `Mülkünüz için ilan verin, başlangıç fiyatı: ${eur(fromEur, locale)}. Onaylandıktan sonra ${R.countries} ülkede ${R.languages} dilde hemen yayına girer; peşin ödeme ve münhasırlık yoktur.`,
+    metaDescription: `Mülkünüz için ilan verin, başlangıç fiyatı: ${fromText}. Onaylandıktan sonra ${R.countries} ülkede ${R.languages} dilde hemen yayına girer; peşin ödeme ve münhasırlık yoktur.`,
     eyebrow: 'İlan verin',
     title: 'Mülkünüzü tanıtın',
     titleEm: 'Batı Avrupa’da',
@@ -869,7 +875,7 @@ const copies = {
   },
   he: {
     metaTitle: 'פרסום מודעה: פרסמו את הנכס שלכם במערב אירופה',
-    metaDescription: `פרסמו מודעה לנכס שלכם החל מ־${eur(fromEur, locale)}. לאחר האישור היא עולה מיד ב־${R.languages} שפות ב־${R.countries} מדינות, ללא תשלום מראש וללא בלעדיות.`,
+    metaDescription: `פרסמו מודעה לנכס שלכם החל מ־${fromText}. לאחר האישור היא עולה מיד ב־${R.languages} שפות ב־${R.countries} מדינות, ללא תשלום מראש וללא בלעדיות.`,
     eyebrow: 'פרסום מודעה',
     title: 'פרסמו את הנכס שלכם',
     titleEm: 'במערב אירופה',
@@ -903,7 +909,7 @@ const copies = {
   },
   ar: {
     metaTitle: 'أضف إعلانًا: اعرض عقارك في أوروبا الغربية',
-    metaDescription: `أضف إعلان عقارك ابتداءً من ${eur(fromEur, locale)}. بعد الموافقة يظهر فورًا بـ${R.languages} لغات في ${R.countries} دول، دون دفع مسبق ودون حصرية.`,
+    metaDescription: `أضف إعلان عقارك ابتداءً من ${fromText}. بعد الموافقة يظهر فورًا بـ${R.languages} لغات في ${R.countries} دول، دون دفع مسبق ودون حصرية.`,
     eyebrow: 'أضف إعلانًا',
     title: 'اعرض عقارك',
     titleEm: 'في أوروبا الغربية',
@@ -937,7 +943,7 @@ const copies = {
   },
   ru: {
     metaTitle: 'Разместить объявление: рекламируйте свою недвижимость в Западной Европе',
-    metaDescription: `Разместите объявление о своей недвижимости от ${eur(fromEur, locale)}. После одобрения оно сразу появляется на ${R.languages} языках в ${R.countries} странах, без предоплаты и без эксклюзивного договора.`,
+    metaDescription: `Разместите объявление о своей недвижимости от ${fromText}. После одобрения оно сразу появляется на ${R.languages} языках в ${R.countries} странах, без предоплаты и без эксклюзивного договора.`,
     eyebrow: 'Разместить объявление',
     title: 'Рекламируйте свою недвижимость',
     titleEm: 'в Западной Европе',
@@ -971,7 +977,7 @@ const copies = {
   },
   zh: {
     metaTitle: '发布房源：在西欧推广您的房产',
-    metaDescription: `发布房源 ${eur(fromEur, locale)} 起。审核通过后即以 ${R.languages} 种语言在 ${R.countries} 个国家上线，无需预付，也无独家代理要求。`,
+    metaDescription: `发布房源 ${fromText} 起。审核通过后即以 ${R.languages} 种语言在 ${R.countries} 个国家上线，无需预付，也无独家代理要求。`,
     eyebrow: '发布房源',
     title: '在西欧推广',
     titleEm: '您的房产',
@@ -1020,7 +1026,7 @@ const money = (cents: number) => eurCents(cents, locale === 'hu' ? 'nl' : locale
  * old id bug impossible: the value posted by the radio input can only ever
  * be a real package id (src/lib/listing-packages.ts), never a hand-typed string.
  */
-const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale));
+const packageCards = sellingPackages(catalog).map((pkg) => packageCard(pkg, catalog, locale));
 
 const extra = (id: string) => catalog.extras.find((e) => e.id === id)!;
 const categoryHighlight = extra('category-highlight');
@@ -1046,7 +1052,7 @@ const packageSchema = listingServiceSchema(locale, {
   name: t.packagesHead,
   description: t.metaDescription,
   url: path(locale, 'submitAd'),
-  packages: packageCards.map((p) => ({ name: p.name, priceEur: p.priceCents / 100 })),
+  packages: live ? sellingPackages(catalog).map((pkg) => ({ name: pkg.names[locale], priceEur: (fromCents(catalog.pricing, pkg.id as PackageKey) ?? 0) / 100 })) : packageCards.map((p) => ({ name: p.name, priceEur: p.priceCents / 100 })),
 });
 ---
 
@@ -1091,9 +1097,11 @@ const packageSchema = listingServiceSchema(locale, {
       <section class="packages">
         <Eyebrow space="20px">{t.packagesHead}</Eyebrow>
         <p class="packages-note">{t.packagesNote}</p>
+        {live ? <PriceMatrix catalog={catalog} locale={locale} /> : (
         <div class="package-grid">
           {packageCards.map((card) => <PackageCard pkg={card} mode="info" recommendedLabel={t.recommended} />)}
         </div>
+        )}
       </section>
 
       <section class="extras">

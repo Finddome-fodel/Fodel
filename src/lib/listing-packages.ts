@@ -23,7 +23,7 @@
 import { LISTING_PACKAGES, LISTING_EXTRAS, TRANSLATION_PACKAGES } from '~/config/company';
 import { translationPricing, type TranslationPricing } from '~/lib/translation-packages';
 import { listingRules, type LegacyPackageId, type PackageId } from '~/lib/listing-rules';
-import { PACKAGE_KEYS, fromCents, readPricing, type ListingPricing } from '~/lib/listing-pricing';
+import { PACKAGE_KEYS, fromCents, readPricing, type ListingPricing, type PackageKey } from '~/lib/listing-pricing';
 import { LOCALES, localizer, type L10n, type Locale } from '~/i18n/ui';
 import { eur } from '~/lib/format';
 import { nOf } from '~/i18n/plural';
@@ -469,6 +469,9 @@ export function packageCard(pkg: ListingPackage, catalog: ListingCatalog, locale
 
 /** The lowest package price and the price range, for headlines and meta descriptions. */
 export function priceFacts(catalog: ListingCatalog) {
-  const prices = catalog.packages.map((p) => p.priceEur);
+  // Live: the cheapest cell of the matrix (8,90 €), in euros with cents; before that, the cheaper of the older packages.
+  const prices = catalog.pricingLive
+    ? sellingPackages(catalog).map((p) => (fromCents(catalog.pricing, p.id as PackageKey) ?? 0) / 100).filter((n) => n > 0)
+    : sellingPackages(catalog).map((p) => p.priceEur);
   return { from: Math.min(...prices) };
 }

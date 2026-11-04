@@ -1,0 +1,97 @@
+---
+/**
+ * The price table of the three listing packages: per value band, Basic / Europe / World against 1, 3, 6 months, in
+ * euro (the official currency), with a forint hint under each price. The page is built ahead of time, so the hint is
+ * filled in from /api/fx by a few lines of script; with no script the euro prices stand alone. Every figure comes
+ * from the admin's matrix (priceFor): nothing is typed here.
+ */
+import Flag from '~/components/Flag.astro';
+import { sellingPackages, type ListingCatalog } from '~/lib/listing-packages';
+import { priceFor, tierLabel, type PackageKey } from '~/lib/listing-pricing';
+import { eurPrice, huf } from '~/lib/format';
+import { LOCALE_META, type Locale } from '~/i18n/ui';
+import { packageLocales, packageById } from '~/lib/translation-packages';
+import { LOCALES } from '~/i18n/ui';
+
+interface Props { catalog: ListingCatalog; locale: Locale }
+const { catalog, locale } = Astro.props as Props;
+const pricing = catalog.pricing;
+const packages = sellingPackages(catalog).filter((pkg) => pkg.id === 'basic' || pkg.id === 'europe' || pkg.id === 'world');
+const durations = [...pricing.durations].sort((a, b) => a - b);
+const months = (n: number) => { try { return new Intl.NumberFormat(locale, { style: 'unit', unit: 'month', unitDisplay: 'long' }).format(n); } catch { return `${n}`; } };
+const flags = (id: string) => packageLocales(packageById(catalog.translation, id), LOCALES).map((code) => (LOCALE_META as Record<string, { flag: string }>)[code]?.flag).filter(Boolean);
+const bands = pricing.valueTiers.map((_, index) => tierLabel(pricing.valueTiers, index, locale, (n) => huf(n, locale)));
+---
+
+<div class="pm" data-pm data-locale={locale}>
+  {bands.map((band, index) => (
+    <section class="pm-band">
+      <h3 class="pm-band-title">{band}</h3>
+      <div class="pm-table" role="table" aria-label={band}>
+        <div class="pm-row pm-head" role="row">
+          <span role="columnheader"></span>
+          {durations.map((n) => <span role="columnheader">{months(n)}</span>)}
+        </div>
+        {packages.map((pkg) => (
+          <div class="pm-row" role="row" data-recommended={pkg.recommended ? '' : undefined}>
+            <span class="pm-name" role="rowheader">{pkg.names[locale]}</span>
+            {durations.map((n) => {
+              const price = priceFor({ packageId: pkg.id as PackageKey, months: n, tierIndex: index, pricing });
+              return (
+                <span class="pm-cell" role="cell">
+                  {price ? (<><strong class="num">{eurPrice(price.cents, locale)}</strong><small class="num" data-pm-huf data-cents={price.cents}></small></>) : '–'}
+                </span>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </section>
+  ))}
+  <ul class="pm-flags">
+    {packages.map((pkg) => (
+      <li>
+        <span class="pm-flags-name">{pkg.names[locale]}</span>
+        <span class="pm-flag-list" aria-hidden="true">{flags(pkg.id).map((code) => <Flag code={code as never} />)}</span>
+      </li>
+    ))}
+  </ul>
+  <p class="pm-foot" data-pm-foot hidden></p>
+</div>
+
+<script>
+  import { formatHufHint, fxFootnote } from '~/lib/fx';
+  import type { Locale } from '~/i18n/ui';
+  document.querySelectorAll<HTMLElement>('[data-pm]').forEach(async (root) => {
+    try {
+      const res = await fetch('/api/fx');
+      const fx = (await res.json()) as { rate: number | null; date?: string };
+      if (!fx.rate || !fx.date) return;
+      const locale = root.dataset.locale as Locale;
+      root.querySelectorAll<HTMLElement>('[data-pm-huf]').forEach((el) => { el.textContent = formatHufHint(Number(el.dataset.cents), { rate: fx.rate! }, locale); });
+      const foot = root.querySelector<HTMLElement>('[data-pm-foot]');
+      if (foot) { foot.textContent = fxFootnote({ rate: fx.rate, date: fx.date }, locale); foot.hidden = false; }
+    } catch { /* the euro prices stand alone */ }
+  });
+</script>
+
+<style is:global>
+  .pm-band { margin: 0 0 32px; }
+  .pm-band-title { font-family: var(--serif); font-weight: var(--fw-medium); font-size: 22px; color: var(--ink); margin: 0 0 12px; }
+  .pm-table { display: grid; gap: 6px; }
+  .pm-row { display: grid; grid-template-columns: minmax(96px, 1.1fr) repeat(auto-fit, minmax(0, 1fr)); align-items: center; gap: 8px; padding: 14px 20px; border-radius: var(--r-md); background: rgba(255, 255, 255, 0.6); }
+  .pm-row:not(.pm-head):hover { background: var(--white); }
+  .pm-head { background: transparent; padding-block: 0; font-size: var(--fs-small); color: var(--taupe); }
+  .pm-head > span:not(:first-child), .pm-cell { text-align: end; }
+  .pm-name { font-family: var(--serif); font-weight: var(--fw-medium); font-size: var(--fs-lead); color: var(--ink); }
+  .pm-row[data-recommended] { box-shadow: inset 3px 0 0 var(--ink); }
+  .pm-cell strong { display: block; font-family: var(--serif); font-weight: var(--fw-medium); font-size: var(--fs-lead); color: var(--ink); white-space: nowrap; }
+  .pm-cell small { display: block; min-height: 1.3em; font-size: 12.5px; color: var(--taupe); white-space: nowrap; }
+  .pm-flags { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+  .pm-flags li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+  .pm-flags-name { min-width: 72px; font-size: var(--fs-small); color: var(--ink); }
+  .pm-flag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+  .pm-flag-list .flag { width: 18px; height: 14px; }
+  .pm-foot { margin: 16px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--taupe); max-width: 64ch; }
+  @media (max-width: 560px) { .pm-row { padding: 12px 12px; gap: 4px; } .pm-cell strong { font-size: 15px; } .pm-name { font-size: 16px; } }
+</style>

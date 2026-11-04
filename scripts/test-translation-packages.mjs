@@ -167,13 +167,13 @@ test('every listing that goes live is queued for English and German', async () =
   assert.equal(prop().translation_package, 'basic');
 });
 
-test('a listing written in English is queued for German only; one written in German for English only', async () => {
+test('a listing written in English is queued for German and Hungarian; one written in German for English and Hungarian', async () => {
   fresh({ translations: [{ ...hu, locale: 'en' }] });
   await pay('evt_f');
-  assert.deepEqual(jobLocales(), ['de']);
+  assert.deepEqual(jobLocales(), ['de', 'hu'], 'Basic is Hungarian, English and German: an English original gets the other two');
   fresh({ translations: [{ ...hu, locale: 'de' }] });
   await pay('evt_g');
-  assert.deepEqual(jobLocales(), ['en']);
+  assert.deepEqual(jobLocales(), ['en', 'hu']);
 });
 
 test('a language that already has a text is not queued again', async () => {

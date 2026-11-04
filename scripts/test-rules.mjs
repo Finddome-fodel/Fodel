@@ -1007,7 +1007,7 @@ console.log('AI translation: the rules around the model');
 
   test('the packages are rules: Go is English and German, Európa is everything but the World-only languages, World is everything', () => {
     const [go, europe, world] = ['basic', 'europe', 'world'].map((id) => tp.packageById(cfg0, id));
-    assert.deepEqual(tp.packageLocales(go, T28), ['en', 'de']);
+    assert.deepEqual(tp.packageLocales(go, T28), ['hu', 'en', 'de'], 'Basic: Hungarian, English, German (Q3); the original is taken off per listing');
     assert.equal(tp.packageLocales(europe, T28).length, 23, 'Európa: 28 languages minus the five World-only ones, the original included');
     assert.equal(WORLD_ONLY.some((code) => tp.packageLocales(europe, T28).includes(code)), false);
     assert.equal(tp.packageLocales(world, T28).length, 28);
@@ -1049,7 +1049,7 @@ console.log('AI translation: the rules around the model');
     // A text a person wrote in a language is theirs to publish.
     assert.deepEqual(tp.entitledLocales({ translationPackage: 'basic', writtenLocales: ['pl'], sourceLocale: 'hu' }, cfg0, T28), ['en', 'de', 'pl']);
     // A Dutch seller: Go is nl + en + de.
-    assert.deepEqual(tp.entitledLocales({ translationPackage: 'basic', sourceLocale: 'nl' }, cfg0, T28), ['en', 'de']);
+    assert.deepEqual(tp.entitledLocales({ translationPackage: 'basic', sourceLocale: 'nl' }, cfg0, T28), ['hu', 'en', 'de']);
     assert.deepEqual(tp.packageLocales(tp.packageById(cfg0, 'europe'), T28).includes('hu'), true, 'for a Dutch seller Hungarian is a target');
   });
 

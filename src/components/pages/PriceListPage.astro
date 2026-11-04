@@ -17,7 +17,10 @@ import Button from '~/components/Button.astro';
 import PackageCard from '~/components/PackageCard.astro';
 import { path, localizer, type L10n, type Locale } from '~/i18n/ui';
 import { COMMISSION, CONTRACT_PRICES, ONSITE_SERVICES, LISTING_VAT_PERCENT } from '~/config/company';
-import { listingCatalog, packageCard, priceFacts, extraPrice, eurText, type ExtraId } from '~/lib/listing-packages';
+import { listingCatalog, packageCard, priceFacts, extraPrice, eurText, sellingPackages, type ExtraId } from '~/lib/listing-packages';
+import PriceMatrix from '~/components/pages/PriceMatrix.astro';
+import { eurPrice } from '~/lib/format';
+import { fromCents, type PackageKey } from '~/lib/listing-pricing';
 import { alternatesFor } from '~/lib/page';
 import { extraLabel } from '~/lib/orders';
 import { approvedWording } from '~/lib/approved-text';
@@ -42,11 +45,14 @@ const refundLang = refund?.lang ?? locale;
 // (Csomagok menü), so this page always matches checkout.
 const catalog = listingCatalog(company.services);
 const from = priceFacts(catalog).from;
+const live = catalog.pricingLive;
+// "8,90 €" / "€ 8,90": the cheapest cell of the matrix, with its cents (the older packages are whole euros).
+const fromText = live ? eurPrice(Math.round(from * 100), locale) : eurText(locale, from);
 const fmt = (n: number) => eurText(locale, n);
 const xp = (id: ExtraId) => fmt(extraPrice(catalog, id));
 const vat = LISTING_VAT_PERCENT;
 const pct = (n: number) => (locale === 'de' || locale === 'fr' || locale === 'es' || locale === 'sk' ? `${n}\u00a0%` : `${n}%`);
-const pkgSummary = catalog.packages
+const pkgSummary = live ? sellingPackages(catalog).map((p) => p.names[locale]).join(' / ') : catalog.packages
   .map((p) => {
     // "€ 129 vagy € 179" — every tier price, the last joined with "or".
     const prices = p.tiers.map((tier) => fmt(tier.priceEur));
@@ -64,7 +70,7 @@ const translationPrice = extraPrice(catalog, 'translation');
 
 const copies = {
   hu: {
-      metaTitle: `Árlista: hirdetési díjak ${from} €-tól`,
+      metaTitle: `Árlista: hirdetési díjak ${fromText}-tól`,
       metaDescription:
         `FINDDOME hirdetési árlista: ${pkgSummary}. Fordítás ${extraPrice(catalog, 'translation')} €/nyelv, kiemelés ${hlRange} €/hó. Minden ár tartalmazza a 21% holland áfát.`,
       eyebrow: 'Árlista',
@@ -96,7 +102,7 @@ const copies = {
         'Jutalékot kizárólag akkor számítunk fel, ha a vevőt a FINDDOME hozta, írásos adásvételi szerződés jött létre és a foglaló megfizetésre került. Ha a vevő közvetlenül Önnél jelentkezik és nincs szükség a segítségünkre, a hirdetési díjon felül semmilyen más díjat nem kell fizetnie.',
     },
   nl: {
-      metaTitle: `Tarieven: adverteren vanaf € ${from}`,
+      metaTitle: `Tarieven: adverteren vanaf ${fromText}`,
       metaDescription:
         `Tarieven van FINDDOME: advertentie van ${pkgSummary}. Vertaling € ${extraPrice(catalog, 'translation')} per taal, uitlichten € ${hlRange} per maand. Alle prijzen inclusief 21% btw.`,
       eyebrow: 'Tarieven',
@@ -937,6 +943,14 @@ type Copy = (typeof copies)['en'];
 const huExtra = { refundHead: 'Visszatérítési szabály', commissionTitle: `${COMMISSION.percent}% nettó, min. ${COMMISSION.minimumEur} €`, contractFrom: (n: number) => `${n} €-tól` };
 const nlExtra = { refundHead: 'Terugbetalingsbeleid', commissionTitle: `${COMMISSION.percent}% netto, min. € ${COMMISSION.minimumEur}`, contractFrom: (n: number) => `vanaf € ${n}` };
 const t = { ...copies[locale], ...(locale === 'hu' ? huExtra : locale === 'nl' ? nlExtra : {}) } as Copy;
+if (live) {
+  // Languages are part of the packages now: the per-language row and the sentence about it go. The description names
+  // the packages and the range of the matrix, the same in every language.
+  const translationRow = t.extras.findIndex((extra: any) => extra.price === xp('translation'));
+  if (translationRow >= 0) t.extras = t.extras.filter((_: unknown, index: number) => index !== translationRow);
+  const cells = sellingPackages(catalog).flatMap((pkg) => Object.values(catalog.pricing.prices[pkg.id as PackageKey] ?? {}).flatMap((row) => Object.values(row)));
+  t.metaDescription = `FINDDOME: ${pkgSummary} (${eurPrice(Math.min(...cells), locale)} – ${eurPrice(Math.max(...cells), locale)}). ${t.vatNote}`;
+}
 
 const contractLabels: Record<string, L10n> = {
   hu: { hu: 'Magyar', nl: 'Hongaars', en: 'Hungarian', de: 'Ungarisch', fr: 'Hongrois', es: 'Húngaro', pl: 'Węgierski', ro: 'Maghiară', sk: 'Maďarčina', it: 'Ungherese', pt: 'Húngaro', el: 'Ουγγρικά', cs: 'Maďarština', sl: 'Madžarščina', sv: 'Ungerska', da: 'Ungarsk', no: 'Ungarsk', fi: 'Unkari', et: 'Ungari keel', lv: 'Ungāru valoda', lt: 'Vengrų kalba', sr: 'Mađarski', uk: 'Угорська', tr: 'Macarca', he: 'הונגרית', ar: 'المجرية', ru: 'Венгерский', zh: '匈牙利语' },
@@ -944,15 +958,15 @@ const contractLabels: Record<string, L10n> = {
   'en-hu': { hu: 'Angol–magyar', nl: 'Engels–Hongaars', en: 'English–Hungarian', de: 'Englisch–Ungarisch', fr: 'Anglais–hongrois', es: 'Inglés–húngaro', pl: 'Angielski–węgierski', ro: 'Engleză–maghiară', sk: 'Angličtina–maďarčina', it: 'Inglese–ungherese', pt: 'Inglês–húngaro', el: 'Αγγλικά–ουγγρικά', cs: 'Angličtina–maďarština', sl: 'Angleščina–madžarščina', sv: 'Engelska–ungerska', da: 'Engelsk–ungarsk', no: 'Engelsk–ungarsk', fi: 'Englanti–unkari', et: 'Inglise–ungari', lv: 'Angļu–ungāru', lt: 'Anglų–vengrų', sr: 'Englesko-mađarski', uk: 'Англійська–угорська', tr: 'İngilizce–Macarca', he: 'אנגלית–הונגרית', ar: 'الإنجليزية–المجرية', ru: 'Английский–венгерский', zh: '英语–匈牙利语' },
   'nl-hu': { hu: 'Holland–magyar', nl: 'Nederlands–Hongaars', en: 'Dutch–Hungarian', de: 'Niederländisch–Ungarisch', fr: 'Néerlandais–hongrois', es: 'Neerlandés–húngaro', pl: 'Niderlandzki–węgierski', ro: 'Neerlandeză–maghiară', sk: 'Holandčina–maďarčina', it: 'Olandese–ungherese', pt: 'Neerlandês–húngaro', el: 'Ολλανδικά–ουγγρικά', cs: 'Nizozemština–maďarština', sl: 'Nizozemščina–madžarščina', sv: 'Nederländska–ungerska', da: 'Hollandsk–ungarsk', no: 'Nederlandsk–ungarsk', fi: 'Hollanti–unkari', et: 'Hollandi–ungari', lv: 'Nīderlandiešu–ungāru', lt: 'Olandų–vengrų', sr: 'Holandsko-mađarski', uk: 'Нідерландська–угорська', tr: 'Felemenkçe–Macarca', he: 'הולנדית–הונגרית', ar: 'الهولندية–المجرية', ru: 'Нидерландский–венгерский', zh: '荷兰语–匈牙利语' },
 };
-const packageCards = catalog.packages.map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
+const packageCards = sellingPackages(catalog).map((pkg) => packageCard(pkg, catalog, locale, { withExtras: true }));
 
 const packageSchema = listingServiceSchema(locale, {
   name: t.packagesHead,
   description: t.metaDescription,
   url: path(locale, 'priceList'),
-  packages: catalog.packages.map((pkg) => ({
+  packages: sellingPackages(catalog).map((pkg) => ({
     name: pkg.names[locale],
-    priceEur: pkg.priceEur,
+    priceEur: live ? (fromCents(catalog.pricing, pkg.id as PackageKey) ?? 0) / 100 : pkg.priceEur,
   })),
 });
 ---
@@ -976,6 +990,7 @@ const packageSchema = listingServiceSchema(locale, {
   {/* ── Packages ── */}
   <section class="packages">
     <Eyebrow space="24px">{t.packagesHead}</Eyebrow>
+    {live ? <PriceMatrix catalog={catalog} locale={locale} /> : (
     <div class="package-grid">
       {
         packageCards.map((pkg: any) => (
@@ -983,6 +998,7 @@ const packageSchema = listingServiceSchema(locale, {
         ))
       }
     </div>
+    )}
     <p class="vat">{t.vatNote}</p>
   </section>
 

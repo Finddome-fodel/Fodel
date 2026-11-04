@@ -95,7 +95,7 @@ try {
     assert.equal(['tr', 'he', 'ar', 'zh', 'ru'].some((c) => m.packages[1].languages.includes(c)), false);
     assert.equal(m.packages[2].languages.length, 28);
     const german = model({ sourceLocale: 'de' });
-    assert.deepEqual(german.packages[0].languages, ['de', 'en'], 'a German owner: German is the original; Basic adds English (Hungarian only if an admin adds it to Basic)');
+    assert.deepEqual(german.packages[0].languages, ['de', 'hu', 'en'], 'a German owner: German is the original; Basic adds Hungarian and English');
   });
 
   await test('a package an admin switched off is not offered; a term without a price is not shown', () => {

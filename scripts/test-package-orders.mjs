@@ -127,7 +127,7 @@ try {
     assert.deepEqual(basic.locales, ['en', 'de']);
     // A German owner: German is the original, not a translation.
     const german = pkgLine(build({ packageId: 'basic', months: 6, priceHuf: 1, translation: { packageId: 'basic', sourceLocale: 'de' } }));
-    assert.deepEqual(german.locales, ['en']);
+    assert.deepEqual(german.locales, ['hu', 'en'], 'Basic is Hungarian, English and German: a German original leaves Hungarian and English to translate');
   });
 
   await test('the referral discount is 10% of the package line only, in whole cents, half up', () => {
@@ -238,7 +238,7 @@ try {
     assert.equal(patch.listingPricing.packages.europe.recommended, true);
     assert.equal(patch.listingPricing.prices.basic[0][1], 890, 'prices are not on this tab');
     assert.equal(patch.translationPackages.packages.every((pkg) => !('locales' in pkg)), true, 'no language field posted: rules stay');
-    const rule = ['en', 'de'];
+    const rule = ['hu', 'en', 'de'];
     const same = F.contentPatch(fd([...content().entries(), ['lang_basic__present', '1'], ...rule.map((c) => ['lang_basic', c])]), stored);
     assert.equal('locales' in same.translationPackages.packages.find((p) => p.id === 'basic'), false, 'the rule\'s own list is no list');
     const custom = F.contentPatch(fd([...content().entries(), ['lang_basic__present', '1'], ['lang_basic', 'fr'], ['lang_basic', 'de']]), stored);

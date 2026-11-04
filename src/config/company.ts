@@ -413,7 +413,7 @@ export const TRANSLATION_PACKAGES = {
   worldOnly: ['tr', 'he', 'ar', 'zh', 'ru'],
   packages: [
     {
-      id: 'basic', priceEur: 0, rule: { include: ['en', 'de'] }, recommended: false, active: true,
+      id: 'basic', priceEur: 0, rule: { include: ['hu', 'en', 'de'] }, recommended: false, active: true,
       names: { hu: 'Basic', en: 'Basic', nl: 'Basic' },
       badge: { hu: '', en: '', nl: '' },
       pitch: {
