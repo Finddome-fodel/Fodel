@@ -11,6 +11,7 @@ import { getStripe } from '~/lib/stripe';
 import { getCompany } from '~/lib/runtime-config';
 import { listingCatalog, sellingPackages } from '~/lib/listing-packages';
 import { isPackageKey, tierIndexFor } from '~/lib/listing-pricing';
+import { upgradeTerm } from '~/lib/portal/package-terms';
 import { TRANSLATION_LINE_IDS, grantedLocales } from '~/lib/translation-packages';
 import { ALL_LOCALES } from './translate-core';
 import { loadEntitlement } from './translation-entitlement';
@@ -20,16 +21,6 @@ import { isTranslationOrder } from './translation-orders';
 export type TranslationChoice = { packageId: string; extraLocales: string[]; excludedLocales: string[] };
 
 export type TranslationOrder = { id: string; amount_cents: number; line_items: OrderLine[]; stripe_session_id: string | null };
-
-/**
- * The term an upgrade is priced for: what the listing was bought for, else (a listing on one of the older packages) the
- * configured term closest to the months it has left.
- */
-function upgradeTerm(property: { package_months?: number | null; expires_at?: string | null }, durations: readonly number[]): number {
-  if (typeof property.package_months === 'number' && durations.includes(property.package_months)) return property.package_months;
-  const left = property.expires_at ? Math.max(1, Math.round((Date.parse(property.expires_at) - Date.now()) / (30 * 86_400_000))) : Math.max(...durations);
-  return [...durations].sort((a, b) => Math.abs(a - left) - Math.abs(b - left) || b - a)[0];
-}
 
 /**
  * Replaces whatever translation order was still open with one for exactly these

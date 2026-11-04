@@ -230,3 +230,44 @@ export function chooserModel(input: {
     },
   };
 }
+
+export type UpgradeCopy = {
+  title: string;
+  lead: string;
+  action: string;
+  paying: string;
+  error: string;
+  difference: string;
+  expiry: string;
+};
+
+/** The owner's "move to a bigger package" panel: what it costs is the difference, the expiry does not move. */
+export const UPGRADE_COPY: Record<ChooserLang, UpgradeCopy> = {
+  hu: {
+    title: 'Váltás nagyobb csomagra',
+    lead: 'Több nyelven is megjelenhet a hirdetése. Csak a két csomag árának különbözetét fizeti: az eredetileg megvásárolt időtartam és értékhatár szerint számolunk.',
+    action: 'Váltás',
+    paying: 'Átirányítjuk a fizetéshez…',
+    error: 'A váltást most nem sikerült elindítani. Kérjük, próbálja újra később.',
+    difference: 'különbözet',
+    expiry: 'A hirdetés lejárata nem változik.',
+  },
+  nl: {
+    title: 'Overstappen op een groter pakket',
+    lead: 'Uw advertentie kan in meer talen verschijnen. U betaalt alleen het verschil tussen de twee pakketten, voor de oorspronkelijke looptijd en waardeklasse.',
+    action: 'Overstappen',
+    paying: 'U wordt doorgestuurd naar de betaling…',
+    error: 'Overstappen lukt nu niet. Probeer het later opnieuw.',
+    difference: 'verschil',
+    expiry: 'De einddatum van de advertentie verandert niet.',
+  },
+  en: {
+    title: 'Move to a bigger package',
+    lead: 'Your listing can appear in more languages. You only pay the difference between the two packages, for the term and value band originally bought.',
+    action: 'Upgrade',
+    paying: 'Taking you to payment…',
+    error: 'The upgrade could not be started now. Please try again later.',
+    difference: 'difference',
+    expiry: 'The listing’s expiry date does not change.',
+  },
+};

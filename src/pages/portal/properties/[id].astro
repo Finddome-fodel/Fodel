@@ -34,6 +34,12 @@ import { translationModel } from '~/lib/ai/translate';
 import { ALL_LOCALES, HU_NAME, LIMITS, TARGET_LIMITS, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
 import { jobsForProperty, latestPerLocale } from '~/lib/ai/translation-jobs';
 import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import PackageUpgrade from '~/components/portal/PackageUpgrade.astro';
+import { upgradeQuotes } from '~/lib/portal/package-terms';
+import { packageLocales, packageById } from '~/lib/translation-packages';
+import { UPGRADE_COPY } from '~/lib/portal/package-chooser';
+import { currentRate } from '~/lib/fx-store';
+import { languageName } from '~/lib/listing-catalogue';
 import ListingLanguages from '~/components/portal/ListingLanguages.astro';
 import { loadEntitlement } from '~/lib/ai/translation-entitlement';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
@@ -210,6 +216,20 @@ const trConfig = listingCatalog(company.services).translation;
 const trEntitlement = (isAdmin || isOwnProperty) ? await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null) : null;
 const trGranted = trEntitlement ? grantedLocales(trEntitlement.listing, trConfig, ALL_LOCALES) : [];
 const trPaid = Astro.url.searchParams.get('translations');
+// A paying owner of a live listing on Basic / Europe: the bigger packages and their difference (not for free listings).
+const pkgCatalog = listingCatalog(company.services);
+const upgrades = trOwnerPanel && !property.free_listing && trEntitlement
+  ? upgradeQuotes(pkgCatalog, property as never).map((quote) => {
+      const have = new Set(packageLocales(packageById(pkgCatalog.translation, property.package), ALL_LOCALES));
+      return {
+        packageId: quote.packageId,
+        name: portalLocale === 'hu' ? pkgCatalog.pricing.packages[quote.packageId].names.hu : pkgCatalog.pricing.packages[quote.packageId].names.en,
+        cents: quote.cents,
+        added: packageLocales(packageById(pkgCatalog.translation, quote.packageId), ALL_LOCALES).filter((code) => !have.has(code) && code !== trSourceLocale),
+      };
+    })
+  : [];
+const upgradeFx = upgrades.length ? await currentRate().catch(() => null) : null;
 ---
 
 <Portal title={`Ingatlan #${property.ref}`}>
@@ -456,18 +476,24 @@ const trPaid = Astro.url.searchParams.get('translations');
 
   {trOwnerPanel && (
     <section class="tr-panel ed-card" id="translations-panel" data-free={property.free_listing ? 'yes' : undefined}>
-      <header class="card-head"><div><h2>{tc.panelTitle}</h2><p>{property.free_listing ? tc.panelLeadFree : tc.panelLead}</p></div></header>
+      <header class="card-head"><div><h2>{pkgCatalog.pricingLive && !property.free_listing ? UPGRADE_COPY[portalLocale].title : tc.panelTitle}</h2>{!(pkgCatalog.pricingLive && !property.free_listing) && <p>{property.free_listing ? tc.panelLeadFree : tc.panelLead}</p>}</div></header>
       {trPaid === 'paid' && <p class="notice ok">{tc.thanksPaid}</p>}
       {property.free_listing && !aiOn && <p class="notice warn">{tc.aiOffNote}</p>}
       <div class="tr-owner-progress" id="tr-owner-progress" aria-live="polite"></div>
-      {trMissing.length === 0 && trJobs.every((job) => !['requested', 'queued', 'running'].includes(job.status))
-        ? <p class="hint">{tc.nothingToAdd}</p>
+      {pkgCatalog.pricingLive && !property.free_listing
+        ? (upgrades.length > 0
+          ? <PackageUpgrade propertyId={property.id} lang={portalLocale} quotes={upgrades} fx={upgradeFx} names={Object.fromEntries(ALL_LOCALES.map((code) => [code, languageName(code, portalLocale)]))} />
+          : <p class="hint">{tc.nothingToAdd}</p>)
         : (
-          <>
-            <TranslationPackagePicker lang={portalLocale} bare cfg={trConfig} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trEntitlement?.listing.translationPackage ?? 'basic'} currentPackageId={trEntitlement?.listing.translationPackage ?? null} excluded={[...(trEntitlement?.listing.excludedLocales ?? [])]} present={ALL_LOCALES.filter(trHas)} busy={trBusy} free={Boolean(property.free_listing)} />
-            <p class="tr-owner-msg" id="tr-owner-msg" role="status"></p>
-            <button type="button" class="btn" id="tr-buy" disabled>{property.free_listing ? tc.request : tc.pay}</button>
-          </>
+      trMissing.length === 0 && trJobs.every((job) => !['requested', 'queued', 'running'].includes(job.status))
+          ? <p class="hint">{tc.nothingToAdd}</p>
+          : (
+            <>
+              <TranslationPackagePicker lang={portalLocale} bare cfg={trConfig} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trEntitlement?.listing.translationPackage ?? 'basic'} currentPackageId={trEntitlement?.listing.translationPackage ?? null} excluded={[...(trEntitlement?.listing.excludedLocales ?? [])]} present={ALL_LOCALES.filter(trHas)} busy={trBusy} free={Boolean(property.free_listing)} />
+              <p class="tr-owner-msg" id="tr-owner-msg" role="status"></p>
+              <button type="button" class="btn" id="tr-buy" disabled>{property.free_listing ? tc.request : tc.pay}</button>
+            </>
+          )
         )}
     </section>
   )}

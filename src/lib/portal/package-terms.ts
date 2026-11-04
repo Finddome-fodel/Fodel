@@ -9,7 +9,8 @@
 import type { OrderLine } from '~/lib/orders';
 import type { ListingCatalog } from '~/lib/listing-packages';
 import { packageOf } from '~/lib/listing-packages';
-import { isPackageKey, priceFor, tierIndexFor, type ListingPricing, type PackageKey } from '~/lib/listing-pricing';
+import { sellingPackages } from '~/lib/listing-packages';
+import { isPackageKey, priceFor, tierIndexFor, upgradeCents, PACKAGE_KEYS, type ListingPricing, type PackageKey } from '~/lib/listing-pricing';
 
 /** The columns an order's package line writes onto the listing, or nothing when the order has no such line. */
 export function termColumns(lines: readonly OrderLine[], pricing: ListingPricing): { package_months: number; price_tier_index: number; price_tier_huf_bounds: (number | null)[] } | null {
@@ -41,4 +42,33 @@ export function renewalQuote(catalog: ListingCatalog, row: { package?: string | 
   const tierIndex = tierIndexFor(catalog.pricing, row.price_huf);
   const price = priceFor({ packageId, months, tierIndex, pricing: catalog.pricing });
   return price ? { packageId, months, tierIndex, cents: price.cents } : null;
+}
+
+/**
+ * The term an upgrade is priced for: what the listing was bought for, else (a listing on one of the older packages) the
+ * configured term closest to the months it has left.
+ */
+export function upgradeTerm(property: { package_months?: number | null; expires_at?: string | null }, durations: readonly number[]): number {
+  if (typeof property.package_months === 'number' && durations.includes(property.package_months)) return property.package_months;
+  const left = property.expires_at ? Math.max(1, Math.round((Date.parse(property.expires_at) - Date.now()) / (30 * 86_400_000))) : Math.max(...durations);
+  return [...durations].sort((a, b) => Math.abs(a - left) - Math.abs(b - left) || b - a)[0];
+}
+
+export type UpgradeQuote = { packageId: PackageKey; months: number; tierIndex: number; cents: number };
+
+/**
+ * The bigger packages a live listing can move to, and what each costs (Q6): the difference between the two packages for
+ * the term and inside the value band originally bought, never negative; the expiry stays. Empty when the listing holds
+ * the biggest package, or is on an older package with no band to price inside (it is then priced by its price now).
+ */
+export function upgradeQuotes(catalog: ListingCatalog, row: { package?: string | null; package_months?: number | null; price_tier_index?: number | null; price_huf?: number | null; expires_at?: string | null }): UpgradeQuote[] {
+  if (!catalog.pricingLive) return [];
+  const from: PackageKey = row.package && isPackageKey(row.package) ? row.package : 'basic';
+  const months = upgradeTerm(row, catalog.pricing.durations);
+  const tierIndex = typeof row.price_tier_index === 'number' ? row.price_tier_index : tierIndexFor(catalog.pricing, row.price_huf);
+  const selling = new Set(sellingPackages(catalog).map((pkg) => pkg.id));
+  return PACKAGE_KEYS.slice(PACKAGE_KEYS.indexOf(from) + 1).filter((key) => selling.has(key)).flatMap((key) => {
+    const cents = upgradeCents({ from, to: key, months, tierIndex, pricing: catalog.pricing });
+    return cents && cents > 0 ? [{ packageId: key, months, tierIndex, cents }] : [];
+  });
 }

@@ -1,0 +1,78 @@
+---
+/**
+ * The owner's panel for a live listing: move to a bigger package. Each card shows what is added (languages) and the
+ * difference in euro for the term and value band originally bought, with the forint hint underneath. The button
+ * asks the server for an order (`POST …/translations {action:'order', packageId}`), which prices it again from the
+ * matrix, and sends the owner to Stripe. Nothing here computes a price: the cents come from `upgradeQuotes()`.
+ */
+import Flag from '~/components/Flag.astro';
+import { UPGRADE_COPY, type ChooserLang } from '~/lib/portal/package-chooser';
+import { eurPrice } from '~/lib/format';
+import { formatHufHint, type FxRate } from '~/lib/fx';
+import { LOCALE_META } from '~/i18n/ui';
+
+interface Quote { packageId: string; name: string; cents: number; added: string[]; }
+interface Props { propertyId: string; lang: ChooserLang; quotes: Quote[]; fx: FxRate | null; names: Record<string, string> }
+const { propertyId, lang, quotes, fx, names } = Astro.props as Props;
+const t = UPGRADE_COPY[lang];
+const cap = (text: string) => text.replace(/^./, (c) => c.toLocaleUpperCase(lang));
+const flagOf = (code: string) => (LOCALE_META as Record<string, { flag: string }>)[code]?.flag;
+const count = (n: number) => (lang === 'hu' ? `+${n} nyelv` : lang === 'nl' ? `+${n} talen` : `+${n} ${n === 1 ? 'language' : 'languages'}`);
+---
+
+<div class="pup" data-pup data-property={propertyId} data-paying={t.paying} data-error={t.error}>
+  <p class="pup-lead">{t.lead} {t.expiry}</p>
+  <div class="pup-cards">
+    {quotes.map((quote) => (
+      <div class="pup-card">
+        <p class="pup-name">{quote.name}</p>
+        <p class="pup-price num"><strong>+ {eurPrice(quote.cents, lang)}</strong><small>{formatHufHint(quote.cents, fx, lang)}</small></p>
+        <p class="pup-diff">{t.difference} · {count(quote.added.length)}</p>
+        <details class="pup-langs">
+          <summary>{count(quote.added.length)}</summary>
+          <ul>{quote.added.map((code) => (<li>{flagOf(code) && <Flag code={flagOf(code) as never} />}<span>{cap(names[code] ?? code)}</span></li>))}</ul>
+        </details>
+        <button type="button" class="btn" data-pup-buy={quote.packageId}>{t.action}: {quote.name}</button>
+      </div>
+    ))}
+  </div>
+  <p class="pup-msg" role="status" aria-live="polite" data-pup-msg></p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pup]').forEach((root) => {
+    const msg = root.querySelector<HTMLElement>('[data-pup-msg]')!;
+    root.querySelectorAll<HTMLButtonElement>('[data-pup-buy]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        root.querySelectorAll<HTMLButtonElement>('[data-pup-buy]').forEach((b) => (b.disabled = true));
+        msg.textContent = root.dataset.paying ?? '';
+        try {
+          const res = await fetch(`/api/portal/properties/${root.dataset.property}/translations`, {
+            method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'order', packageId: button.dataset.pupBuy, excluded: [] }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (res.ok && json.url) { location.href = json.url; return; }
+        } catch { /* fall through to the message */ }
+        msg.textContent = root.dataset.error ?? '';
+        root.querySelectorAll<HTMLButtonElement>('[data-pup-buy]').forEach((b) => (b.disabled = false));
+      });
+    });
+  });
+</script>
+
+<style is:global>
+  .pup-lead { margin: 0 0 16px; max-width: 64ch; font-size: var(--fs-small); line-height: 1.6; color: var(--ink-quiet); }
+  .pup-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 12px; }
+  .pup-card { display: flex; flex-direction: column; gap: 6px; padding: 20px; background: var(--white); border: 1px solid var(--pt-hair); border-radius: var(--r-lg); }
+  .pup-name { margin: 0; font-family: var(--serif); font-weight: var(--fw-medium); font-size: 24px; color: var(--ink); }
+  .pup-price { margin: 0; }
+  .pup-price strong { display: block; font-family: var(--serif); font-weight: var(--fw-medium); font-size: 28px; line-height: 1.1; color: var(--ink); }
+  .pup-price small { display: block; margin-top: 2px; font-size: 13px; color: var(--ink-quiet); min-height: 1.3em; }
+  .pup-diff { margin: 0; font-size: var(--fs-small); color: var(--ink-quiet); }
+  .pup-langs summary { cursor: pointer; display: inline-block; padding: 6px 0; font-size: 13px; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(16, 42, 67, 0.3); list-style: none; }
+  .pup-langs summary::-webkit-details-marker { display: none; }
+  .pup-langs ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+  .pup-langs li { display: flex; align-items: center; gap: 10px; min-height: 30px; font-size: 13px; color: var(--ink); }
+  .pup-card .btn { margin-top: auto; }
+  .pup-msg { margin: 12px 0 0; min-height: 1.4em; font-size: var(--fs-small); color: var(--ink-quiet); }
+</style>

@@ -123,6 +123,18 @@ try {
     }
   });
 
+  await test('an upgrade quote is the difference for the bought term inside the bought band, and the biggest package has none', async () => {
+    const T = await server.ssrLoadModule('/src/lib/portal/package-terms.ts');
+    const row = { package: 'basic', package_months: 3, price_tier_index: 1, price_huf: 900_000_000 };
+    assert.deepEqual(T.upgradeQuotes(live, row).map((q) => [q.packageId, q.cents]), [['europe', 3800 - 2490], ['world', 4990 - 2490]], 'the stored band, not the price now (900 M Ft would be the top band)');
+    assert.deepEqual(T.upgradeQuotes(live, { ...row, package: 'europe' }).map((q) => [q.packageId, q.cents]), [['world', 4990 - 3800]]);
+    assert.deepEqual(T.upgradeQuotes(live, { ...row, package: 'world' }), []);
+    assert.deepEqual(T.upgradeQuotes(L.listingCatalog({}), row), [], 'before the migrations nothing is sold');
+    // An older-package listing has no stored term or band: the closest term to the time left, the band of its price.
+    const old = T.upgradeQuotes(live, { package: 'normal-12m', price_huf: 48_000_000, expires_at: new Date(Date.now() + 170 * 86400000).toISOString() });
+    assert.deepEqual(old.map((q) => [q.packageId, q.months, q.cents]), [['europe', 6, 5990 - 3890], ['world', 6, 7690 - 3890]]);
+  });
+
   console.log(`\n${passed} package chooser checks passed.`);
 } catch (error) {
   console.error('✗ ' + (error.stack || error));
