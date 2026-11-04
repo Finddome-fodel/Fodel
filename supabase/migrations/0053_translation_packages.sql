@@ -100,6 +100,140 @@ set extra_locales = c.locales
 from computed c
 where c.id = p.id and p.extra_locales = '{}' and p.translation_package = 'basic' and cardinality(c.locales) > 0;
 
+
+-- 7. Search lists only what is published in the visitor's language (fix 3.3) ----------------------------------------------
+--
+-- The rule "this listing appears in this language's lists" (src/lib/listing-languages.ts `listedIn`) used to run in the app
+-- AFTER the database had cut the page, so a page could come back short and the total was only corrected for the page in hand.
+-- It is now part of the query: three optional parameters, the app passes the language and the packages that cover it (the
+-- packages are admin-editable, so the app works out the list); `total_count` is then counted over the filtered set.
+--
+--   p_listed_locale    the visitor's language, or null for no filter (what every older caller sends)
+--   p_listed_packages  the package ids whose languages include it (from Csomagok → Csomagok tartalma)
+--   p_listed_fallback  true when UNPURCHASED_LISTING_LOCALES=fallback: such listings stay listed, noindex, with fallback text
+--
+-- A listing is listed in a language when it is written in it (its original), or it is English (always), or the language is
+-- bought (its package covers it, or it is a single language) and not switched off, and the listing has a text row for it.
+-- (In fallback mode only a switched-off language, or a bought one that has no text yet, is left out.)
+-- The old 20-argument signature is dropped first: with defaults on the new one a call would otherwise be ambiguous.
+-- Also: a search for the new type "Birtok" (rural-estate) still finds a listing that has not been moved off the old key yet
+-- (0057), so searching works before and after that run.
+drop function if exists search_european_properties(
+  text, text, text, text, text, text, text, numeric, numeric, numeric, numeric, numeric, numeric, integer, numeric[], text, boolean, text, integer, integer
+);
+
+create or replace function search_european_properties(
+  p_locale text default 'hu',
+  p_query text default null,
+  p_category text default null,
+  p_country text default null,
+  p_region text default null,
+  p_county text default null,
+  p_settlement text default null,
+  p_price_min numeric default null,
+  p_price_max numeric default null,
+  p_floor_min numeric default null,
+  p_floor_max numeric default null,
+  p_plot_min numeric default null,
+  p_plot_max numeric default null,
+  p_bedrooms_min integer default null,
+  p_bbox numeric[] default null,
+  p_subtype text default null,
+  p_exclude_adobe boolean default null,
+  p_sort text default 'featured',
+  p_limit integer default 24,
+  p_offset integer default 0,
+  p_listed_locale text default null,
+  p_listed_packages text[] default null,
+  p_listed_fallback boolean default false
+) returns table (id uuid, total_count bigint)
+language sql stable as $$
+  select p.id, count(*) over() as total_count
+  from properties p
+  left join lateral (
+    select tr.* from property_translations tr
+    where tr.property_id = p.id and nullif(btrim(tr.description),'') is not null
+    order by (tr.locale = coalesce(p_locale,'hu')::locale_code) desc, (tr.locale='nl') desc, (tr.locale='hu') desc
+    limit 1
+  ) t on true
+  where p.status = 'published'
+    and (p.expires_at is null or p.expires_at > now())
+    and (p_exclude_adobe is not true or (p.wall_key is distinct from 'valyog' and not coalesce(p.details->'walls', '[]'::jsonb) ? 'valyog'))
+    and (p_category is null or p.category = p_category or p.property_group = p_category)
+    and (p_subtype is null or p.property_subtype = p_subtype or (p_subtype = 'rural-estate' and p.property_subtype = 'agricultural-estate'))
+    and (p_country is null or p.country = upper(p_country))
+    and (p_region is null or p.region = p_region)
+    and (p_county is null or p.county = p_county)
+    and (p_settlement is null or p.settlement ilike '%' || p_settlement || '%')
+    and (p_price_min is null or p.price_eur >= p_price_min)
+    and (p_price_max is null or p.price_eur < p_price_max)
+    and (p_floor_min is null or p.floor_m2 >= p_floor_min)
+    and (p_floor_max is null or p.floor_m2 <= p_floor_max)
+    and (p_plot_min is null or p.plot_m2 >= p_plot_min)
+    and (p_plot_max is null or p.plot_m2 <= p_plot_max)
+    and (p_bedrooms_min is null or coalesce(case when jsonb_typeof(p.details->'rooms') = 'number' then (p.details->>'rooms')::numeric end, p.bedrooms) >= p_bedrooms_min)
+    and (p_bbox is null or (p.lng between p_bbox[1] and p_bbox[3] and p.lat between p_bbox[2] and p_bbox[4]))
+    and (
+      p_query is null or btrim(p_query) = '' or
+      p.ref ilike '%' || btrim(p_query) || '%' or
+      p.settlement ilike '%' || btrim(p_query) || '%' or
+      p.county ilike '%' || btrim(p_query) || '%' or
+      p.region ilike '%' || btrim(p_query) || '%' or
+      t.search_vector @@ websearch_to_tsquery(
+        case t.locale
+          when 'hu' then 'hungarian'::regconfig
+          when 'nl' then 'dutch'::regconfig
+          when 'de' then 'german'::regconfig
+          when 'en' then 'english'::regconfig
+          when 'fr' then 'french'::regconfig
+          else 'simple'::regconfig
+        end,
+        p_query
+      )
+    )
+    -- Listed in the visitor's language (mirrors listedIn() in src/lib/listing-languages.ts).
+    and (
+      p_listed_locale is null
+      or p_listed_locale = 'en'
+      -- its original language: Hungarian when a person wrote it, otherwise the first language a person wrote
+      or p_listed_locale = coalesce(
+           (select o.locale::text from property_translations o
+             where o.property_id = p.id and not o.machine and (btrim(coalesce(o.title, '')) <> '' or btrim(coalesce(o.description, '')) <> '')
+             order by (o.locale = 'hu') desc, o.locale limit 1),
+           'hu')
+      or (
+        -- bought: the package covers it, or it is a single language
+        (coalesce(p.translation_package, 'basic') = any (coalesce(p_listed_packages, '{}'::text[])) or p_listed_locale = any (coalesce(p.extra_locales, '{}')::text[]))
+        and not (p_listed_locale = any (coalesce(p.excluded_locales, '{}')::text[]))
+        and exists (
+          select 1 from property_translations x
+           where x.property_id = p.id and x.locale::text = p_listed_locale
+             and (x.title <> 'Új hirdetés' or btrim(coalesce(x.description, '')) <> '' or btrim(coalesce(x.body, '')) <> '')
+        )
+      )
+      or (
+        -- fallback mode keeps a language nobody bought; it still drops a switched-off one and a bought one with no text yet
+        coalesce(p_listed_fallback, false)
+        and not (p_listed_locale = any (coalesce(p.excluded_locales, '{}')::text[]))
+        and not (
+          (coalesce(p.translation_package, 'basic') = any (coalesce(p_listed_packages, '{}'::text[])) or p_listed_locale = any (coalesce(p.extra_locales, '{}')::text[]))
+        )
+      )
+    )
+  order by
+    case when p_sort = 'price-asc' then p.price_eur end asc nulls last,
+    case when p_sort = 'price-desc' then p.price_eur end desc nulls last,
+    case when p_sort = 'area-desc' then p.floor_m2 end desc nulls last,
+    case when coalesce(p_sort,'featured') = 'featured' then p.featured else false end desc,
+    case when coalesce(p_sort,'featured') = 'featured' and p_subtype is not null then p.topic_featured else false end desc,
+    p.published_at desc
+  limit least(greatest(p_limit,1),100) offset greatest(p_offset,0);
+$$;
+
+grant execute on function search_european_properties(
+  text, text, text, text, text, text, text, numeric, numeric, numeric, numeric, numeric, numeric, integer, numeric[], text, boolean, text, integer, integer, text, text[], boolean
+) to anon, authenticated, service_role;
+
 notify pgrst, 'reload schema';
 
 commit;

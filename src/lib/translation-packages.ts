@@ -111,7 +111,10 @@ export type ListingLanguages = {
   translationPackage?: string | null;
   extraLocales?: readonly string[] | null;
   excludedLocales?: readonly string[] | null;
-  /** Languages a person wrote the text in themselves (not translated): theirs to publish, no purchase needed. */
+  /**
+   * Languages a person wrote the text in themselves (not translated). Q16: they are kept, but published only if the package
+   * covers the language; they do not publish by themselves, so writing a text is not a way round the package.
+   */
   writtenLocales?: readonly string[] | null;
   sourceLocale: string;
 };
@@ -119,7 +122,7 @@ export type ListingLanguages = {
 /** Everything the listing may be published in, before anything is switched off: package plus single languages, minus the original. */
 export function grantedLocales(listing: ListingLanguages, cfg: TranslationPricing, targets: readonly string[]): string[] {
   const inPackage = packageLocales(packageById(cfg, listing.translationPackage), targets);
-  const granted = new Set([...inPackage, ...[...(listing.extraLocales ?? []), ...(listing.writtenLocales ?? [])].filter((code) => targets.includes(code))]);
+  const granted = new Set([...inPackage, ...(listing.extraLocales ?? []).filter((code) => targets.includes(code))]);
   granted.delete(listing.sourceLocale);
   return targets.filter((code) => granted.has(code));
 }

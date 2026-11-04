@@ -1046,8 +1046,9 @@ console.log('AI translation: the rules around the model');
     const listing = { translationPackage: 'basic', extraLocales: ['fr', 'ar'], excludedLocales: ['de'], sourceLocale: 'hu' };
     assert.deepEqual(tp.entitledLocales(listing, cfg0, T28), ['en', 'fr', 'ar']);
     assert.deepEqual(tp.grantedLocales(listing, cfg0, T28), ['en', 'de', 'fr', 'ar'], 'switching off keeps what was granted');
-    // A text a person wrote in a language is theirs to publish.
-    assert.deepEqual(tp.entitledLocales({ translationPackage: 'basic', writtenLocales: ['pl'], sourceLocale: 'hu' }, cfg0, T28), ['en', 'de', 'pl']);
+    // Q16: a text a person wrote in a language is kept, but it does not publish by itself: only the package's languages do.
+    assert.deepEqual(tp.entitledLocales({ translationPackage: 'basic', writtenLocales: ['pl'], sourceLocale: 'hu' }, cfg0, T28), ['hu', 'en', 'de'].filter((code) => code !== 'hu'), 'Polish is not in Basic, so writing it by hand does not add it');
+    assert.deepEqual(tp.entitledLocales({ translationPackage: 'europe', writtenLocales: ['pl'], sourceLocale: 'hu' }, cfg0, T28).includes('pl'), true, 'a package that covers it publishes it');
     // A Dutch seller: Go is nl + en + de.
     assert.deepEqual(tp.entitledLocales({ translationPackage: 'basic', sourceLocale: 'nl' }, cfg0, T28), ['hu', 'en', 'de']);
     assert.deepEqual(tp.packageLocales(tp.packageById(cfg0, 'europe'), T28).includes('hu'), true, 'for a Dutch seller Hungarian is a target');
@@ -1184,9 +1185,11 @@ console.log('AI translation: the rules around the model');
     assert.deepEqual(serve(policy({ excludedLocales: ['en'], languagesWithText: ['hu', 'en'] }), 'en'), { serve: 'fallback' }, 'a bad row still never takes the English page away');
   });
 
-  test('a text a person wrote in a language is published without a purchase', () => {
+  test('Q16: a text a person wrote in a language is kept but published only if the package covers it', () => {
     const p = policy({ languagesWithText: ['hu', 'fr'], writtenLocales: ['fr'] });
-    assert.deepEqual(serve(p, 'fr'), { serve: 'render' });
+    assert.deepEqual(serve(p, 'fr'), { serve: 'redirect', permanent: true }, 'Basic does not cover French: nincs benne a csomagban');
+    const covered = policy({ languagesWithText: ['hu', 'fr'], writtenLocales: ['fr'], translationPackage: 'europe' });
+    assert.deepEqual(serve(covered, 'fr'), { serve: 'render' }, 'the Europe package covers it');
     const machineOnly = policy({ languagesWithText: ['hu', 'fr'], writtenLocales: [] });
     assert.deepEqual(serve(machineOnly, 'fr'), { serve: 'redirect', permanent: true }, 'a machine text nobody bought is not published');
   });

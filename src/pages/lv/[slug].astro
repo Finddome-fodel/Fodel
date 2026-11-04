@@ -12,7 +12,8 @@
 export const prerender = false;
 
 import PropertyDetailPage from '~/components/pages/PropertyDetailPage.astro';
-import { activeProperties, englishUrl, servingFor, text, translationConfig } from '~/lib/properties';
+import { activeProperties, text } from '~/lib/properties';
+import { localeGate } from '~/lib/listing-locale-gate';
 import { ROUTES } from '~/i18n/ui';
 
 const { slug } = Astro.params;
@@ -28,10 +29,10 @@ if (!property) {
   return Astro.rewrite('/404');
 }
 
-// A language this listing is not published in (not bought, switched off, or not translated yet) has no page of
-// its own: the visitor goes to the English one. See src/lib/listing-languages.ts.
-const serving = servingFor(property, 'lv', await translationConfig());
-if (serving.serve === 'redirect') return Astro.redirect(englishUrl(property), serving.permanent ? 301 : 302);
+// A language this listing is not published in has no page of its own: the visitor goes to the English one (F1, one rule for all 28 routes).
+const gate = await localeGate(property, 'lv');
+if (gate) return Astro.redirect(gate.to, gate.status);
+
 
 Astro.response.headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
 

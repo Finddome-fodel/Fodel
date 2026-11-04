@@ -606,4 +606,62 @@ console.log('✓ 0053: repeatable; the backfill keeps every language; English ca
   await db.exec(`delete from activity_events;delete from property_translations where property_id::text like '3%';delete from properties where id::text like '3%';delete from taxonomy_terms where key like 't57%';alter table properties enable trigger user;drop table activity_events;`);
   console.log('✓ 0057 moves each old agricultural listing by keyword, flags and logs it, widens the dictionary, and is repeatable');
 }
+// Fix 3.3: the search lists only what is published in the visitor's language, in SQL: every page is full except the last, the total is exact,
+// pages never overlap, and for every listing x language the database agrees with listedIn() (src/lib/listing-languages.ts).
+{
+  const { listedIn } = await import('../src/lib/listing-languages.ts');
+  const { packageLocales } = await import('../src/lib/translation-packages.ts');
+  const { LOCALES } = await import('../src/i18n/ui.ts');
+  const worldOnly = ['tr', 'he', 'ar', 'zh', 'ru'];
+  const cfg = { worldOnly, singleEur: { european: 1, world: 5 }, packages: [
+    { id: 'basic', rule: { include: ['hu', 'en', 'de'] }, active: true }, { id: 'europe', rule: { excludeFromAll: worldOnly }, active: true }, { id: 'world', rule: {}, active: true } ] };
+  const packagesFor = (locale) => cfg.packages.filter((pkg) => packageLocales(pkg, LOCALES).includes(locale)).map((pkg) => pkg.id);
+  await db.exec(`reset role;set test.uid='';set test.admin='true';alter table properties disable trigger user;`);
+  const seeds = [];
+  const lit = (list) => `array[${list.map((x) => `'${x}'`).join(',')}]::locale_code[]`;
+  for (let i = 0; i < 30; i++) {
+    const pid = `40000000-0000-4000-8000-0000000000${String(i).padStart(2, '0')}`;
+    const source = ['hu', 'hu', 'nl', 'de'][i % 4];
+    const pkg = ['basic', 'europe', 'world'][i % 3];
+    const extra = [[], ['fr'], ['tr'], []][i % 4];
+    const excluded = [[], ['sr'], ['ar'], ['de'], []][i % 5];
+    const rows = [[source, false], ['en', true], ...(['uk', 'fr', 'ar', 'tr', 'sr', 'de'].filter((_, k) => (i + k) % 3 !== 0).map((code, k) => [code, (i + k) % 2 === 0]))].filter(([code], k, all) => all.findIndex(([c]) => c === code) === k);
+    seeds.push({ pid, source, pkg, extra, excluded, rows });
+    await db.exec(`create temp table t40 as select * from properties where id='${id}';update t40 set id='${pid}',ref='40${i}',status='published',category='farm',property_group='agricultural',property_subtype='farm',expires_at=null,translation_package='${pkg}',extra_locales=${lit(extra)},excluded_locales=${lit(excluded)},published_at=now()-interval '${i} hours';insert into properties select * from t40;drop table t40;`);
+    for (const [code, machine] of rows) await db.exec(`insert into property_translations(property_id,locale,title,description,machine) values('${pid}','${code}','Cím ${i} ${code}','Leírás ${i} ${code}',${machine}) on conflict do nothing`);
+  }
+  const call = (locale, extra = '') => db.query(`select id, total_count from search_european_properties(p_category=>'agricultural',p_listed_locale=>$1,p_listed_packages=>$2::text[],p_listed_fallback=>$3,p_sort=>'price-asc'${extra})`, [locale, packagesFor(locale), false]);
+  const expected = (locale, mode) => seeds.filter((seed) => listedIn({
+    gated: true, sourceLocale: seed.rows.find(([c, m]) => c === 'hu' && !m) ? 'hu' : seed.rows.find(([, m]) => !m)[0],
+    languagesWithText: seed.rows.map(([c]) => c), writtenLocales: [], translationPackage: seed.pkg, extraLocales: seed.extra, excludedLocales: seed.excluded,
+  }, locale, cfg, LOCALES, mode)).map((seed) => seed.pid).sort();
+  for (const mode of ['redirect', 'fallback']) {
+    for (const locale of LOCALES) {
+      const rows = (await db.query(`select id from search_european_properties(p_category=>'agricultural',p_listed_locale=>$1,p_listed_packages=>$2::text[],p_listed_fallback=>$3,p_limit=>100)`, [locale, packagesFor(locale), mode === 'fallback'])).rows.map((r) => r.id).filter((x) => String(x).startsWith('4')).sort();
+      assert.deepEqual(rows, expected(locale, mode), `${mode}: ${locale}: the database lists exactly what listedIn() lists`);
+    }
+  }
+  console.log('✓ 3.3 parity: for every one of 30 listings x 28 languages x both modes the database agrees with listedIn()');
+  for (const locale of ['fr', 'ar', 'hu']) {
+    const want = expected(locale, 'redirect');
+    const seen = [];
+    for (let page = 0; page * 7 < want.length + 7; page++) {
+      const res = await call(locale, `,p_limit=>7,p_offset=>${page * 7}`);
+      const ids = res.rows.map((r) => r.id).filter((x) => String(x).startsWith('4'));
+      if (!res.rows.length) break;
+      assert.equal(Number(res.rows[0].total_count) >= want.length, true);
+      assert.equal(Number(res.rows[0].total_count), (await call(locale, ',p_limit=>100')).rows.length, `${locale}: the total counts the filtered set`);
+      if (page * 7 + 7 < Number(res.rows[0].total_count)) assert.equal(res.rows.length, 7, `${locale}: page ${page} is full`);
+      seen.push(...ids);
+    }
+    assert.equal(new Set(seen).size, seen.length, `${locale}: pages do not overlap`);
+    assert.deepEqual([...seen].sort(), want, `${locale}: the pages together are the filtered set`);
+  }
+  console.log('✓ 3.3 pagination: pages are full except the last, totals are exact, pages never overlap');
+  assert.equal((await db.query(`select count(*)::int n from search_european_properties(p_category=>'agricultural',p_limit=>100)`)).rows[0].n >= 30, true, 'no filter: every listing, as before');
+  await db.exec(`grant select on property_translations to anon;set role anon;`);
+  assert.ok((await db.query(`select count(*)::int n from search_european_properties(p_listed_locale=>'fr',p_listed_packages=>array['europe'])`)).rows[0].n >= 0, 'anonymous visitors can still run the search');
+  await db.exec(`reset role;set test.uid='';set test.admin='true';delete from property_translations where property_id::text like '4%';delete from properties where id::text like '4%';alter table properties enable trigger user;`);
+  console.log('✓ 3.3 the old 20-argument call still resolves, and anon can execute the function');
+}
 await db.close();

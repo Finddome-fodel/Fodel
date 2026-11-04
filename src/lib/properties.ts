@@ -30,7 +30,7 @@ import { contactModeOf, type ContactMode } from '~/lib/contact-display';
 import { readDetails, fieldRules, COUNT_FIELDS, type ListingDetails } from '~/lib/listing-details';
 import { listedIn, servingOf, switcherLocales, publishedLocales, textOrder, type ListingPolicy, type Serving } from '~/lib/listing-languages';
 import { listingCatalog } from '~/lib/listing-packages';
-import type { TranslationPricing } from '~/lib/translation-packages';
+import { packageLocales, type TranslationPricing } from '~/lib/translation-packages';
 import { unpurchasedListingLocales } from '~/config/flags';
 import { asciiSlug, safeCategorySlugs } from '~/lib/listing-slug';
 
@@ -495,9 +495,18 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
     p_limit: perPage,
     p_offset: (page - 1) * perPage,
   };
-  const { data: matches, error: rpcError } = await getSupabase().rpc('search_european_properties', {
-    ...args, p_exclude_adobe: params.excludeAdobe ?? null,
-  });
+  // "Listed in this language" is part of the query (migration 0053), so a page is full, the total is exact and no listing
+  // moves between pages: the database gets the language and the packages that cover it (an admin edits those).
+  const languages = await translationConfig();
+  const listed = {
+    p_listed_locale: params.locale,
+    p_listed_packages: languages.packages.filter((pkg) => packageLocales(pkg, TARGETS).includes(params.locale)).map((pkg) => pkg.id),
+    p_listed_fallback: unpurchasedListingLocales() === 'fallback',
+  };
+  const call = (extra: Record<string, unknown>) => getSupabase().rpc('search_european_properties', { ...args, p_exclude_adobe: params.excludeAdobe ?? null, ...extra });
+  let { data: matches, error: rpcError } = await call(listed);
+  // Before migration 0053 the function has no such parameters (and no listing is gated yet): ask the way it always was.
+  if (rpcError && (rpcError.code === 'PGRST202' || /p_listed_/.test(rpcError.message))) ({ data: matches, error: rpcError } = await call({}));
   if (rpcError) throw new Error(`Search failed: ${rpcError.message}`);
 
   const ids = (matches ?? []).map((m: { id: string }) => m.id);
@@ -513,15 +522,11 @@ export async function searchProperties(params: SearchParams): Promise<SearchResu
   const taxonomy = await getTaxonomy();
   const byId = new Map(((data ?? []) as PropertyRow[]).map((row) => [row.id, mapRow(row, taxonomy)]));
   const live = new Set(((data ?? []) as PropertyRow[]).filter((row) => isPubliclyListed(row)).map((row) => row.id));
-  const found = ids
+  const properties = ids
     .filter((id: string) => live.has(id))
     .map((id: string) => byId.get(id))
     .filter((p: Property | undefined): p is Property => Boolean(p));
-  // A listing with no page in this language is not listed in it. The page the database cut is already
-  // fixed, so the total drops by what was left out here (a short page is possible, a wrong listing is not).
-  const languages = await translationConfig();
-  const properties = found.filter((p: Property) => listedInLocale(p, params.locale, languages));
-  return { properties, total: Math.max(0, Number(total) - (found.length - properties.length)), page, perPage };
+  return { properties, total: Number(total), page, perPage };
 }
 
 /**

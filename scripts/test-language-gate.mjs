@@ -108,6 +108,22 @@ test('before migration 0052 there is no overview and nothing is held back', asyn
   world.db.client = real;
 });
 
+test('F1: every one of the 28 listing routes asks the one gate helper, with its own locale', async () => {
+  const fs = await import('node:fs');
+  const { LOCALES } = await import('../src/i18n/ui.ts');
+  assert.equal(LOCALES.length, 28);
+  for (const locale of LOCALES) {
+    const file = new URL(`../src/pages/${locale}/[slug].astro`, import.meta.url);
+    const source = fs.readFileSync(file, 'utf8');
+    assert.match(source, /import \{ localeGate \} from '~\/lib\/listing-locale-gate';/, `${locale}: imports the helper`);
+    assert.match(source, new RegExp(`await localeGate\\(property, '${locale}'\\)`), `${locale}: calls it with its own locale`);
+    assert.match(source, /if \(gate\) return Astro\.redirect\(gate\.to, gate\.status\);/, `${locale}: redirects when the gate says so`);
+    assert.equal(/servingFor|TODO\(#32\)/.test(source), false, `${locale}: no private copy of the rule, no leftover TODO`);
+    // The gate comes before anything is rendered or cached.
+    assert.ok(source.indexOf('localeGate(property') < source.indexOf('Cache-Control'), `${locale}: the gate runs first`);
+  }
+});
+
 let failed = 0;
 for (const [name, fn] of tests) {
   try { await fn(); console.log(`  ✓ ${name}`); }
