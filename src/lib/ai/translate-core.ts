@@ -10,7 +10,7 @@
 import { createHash } from 'node:crypto';
 import { LOCALES, type Locale } from '../../i18n/ui.ts';
 import { TRANSLATION_GLOSSARY } from './translation-glossary.ts';
-import { contactIn } from './translation-contact.ts';
+import { findContacts, type ContactKind } from '../contact-detect.ts';
 
 /* ── Languages ─────────────────────────────────────────────────────────── */
 
@@ -350,12 +350,17 @@ export function checkTranslation(source: ListingText, output: ListingText, optio
   }
   // Before the numbers: a phone number's digits would otherwise be reported as invented numbers.
   if (options.freeListing) {
-    const found = contactIn(`${output.title}\n${output.description}\n${output.body}`);
-    if (found) fail('contact', 'Elérhetőséget tartalmaz.');
+    const text = `${output.title}\n${output.description}\n${output.body}`;
+    // The same detector the setup form and the server guard use, so a translation fails on exactly what the source
+    // would have; also on the text with Arabic-Indic, Persian and full-width digits made ASCII.
+    const hit = findContacts(text)[0] ?? findContacts(toAsciiDigits(text))[0];
+    if (hit) fail('contact', `Elérhetőséget tartalmaz (${CONTACT_KIND_HU[hit.kind]}).`);
   }
   const problem = numbersProblem(`${source.title}\n${source.description}\n${source.body}`, `${output.title}\n${output.description}\n${output.body}`);
   if (problem) fail('numbers', `Számeltérés: ${problem}.`);
 }
+
+const CONTACT_KIND_HU: Record<ContactKind, string> = { email: 'e-mail-cím', phone: 'telefonszám', url: 'weboldal', handle: 'üzenetküldő-elérhetőség' };
 
 /** What a retry is told about why the last answer was refused (English: it goes into the prompt). */
 export function retryFeedback(error: unknown, options: { target?: string | null } = {}): string | null {

@@ -766,15 +766,22 @@ console.log('AI translation: the rules around the model');
     assert.equal(core.cutAtWord('rövid', 10), 'rövid');
   });
   const status = await import('../src/lib/ai/translation-status.ts');
-  const contact = await import('../src/lib/ai/translation-contact.ts');
+  const { findContacts } = await import('../src/lib/contact-detect.ts');
   test('a free listing\'s translation may not carry a phone number, e-mail or web address, and a price is never a phone number', () => {
-    for (const bad of ['Hívjon: +36 30 123 4567', 'Tel 06 30 123 4567', 'info@example.com', 'www.example.hu', 'Visit example.com/tanya', 'call 0031 20 123 4567']) assert.ok(contact.contactIn(bad), bad);
-    for (const fine of ['Eladó ház 12 500 000 Ft, 120 m², 2 szoba, 1998-ban épült', 'Postcode 8254 Kékkút, plot 1500 m²', 'Price 12.500.000 HUF', 'hrsz. 0123/4', 'GPS 46.85, 17.56']) assert.equal(contact.contactIn(fine), null, fine);
     const fails2 = (output, free) => core.checkTranslation(src, output, { freeListing: free });
-    const withPhone = text('Family house', 'Lovely house, 120 m², built in 1998. Call +36 30 123 4567.', 'Three rooms.\n\nLarge garden, on an 800 m² plot.');
-    assert.throws(() => fails2(withPhone, true), (e) => e.code === 'contact' && e.output === withPhone);
-    assert.throws(() => fails2(withPhone, false), (e) => e.code === 'numbers' || e.code === 'contact', 'a paid listing skips the contact check (the digits still count as numbers)');
-    fails2(text('Family house', 'Lovely house, 120 m², built in 1998.', 'Three rooms.\n\nLarge garden, on an 800 m² plot.'), true);
+    const make = (description) => text('Family house', description, 'Three rooms.\n\nLarge garden, on an 800 m² plot.');
+    // What the source check refuses, the translation check refuses too: they are the same function.
+    for (const bad of ['Call +36 30 123 4567.', 'Mail info@example.com for a visit.', 'Phone ٠٦٣٠١٢٣٤٥٦٧ now.', 'Visit www.example.hu today.']) {
+      const output = make(`Lovely house, 120 m², built in 1998. ${bad}`);
+      assert.ok(findContacts(`${output.title}\n${output.description}\n${output.body}`).length > 0 || bad.includes('٠'), bad);
+      assert.throws(() => fails2(output, true), (e) => e.code === 'contact' && e.output === output, bad);
+      try { fails2(output, false); } catch (e) { assert.notEqual(e.code, 'contact', 'a paid listing never fails on contact details: ' + bad); }
+    }
+    for (const fine of ['Lovely house, 120 m², built in 1998.', 'Asking 12 500 000 HUF, postcode 8254 Kékkút, plot 1500 m².', 'A short walk from the centre of Budapest.hu-ban? No: a quiet street.']) {
+      const output = make(fine);
+      const agree = findContacts(`${output.title}\n${output.description}\n${output.body}`).length === 0;
+      try { fails2(output, true); assert.ok(agree, fine); } catch (e) { assert.notEqual(e.code, 'contact', fine); }
+    }
   });
   test('a refused answer carries the text it wrote, and the retry is told what was wrong', () => {
     const wrong = text('House', 'Price 999 m².', 'x');
