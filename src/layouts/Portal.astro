@@ -368,8 +368,16 @@ const homeHref = `/${typeof profile?.locale === 'string' && isLocale(profile.loc
     const below = rect.bottom + 6;
     const top = below + h > window.innerHeight - 12 ? Math.max(12, rect.top - h - 6) : below;
     const left = Math.min(Math.max(12, rect.right - w), window.innerWidth - w - 12);
-    pop.style.top = `${top}px`;
-    pop.style.left = `${left}px`;
+    // `position: fixed` is measured from the viewport, unless an ancestor has a transform, filter or similar (a row
+    // that lifts on hover does): then the popover is measured from that ancestor and would open far away. So find
+    // where this popover's (0, 0) really is on screen, and place it from there.
+    pop.style.animation = 'none';
+    pop.style.top = '0px';
+    pop.style.left = '0px';
+    const origin = pop.getBoundingClientRect();
+    pop.style.top = `${top - origin.top}px`;
+    pop.style.left = `${left - origin.left}px`;
+    pop.style.animation = '';
   }
 
   document.addEventListener('click', (event) => {

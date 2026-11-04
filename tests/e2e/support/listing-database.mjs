@@ -48,6 +48,8 @@ http.createServer(async(req,res)=>{
  if(table==='property_private')rows=[privateData];
  if(table==='property_media')rows=media;
  if(table==='profiles')rows=[{id,role:id===ADMIN?'admin':'owner',full_name:'Teszt Eladó',phone:'+36301234567',email:sessionFor(id).user.email,locale:profileLocale,billing:{kind:'person',name:'Teszt Eladó',country:'HU',postalCode:'8254',city:'Kékkút',street:'Teszt utca 1.'}}];
+ // The Felhasználók list asks for every profile (not one): an admin, the owner and a second owner.
+ if(table==='profiles'&&!asObject){const person=(pid,role,full_name,email)=>({id:pid,role,full_name,email,phone:'+36301234567',created_at:now,locale:'hu'});rows=[person(ADMIN,'admin','Teszt Admin','admin@fodel-test.local'),person(OWNER,'owner','Teszt Eladó','owner@fodel-test.local'),person('00000000-0000-4000-8000-000000000003','owner','Második Eladó','masodik@fodel-test.local')];}
  if(req.method==='HEAD')return send(res,200,undefined,{'content-range':`*/${rows.length}`});
  if(asObject&&!rows.length)return send(res,406,{code:'PGRST116',details:'0 rows',message:'No rows'});
  return send(res,200,asObject?rows[0]:rows,{'content-range':`0-${Math.max(0,rows.length-1)}/${rows.length}`});
