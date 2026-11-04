@@ -79,6 +79,9 @@ and not available to the build; the master brief was used as the checklist.
 |---|---|---|
 | The three-dot menu on Felhasználók did nothing (a row that lifts on hover moved the fixed popover off-screen) | `placeMenu` measures the real origin | `tests/e2e/editor/users-menu.spec.ts` (fails before, passes after) |
 | `/ar` and `/he` pages scrolled sideways by 10 000 px (spam-trap fields hidden with `left:-10000px`) | `inset-inline-start` | grep test in `test:share`; no-overflow e2e |
+| The phone field on the 7 new-language pages started on Hungary (RS, UA, TR, IL, AE, RU, CN are not in the common list, so nothing was marked selected) | `selected` also set in the full list | `test:listing` + e2e forms spec (fails before, passes after) |
+| Russian and Ukrainian headers touched the account and listing buttons (about 25 px) | shorter idiomatic button text („Подать объявление”, „Подати оголошення”), Russian links a little tighter | `nav.spec.ts` (171 cases; it now understands right-to-left, which had made he and ar fail for the wrong reason) |
+| The flat „Hosszabbítás 6 hónappal 25 €” was still editable on Kiegészítők and Ársávok, listed on the public price list and offered as an extra on the admin review page once the 2026 prices were live | retired centrally in `listingCatalog` when `pricingLive`; price list row removed in all 28 languages | `test-package-orders.mjs`, `test-pricing.mjs` (fail before, pass after) |
 
 ## §11 Gate, §12 PR, §13 guide
 
