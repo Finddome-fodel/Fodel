@@ -464,7 +464,7 @@ const trPaid = Astro.url.searchParams.get('translations');
         ? <p class="hint">{tc.nothingToAdd}</p>
         : (
           <>
-            <TranslationPackagePicker lang={portalLocale} bare cfg={trConfig} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trEntitlement?.listing.translationPackage ?? 'go'} currentPackageId={trEntitlement?.listing.translationPackage ?? null} excluded={[...(trEntitlement?.listing.excludedLocales ?? [])]} present={ALL_LOCALES.filter(trHas)} busy={trBusy} free={Boolean(property.free_listing)} />
+            <TranslationPackagePicker lang={portalLocale} bare cfg={trConfig} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trEntitlement?.listing.translationPackage ?? 'basic'} currentPackageId={trEntitlement?.listing.translationPackage ?? null} excluded={[...(trEntitlement?.listing.excludedLocales ?? [])]} present={ALL_LOCALES.filter(trHas)} busy={trBusy} free={Boolean(property.free_listing)} />
             <p class="tr-owner-msg" id="tr-owner-msg" role="status"></p>
             <button type="button" class="btn" id="tr-buy" disabled>{property.free_listing ? tc.request : tc.pay}</button>
           </>
@@ -942,7 +942,7 @@ const trPaid = Astro.url.searchParams.get('translations');
 
 </script>
 
-<script define:vars={{ tcStrings: { ...tc, progress: undefined, more: undefined, all: undefined, summary: undefined, summaryFree: undefined, perLanguage: undefined }, tcProgressOne: tc.progress(111, 1), tcProgressMany: tc.progress(111, 222), propertyIdForTranslations: property.id, heldPackage: trEntitlement?.listing.translationPackage ?? 'go', isAdminView: isAdmin, isFree: Boolean(property.free_listing), trJobsInitial: trJobs.map((j) => ({ locale: j.locale, status: j.status, error: j.last_error })), perLanguageHu: formatCostHu(trPerLanguage), missingCount: trMissing.length, missingCostHu: formatCostHu(trMissing.length * trPerLanguage), jobStatusHu: JOB_STATUS_HU, huNames: HU_NAME }}>
+<script define:vars={{ tcStrings: { ...tc, progress: undefined, more: undefined, all: undefined, summary: undefined, summaryFree: undefined, perLanguage: undefined }, tcProgressOne: tc.progress(111, 1), tcProgressMany: tc.progress(111, 222), propertyIdForTranslations: property.id, heldPackage: trEntitlement?.listing.translationPackage ?? 'basic', isAdminView: isAdmin, isFree: Boolean(property.free_listing), trJobsInitial: trJobs.map((j) => ({ locale: j.locale, status: j.status, error: j.last_error })), perLanguageHu: formatCostHu(trPerLanguage), missingCount: trMissing.length, missingCostHu: formatCostHu(trMissing.length * trPerLanguage), jobStatusHu: JOB_STATUS_HU, huNames: HU_NAME }}>
   (() => {
     const url = `/api/portal/properties/${propertyIdForTranslations}/translations`;
     const toast = (message, kind = 'ok') => window.pf?.toast(message, kind);
@@ -1063,7 +1063,7 @@ const trPaid = Astro.url.searchParams.get('translations');
     const picker = panel?.querySelector('[data-tpk]');
     // The choice, as ids: the package, the single languages and what is switched off. The server prices it.
     const choice = () => ({
-      packageId: picker?.querySelector('input[name="translation_package"]:checked')?.value ?? 'go',
+      packageId: picker?.querySelector('input[name="translation_package"]:checked')?.value ?? 'basic',
       locales: [...(picker?.querySelectorAll('input[name="translations"]:checked') ?? [])].map((box) => box.value),
       excluded: (picker?.querySelector('[data-tpk-excluded]')?.value ?? '').split(',').filter(Boolean),
     });

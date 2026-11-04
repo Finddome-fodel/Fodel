@@ -1,11 +1,11 @@
 ---
 /**
- * The translation choice: three packages (Go, Európa, World) as a radio group, single languages on top, and a
+ * The translation choice: three packages (Basic, Európa, World) as a radio group, single languages on top, and a
  * collapsed "fine-tune" list to switch languages off (English is locked on).
  *
  * It is only form fields, so it works inside a form that is saved as a whole (the setup wizard) and beside one
  * that is not (the review screen, the live listing's panel):
- *   radio     `translation_package`        go | europe | world
+ *   radio     `translation_package`        basic | europe | world
  *   checkbox  `translations`               single languages bought on top of the package
  *   hidden    `translation_excluded`       the languages switched off, comma separated
  * Prices are display only: the server prices every order from the catalogue. Whenever the choice changes it
@@ -43,21 +43,21 @@ interface Props {
   singlesName?: string;
 }
 const {
-  lang, cfg, targets, sourceLocale = 'hu', packageId = 'go', extras = [], excluded = [], present = [], busy = {}, currentPackageId,
+  lang, cfg, targets, sourceLocale = 'hu', packageId = 'basic', extras = [], excluded = [], present = [], busy = {}, currentPackageId,
   free = false, bare = false, singlesName = 'translations',
 } = Astro.props as Props;
 const t = PACKAGE_COPY[lang];
-const rank = { go: 0, europe: 1, world: 2 } as Record<string, number>;
-// Go is what every listing starts with: only a bigger package already bought makes the picker an upgrade.
-const held = currentPackageId && currentPackageId !== 'go' ? currentPackageId : null;
-const wanted = cfg.packages.some((p) => p.id === packageId && (p.active || p.id === 'go' || p.id === held)) ? packageId : 'go';
+const rank = { basic: 0, europe: 1, world: 2 } as Record<string, number>;
+// Basic is what every listing starts with: only a bigger package already bought makes the picker an upgrade.
+const held = currentPackageId && currentPackageId !== 'basic' ? currentPackageId : null;
+const wanted = cfg.packages.some((p) => p.id === packageId && (p.active || p.id === 'basic' || p.id === held)) ? packageId : 'basic';
 // A smaller package than the one held cannot be chosen: the held one stays selected.
 const chosen = held !== null && (rank[wanted] ?? 0) < (rank[held] ?? 0) ? held : wanted;
 const tag = lang === 'hu' ? 'hu-HU' : lang === 'nl' ? 'nl-NL' : 'en-GB';
 const money = (eur: number) => `€ ${eur.toLocaleString(tag, { maximumFractionDigits: 2 })}`;
 const nameOf = (code: string) => languageName(code, lang).replace(/^./, (c) => c.toLocaleUpperCase(lang));
 const cards = cfg.packages
-  .filter((pkg) => pkg.active || pkg.id === 'go' || pkg.id === held)
+  .filter((pkg) => pkg.active || pkg.id === 'basic' || pkg.id === held)
   .map((pkg) => {
     const smaller = held !== null && (rank[pkg.id] ?? 0) < (rank[held] ?? 0);
     const upgradeEur = held !== null ? Math.max(0, pkg.priceEur - (cfg.packages.find((p) => p.id === held)?.priceEur ?? 0)) : pkg.priceEur;
@@ -66,7 +66,7 @@ const cards = cfg.packages
       count: packageLanguageCount(pkg, targets, sourceLocale),
       isHeld: pkg.id === held,
       disabled: smaller,
-      price: pkg.id === 'go' || pkg.id === held ? null : upgradeEur,
+      price: pkg.id === 'basic' || pkg.id === held ? null : upgradeEur,
     };
   });
 // Functions do not travel to the browser: the sentences go as templates with markers the script fills in.
@@ -107,7 +107,7 @@ const strings = {
             {(isHeld || pkg.badge[lang]) && <span class={`tpk-badge${isHeld ? ' is-held' : ''}`}>{isHeld ? t.current : pkg.badge[lang]}</span>}
           </span>
           <span class="tpk-card-price">
-            {free || price === null ? (pkg.id === 'go' || isHeld ? t.included : '') : money(price)}
+            {free || price === null ? (pkg.id === 'basic' || isHeld ? t.included : '') : money(price)}
             {!free && price !== null && held !== null && <small> {t.upgrade}</small>}
           </span>
           <span class="tpk-card-count">{t.languages(count)}</span>
@@ -157,7 +157,7 @@ const strings = {
     const source: string = S.sourceLocale;
     const singlesName = root.dataset.singlesName || 'translations';
     const split = (value?: string) => (value ? value.split(',').filter(Boolean) : []);
-    const state = { packageId: root.dataset.package || 'go', extras: new Set(split(root.dataset.extras)), excluded: new Set(split(root.dataset.excluded)) };
+    const state = { packageId: root.dataset.package || 'basic', extras: new Set(split(root.dataset.extras)), excluded: new Set(split(root.dataset.excluded)) };
 
     const singlesBox = root.querySelector<HTMLElement>('[data-tpk-singles]')!;
     const togglesBox = root.querySelector<HTMLElement>('[data-tpk-toggles]')!;
@@ -225,10 +225,10 @@ const strings = {
       const count = covered.size + 1 - off;
       const singles = state.extras.size;
       let text: string;
-      if (S.free) text = (state.packageId === 'go' && singles === 0) ? t.nothing : t.summaryFree;
+      if (S.free) text = (state.packageId === 'basic' && singles === 0) ? t.nothing : t.summaryFree;
       else {
-        text = pkg.id === 'go' ? (singles ? fill(t.singles, { 777: singles }) : t.nothing) : fill(off ? t.summaryOff : t.summaryOn, { '@NAME': S.packageNames[pkg.id] ?? pkg.id, 777: count - singles, 888: off });
-        if (pkg.id !== 'go' && singles) text += ` ${fill(t.plus, { 777: singles })}`;
+        text = pkg.id === 'basic' ? (singles ? fill(t.singles, { 777: singles }) : t.nothing) : fill(off ? t.summaryOff : t.summaryOn, { '@NAME': S.packageNames[pkg.id] ?? pkg.id, 777: count - singles, 888: off });
+        if (pkg.id !== 'basic' && singles) text += ` ${fill(t.plus, { 777: singles })}`;
         if (cents > 0) text += ` · ${money(cents / 100)}`;
       }
       summary.textContent = text;

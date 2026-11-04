@@ -91,7 +91,7 @@ export type OrderSelection = {
   country?: string | null;
   extras: { id: string; quantity: number; /** Translation: the languages. The quantity is then their count. */ locales?: string[] }[];
   /**
-   * The translation choice: a package (Go costs nothing), single languages on top, and what the buyer switched
+   * The translation choice: a package (Basic costs nothing), single languages on top, and what the buyer switched
    * off (the price does not change). A `translation` extra that names its languages is read as single languages.
    */
   translation?: {
@@ -430,11 +430,11 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
  * on sale cannot be bought.
  */
 function translationOrderLines(selection: OrderSelection, legacySingles: string[], locale: OrderLocale, cat: ListingCatalog): TranslationLine[] {
-  const choice = selection.translation ?? { packageId: 'go' };
+  const choice = selection.translation ?? { packageId: 'basic' };
   const sourceLocale = choice.sourceLocale ?? 'hu';
   const cfg = cat.translation;
   const pkg = cfg.packages.find((p) => p.id === choice.packageId);
-  if (!pkg || (pkg.id !== 'go' && !pkg.active && pkg.id !== choice.currentPackageId)) throw new OrderError('unknown-package');
+  if (!pkg || (pkg.id !== 'basic' && !pkg.active && pkg.id !== choice.currentPackageId)) throw new OrderError('unknown-package');
   const singles = [...new Set([...(choice.extraLocales ?? []), ...legacySingles])];
   if (singles.some((code) => code === sourceLocale || !ALL_LOCALES.includes(code))) throw new OrderError('bad-locale');
   const cleaned = cleanExclusions(choice.excludedLocales ?? [], { translationPackage: pkg.id, extraLocales: singles, sourceLocale }, cfg, ALL_LOCALES);
@@ -513,7 +513,7 @@ export function suggestSelection(property: SuggestInput, cat: ListingCatalog = l
   const requested = property.requested ?? {};
   // The package and single languages the owner asked for. A language the listing already has text in (written by
   // the owner, or translated before) is not sold again; the AI translates only what is missing.
-  const packageId = cat.translation.packages.some((p) => p.id === requested.translationPackage && p.active) ? String(requested.translationPackage) : 'go';
+  const packageId = cat.translation.packages.some((p) => p.id === requested.translationPackage && p.active) ? String(requested.translationPackage) : 'basic';
   const have = new Set([...property.locales, 'hu']);
   const languages = [...new Set(requested.translations ?? [])].filter((locale) => !have.has(locale));
   const extras: { id: string; quantity: number; locales?: string[] }[] = [];

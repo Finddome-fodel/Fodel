@@ -79,8 +79,8 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
     .map(String)
     .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && ALL_LOCALES.includes(code) && all.indexOf(code) === i);
   // Package and single languages are only ids: the server prices them (src/lib/orders.ts). A package that is not
-  // on sale falls back to Go, and a single the chosen package already includes is not a single.
-  const trPackage = catalog.translation.packages.find((p) => p.id === str(form, 'translation_package') && (p.active || p.id === 'go'))?.id ?? 'go';
+  // on sale falls back to Basic, and a single the chosen package already includes is not a single.
+  const trPackage = catalog.translation.packages.find((p) => p.id === str(form, 'translation_package') && (p.active || p.id === 'basic'))?.id ?? 'basic';
   const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackage), ALL_LOCALES));
   const trSingles = translations.filter((code) => !trIncluded.has(code));
   const service = isOnsiteServiceId(str(form, 'service')) ? (str(form, 'service') as never) : null;
@@ -212,11 +212,11 @@ async function saveDescription(supabase:SupabaseClient,existing:Existing,form:Fo
     try{
       const catalog=listingCatalog((await getCompany()).services);
       const asked=form.getAll('translations').map(String);
-      const trPackage=catalog.translation.packages.find((p)=>p.id===str(form,'translation_package')&&(p.active||p.id==='go'))?.id??'go';
+      const trPackage=catalog.translation.packages.find((p)=>p.id===str(form,'translation_package')&&(p.active||p.id==='basic'))?.id??'basic';
       const excluded=(readRequestedExtras({excludedLocales:str(form,'translation_excluded')}).excludedLocales??[]);
-      // Go (English, German) comes with every listing and is queued when it goes live. Everything beyond it, the
+      // Basic (English, German) comes with every listing and is queued when it goes live. Everything beyond it, the
       // package's languages and single ones, is a request the office approves. Languages switched off are not asked for.
-      const goLocales=new Set(packageLocales(packageById(catalog.translation,'go'),ALL_LOCALES));
+      const goLocales=new Set(packageLocales(packageById(catalog.translation,'basic'),ALL_LOCALES));
       const wanted=[...new Set([...packageLocales(packageById(catalog.translation,trPackage),ALL_LOCALES),...asked])]
         .filter((code)=>code!=='hu'&&!goLocales.has(code)&&!excluded.includes(code));
       // Remembered with the draft, so the picker shows the same choice next time and approval can switch the languages off.

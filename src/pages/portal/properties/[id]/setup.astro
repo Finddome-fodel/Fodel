@@ -98,9 +98,9 @@ const askedLocales: string[] = free
   ? ((await supabase.from('translation_jobs').select('locale').eq('property_id', property.id).eq('origin', 'free').in('status', ['requested', 'queued', 'running'])).data ?? []).map((job: { locale: string }) => job.locale)
   : [];
 const presentLocales = property.translations.filter((row) => row.title?.trim() && row.title !== 'Új hirdetés').map((row) => row.locale);
-// The translation choice the seller made before, or a fresh one: Go, which every listing has.
+// The translation choice the seller made before, or a fresh one: Basic, which every listing has.
 const trSourceLocale = pickSource(property.translations)?.locale ?? 'hu';
-const trPackageId = requested.translationPackage ?? 'go';
+const trPackageId = requested.translationPackage ?? 'basic';
 const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackageId), ALL_LOCALES));
 const trExtras = (free ? askedLocales : requested.translations ?? []).filter((code) => !trIncluded.has(code));
 const ALL_STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;

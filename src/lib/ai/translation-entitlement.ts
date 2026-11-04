@@ -1,6 +1,6 @@
 /**
  * What a listing is entitled to, and making it so: applying a paid package or single languages, an admin's grant,
- * switching languages off and on, and queueing the languages a package includes (Go for every listing).
+ * switching languages off and on, and queueing the languages a package includes (Basic for every listing).
  *
  * The rules themselves (which languages a package covers, what is left after an exclusion) are the pure ones in
  * src/lib/translation-packages.ts; what is published where is src/lib/listing-languages.ts. This file only
@@ -20,7 +20,7 @@ type Client = SupabaseClient<any, any, any>;
 const TARGETS: readonly string[] = ALL_LOCALES;
 
 /** Package ranks: a purchase never moves a listing to a smaller package. */
-const RANK: Record<string, number> = { go: 0, europe: 1, world: 2 };
+const RANK: Record<string, number> = { basic: 0, europe: 1, world: 2 };
 
 export type Entitlement = { listing: ListingLanguages; rows: { locale: string; title: string; description: string; machine: boolean }[] };
 
@@ -34,7 +34,7 @@ export async function loadEntitlement(client: Client, propertyId: string): Promi
   const written = list.filter((r) => !r.machine && !r.translated_from && !r.manual_override && (r.title?.trim() || r.description?.trim())).map((r) => r.locale as string);
   return {
     listing: {
-      translationPackage: row.translation_package ?? 'go',
+      translationPackage: row.translation_package ?? 'basic',
       extraLocales: row.extra_locales ?? [],
       excludedLocales: row.excluded_locales ?? [],
       writtenLocales: written,
@@ -59,7 +59,7 @@ export type Purchase = { packageId: TranslationPackageId | null; singles: string
 export async function applyPurchase(client: Client, propertyId: string, purchase: Purchase, cfg: TranslationPricing): Promise<boolean> {
   const current = await loadEntitlement(client, propertyId);
   if (!current) return false;
-  const have = current.listing.translationPackage ?? 'go';
+  const have = current.listing.translationPackage ?? 'basic';
   const nextPackage = purchase.packageId && (RANK[purchase.packageId] ?? 0) > (RANK[have] ?? 0) ? purchase.packageId : have;
   const covered = new Set(packageLocales(packageById(cfg, nextPackage), TARGETS));
   const extras = [...new Set([...(current.listing.extraLocales ?? []), ...purchase.singles])].filter((code) => TARGETS.includes(code) && !covered.has(code));
@@ -156,8 +156,8 @@ async function queuePackageJobs(client: Client, propertyId: string, locales: str
 }
 
 /**
- * Queues what a listing is entitled to and does not have yet: English and German for every listing (Go), and
- * whatever else was bought. Called when a listing goes live and from the admin's "Go nyelvek pótlása". Safe to
+ * Queues what a listing is entitled to and does not have yet: English and German for every listing (Basic), and
+ * whatever else was bought. Called when a listing goes live and from the admin's "Basic nyelvek pótlása". Safe to
  * call twice: a language with text or a live job is skipped. Nothing before migration 0053.
  */
 export async function ensurePackageTranslations(client: Client, propertyId: string, cfg: TranslationPricing, kickOrigin?: string): Promise<string[]> {

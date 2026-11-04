@@ -20,7 +20,7 @@ export type RequestedExtras = {
   package?: string;
   /** Language codes the owner wants FODEL to translate into (nl, de, en, fr). */
   translations?: string[];
-  /** The translation package the owner chose: go, europe or world. Go is free and automatic. */
+  /** The translation package the owner chose: basic, europe or world. Basic is free and automatic. */
   translationPackage?: string;
   /** Languages the owner switched off. Never English, whatever is sent. */
   excludedLocales?: string[];
@@ -39,7 +39,7 @@ export type RequestedExtras = {
 
 // Only languages the site really has: a language added to the list ahead of the site is not a wish anyone can make yet.
 const LANGS: readonly string[] = TRANSLATION_LANGUAGES.filter((code) => ALL_LOCALES.includes(code));
-const PACKAGES: readonly string[] = ['go', 'europe', 'world'];
+const PACKAGES: readonly string[] = ['basic', 'europe', 'world'];
 
 /** A list of language codes from a form value or a stored array: known ones only, no repeats, and never English. */
 const excludable = (value: unknown): string[] =>
@@ -93,7 +93,7 @@ export function readRequestedExtras(value: unknown): RequestedExtras {
 /** True when the owner asked for anything beyond the package. */
 export function hasRequests(extras: RequestedExtras): boolean {
   return Boolean(
-    (extras.translations?.length ?? 0) > 0 || (extras.translationPackage !== undefined && extras.translationPackage !== 'go') || extras.categoryHighlight || extras.topicHighlight || extras.dutchAgent || extras.video || extras.service
+    (extras.translations?.length ?? 0) > 0 || (extras.translationPackage !== undefined && extras.translationPackage !== 'basic') || extras.categoryHighlight || extras.topicHighlight || extras.dutchAgent || extras.video || extras.service
   );
 }
 

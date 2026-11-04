@@ -83,14 +83,14 @@ export const TRANSLATION_PRICE_NOTE = {
 };
 
 /**
- * Every listing comes with English and German (Go). Go costs nothing, so it has no order line; the invoice says so
+ * Every listing comes with English and German (Basic). Basic costs nothing, so it has no order line; the invoice says so
  * in one line without a price, unless a bigger package was bought, which already names its languages.
  */
-export function goIncludedLine(lines: OrderLine[]): InvoiceLine | null {
+export function basicIncludedLine(lines: OrderLine[]): InvoiceLine | null {
   if (!lines.some((line) => line.kind === 'package') || lines.some((line) => line.id === 'translation-package')) return null;
   return {
-    description: 'Fordítás: Go (angol, német) – benne van', descriptionNl: 'Vertaling: Go (Engels, Duits) – inbegrepen',
-    quantity: 1, unit: 'db', unitNl: 'stuk', unitCents: 0, catalogId: 'translation-go', listCents: 0,
+    description: 'Fordítás: Basic (angol, német) – benne van', descriptionNl: 'Vertaling: Basic (Engels, Duits) – inbegrepen',
+    quantity: 1, unit: 'db', unitNl: 'stuk', unitCents: 0, catalogId: 'translation-basic', listCents: 0,
   };
 }
 

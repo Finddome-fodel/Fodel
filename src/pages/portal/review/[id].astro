@@ -118,7 +118,7 @@ const trPresent = property.translations.filter((row) => row.title?.trim() || row
 const priceAt = (item: { tiers: { upToHuf: number | null; priceEur: number }[] } | undefined) => (item ? priceEurFor(item, property.price_huf) : 0);
 // What the listing already holds (migration 0053): an upgrade costs the difference. Null before the migration.
 const trHeld = await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null);
-const trChoice = suggested.translation ?? { packageId: 'go', extraLocales: [], excludedLocales: [] };
+const trChoice = suggested.translation ?? { packageId: 'basic', extraLocales: [], excludedLocales: [] };
 // A free-link owner's requests wait here for the admin's decision.
 const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
 const trOpen = trJobs.filter((job) => job.status === 'requested');
@@ -666,7 +666,7 @@ const { data: creditableReferral } = property.owner_id
     const picker = document.querySelector('[data-tpk]');
     const translation = picker
       ? {
-          packageId: picker.querySelector('input[name="translation_package"]:checked')?.value ?? 'go',
+          packageId: picker.querySelector('input[name="translation_package"]:checked')?.value ?? 'basic',
           extraLocales: [...picker.querySelectorAll('input[name="translations"]:checked')].map((box) => box.value),
           excludedLocales: (picker.querySelector('[data-tpk-excluded]')?.value ?? '').split(',').filter(Boolean),
         }

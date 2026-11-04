@@ -53,7 +53,7 @@ const clean = (value: unknown): string[] => (Array.isArray(value) ? [...new Set(
 
 /** The package and languages a person asked for: ids only. */
 function readChoice(body: Record<string, any>, cfg: TranslationPricing) {
-  const packageId = cfg.packages.some((p) => p.id === body.packageId && (p.active || p.id === 'go')) ? String(body.packageId) : 'go';
+  const packageId = cfg.packages.some((p) => p.id === body.packageId && (p.active || p.id === 'basic')) ? String(body.packageId) : 'basic';
   return { packageId, extraLocales: clean(body.locales), excludedLocales: clean(body.excluded) };
 }
 
@@ -158,7 +158,7 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
     // The package's languages and the single ones, minus what Go gives anyway, what is switched off, and what is there.
     const cfg = listingCatalog((await getCompany()).services).translation;
     const choice = readChoice(body, cfg);
-    const goLocales = new Set(packageLocales(packageById(cfg, 'go'), ALL_LOCALES));
+    const goLocales = new Set(packageLocales(packageById(cfg, 'basic'), ALL_LOCALES));
     const wanted = [...new Set([...packageLocales(packageById(cfg, choice.packageId), ALL_LOCALES), ...choice.extraLocales])]
       .filter((code) => OWNER_TARGETS.includes(code) && !goLocales.has(code) && !choice.excludedLocales.includes(code) && !have.has(code));
     if (wanted.length === 0) return json(422, { ok: false, error: 'nothing-to-order' });

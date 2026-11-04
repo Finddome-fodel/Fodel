@@ -69,7 +69,7 @@ export function listedIn(policy: ListingPolicy, locale: string, cfg: Translation
 }
 
 /**
- * Which language's text a page shows, in order: its own, then English (every listing has it: Go includes it),
+ * Which language's text a page shows, in order: its own, then English (every listing has it: Basic includes it),
  * German, Dutch, and Hungarian last. A Hungarian or Dutch page tries only its own language, then Hungarian.
  */
 export function textOrder<T extends string>(locale: T): (T | 'en' | 'de' | 'nl' | 'hu')[] {

@@ -63,7 +63,7 @@ function fresh({ property = {}, lines = [pkgLine], translations = [hu], jobs = [
   world.db = createFakeDb({
     properties: [{
       id: 'p1', ref: '1001', status: 'awaiting_payment', owner_id: 'u1', category: 'house', package: 'normal-12m', price_eur: 150000, floor_m2: 90, plot_m2: 400,
-      ...(gated ? { translation_package: 'go', extra_locales: [], excluded_locales: [] } : {}), ...property,
+      ...(gated ? { translation_package: 'basic', extra_locales: [], excluded_locales: [] } : {}), ...property,
     }],
     profiles: [
       { id: 'u1', email: 'owner@example.test', locale: 'hu', role: 'owner' },
@@ -111,7 +111,7 @@ test('a paid Európa package becomes the listing\'s entitlement and queues its l
 test('single languages bought on top of Go are stored as extra languages', async () => {
   fresh({ lines: [pkgLine, singleLine(['fr', 'es'])] });
   await pay('evt_c');
-  assert.equal(prop().translation_package, 'go');
+  assert.equal(prop().translation_package, 'basic');
   assert.deepEqual(prop().extra_locales.sort(), ['es', 'fr']);
   assert.deepEqual(jobLocales(), ['de', 'en', 'es', 'fr']);
   const origins = Object.fromEntries(jobs().map((j) => [j.locale, j.origin]));
@@ -141,7 +141,7 @@ test('a purchase never shrinks what the listing already holds', async () => {
 });
 
 test('a single language the package now includes is not kept as a single; a bought single is switched back on', async () => {
-  fresh({ property: { translation_package: 'go', extra_locales: ['fr'], excluded_locales: ['es'] } });
+  fresh({ property: { translation_package: 'basic', extra_locales: ['fr'], excluded_locales: ['es'] } });
   await entitlement.applyPurchase(world.db.client, 'p1', { packageId: 'europe', singles: ['es'], packageLocalesPaid: EUROPE }, cfg);
   assert.equal(prop().translation_package, 'europe');
   assert.deepEqual(prop().extra_locales, [], 'fr and es are in Európa');
@@ -152,10 +152,10 @@ test('an order the owner never paid, or one that was waived, entitles nothing', 
   fresh({ lines: [pkgLine, europeLine(EUROPE)], order: { waived_at: new Date().toISOString(), status: 'cancelled' } });
   const res = await pay('evt_w');
   assert.equal(res.status, 200);
-  assert.equal(prop().translation_package, 'go');
+  assert.equal(prop().translation_package, 'basic');
   assert.equal(jobs().length, 0);
   fresh({ lines: [pkgLine, europeLine(EUROPE)] });
-  assert.equal(prop().translation_package, 'go', 'nothing happens until the payment settles');
+  assert.equal(prop().translation_package, 'basic', 'nothing happens until the payment settles');
   assert.equal(jobs().length, 0);
 });
 
@@ -164,7 +164,7 @@ test('every listing that goes live is queued for English and German', async () =
   await pay('evt_e');
   assert.deepEqual(jobLocales(), GO);
   assert.equal(jobs().every((j) => j.origin === 'package' && j.status === 'queued'), true);
-  assert.equal(prop().translation_package, 'go');
+  assert.equal(prop().translation_package, 'basic');
 });
 
 test('a listing written in English is queued for German only; one written in German for English only', async () => {
@@ -216,10 +216,10 @@ test('the owner switches a language off: it is stored, its waiting job is cancel
 });
 
 test('German can be switched off on a Go listing, by the owner and by an admin', async () => {
-  fresh({ property: live({ translation_package: 'go' }), translations: [hu, text('de'), text('en')] });
+  fresh({ property: live({ translation_package: 'basic' }), translations: [hu, text('de'), text('en')] });
   assert.equal((await post(ownerLocals(), ['de'])).status, 200);
   assert.deepEqual(prop().excluded_locales, ['de']);
-  fresh({ property: live({ translation_package: 'go' }), translations: [hu, text('de'), text('en')] });
+  fresh({ property: live({ translation_package: 'basic' }), translations: [hu, text('de'), text('en')] });
   assert.equal((await post(adminLocals(), ['de'])).status, 200);
   assert.deepEqual(prop().excluded_locales, ['de']);
 });
@@ -238,7 +238,7 @@ test('English can never be switched off: a forged request is refused with exclud
 });
 
 test('the original language cannot be switched off either, and a language the listing does not have is ignored', async () => {
-  fresh({ property: live({ translation_package: 'go' }), translations: [hu, text('en'), text('de')] });
+  fresh({ property: live({ translation_package: 'basic' }), translations: [hu, text('en'), text('de')] });
   const res = await post(ownerLocals(), ['hu']);
   assert.equal(res.status, 422);
   assert.equal((await res.json()).error, 'is-source');
@@ -295,7 +295,7 @@ test('the wizard\'s exclusions hold from approval: Go\'s German stays off, and n
 /* ── Admin: free grants, Go fill, settings ───────────────────────────── */
 
 test('a language an admin decides to publish for nothing is granted, and a switched-off one is lifted only on purpose', async () => {
-  fresh({ property: live({ translation_package: 'go', excluded_locales: ['pl'] }) });
+  fresh({ property: live({ translation_package: 'basic', excluded_locales: ['pl'] }) });
   assert.deepEqual(await entitlement.grantLocales(world.db.client, 'p1', ['fr'], cfg), ['fr']);
   assert.deepEqual(prop().extra_locales, ['fr']);
   assert.deepEqual(await entitlement.grantLocales(world.db.client, 'p1', ['fr'], cfg), [], 'idempotent');
@@ -309,7 +309,7 @@ test('a language an admin decides to publish for nothing is granted, and a switc
 });
 
 test('"Go nyelvek pótlása" queues English and German for live listings that lack them, oldest first, and only for admins', async () => {
-  fresh({ property: live({ translation_package: 'go' }) });
+  fresh({ property: live({ translation_package: 'basic' }) });
   const refused = await goFill.POST({ locals: ownerLocals(), request: new Request('http://site.test/x', { method: 'POST' }) });
   assert.equal(refused.status, 403);
   const res = await goFill.POST({ locals: adminLocals(), request: new Request('http://site.test/x', { method: 'POST' }) });
@@ -325,7 +325,7 @@ test('"Go nyelvek pótlása" queues English and German for live listings that la
 test('"Go nyelvek pótlása" stops when today\'s AI budget is used up', async () => {
   globalThis.__ENV.TRANSLATION_DAILY_CAP_EUR = '0.000001';
   try {
-    fresh({ property: live({ translation_package: 'go' }), jobs: [{ id: 'j9', property_id: 'p1', locale: 'fr', status: 'queued', origin: 'admin', estimated_cost_micro_eur: 5 }] });
+    fresh({ property: live({ translation_package: 'basic' }), jobs: [{ id: 'j9', property_id: 'p1', locale: 'fr', status: 'queued', origin: 'admin', estimated_cost_micro_eur: 5 }] });
     const body = await (await goFill.POST({ locals: adminLocals(), request: new Request('http://site.test/x', { method: 'POST' }) })).json();
     assert.equal(body.languages, 0);
     assert.equal(body.budgetStopped, true);
@@ -413,7 +413,7 @@ test('a hand-made language list is kept, English is added to it, and an absurd p
 test('a badge an admin clears stays cleared; one never saved keeps its default; Go has none by default', async () => {
   fresh();
   const defaults = catalog.listingCatalog(services()).translation;
-  assert.equal(packages.packageById(defaults, 'go').badge.hu, '', 'Go says "Benne van" on its price line already');
+  assert.equal(packages.packageById(defaults, 'basic').badge.hu, '', 'Go says "Benne van" on its price line already');
   assert.ok(packages.packageById(defaults, 'europe').badge.hu, 'Európa keeps its badge');
   await submitTab(tabTranslations, { ...TAB_PACKAGES, europe_badge_hu: 'Ajánlott', europe_badge_en: '', europe_badge_nl: '' });
   const saved = catalog.listingCatalog(services()).translation;

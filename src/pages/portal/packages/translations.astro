@@ -1,6 +1,6 @@
 ---
 /**
- * Csomagok → Fordítási csomagok: the three translation packages (Go, Európa, World) as the owners see them.
+ * Csomagok → Fordítási csomagok: the three translation packages (Basic, Európa, World) as the owners see them.
  * Name, price, badge and pitch per package, which one is recommended, and which languages each covers (a rule
  * that follows the site's languages, or a hand-made list). The live preview shows the cards as an owner sees
  * them. Saved by /api/portal/packages/translations; new prices apply to new orders only.
@@ -38,7 +38,7 @@ const PLACEHOLDERS = '{count} {europe} {world} {worldOnlySum} {europePlus} {sing
     <div>
       <p class="eyebrow"><a href="/portal/settings">← Beállítások</a></p>
       <h1>Fordítási <em>csomagok</em></h1>
-      <p class="lede">A Go minden hirdetésben benne van, az Európa és a World megvásárolható. A csomag szabály, nem lista: ha új nyelv kerül az oldalra, magától bekerül az Európába vagy a Worldbe. Az angol minden csomagban benne van, és nem kapcsolható ki.</p>
+      <p class="lede">A Basic minden hirdetésben benne van, az Európa és a World megvásárolható. A csomag szabály, nem lista: ha új nyelv kerül az oldalra, magától bekerül az Európába vagy a Worldbe. Az angol minden csomagban benne van, és nem kapcsolható ki.</p>
     </div>
   </header>
 
@@ -57,7 +57,7 @@ const PLACEHOLDERS = '{count} {europe} {world} {worldOnlySum} {europePlus} {sing
           {cfg.packages.map((pkg) => (
             <div class="pv-card" data-pv={pkg.id}>
               <p class="pv-top"><b data-pv-name>{pkg.names.hu}</b><span class="pv-badge" data-pv-badge hidden={!pkg.badge.hu}>{pkg.badge.hu}</span></p>
-              <p class="pv-price" data-pv-price>{pkg.id === 'go' ? 'Benne van' : eur(pkg.priceEur)}</p>
+              <p class="pv-price" data-pv-price>{pkg.id === 'basic' ? 'Benne van' : eur(pkg.priceEur)}</p>
               <p class="pv-count" data-pv-count>{previewData.counts[pkg.id]} nyelv</p>
               <p class="pv-pitch" data-pv-pitch>{previewData.pitches[pkg.id]}</p>
             </div>
@@ -68,7 +68,7 @@ const PLACEHOLDERS = '{count} {europe} {world} {worldOnlySum} {europePlus} {sing
       {cfg.packages.map((pkg) => {
         const k = (field: string) => `${pkg.id}_${field}`;
         const covered = packageLocales(pkg, targets);
-        const isGo = pkg.id === 'go';
+        const isGo = pkg.id === 'basic';
         return (
           <section class="tpa-card tpa-pkg" data-pkg={pkg.id}>
             <header class="tpa-head">
@@ -120,7 +120,7 @@ const PLACEHOLDERS = '{count} {europe} {world} {worldOnlySum} {europePlus} {sing
             <div class="tpa-block">
               <p class="tpa-label">Nyelvek ({packageLanguageCount(pkg, targets)} az eredetivel együtt)</p>
               <p class="tpa-note">
-                {pkg.id === 'go' ? 'Az eredeti nyelv, az angol és a német.' : pkg.id === 'europe' ? 'Minden nyelv, kivéve az Európán kívüli nyelveket (Egyedi nyelvek fül).' : 'Minden nyelv.'}
+                {pkg.id === 'basic' ? 'Az eredeti nyelv, az angol és a német.' : pkg.id === 'europe' ? 'Minden nyelv, kivéve az Európán kívüli nyelveket (Egyedi nyelvek fül).' : 'Minden nyelv.'}
                 Így követi a csomag az oldal nyelveit.
               </p>
               <label class="tpa-sw tpa-override">
@@ -163,7 +163,7 @@ const PLACEHOLDERS = '{count} {europe} {world} {worldOnlySum} {europePlus} {sing
         const badge = card.querySelector<HTMLElement>('[data-pv-badge]')!;
         badge.textContent = val('badge');
         badge.hidden = !val('badge');
-        card.querySelector('[data-pv-price]')!.textContent = id === 'go' ? 'Benne van' : eur(Number(val('price')) || 0);
+        card.querySelector('[data-pv-price]')!.textContent = id === 'basic' ? 'Benne van' : eur(Number(val('price')) || 0);
         // The numbers in the pitch come from the saved configuration: the text shown is the typed one with them filled in.
         const prices = { count: data.counts[id], europe: Number(form!.querySelector<HTMLInputElement>('[data-pkg="europe"] [data-bind="price"]')?.value) || 0, world: Number(form!.querySelector<HTMLInputElement>('[data-pkg="world"] [data-bind="price"]')?.value) || 0, singleEuropean: data.cfg.singleEur.european, singleWorld: data.cfg.singleEur.world, worldOnlySum: data.cfg.worldOnly.length * data.cfg.singleEur.world };
         const filled: Record<string, number> = { ...prices, europePlus: prices.europe + prices.worldOnlySum };

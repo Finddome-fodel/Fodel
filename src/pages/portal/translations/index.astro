@@ -136,7 +136,7 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
     <div class="spend">
       <p>Ma elköltve: <b>{formatCostHu(spent)}</b> <span>(napi keret: {fmtEur(cap / 1_000_000)}; a keret elérése után a fordítások másnapig várnak)</span></p>
       <span class="spend-tools">
-        {aiOn && <button type="button" class="btn ghost small" id="go-fill" title="Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást, a napi keret erejéig.">Go nyelvek pótlása (EN, DE)</button>}
+        {aiOn && <button type="button" class="btn ghost small" id="go-fill" title="Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást, a napi keret erejéig.">Basic nyelvek pótlása (EN, DE)</button>}
         {counts.active > 0 && aiOn && <button type="button" class="btn ghost small" id="continue-now">Folytatás most</button>}
       </span>
     </div>
@@ -257,7 +257,7 @@ const titleOf = (row: any) => (prop(row).property_translations ?? []).find((t: {
   });
   document.getElementById('go-fill')?.addEventListener('click', async (event) => {
     const button = event.currentTarget as HTMLButtonElement;
-    const ok = await window.pf!.confirm({ title: 'Go nyelvek pótlása', body: 'Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást (régebbi hirdetésektől kezdve), a napi AI-keret erejéig. A keret elérése után a többi másnap pótolható.', confirmLabel: 'Pótlás indítása' });
+    const ok = await window.pf!.confirm({ title: 'Basic nyelvek pótlása', body: 'Minden élő hirdetéshez sorba állítja a hiányzó angol és német fordítást (régebbi hirdetésektől kezdve), a napi AI-keret erejéig. A keret elérése után a többi másnap pótolható.', confirmLabel: 'Pótlás indítása' });
     if (!ok) return;
     button.disabled = true;
     const res = await fetch('/api/portal/translations/go-fill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });

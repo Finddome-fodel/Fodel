@@ -242,7 +242,7 @@ function mapRow(row: PropertyRow, taxonomy: Taxonomy): Property {
     languagesWithText: languages,
     // A text a person typed in that language (an original, not a translation of the listing's text).
     writtenLocales: written.filter((t) => !(t as { translated_from?: string | null }).translated_from && !(t as { manual_override?: boolean }).manual_override).map((t) => t.locale),
-    translationPackage: row.translation_package ?? 'go',
+    translationPackage: row.translation_package ?? 'basic',
     extraLocales: row.extra_locales ?? [],
     excludedLocales: row.excluded_locales ?? [],
   };

@@ -102,8 +102,8 @@ export async function publishProperty(
     dedupeKey: opts.dedupeKey ?? null,
   }).catch(() => {});
 
-  // Every listing comes with English and German (the Go package): queued now, translated within minutes. A
-  // failure here never touches the publication, and the admin's "Go nyelvek pótlása" can queue them again.
+  // Every listing comes with English and German (the Basic package): queued now, translated within minutes. A
+  // failure here never touches the publication, and the admin's "Basic nyelvek pótlása" can queue them again.
   // Loaded here so the publish path itself keeps no hard dependency on the translation code.
   try {
     const [{ ensurePackageTranslations }, { createSupabaseAdminClient }] = await Promise.all([import('~/lib/ai/translation-entitlement'), import('~/lib/supabase-server')]);

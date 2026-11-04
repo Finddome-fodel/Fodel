@@ -4,13 +4,13 @@
  * (TRANSLATION_PACKAGES) and are merged with what an admin saved (site_settings.services.translationPackages)
  * by listingCatalog().
  *
- * Packages are RULES, not lists: Go is the original language plus English and German, Európa is every
+ * Packages are RULES, not lists: Basic is the original language plus English and German, Európa is every
  * language except the World-only ones, World is every language. A language added to the site joins Európa
  * or World by itself. English is mandatory in every package and can never be excluded.
  */
 
-export type TranslationPackageId = 'go' | 'europe' | 'world';
-export const TRANSLATION_PACKAGE_IDS: readonly TranslationPackageId[] = ['go', 'europe', 'world'];
+export type TranslationPackageId = 'basic' | 'europe' | 'world';
+export const TRANSLATION_PACKAGE_IDS: readonly TranslationPackageId[] = ['basic', 'europe', 'world'];
 
 export type PackageRule = { include?: string[]; excludeFromAll?: string[] };
 type Words = { hu: string; en: string; nl: string };
@@ -55,7 +55,7 @@ type Defaults = { singleEur: { european: number; world: number }; worldOnly: rea
 
 /**
  * Stored settings (any shape, possibly missing) -> a complete, sane configuration. Every number is clamped,
- * every language must be one the site has, the three packages always exist in order, Go is always free and
+ * every language must be one the site has, the three packages always exist in order, Basic is always free and
  * on, and exactly one package is recommended.
  */
 export function translationPricing(stored: unknown, defaults: Defaults, knownLocales: readonly string[]): TranslationPricing {
@@ -70,22 +70,22 @@ export function translationPricing(stored: unknown, defaults: Defaults, knownLoc
     const base = defaults.packages.find((pkg) => pkg.id === id)!;
     const given = (Array.isArray(s.packages) ? s.packages.find((pkg: any) => pkg?.id === id) : null) ?? {};
     // The default rule for Európa names the World-only languages; follow the stored list when there is one.
-    const rule: PackageRule = id === 'europe' ? { excludeFromAll: worldOnly } : id === 'go' ? { include: codes(given.rule?.include ?? base.rule.include, knownLocales) } : {};
+    const rule: PackageRule = id === 'europe' ? { excludeFromAll: worldOnly } : id === 'basic' ? { include: codes(given.rule?.include ?? base.rule.include, knownLocales) } : {};
     const own = Array.isArray(given.locales) ? codes(given.locales, knownLocales) : undefined;
     return {
       id,
-      priceEur: id === 'go' ? 0 : num(given.priceEur, base.priceEur),
+      priceEur: id === 'basic' ? 0 : num(given.priceEur, base.priceEur),
       rule,
       ...(own && own.length > 0 ? { locales: own } : {}),
       names: words(given.names, base.names, 40),
       pitch: words(given.pitch, base.pitch, 900),
       badge: badgeWords(given.badge, base.badge),
       recommended: typeof given.recommended === 'boolean' ? given.recommended : base.recommended,
-      active: id === 'go' ? true : typeof given.active === 'boolean' ? given.active : base.active,
+      active: id === 'basic' ? true : typeof given.active === 'boolean' ? given.active : base.active,
     };
   });
-  // Exactly one card is recommended (never Go, which is not for sale).
-  const recommended = packages.filter((pkg) => pkg.recommended && pkg.id !== 'go');
+  // Exactly one card is recommended (never Basic, which is not for sale).
+  const recommended = packages.filter((pkg) => pkg.recommended && pkg.id !== 'basic');
   packages.forEach((pkg) => { pkg.recommended = recommended.length === 1 ? pkg === recommended[0] : pkg.id === 'europe'; });
   return {
     packages,
@@ -187,7 +187,7 @@ export function billableSingles(selection: TranslationSelection, cfg: Translatio
 }
 
 /**
- * The order lines for a translation choice. Go costs nothing and has no line. A package is one line that
+ * The order lines for a translation choice. Basic costs nothing and has no line. A package is one line that
  * remembers the languages it covers (minus the ones switched off: the price does not change); singles are one
  * line per price group. Prices come from the configuration, never from the browser.
  */
@@ -208,7 +208,7 @@ export function translationLines(
     const detail = `${languageCount(covered.length + 1, lang)}${switchedOff ? `, ${switchedOff} ${EXCLUDED_WORD[lang]}` : ''}`;
     lines.push({
       kind: 'extra', id: 'translation-package', quantity: 1, unitCents: Math.round(priceEur * 100), packageId: pkg.id, locales: covered,
-      label: `${translationLineLabel('translation-package', locale)}: ${name} (${detail}${opts.currentPackageId && opts.currentPackageId !== 'go' ? `, ${UPGRADE_WORD[lang]}` : ''})`,
+      label: `${translationLineLabel('translation-package', locale)}: ${name} (${detail}${opts.currentPackageId && opts.currentPackageId !== 'basic' ? `, ${UPGRADE_WORD[lang]}` : ''})`,
     });
   }
   const singles = billableSingles(selection, cfg, targets);
@@ -241,7 +241,7 @@ export function cheaperPackageHint(selection: TranslationSelection, cfg: Transla
   wanted.delete(selection.sourceLocale);
   let best: { id: TranslationPackageId; price: number } | null = null;
   for (const pkg of cfg.packages) {
-    if (!pkg.active || pkg.id === 'go' || pkg.id === selection.packageId) continue;
+    if (!pkg.active || pkg.id === 'basic' || pkg.id === selection.packageId) continue;
     const covers = packageLocales(pkg, targets);
     if (![...wanted].every((code) => covers.includes(code))) continue; // it would drop a language they asked for
     // Same languages or more, for less or the same money, and strictly more reach.
@@ -254,7 +254,7 @@ export function cheaperPackageHint(selection: TranslationSelection, cfg: Transla
 
 /** Moving to a bigger package costs the difference; singles bought earlier are not credited. Never negative. */
 export function upgradePriceEur(fromId: string | null | undefined, toId: string, cfg: TranslationPricing): number {
-  const from = packageById(cfg, fromId ?? 'go').priceEur;
+  const from = packageById(cfg, fromId ?? 'basic').priceEur;
   return Math.max(0, Math.round((packageById(cfg, toId).priceEur - from) * 100) / 100);
 }
 

@@ -1,5 +1,5 @@
 /**
- * Words for the translation package picker (Go / Európa / World, single languages, switching languages off), in
+ * Words for the translation package picker (Basic / Európa / World, single languages, switching languages off), in
  * the three languages of the portal. Prices and counts are filled in by the picker from the configuration, so the
  * copy never states a number that an admin can change.
  */
@@ -60,10 +60,10 @@ export const PACKAGE_COPY: Record<PortalCopyLang, PackageCopy> = {
     priceUnchanged: 'A csomag ára nem változik, ha egyes nyelveket kizár.',
     nothing: 'Csak az eredeti nyelv, az angol és a német.',
     summary: (name, count, excluded) => `Fordítás: ${name} csomag (${count} nyelv${excluded ? `, ${excluded} kizárva` : ''})`,
-    summarySingles: (count) => `Fordítás: Go + ${count} egyedi nyelv`,
+    summarySingles: (count) => `Fordítás: Basic + ${count} egyedi nyelv`,
     plusSingles: (count) => `+ ${count} egyedi nyelv`,
     summaryFree: 'Fordítás: a kért nyelveket munkatársunk hagyja jóvá',
-    requestNote: 'A Go nyelvei automatikusak. Minden további nyelv kérés, amelyet munkatársunk hagy jóvá.',
+    requestNote: 'A Basic nyelvei automatikusak. Minden további nyelv kérés, amelyet munkatársunk hagy jóvá.',
     switchLabel: 'Váltás',
     hintEurope: (price, more) => `Az Európa csomag ${price} €-ért ${more} további nyelvet ad.`,
     hintWorld: (price, all) => `A World csomag ${price} €-ért mind a ${all} nyelvet tartalmazza, és olcsóbb, mint az egyenként választott nyelvek.`,
@@ -90,10 +90,10 @@ export const PACKAGE_COPY: Record<PortalCopyLang, PackageCopy> = {
     priceUnchanged: 'De prijs van het pakket blijft gelijk als u talen uitsluit.',
     nothing: 'Alleen de oorspronkelijke taal, Engels en Duits.',
     summary: (name, count, excluded) => `Vertaling: pakket ${name} (${count} talen${excluded ? `, ${excluded} uitgesloten` : ''})`,
-    summarySingles: (count) => `Vertaling: Go + ${count} losse ${count === 1 ? 'taal' : 'talen'}`,
+    summarySingles: (count) => `Vertaling: Basic + ${count} losse ${count === 1 ? 'taal' : 'talen'}`,
     plusSingles: (count) => `+ ${count} losse ${count === 1 ? 'taal' : 'talen'}`,
     summaryFree: 'Vertaling: een medewerker keurt de gevraagde talen goed',
-    requestNote: 'De talen van Go zijn automatisch. Elke andere taal is een verzoek dat een medewerker goedkeurt.',
+    requestNote: 'De talen van Basic zijn automatisch. Elke andere taal is een verzoek dat een medewerker goedkeurt.',
     switchLabel: 'Overstappen',
     hintEurope: (price, more) => `Het pakket Europa geeft u voor € ${price} nog ${more} talen erbij.`,
     hintWorld: (price, all) => `Het pakket World bevat voor € ${price} alle ${all} talen en is goedkoper dan de talen apart.`,
@@ -120,10 +120,10 @@ export const PACKAGE_COPY: Record<PortalCopyLang, PackageCopy> = {
     priceUnchanged: 'The package price stays the same if you exclude some languages.',
     nothing: 'Only the original language, English and German.',
     summary: (name, count, excluded) => `Translation: ${name} package (${count} languages${excluded ? `, ${excluded} excluded` : ''})`,
-    summarySingles: (count) => `Translation: Go + ${count} single ${count === 1 ? 'language' : 'languages'}`,
+    summarySingles: (count) => `Translation: Basic + ${count} single ${count === 1 ? 'language' : 'languages'}`,
     plusSingles: (count) => `+ ${count} single ${count === 1 ? 'language' : 'languages'}`,
     summaryFree: 'Translation: our team approves the languages you ask for',
-    requestNote: 'The Go languages are automatic. Every other language is a request that our team approves.',
+    requestNote: 'The Basic languages are automatic. Every other language is a request that our team approves.',
     switchLabel: 'Switch',
     hintEurope: (price, more) => `The Europe package gives you ${more} more languages for €${price}.`,
     hintWorld: (price, all) => `The World package includes all ${all} languages for €${price}, which is cheaper than the languages one by one.`,

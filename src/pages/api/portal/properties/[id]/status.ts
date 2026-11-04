@@ -268,7 +268,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
           ...(body.order.translation && typeof body.order.translation === 'object'
             ? {
                 translation: {
-                  packageId: String(body.order.translation.packageId ?? 'go'),
+                  packageId: String(body.order.translation.packageId ?? 'basic'),
                   extraLocales: Array.isArray(body.order.translation.extraLocales) ? body.order.translation.extraLocales.map(String) : [],
                   excludedLocales: Array.isArray(body.order.translation.excludedLocales) ? body.order.translation.excludedLocales.map(String) : [],
                 },
@@ -308,7 +308,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         ...selection.translation,
         extraLocales: (selection.translation.extraLocales ?? []).filter((code) => !alreadyHeld.has(code)),
         sourceLocale: entitlement?.listing.sourceLocale ?? 'hu',
-        ...(entitlement ? { currentPackageId: entitlement.listing.translationPackage ?? 'go' } : {}),
+        ...(entitlement ? { currentPackageId: entitlement.listing.translationPackage ?? 'basic' } : {}),
       };
     }
 

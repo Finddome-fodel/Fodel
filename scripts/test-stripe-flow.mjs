@@ -421,7 +421,7 @@ test('a free-link owner can ask for a whole package: Go\'s languages and the one
 });
 
 test('an owner buys the Európa package for a live listing: one order from the catalogue; paying it makes the entitlement and queues the languages', async () => {
-  freshWorld({ property: { ...live, translation_package: 'go', extra_locales: [], excluded_locales: [] } });
+  freshWorld({ property: { ...live, translation_package: 'basic', extra_locales: [], excluded_locales: [] } });
   world.db.table('payments').length = 0;
   const res = await buy({ id: 'u1' }, { action: 'order', packageId: 'europe', locales: [], excluded: ['pl'], amount: 1, price: 1 });
   assert.equal(res.status, 200);
@@ -455,7 +455,7 @@ test('an upgrade costs the difference, a package already held costs nothing, and
   const forged = await buy({ id: 'u1' }, { action: 'order', packageId: 'world', locales: [], excluded: ['en'] });
   assert.equal(forged.status, 422);
   assert.equal((await body(forged)).error, 'exclude-en');
-  freshWorld({ property: { ...live, translation_package: 'go', extra_locales: [], excluded_locales: [] } });
+  freshWorld({ property: { ...live, translation_package: 'basic', extra_locales: [], excluded_locales: [] } });
   world.db.table('payments').length = 0;
   const ghost = await buy({ id: 'u1' }, { action: 'order', packageId: 'platinum', locales: ['nl'] });
   assert.equal((await body(ghost)).amountCents, 100, 'an unknown package is Go; the single language is still a single language');

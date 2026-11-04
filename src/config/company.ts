@@ -396,7 +396,7 @@ export const TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 
 /**
  * Translation packages (decided by Marci, 2026-11-03). What a listing is published in beyond the language it
  * was written in:
- *   Go      free with every listing: the source language, English and German
+ *   Basic      free with every listing: the source language, English and German
  *   Európa  every language except the World-only ones
  *   World   every language
  * Single languages cost `singleEur`: European ones €1, the World-only ones (`worldOnly`) €5. English is the
@@ -413,8 +413,8 @@ export const TRANSLATION_PACKAGES = {
   worldOnly: ['tr', 'he', 'ar', 'zh', 'ru'],
   packages: [
     {
-      id: 'go', priceEur: 0, rule: { include: ['en', 'de'] }, recommended: false, active: true,
-      names: { hu: 'Go', en: 'Go', nl: 'Go' },
+      id: 'basic', priceEur: 0, rule: { include: ['en', 'de'] }, recommended: false, active: true,
+      names: { hu: 'Basic', en: 'Basic', nl: 'Basic' },
       badge: { hu: '', en: '', nl: '' },
       pitch: {
         hu: 'Hirdetése magyarul, angolul és németül is megjelenik, automatikusan, felár nélkül. További európai nyelvek nyelvenként {singleEuropean} €-ért, a török, héber, arab, kínai és orosz nyelv nyelvenként {singleWorld} €-ért.',

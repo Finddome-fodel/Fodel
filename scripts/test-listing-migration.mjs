@@ -457,7 +457,7 @@ await db.exec(`reset role;set test.uid='';set test.admin='true';delete from tran
 const sql52=fs.readFileSync(root+'/supabase/migrations/0053_translation_packages.sql','utf8');
 try{await db.exec(sql52);await db.exec(sql52);}catch(e){console.error('MIGRATION 0053 FAILED',e.message,e.detail);process.exit(1);}
 let tp=(await get(`select translation_package,extra_locales::text[] as extra_locales,excluded_locales::text[] as excluded_locales from properties where id='${id}'`))[0];
-assert.deepEqual(tp,{translation_package:'go',extra_locales:['nl','fr'],excluded_locales:[]},'the backfill keeps nl and fr, and leaves out the original (hu), English and German which Go covers');
+assert.deepEqual(tp,{translation_package:'basic',extra_locales:['nl','fr'],excluded_locales:[]},'the backfill keeps nl and fr, and leaves out the original (hu), English and German which Basic covers');
 await db.exec(`update properties set extra_locales='{}' where id='${id}'`);
 await db.exec(`delete from property_translations where property_id='${id}' and locale='hu'`);
 await db.exec(sql52);
@@ -468,6 +468,31 @@ await db.exec(`update properties set extra_locales='{fr}',translation_package='e
 await db.exec(sql52);
 tp=(await get(`select translation_package,extra_locales::text[] as extra_locales from properties where id='${id}'`))[0];
 assert.deepEqual(tp,{translation_package:'europe',extra_locales:['fr']},'a listing that already has a package or extras is left alone');
+// The checks below change the fixtures (and rewrite the check constraint); they are put back at the end.
+await db.exec(`create temp table sv_tr as select * from property_translations where property_id='${id}';create temp table sv_jobs as select * from translation_jobs;create temp table sv_prop as select translation_package,extra_locales,excluded_locales,updated_at from properties where id='${id}';`);
+// An earlier version of this file called the first package 'go': those rows become 'basic', and the check allows the new names only.
+await db.exec(`alter table properties drop constraint properties_translation_package_check;update properties set translation_package='go',extra_locales='{}' where id='${id}'`);
+await db.exec(sql52);
+assert.equal((await get(`select translation_package from properties where id='${id}'`))[0].translation_package,'basic',"'go' is converted to 'basic'");
+await assert.rejects(()=>db.exec(`update properties set translation_package='go' where id='${id}'`),"'go' is no longer a package");
+// Fix 3.6: the backfill touches only the listings that gain languages. A listing with nothing to add keeps its updated_at.
+await db.exec(`update properties set extra_locales='{}',translation_package='basic' where id='${id}';delete from property_translations where property_id='${id}' and locale not in ('hu');delete from translation_jobs;`);
+await db.exec(`alter table properties disable trigger user;update properties set updated_at='2020-01-01T00:00:00Z' where id='${id}';alter table properties enable trigger user;`);
+const stamp=async()=>(await get(`select updated_at::text as at,extra_locales::text[] as extra from properties where id='${id}'`))[0];
+await db.exec(sql52);
+let after=await stamp();
+assert.equal(after.at.startsWith('2020-01-01'),true,'a listing with no language to add keeps its updated_at');
+assert.deepEqual(after.extra,[],'and gains nothing');
+await db.exec(`insert into property_translations(property_id,locale,title,description,body,machine)values('${id}','nl','Titel','Kort','Lang',true) on conflict do nothing`);
+await db.exec(sql52);
+after=await stamp();
+assert.deepEqual(after.extra,['nl'],'a listing with a Dutch text gains nl');
+await db.exec(`alter table properties disable trigger user;update properties set updated_at='2020-01-01T00:00:00Z' where id='${id}';alter table properties enable trigger user;`);
+await db.exec(sql52);
+assert.equal((await stamp()).at.startsWith('2020-01-01'),true,'a second run changes nothing, not even an updated_at');
+await db.exec(`alter table properties drop constraint if exists properties_translation_package_check;alter table properties add constraint properties_translation_package_check check (translation_package in ('basic','europe','world'));`);
+await db.exec(`alter table properties disable trigger user;update properties p set translation_package=v.translation_package,extra_locales=v.extra_locales,excluded_locales=v.excluded_locales,updated_at=v.updated_at from sv_prop v where p.id='${id}';alter table properties enable trigger user;`);
+await db.exec(`delete from property_translations where property_id='${id}';insert into property_translations select * from sv_tr;delete from translation_jobs;insert into translation_jobs select * from sv_jobs;drop table sv_tr;drop table sv_jobs;drop table sv_prop;`);
 await assert.rejects(()=>db.exec(`update properties set translation_package='gold' where id='${id}'`),'only the three packages');
 await assert.rejects(()=>db.exec(`update properties set excluded_locales='{nl,en}' where id='${id}'`),'English can never be excluded (direct SQL)');
 await db.exec(`update properties set excluded_locales='{de}' where id='${id}'`);
@@ -485,7 +510,7 @@ await db.exec(`reset role;set test.uid='${other}';set test.admin='true';set role
 await db.exec(`update properties set translation_package='world',extra_locales='{fr}' where id='${id}'`);
 assert.deepEqual((await get(`select translation_package,extra_locales::text[] as extra_locales from properties where id='${id}'`))[0],{translation_package:'world',extra_locales:['fr']});
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
-await db.exec(`update properties set translation_package='go',extra_locales='{}' where id='${id}'`);
+await db.exec(`update properties set translation_package='basic',extra_locales='{}' where id='${id}'`);
 // The editor's own save never touches them.
 await db.exec(`set role authenticated;set test.admin='true';set test.uid='${other}';`);
 await db.exec(`update properties set translation_package='europe',extra_locales='{nl}' where id='${id}'`);
@@ -495,7 +520,7 @@ await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 // A seller creating a listing cannot start on a package either.
 await db.exec(`set role authenticated;set test.admin='false';set test.uid='${owner}';`);
 const created=await db.query(`insert into properties(ref,owner_id,status,category,country,settlement,county,region,lat,lng,translation_package,extra_locales) values('9999','${owner}','draft','house','HU','X','Y','Z',47,19,'world','{fr}') returning translation_package,extra_locales::text[] as extra_locales`).catch(()=>null);
-if(created)assert.deepEqual(created.rows[0],{translation_package:'go',extra_locales:[]},'an insert by a seller starts on Go');
+if(created)assert.deepEqual(created.rows[0],{translation_package:'basic',extra_locales:[]},'an insert by a seller starts on Go');
 await db.exec(`reset role;set test.uid='';set test.admin='true';`);
 console.log('✓ 0053: repeatable; the backfill keeps every language; English cannot be excluded; sellers cannot grant themselves languages');
 await db.close();
