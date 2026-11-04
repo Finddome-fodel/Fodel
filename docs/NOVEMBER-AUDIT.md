@@ -20,27 +20,27 @@ and not available to the build; the master brief was used as the checklist.
 | Item | Status | Evidence |
 |---|---|---|
 | I1 #30, #31, #34 merged | ✅ | merge commits on the release branch; suites green |
-| Chain #28 #29 #32 #33 rebased onto the release (never the PR branches) | ✅ | `tmp/chain` replayed, merged with a merge commit |
+| Chain #28 #29 #32 #33 replayed onto the release (never the PR branches) | ✅ | merge commit; PR branches untouched (`gh pr list`) |
 | 21-language pin dropped; `ALL_LOCALES = LOCALES` (28) | ✅ | `translate-core.ts`, `page.ts`; tests count 28 |
 | Migrations renumbered 0046–0054 + `test:migrations` | ✅ | `scripts/test-migrations-sequence.mjs` |
-| 0055 `listing_package_values` (own run) | ✅ | PGlite test |
-| 0056 `pricing_2026` (term/band columns, `exchange_rate_snapshots`) | ✅ | PGlite test |
-| 0057 agricultural types | ❌ | |
-| 0058 floor-area report | ❌ | |
-| F2 photo-review e-mail in the 7 new languages | ✅ | `fix(#34)` commit; `check:i18n` |
-| 2.1 one contact detector (`findContacts`) | ✅ | `translation-contact.ts` deleted; test in `test:rules` |
-| 3.1 Csomagok tabs in `PackagesShell` / `saveServicesPatch`, no placeholder | ✅ | new tabs; `PACKAGE_TABS` test |
+| 0055 `listing_package_values` (own run) | ✅ | PGlite harness, twice |
+| 0056 `pricing_2026` (term/band columns, `exchange_rate_snapshots`, `pricingLive`) | ✅ | PGlite harness, twice |
+| 0057 agricultural types | ✅ | PGlite harness (remap, flag, log, rollback line) |
+| 0058 photo bucket closed to listing (replaces the planned floor-area report, see decisions) | ✅ | PGlite harness: before/after, owner/other/admin, twice |
+| F2 photo-review e-mail in the 7 new languages | ✅ | `check:i18n` |
+| 2.1 one contact detector (`findContacts`) | ✅ | `test:rules` |
+| 3.1 Csomagok tabs in `PackagesShell` / `saveServicesPatch`, no placeholder | ✅ | `PACKAGE_TABS` test |
 | 3.2 Kiegészítők never writes the translation price | ✅ | `extrasStored`; test |
-| 3.3 locale filter in SQL + parity test | ❌ | |
-| 3.4 prices read with `readMoney` | ✅ | cents forms; `test-package-orders.mjs` |
-| 3.5 `applyPurchase` snapshot + one-shot | ❌ | |
-| 3.6 backfill touches only rows that gain languages | ✅ | PGlite test (`updated_at` kept) |
-| 3.7 "Basic included" line once on pro-forma / invoice / e-mail | ❌ | |
-| 3.8 decisions in the PR text | ❌ | in the release PR |
-| F1 one locale-gate helper for all 28 routes | ❌ | |
-| F3 `writtenLocales` (Q16) | ❌ | |
-| F5 pending photos private (#34 follow-up) | ❌ | |
-| F6 legal and price pages updated | ❌ | |
+| 3.3 locale filter in SQL + parity test | ✅ | `test:listing:migration` (30 listings × 28 languages × 2 modes, pagination) |
+| 3.4 prices read with `readMoney` | ✅ | `test-package-orders.mjs` |
+| 3.5 `applyPurchase` snapshot + one-shot (`23505` only = already applied) | ✅ | `test:translation`, `test:stripe` |
+| 3.6 backfill touches only rows that gain languages | ✅ | PGlite test |
+| 3.7 "Basic included" line once, only on older-package orders | ✅ | `test-package-orders.mjs` |
+| 3.8 decisions in the PR text | ✅ | `docs/DECISIONS-2026-11.md`, PR body |
+| F1 one locale-gate helper for all 28 routes | ✅ | `src/lib/listing-locale-gate.ts`; grep test in `test:language-gate` |
+| F3 `writtenLocales` (Q16) | ✅ | `listing-languages.ts` + SQL twin, parity test |
+| F5 pending photos | 🟡 | the bucket can no longer be listed (0058); a pending photo's own address still opens for whoever holds it (random uuid). Private bucket + signed addresses **not** shipped: residual risk in the PR and the guide |
+| F6 legal and price pages | ✅ | price list/submit/sellers/llms on the new model (`priceFacts`); legal texts keep „A magyar/angol változat az irányadó”; lawyer check in the guide |
 
 ## §8 Pricing and the daily rate
 
@@ -50,34 +50,36 @@ and not available to the build; the master brief was used as the checklist.
 | Value bands (Q1) at 24 999 999 / 25 000 000 / 100 000 000 / 100 000 001 | ✅ | `test:pricing` |
 | `priceFor()` the only price function; integer cents | ✅ | `src/lib/listing-pricing.ts` |
 | Orders: package line with term, band, languages, switched-off languages frozen | ✅ | `test-package-orders.mjs` |
-| Upgrade = difference inside the original band | ✅ (order builder) / ❌ (owner UI, webhook) | |
-| Referral discount whole cents, half up | ✅ | |
+| Upgrade = difference inside the original band (builder, owner panel, webhook entitlement) | ✅ | `test:pricing`, `test:stripe` (live-model flows) |
+| Referral discount whole cents, half up | ✅ | `test:pricing` |
 | Catalog exposes Basic/Europe/World; old packages kept (Q9) | ✅ | `sellingPackages`, `legacy` |
-| Csomagok tabs: matrix, content, extras, single languages, rate, extras' bands, rounding | ✅ | pages + forms + tests |
-| Graceful before the migrations (`pricingLive`) | 🟡 | |
-| Stripe checkout, webhook, publish term (`package_months`), expiry | ❌ | |
-| Setup chooser (JS off and on), review page, owner panel | ❌ | |
-| Renewal 1/3/6 (Q8) | ❌ | |
-| Public price list, submit page, legal text (28 languages) | ❌ | |
-| Pro-forma / invoice lines and informational HUF at order-time rate | ❌ | |
-| Daily rate: table, cron `/api/cron/fx`, catch-up in the daily job, read chain, fallback, "Frissítés most", stale notice | ✅ | `test:pricing` (`test-fx.mjs`) |
+| Csomagok tabs: matrix, content, extras, single languages, rate, extras' bands, rounding | 🟡 | pages, forms and tests done; see click-test below |
+| Graceful before the migrations (`pricingLive`) | ✅ | catalog sells the two older packages until 0056 |
+| Stripe checkout, webhook, publish term (`package_months`), expiry | ✅ | `test:stripe` (live-model Stripe tests) |
+| Setup chooser (JS off and on), review page, owner panel | ✅ | `test:chooser`; browser-checked at 1440 and 390 px |
+| Renewal 1/3/6 (Q8) | ✅ | `test:stripe`, `test:pricing` |
+| Public price list, submit page (28 languages) | ✅ | `PriceMatrix`, `PriceListPage`, `SubmitAdPage` |
+| Pro-forma / invoice lines (hu, nl) | ✅ | `invoicing/catalogue.ts`; order-time forint note on invoices: **skipped, optional** |
+| Daily rate: table, cron `/api/cron/fx`, catch-up in the daily job, read chain, fallback, "Frissítés most", stale notice | ✅ | `test-fx.mjs` |
 | Rate never used to compute a charge (grep test) | ✅ | `test-fx.mjs` |
-| HUF hints on public pages / checkout / e-mails; footnote in 28 languages | 🟡 | footnote + hint formatter done; surfaces ❌ |
+| HUF hints on public pages (`/api/fx`), checkout, e-mails; footnote in 28 languages | ✅ | `test-fx.mjs` |
 
 ## §9 Agricultural types, §10 forms, §10b share buttons
 
-| Item | Status |
-|---|---|
-| Three agricultural types + legacy alias + migration remap + admin review + 301 + search alias | ❌ |
-| „Irányár” → „Ár” everywhere | ❌ |
-| Floor areas (living area per type, building area optional, labels in 28 languages, `fieldRules` snapshot) | ❌ |
-| Share buttons (Facebook, WhatsApp, e-mail, native, copy), OG tags, UTM | ❌ |
+| Item | Status | Evidence |
+|---|---|---|
+| Three agricultural types + legacy alias + migration remap + admin „Típus ellenőrzése” + 301 + search alias | ✅ | 0057 harness, snapshot test, `legacySubtypeRedirect` |
+| „Irányár” → „Ár” everywhere | ✅ | `git grep` = 0 outside historic migrations |
+| Floor areas (living area per type, building area optional, labels in 28 languages, `fieldRules` snapshot) | ✅ | `test:field-rules` |
+| Share buttons (Facebook, WhatsApp, e-mail, native, copy), OG tags, UTM | ✅ | `test:share` (22), `tests/e2e/public/share.spec.ts` (41 passed on chromium, webkit, mobile-safari, mobile-chrome), screenshots `docs/qa/2026-11/share-*.png`. **Not verifiable from here:** the real Facebook preview and a real WhatsApp card (guide step 6) |
+
+## Found and fixed during the final pass
+
+| Bug | Fix | Test |
+|---|---|---|
+| The three-dot menu on Felhasználók did nothing (a row that lifts on hover moved the fixed popover off-screen) | `placeMenu` measures the real origin | `tests/e2e/editor/users-menu.spec.ts` (fails before, passes after) |
+| `/ar` and `/he` pages scrolled sideways by 10 000 px (spam-trap fields hidden with `left:-10000px`) | `inset-inline-start` | grep test in `test:share`; no-overflow e2e |
 
 ## §11 Gate, §12 PR, §13 guide
 
-| Item | Status |
-|---|---|
-| Full quality gate green | ❌ |
-| Local click-test with screenshots in `docs/qa/2026-11/` | ❌ |
-| Release PR opened | ❌ |
-| `docs/GO-LIVE-2026-11.md` + final message | ❌ |
+See the end of this file once the gate has run (updated before the PR is opened).
