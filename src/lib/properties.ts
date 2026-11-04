@@ -91,7 +91,7 @@ export type Property = {
       videoUrl?: string;
     };
     listing: {
-      package: 'cheap-6m' | 'normal-12m';
+      package: 'cheap-6m' | 'normal-12m' | 'basic' | 'europe' | 'world';
       featured: boolean;
       topicFeatured?: boolean;
       homepageFeatured: boolean;
@@ -177,7 +177,7 @@ type PropertyRow = {
   public_contact?: string | null;
   public_contact_name?: string | null;
   public_contact_phone?: string | null;
-  package: 'cheap-6m' | 'normal-12m';
+  package: 'cheap-6m' | 'normal-12m' | 'basic' | 'europe' | 'world';
   featured: boolean;
   homepage_featured: boolean;
   homepage_order: number;

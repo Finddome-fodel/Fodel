@@ -212,8 +212,11 @@ const nextMonth = new Date(Date.UTC(calYear, calMon, 1)).toISOString().slice(0, 
             Csomag
             <select name="package">
               <option value="" selected={!packageFilter}>Mind</option>
-              <option value="cheap-6m" selected={packageFilter === 'cheap-6m'}>Olcsó — 6 hónap</option>
-              <option value="normal-12m" selected={packageFilter === 'normal-12m'}>Normál — 12 hónap</option>
+              <option value="basic" selected={packageFilter === 'basic'}>Basic</option>
+              <option value="europe" selected={packageFilter === 'europe'}>Europe</option>
+              <option value="world" selected={packageFilter === 'world'}>World</option>
+              <option value="cheap-6m" selected={packageFilter === 'cheap-6m'}>Olcsó — 6 hónap (régi)</option>
+              <option value="normal-12m" selected={packageFilter === 'normal-12m'}>Normál — 12 hónap (régi)</option>
             </select>
           </label>
           <label>Hirdető <input name="owner" value={ownerFilter} placeholder="név vagy e-mail" /></label>

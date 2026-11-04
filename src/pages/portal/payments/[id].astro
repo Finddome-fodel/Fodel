@@ -14,7 +14,7 @@ import { isListingFeeOrder } from '~/lib/portal/free-approval';
 import { money } from '~/lib/portal/payments';
 import { listingCatalog } from '~/lib/listing-packages';
 import { getCompany } from '~/lib/runtime-config';
-import { needsReview, retiredLines, tierDrift } from '~/lib/portal/order-notices';
+import { needsReview, retiredLines, tierDrift, legacyPackageLine } from '~/lib/portal/order-notices';
 import { fmtHuf } from '~/lib/portal/num';
 
 const { supabase, profile } = Astro.locals;
@@ -76,6 +76,7 @@ const lines = (Array.isArray(order.line_items) ? order.line_items : []) as Order
    the admin decides — the pro-forma is valid as issued, or the order is withdrawn. */
 const reviewLines = needsReview(order.status);
 const retired = reviewLines ? retiredLines(lines, listingCatalog((await getCompany()).services)) : [];
+const oldPackage = reviewLines ? legacyPackageLine(lines, listingCatalog((await getCompany()).services).pricingLive) : null;
 const drift = reviewLines ? tierDrift(lines, property?.price_huf == null ? null : Number(property.price_huf)) : [];
 const band = (fromHuf: number, toHuf: number | null) =>
   toHuf === null ? `${fmtHuf(fromHuf)} felett` : fromHuf <= 1 ? `${fmtHuf(toHuf)}-ig` : `${fmtHuf(fromHuf)} – ${fmtHuf(toHuf)}`;
@@ -130,6 +131,14 @@ const canWaive = order.status === 'pending'
         </tbody>
       </table>
 
+      {oldPackage && (
+        <div class="notice warn order-notice" role="note">
+          <strong>Elavult ár: régi csomag ({oldPackage.label})</strong>
+          2026 novembere óta a hirdetési csomagok a Basic, Europe és World, ingatlanértéktől és időtartamtól függő árakkal. Ez a díjbekérő
+          a kiállításkori áron marad érvényes, és kifizethető. Ha az új árakkal szeretne újat kiállítani, vonja vissza ezt a rendelést,
+          majd a hirdetés áttekintő oldalán állítson ki újat{order.property_id ? <> (<a href={`/portal/review/${order.property_id}`}>áttekintés</a>)</> : null}.
+        </div>
+      )}
       {retired.length > 0 && (
         <div class="notice warn order-notice" role="note">
           <strong>Kivezetett tétel: {retired.map((l) => l.id === 'homepage-highlight' ? 'főoldali kiemelés' : l.label).join(', ')}</strong>

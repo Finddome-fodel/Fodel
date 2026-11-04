@@ -39,3 +39,12 @@ export function tierDrift(lines: readonly OrderLine[], priceHuf: number | null |
   }
   return out;
 }
+
+/**
+ * An unpaid order on one of the two older packages once Basic, Europe and World are on sale (Q9): it stays payable for
+ * 14 days at the price it was made with, and the admin is told it is the old model so they can re-issue it.
+ */
+export function legacyPackageLine(lines: readonly OrderLine[], pricingLive: boolean): OrderLine | null {
+  if (!pricingLive) return null;
+  return lines.find((line) => line.kind === 'package' && (line.id === 'cheap-6m' || line.id === 'normal-12m')) ?? null;
+}

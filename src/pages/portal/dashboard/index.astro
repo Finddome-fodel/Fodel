@@ -25,6 +25,8 @@ import { getCompany } from '~/lib/runtime-config';
 import { listingRules, isUnresponsive, daysLeft } from '~/lib/listing-rules';
 import { toListItem } from '~/lib/invoicing/store';
 import { fmtInt } from '~/lib/portal/num';
+import { currentRate } from '~/lib/fx-store';
+import { fxStale } from '~/lib/fx';
 
 const { supabase, profile } = Astro.locals;
 const isAdmin = profile?.role === 'admin';
@@ -123,6 +125,10 @@ const thumb = (p: (typeof properties)[number]) => {
 // Live listings ending within 30 days, soonest first; and owners who left the
 // monthly check unanswered (flag only — nothing is unpublished automatically).
 const rules = isAdmin ? listingRules((await getCompany()).services) : null;
+// The daily EUR/HUF rate: the forint hints use the last one meanwhile, but an admin should know it is old (or missing).
+const fxNow = isAdmin ? await currentRate().catch(() => null) : null;
+const fxOld = isAdmin && fxNow ? fxStale(fxNow) : false;
+const fxMissing = isAdmin && !fxNow;
 const expiring = isAdmin
   ? properties
       .filter((p: any) => p.status === 'published' && p.expires_at && daysLeft(p.expires_at) <= 30)
@@ -187,6 +193,13 @@ const ownerSteps = PIPELINE.filter((step) => counts[step.key] > 0 || step.key ==
       </a>
     </div>
   </header>
+
+  {isAdmin && fxOld && fxNow && (
+    <p class="notice warn" role="note"><strong>Elavult árfolyam ({fxNow.date.replaceAll('-', '.')}.)</strong> A forintos tájékoztató árak az utolsó ismert árfolyamot használják. Az árfolyam a Csomagok → Árfolyam oldalon frissíthető.</p>
+  )}
+  {isAdmin && fxMissing && (
+    <p class="notice error" role="alert"><strong>Nincs árfolyam.</strong> A forintos tájékoztató árak most nem jelennek meg, az eurós árak igen. Csomagok → Árfolyam → Frissítés most.</p>
+  )}
 
   {
     isAdmin ? (
