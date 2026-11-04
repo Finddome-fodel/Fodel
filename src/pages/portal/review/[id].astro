@@ -30,6 +30,10 @@ import { groupOf, subtypeOf, currentFeatures, readEnergy, labelIn, DETAIL_OPTION
 import DutchAgentBadge from '~/components/portal/DutchAgentBadge.astro';
 import FreeBadge from '~/components/portal/FreeBadge.astro';
 import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import PackageChooser from '~/components/portal/PackageChooser.astro';
+import { chooserModel } from '~/lib/portal/package-chooser';
+import { currentRate } from '~/lib/fx-store';
+import { languageName } from '~/lib/listing-catalogue';
 import { loadEntitlement } from '~/lib/ai/translation-entitlement';
 import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
@@ -119,6 +123,12 @@ const priceAt = (item: { tiers: { upToHuf: number | null; priceEur: number }[] }
 // What the listing already holds (migration 0053): an upgrade costs the difference. Null before the migration.
 const trHeld = await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null);
 const trChoice = suggested.translation ?? { packageId: 'basic', extraLocales: [], excludedLocales: [] };
+// The three packages: the same chooser the owner saw (term, band, languages, switch-offs), priced by priceFor(). Null before the migrations.
+const chooser = chooserModel({
+  catalog: listing, lang: 'hu', priceHuf: property.price_huf, packageId: suggested.packageId, months: suggested.months ?? null,
+  fx: await currentRate().catch(() => null), sourceLocale: trSource?.locale ?? 'hu', targets: ALL_LOCALES, names: (code) => languageName(code, 'hu'),
+});
+const categoryMin = listing.extras.find((extra) => extra.id === 'category-highlight')?.minMonths ?? 3;
 // A free-link owner's requests wait here for the admin's decision.
 const trJobs = property.free_listing ? await jobsForProperty(supabase, property.id) : [];
 const trOpen = trJobs.filter((job) => job.status === 'requested');
@@ -422,40 +432,46 @@ const { data: creditableReferral } = property.owner_id
         a hirdető ezt az összeget kapja meg e-mailben, és ezt fizeti bankkártyával vagy átutalással.
       </p>
 
+      {chooser ? (
+        <PackageChooser model={chooser} lang="hu" excluded={trChoice.excludedLocales ?? []} />
+      ) : (
       <fieldset class="pkg">
-        <legend>Csomag</legend>
-        {cat.packages.map((pkg) => {
-          const price = priceEurFor(packageOf(listing, pkg.id), property.price_huf);
-          return (
-            <label class="radio">
-              <input
-                type="radio"
-                name="package"
-                value={pkg.id}
-                checked={pkg.id === suggested.packageId}
-                data-price={price}
-              />
-              <span>{pkg.label} — {eur(price)}</span>
-            </label>
-          );
-        })}
-        {tierNotes.map((note) => (
-          <p class="threshold">
-            {note.name}: {note.index + 1}. ársáv a {note.count}-ból ({note.range}).
-          </p>
-        ))}
-      </fieldset>
+          <legend>Csomag</legend>
+          {cat.packages.map((pkg) => {
+            const price = priceEurFor(packageOf(listing, pkg.id), property.price_huf);
+            return (
+              <label class="radio">
+                <input
+                  type="radio"
+                  name="package"
+                  value={pkg.id}
+                  checked={pkg.id === suggested.packageId}
+                  data-price={price}
+                />
+                <span>{pkg.label} — {eur(price)}</span>
+              </label>
+            );
+          })}
+          {tierNotes.map((note) => (
+            <p class="threshold">
+              {note.name}: {note.index + 1}. ársáv a {note.count}-ból ({note.range}).
+            </p>
+          ))}
+        </fieldset>
+      )}
 
+      {!chooser && (
       <fieldset class="extras tr-extra" id="tr-extra">
-        <legend>Fordítás <span class="ai-badge">AI fordítás</span></legend>
-        <p class="hint">
-          {aiOn
-            ? 'A fordításokat a rendszer automatikusan, OpenAI-val készíti el, miután a hirdető kifizette a díjat. Gép készíti, ember nem nézi át.'
-            : 'Az AI fordítás jelenleg nincs bekapcsolva. A nyelvek a fizetés után sorba állnak, és amint bekapcsolja, elkészülnek; addig a szerkesztőben kézzel is fordíthat.'}
-        </p>
-        <TranslationPackagePicker lang="hu" bare cfg={listing.translation} targets={ALL_LOCALES} sourceLocale={trSource?.locale ?? 'hu'} packageId={trChoice.packageId} extras={trChoice.extraLocales ?? []} excluded={trChoice.excludedLocales ?? []} present={trPresent} currentPackageId={trHeld?.listing.translationPackage ?? null} />
-        <p class="tr-cost">Becsült AI-költség: <strong data-tr-cost>—</strong> <span>(a szöveg hosszából; nyelvenként {formatCostHu(trPerLanguage)})</span></p>
-      </fieldset>
+          <legend>Fordítás <span class="ai-badge">AI fordítás</span></legend>
+          <p class="hint">
+            {aiOn
+              ? 'A fordításokat a rendszer automatikusan, OpenAI-val készíti el, miután a hirdető kifizette a díjat. Gép készíti, ember nem nézi át.'
+              : 'Az AI fordítás jelenleg nincs bekapcsolva. A nyelvek a fizetés után sorba állnak, és amint bekapcsolja, elkészülnek; addig a szerkesztőben kézzel is fordíthat.'}
+          </p>
+          <TranslationPackagePicker lang="hu" bare cfg={listing.translation} targets={ALL_LOCALES} sourceLocale={trSource?.locale ?? 'hu'} packageId={trChoice.packageId} extras={trChoice.extraLocales ?? []} excluded={trChoice.excludedLocales ?? []} present={trPresent} currentPackageId={trHeld?.listing.translationPackage ?? null} />
+          <p class="tr-cost">Becsült AI-költség: <strong data-tr-cost>—</strong> <span>(a szöveg hosszából; nyelvenként {formatCostHu(trPerLanguage)})</span></p>
+        </fieldset>
+      )}
 
       <fieldset class="extras">
         <legend>Kiegészítők</legend>
@@ -469,6 +485,7 @@ const { data: creditableReferral } = property.owner_id
                 checked={suggestedExtras.has(extra.id)}
                 data-price={priceAt(extra)}
                 data-exclusive={extra.exclusive ? 'onsite' : undefined}
+                data-min-months={extra.id === 'category-highlight' ? extra.minMonths ?? 1 : undefined}
               />
               <span>{extra.label} — {eur(priceAt(extra))}{extra.unit ? ` / ${extra.unit}` : ''}</span>
             </label>
@@ -647,7 +664,7 @@ const { data: creditableReferral } = property.owner_id
   })();
 </script>
 
-<script define:vars={{ propertyId: property.id, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, presentLocales: trPresent, perLanguageMicro: trPerLanguage }}>
+<script define:vars={{ propertyId: property.id, referralDiscountPercent: REFERRAL_DISCOUNT_PERCENT, presentLocales: trPresent, perLanguageMicro: trPerLanguage, categoryMin }}>
   const statusEl = document.getElementById('action-status');
   const totalEl = document.getElementById('order-total');
   const discountNoteEl = document.getElementById('discount-note');
@@ -663,8 +680,12 @@ const { data: creditableReferral } = property.owner_id
       return { id: box.value, quantity: qtyInput ? Number(qtyInput.value) || 1 : 1 };
     });
     // The translation choice: ids only (the package, the single languages, what is switched off). The server prices it.
-    const picker = document.querySelector('[data-tpk]');
-    const translation = picker
+    const chooser = document.querySelector('[data-pch]');
+    const picker = chooser ? null : document.querySelector('[data-tpk]');
+    // The three packages: the package, its term and what is switched off. The server prices all of it with priceFor().
+    const translation = chooser
+      ? { packageId: pkg.value, extraLocales: [], excludedLocales: (chooser.querySelector('[data-pch-excluded]')?.value ?? '').split(',').filter(Boolean) }
+      : picker
       ? {
           packageId: picker.querySelector('input[name="translation_package"]:checked')?.value ?? 'basic',
           extraLocales: [...picker.querySelectorAll('input[name="translations"]:checked')].map((box) => box.value),
@@ -673,6 +694,7 @@ const { data: creditableReferral } = property.owner_id
       : undefined;
     return {
       packageId: pkg.value,
+      ...(chooser ? { months: Number(chooser.dataset.months) || undefined } : {}),
       extras,
       ...(translation ? { translation } : {}),
       referralDiscountId: discountBox?.checked ? discountBox.dataset.referralId : null,
@@ -684,8 +706,21 @@ const { data: creditableReferral } = property.owner_id
   function renderTotal() {
     if (!totalEl) return;
     const pkg = document.querySelector('input[name="package"]:checked');
-    const pkgPrice = pkg ? Number(pkg.dataset.price) : 0;
+    const chooser = document.querySelector('[data-pch]');
+    // Live pricing: the package is in integer cents (the chooser's table); the extras are whole euros.
+    const pkgPrice = chooser ? Number(chooser.dataset.cents || 0) / 100 : pkg ? Number(pkg.dataset.price) : 0;
     let sum = pkgPrice;
+    if (chooser) {
+      // A highlight needs a package at least as long as its minimum and cannot outlast it (Q10).
+      const months = Number(chooser.dataset.months) || 0;
+      document.querySelectorAll('input[name="extra"][data-min-months]').forEach((box) => {
+        const ok = months >= Number(box.dataset.minMonths);
+        box.disabled = !ok;
+        if (!ok) box.checked = false;
+        const qty = document.querySelector(`[data-qty-for="${box.value}"]`);
+        if (qty) { qty.max = String(months); if (Number(qty.value) > months) qty.value = String(months); qty.disabled = !ok; }
+      });
+    }
     document.querySelectorAll('input[name="extra"]:checked').forEach((box) => {
       const qtyInput = document.querySelector(`[data-qty-for="${box.value}"]`);
       const qty = qtyInput ? Number(qtyInput.value) || 1 : 1;
@@ -705,15 +740,18 @@ const { data: creditableReferral } = property.owner_id
 
     const discountApplied = Boolean(discountBox?.checked) || Boolean(creditBox?.checked);
     if (discountApplied) {
-      sum -= Math.round((pkgPrice * referralDiscountPercent) / 100);
+      // Whole cents, half up: the same rule as the server (percentOfCents).
+      sum -= Math.floor((Math.round(pkgPrice * 100) * referralDiscountPercent * 2 + 100) / 200) / 100;
     }
     if (discountNoteEl) discountNoteEl.hidden = !discountApplied;
 
-    totalEl.textContent = `€ ${sum.toLocaleString('de-DE')}`;
+    const cents = Math.round(sum * 100);
+    totalEl.textContent = `€ ${(cents / 100).toLocaleString('de-DE', cents % 100 === 0 ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
   document.getElementById('order')?.addEventListener('input', renderTotal);
   document.getElementById('order')?.addEventListener('tp:change', renderTotal);
+  document.getElementById('order')?.addEventListener('pch:change', renderTotal);
   renderTotal();
 
   let busy = false;
