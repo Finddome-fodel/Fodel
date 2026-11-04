@@ -606,6 +606,26 @@ console.log('✓ 0053: repeatable; the backfill keeps every language; English ca
   await db.exec(`delete from activity_events;delete from property_translations where property_id::text like '3%';delete from properties where id::text like '3%';delete from taxonomy_terms where key like 't57%';alter table properties enable trigger user;drop table activity_events;`);
   console.log('✓ 0057 moves each old agricultural listing by keyword, flags and logs it, widens the dictionary, and is repeatable');
 }
+// 0058: nobody can browse the photo bucket; owners see their own listing's files, admins all of them. Public photo addresses are untouched (public bucket).
+{
+  const sql58=fs.readFileSync(root+'/supabase/migrations/0058_property_media_listing_closed.sql','utf8');
+    await db.exec(`reset role;set test.uid='';set test.admin='true';drop policy if exists test_storage_read on storage.objects;drop policy if exists property_media_objects_read on storage.objects;create policy property_media_objects_read on storage.objects for select using(bucket_id='property-media');grant select on storage.objects to anon;delete from storage.objects;insert into storage.objects(bucket_id,name)values('property-media','${live}/published.webp'),('property-media','${live}/pending.webp'),('property-media','${id}/draft.webp'),('property-media','99999999-0000-4000-8000-000000000001/stranger.webp'),('other-bucket','${live}/elsewhere.webp');`);
+  const names=async(role)=>(await get(`select name from storage.objects order by name`)).map(r=>r.name);
+  // Before: the old policy lets anybody list everything in the bucket.
+  await db.exec(`set role anon;set test.uid='';set test.admin='false';`);
+  assert.equal((await names()).length,4,'before 0058 an anonymous visitor can list every file (the leak)');
+  try{await db.exec(`reset role;set test.admin='true';`+sql58);await db.exec(sql58);}catch(e){console.error('MIGRATION 0058 FAILED',e.message,e.detail);process.exit(1);}
+  await db.exec(`reset role;set test.uid='';set test.admin='false';set role anon;`);
+  assert.deepEqual(await names(),[],'anonymous visitors list nothing, pending photos included');
+  await db.exec(`reset role;${asOwner}`);
+  assert.deepEqual(await names(),[`${id}/draft.webp`,`${live}/pending.webp`,`${live}/published.webp`],'the owner lists the files of their own listings, and of no other folder');
+  await db.exec(`reset role;set test.uid='${other}';set test.admin='false';set role authenticated;`);
+  assert.deepEqual(await names(),[],'another signed-in user lists nothing of it');
+  await db.exec(`reset role;set test.uid='${other}';set test.admin='true';set role authenticated;`);
+  assert.equal((await names()).length,4,'an admin lists the whole bucket (and not another bucket)');
+  await db.exec(`reset role;set test.uid='';set test.admin='true';delete from storage.objects;`);
+  console.log('✓ 0058 closes the photo bucket to listing by anyone but the listing\'s owner and admins, and is repeatable');
+}
 // Fix 3.3: the search lists only what is published in the visitor's language, in SQL: every page is full except the last, the total is exact,
 // pages never overlap, and for every listing x language the database agrees with listedIn() (src/lib/listing-languages.ts).
 {
