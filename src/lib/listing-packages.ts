@@ -250,7 +250,9 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
       priceEur: tiers[0].priceEur,
       unit: extra.unit,
       ...('minMonths' in extra ? { minMonths: extra.minMonths } : {}),
-      ...('retired' in extra && extra.retired ? { retired: true } : {}),
+      // Once the 2026 prices are live a renewal is the package's own price for 1, 3 or 6 months (Q8): the flat six-month
+      // renewal is no longer sold anywhere. Old orders and invoices keep its name.
+      ...(('retired' in extra && extra.retired) || (pricingLive && extra.id === 'renewal-6m') ? { retired: true } : {}),
       ...('countries' in extra ? { countries: extra.countries } : {}),
     };
   });

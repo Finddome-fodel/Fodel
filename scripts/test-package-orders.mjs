@@ -332,6 +332,14 @@ try {
     assert.equal(up.unitCents, 4990 - 2490);
   });
 
+  await test('the flat six-month renewal is sold only before the 2026 prices are live (then a renewal is the package price)', async () => {
+    const extra = (catalog, id) => catalog.extras.find((e) => e.id === id);
+    assert.equal(extra(L.listingCatalog(undefined), 'renewal-6m').retired, undefined);
+    assert.equal(extra(L.listingCatalog({ pricingLive: true }), 'renewal-6m').retired, true);
+    assert.equal(L.sellingExtras(L.listingCatalog({ pricingLive: true }), { anyCountry: true }).some((e) => e.id === 'renewal-6m'), false);
+    assert.equal(L.sellingExtras(L.listingCatalog(undefined), { anyCountry: true }).some((e) => e.id === 'renewal-6m'), true);
+    assert.equal(extra(L.listingCatalog({ pricingLive: true }), 'category-highlight').retired, undefined);
+  });
   console.log(`\n${passed} package order checks passed.`);
 } catch (error) {
   console.error('✗ ' + (error.stack || error));
