@@ -606,6 +606,18 @@ console.log('✓ 0053: repeatable; the backfill keeps every language; English ca
   await db.exec(`delete from activity_events;delete from property_translations where property_id::text like '3%';delete from properties where id::text like '3%';delete from taxonomy_terms where key like 't57%';alter table properties enable trigger user;drop table activity_events;`);
   console.log('✓ 0057 moves each old agricultural listing by keyword, flags and logs it, widens the dictionary, and is repeatable');
 }
+// The admin photo queue (src/pages/portal/photos/index.astro) asks for exactly these columns: every one must exist after 0054. It once asked for a
+// created_at that property_media never had, so the page showed "run migration 0054" for ever, even after it had run.
+{
+  const page=fs.readFileSync(root+'/src/pages/portal/photos/index.astro','utf8');
+  const columns=page.match(/\.from\('property_media'\)\s*\.select\('([^']+)'\)/)?.[1];
+  assert.ok(columns,'the queue query was found');
+  // The harness does not replay 0003, which added width and height; the real table has them.
+  await db.exec(`reset role;set test.uid='';set test.admin='true';alter table property_media add column if not exists width integer;alter table property_media add column if not exists height integer;`);
+  try{await db.query(`select ${columns} from property_media where pending order by submitted_at limit 1`);}
+  catch(e){assert.fail('the photo queue asks for a column property_media does not have: '+e.message);}
+  console.log('✓ the admin photo queue only asks for columns that exist after 0054');
+}
 // 0058: nobody can browse the photo bucket; owners see their own listing's files, admins all of them. Public photo addresses are untouched (public bucket).
 {
   const sql58=fs.readFileSync(root+'/supabase/migrations/0058_property_media_listing_closed.sql','utf8');

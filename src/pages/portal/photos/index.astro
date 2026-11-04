@@ -31,12 +31,11 @@ type Photo = {
   pending: boolean;
   is_hero: boolean;
   submitted_at: string | null;
-  created_at: string | null;
 };
 
 const { data: pendingRows, error } = await supabase
   .from('property_media')
-  .select('id, property_id, storage_path, alt, width, height, sort_order, pending, is_hero, submitted_at, created_at')
+  .select('id, property_id, storage_path, alt, width, height, sort_order, pending, is_hero, submitted_at')
   .eq('pending', true)
   .order('submitted_at', { ascending: true })
   .limit(600);
@@ -70,7 +69,7 @@ const groups = propertyIds
     const owner = (owners ?? []).find((o: any) => o.id === property?.owner_id) as { full_name: string | null; email: string | null } | undefined;
     const photos = pending.filter((p) => p.property_id === id).sort((a, b) => a.sort_order - b.sort_order);
     const approved = (approvedRows ?? []).filter((m: any) => m.property_id === id);
-    const since = photos.map((p) => p.submitted_at ?? p.created_at).filter(Boolean).sort()[0] ?? null;
+    const since = photos.map((p) => p.submitted_at).filter(Boolean).sort()[0] ?? null;
     return { id, property, owner, photos, approved, since, title: titles.get(id) ?? '' };
   })
   .filter((g) => g.property)
