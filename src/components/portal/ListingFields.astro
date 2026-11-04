@@ -1,7 +1,7 @@
 ---
 import Field from '~/components/forms/Field.astro';
 import { formatAmount } from '~/lib/portal/num';
-import { PROPERTY_GROUPS, groupOf, subtypeOf, labelIn, FEATURE_ALIASES, DETAIL_OPTIONS, FEATURE_DEFINITIONS, RETIRED_FEATURES, currentFeatures, readEnergy } from '~/lib/listing-catalogue';
+import { PROPERTY_GROUPS, groupOf, subtypeOf, labelIn, livingAreaKind, FEATURE_ALIASES, DETAIL_OPTIONS, FEATURE_DEFINITIONS, RETIRED_FEATURES, currentFeatures, readEnergy } from '~/lib/listing-catalogue';
 import { COUNTRIES, regionLabel } from '~/config/countries';
 import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
 import { PRICE_CURRENCIES } from '~/lib/exchange-rates';
@@ -39,6 +39,15 @@ const d=readDetails(p.details,p);
 // Which facts this kind of property has, and which of them are required (src/lib/listing-details.ts).
 // The client script applies the same rules again when the type changes in the form.
 const rules=fieldRules(group,subtype);
+// The living-area column (Q15): the home's net usable area, "if there is a home" on a farm business, or a building's net
+// usable area. The wording follows the type; the script (listing-fields.ts) switches it when the type changes.
+const subtypeHints:Record<string,string>=Object.fromEntries(PROPERTY_GROUPS.flatMap(g=>g.subtypes).filter((t:any)=>t.hint).map((t:any)=>[t.key,t.hint[locale]||t.hint.en||'']));
+const areaKind=livingAreaKind(group,subtype);
+const areaCopy={
+  living:{label:x('Lakóterület (nettó hasznos alapterület, m²)','Woonoppervlakte (netto gebruiksoppervlakte, m²)','Living area (net usable area, m²)'),hint:x('A lakóépület tényleges nettó hasznos alapterülete.','De daadwerkelijke netto gebruiksoppervlakte van de woning.','The actual net usable floor area of the home.')},
+  'optional-home':{label:x('Lakóterület (nettó hasznos alapterület, m²)','Woonoppervlakte (netto gebruiksoppervlakte, m²)','Living area (net usable area, m²)'),hint:x('Ha van lakóépület: annak tényleges nettó hasznos alapterülete.','Als er een woning is: de daadwerkelijke netto gebruiksoppervlakte ervan.','If there is a home: its actual net usable floor area.')},
+  net:{label:x('Nettó hasznos alapterület (m²)','Netto gebruiksoppervlakte (m²)','Net usable area (m²)'),hint:x('Az épület tényleges nettó hasznos alapterülete.','De daadwerkelijke netto gebruiksoppervlakte van het gebouw.','The actual net usable floor area of the building.')},
+};
 const hide=(k:ListingField)=>rules[k]==='hidden';
 const req=(k:ListingField)=>rules[k]==='required';
 const words={required:`(${UI[locale].form.required})`,optional:`(${UI[locale].form.optional})`};
@@ -97,6 +106,7 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   <div class="lf-map" data-location-map role="region" aria-label={x('Az ingatlan helyének megjelölése','Locatie van het vastgoed kiezen','Choose the property location')}><span data-map-loading>{x('Térkép betöltése…','Kaart laden…','Loading map…')}</span></div>
   <p class="lf-status" role="status" data-location-status></p>
   <div class="lf-grid lf-coordinates">
+    <p class="hint lf-subtype-hint" data-subtype-hint data-hints={JSON.stringify(subtypeHints)} hidden={!subtypeHints[subtype]}>{subtypeHints[subtype]||''}</p>
     <Field span="half" locale={locale} name="lat" required label={x('Szélesség','Breedtegraad','Latitude')} type="coordinate" value={placed ? String(p.lat) : ''} min={-90} max={90}/>
     <Field span="half" locale={locale} name="lng" required label={x('Hosszúság','Lengtegraad','Longitude')} type="coordinate" value={placed ? String(p.lng) : ''} min={-180} max={180}/>
   </div>
@@ -115,8 +125,8 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   <div class="lf-block" data-field-block hidden={(['floor_m2','building_m2','plot_m2'] as ListingField[]).every(hide)}>
     <h3 class="lf-sub">{x('Területek','Oppervlakten','Areas')}</h3>
     <div class="lf-grid">
-      <div class="lf-area" data-field="floor_m2" hidden={hide('floor_m2')}><Field span="half" locale={locale} name="floor_m2" softRequired={req('floor_m2')} label={x('Lakóegység területe (m²)','Woonoppervlakte (m²)','Living area (m²)')} type="number" value={area(p.floor_m2)} min={0.000001} hint={x('A lakótér hasznos alapterülete.','De bruikbare woonoppervlakte.','The usable floor area of the home.')}/><input type="hidden" name="floor_m2_unit" value="m2"/></div>
-      <div class="lf-area" data-field="building_m2" hidden={hide('building_m2')}><Field span="half" locale={locale} name="building_m2" softRequired={req('building_m2')} label={x('Teljes épületterület (m²)','Totale gebouwoppervlakte (m²)','Total building area (m²)')} type="number" value={area(p.building_m2)} min={0.000001} hint={x('Az összes épület együtt, a melléképületekkel, gazdasági épületekkel, istállókkal, műhelyekkel és raktárakkal.','Alle gebouwen samen, inclusief bijgebouwen, agrarische gebouwen, stallen, werkplaatsen en opslagruimten.','All buildings together, including outbuildings, farm buildings, stables, workshops and warehouses.')}/><input type="hidden" name="building_m2_unit" value="m2"/></div>
+      <div class="lf-area" data-field="floor_m2" hidden={hide('floor_m2')} data-area-copy={JSON.stringify(areaCopy)}><Field span="half" locale={locale} name="floor_m2" softRequired={req('floor_m2')} label={areaCopy[areaKind].label} type="number" value={area(p.floor_m2)} min={0.000001} hint={areaCopy[areaKind].hint}/><input type="hidden" name="floor_m2_unit" value="m2"/></div>
+      <div class="lf-area" data-field="building_m2" hidden={hide('building_m2')}><Field span="half" locale={locale} name="building_m2" softRequired={req('building_m2')} label={x('Teljes épületterület (m²)','Totale gebouwoppervlakte (m²)','Total building area (m²)')} type="number" value={area(p.building_m2)} min={0.000001} hint={x('Opcionális. A lakóépületen felüli egyéb épületek és építmények összesített területe, például garázsok, ólak, istállók, műhelyek és egyéb gazdasági vagy melléképületek.','Optioneel. De samengevoegde oppervlakte van de overige gebouwen en bouwwerken naast de woning, zoals garages, stallen, werkplaatsen en overige bedrijfs- of bijgebouwen.','Optional. The combined area of the other buildings and structures besides the home, for example garages, sheds, stables, workshops and other farm or outbuildings.')}/><input type="hidden" name="building_m2_unit" value="m2"/></div>
       <div class="lf-area lf-area-unit" data-field="plot_m2" hidden={hide('plot_m2')}><Field span="half" locale={locale} name="plot_m2" softRequired={req('plot_m2')} label={x('Telekterület','Perceeloppervlakte','Plot area')} type="number" value={area(p.plot_m2)} min={0.000001} /><label class="lf-unit"><span class="sr-only">{x('Mértékegység','Eenheid','Unit')}</span><select name="plot_m2_unit" aria-label={x('A telekterület mértékegysége','Eenheid van de perceeloppervlakte','Plot area unit')} data-area-unit="plot_m2"><option value="m2">m²</option><option value="ha">ha</option></select></label><small data-area-equivalent></small><p class="lf-hint">{x('Négyzetméterben vagy hektárban; a másikat automatikusan kiszámítjuk.','In vierkante meters of hectare; de andere eenheid rekenen we uit.','In square metres or hectares; we work out the other unit.')}</p></div>
     </div>
   </div>
@@ -210,6 +220,8 @@ const sectionNames:Record<string,string>={outdoor:x('Kert és környezet','Tuin 
   .lf-number { display:grid;place-items:center;flex-shrink:0;width:34px;height:34px;border:1px solid var(--pt-hair,var(--border));border-radius:50%;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-quiet); }
   .lf-heading h2 { font-family:var(--serif);font-size:24px;font-weight:var(--fw-medium);letter-spacing:-.025em;line-height:1.2;color:var(--ink); }
   .lf-heading p { margin:7px 0 0;font-size:14px;line-height:1.65;color:var(--ink-quiet);max-width:66ch; }
+  .lf-subtype-hint { grid-column:1/-1;margin:-10px 0 0;font-size:var(--fs-small);color:var(--ink-quiet); }
+  .lf-subtype-hint[hidden] { display:none; }
   .lf-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 20px; }
   .lf-grid>* { min-width:0; }
   /* Paired fields line up even when only one of them has a hint: the hint takes up the slack, so both inputs sit on the same line. */

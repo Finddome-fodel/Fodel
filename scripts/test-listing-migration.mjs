@@ -351,7 +351,7 @@ await db.query('select reorder_property_media($1,$2,$3)',[live,[...all53].revers
 assert.deepEqual((await get(`select id from property_media where property_id='${live}' order by sort_order`)).map(r=>r.id),[...all53].reverse(),'the owner may reorder a live listing');
 assert.equal((await get(`select id from property_media where property_id='${live}' and is_hero`))[0].id,all53[1],'and choose an approved cover');
 await db.exec(`update property_media set alt='{"hu":"Új felirat"}' where id='${fresh.id}'`);
-await assert.rejects(()=>db.exec(`update property_media set alt='{"hu":"x"}' where id='${all53[0]}'`),/approved-photo-locked/,'an approved caption on a live listing needs review');
+await assert.rejects(()=>db.exec(`update property_media set alt='{"hu":"x","en":"x","nl":"x","de":"x","fr":"x"}' where id='${all53[0]}'`),/approved-photo-locked/,'an approved caption on a live listing needs review');
 await assert.rejects(()=>db.exec(`update property_media set storage_path='${live}/swap.webp' where id='${all53[0]}'`),/approved-photo-locked/,'an approved photo cannot be swapped unseen');
 // The public never sees it; another user neither; the owner does.
 await db.exec(`reset role;set role anon;set test.uid='';set test.admin='false';`);
@@ -558,5 +558,52 @@ console.log('✓ 0053: repeatable; the backfill keeps every language; English ca
   assert.deepEqual((await get(`select services from site_settings where id=1`))[0].services,{priceRounding:{step:500},pricingLive:true},'0056 switches the new packages on and keeps the other settings');
   await db.exec(`drop table site_settings;`);
   console.log('✓ 0056 records the term and band (sellers cannot set them), keeps the daily rate readable by all and writable by the server only, and is repeatable');
+}
+// 0057: "Mezőgazdasági üzem, birtok" becomes three types: the dictionary gains the new keys, every listing is moved by keyword, flagged and logged.
+{
+  const sql57=fs.readFileSync(root+'/supabase/migrations/0057_agricultural_types.sql','utf8');
+  await db.exec(`reset role;set test.uid='';set test.admin='true';create table if not exists activity_events(id uuid primary key default gen_random_uuid(),kind text not null,subject_type text,subject_id text,property_id uuid,source text,payload jsonb not null default '{}',dedupe_key text unique);`);
+  await db.exec(`alter table properties disable trigger user;`);
+  const base=(await get(`select * from properties where id='${id}'`))[0];
+  void base;
+  const make=async(n,title,description,subtype='agricultural-estate',locale='hu')=>{
+    const pid=`30000000-0000-4000-8000-00000000000${n}`;
+    await db.exec(`create temp table t57 as select * from properties where id='${id}';update t57 set id='${pid}',ref='57${n}',status='published',category='farm',property_group='agricultural',property_subtype='${subtype}';insert into properties select * from t57;drop table t57;`);
+    if(title!==null)await db.exec(`insert into property_translations(property_id,locale,title,description,machine) values('${pid}','${locale}','${title}','${description}',false) on conflict do nothing`);
+    return pid;
+  };
+  const a=await make(1,'Működő sertéstelep','Régi telep, 400 férőhellyel.');
+  const b=await make(2,'Majorság a Dunántúlon','Felújított major, lakóházzal.');
+  const c=await make(3,'Csodás birtok','Szép birtok erdővel.');
+  const d=await make(4,null,null);
+  const e=await make(5,'Mezőgazdasági terület','Szántó és birtok, mezőgazdasági művelésre.');
+  const f=await make(6,'Gyümölcsüzem','Alma és meggy.');
+  const g=await make(7,'Tanya','Egy tanya.','farm');
+  await db.exec(`insert into taxonomy_terms(group_key,key,labels,sort_order,property_groups,subtype_keys,section_key) values ('feature','t57-outbuildings','{"hu":"x","en":"x","nl":"x","de":"x","fr":"x"}',1,array['agricultural'],array['farm','agricultural-estate'],'facilities'),('feature','t57-other','{"hu":"y","en":"y","nl":"y","de":"y","fr":"y"}',2,array['agricultural'],array['farm'],'facilities') on conflict do nothing`);
+  const snapshot=async()=>JSON.stringify([await get(`select id,property_subtype,details,updated_at from properties order by id`),await get(`select key,subtype_keys from taxonomy_terms where key like 't57%' order by key`),await get(`select kind,property_id,payload from activity_events where kind='listing.subtype_remapped' order by property_id`)]);
+  try{await db.exec(sql57);}catch(err){console.error('MIGRATION 0057 FAILED',err.message,err.detail);process.exit(1);}
+  const once=await snapshot();
+  await db.exec(sql57);
+  assert.equal(await snapshot(),once,'a second run changes nothing');
+  const sub=async pid=>(await get(`select property_subtype s,details->'subtype_review' r from properties where id='${pid}'`))[0];
+  assert.equal((await sub(a)).s,'agricultural-business','„telep” -> Mezőgazdasági üzem');assert.equal((await sub(a)).r.reason,'telep');
+  assert.equal((await sub(b)).s,'manor-farmstead','„major” -> Majorság');assert.equal((await sub(b)).r.reason,'major');
+  assert.equal((await sub(c)).s,'rural-estate','everything else -> Birtok');assert.equal((await sub(c)).r.reason,'default');
+  assert.equal((await sub(d)).s,'rural-estate','no text at all -> Birtok, reason default');assert.equal((await sub(d)).r.reason,'default');
+  assert.equal((await sub(e)).s,'rural-estate','„mezőgazdasági” alone is not „gazdaság”: land that mentions it stays a Birtok');
+  assert.equal((await sub(f)).s,'agricultural-business','„üzem” inside a word counts');assert.equal((await sub(f)).r.reason,'üzem');
+  assert.deepEqual(await sub(g),{s:'farm',r:null},'a Tanya is not touched and not flagged');
+  assert.equal((await sub(a)).r.from,'agricultural-estate');assert.ok((await sub(a)).r.at);
+  assert.equal((await get(`select count(*)::int n from properties where property_subtype='agricultural-estate'`))[0].n,0,'no listing is left on the old key');
+  assert.equal((await get(`select count(*)::int n from properties where details ? 'subtype_review'`))[0].n,6,'every moved listing is flagged for an admin');
+  assert.equal((await get(`select count(*)::int n from activity_events where kind='listing.subtype_remapped'`))[0].n,6,'one activity row per listing, once');
+  const arrays=Object.fromEntries((await get(`select key,subtype_keys from taxonomy_terms where key like 't57%'`)).map(r=>[r.key,r.subtype_keys]));
+  assert.deepEqual(arrays['t57-outbuildings'],['farm','agricultural-estate','agricultural-business','rural-estate','manor-farmstead'],'the old key stays, the three new ones follow, no repeats');
+  assert.deepEqual(arrays['t57-other'],['farm'],'a list without the old key is not touched');
+  // The rollback in the header puts the unconfirmed ones back.
+  await db.exec(`update properties set property_subtype = details -> 'subtype_review' ->> 'from', details = details - 'subtype_review' where details ? 'subtype_review'`);
+  assert.equal((await get(`select count(*)::int n from properties where property_subtype='agricultural-estate'`))[0].n,6,'the rollback line works');
+  await db.exec(`delete from activity_events;delete from property_translations where property_id::text like '3%';delete from properties where id::text like '3%';delete from taxonomy_terms where key like 't57%';alter table properties enable trigger user;drop table activity_events;`);
+  console.log('✓ 0057 moves each old agricultural listing by keyword, flags and logs it, widens the dictionary, and is repeatable');
 }
 await db.close();

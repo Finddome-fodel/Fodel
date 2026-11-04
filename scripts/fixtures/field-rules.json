@@ -1,0 +1,408 @@
+{
+  "house/apartment": {
+    "floor_m2": "required",
+    "building_m2": "hidden",
+    "plot_m2": "hidden",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "house/house-villa": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "house/terraced": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "house/penthouse": {
+    "floor_m2": "required",
+    "building_m2": "hidden",
+    "plot_m2": "hidden",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "house/residential-building": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "house/residential-other": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "holiday/holiday-house": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "holiday/holiday-apartment": {
+    "floor_m2": "required",
+    "building_m2": "hidden",
+    "plot_m2": "hidden",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "holiday/waterfront-home": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "holiday/chalet": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "holiday/holiday-complex": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "holiday/holiday-other": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "agricultural/farm": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "agricultural/manor-farmstead": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "agricultural/rural-estate": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "agricultural/agricultural-business": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "optional-home"
+  },
+  "agricultural/livestock": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "optional-home"
+  },
+  "agricultural/arable": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "optional-home"
+  },
+  "agricultural/orchard-vineyard": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "optional-home"
+  },
+  "agricultural/forest-pasture": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "optional-home"
+  },
+  "agricultural/fish-farm": {
+    "floor_m2": "optional",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "optional-home"
+  },
+  "agricultural/agricultural-other": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "optional-home"
+  },
+  "commercial/retail": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "hidden",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "commercial/office": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "hidden",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "commercial/restaurant": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "commercial/hotel": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "commercial/shopping-centre": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "commercial/institution": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "commercial/commercial-other": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "industrial/factory": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "industrial/warehouse": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "industrial/industrial-hall": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "industrial/workshop": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "industrial/food-processing": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "industrial/industrial-other": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "mansion/castle-manor": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "mansion/historic-villa": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "mansion/historic-building": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "mansion/listed-building": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "mansion/historic-other": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "land/residential-plot": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "land/commercial-plot": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "land/tourism-land": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "land/development-land": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "land/agricultural-land": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "land/land-other": {
+    "floor_m2": "hidden",
+    "building_m2": "hidden",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "investment/rented-home": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "investment/investment-building": {
+    "floor_m2": "required",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "required",
+    "kind": "living"
+  },
+  "investment/rented-commercial": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "investment/income-property": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "investment/portfolio": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "investment/development-project": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "investment/investment-other": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "other/garage-parking": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "hidden",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "other/storage-cellar": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "hidden",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "other/wine-cellar": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "required",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "other/special-purpose": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  },
+  "other/other-property": {
+    "floor_m2": "optional",
+    "building_m2": "optional",
+    "plot_m2": "optional",
+    "rooms": "hidden",
+    "kind": "net"
+  }
+}

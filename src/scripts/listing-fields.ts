@@ -1,4 +1,4 @@
-import { PROPERTY_GROUPS, labelIn } from '~/lib/listing-catalogue';
+import { PROPERTY_GROUPS, labelIn, livingAreaKind, canonicalSubtype } from '~/lib/listing-catalogue';
 import { fieldRules, parkingFits, gapError, gapControl, type ListingField } from '~/lib/listing-details';
 import { regionLabel } from '~/config/countries';
 import { canonicalCounty, countyOptions, hasCountyList } from '~/lib/counties';
@@ -33,6 +33,20 @@ for(const form of forms){
       const tag=wrapper.querySelector<HTMLElement>('.req');
       if(tag&&words.required)tag.textContent=rule==='required'?words.required:words.optional;
     }
+    // The living-area column is worded for the type: the home's net usable area, "if there is a home", or a building's.
+    const areaBox=form.querySelector<HTMLElement>('[data-area-copy]');
+    if(areaBox){
+      const copy=JSON.parse(areaBox.dataset.areaCopy||'{}') as Record<string,{label:string;hint:string}>;
+      const kind=livingAreaKind(group(),subtype());
+      const text=copy[kind];
+      const label=areaBox.querySelector('label');
+      if(text&&label&&label.firstChild)label.firstChild.nodeValue=`${text.label}\n    `;
+      const hint=areaBox.querySelector<HTMLElement>('.hint');
+      if(text&&hint)hint.textContent=text.hint;
+    }
+    // A short hint under the subtype where the types are easy to mix up (the three agricultural ones).
+    const typeHint=form.querySelector<HTMLElement>('[data-subtype-hint]');
+    if(typeHint){const hints=JSON.parse(typeHint.dataset.hints||'{}') as Record<string,string>;typeHint.textContent=hints[canonicalSubtype(subtype())]||'';typeHint.hidden=!typeHint.textContent;}
     // Street has no wrapper of its own; it is always shown and required only for a home.
     const street=control('street')?.closest('.fld')?.querySelector<HTMLElement>('.req');
     if(street&&words.required)street.textContent=rules.street==='required'?words.required:words.optional;
