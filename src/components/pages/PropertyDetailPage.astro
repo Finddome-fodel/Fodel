@@ -20,8 +20,8 @@ import { sourceNote, machineNote } from '~/i18n/fallback';
 import { showMachineTranslationNote } from '~/config/flags';
 import { COMPANY } from '~/config/company';
 import { featureLabel } from '~/data/features';
-import { activeProperties, similarTo, text, resolveText, url as propUrl, type Property } from '~/lib/properties';
-import { propertyAlternates, propertySwitcher, listingPageIndexable, crumbs } from '~/lib/page';
+import { activeProperties, publishedLocalesOf, servingFor, similarTo, switcherLocalesOf, text, translationConfig, resolveText, url as propUrl, type Property } from '~/lib/properties';
+import { propertyAlternates, crumbs } from '~/lib/page';
 import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
 import { eur, huf, area, floorArea, epcLabel, formatDate, placeLabel } from '~/lib/format';
 import { copy } from '~/data/copy';
@@ -120,8 +120,18 @@ const factRows = [
 ].filter(Boolean) as { label: string; value: string }[];
 const hasFacts = factRows.length > 0 || d.details.utilities.length > 0 || d.details.parking.length > 0;
 
-const all = await activeProperties();
+const languages = await translationConfig();
+const all = await activeProperties(locale);
 const similar = similarTo(property, all, 3);
+
+// In which languages is this listing published? hreflang and the language menu name only those; a page that
+// shows another language's text (English, until the English text exists) is not indexed. Before migration 0052
+// nothing is restricted, as it always was.
+const policy = property.data.listing.languagePolicy;
+const published = new Set<Locale>(publishedLocalesOf(property, languages));
+const allAlternates = propertyAlternates(d.categorySlugs, d.ref);
+const alternates = policy.gated ? (Object.fromEntries(Object.entries(allAlternates).filter(([code]) => published.has(code as Locale))) as Partial<Record<Locale, string>>) : allAlternates;
+const standIn = policy.gated && servingFor(property, locale, languages).serve === 'fallback';
 
 const trail = crumbs(locale, [
   { name: ui.nav.properties, url: path(locale, 'properties') },
@@ -199,9 +209,10 @@ const whatsappMessage = x({
   locale={locale}
   title={`${title}, ${d.location.settlement}`}
   description={metaDescription}
-  alternates={propertyAlternates(d.categorySlugs, d.ref)}
-  switcher={propertySwitcher(d.categorySlugs, d.ref)}
-  noindex={!listingPageIndexable(locale)}
+  alternates={alternates}
+  switcher={allAlternates}
+  switcherAvailable={policy.gated ? switcherLocalesOf(property, languages) : undefined}
+  noindex={standIn}
   ogType="article"
   ogImage={shareImage.src}
   whatsapp={{ message: whatsappMessage }}
@@ -315,8 +326,8 @@ const whatsappMessage = x({
       </p>
 
       <div class="price-row">
-        <span class="price">{eur(d.price.eur, locale)}</span>
-        <span class="price-huf">{huf(d.price.huf, locale)}</span>
+        <span class="price"><bdi>{eur(d.price.eur, locale)}</bdi></span>
+        <span class="price-huf"><bdi>{huf(d.price.huf, locale)}</bdi></span>
         <span class="price-asof">
           {x({ hu: 'Árfolyam', nl: 'Koers', en: 'Exchange rate', de: 'Wechselkurs', fr: 'Taux de change', es: 'Tipo de cambio', pl: 'Kurs wymiany', ro: 'Curs de schimb', sk: 'Výmenný kurz', it: 'Tasso di cambio', pt: 'Taxa de câmbio', el: 'Συναλλαγματική ισοτιμία', cs: 'Směnný kurz', sl: 'Menjalni tečaj', sv: 'Växelkurs', da: 'Valutakurs', no: 'Valutakurs', fi: 'Valuuttakurssi', et: 'Vahetuskurss', lv: 'Valūtas kurss', lt: 'Valiutos kursas', sr: 'Kurs', uk: 'Курс валют', tr: 'Döviz kuru', he: 'שער חליפין', ar: 'سعر الصرف', ru: 'Курс валют', zh: '汇率' })}{colon} {formatDate(d.price.asOf, locale)}
         </span>
@@ -326,7 +337,7 @@ const whatsappMessage = x({
         {
           specs.map((s) => (
             <div class="spec">
-              <dd>{s.value}</dd>
+              <dd><bdi>{s.value}</bdi></dd>
               <dt>{s.label}</dt>
             </div>
           ))
@@ -334,7 +345,7 @@ const whatsappMessage = x({
       </dl>
 
       <div class="ref-row">
-        <span>{ui.property.reference} <strong>{d.ref}</strong></span>
+        <span>{ui.property.reference} <strong><bdi>{d.ref}</bdi></strong></span>
         <button type="button" class="print-btn no-print" id="print-btn">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M4 6V1.75h8V6M4 12H2.25A1.25 1.25 0 0 1 1 10.75v-3.5A1.25 1.25 0 0 1 2.25 6h11.5A1.25 1.25 0 0 1 15 7.25v3.5A1.25 1.25 0 0 1 13.75 12H12M4 9.5h8v4.75H4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
@@ -370,7 +381,7 @@ const whatsappMessage = x({
                 {factRows.map((row) => (
                   <div>
                     <dt>{row.label}</dt>
-                    <dd>{row.value}</dd>
+                    <dd><bdi>{row.value}</bdi></dd>
                   </div>
                 ))}
               </dl>
@@ -419,7 +430,7 @@ const whatsappMessage = x({
                       <path d="M6.2 2.5 7.9 6.4 5.9 7.8a10.6 10.6 0 0 0 6.3 6.3l1.4-2 3.9 1.7-.6 3a1.8 1.8 0 0 1-1.9 1.4C8.7 17.8 2.2 11.3 1.8 5a1.8 1.8 0 0 1 1.4-1.9l3-.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
                     </svg>
                   </span>
-                  <span class="num">{contactDialled.ok ? contactDialled.display : contact.phone}</span>
+                  <span class="num"><bdi>{contactDialled.ok ? contactDialled.display : contact.phone}</bdi></span>
                 </a>
               </p>
             )}

@@ -24,9 +24,14 @@ interface Props {
   alternates?: Partial<Record<Locale, string>>;
   /** Which edge of the toggle the menu lines up with; follows the writing direction. */
   align?: 'start' | 'end';
+  /**
+   * A listing page: the only languages it is published in. The others are left out of the menu, with a short
+   * note saying so, instead of leading to a page that sends the visitor away.
+   */
+  available?: readonly Locale[];
 }
 
-const { locale, alternates = {}, align = 'end' } = Astro.props;
+const { locale, alternates = {}, align = 'end', available } = Astro.props;
 const current = LOCALE_META[locale];
 const uid = Math.random().toString(36).slice(2, 8);
 const menuId = `lang-menu-${uid}`;
@@ -38,7 +43,8 @@ const switchLabel = UI[locale].a11y.langSwitch;
 const WORLD: readonly Locale[] = ['tr', 'he', 'ar', 'ru', 'zh'];
 const byName = new Intl.Collator('en', { sensitivity: 'base' });
 const sorted = (codes: Locale[]) => codes.sort((a, b) => byName.compare(LOCALE_META[a].label, LOCALE_META[b].label));
-const codes = SWITCHER_LOCALES.map(({ code }) => code);
+const codes = SWITCHER_LOCALES.map(({ code }) => code).filter((code) => !available || available.includes(code));
+const hidden = available ? SWITCHER_LOCALES.length - codes.length : 0;
 const englishNames = new Intl.DisplayNames(['en'], { type: 'language' });
 const pageNames = new Intl.DisplayNames([current.htmlLang, 'en'], { type: 'language' });
 const searchText = (code: Locale) => {
@@ -58,6 +64,18 @@ const groups = [
     codes: sorted(codes.filter((code) => WORLD.includes(code))),
   },
 ];
+/** Shown under the list on a listing page that is published in only some languages. */
+const note = x({
+  hu: 'A hirdetés további nyelveken nem érhető el.', nl: 'Deze woning is niet in andere talen beschikbaar.', en: 'This listing is not available in other languages.',
+  de: 'Dieses Inserat ist in weiteren Sprachen nicht verfügbar.', fr: "Cette annonce n'est pas disponible dans d'autres langues.", es: 'Este anuncio no está disponible en otros idiomas.',
+  pl: 'To ogłoszenie nie jest dostępne w innych językach.', ro: 'Acest anunț nu este disponibil în alte limbi.', sk: 'Tento inzerát nie je dostupný v ďalších jazykoch.',
+  it: 'Questo annuncio non è disponibile in altre lingue.', pt: 'Este anúncio não está disponível noutras línguas.', el: 'Αυτή η αγγελία δεν είναι διαθέσιμη σε άλλες γλώσσες.',
+  cs: 'Tento inzerát není dostupný v dalších jazycích.', sl: 'Ta oglas ni na voljo v drugih jezikih.', sv: 'Den här annonsen finns inte på fler språk.',
+  da: 'Denne annonce er ikke tilgængelig på andre sprog.', no: 'Denne annonsen er ikke tilgjengelig på andre språk.', fi: 'Tämä ilmoitus ei ole saatavilla muilla kielillä.',
+  et: 'See kuulutus ei ole saadaval teistes keeltes.', lv: 'Šis sludinājums nav pieejams citās valodās.', lt: 'Šis skelbimas nepasiekiamas kitomis kalbomis.',
+  sr: 'Oglas nije dostupan na drugim jezicima.', uk: 'Це оголошення недоступне іншими мовами.', tr: 'Bu ilan başka dillerde mevcut değil.',
+  he: 'המודעה אינה זמינה בשפות נוספות.', ar: 'هذا الإعلان غير متاح بلغات أخرى.', ru: 'Это объявление недоступно на других языках.', zh: '此房源暂无其他语言版本。',
+});
 const searchLabel = x({ hu: 'Nyelv keresése', nl: 'Taal zoeken', en: 'Find a language', de: 'Sprache suchen', fr: 'Rechercher une langue', es: 'Buscar idioma', pl: 'Szukaj języka', ro: 'Caută o limbă', sk: 'Hľadať jazyk', it: 'Cerca una lingua', pt: 'Procurar idioma', el: 'Αναζήτηση γλώσσας', cs: 'Hledat jazyk', sl: 'Poišči jezik', sv: 'Sök språk', da: 'Søg sprog', no: 'Søk etter språk', fi: 'Etsi kieli', et: 'Otsi keelt', lv: 'Meklēt valodu', lt: 'Ieškoti kalbos', sr: 'Pronađite jezik', uk: 'Знайти мову', tr: 'Dil arayın', he: 'חיפוש שפה', ar: 'ابحث عن لغة', ru: 'Найти язык', zh: '查找语言' });
 const noMatch = x({ hu: 'Nincs ilyen nyelv', nl: 'Geen taal gevonden', en: 'No language found', de: 'Keine Sprache gefunden', fr: 'Aucune langue trouvée', es: 'No se ha encontrado ningún idioma', pl: 'Nie znaleziono języka', ro: 'Nicio limbă găsită', sk: 'Jazyk sa nenašiel', it: 'Nessuna lingua trovata', pt: 'Nenhum idioma encontrado', el: 'Δεν βρέθηκε γλώσσα', cs: 'Jazyk nenalezen', sl: 'Jezika ni mogoče najti', sv: 'Inget språk hittades', da: 'Intet sprog fundet', no: 'Fant ikke noe språk', fi: 'Kieltä ei löytynyt', et: 'Keelt ei leitud', lv: 'Valoda nav atrasta', lt: 'Kalba nerasta', sr: 'Jezik nije pronađen', uk: 'Мову не знайдено', tr: 'Dil bulunamadı', he: 'לא נמצאה שפה', ar: 'لم يتم العثور على لغة', ru: 'Язык не найден', zh: '未找到该语言' });
 ---
@@ -116,6 +134,7 @@ const noMatch = x({ hu: 'Nincs ilyen nyelv', nl: 'Geen taal gevonden', en: 'No l
       ))
     }
     <p class="switcher-empty" hidden data-empty>{noMatch}</p>
+    {hidden > 0 && <p class="switcher-note" role="note">{note}</p>}
   </div>
 </div>
 
@@ -270,6 +289,7 @@ const noMatch = x({ hu: 'Nincs ilyen nyelv', nl: 'Geen taal gevonden', en: 'No l
     transform: rotate(180deg);
   }
 
+  .switcher-note { padding: 10px 14px 6px; border-top: 1px solid rgba(16, 42, 67, 0.12); font-size: 12px; line-height: 1.5; color: var(--ink-quiet, #5b6b7b); max-width: 220px; }
   .switcher-menu {
     position: absolute;
     top: calc(100% + 10px);

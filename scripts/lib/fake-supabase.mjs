@@ -46,6 +46,8 @@ export function createFakeDb(seed = {}, options = {}) {
     is(col, value) { this.touch([col]); this.tests.push((row) => (row[col] ?? null) === value); return this; }
     lt(col, value) { this.tests.push((row) => row[col] < value); return this; }
     gte(col, value) { this.tests.push((row) => row[col] >= value); return this; }
+    // A filter written as an OR string is not interpreted: tests seed only the rows they want back.
+    or() { return this; }
     not(col, op, value) { this.touch([col]); if (op === 'is') this.tests.push((row) => (row[col] ?? null) !== value); return this; }
     order(col, { ascending = true } = {}) { this.sort.push([col, ascending]); return this; }
     limit(n) { this.limitTo = n; return this; }

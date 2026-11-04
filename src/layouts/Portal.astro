@@ -52,8 +52,14 @@ if (!bare && profile && supabase) {
     isAdmin ? count(supabase.from('service_requests').select('id', head).eq('status', 'requested')) : 0,
     !isAdmin ? count(supabase.from('properties').select('id', head).eq('status', 'awaiting_payment')) : 0,
     isAdmin ? count(supabase.from('invoices').select('id', head).eq('status', 'draft')) : 0,
-    // Free-link owners' translation requests waiting for a decision (0 before migration 0043).
-    isAdmin ? count(supabase.from('translation_jobs').select('id', head).eq('status', 'requested')) : 0,
+    // Free-link owners' translation requests waiting for a decision (0 before migration 0043), plus the
+    // languages whose latest job failed and that have no text yet (0 before migration 0051).
+    isAdmin
+      ? Promise.all([
+          count(supabase.from('translation_jobs').select('id', head).eq('status', 'requested')),
+          count(supabase.from('translation_matrix').select('property_id', head).eq('job_status', 'failed').eq('has_text', false).eq('excluded', false)),
+        ]).then(([requested, failed]) => requested + failed)
+      : 0,
     // Photos added to live listings, waiting for moderation (0 before migration 0053).
     isAdmin ? count(supabase.from('property_media').select('id', head).eq('pending', true)) : 0,
   ]);

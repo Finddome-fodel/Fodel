@@ -1,0 +1,23 @@
+---
+/** The three places the packages are edited: listing packages, translation packages, single languages. */
+interface Props { current: 'translations' | 'languages' }
+const { current } = Astro.props as Props;
+const tabs = [
+  { id: 'listing', href: '/portal/settings/packages', label: 'Hirdetési csomagok' },
+  { id: 'translations', href: '/portal/packages/translations', label: 'Fordítási csomagok' },
+  { id: 'languages', href: '/portal/packages/languages', label: 'Egyedi nyelvek' },
+];
+---
+
+<nav class="tpa-tabs" aria-label="Csomagok">
+  {tabs.map((tab) => <a href={tab.href} aria-current={tab.id === current ? 'page' : undefined}>{tab.label}</a>)}
+</nav>
+
+<style>
+  .tpa-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 28px; padding: 4px; width: fit-content; max-width: 100%; border-radius: var(--r-pill); background: var(--linen); }
+  .tpa-tabs a { padding: 9px 18px; border-radius: var(--r-pill); font-size: 14.5px; color: var(--ink-quiet); text-decoration: none; transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out); }
+  .tpa-tabs a:hover { color: var(--ink); }
+  .tpa-tabs a[aria-current='page'] { background: var(--white); color: var(--ink); font-weight: var(--fw-medium); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); }
+  .tpa-tabs a:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+  @media (max-width: 560px) { .tpa-tabs { width: 100%; border-radius: var(--r-lg); } .tpa-tabs a { flex: 1 1 auto; text-align: center; } }
+</style>

@@ -13,16 +13,31 @@ import {
   callOpenAiJsonWithUsage, isAiEnabled, type AiUsage,
 } from './client';
 import {
-  TRANSLATION_SCHEMA, buildSystemPrompt, buildUserMessage, checkTranslation, costMicroEur, listingChars,
-  maxTokensFor, modelFromEnv, splitForTranslation, type ListingText,
+  SHORTEN_SCHEMA, TITLE_GOAL, TRANSLATION_SCHEMA, buildShortenPrompt, buildSystemPrompt, buildUserMessage, checkTranslation,
+  costMicroEur, listingChars, maxTokensFor, modelFromEnv, settleTitle, splitForTranslation, type ListingText,
 } from './translate-core';
 
 export type CallJson = (opts: {
   system: string; user: string; schema: Record<string, unknown>; schemaName: string;
   maxTokens: number; timeoutMs: number; retry: boolean; model: string;
-}) => Promise<{ data: ListingText; usage: AiUsage }>;
+}) => Promise<{ data: any; usage: AiUsage }>;
 
-export type TranslationResult = ListingText & { model: string; tokensIn: number; tokensOut: number; costMicroEur: number };
+export type TranslationResult = ListingText & {
+  model: string; tokensIn: number; tokensOut: number; costMicroEur: number;
+  /** The title came back too long: 'shortened' by a second, title-only request; 'cut' at a word boundary as the last resort. */
+  titleFix?: 'shortened' | 'cut';
+  /** A person should look at it: published as it is, but flagged (a title the machine had to shorten). */
+  needsReview: boolean;
+  /** Why, in words for the admin. */
+  warnings: string[];
+};
+
+export type TranslateOptions = {
+  /** What the last refused attempt did wrong (translate-core.ts retryFeedback). */
+  feedback?: string | null;
+  /** Free listing: contact details in the answer are refused. */
+  freeListing?: boolean;
+};
 
 /** One request's worth of text. Above this a listing is split. */
 const ONE_CALL_CHARS = 4500;
@@ -63,16 +78,44 @@ async function pool<T, R>(items: T[], size: number, work: (item: T, index: numbe
   return results;
 }
 
-const callOpenAi: CallJson = (opts) => callOpenAiJsonWithUsage<ListingText>(opts);
+const callOpenAi: CallJson = (opts) => callOpenAiJsonWithUsage<any>(opts);
+
+/**
+ * One cheap request that shortens only the title. A model cannot count characters, so a title
+ * that came back over the goal is fixed here instead of failing a whole, otherwise good translation.
+ * Returns null when the request itself fails: the caller then keeps the title it has.
+ */
+export async function shortenTitle(
+  title: string, targetLocale: string, call: CallJson, model: string, usage: { tokensIn: number; tokensOut: number }
+): Promise<string | null> {
+  try {
+    const { data, usage: used } = await call({
+      system: buildShortenPrompt(targetLocale),
+      user: JSON.stringify({ shorten_title: title, at_most_characters: TITLE_GOAL }),
+      schema: SHORTEN_SCHEMA as unknown as Record<string, unknown>,
+      schemaName: 'listing_title',
+      maxTokens: 300,
+      timeoutMs: 20_000,
+      retry: false,
+      model,
+    });
+    usage.tokensIn += used.tokensIn;
+    usage.tokensOut += used.tokensOut;
+    return typeof data?.title === 'string' ? data.title : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function translateListing(
   source: ListingText,
   sourceLocale: string,
   targetLocale: string,
   call: CallJson = callOpenAi,
-  model: string = translationModel()
+  model: string = translationModel(),
+  options: TranslateOptions = {}
 ): Promise<TranslationResult> {
-  const system = buildSystemPrompt(sourceLocale, targetLocale);
+  const system = buildSystemPrompt(sourceLocale, targetLocale, options.feedback);
   const segments = planSegments(source);
   const usage = { tokensIn: 0, tokensOut: 0 };
 
@@ -82,7 +125,7 @@ export async function translateListing(
       user: buildUserMessage(segment, segments.length > 1 && !segment.title ? { title: source.title } : undefined),
       schema: TRANSLATION_SCHEMA as unknown as Record<string, unknown>,
       schemaName: 'listing_translation',
-      maxTokens: maxTokensFor(listingChars(segment)),
+      maxTokens: maxTokensFor(listingChars(segment), targetLocale),
       timeoutMs: CALL_TIMEOUT_MS,
       // A second attempt would outlive a short function; the job runner retries instead.
       retry: false,
@@ -99,6 +142,28 @@ export async function translateListing(
     description: answers.map((answer) => answer.description).filter(Boolean).join('\n\n'),
     body: answers.map((answer) => answer.body).filter(Boolean).join('\n\n'),
   };
-  checkTranslation(source, merged);
-  return { ...merged, model, ...usage, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut) };
+  // The description and body are good; a title over the goal is repaired on its own, inside this attempt.
+  let titleFix: TranslationResult['titleFix'];
+  if (merged.title.length > TITLE_GOAL) {
+    const settled = settleTitle(merged.title, await shortenTitle(merged.title, targetLocale, call, model, usage));
+    merged.title = settled.title;
+    if (settled.how !== 'as-is') titleFix = settled.how;
+  }
+  checkTranslation(source, merged, { freeListing: options.freeListing, target: targetLocale });
+  const warnings = titleFix === 'cut'
+    ? ['A cím túl hosszú volt, ezért szóhatárnál le lett vágva. Érdemes átírni.']
+    : titleFix === 'shortened' ? ['A címet az AI lerövidítette, hogy beleférjen. Érdemes átnézni.'] : [];
+  return {
+    ...merged, model, ...usage, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut),
+    ...(titleFix ? { titleFix } : {}), needsReview: warnings.length > 0, warnings,
+  };
+}
+
+/** The editor's "Csak a cím rövidítése": one cheap request on one title. `how` is 'as-is' when nothing usable came back. */
+export async function shortenListingTitle(
+  title: string, targetLocale: string, call: CallJson = callOpenAi, model: string = translationModel()
+): Promise<{ title: string; how: 'as-is' | 'shortened' | 'cut'; costMicroEur: number }> {
+  const usage = { tokensIn: 0, tokensOut: 0 };
+  const settled = settleTitle(title, await shortenTitle(title, targetLocale, call, model, usage));
+  return { ...settled, costMicroEur: costMicroEur(model, usage.tokensIn, usage.tokensOut) };
 }

@@ -74,8 +74,7 @@ export type SwitcherLocale = Locale;
 
 /**
  * The seven languages added in November 2026. Their fallback for text nobody
- * has written in them yet is English (then Dutch, then Hungarian), and listing
- * text is not machine-translated into them yet (LISTING_TRANSLATION_LOCALES).
+ * has written in them yet is English (then Dutch, then Hungarian).
  */
 export const LATER_LOCALES: readonly Locale[] = ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh'];
 

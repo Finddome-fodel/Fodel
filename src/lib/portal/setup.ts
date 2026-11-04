@@ -33,6 +33,8 @@ import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { contactDisplayPatch } from '~/lib/contact-display';
 import { syncFreeRequests } from '~/lib/ai/translation-jobs';
 import { guardContacts, type ContactActor } from '~/lib/portal/contact-guard';
+import { ALL_LOCALES } from '~/lib/ai/translate-core';
+import { packageById, packageLocales } from '~/lib/translation-packages';
 
 export const SETUP_STEPS = ['package', 'property', 'description'] as const;
 export type SetupStep = (typeof SETUP_STEPS)[number];
@@ -75,7 +77,12 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
   const translations = form
     .getAll('translations')
     .map(String)
-    .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && all.indexOf(code) === i);
+    .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && ALL_LOCALES.includes(code) && all.indexOf(code) === i);
+  // Package and single languages are only ids: the server prices them (src/lib/orders.ts). A package that is not
+  // on sale falls back to Go, and a single the chosen package already includes is not a single.
+  const trPackage = catalog.translation.packages.find((p) => p.id === str(form, 'translation_package') && (p.active || p.id === 'go'))?.id ?? 'go';
+  const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackage), ALL_LOCALES));
+  const trSingles = translations.filter((code) => !trIncluded.has(code));
   const service = isOnsiteServiceId(str(form, 'service')) ? (str(form, 'service') as never) : null;
 
   const { error } = await supabase.from('properties').update({ package: chosen.id }).eq('id', existing.id);
@@ -87,7 +94,9 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
     source: 'listing_editor',
     at: new Date().toISOString(),
     package: chosen.id,
-    translations,
+    translations: trSingles,
+    translationPackage: trPackage,
+    excludedLocales: str(form, 'translation_excluded').split(','),
     categoryHighlight: form.get('categoryHighlight') === 'yes',
     topicHighlight: form.get('topicHighlight') === 'yes',
     dutchAgent: form.get('dutchAgent') === 'yes',
@@ -200,7 +209,21 @@ async function saveDescription(supabase:SupabaseClient,existing:Existing,form:Fo
   // A free-link owner's translation wish list: kept as requests for the office to approve, never run by itself.
   // The text is saved first (a request needs something to translate), and a problem here never fails the save.
   if(existing.free_listing&&existing.owner_id&&form.get('translations_present')==='yes'){
-    try{await syncFreeRequests(createSupabaseAdminClient(),existing.id,form.getAll('translations').map(String),existing.owner_id);}
+    try{
+      const catalog=listingCatalog((await getCompany()).services);
+      const asked=form.getAll('translations').map(String);
+      const trPackage=catalog.translation.packages.find((p)=>p.id===str(form,'translation_package')&&(p.active||p.id==='go'))?.id??'go';
+      const excluded=(readRequestedExtras({excludedLocales:str(form,'translation_excluded')}).excludedLocales??[]);
+      // Go (English, German) comes with every listing and is queued when it goes live. Everything beyond it, the
+      // package's languages and single ones, is a request the office approves. Languages switched off are not asked for.
+      const goLocales=new Set(packageLocales(packageById(catalog.translation,'go'),ALL_LOCALES));
+      const wanted=[...new Set([...packageLocales(packageById(catalog.translation,trPackage),ALL_LOCALES),...asked])]
+        .filter((code)=>code!=='hu'&&!goLocales.has(code)&&!excluded.includes(code));
+      // Remembered with the draft, so the picker shows the same choice next time and approval can switch the languages off.
+      const {data:row}=await supabase.from('properties').select('requested_extras').eq('id',existing.id).maybeSingle();
+      await supabase.from('properties').update({requested_extras:readRequestedExtras({...(row?.requested_extras??{}),translationPackage:trPackage,translations:asked.filter((code)=>!packageLocales(packageById(catalog.translation,trPackage),ALL_LOCALES).includes(code)),excludedLocales:excluded})}).eq('id',existing.id);
+      await syncFreeRequests(createSupabaseAdminClient(),existing.id,wanted,existing.owner_id);
+    }
     catch(e){console.error('[setup] translation requests not kept',existing.id,e instanceof Error?e.message:e);}
   }
   return {ok:true};

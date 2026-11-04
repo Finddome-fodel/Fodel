@@ -27,6 +27,8 @@ import { logEvent } from '~/lib/activity';
 import { eur } from '~/lib/format';
 import { formatCents } from '~/lib/orders';
 import { renewalPricer } from '~/lib/portal/renewal';
+import { sendTranslationDigest } from '~/lib/ai/translation-alerts';
+import { dailyCapMicroEur } from '~/lib/ai/translation-jobs';
 
 export const prerender = false;
 
@@ -166,8 +168,11 @@ export const GET: APIRoute = async ({ request }) => {
     counts.emails++;
   }
 
-  await logEvent({ kind: 'cron.daily', source: 'cron', payload: { ...counts, at: now.toISOString() } }).catch(() => {});
-  return json(200, { ok: true, ...counts });
+  // A short note to the admins about translations, only when something needs a person (never fails the run).
+  const translationDigest = await sendTranslationDigest(admin, dailyCapMicroEur(), now).catch(() => ({ sent: false }));
+
+  await logEvent({ kind: 'cron.daily', source: 'cron', payload: { ...counts, translationDigest: translationDigest.sent, at: now.toISOString() } }).catch(() => {});
+  return json(200, { ok: true, ...counts, translationDigest: translationDigest.sent });
 };
 
 async function sendRefresh(admin: any, row: any, owner: any, rules: ListingRules, reminder: boolean) {

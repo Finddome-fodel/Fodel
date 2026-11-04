@@ -50,7 +50,7 @@ const params = Astro.url.searchParams;
 // Facet options always reflect the full active inventory, not just the
 // current result set, so a search that returns zero results still lets the
 // visitor pivot to a different filter instead of hitting a dead end.
-const facetSource = await activeProperties();
+const facetSource = await activeProperties(locale);
 // Nothing published at all (a new site): say so, instead of blaming the filters.
 const catalogueEmpty = facetSource.length === 0;
 const regions = regionsOf(facetSource);

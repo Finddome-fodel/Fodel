@@ -31,9 +31,13 @@ import { eur } from '~/lib/format';
 import { isStripeEnabled } from '~/lib/stripe';
 import { isAiEnabled } from '~/lib/ai/client';
 import { translationModel } from '~/lib/ai/translate';
-import { ALL_LOCALES, HU_NAME, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
+import { ALL_LOCALES, HU_NAME, LIMITS, TARGET_LIMITS, estimateCostMicroEur, formatCostHu, listingChars, listingText, pickSource, sourceHash, JOB_STATUS_HU } from '~/lib/ai/translate-core';
 import { jobsForProperty, latestPerLocale } from '~/lib/ai/translation-jobs';
-import TranslationPicker from '~/components/portal/TranslationPicker.astro';
+import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
+import ListingLanguages from '~/components/portal/ListingLanguages.astro';
+import { loadEntitlement } from '~/lib/ai/translation-entitlement';
+import { createSupabaseAdminClient } from '~/lib/supabase-server';
+import { grantedLocales } from '~/lib/translation-packages';
 import { TRANSLATION_COPY, type PortalCopyLang } from '~/lib/ai/translation-copy';
 import { COMPANY } from '~/config/company';
 import { listingCatalog, packageOf } from '~/lib/listing-packages';
@@ -201,7 +205,10 @@ const tc = TRANSLATION_COPY[portalLocale];
 const listingLive = property.status === 'published';
 const trOwnerPanel = isOwnProperty && !isAdmin && listingLive;
 const trBusy = Object.fromEntries(trJobs.filter((job) => ['requested', 'queued', 'running'].includes(job.status)).map((job) => [job.locale, tc.statusLabels[job.status]]));
-const trCatalogPrice = listingCatalog(company.services).extras.find((e) => e.id === 'translation')?.priceEur ?? 0;
+const trConfig = listingCatalog(company.services).translation;
+// What the listing is published in (migration 0052); null before it ran, and then none of this is shown.
+const trEntitlement = (isAdmin || isOwnProperty) ? await loadEntitlement(createSupabaseAdminClient(), property.id).catch(() => null) : null;
+const trGranted = trEntitlement ? grantedLocales(trEntitlement.listing, trConfig, ALL_LOCALES) : [];
 const trPaid = Astro.url.searchParams.get('translations');
 ---
 
@@ -327,6 +334,8 @@ const trPaid = Astro.url.searchParams.get('translations');
         <ContactLanguages selected={property.seller_speaks} locale="hu"/>
       </section>
 
+    </fieldset>
+
       <section id="translations" class="ed-card">
         <header class="card-head"><div><h2>Szövegek</h2><p>Minden nyelven külön szöveg. A magyar kötelező, a többi bővíti az elérést.</p></div></header>
         {property.free_listing && (
@@ -340,6 +349,10 @@ const trPaid = Astro.url.searchParams.get('translations');
             Tudatosan benne hagyom <span class="hint">(a mentés naplózásra kerül)</span>
           </label>
         )}
+        {trEntitlement && (
+          <ListingLanguages propertyId={property.id} lang={isAdmin ? 'hu' : portalLocale} sourceLocale={trSourceLocale} granted={trGranted} excluded={[...(trEntitlement.listing.excludedLocales ?? [])]} withText={ALL_LOCALES.filter(trHas)} busy={trBusy} />
+        )}
+        <fieldset disabled={!editable} class="tr-fields">
         {isAdmin && (
           <div class="tr-bar" id="tr-bar">
             <button type="button" class="btn small" id="tr-missing" disabled={!aiOn || trMissing.length === 0}>Hiányzó nyelvek fordítása ({trMissing.length})</button>
@@ -350,7 +363,8 @@ const trPaid = Astro.url.searchParams.get('translations');
                   : 'Minden nyelven van szöveg.'
                 : 'Az AI fordítás nincs bekapcsolva (AI_ENABLED és OPENAI_API_KEY a Vercelben).'}
             </p>
-            <p class="tr-progress" id="tr-progress" role="status" aria-live="polite"></p>
+            <p class="tr-progress" id="tr-progress" role="status"></p>
+            <p class="tr-bar-note"><a class="hint-link" href={`/portal/translations/${property.id}`}>Fordítások egymás mellett: eredeti és fordítás, kézi javítással</a></p>
           </div>
         )}
         <div class="locale-tabs" role="tablist">
@@ -366,7 +380,8 @@ const trPaid = Astro.url.searchParams.get('translations');
           const suggestion = suggestionByLocale[l.value];
           return (
             <div class="locale-panel" data-locale-panel={l.value} hidden={i !== 0}>
-              <Field locale="hu" name={`title_${l.value}`} label="Hirdetés címe" required={required} value={t?.title ?? ''} />
+              <Field locale="hu" name={`title_${l.value}`} label="Hirdetés címe" required={required} value={t?.title ?? ''} maxlength={l.value === trSourceLocale ? LIMITS.title : TARGET_LIMITS.title} />
+              <p class="title-count" data-title-count={`title_${l.value}`}></p>
               <Field locale="hu" name={`description_${l.value}`} label="Rövid leírás" type="textarea" rows={3} required={required} value={t?.description ?? ''} />
               <Field locale="hu" name={`body_${l.value}`} label="Részletes leírás" type="textarea" rows={8} value={t?.body ?? ''}
                 hint="Bekezdéseket üres sorral válasszon el." />
@@ -418,6 +433,7 @@ const trPaid = Astro.url.searchParams.get('translations');
         })}
         <Field locale="hu" name="heard_from" label="Honnan értesült a FINDDOME-ről?" type="select" value={property.heard_from||''} options={[{value:'',label:'Válasszon!'},...HEARD_FROM.map(o=>({value:o.key,label:o.labels.hu}))]} hint="Csak a FINDDOME munkatársai látják."/>
         <Field locale="hu" name="internal_note" label="Megjegyzés (belső használatra)" type="textarea" rows={3} value={property.internal_note||''} hint="Csak Ön és a FINDDOME munkatársai láthatják. A nyilvános hirdetésben soha nem jelenik meg." maxlength={10000}/>
+        </fieldset>
       </section>
 
       {editable && (
@@ -436,7 +452,6 @@ const trPaid = Astro.url.searchParams.get('translations');
           </div>
         </div>
       )}
-    </fieldset>
   </form>
 
   {trOwnerPanel && (
@@ -449,7 +464,7 @@ const trPaid = Astro.url.searchParams.get('translations');
         ? <p class="hint">{tc.nothingToAdd}</p>
         : (
           <>
-            <TranslationPicker lang={portalLocale} bare name="locales" present={ALL_LOCALES.filter(trHas)} busy={trBusy} priceEur={property.free_listing ? null : trCatalogPrice} free={Boolean(property.free_listing)} />
+            <TranslationPackagePicker lang={portalLocale} bare cfg={trConfig} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trEntitlement?.listing.translationPackage ?? 'go'} currentPackageId={trEntitlement?.listing.translationPackage ?? null} excluded={[...(trEntitlement?.listing.excludedLocales ?? [])]} present={ALL_LOCALES.filter(trHas)} busy={trBusy} free={Boolean(property.free_listing)} />
             <p class="tr-owner-msg" id="tr-owner-msg" role="status"></p>
             <button type="button" class="btn" id="tr-buy" disabled>{property.free_listing ? tc.request : tc.pay}</button>
           </>
@@ -679,6 +694,20 @@ const trPaid = Astro.url.searchParams.get('translations');
 
 
 <script>
+  /* ── Title length: a live count, so a long title is noticed before it is saved ── */
+  document.querySelectorAll<HTMLElement>('[data-title-count]').forEach((counter) => {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${counter.dataset.titleCount}"]`);
+    if (!input) return;
+    const max = input.maxLength;
+    const show = () => {
+      const length = input.value.length;
+      counter.textContent = length ? `${length} / ${max} karakter` : '';
+      counter.dataset.near = String(length >= max - 10);
+    };
+    input.addEventListener('input', show);
+    show();
+  });
+
   /* ── Section rail: the section being read lights up ─────────────────── */
   const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-rail]')];
   const targets = links.map((link) => document.getElementById(link.dataset.rail!)).filter((el): el is HTMLElement => Boolean(el));
@@ -913,7 +942,7 @@ const trPaid = Astro.url.searchParams.get('translations');
 
 </script>
 
-<script define:vars={{ tcStrings: { ...tc, progress: undefined, more: undefined, all: undefined, summary: undefined, summaryFree: undefined, perLanguage: undefined }, tcProgressOne: tc.progress(111, 1), tcProgressMany: tc.progress(111, 222), propertyIdForTranslations: property.id, isAdminView: isAdmin, isFree: Boolean(property.free_listing), trJobsInitial: trJobs.map((j) => ({ locale: j.locale, status: j.status, error: j.last_error })), perLanguageHu: formatCostHu(trPerLanguage), missingCount: trMissing.length, missingCostHu: formatCostHu(trMissing.length * trPerLanguage), jobStatusHu: JOB_STATUS_HU, huNames: HU_NAME }}>
+<script define:vars={{ tcStrings: { ...tc, progress: undefined, more: undefined, all: undefined, summary: undefined, summaryFree: undefined, perLanguage: undefined }, tcProgressOne: tc.progress(111, 1), tcProgressMany: tc.progress(111, 222), propertyIdForTranslations: property.id, heldPackage: trEntitlement?.listing.translationPackage ?? 'go', isAdminView: isAdmin, isFree: Boolean(property.free_listing), trJobsInitial: trJobs.map((j) => ({ locale: j.locale, status: j.status, error: j.last_error })), perLanguageHu: formatCostHu(trPerLanguage), missingCount: trMissing.length, missingCostHu: formatCostHu(trMissing.length * trPerLanguage), jobStatusHu: JOB_STATUS_HU, huNames: HU_NAME }}>
   (() => {
     const url = `/api/portal/properties/${propertyIdForTranslations}/translations`;
     const toast = (message, kind = 'ok') => window.pf?.toast(message, kind);
@@ -1031,16 +1060,24 @@ const trPaid = Astro.url.searchParams.get('translations');
     const buy = document.getElementById('tr-buy');
     const msg = document.getElementById('tr-owner-msg');
     const panel = document.getElementById('translations-panel');
-    const chosen = () => [...(panel?.querySelectorAll('input[name="locales"]:checked:not(:disabled)') ?? [])].map((box) => box.value);
-    panel?.addEventListener('tp:change', () => { if (buy) buy.disabled = chosen().length === 0; });
+    const picker = panel?.querySelector('[data-tpk]');
+    // The choice, as ids: the package, the single languages and what is switched off. The server prices it.
+    const choice = () => ({
+      packageId: picker?.querySelector('input[name="translation_package"]:checked')?.value ?? 'go',
+      locales: [...(picker?.querySelectorAll('input[name="translations"]:checked') ?? [])].map((box) => box.value),
+      excluded: (picker?.querySelector('[data-tpk-excluded]')?.value ?? '').split(',').filter(Boolean),
+    });
+    // Something to buy or ask for: a bigger package than the one held, or at least one single language.
+    const anything = () => { const c = choice(); return c.locales.length > 0 || c.packageId !== heldPackage; };
+    panel?.addEventListener('tp:change', () => { if (buy) buy.disabled = !anything(); });
     buy?.addEventListener('click', async () => {
       buy.disabled = true;
       msg.textContent = isFree ? '' : tcStrings.paying;
-      const { ok, json } = await post({ action: isFree ? 'request' : 'order', locales: chosen() });
+      const { ok, json } = await post({ action: isFree ? 'request' : 'order', ...choice() });
       if (ok && json.url) { location.href = json.url; return; }
       if (ok) { msg.textContent = tcStrings.requested; await poll(); setTimeout(() => location.reload(), 1200); return; }
       msg.textContent = json.error === 'card-unavailable' ? tcStrings.cardUnavailable : json.error === 'nothing-to-order' ? tcStrings.nothingToAdd : tcStrings.errorGeneric;
-      buy.disabled = chosen().length === 0;
+      buy.disabled = !anything();
     });
 
     render(jobs, null);
@@ -1097,6 +1134,8 @@ const trPaid = Astro.url.searchParams.get('translations');
   .ed-body { display: grid; gap: 20px; min-width: 0; }
   .ed-body > form, fieldset { display: grid; gap: 20px; border: 0; padding: 0; margin: 0; min-width: 0; }
   fieldset:disabled .ed-card { opacity: 0.72; }
+  fieldset.tr-fields { display: block; }
+  fieldset.tr-fields:disabled { opacity: 0.72; }
 
   /* ── Cards ───────────────────────────────────────────────────────────── */
   .ed-card { padding: clamp(22px, 3vw, 36px); border-radius: var(--r-xl); background: var(--white); box-shadow: var(--shadow-xs), 0 0 0 1px var(--pt-hair); scroll-margin-top: 24px; transition: box-shadow 0.4s var(--ease-out); }
@@ -1132,6 +1171,9 @@ const trPaid = Astro.url.searchParams.get('translations');
   .tr-machine { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 10px; font-size: var(--fs-small); color: var(--ink-quiet); }
   .tr-machine .ai-badge { margin-left: 0; }
   .tr-stale { color: var(--pt-red); font-weight: var(--fw-medium); }
+  .title-count { margin: -4px 0 14px; font-size: var(--fs-small); color: var(--ink-quiet); font-variant-numeric: tabular-nums; }
+  .title-count:empty { display: none; }
+  .title-count[data-near='true'] { color: var(--pt-red); }
   .tr-state { margin: 8px 0 0; font-size: var(--fs-small); color: var(--ink-quiet); }
   .tr-state:empty { display: none; }
   .tr-state[data-state='failed'] { color: var(--pt-red); }

@@ -34,11 +34,15 @@ import {validSubtype, groupOf, subtypeOf} from '~/lib/listing-catalogue';
 import { detailGaps } from '~/lib/listing-details';
 import type { APIRoute } from 'astro';
 import { approvedWording } from '~/lib/approved-text';
+import { publishLanguageProblems } from '~/lib/ai/translation-overview';
+import { ALL_LOCALES, HU_NAME } from '~/lib/ai/translate-core';
 import { deliver, localeOf, templates, adminRecipients } from '~/lib/email/send';
 import { createSupabaseAdminClient } from '~/lib/supabase-server';
 import { getCompany } from '~/lib/runtime-config';
 import { publishProperty, listingTitle, publicUrl, renewProperty } from '~/lib/portal/publish';
-import { enqueuePaidTranslations } from '~/lib/ai/translation-orders';
+import { applyPaidEntitlement, enqueuePaidTranslations } from '~/lib/ai/translation-orders';
+import { applyRequestedExclusions, loadEntitlement, requestedExclusions } from '~/lib/ai/translation-entitlement';
+import { grantedLocales } from '~/lib/translation-packages';
 import { placeholderProblem } from '~/lib/portal/placeholder';
 import { deleteImage } from '~/lib/media';
 import { logEvent } from '~/lib/activity';
@@ -65,6 +69,22 @@ export const prerender = false;
 
 const json = (status: number, body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+/**
+ * Bought languages a visitor could not read (failed, missing, out of date): an admin may still approve,
+ * but only knowing it. Without `acknowledgeLanguages` the request is refused with the list; the review
+ * page shows it and sends the acknowledgement. Quietly passes before migration 0051.
+ */
+async function languagesGate(propertyId: string, body: Record<string, unknown>): Promise<Response | null> {
+  if (body.acknowledgeLanguages === true) return null;
+  const { blocking } = await publishLanguageProblems(createSupabaseAdminClient(), propertyId);
+  if (blocking.length === 0) return null;
+  const names = blocking.map((item) => HU_NAME[item.locale] ?? item.locale).join(', ');
+  return json(409, {
+    ok: false, error: 'languages-incomplete', problems: blocking,
+    message: `A(z) ${names} fordítás hiányzik vagy hibás. Ha ennek tudatában jóváhagyja, a nyelv később automatikusan élesedik.`,
+  });
+}
 
 /** Runs work that follows a saved change: a failure is logged, never thrown. */
 async function safely<T>(what: string, task: () => Promise<T>): Promise<T | null> {
@@ -188,6 +208,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // Refuse before anything is sent or charged: a placeholder price or area is not an approvable listing.
     const placeholder = placeholderProblem(property);
     if (placeholder) return json(422, { ok: false, error: 'placeholder', message: placeholder });
+    const languageStop = await languagesGate(property.id, body);
+    if (languageStop) return languageStop;
 
     const owner = await ownerContact(supabase, property.owner_id);
     const locale = owner?.locale ?? 'hu';
@@ -206,7 +228,12 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
         .eq('id', id);
       if (error) return json(500, { ok: false, error: error.message });
 
-      const published = await publishProperty(supabase, id!, { notifyOwner: !adminOwned });
+      // What the owner switched off in the wizard (Go: English stays, German may go) holds before the first publish.
+      await safely('requested exclusions', async () => {
+        const admin = createSupabaseAdminClient();
+        await applyRequestedExclusions(admin, id!, await requestedExclusions(admin, id!), listingCatalog((await getCompany()).services).translation);
+      });
+      const published = await publishProperty(supabase, id!, { notifyOwner: !adminOwned, kickOrigin: new URL(request.url).origin });
       if (!published.ok) return json(500, { ok: false, error: published.error });
 
       await logEvent({
@@ -237,6 +264,16 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
                 ...(Array.isArray(e.locales) ? { locales: e.locales.map(String) } : {}),
               }))
             : [],
+          // Only ids: the package and the languages. The price is the catalogue's (buildOrderLines).
+          ...(body.order.translation && typeof body.order.translation === 'object'
+            ? {
+                translation: {
+                  packageId: String(body.order.translation.packageId ?? 'go'),
+                  extraLocales: Array.isArray(body.order.translation.extraLocales) ? body.order.translation.extraLocales.map(String) : [],
+                  excludedLocales: Array.isArray(body.order.translation.excludedLocales) ? body.order.translation.excludedLocales.map(String) : [],
+                },
+              }
+            : {}),
         }
       : suggestSelection({
           package: property.package,
@@ -256,13 +293,24 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     selection.priceHuf = property.price_huf;
     selection.country = property.country ?? null;
     delete selection.aboveThreshold;
-    // A language the listing already has text in is never sold: the AI would not touch it, and the owner would pay for nothing.
+    // What the listing already holds decides what is still for sale: the package it has (an upgrade costs the
+    // difference), and the languages it already has text in or has bought (never sold twice).
+    const entitlement = await loadEntitlement(createSupabaseAdminClient(), id!).catch(() => null);
     const haveText = new Set((property.property_translations ?? []).filter((t: { title: string; description: string }) => t.title?.trim() || t.description?.trim()).map((t: { locale: string }) => t.locale));
+    const alreadyHeld = new Set([...haveText, ...(entitlement ? grantedLocales(entitlement.listing, listing.translation, ALL_LOCALES) : [])]);
     selection.extras = selection.extras.flatMap((extra) => {
       if (extra.id !== 'translation' || !extra.locales) return [extra];
-      const rest = extra.locales.filter((code) => !haveText.has(code));
+      const rest = extra.locales.filter((code) => !alreadyHeld.has(code));
       return rest.length ? [{ ...extra, locales: rest, quantity: rest.length }] : [];
     });
+    if (selection.translation) {
+      selection.translation = {
+        ...selection.translation,
+        extraLocales: (selection.translation.extraLocales ?? []).filter((code) => !alreadyHeld.has(code)),
+        sourceLocale: entitlement?.listing.sourceLocale ?? 'hu',
+        ...(entitlement ? { currentPackageId: entitlement.listing.translationPackage ?? 'go' } : {}),
+      };
+    }
 
     let lines;
     try {
@@ -399,8 +447,11 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       .not('free_approved_at', 'is', null)
       .then(() => {}, () => {});
 
+    // The Go languages the owner switched off hold from the start; the rest follow the package line when it is paid.
+    await safely('requested exclusions', () => applyRequestedExclusions(admin, id!, selection.translation?.excludedLocales ?? [], listing.translation));
+
     if (!gated) {
-      const published = await publishProperty(supabase, id!, { notifyOwner: false });
+      const published = await publishProperty(supabase, id!, { notifyOwner: false, kickOrigin: new URL(request.url).origin });
       if (!published.ok) return json(500, { ok: false, error: published.error });
     }
 
@@ -468,6 +519,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   if (action === 'approve_free') {
     if (!isAdmin) return json(403, { ok: false, error: 'forbidden' });
     const admin = createSupabaseAdminClient();
+    const languageStop = await languagesGate(property.id, body);
+    if (languageStop) return languageStop;
 
     // Before migration 0045 the columns are missing: say so, change nothing.
     const { data: state, error: stateError } = await admin
@@ -566,7 +619,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     }
     if (from !== 'published') {
       // notifyOwner: false — the owner gets the one e-mail written for this, not the generic "you are online" as well.
-      const published = await publishProperty(supabase, id!, { notifyOwner: false });
+      const published = await publishProperty(supabase, id!, { notifyOwner: false, kickOrigin: new URL(request.url).origin });
       if (!published.ok) {
         await restoreOrders(admin, waiver.waived, at);
         await unclaim();
@@ -653,7 +706,8 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     // listing.published is logged exclusively inside publishProperty() —
     // never here too. It is the one function both this action and the
     // Stripe webhook call, and logging in both would double-count the event.
-    const result = await publishProperty(supabase, id!);
+    if (order) await applyPaidEntitlement(admin, order);
+    const result = await publishProperty(supabase, id!, { kickOrigin: new URL(request.url).origin });
     if (!result.ok) return json(500, { ok: false, error: result.error });
     // The transfer is confirmed and the listing is online: the translations that were paid for start.
     if (order) await enqueuePaidTranslations(admin, order, new URL(request.url).origin);
@@ -665,7 +719,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
   if (action === 'publish_unpaid') {
     if (!isAdmin) return json(403, { ok: false });
     if (property.status !== 'awaiting_payment') return json(409, { ok: false, error: 'not-awaiting-payment' });
-    const result = await publishProperty(supabase, id!);
+    const result = await publishProperty(supabase, id!, { kickOrigin: new URL(request.url).origin });
     return result.ok ? json(200, { ok: true }) : json(500, { ok: false, error: result.error });
   }
 

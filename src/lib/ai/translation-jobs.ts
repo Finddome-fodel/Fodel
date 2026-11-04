@@ -21,13 +21,14 @@ import { logEvent } from '~/lib/activity';
 import { isAiEnabled } from './client';
 import { translateListing, translationModel } from './translate';
 import {
-  classifyFailure, estimateCostMicroEur, isTargetLocale, listingChars, listingText, pickSource, sourceHash,
-  type ListingText,
+  TranslationCheckError, classifyFailure, estimateCostMicroEur, failCodeOf, isTargetLocale, listingChars, listingText, pickSource,
+  retryFeedback, sourceHash, type ListingText,
 } from './translate-core';
+import { notifyTranslationStopped } from './translation-alerts';
 
 type Client = SupabaseClient<any, any, any>;
 
-export type JobOrigin = 'upload_paid' | 'after_publish_paid' | 'admin' | 'free';
+export type JobOrigin = 'upload_paid' | 'after_publish_paid' | 'admin' | 'free' | 'package';
 
 /** Fixed number of attempts per job (also enforced in claim_translation_jobs). */
 export const MAX_ATTEMPTS = 3;
@@ -45,6 +46,26 @@ export function isMissingTranslationSchema(error: { code?: string | null; messag
   if (!error) return false;
   if (error.code && ['42P01', 'PGRST205', 'PGRST202', '42883'].includes(error.code)) return true;
   return /translation_jobs|claim_translation_jobs|save_machine_translation|machine/.test(error.message ?? '') && /does not exist|schema cache|could not find/i.test(error.message ?? '');
+}
+
+/** A column from migration 0051 is missing: write the same change without it. */
+function isMissingColumn(error: { code?: string | null; message?: string | null } | null | undefined): boolean {
+  if (!error) return false;
+  if (error.code && ['42703', 'PGRST204'].includes(error.code)) return true;
+  return /column/i.test(error.message ?? '') && /does not exist|schema cache|could not find/i.test(error.message ?? '');
+}
+
+/** The columns 0051 added to translation_jobs. Before it has been run, only the older ones are written. */
+const EXTRA_JOB_COLUMNS = ['fail_code', 'partial_output', 'feedback'];
+
+/** Updates a running job; if 0051 is not there yet, writes the same change without the new columns. */
+async function updateRunningJob(client: Client, jobId: string, patch: Record<string, unknown>): Promise<void> {
+  const attempt = (body: Record<string, unknown>) => client.from('translation_jobs').update(body).eq('id', jobId).eq('status', 'running');
+  const { error } = await attempt(patch);
+  if (error && isMissingColumn(error)) {
+    const base = Object.fromEntries(Object.entries(patch).filter(([key]) => !EXTRA_JOB_COLUMNS.includes(key)));
+    await attempt(base);
+  }
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -109,6 +130,11 @@ export async function enqueueTranslations(
   const hash = sourceHash(text);
   const estimate = estimateCostMicroEur(listingChars(text), translationModel());
 
+  // A language that already has a live job is not queued twice (the database's unique index says the same; this
+  // keeps the answer right, and the work out of a retried or overlapping call, without relying on an error).
+  const { data: liveJobs } = await client.from('translation_jobs').select('locale').eq('property_id', opts.propertyId).in('status', ['requested', 'queued', 'running']);
+  const live = new Set((liveJobs ?? []).map((job: { locale: string }) => job.locale));
+
   let ordered = new Set<string>();
   if (opts.paymentId) {
     const { data: earlier } = await client.from('translation_jobs').select('locale').eq('payment_id', opts.paymentId);
@@ -118,6 +144,7 @@ export async function enqueueTranslations(
   for (const locale of locales) {
     if (locale === source.locale) { result.skipped.push({ locale, reason: 'is-source' }); continue; }
     if (ordered.has(locale)) { result.skipped.push({ locale, reason: 'already-ordered' }); continue; }
+    if (live.has(locale)) { result.skipped.push({ locale, reason: 'already-live' }); continue; }
     const existing = (rows ?? []).find((row: { locale: string }) => row.locale === locale);
     if (existing && !existing.machine && (listingText(existing).title || listingText(existing).description) && !opts.overwrite) {
       result.skipped.push({ locale, reason: 'has-text' });
@@ -204,6 +231,8 @@ export async function cancelJob(client: Client, jobId: string): Promise<boolean>
 
 /** Run a failed job again (an admin pressed "Újra"). */
 export async function retryJob(client: Client, jobId: string): Promise<boolean> {
+  // fail_code, partial_output and feedback stay: the new attempt is told what went wrong last time, and
+  // the finished job clears them.
   const { data, error } = await client
     .from('translation_jobs')
     .update({ status: 'queued', attempts: 0, last_error: null, claimed_at: null, finished_at: null })
@@ -287,15 +316,17 @@ export async function processTranslationJobs(
     if (result.stopped) break;
   }
   result.remaining = await countQueued(client).catch(() => 0);
+  // The system has stopped: say so once, instead of leaving it to be noticed in the queue.
+  if (result.capped || result.stopped) {
+    await notifyTranslationStopped(client, result.stopped ? 'stopped' : 'cap', {
+      spentMicroEur: await spentTodayMicroEur(client).catch(() => 0), capMicroEur: dailyCapMicroEur(), remaining: result.remaining,
+    }).catch(() => {});
+  }
   return result;
 }
 
 async function finishJob(client: Client, job: any, patch: Record<string, unknown>) {
-  await client
-    .from('translation_jobs')
-    .update({ ...patch, finished_at: new Date().toISOString() })
-    .eq('id', job.id)
-    .eq('status', 'running');
+  await updateRunningJob(client, job.id, { ...patch, finished_at: new Date().toISOString() });
 }
 
 async function runJob(client: Client, job: any, model: string): Promise<{ outcome: Outcome; stopAll: boolean }> {
@@ -322,8 +353,12 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
     }
 
     const text: ListingText = listingText(source);
-    const translated = await translateListing(text, source.locale, job.locale, undefined, model);
-    const { data: saved, error: saveError } = await client.rpc('save_machine_translation', {
+    // A free listing carries no contact details, in any language.
+    const { data: listing } = await client.from('properties').select('free_listing').eq('id', job.property_id).maybeSingle();
+    const translated = await translateListing(text, source.locale, job.locale, undefined, model, {
+      feedback: typeof job.feedback === 'string' ? job.feedback : null, freeListing: Boolean(listing?.free_listing),
+    });
+    const saveArgs = {
       p_property: job.property_id,
       p_locale: job.locale,
       p_from: source.locale,
@@ -332,7 +367,12 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
       p_body: translated.body,
       p_hash: sourceHash(text),
       p_overwrite: Boolean(job.overwrite),
+    };
+    let { data: saved, error: saveError } = await client.rpc('save_machine_translation', {
+      ...saveArgs, p_needs_review: translated.needsReview, p_warnings: translated.warnings,
     });
+    // Before migration 0051 the function has the older, shorter signature.
+    if (saveError && isMissingTranslationSchema(saveError)) ({ data: saved, error: saveError } = await client.rpc('save_machine_translation', saveArgs));
     if (saveError) throw new Error(saveError.message);
 
     // The AI was paid for either way, so the cost is recorded even when a person got there first.
@@ -341,29 +381,35 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
       await finishJob(client, job, { status: 'cancelled', last_error: 'Közben kézzel írt szöveg került ehhez a nyelvhez, azt nem írtuk felül.', ...costs });
       return { outcome: 'cancelled', stopAll: false };
     }
-    await finishJob(client, job, { status: 'done', last_error: null, source_hash: sourceHash(text), ...costs });
+    await finishJob(client, job, { status: 'done', last_error: null, fail_code: null, partial_output: null, feedback: null, source_hash: sourceHash(text), ...costs });
+    // A translation an admin decided to make for nothing (their own run, or a free-link owner's request they approved)
+    // is published like a bought one. Nothing to do for a paid or package job: its entitlement came with the order.
+    if (job.origin === 'admin' || job.origin === 'free') await grantFreeLanguage(client, job.property_id, job.locale);
     await logEvent({
       kind: 'ai.translation_done', subjectType: 'property', subjectId: job.property_id, propertyId: job.property_id, locale: job.locale,
       source: job.origin, dedupeKey: `translation-job-${job.id}-done`,
-      payload: { from: source.locale, origin: job.origin, model: translated.model, tokensIn: translated.tokensIn, tokensOut: translated.tokensOut, costMicroEur: translated.costMicroEur },
+      payload: { from: source.locale, origin: job.origin, model: translated.model, tokensIn: translated.tokensIn, tokensOut: translated.tokensOut, costMicroEur: translated.costMicroEur, ...(translated.titleFix ? { titleFix: translated.titleFix } : {}) },
     }).catch(() => {});
     return { outcome: 'done', stopAll: false };
   } catch (error) {
     const failure = classifyFailure(error);
     // Never the raw error: it can carry the API's own text. The class and a short reason are enough.
     console.warn(`[translate] job ${job.id} (${job.locale}) attempt ${job.attempts}: ${(error as { code?: string })?.code ?? (error as Error)?.name ?? 'error'}`);
+    const failCode = failCodeOf(error);
+    // What the last attempt wrote stays with the job: an admin can fix just the title instead of starting over.
+    const partial = error instanceof TranslationCheckError && error.output ? error.output : null;
     if (failure.retry && job.attempts < MAX_ATTEMPTS) {
-      await client
-        .from('translation_jobs')
-        .update({ status: 'queued', last_error: failure.message, claimed_at: new Date().toISOString() })
-        .eq('id', job.id)
-        .eq('status', 'running');
+      // The next attempt is told what was wrong, so it is not the same attempt again.
+      await updateRunningJob(client, job.id, {
+        status: 'queued', last_error: failure.message, claimed_at: new Date().toISOString(),
+        fail_code: failCode, partial_output: partial, feedback: retryFeedback(error, { target: job.locale }),
+      });
       return { outcome: 'requeued', stopAll: failure.stopAll };
     }
-    await finishJob(client, job, { status: 'failed', last_error: failure.message });
+    await finishJob(client, job, { status: 'failed', last_error: failure.message, fail_code: failCode, partial_output: partial, feedback: retryFeedback(error, { target: job.locale }) });
     await logEvent({
       kind: 'ai.translation_failed', subjectType: 'property', subjectId: job.property_id, propertyId: job.property_id, locale: job.locale,
-      source: job.origin, dedupeKey: `translation-job-${job.id}-failed-${job.attempts}`, payload: { origin: job.origin, reason: failure.message },
+      source: job.origin, dedupeKey: `translation-job-${job.id}-failed-${job.attempts}`, payload: { origin: job.origin, reason: failure.message, code: failCode },
     }).catch(() => {});
     return { outcome: 'failed', stopAll: failure.stopAll };
   }
@@ -378,6 +424,16 @@ async function runJob(client: Client, job: any, model: string): Promise<{ outcom
  * design: the daily cron, the admin's "Folytatás most" and a page that is
  * showing progress all start the same run if this one never arrives.
  */
+/** Never throws: the translation is saved, and an admin can still publish the language by hand. */
+async function grantFreeLanguage(client: Client, propertyId: string, locale: string): Promise<void> {
+  try {
+    const [{ grantLocales }, { getCompany }, { listingCatalog }] = await Promise.all([import('./translation-entitlement'), import('../runtime-config'), import('../listing-packages')]);
+    await grantLocales(client, propertyId, [locale], listingCatalog((await getCompany()).services).translation, { lift: false });
+  } catch (error) {
+    console.error(`[translate] free language not published for ${propertyId}/${locale}`, error instanceof Error ? error.message : error);
+  }
+}
+
 export async function kickTranslation(origin: string): Promise<void> {
   const secret = process.env.CRON_SECRET ?? import.meta.env.CRON_SECRET;
   if (!secret || !origin) return;

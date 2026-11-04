@@ -706,6 +706,10 @@ console.log('AI translation: the rules around the model');
 {
   const core = await import('../src/lib/ai/translate-core.ts');
   const engine = await import('../src/lib/ai/translate.ts');
+  const glossary = await import('../src/lib/ai/translation-glossary.ts');
+  const slugs = await import('../src/lib/listing-slug.ts');
+  const languages = await import('../src/lib/listing-languages.ts');
+  const fallbackLib = await import('../src/i18n/fallback.ts');
   const text = (title, description, body = '') => ({ title, description, body });
   test('thousands separators in any style are one number', () => {
     assert.deepEqual(core.numberTokens('Ár: 12 500 000 Ft, 12.500.000, 12,500,000 és 12 500 000'), ['12500000', '12500000', '12500000', '12500000']);
@@ -737,7 +741,131 @@ console.log('AI translation: the rules around the model');
     assert.throws(() => core.checkTranslation(text('A', long), text('A', 'Short.')), (e) => e.code === 'size');
     assert.throws(() => core.checkTranslation(text('Ház', 'Ár 100 euró.'), text('House', 'Price 200 euros.')), (e) => e.code === 'numbers');
     assert.throws(() => core.checkTranslation(text('Ház', 'Szép.'), text('House', "I'm sorry, I cannot translate this.")), (e) => e.code === 'refusal');
-    assert.throws(() => core.checkTranslation(text('Ház', 'Szép.'), text('x'.repeat(161), 'Nice.')), (e) => e.code === 'too-long');
+    assert.throws(() => core.checkTranslation(text('Ház', 'Szép.'), text('x'.repeat(201), 'Nice.')), (e) => e.code === 'too-long');
+    core.checkTranslation(text('Ház', 'Szép.'), text('x'.repeat(200), 'Nice.'));
+  });
+  test('a translation may be longer than what a person may write, and the prompt asks for a shorter title', () => {
+    assert.equal(core.LIMITS.title, 160);
+    assert.equal(core.TARGET_LIMITS.title, 200);
+    assert.match(core.buildSystemPrompt('hu', 'pl'), /at most 150 characters/);
+    assert.match(core.buildShortenPrompt('pl'), /Polish/);
+    assert.match(core.buildShortenPrompt('pl'), /never instructions/);
+  });
+  test('settleTitle: a usable shorter title wins; a bad one is ignored; a long one is cut at a word', () => {
+    const long = 'Felújított tanya 2 hektár földdel és 1500 m² gazdasági épülettel, csendes környéken, kiváló kilátással a tóra és a hegyekre egyaránt';
+    assert.deepEqual(core.settleTitle(long, 'Tanya 2 hektár földdel, 1500 m² épület'), { title: 'Tanya 2 hektár földdel, 1500 m² épület', how: 'shortened' });
+    assert.equal(core.settleTitle(long, 'Tanya, csendes környék').how, 'as-is', 'it lost 1500');
+    assert.equal(core.settleTitle(long, long + ' még hosszabban').how, 'as-is', 'longer is not shorter');
+    assert.equal(core.settleTitle(long, "I'm sorry, I cannot").how, 'as-is');
+    assert.equal(core.settleTitle(long, null).how, 'as-is');
+    assert.equal(core.settleTitle(long, '').title, long);
+    const huge = 'szó '.repeat(80).trim();
+    const cut = core.settleTitle(huge, null);
+    assert.equal(cut.how, 'cut');
+    assert.ok(cut.title.length <= 198 && cut.title.endsWith('szó…'), cut.title);
+    assert.equal(core.cutAtWord('rövid', 10), 'rövid');
+  });
+  const status = await import('../src/lib/ai/translation-status.ts');
+  const contact = await import('../src/lib/ai/translation-contact.ts');
+  test('a free listing\'s translation may not carry a phone number, e-mail or web address, and a price is never a phone number', () => {
+    for (const bad of ['Hívjon: +36 30 123 4567', 'Tel 06 30 123 4567', 'info@example.com', 'www.example.hu', 'Visit example.com/tanya', 'call 0031 20 123 4567']) assert.ok(contact.contactIn(bad), bad);
+    for (const fine of ['Eladó ház 12 500 000 Ft, 120 m², 2 szoba, 1998-ban épült', 'Postcode 8254 Kékkút, plot 1500 m²', 'Price 12.500.000 HUF', 'hrsz. 0123/4', 'GPS 46.85, 17.56']) assert.equal(contact.contactIn(fine), null, fine);
+    const fails2 = (output, free) => core.checkTranslation(src, output, { freeListing: free });
+    const withPhone = text('Family house', 'Lovely house, 120 m², built in 1998. Call +36 30 123 4567.', 'Three rooms.\n\nLarge garden, on an 800 m² plot.');
+    assert.throws(() => fails2(withPhone, true), (e) => e.code === 'contact' && e.output === withPhone);
+    assert.throws(() => fails2(withPhone, false), (e) => e.code === 'numbers' || e.code === 'contact', 'a paid listing skips the contact check (the digits still count as numbers)');
+    fails2(text('Family house', 'Lovely house, 120 m², built in 1998.', 'Three rooms.\n\nLarge garden, on an 800 m² plot.'), true);
+  });
+  test('a refused answer carries the text it wrote, and the retry is told what was wrong', () => {
+    const wrong = text('House', 'Price 999 m².', 'x');
+    let error = null;
+    try { core.checkTranslation(src, wrong); } catch (e) { error = e; }
+    assert.ok(error instanceof core.TranslationCheckError && error.output === wrong);
+    assert.match(core.retryFeedback(error), /numbers/i);
+    assert.equal(core.retryFeedback(new Error('x')), null);
+    assert.match(core.buildSystemPrompt('hu', 'de', core.retryFeedback(error)), /A previous attempt was refused/);
+    assert.doesNotMatch(core.buildSystemPrompt('hu', 'de'), /previous attempt/);
+  });
+  test('every failure has a short code and a Hungarian name', () => {
+    assert.equal(core.failCodeOf(new core.TranslationCheckError('too-long', 'x')), 'too-long');
+    assert.equal(core.failCodeOf(Object.assign(new Error('x'), { code: 'openai-429' })), 'openai-429');
+    assert.equal(core.failCodeOf(Object.assign(new Error('x'), { name: 'AbortError' })), 'timeout');
+    assert.equal(core.failCodeOf(new SyntaxError('x')), 'bad-json');
+    assert.equal(core.failCodeOf(new Error('x')), 'error');
+    assert.equal(core.failCodeHu('too-long'), 'Túl hosszú cím vagy szöveg');
+    assert.equal(core.failCodeHu('openai-503'), 'Az OpenAI nem érhető el');
+    assert.equal(core.failCodeHu(null), '');
+  });
+  test('the languages split into Europe and the World, in site order', () => {
+    const groups = core.localeGroups(['hu', 'nl', 'tr', 'en', 'ar', 'sr']);
+    assert.deepEqual(groups, { europe: ['hu', 'nl', 'en', 'sr'], world: ['tr', 'ar'] });
+  });
+  const fact = (locale, over = {}) => ({ property_id: 'p', locale, excluded: false, has_text: false, machine: null, manual_override: null, needs_review: null, translated_from: null, source_hash: null, validated_at: null, check_warnings: null, job_id: null, job_status: null, job_origin: null, fail_code: null, last_error: null, attempts: null, job_finished_at: null, ...over });
+  const ctx = { sourceLocale: 'hu', sourceHash: 'H2' };
+  const stat = (f, c = ctx) => status.translationStatus(f, c).status;
+  test('the eight statuses, decided in one place', () => {
+    assert.equal(stat(fact('hu', { has_text: true })), 'source');
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2' })), 'ok');
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2', needs_review: true, check_warnings: ['A címet az AI lerövidítette.'] })), 'review');
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1' })), 'stale');
+    assert.equal(stat(fact('pl', { job_status: 'queued' })), 'pending');
+    assert.equal(stat(fact('pl', { job_status: 'requested' })), 'pending');
+    assert.equal(stat(fact('pl', { job_status: 'failed', fail_code: 'too-long', last_error: 'A fordított cím túl hosszú.' })), 'failed');
+    assert.equal(stat(fact('pl', { excluded: true, has_text: true })), 'excluded');
+    assert.equal(stat(fact('pl')), 'missing');
+  });
+  test('a status says why, in Hungarian', () => {
+    const failed = status.translationStatus(fact('pl', { job_status: 'failed', fail_code: 'too-long' }), ctx);
+    assert.equal(failed.label, 'Hibás: Túl hosszú cím vagy szöveg');
+    assert.match(failed.reason, /Túl hosszú/);
+    assert.equal(status.translationStatus(fact('pl', { job_status: 'requested' }), ctx).label, 'Jóváhagyásra vár');
+    assert.equal(status.translationStatus(fact('pl', { job_status: 'queued' }), { ...ctx, capped: true }).label, 'Folyamatban (napi keret elérve)');
+    assert.equal(status.translationStatus(fact('pl', { job_status: 'running' }), { ...ctx, capped: true }).label, 'Folyamatban', 'only a waiting job is held back by the budget');
+  });
+  test('a failed job does not hide a text that is current; a stale text is not hidden by a failed re-translation either', () => {
+    assert.equal(stat(fact('pl', { job_status: 'failed', has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2' })), 'ok', 'the old text is still right');
+    assert.equal(stat(fact('pl', { job_status: 'failed', has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1', fail_code: 'numbers' })), 'failed');
+    assert.equal(stat(fact('pl', { job_status: 'done', has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2' })), 'ok');
+  });
+  test('a hand-made text is ok, shows it was edited, and goes stale when the source changes', () => {
+    const edited = fact('de', { has_text: true, machine: false, manual_override: true, translated_from: 'hu', source_hash: 'H1' });
+    assert.equal(stat(edited), 'stale');
+    const current = status.translationStatus({ ...edited, source_hash: 'H2' }, ctx);
+    assert.deepEqual([current.status, current.manual, current.reason], ['ok', true, 'Kézzel javított szöveg.']);
+    assert.equal(stat(fact('nl', { has_text: true, machine: false })), 'ok', 'text a person wrote as an original is never stale');
+  });
+  test('without a source fingerprint nothing is called stale', () => {
+    assert.equal(stat(fact('pl', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1' }), { sourceLocale: 'hu', sourceHash: '' }), 'ok');
+  });
+  test('counts and the column summary line', () => {
+    const infos = ['ok', 'ok', 'failed', 'pending', 'missing'].map((s) => ({ status: s }));
+    const counts = status.countStatuses(infos);
+    assert.equal(status.summaryLine(counts), '2 kész · 1 folyamatban · 1 hibás');
+    assert.equal(status.summaryLine(status.countStatuses([])), '');
+    assert.deepEqual(status.STATUS_ORDER.slice(0, 2), ['failed', 'stale']);
+  });
+  test('before publishing, bought languages that a visitor cannot read are named; one still being made is only news', () => {
+    const facts = [
+      fact('pl', { job_status: 'failed', fail_code: 'numbers' }),
+      fact('de', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H2', job_status: 'done', job_origin: 'upload_paid' }),
+      fact('fr', { job_status: 'queued' }),
+      fact('es', { excluded: true }),
+      fact('it', { has_text: true, machine: true, translated_from: 'hu', source_hash: 'H1' }),
+    ];
+    const result = status.languageProblems(facts, ctx, ['pl', 'de', 'fr', 'es', 'it', 'nl']);
+    assert.deepEqual(result.blocking.map((i) => [i.locale, i.status]), [['pl', 'failed'], ['it', 'stale']]);
+    assert.deepEqual(result.waiting.map((i) => i.locale), ['fr']);
+    assert.deepEqual(status.languageProblems(facts, ctx, []).blocking, []);
+  });
+  test('bought languages are read from the jobs: paid and package ones that were not cancelled or declined', () => {
+    const jobs = [
+      { locale: 'de', origin: 'upload_paid', status: 'done' }, { locale: 'fr', origin: 'after_publish_paid', status: 'failed' },
+      { locale: 'es', origin: 'package', status: 'queued' }, { locale: 'it', origin: 'admin', status: 'done' },
+      { locale: 'nl', origin: 'free', status: 'requested' }, { locale: 'pl', origin: 'upload_paid', status: 'cancelled' },
+      { locale: 'lt', origin: 'upload_paid', status: 'declined' }, { locale: 'de', origin: 'package', status: 'done' },
+    ];
+    assert.deepEqual(status.expectedFromJobs(jobs).sort(), ['de', 'es', 'fr']);
+    assert.deepEqual(status.blankFact('p', 'xx').locale, 'xx');
   });
   test('long prose splits on paragraphs, never mid-word, and loses nothing', () => {
     const paragraph = 'Ez egy mondat. '.repeat(300).trim();
@@ -813,13 +941,15 @@ console.log('AI translation: the rules around the model');
   });
   const orders = await import('../src/lib/orders.ts');
   const paid = await import('../src/lib/ai/translation-orders.ts');
-  test('a translation line remembers its languages and is priced by their count', () => {
+  test('single languages on an order are priced one by one, and what Go already includes is free', () => {
+    // de is part of Go (the original, English and German), so only fr and lt are bought: €1 each.
     const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [{ id: 'translation', quantity: 99, locales: ['de', 'fr', 'de', 'lt'] }] }, 'hu');
     const line = lines.find((l) => l.id === 'translation');
-    assert.deepEqual(line.locales, ['de', 'fr', 'lt']);
-    assert.equal(line.quantity, 3);
-    assert.equal(line.unitCents, 2500);
-    assert.deepEqual(paid.translationLocalesOf(lines), ['de', 'fr', 'lt']);
+    assert.deepEqual(line.locales, ['fr', 'lt']);
+    assert.equal(line.quantity, 2);
+    assert.equal(line.unitCents, 100);
+    assert.deepEqual(paid.translationLocalesOf(lines), ['fr', 'lt']);
+    assert.equal(lines.find((l) => l.id === 'translation-package'), undefined, 'Go has no line: it costs nothing');
   });
   test('Hungarian, unknown languages and an empty list are refused on an order', () => {
     for (const locales of [['hu'], ['xx'], [], ['de', 'hu']]) {
@@ -831,13 +961,17 @@ console.log('AI translation: the rules around the model');
     assert.equal(lines.find((l) => l.id === 'translation').quantity, 2);
     assert.deepEqual(paid.translationLocalesOf(lines), []);
   });
-  test('the suggested order charges the languages asked for that the listing does not have yet', () => {
+  test('the suggested order asks for the languages the listing does not have yet, as single languages of the chosen package', () => {
     const base = { package: 'normal-12m', price_huf: 50_000_000, video_url: null, homepage_featured: false, featured: false };
-    const pick = (locales, translations) => orders.suggestSelection({ ...base, locales, requested: { translations } }).extras.find((e) => e.id === 'translation');
-    assert.deepEqual(pick(['hu'], ['nl', 'de', 'lt']), { id: 'translation', quantity: 3, locales: ['nl', 'de', 'lt'] });
-    assert.deepEqual(pick(['hu', 'de'], ['nl', 'de']), { id: 'translation', quantity: 1, locales: ['nl'] }, 'a language already there is not sold again');
-    assert.equal(pick(['hu', 'nl'], []), undefined, 'text the owner wrote is not billed as a translation');
-    assert.equal(pick(['hu'], ['hu']), undefined);
+    const pick = (locales, translations, extra = {}) => orders.suggestSelection({ ...base, locales, requested: { translations, ...extra } }).translation;
+    assert.deepEqual(pick(['hu'], ['nl', 'de', 'lt']), { packageId: 'go', extraLocales: ['nl', 'de', 'lt'], excludedLocales: [] });
+    assert.deepEqual(pick(['hu', 'de'], ['nl', 'de']).extraLocales, ['nl'], 'a language already there is not sold again');
+    assert.deepEqual(pick(['hu', 'nl'], []).extraLocales, [], 'text the owner wrote is not billed as a translation');
+    assert.deepEqual(pick(['hu'], ['hu']).extraLocales, []);
+    assert.equal(pick(['hu'], [], { translationPackage: 'europe' }).packageId, 'europe');
+    assert.equal(pick(['hu'], [], { translationPackage: 'nonsense' }).packageId, 'go', 'a package that does not exist falls back to Go');
+    assert.deepEqual(pick(['hu'], [], { translationPackage: 'world', excludedLocales: ['de', 'ar'] }).excludedLocales, ['de', 'ar']);
+    assert.equal(orders.suggestSelection({ ...base, locales: ['hu'], requested: { translations: ['nl'] } }).extras.find((e) => e.id === 'translation'), undefined, 'languages are no longer a separate extra');
   });
   test('only an order made of translations alone is a translation order', () => {
     assert.equal(paid.isTranslationOrder([{ id: 'translation', kind: 'extra' }]), true);
@@ -846,6 +980,281 @@ console.log('AI translation: the rules around the model');
     assert.equal(paid.isTranslationOrder(null), false);
   });
   const requestedLib = await import('../src/lib/portal/requested-extras.ts');
+  const listingCatalogLib = await import('../src/lib/listing-packages.ts');
+  /* ── Translation packages: Go / Európa / World, single languages, switching languages off ─────────── */
+  const tp = await import('../src/lib/translation-packages.ts');
+  const ll = await import('../src/lib/listing-languages.ts');
+  const companyCfg = await import('../src/config/company.ts');
+  const WORLD_ONLY = ['tr', 'he', 'ar', 'zh', 'ru'];
+  // The site as it will be once the seven new languages are added: 28 in all.
+  const T28 = [...LOCALES, 'sr', 'uk', ...WORLD_ONLY];
+  const T21 = [...LOCALES];
+  const pcfg = (stored) => tp.translationPricing(stored, companyCfg.TRANSLATION_PACKAGES, T28);
+  const cfg0 = pcfg(undefined);
+  const sel = (packageId, extraLocales = [], excludedLocales = []) => ({ packageId, extraLocales, excludedLocales, sourceLocale: 'hu' });
+  const cents = (lines) => tp.translationTotalCents(lines);
+
+  test('the packages are rules: Go is English and German, Európa is everything but the World-only languages, World is everything', () => {
+    const [go, europe, world] = ['go', 'europe', 'world'].map((id) => tp.packageById(cfg0, id));
+    assert.deepEqual(tp.packageLocales(go, T28), ['en', 'de']);
+    assert.equal(tp.packageLocales(europe, T28).length, 23, 'Európa: 28 languages minus the five World-only ones, the original included');
+    assert.equal(WORLD_ONLY.some((code) => tp.packageLocales(europe, T28).includes(code)), false);
+    assert.equal(tp.packageLocales(world, T28).length, 28);
+    // The count a card shows is the original language included, and counts it once.
+    assert.deepEqual([go, europe, world].map((p) => tp.packageLanguageCount(p, T28)), [3, 23, 28]);
+    // Without the new languages the same rules still hold: a language added later joins by itself.
+    assert.deepEqual([go, europe, world].map((p) => tp.packageLanguageCount(p, T21)), [3, 21, 21]);
+    assert.equal(tp.packageLocales(europe, T28).includes('sr') && tp.packageLocales(europe, T28).includes('uk'), true, 'sr and uk are in Európa by the rule (open question 1)');
+  });
+
+  test('with all 28 languages a World listing is entitled to 27 targets, an Európa one to 22 (sr and uk among them), the original never', () => {
+    const own = (translationPackage) => ({ translationPackage, sourceLocale: 'hu' });
+    const world27 = tp.entitledLocales(own('world'), cfg0, T28);
+    const europe22 = tp.entitledLocales(own('europe'), cfg0, T28);
+    assert.equal(world27.length, 27);
+    assert.equal(world27.includes('hu'), false);
+    for (const code of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) assert.ok(world27.includes(code), `World has ${code}`);
+    assert.equal(europe22.length, 22);
+    assert.ok(europe22.includes('sr') && europe22.includes('uk'));
+    for (const code of ['tr', 'he', 'ar', 'ru', 'zh']) assert.equal(europe22.includes(code), false, `Európa has no ${code}`);
+  });
+
+  test('English is in every package, even a hand-made list without it, and can never be switched off', () => {
+    const custom = pcfg({ packages: [{ id: 'europe', locales: ['fr', 'es'] }] });
+    assert.deepEqual(tp.packageLocales(tp.packageById(custom, 'europe'), T28), ['en', 'fr', 'es']);
+    const listing = { translationPackage: 'world', sourceLocale: 'hu' };
+    assert.deepEqual(tp.cleanExclusions(['en'], listing, cfg0, T28), { excluded: [], problem: 'exclude-en' });
+    assert.deepEqual(tp.cleanExclusions(['fr', 'en'], listing, cfg0, T28), { excluded: [], problem: 'exclude-en' }, 'a forged request naming English is refused, not trimmed');
+    assert.deepEqual(tp.cleanExclusions(['hu'], listing, cfg0, T28), { excluded: [], problem: 'is-source' });
+    assert.deepEqual(tp.cleanExclusions(['ar', 'de'], listing, cfg0, T28), { excluded: ['de', 'ar'] }, 'German and the others can go');
+    assert.deepEqual(tp.cleanExclusions(['ar'], { translationPackage: 'go', sourceLocale: 'hu' }, cfg0, T28), { excluded: [] }, 'a language the listing does not have cannot be switched off');
+    assert.deepEqual(tp.NON_EXCLUDABLE_LOCALES, ['en']);
+  });
+
+  test('what a listing is entitled to: package plus single languages, minus the original, minus what is switched off', () => {
+    const listing = { translationPackage: 'go', extraLocales: ['fr', 'ar'], excludedLocales: ['de'], sourceLocale: 'hu' };
+    assert.deepEqual(tp.entitledLocales(listing, cfg0, T28), ['en', 'fr', 'ar']);
+    assert.deepEqual(tp.grantedLocales(listing, cfg0, T28), ['en', 'de', 'fr', 'ar'], 'switching off keeps what was granted');
+    // A text a person wrote in a language is theirs to publish.
+    assert.deepEqual(tp.entitledLocales({ translationPackage: 'go', writtenLocales: ['pl'], sourceLocale: 'hu' }, cfg0, T28), ['en', 'de', 'pl']);
+    // A Dutch seller: Go is nl + en + de.
+    assert.deepEqual(tp.entitledLocales({ translationPackage: 'go', sourceLocale: 'nl' }, cfg0, T28), ['en', 'de']);
+    assert.deepEqual(tp.packageLocales(tp.packageById(cfg0, 'europe'), T28).includes('hu'), true, 'for a Dutch seller Hungarian is a target');
+  });
+
+  test('prices: Go + fr + es + ar = €7, Európa + tr + ru = €22, five World-only singles = €25, Európa + five = €37', () => {
+    assert.equal(cents(tp.translationLines(sel('go', ['fr', 'es', 'ar']), cfg0, 'hu', T28)), 700);
+    assert.equal(cents(tp.translationLines(sel('europe', ['tr', 'ru']), cfg0, 'hu', T28)), 2200);
+    assert.equal(cents(tp.translationLines(sel('go', WORLD_ONLY), cfg0, 'hu', T28)), 2500);
+    assert.equal(cents(tp.translationLines(sel('europe', WORLD_ONLY), cfg0, 'hu', T28)), 3700);
+    assert.equal(cents(tp.translationLines(sel('world'), cfg0, 'hu', T28)), 2500);
+    assert.equal(cents(tp.translationLines(sel('go'), cfg0, 'hu', T28)), 0);
+    assert.deepEqual(tp.translationLines(sel('go'), cfg0, 'hu', T28), [], 'Go has no line');
+    // A single language the package already includes is not bought: Európa includes fr, so €12 and nothing more.
+    assert.equal(cents(tp.translationLines(sel('europe', ['fr', 'de']), cfg0, 'hu', T28)), 1200);
+  });
+
+  test('the lines remember their languages; switching languages off never changes the price', () => {
+    const lines = tp.translationLines(sel('europe', ['tr', 'ru'], ['de', 'sr']), cfg0, 'hu', T28);
+    assert.deepEqual(lines.map((l) => [l.id, l.quantity, l.unitCents]), [['translation-package', 1, 1200], ['translation-world', 2, 500]]);
+    const pkg = lines[0];
+    assert.equal(pkg.packageId, 'europe');
+    assert.equal(pkg.locales.includes('de') || pkg.locales.includes('sr'), false, 'the line lists what stays on');
+    assert.equal(pkg.locales.includes('en'), true);
+    assert.equal(pkg.locales.includes('hu'), false, 'the original is not a translation');
+    assert.match(pkg.label, /Európa \(21 nyelv, 2 kizárva\)/);
+    assert.equal(cents(lines), cents(tp.translationLines(sel('europe', ['tr', 'ru']), cfg0, 'hu', T28)), 'the same total as with nothing switched off');
+    assert.deepEqual(lines[1].locales, ['tr', 'ru']);
+    assert.equal(tp.translationLines(sel('go', ['fr', 'ar']), cfg0, 'en', T28).map((l) => l.id).join(), 'translation,translation-world');
+  });
+
+  test('upgrades cost the difference; a package already held costs nothing more; singles bought earlier are not credited', () => {
+    assert.equal(cents(tp.translationLines(sel('europe'), cfg0, 'hu', T28, { currentPackageId: 'go' })), 1200);
+    assert.equal(cents(tp.translationLines(sel('world'), cfg0, 'hu', T28, { currentPackageId: 'europe' })), 1300);
+    assert.equal(cents(tp.translationLines(sel('world'), cfg0, 'hu', T28, { currentPackageId: 'go' })), 2500);
+    assert.deepEqual(tp.translationLines(sel('europe'), cfg0, 'hu', T28, { currentPackageId: 'europe' }), []);
+    assert.deepEqual(tp.translationLines(sel('europe'), cfg0, 'hu', T28, { currentPackageId: 'world' }), [], 'never a refund or a negative line');
+    assert.equal(tp.upgradePriceEur('europe', 'world', cfg0), 13);
+    assert.match(tp.translationLines(sel('world'), cfg0, 'hu', T28, { currentPackageId: 'europe' })[0].label, /bővítés/);
+    assert.doesNotMatch(tp.translationLines(sel('europe'), cfg0, 'hu', T28, { currentPackageId: 'go' })[0].label, /bővítés/, 'from Go it is a first purchase, not an upgrade');
+  });
+
+  test('the picker suggests the cheaper way to the same languages', () => {
+    const hint = (packageId, extras) => tp.cheaperPackageHint(sel(packageId, extras), cfg0, T28);
+    assert.equal(hint('europe', ['tr', 'ru', 'ar']), 'world', 'Európa + three World-only = €27 > World €25');
+    assert.equal(hint('go', ['fr', 'es', 'it', 'pt', 'pl', 'ro', 'sk', 'el', 'cs', 'sl', 'sv', 'da']), 'europe', 'Go + 12 European singles = €12 = Európa');
+    assert.equal(hint('go', WORLD_ONLY), 'world', 'Go + five World-only = €25 = World, which adds every European language');
+    assert.equal(hint('go', ['tr', 'ru']), null);
+    assert.equal(hint('europe', ['tr', 'ru']), null, 'Európa + two = €22 < World');
+    assert.equal(hint('go', ['fr']), null);
+    assert.equal(hint('world', []), null);
+    assert.equal(hint('go', []), null);
+  });
+
+  test('the World deal is checked: it stays obvious only while World costs no more than Európa plus every World-only language', () => {
+    assert.deepEqual(tp.worldDeal(cfg0), { ok: true, europePlusSingles: 37, worldOnlySum: 25, world: 25, europe: 12 });
+    assert.equal(tp.worldDeal(pcfg({ packages: [{ id: 'world', priceEur: 40 }] })).ok, false);
+    assert.equal(tp.worldDeal(pcfg({ singleEur: { world: 1 } })).ok, false, 'cheap World-only singles make Európa + singles cheaper');
+  });
+
+  test('the configuration is clamped: bad numbers fall back, Go is always free and on, exactly one package is recommended', () => {
+    const odd = pcfg({
+      singleEur: { european: -3, world: 'abc' },
+      packages: [{ id: 'go', priceEur: 99, active: false, recommended: true }, { id: 'europe', priceEur: 999999, recommended: true }, { id: 'world', recommended: true }, { id: 'ghost', priceEur: 1 }],
+    });
+    assert.deepEqual(odd.singleEur, { european: 1, world: 5 });
+    assert.deepEqual(odd.packages.map((p) => p.id), ['go', 'europe', 'world']);
+    assert.equal(odd.packages[0].priceEur, 0);
+    assert.equal(odd.packages[0].active, true);
+    assert.equal(odd.packages[1].priceEur, 12, 'an absurd price is ignored');
+    assert.equal(odd.packages.filter((p) => p.recommended).length, 1);
+    assert.equal(odd.packages[0].recommended, false, 'Go is not for sale, so never recommended');
+    // Prices saved before the new languages exist must not forget the World-only list.
+    assert.deepEqual(pcfg({ worldOnly: ['tr', 'he', 'en', 'Türkçe', '12', 'tr'] }).worldOnly, ['tr', 'he']);
+    assert.deepEqual(tp.translationPricing({ worldOnly: ['tr', 'ru'] }, companyCfg.TRANSLATION_PACKAGES, T21).worldOnly, ['tr', 'ru']);
+    assert.equal(pcfg(null).packages.length, 3);
+    assert.equal(pcfg('garbage').singleEur.european, 1);
+  });
+
+  test('the pitch is filled in from the configuration, so its numbers can never go stale', () => {
+    const world = tp.packageById(cfg0, 'world');
+    const text = tp.renderPitch(world, 'hu', cfg0, T28);
+    assert.match(text, /28 nyelven/);
+    assert.match(text, /25 €/);
+    assert.match(text, /37 €/);
+    assert.doesNotMatch(text, /\{\w+\}/);
+    const dearer = pcfg({ packages: [{ id: 'europe', priceEur: 15 }], singleEur: { world: 6 } });
+    assert.match(tp.renderPitch(tp.packageById(dearer, 'world'), 'hu', dearer, T28), /45 €/, 'Európa 15 + five at 6 = 45');
+    assert.match(tp.renderPitch(tp.packageById(cfg0, 'go'), 'en', cfg0, T28), /€1 each.*€5 each/);
+  });
+
+  /* publication: render / fallback / redirect */
+  const policy = (over = {}) => ({ gated: true, sourceLocale: 'hu', languagesWithText: ['hu', 'en', 'de'], translationPackage: 'go', extraLocales: [], excludedLocales: [], ...over });
+  const serve = (p, locale, mode) => ll.servingOf(p, locale, cfg0, T28, mode);
+
+  test('a listing page renders in the original, in what was bought and made, and only there', () => {
+    const p = policy();
+    assert.deepEqual(serve(p, 'hu'), { serve: 'render' });
+    assert.deepEqual(serve(p, 'en'), { serve: 'render' });
+    assert.deepEqual(serve(p, 'de'), { serve: 'render' });
+    assert.deepEqual(serve(p, 'fr'), { serve: 'redirect', permanent: true }, 'not bought: no page, a permanent move to English');
+    assert.deepEqual(serve(p, 'fr', 'fallback'), { serve: 'fallback' }, 'the alternative: a page with English text, not indexed');
+    assert.deepEqual(ll.publishedLocales(p, cfg0, T28), ['hu', 'en', 'de']);
+  });
+
+  test('a language that was bought but has no text yet is a temporary move to English, never an empty page', () => {
+    const p = policy({ translationPackage: 'world', languagesWithText: ['hu', 'en'] });
+    assert.deepEqual(serve(p, 'pl'), { serve: 'redirect', permanent: false });
+    assert.deepEqual(serve(p, 'de'), { serve: 'redirect', permanent: false }, 'even a Go language, until it exists');
+    assert.deepEqual(serve(p, 'pl', 'fallback'), { serve: 'redirect', permanent: false }, 'the fallback flag is only for languages that were not bought');
+  });
+
+  test('a language that is switched off has no page: a permanent move to English, no hreflang, no sitemap entry, no switcher entry', () => {
+    const p = policy({ translationPackage: 'world', languagesWithText: ['hu', 'en', 'de', 'fr', 'ar'], excludedLocales: ['ar', 'de'] });
+    assert.deepEqual(serve(p, 'ar'), { serve: 'redirect', permanent: true });
+    assert.deepEqual(serve(p, 'de'), { serve: 'redirect', permanent: true }, 'German can be switched off too');
+    assert.deepEqual(serve(p, 'fr'), { serve: 'render' });
+    assert.deepEqual(ll.publishedLocales(p, cfg0, T28), ['hu', 'en', 'fr']);
+    assert.deepEqual(ll.switcherLocales(p, cfg0, T28), ['hu', 'en', 'fr']);
+    assert.equal(ll.listedIn(p, 'ar', cfg0, T28), false);
+    assert.equal(ll.listedIn(p, 'fr', cfg0, T28), true);
+    // The text of a language that is off is kept: switching it back on publishes it with no new work.
+    const back = { ...p, excludedLocales: ['de'] };
+    assert.deepEqual(serve(back, 'ar'), { serve: 'render' });
+  });
+
+  test('English always has a page (the fallback text of every language), even before its translation exists or when nothing was bought', () => {
+    const p = policy({ languagesWithText: ['hu'], excludedLocales: [] });
+    assert.deepEqual(serve(p, 'en'), { serve: 'fallback' });
+    assert.deepEqual(serve(p, 'hu'), { serve: 'render' });
+    assert.equal(ll.switcherLocales(p, cfg0, T28).includes('en'), true);
+    // An English listing: Go is en + de + the original, and English cannot be switched off even by a forged list.
+    assert.deepEqual(serve(policy({ sourceLocale: 'en', languagesWithText: ['en'] }), 'en'), { serve: 'render' });
+    assert.deepEqual(serve(policy({ excludedLocales: ['en'], languagesWithText: ['hu', 'en'] }), 'en'), { serve: 'fallback' }, 'a bad row still never takes the English page away');
+  });
+
+  test('a text a person wrote in a language is published without a purchase', () => {
+    const p = policy({ languagesWithText: ['hu', 'fr'], writtenLocales: ['fr'] });
+    assert.deepEqual(serve(p, 'fr'), { serve: 'render' });
+    const machineOnly = policy({ languagesWithText: ['hu', 'fr'], writtenLocales: [] });
+    assert.deepEqual(serve(machineOnly, 'fr'), { serve: 'redirect', permanent: true }, 'a machine text nobody bought is not published');
+  });
+
+  test('before migration 0052 nothing changes: every language that has a text is served, as it always was', () => {
+    const p = { gated: false, sourceLocale: 'hu', languagesWithText: ['hu', 'fr'] };
+    for (const code of T28) assert.deepEqual(serve(p, code), { serve: 'render' });
+    assert.deepEqual(ll.publishedLocales(p, cfg0, T28), ['hu', 'fr']);
+  });
+
+  test('the invoice carries the package line with its languages and the price note, and says Go is included', async () => {
+    const inv = await import('../src/lib/invoicing/catalogue.ts');
+    const items = inv.invoiceCatalogue();
+    const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation: { packageId: 'europe', excludedLocales: ['pl'] } }, 'hu');
+    const pkgInvoice = inv.invoiceLineFromOrder(lines.find((l) => l.id === 'translation-package'), items);
+    assert.match(pkgInvoice.description, /Európa \(20 nyelv, 1 kizárva\)/);
+    assert.match(pkgInvoice.description, /A csomag ára nem változik, ha egyes nyelveket kizár\./);
+    assert.match(pkgInvoice.descriptionNl, /De prijs van het pakket blijft gelijk/);
+    assert.equal(pkgInvoice.unitCents, 1200);
+    assert.equal(inv.goIncludedLine(lines), null, 'a bigger package names its languages itself');
+    const goLines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [] }, 'hu');
+    const go = inv.goIncludedLine(goLines);
+    assert.equal(go.description, 'Fordítás: Go (angol, német) – benne van');
+    assert.equal(go.unitCents, 0);
+    assert.equal(inv.goIncludedLine([{ kind: 'extra', id: 'renewal-6m', quantity: 1, unitCents: 100, label: 'x' }]), null, 'only a listing order');
+  });
+
+  /* orders */
+  test('a package is one order line that remembers the package and the languages it covers', () => {
+    const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation: { packageId: 'europe', extraLocales: [], excludedLocales: ['de'] } }, 'hu');
+    const line = lines.find((l) => l.id === 'translation-package');
+    assert.equal(line.packageId, 'europe');
+    assert.equal(line.unitCents, 1200);
+    assert.equal(line.locales.includes('de'), false);
+    assert.equal(line.locales.includes('en'), true);
+    assert.equal(line.locales.length, 19, '20 translation targets, German switched off');
+    assert.deepEqual(paid.translationPurchaseOf(lines), { packageId: 'europe', singles: [], packageLocalesPaid: line.locales });
+    assert.deepEqual(paid.translationLocalesOf(lines), line.locales);
+    assert.equal(paid.isTranslationOrder(lines.filter((l) => l.id === 'translation-package')), true);
+    // The legal order total: the listing package plus Európa.
+    assert.equal(orders.orderTotalCents(lines), orders.orderTotalCents(lines.filter((l) => l.kind === 'package')) + 1200);
+  });
+
+  test('an order never takes English off, never sells a package that is off the shelf, and never trusts the browser for money', () => {
+    const build = (translation) => () => orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation }, 'hu');
+    assert.throws(build({ packageId: 'europe', excludedLocales: ['en'] }), (e) => e.code === 'exclude-en');
+    assert.throws(build({ packageId: 'go', extraLocales: ['fr'], excludedLocales: ['fr', 'en'] }), (e) => e.code === 'exclude-en');
+    assert.throws(build({ packageId: 'platinum' }), (e) => e.code === 'unknown-package');
+    assert.throws(build({ packageId: 'go', extraLocales: ['hu'] }), (e) => e.code === 'bad-locale');
+    assert.throws(build({ packageId: 'go', extraLocales: ['xx'] }), (e) => e.code === 'bad-locale');
+    assert.throws(build({ packageId: 'go', excludedLocales: ['hu'] }), (e) => e.code === 'bad-locale');
+    const shelf = listingCatalogLib.listingCatalog({ translationPackages: { packages: [{ id: 'europe', active: false }] } });
+    assert.throws(() => orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation: { packageId: 'europe' } }, 'hu', shelf), (e) => e.code === 'unknown-package');
+    // Prices: only the catalogue's, whatever the browser says.
+    const dear = listingCatalogLib.listingCatalog({ translationPackages: { packages: [{ id: 'europe', priceEur: 14 }], singleEur: { european: 2 } } });
+    const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation: { packageId: 'europe', price: 1, unitCents: 1 } }, 'hu', dear);
+    assert.equal(lines.find((l) => l.id === 'translation-package').unitCents, 1400);
+    const singles = orders.buildOrderLines({ packageId: 'normal-12m', extras: [{ id: 'translation', quantity: 1, locales: ['fr'] }] }, 'hu', dear);
+    assert.equal(singles.find((l) => l.id === 'translation').unitCents, 200, 'a language on its own costs what the admin set');
+  });
+
+  test('an old-style "translation" extra and a package merge into the same single-language pricing', () => {
+    const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [{ id: 'translation', quantity: 2, locales: ['fr', 'es'] }], translation: { packageId: 'go', extraLocales: ['es', 'pl'] } }, 'hu');
+    assert.equal(lines.filter((l) => l.id === 'translation').length, 1, 'one line, not two');
+    assert.equal(lines.find((l) => l.id === 'translation').quantity, 3);
+    assert.deepEqual([...lines.find((l) => l.id === 'translation').locales].sort(), ['es', 'fr', 'pl']);
+  });
+
+  test('a free-link owner can ask for any package but no price is shown or stored; requested extras carry only ids, and never English', () => {
+    const asked = requestedLib.extrasFromForm({ translation_package: 'world', translations: 'fr nl', translation_excluded: 'en,de,xx,fr', package: 'normal-12m' });
+    assert.equal(asked.translationPackage, 'world');
+    assert.deepEqual(asked.excludedLocales, ['de', 'fr'], 'English is dropped silently from a stored wish; the server refuses it when it matters');
+    assert.equal(requestedLib.extrasFromForm({ translation_package: 'platinum' }).translationPackage, undefined);
+    assert.equal(requestedLib.hasRequests({ translationPackage: 'europe' }), true);
+    assert.equal(requestedLib.hasRequests({ translationPackage: 'go' }), false);
+    assert.ok(requestedLib.describeRequestedExtras({ translationPackage: 'world', excludedLocales: ['de'] }).some((line) => /World/.test(line)));
+  });
+
+
   test('a request can name any of the twenty languages, and nothing else', () => {
     const all = core.OWNER_TARGETS.join(' ');
     assert.equal(requestedLib.extrasFromForm({ translations: `${all} hu xx DE` }).translations.length, 20);
@@ -885,6 +1294,93 @@ console.log('AI translation: the rules around the model');
     try { await engine.translateListing(src, 'hu', 'en', mock(() => ({ title: 'House', description: 'Price 999 m².', body: 'x' })), 'gpt-4o-mini'); } catch (error) { refused = error; }
     test('an answer that breaks the checks never comes back as a translation', () => {
       assert.ok(refused instanceof core.TranslationCheckError);
+    });
+
+    /* ── The seven languages added later: Chinese, Arabic, Hebrew, Ukrainian, Russian, Turkish, Serbian ─────────── */
+    const hu1500 = text('Felújított tanya 2 ha földdel', 'A tanya 1985-ben épült, 185 m² lakóterülettel.', `${'A birtok csendes környezetben fekszik, a kertből a dombokra nyílik kilátás, a gazdasági épületek jó állapotúak. '.repeat(14)}Irányár: 90 000 000 Ft.`.trim());
+    const zhBody = `${'这处农庄坐落在安静的环境中，花园可以眺望山丘，农用建筑状况良好。'.repeat(12)}参考价格：90 000 000 Ft。`;
+    test('a Chinese translation, far shorter than the Hungarian in characters, passes the checks (a 1,500-character description)', async () => {
+      assert.ok(hu1500.body.length > 1400);
+      const zh = await engine.translateListing(hu1500, 'hu', 'zh', mock(() => ({ title: '翻新农庄，2公顷土地', description: '农庄建于1985年，居住面积185 m²。', body: zhBody })), 'gpt-4o-mini');
+      assert.ok(zh.body.length < hu1500.body.length * 0.35, 'the old 35 % rule would have refused it');
+      assert.equal(core.sizeBoundsFor('zh')[0], 0.15);
+      assert.deepEqual([...core.sizeBoundsFor('ar')], [0.5, 2]);
+      assert.deepEqual([...core.sizeBoundsFor('fr')], [0.35, 3], 'every other language keeps the wide default');
+      assert.throws(() => core.checkTranslation(hu1500, { title: 'x', description: '农庄建于1985年，居住面积185 m²。', body: 'a'.repeat(5) }, { target: 'de' }), (e) => e.code === 'size', 'the same shortness is still refused for German');
+    });
+    test('the prompt asks for the right script and for Western digits where numbers would otherwise change shape', () => {
+      const sr = core.buildSystemPrompt('hu', 'sr');
+      assert.match(sr, /Serbian \(Latin script\)/);
+      assert.match(sr, /ekavian, in the Latin script only/);
+      assert.match(core.buildSystemPrompt('hu', 'zh'), /Simplified Chinese \(zh-Hans\)/);
+      for (const code of ['ar', 'he', 'zh']) assert.match(core.buildSystemPrompt('hu', code), /Western digits 0-9/, code);
+      for (const code of ['sr', 'uk', 'tr', 'ru', 'fr']) assert.doesNotMatch(core.buildSystemPrompt('hu', code), /Western digits/, code);
+      assert.match(core.buildSystemPrompt('hu', 'ar'), /tanya = مزرعة \(tanya\)/, 'the glossary reaches the prompt');
+      for (const code of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) {
+        assert.ok(core.HU_NAME[code] && core.englishName(code) !== code, `${code} has both names`);
+        assert.equal((glossary.TRANSLATION_GLOSSARY[code] ?? []).length, 13, `${code} glossary`);
+      }
+    });
+    test('Arabic-Indic, Persian and full-width digits count as the same numbers', () => {
+      assert.equal(core.toAsciiDigits('١٢٣ ۴۵۶ ７８９'), '123 456 789');
+      assert.deepEqual(core.numberTokens('السعر ٩٠٬٠٠٠٬٠٠٠ Ft'), ['90000000']);
+      assert.equal(core.numbersProblem('Ár: 90 000 000 Ft, 185 m², 1985', 'السعر: ٩٠٬٠٠٠٬٠٠٠ Ft، ١٨٥ m²، ١٩٨٥'), null, 'matching values pass');
+      assert.match(core.numbersProblem('Ár: 90 000 000 Ft, 185 m², 1985', 'السعر: ٩٠٬٠٠٠٬٠٠٠ Ft، ١٨٥ m²، ١٩٩٥'), /1985|1995/, 'a different value fails');
+      const arabic = { title: 'مزرعة مجدّدة', description: 'بنيت المزرعة عام ١٩٨٥ بمساحة سكنية ١٨٥ م².', body: '' };
+      const source = text('Felújított tanya', 'A tanya 1985-ben épült, 185 m² lakóterülettel.', '');
+      assert.doesNotThrow(() => core.checkTranslation(source, arabic, { target: 'ar' }));
+      assert.throws(() => core.checkTranslation(source, { ...arabic, description: 'بنيت المزرعة عام ١٩٩٥ بمساحة سكنية ١٨٥ م².' }, { target: 'ar' }), (e) => e.code === 'numbers');
+    });
+    test('Serbian in Cyrillic is refused and asked again in Latin; Latin passes; the other scripts are held to theirs', () => {
+      const source = text('Felújított tanya 2 ha földdel', 'A tanya 1985-ben épült, 185 m² lakóterülettel és nagy kerttel.', '');
+      const latin = { title: 'Renovirani salaš sa 2 ha zemlje', description: 'Salaš je izgrađen 1985. godine, sa 185 m² stambenog prostora i velikom baštom.', body: '' };
+      const cyrillic = { title: 'Реновирани салаш са 2 ха земље', description: 'Салаш је изграђен 1985. године, са 185 m² стамбеног простора и великом баштом.', body: '' };
+      assert.doesNotThrow(() => core.checkTranslation(source, latin, { target: 'sr' }));
+      let refusal = null;
+      try { core.checkTranslation(source, cyrillic, { target: 'sr' }); } catch (error) { refusal = error; }
+      assert.equal(refusal?.code, 'script');
+      assert.match(core.retryFeedback(refusal, { target: 'sr' }), /Latin script only/);
+      assert.equal(core.failCodeHu('script'), 'Rossz írásrendszer');
+      assert.doesNotThrow(() => core.checkTranslation(source, cyrillic, { target: 'uk' }), 'Cyrillic is right for Ukrainian');
+      assert.throws(() => core.checkTranslation(source, latin, { target: 'ru' }), (e) => e.code === 'script', 'Latin letters are not Russian');
+      assert.throws(() => core.checkTranslation(source, latin, { target: 'zh' }), (e) => e.code === 'script');
+      assert.doesNotThrow(() => core.checkTranslation(source, latin, { target: 'tr' }), 'Turkish is Latin, nothing to enforce');
+    });
+    test('a listing address is readable in every language: Latin words stay, Cyrillic is transliterated, Hebrew, Arabic and Chinese fall back to English, then the reference', () => {
+      assert.equal(slugs.categoryWord('woonhuis', 'nl', 'house', 'house'), 'woonhuis', 'a Latin word is untouched');
+      assert.equal(slugs.categoryWord('dům', 'cs', 'house', 'house'), 'dům', 'even with accents: no existing address changes');
+      assert.equal(slugs.categoryWord('хутор', 'ru', 'farm', 'farm'), 'khutor');
+      assert.equal(slugs.categoryWord('хутір', 'uk', 'farm', 'farm'), 'khutir');
+      assert.equal(slugs.categoryWord('Щасливий дім', 'uk', 'house', 'house'), 'shchaslyvyy-dim');
+      assert.equal(slugs.categoryWord('חווה', 'he', 'farm', 'farm'), 'farm');
+      assert.equal(slugs.categoryWord('مزرعة', 'ar', 'farm', 'farm'), 'farm');
+      assert.equal(slugs.categoryWord('农庄', 'zh', 'farm', 'farm'), 'farm');
+      assert.equal(slugs.categoryWord('农庄', 'zh', undefined, 'farm'), 'farm', 'no English word: the category key');
+      assert.equal(slugs.categoryWord('', 'ar', 'ab', 'farm'), 'farm', 'a two-letter English word is too short as well');
+      assert.deepEqual(slugs.safeCategorySlugs({ hu: 'tanya', en: 'farm', ru: 'хутор', ar: 'مزرعة' }, 'farm'), { hu: 'tanya', en: 'farm', ru: 'khutor', ar: 'farm' });
+      assert.equal(slugs.titleSlug('农庄出售', 'zh', 'Farm for sale', 'fd-1'), 'farm-for-sale');
+      assert.equal(slugs.titleSlug('农庄出售', 'zh', '', '1234'), 'fd-1234');
+      assert.equal(slugs.titleSlug('Хутор у Закарпатті', 'uk', 'x', '1'), 'khutor-u-zakarpatti');
+      assert.equal(slugs.asciiSlug('Veszprém megye'), 'veszprem-megye');
+    });
+    test('a page shows its own language, then English, German, Dutch, Hungarian, and says so when it is not its own', () => {
+      assert.deepEqual(languages.textOrder('ar'), ['ar', 'en', 'de', 'nl', 'hu']);
+      assert.deepEqual(languages.textOrder('en'), ['en', 'de', 'nl', 'hu']);
+      assert.deepEqual(languages.textOrder('de'), ['de', 'en', 'nl', 'hu']);
+      assert.deepEqual(languages.textOrder('nl'), ['nl', 'hu']);
+      assert.deepEqual(languages.textOrder('hu'), ['hu']);
+      assert.equal(fallbackLib.sourceNote('ar', 'en', 'description'), 'الوصف بالإنجليزية');
+      assert.equal(fallbackLib.sourceNote('zh', 'en', 'description'), '英文描述');
+      assert.equal(fallbackLib.sourceNote('he', 'de', 'description'), 'תיאור בגרמנית');
+      assert.equal(fallbackLib.sourceNote('ru', 'en', 'description'), 'Описание на английском языке');
+      assert.equal(fallbackLib.sourceNote('fr', 'en', 'description'), 'Description en anglais');
+      assert.equal(fallbackLib.sourceNote('de', 'hu', 'description'), 'Beschreibung auf Ungarisch', 'the old notes are unchanged');
+      assert.equal(fallbackLib.sourceNote('ar', 'ar', 'description'), null, 'its own language: nothing to say');
+      assert.equal(fallbackLib.sourceNote('hu', 'en', 'description'), null);
+      for (const code of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) {
+        assert.ok(fallbackLib.machineNote(code).length > 3 && fallbackLib.LISTING_UNAVAILABLE_NOTE[code].length > 10, code);
+        for (const from of ['nl', 'hu', 'en', 'de']) assert.ok(fallbackLib.sourceNote(code, from, 'article'), `${code} <- ${from}`);
+      }
     });
   })();
 }

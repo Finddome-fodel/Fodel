@@ -1,0 +1,330 @@
+---
+/**
+ * The translation choice: three packages (Go, Európa, World) as a radio group, single languages on top, and a
+ * collapsed "fine-tune" list to switch languages off (English is locked on).
+ *
+ * It is only form fields, so it works inside a form that is saved as a whole (the setup wizard) and beside one
+ * that is not (the review screen, the live listing's panel):
+ *   radio     `translation_package`        go | europe | world
+ *   checkbox  `translations`               single languages bought on top of the package
+ *   hidden    `translation_excluded`       the languages switched off, comma separated
+ * Prices are display only: the server prices every order from the catalogue. Whenever the choice changes it
+ * dispatches `tp:change` ({ packageId, locales, excluded, cents }) on its root element and keeps `data-cents`
+ * up to date for a host page's own total. The rules (what a package covers, what a single costs, which package
+ * is the better deal) are the pure ones in src/lib/translation-packages.ts, shared with the server.
+ */
+import type { TranslationPricing } from '~/lib/translation-packages';
+import { packageLanguageCount } from '~/lib/translation-packages';
+import { languageName } from '~/lib/listing-catalogue';
+import { PACKAGE_COPY } from '~/lib/ai/translation-package-copy';
+import type { PortalCopyLang } from '~/lib/ai/translation-copy';
+
+interface Props {
+  lang: PortalCopyLang;
+  cfg: TranslationPricing;
+  /** Every language the site can translate a listing into. */
+  targets: readonly string[];
+  sourceLocale?: string;
+  packageId?: string;
+  /** Single languages already chosen. */
+  extras?: string[];
+  /** Languages already switched off. */
+  excluded?: string[];
+  /** Languages the listing already has text in: shown as "there", not for sale again. */
+  present?: string[];
+  /** Languages being made right now (locale -> word). Shown like "present". */
+  busy?: Record<string, string>;
+  /** The package the listing holds: smaller ones are off, a bigger one costs the difference. */
+  currentPackageId?: string | null;
+  /** A free-link listing: no prices, higher packages are requests the office approves. */
+  free?: boolean;
+  /** Hide the legend and intro (the host page has its own heading). */
+  bare?: boolean;
+  singlesName?: string;
+}
+const {
+  lang, cfg, targets, sourceLocale = 'hu', packageId = 'go', extras = [], excluded = [], present = [], busy = {}, currentPackageId,
+  free = false, bare = false, singlesName = 'translations',
+} = Astro.props as Props;
+const t = PACKAGE_COPY[lang];
+const rank = { go: 0, europe: 1, world: 2 } as Record<string, number>;
+// Go is what every listing starts with: only a bigger package already bought makes the picker an upgrade.
+const held = currentPackageId && currentPackageId !== 'go' ? currentPackageId : null;
+const wanted = cfg.packages.some((p) => p.id === packageId && (p.active || p.id === 'go' || p.id === held)) ? packageId : 'go';
+// A smaller package than the one held cannot be chosen: the held one stays selected.
+const chosen = held !== null && (rank[wanted] ?? 0) < (rank[held] ?? 0) ? held : wanted;
+const tag = lang === 'hu' ? 'hu-HU' : lang === 'nl' ? 'nl-NL' : 'en-GB';
+const money = (eur: number) => `€ ${eur.toLocaleString(tag, { maximumFractionDigits: 2 })}`;
+const nameOf = (code: string) => languageName(code, lang).replace(/^./, (c) => c.toLocaleUpperCase(lang));
+const cards = cfg.packages
+  .filter((pkg) => pkg.active || pkg.id === 'go' || pkg.id === held)
+  .map((pkg) => {
+    const smaller = held !== null && (rank[pkg.id] ?? 0) < (rank[held] ?? 0);
+    const upgradeEur = held !== null ? Math.max(0, pkg.priceEur - (cfg.packages.find((p) => p.id === held)?.priceEur ?? 0)) : pkg.priceEur;
+    return {
+      pkg,
+      count: packageLanguageCount(pkg, targets, sourceLocale),
+      isHeld: pkg.id === held,
+      disabled: smaller,
+      price: pkg.id === 'go' || pkg.id === held ? null : upgradeEur,
+    };
+  });
+// Functions do not travel to the browser: the sentences go as templates with markers the script fills in.
+const copy = {
+  nothing: t.nothing, original: t.original, excludedBadge: t.excludedBadge, lockedTip: t.lockedTip, european: t.european, worldOnly: t.worldOnly,
+  summaryOn: t.summary('@NAME', 777, 0), summaryOff: t.summary('@NAME', 777, 888), summaryFree: t.summaryFree,
+  singles: t.summarySingles(777), plus: t.plusSingles(777), hintEurope: t.hintEurope('@PRICE', 777), hintWorld: t.hintWorld('@PRICE', 777),
+};
+const strings = {
+  copy,
+  lang,
+  tag,
+  free,
+  held,
+  sourceLocale,
+  names: Object.fromEntries(targets.map((code) => [code, nameOf(code)])),
+  packageNames: Object.fromEntries(cfg.packages.map((p) => [p.id, p.names[lang]])),
+  present,
+  busy,
+};
+---
+
+<div class="tpk" data-tpk data-config={JSON.stringify({ cfg, targets })} data-strings={JSON.stringify(strings)} data-package={chosen} data-extras={extras.join(',')} data-excluded={excluded.join(',')} data-singles-name={singlesName} data-cents="0">
+  {!bare && (
+    <>
+      <p class="tpk-legend">{t.legend}</p>
+      <p class="tpk-intro">{free ? t.introFree : t.intro}</p>
+    </>
+  )}
+
+  <div class="tpk-cards" role="radiogroup" aria-label={t.legend}>
+    {cards.map(({ pkg, count, isHeld, disabled, price }) => (
+      <label class="tpk-card" data-recommended={pkg.recommended ? '' : undefined} data-disabled={disabled ? '' : undefined}>
+        <input type="radio" name="translation_package" value={pkg.id} checked={pkg.id === chosen} disabled={disabled} />
+        <span class="tpk-card-body">
+          <span class="tpk-card-top">
+            <span class="tpk-card-name">{pkg.names[lang]}</span>
+            {(isHeld || pkg.badge[lang]) && <span class={`tpk-badge${isHeld ? ' is-held' : ''}`}>{isHeld ? t.current : pkg.badge[lang]}</span>}
+          </span>
+          <span class="tpk-card-price">
+            {free || price === null ? (pkg.id === 'go' || isHeld ? t.included : '') : money(price)}
+            {!free && price !== null && held !== null && <small> {t.upgrade}</small>}
+          </span>
+          <span class="tpk-card-count">{t.languages(count)}</span>
+        </span>
+      </label>
+    ))}
+  </div>
+
+  <div class="tpk-custom" data-tpk-custom>
+    <p class="tpk-sub">{t.customTitle}</p>
+    <p class="tpk-note">{t.customLead}</p>
+    <div data-tpk-singles></div>
+  </div>
+
+  <p class="tpk-hint" data-tpk-hint hidden>
+    <span data-tpk-hint-text></span>
+    <button type="button" class="link-btn" data-tpk-switch>{t.switchLabel}</button>
+  </p>
+
+  <details class="tpk-fine" data-tpk-fine>
+    <summary>{t.fineTitle}</summary>
+    <p class="tpk-note">{t.fineLead}</p>
+    <div class="tpk-toggles" data-tpk-toggles></div>
+    <p class="tpk-note">{t.priceUnchanged}</p>
+  </details>
+  <input type="hidden" name="translation_excluded" value={excluded.join(',')} data-tpk-excluded />
+
+  <div class="tpk-foot">
+    <p class="tpk-summary" role="status" aria-live="polite" data-tpk-summary></p>
+    {free && <p class="tpk-note">{t.requestNote}</p>}
+  </div>
+</div>
+
+<script>
+  import { cheaperPackageHint, packageById, packageLocales, singlePriceEur, translationLines, translationTotalCents, isWorldOnly, NON_EXCLUDABLE_LOCALES } from '~/lib/translation-packages';
+  import type { TranslationPricing } from '~/lib/translation-packages';
+
+  const esc = (value: string) => value.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  function setUp(root: HTMLElement) {
+    if (root.dataset.ready) return;
+    root.dataset.ready = '1';
+    const { cfg, targets } = JSON.parse(root.dataset.config || '{}') as { cfg: TranslationPricing; targets: string[] };
+    const S = JSON.parse(root.dataset.strings || '{}');
+    const t = S.copy;
+    const fill = (text: string, values: Record<string, string | number>) => text.replace(/@NAME|@PRICE|777|888/g, (m) => String(values[m] ?? m));
+    const source: string = S.sourceLocale;
+    const singlesName = root.dataset.singlesName || 'translations';
+    const split = (value?: string) => (value ? value.split(',').filter(Boolean) : []);
+    const state = { packageId: root.dataset.package || 'go', extras: new Set(split(root.dataset.extras)), excluded: new Set(split(root.dataset.excluded)) };
+
+    const singlesBox = root.querySelector<HTMLElement>('[data-tpk-singles]')!;
+    const togglesBox = root.querySelector<HTMLElement>('[data-tpk-toggles]')!;
+    const hintBox = root.querySelector<HTMLElement>('[data-tpk-hint]')!;
+    const hintText = root.querySelector<HTMLElement>('[data-tpk-hint-text]')!;
+    const hidden = root.querySelector<HTMLInputElement>('[data-tpk-excluded]')!;
+    const summary = root.querySelector<HTMLElement>('[data-tpk-summary]')!;
+    const money = (eur: number) => `€ ${eur.toLocaleString(S.tag, { maximumFractionDigits: 2 })}`;
+    const have = new Set<string>([...S.present, ...Object.keys(S.busy)]);
+
+    const inPackage = () => new Set(packageLocales(packageById(cfg, state.packageId), targets).filter((code) => code !== source));
+    const selection = () => ({ packageId: state.packageId, extraLocales: [...state.extras], excludedLocales: [...state.excluded], sourceLocale: source });
+    const lines = () => translationLines(selection(), cfg, S.lang, targets, S.held === null ? {} : { currentPackageId: S.held });
+
+    function chip(code: string, price: number): string {
+      const on = state.extras.has(code);
+      return `<label class="tpk-chip"><input type="checkbox" name="${singlesName}" value="${code}"${on ? ' checked' : ''}>` +
+        `<span class="tpk-box" aria-hidden="true"></span><span class="tpk-name">${esc(S.names[code] ?? code)}</span>` +
+        `<span class="tpk-code">${S.free ? code.toUpperCase() : esc(money(price))}</span></label>`;
+    }
+
+    function renderSingles() {
+      const included = inPackage();
+      const open = targets.filter((code) => code !== source && !included.has(code) && !have.has(code));
+      const european = open.filter((code) => !isWorldOnly(code, cfg));
+      const world = open.filter((code) => isWorldOnly(code, cfg));
+      const group = (title: string, codes: string[]) => codes.length
+        ? `<p class="tpk-group">${esc(title)}</p><div class="tpk-chips">${codes.map((code) => chip(code, singlePriceEur(code, cfg))).join('')}</div>` : '';
+      singlesBox.innerHTML = group(t.european, european) + group(t.worldOnly, world);
+      root.querySelector<HTMLElement>('[data-tpk-custom]')!.hidden = open.length === 0;
+    }
+
+    function renderToggles() {
+      const covered = new Set([...inPackage(), ...state.extras]);
+      const list = targets.filter((code) => code === source || covered.has(code));
+      togglesBox.innerHTML = list.map((code) => {
+        if (code === source) return `<label class="tpk-toggle is-locked"><input type="checkbox" checked disabled><span class="tpk-switch" aria-hidden="true"></span><span class="tpk-tname">${esc(S.names[code] ?? code)}</span><span class="tpk-tag">${esc(t.original)}</span></label>`;
+        const locked = NON_EXCLUDABLE_LOCALES.includes(code);
+        const on = !state.excluded.has(code);
+        return `<label class="tpk-toggle${locked ? ' is-locked' : ''}"${locked ? ` title="${esc(t.lockedTip)}"` : ''}>` +
+          `<input type="checkbox" data-tpk-locale="${code}"${on ? ' checked' : ''}${locked ? ' checked disabled' : ''}>` +
+          `<span class="tpk-switch" aria-hidden="true"></span><span class="tpk-tname">${esc(S.names[code] ?? code)}</span>` +
+          (locked ? `<span class="tpk-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="tpk-sr">${esc(t.lockedTip)}</span></span>` : (on ? '' : `<span class="tpk-tag">${esc(t.excludedBadge)}</span>`)) +
+          `</label>`;
+      }).join('');
+    }
+
+    function update(rerender = true) {
+      // A single the package already includes is not a single any more.
+      const included = inPackage();
+      state.extras.forEach((code) => { if (included.has(code)) state.extras.delete(code); });
+      // Only languages that are in the choice can be switched off; the original and English never.
+      const covered = new Set([...included, ...state.extras]);
+      state.excluded.forEach((code) => { if (!covered.has(code) || NON_EXCLUDABLE_LOCALES.includes(code) || code === source) state.excluded.delete(code); });
+      if (rerender) { renderSingles(); renderToggles(); }
+      hidden.value = [...state.excluded].join(',');
+
+      const rows = lines();
+      const cents = translationTotalCents(rows);
+      root.dataset.cents = String(cents);
+      const languages = [...new Set([...included, ...state.extras])].filter((code) => !state.excluded.has(code));
+      root.dataset.languages = languages.join(',');
+      const pkg = packageById(cfg, state.packageId);
+      const off = [...state.excluded].length;
+      const count = covered.size + 1 - off;
+      const singles = state.extras.size;
+      let text: string;
+      if (S.free) text = (state.packageId === 'go' && singles === 0) ? t.nothing : t.summaryFree;
+      else {
+        text = pkg.id === 'go' ? (singles ? fill(t.singles, { 777: singles }) : t.nothing) : fill(off ? t.summaryOff : t.summaryOn, { '@NAME': S.packageNames[pkg.id] ?? pkg.id, 777: count - singles, 888: off });
+        if (pkg.id !== 'go' && singles) text += ` ${fill(t.plus, { 777: singles })}`;
+        if (cents > 0) text += ` · ${money(cents / 100)}`;
+      }
+      summary.textContent = text;
+
+      // A better deal for the same languages, when there is one.
+      const better = S.free ? null : cheaperPackageHint(selection(), cfg, targets);
+      hintBox.hidden = !better;
+      hintBox.dataset.target = better ?? '';
+      if (better) {
+        const target = packageById(cfg, better);
+        const reach = packageLocales(target, targets).filter((code) => code !== source).length;
+        const now = new Set([...included, ...state.extras]).size;
+        hintText.textContent = better === 'world' ? fill(t.hintWorld, { '@PRICE': target.priceEur, 777: reach + 1 }) : fill(t.hintEurope, { '@PRICE': target.priceEur, 777: Math.max(0, reach - now) });
+      }
+      root.dispatchEvent(new CustomEvent('tp:change', { bubbles: true, detail: { packageId: state.packageId, locales: [...state.extras], excluded: [...state.excluded], languages, cents } }));
+    }
+
+    root.addEventListener('change', (event) => {
+      const el = event.target as HTMLInputElement;
+      if (el.name === 'translation_package') { state.packageId = el.value; update(); return; }
+      if (el.name === singlesName) { el.checked ? state.extras.add(el.value) : state.extras.delete(el.value); update(false); renderToggles(); return; }
+      if (el.dataset.tpkLocale) { el.checked ? state.excluded.delete(el.dataset.tpkLocale) : state.excluded.add(el.dataset.tpkLocale); update(false); renderToggles(); }
+    });
+    root.querySelector('[data-tpk-switch]')?.addEventListener('click', () => {
+      const target = hintBox.dataset.target;
+      if (!target) return;
+      const radio = root.querySelector<HTMLInputElement>(`input[name="translation_package"][value="${target}"]`);
+      if (!radio || radio.disabled) return;
+      radio.checked = true;
+      state.packageId = target;
+      update();
+      radio.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    update();
+  }
+  document.querySelectorAll<HTMLElement>('[data-tpk]').forEach(setUp);
+</script>
+
+<style is:global>
+  .tpk { margin: 0 0 24px; }
+  .tpk-legend { font-family: var(--serif); font-weight: var(--fw-medium); font-size: 20px; color: var(--ink); margin: 0 0 6px; }
+  .tpk-intro { margin: 0 0 18px; max-width: 64ch; font-size: var(--fs-small); line-height: 1.6; color: var(--ink-quiet); }
+  .tpk-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 12px; }
+  .tpk-card { position: relative; display: block; cursor: pointer; }
+  .tpk .tpk-card > input[type='radio'], main.pm.pm .tpk .tpk-card > input[type='radio'], main.pm.pm .tpk .tpk-card > input[type='radio']:is(:checked, :disabled, :hover, :focus-visible) { position: absolute; opacity: 0; width: 1px; height: 1px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; appearance: none; -webkit-appearance: none; pointer-events: none; }
+  main.pm.pm .tpk .tpk-card > input[type='radio']::after { content: none; }
+  .tpk-card-body { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 18px 18px 16px; background: var(--white); border: 1px solid var(--pt-hair); border-radius: var(--r-lg); transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out); }
+  @media (hover: hover) { .tpk-card:not([data-disabled]):hover .tpk-card-body { border-color: rgba(16, 42, 67, 0.34); } }
+  .tpk-card:has(input:checked) .tpk-card-body { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+  .tpk-card:has(input:focus-visible) .tpk-card-body { outline: var(--focus-ring); outline-offset: 3px; }
+  .tpk-card[data-disabled] { cursor: not-allowed; }
+  .tpk-card[data-disabled] .tpk-card-body { opacity: 0.5; background: transparent; }
+  .tpk-card-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 10px; }
+  .tpk-card-name { font-family: var(--serif); font-weight: var(--fw-medium); font-size: 22px; color: var(--ink); line-height: 1.15; }
+  .tpk-badge { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: var(--r-pill); background: var(--linen); color: var(--ink); white-space: nowrap; }
+  .tpk-badge.is-held { background: var(--pt-green-bg); color: var(--pt-green); }
+  .tpk-card-price { font-size: 18px; font-variant-numeric: tabular-nums; color: var(--ink); min-height: 1.4em; }
+  .tpk-card-price small { font-size: 13px; color: var(--ink-quiet); }
+  .tpk-card-count { font-size: var(--fs-small); color: var(--ink-quiet); }
+  .tpk-sub { margin: 24px 0 2px; font-family: var(--serif); font-weight: var(--fw-medium); font-size: 17px; color: var(--ink); }
+  .tpk-note { margin: 0 0 12px; max-width: 64ch; font-size: 13px; line-height: 1.55; color: var(--ink-quiet); }
+  .tpk-group { margin: 14px 0 8px; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-quiet); }
+  .tpk-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tpk-chip { position: relative; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 14px 6px 10px; border-radius: var(--r-pill); background: var(--white); border: 1px solid rgba(16, 42, 67, 0.12); cursor: pointer; transition: border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out); }
+  @media (hover: hover) { .tpk-chip:hover { border-color: rgba(16, 42, 67, 0.34); } }
+  .tpk .tpk-chip > input[type='checkbox'], .tpk .tpk-toggle > input[type='checkbox'] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; appearance: none; -webkit-appearance: none; pointer-events: none; }
+  .tpk-box { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid rgba(16, 42, 67, 0.3); display: grid; place-items: center; transition: background-color 0.3s var(--ease-out), border-color 0.3s var(--ease-out); }
+  .tpk-box::after { content: ''; width: 8px; height: 4px; border-left: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(-45deg) scale(0); margin-top: -2px; transition: transform 0.25s var(--ease-out); }
+  .tpk-chip:has(input:checked) { background: var(--ink); border-color: var(--ink); }
+  .tpk-chip:has(input:checked) .tpk-box { background: var(--cream); border-color: var(--cream); }
+  .tpk-chip:has(input:checked) .tpk-box::after { transform: rotate(-45deg) scale(1); }
+  .tpk-chip:has(input:checked) :is(.tpk-name, .tpk-code) { color: var(--cream); }
+  .tpk-chip:has(input:focus-visible) { outline: var(--focus-ring); outline-offset: 3px; }
+  .tpk-name { font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
+  .tpk-code { font-size: 12px; letter-spacing: 0.04em; color: var(--ink-quiet); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tpk-hint { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 16px 0 0; padding: 12px 16px; border-radius: var(--r-md); background: var(--linen); font-size: var(--fs-small); color: var(--ink); }
+  .tpk-hint[hidden] { display: none; }
+  .tpk-fine { margin-top: 20px; }
+  .tpk-fine > summary { cursor: pointer; display: inline-block; padding: 8px 0; font-size: var(--fs-small); color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(16, 42, 67, 0.3); list-style: none; }
+  .tpk-fine > summary::-webkit-details-marker { display: none; }
+  .tpk-fine > summary:focus-visible { outline: var(--focus-ring); outline-offset: 3px; border-radius: 4px; }
+  .tpk-toggles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 4px 20px; margin: 4px 0 12px; }
+  .tpk-toggle { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; cursor: pointer; }
+  .tpk-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .tpk-switch { flex: none; position: relative; width: 36px; height: 20px; border-radius: 10px; background: rgba(16, 42, 67, 0.2); transition: background-color 0.3s var(--ease-out); }
+  .tpk-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--white); transition: transform 0.25s var(--ease-out); }
+  .tpk-toggle:has(input:checked) .tpk-switch { background: var(--ink); }
+  .tpk-toggle:has(input:checked) .tpk-switch::after { transform: translateX(16px); }
+  .tpk-toggle:has(input:focus-visible) .tpk-switch { outline: var(--focus-ring); outline-offset: 3px; }
+  .tpk-toggle.is-locked { cursor: default; }
+  .tpk-toggle.is-locked .tpk-switch { opacity: 0.55; }
+  .tpk-tname { font-size: var(--fs-small); color: var(--ink); }
+  .tpk-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-quiet); }
+  .tpk-foot { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--pt-hair); }
+  .tpk-summary { margin: 0 0 4px; font-family: var(--serif); font-size: 18px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tpk-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 760px) { .tpk-toggles { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .tpk-card-body, .tpk-chip, .tpk-box, .tpk-box::after, .tpk-switch, .tpk-switch::after { transition: none; } }
+</style>

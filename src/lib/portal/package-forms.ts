@@ -112,7 +112,7 @@ export function tiersPatch(form: FormData, current: Record<string, unknown>): Se
     const key = tierKey('extra', extra.id);
     return !extra.retired && form.has(`${key}_price`) ? { ...extra, tiers: readTierRows(form, key, extraName(extra.id)) } : extra;
   });
-  const next = listingCatalog({ ...current, listingPackages: storedPackages({ packages, extras }), listingExtras: storedExtras({ packages, extras }) } as StoredServices);
+  const next = listingCatalog({ ...current, listingPackages: storedPackages({ ...catalog, packages, extras }), listingExtras: storedExtras({ ...catalog, packages, extras }) } as StoredServices);
   return { listingPackages: storedPackages(next), listingExtras: storedExtras(next) };
 }
 
