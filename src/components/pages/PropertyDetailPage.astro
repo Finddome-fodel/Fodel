@@ -28,6 +28,8 @@ import { copy } from '~/data/copy';
 import { readEnergy } from '~/lib/energy';
 import { extractYouTubeId } from '~/lib/video';
 import WhatsApp from '~/components/WhatsApp.astro';
+import ShareButtons from '~/components/ShareButtons.astro';
+import { truncate } from '~/lib/share';
 import { getTaxonomy, termLabel, getCompany } from '~/lib/runtime-config';
 import { abs } from '~/lib/seo';
 import { listingRules } from '~/lib/listing-rules';
@@ -132,6 +134,8 @@ const published = new Set<Locale>(publishedLocalesOf(property, languages));
 const allAlternates = propertyAlternates(d.categorySlugs, d.ref);
 const alternates = policy.gated ? (Object.fromEntries(Object.entries(allAlternates).filter(([code]) => published.has(code as Locale))) as Partial<Record<Locale, string>>) : allAlternates;
 const standIn = policy.gated && servingFor(property, locale, languages).serve === 'fallback';
+// Only a page that is really this language's own can be shared; a stand-in (English text under another language's address) is not indexed and not offered.
+const sharePrice = d.price.eur > 0 ? eur(d.price.eur, locale) : null;
 
 const trail = crumbs(locale, [
   { name: ui.nav.properties, url: path(locale, 'properties') },
@@ -146,7 +150,7 @@ const mapUrl = d.location.precision === 'exact'
   : `https://www.openstreetmap.org/#map=14/${d.location.lat}/${d.location.lng}`;
 
 
-const metaDescription = `${title} · ${placeLabel(d.location.settlement, d.location.county)}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}${d.areas.plotM2 ? `, ${area(d.areas.plotM2,locale)}` : ''}. ${x({ hu: 'Azonosító', nl: 'Referentie', en: 'Reference', de: 'Referenz', fr: 'Référence', es: 'Referencia', pl: 'Numer referencyjny', ro: 'Referință', sk: 'Referenčné číslo', it: 'Riferimento', pt: 'Referência', el: 'Κωδικός', cs: 'Číslo inzerátu', sl: 'Referenca', sv: 'Referens', da: 'Reference', no: 'Referanse', fi: 'Viite', et: 'Viitenumber', lv: 'Atsauce', lt: 'Nuoroda', sr: 'Šifra', uk: 'Номер об’єкта', tr: 'İlan no', he: 'מספר מודעה', ar: 'الرقم المرجعي', ru: 'Номер объекта', zh: '房源编号' })} ${d.ref}.`;
+const metaDescription = truncate(`${title} · ${placeLabel(d.location.settlement, d.location.county)}${category ? ` · ${category}` : ''}. ${eur(d.price.eur, locale)}${d.areas.floorM2 ? `, ${floorArea(d.areas.floorM2, locale)}` : ''}${d.areas.plotM2 ? `, ${area(d.areas.plotM2,locale)}` : ''}. ${x({ hu: 'Azonosító', nl: 'Referentie', en: 'Reference', de: 'Referenz', fr: 'Référence', es: 'Referencia', pl: 'Numer referencyjny', ro: 'Referință', sk: 'Referenčné číslo', it: 'Riferimento', pt: 'Referência', el: 'Κωδικός', cs: 'Číslo inzerátu', sl: 'Referenca', sv: 'Referens', da: 'Reference', no: 'Referanse', fi: 'Viite', et: 'Viitenumber', lv: 'Atsauce', lt: 'Nuoroda', sr: 'Šifra', uk: 'Номер об’єкта', tr: 'İlan no', he: 'מספר מודעה', ar: 'الرقم المرجعي', ru: 'Номер объекта', zh: '房源编号' })} ${d.ref}.`, 200);
 
 const videoId = d.media.videoUrl ? extractYouTubeId(d.media.videoUrl) : null;
 
@@ -215,6 +219,8 @@ const whatsappMessage = x({
   noindex={standIn}
   ogType="article"
   ogImage={shareImage.src}
+  ogImageAlt={gallery[0].alt || undefined}
+  ogLocaleAlternates={Object.keys(alternates) as Locale[]}
   whatsapp={{ message: whatsappMessage }}
   schema={[
     propertySchema(property, locale, pageUrl, shareImage.src),
@@ -343,6 +349,8 @@ const whatsappMessage = x({
           ))
         }
       </dl>
+
+      {!standIn && <ShareButtons locale={locale} url={abs(pageUrl)} title={title} price={sharePrice} />}
 
       <div class="ref-row">
         <span>{ui.property.reference} <strong><bdi>{d.ref}</bdi></strong></span>

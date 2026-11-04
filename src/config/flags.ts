@@ -23,3 +23,11 @@ export function showMachineTranslationNote(): boolean {
 export function unpurchasedListingLocales(): 'redirect' | 'fallback' {
   return String(import.meta.env.UNPURCHASED_LISTING_LOCALES) === 'fallback' ? 'fallback' : 'redirect';
 }
+
+/**
+ * Whether the address a visitor shares carries `utm_source=<channel>&utm_medium=share&utm_campaign=listing`. On by default;
+ * `SHARE_UTM=off` switches it off. It is only ever added to the shared address, never to the canonical or og:url.
+ */
+export function shareUtm(): boolean {
+  return String(import.meta.env.SHARE_UTM ?? 'on').toLowerCase() !== 'off';
+}

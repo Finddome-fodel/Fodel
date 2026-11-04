@@ -35,6 +35,10 @@ interface Props {
   canonicalPath?: string;
   ogImage?: string;
   ogType?: 'website' | 'article';
+  /** The other languages this page is really published in: one `og:locale:alternate` each. */
+  ogLocaleAlternates?: Locale[];
+  /** What the share image shows, in the page's language. */
+  ogImageAlt?: string;
   /** Extra JSON-LD nodes merged into the page @graph. */
   schema?: unknown[];
   noindex?: boolean;
@@ -58,6 +62,8 @@ const {
   canonicalPath,
   ogImage,
   ogType = 'website',
+  ogLocaleAlternates = [],
+  ogImageAlt,
   schema = [],
   noindex = false,
   flush = false,
@@ -102,16 +108,19 @@ const jsonLd = graph([organisationSchema(locale, company), ...schema]);
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={brand.name} />
     <meta property="og:locale" content={meta.ogLocale} />
+    {ogLocaleAlternates.filter((code) => code !== locale).map((code) => <meta property="og:locale:alternate" content={LOCALE_META[code].ogLocale} />)}
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
+    {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
     <FontPreload locale={locale} />
     <meta name="theme-color" content="#102A43" />

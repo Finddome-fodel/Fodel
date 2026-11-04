@@ -109,7 +109,7 @@ const phoneDisplay = contactPhone?.display ?? '';
     {/* No visible label at all, and hidden inline so it stays hidden even if
         this component's stylesheet arrives late or not at all (a stale
         style module once let a stray "Company" label show on the homepage). */}
-    <div class="hp" aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">
+    <div class="hp" aria-hidden="true" style="position:absolute;inset-inline-start:-10000px;top:auto;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">
       <input id={`${formId}-company`} type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
     </div>
     {/* Time-trap: submissions faster than a human can type are rejected. */}
@@ -428,8 +428,9 @@ const phoneDisplay = contactPhone?.display ?? '';
   }
 
   .hp {
+    /* Off to the side of the reading direction: `left` would, in a right-to-left page, open a 10 000 px scroll area. */
     position: absolute;
-    left: -9999px;
+    inset-inline-start: -9999px;
     width: 1px;
     height: 1px;
     overflow: hidden;
