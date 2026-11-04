@@ -28,6 +28,8 @@ export const EVENT_LABEL: Record<string, string> = {
   'listing.archive': 'Archiválva',
   'listing.reactivate': 'Újra aktiválva',
   'settings.packages': 'Csomagok módosítva',
+  'fx.updated': 'Árfolyam frissítve',
+  'fx.failed': 'Az árfolyam frissítése nem sikerült',
   'listing.delete': 'Hirdetés törölve',
   'listing.edited': 'Hirdetés szerkesztve',
   'listing.contact_override': 'Elérhetőség a szövegben – admin tudatosan benne hagyta',

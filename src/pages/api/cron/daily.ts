@@ -24,6 +24,7 @@ import { cronAuthorised } from '~/lib/cron-auth';
 import { lifecycleEmails } from '~/lib/email/lifecycle';
 import { ownerLink, RENEW_LINK_DAYS } from '~/lib/owner-links';
 import { logEvent } from '~/lib/activity';
+import { latestSnapshot, refreshRates } from '~/lib/fx-store';
 import { eur } from '~/lib/format';
 import { formatCents } from '~/lib/orders';
 import { renewalPricer } from '~/lib/portal/renewal';
@@ -44,6 +45,12 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const admin = createSupabaseAdminClient();
+  // Catch-up for the daily rate: if the 15:30 run missed a day, heal it here (never blocks the rest of the run).
+  const fx = await latestSnapshot(admin).catch(() => null);
+  if (!fx || Date.now() - Date.parse(fx.date) > 3 * 86400000) {
+    const refreshed = await refreshRates({ client: admin }).catch(() => null);
+    await logEvent({ kind: refreshed?.ok ? 'fx.updated' : 'fx.failed', source: 'cron', payload: { catchUp: true, ...(refreshed?.ok ? { date: refreshed.snapshot.date } : { error: refreshed && !refreshed.ok ? refreshed.error : 'unknown' }) } }).catch(() => {});
+  }
   // Renewals are tiered by the listing's own price (Csomagok → Ársávok).
   const renewalCents = await renewalPricer();
   const now = new Date();
@@ -97,7 +104,7 @@ export const GET: APIRoute = async ({ request }) => {
           ref: row.ref,
           title: await listingTitle(admin, row.id, locale, row.ref),
           renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-          price: formatCents(renewalCents(row.price_huf), locale),
+          price: formatCents(renewalCents(row), locale),
         }));
         counts.emails++;
       }
@@ -119,7 +126,7 @@ export const GET: APIRoute = async ({ request }) => {
         expiresOn: new Date(row.expires_at).toLocaleDateString(intlTag(locale), { year: 'numeric', month: 'long', day: 'numeric' }),
         days: Math.max(1, daysLeft(row.expires_at, now)),
         renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-        price: formatCents(renewalCents(row.price_huf), locale),
+        price: formatCents(renewalCents(row), locale),
       }));
       counts.emails++;
       counts[action === 'first-reminder' ? 'firstReminder' : 'lastReminder']++;
@@ -163,7 +170,7 @@ export const GET: APIRoute = async ({ request }) => {
       ref: row.ref,
       title: await listingTitle(admin, row.id, locale, row.ref),
       renewUrl: ownerLink('renew', row.id, locale, RENEW_LINK_DAYS),
-      price: formatCents(renewalCents(row.price_huf), locale),
+      price: formatCents(renewalCents(row), locale),
     }));
     counts.emails++;
   }

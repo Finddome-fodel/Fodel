@@ -13,13 +13,26 @@ export function parseEcbRates(xml: string, now = new Date()): RateSnapshot {
   if (!date || !rates.HUF || !rates.GBP || now.getTime() - Date.parse(date) > 7 * 86400000 || Date.parse(date) > now.getTime() + 86400000) throw new Error('rates-unavailable');
   return { date, fetchedAt: now.toISOString(), source: 'ECB', rates };
 }
+/**
+ * The rates listing prices are converted at (and the daily fee hints use): the newest stored day (migration 0056,
+ * refreshed daily by /api/cron/fx), else a live ECB fetch, kept in memory for an hour. One daily rate for both.
+ */
 export async function exchangeRates(): Promise<RateSnapshot> {
   if (cached && Date.now()-Date.parse(cached.fetchedAt) < 3600000) return cached;
   if (pending) return pending;
   pending = (async () => {
-    const response = await fetch('https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml', { signal: AbortSignal.timeout(8000) });
-    if (!response.ok) throw new Error('rates-unavailable');
-    return cached = parseEcbRates(await response.text());
+    const stored = await import('~/lib/fx-store').then((m) => m.latestSnapshot()).catch(() => null);
+    // A stored day up to a week old is as good as the ECB's own file (parseEcbRates refuses older ones too).
+    if (stored && Date.now() - Date.parse(stored.date) <= 7 * 86400000) return cached = stored;
+    try {
+      const response = await fetch('https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml', { signal: AbortSignal.timeout(8000) });
+      if (!response.ok) throw new Error('rates-unavailable');
+      return cached = parseEcbRates(await response.text());
+    } catch (error) {
+      // The ECB is down and the stored day is older than a week: better a slightly old rate than no listing at all.
+      if (stored) return cached = stored;
+      throw error;
+    }
   })().finally(() => { pending = undefined; });
   return pending;
 }
