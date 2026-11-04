@@ -22,13 +22,13 @@ export const SL = {
     meta: {
       title: 'FINDDOME Real Estates | Oglašujte svojo nepremičnino v Evropi',
       description:
-        'Oglas naložite v nekaj korakih. Po spletnem plačilu se objavi v 21 jezikih, brez pogodbe o ekskluzivnosti.',
+        'Oglas naložite v nekaj korakih. Po spletnem plačilu se objavi v 28 jezikih, brez pogodbe o ekskluzivnosti.',
     },
     hero: {
       eyebrow: `Od leta 2013 · ${foundedInLabel(L)}`,
       title: ['Oglašujte', 'svojo nepremičnino', 'v Evropi'],
       emphasis: 1,
-      body: 'Oglas naložite v nekaj korakih. Pregledamo ga in po spletnem plačilu se objavi na naši strani v 21 jezikih, brez pogodbe o ekskluzivnosti. Zainteresirani vas kontaktirajo neposredno ali prek nas.',
+      body: 'Oglas naložite v nekaj korakih. Pregledamo ga in po spletnem plačilu se objavi na naši strani v 28 jezikih, brez pogodbe o ekskluzivnosti. Zainteresirani vas kontaktirajo neposredno ali prek nas.',
       primary: 'Prebrskaj nepremičnine',
       secondary: 'Brezplačno iskanje nepremičnine',
       featuredLabel: 'Izpostavljeno',

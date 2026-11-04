@@ -22,13 +22,13 @@ export const EN = {
     meta: {
       title: 'FINDDOME Real Estates | Advertise your property in Europe',
       description:
-        'Upload your listing in a few steps. After online payment it goes live on our site in 21 languages, with no exclusivity contract.',
+        'Upload your listing in a few steps. After online payment it goes live on our site in 28 languages, with no exclusivity contract.',
     },
     hero: {
       eyebrow: `Since 2013 · ${foundedInLabel(L)}`,
       title: ['Advertise', 'your property', 'in Europe'],
       emphasis: 1,
-      body: 'Upload your listing in a few steps. We review it, and after online payment it goes live on our site in 21 languages, with no exclusivity contract. Enquiries reach you directly or through us.',
+      body: 'Upload your listing in a few steps. We review it, and after online payment it goes live on our site in 28 languages, with no exclusivity contract. Enquiries reach you directly or through us.',
       primary: 'Browse properties',
       secondary: 'Free property search',
       featuredLabel: 'Featured',

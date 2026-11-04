@@ -35,6 +35,13 @@ import { FI } from '~/data/copy-fi';
 import { ET } from '~/data/copy-et';
 import { LV } from '~/data/copy-lv';
 import { LT } from '~/data/copy-lt';
+import { RU } from '~/data/copy-ru';
+import { UK } from '~/data/copy-uk';
+import { SR } from '~/data/copy-sr';
+import { TR } from '~/data/copy-tr';
+import { HE } from '~/data/copy-he';
+import { AR } from '~/data/copy-ar';
+import { ZH } from '~/data/copy-zh';
 
 const REACH_COUNTRIES = COMPANY.reach.countries;
 const REACH_LANGUAGES = COMPANY.reach.languages;
@@ -61,13 +68,13 @@ const BASE = {
       meta: {
         title: 'FINDDOME Ingatlan | Hirdesse ingatlanát Európában',
         description:
-          'Töltse fel hirdetését néhány lépésben. Online fizetés után 21 nyelvű oldalunkon jelenik meg, kizárólagossági szerződés nélkül.',
+          'Töltse fel hirdetését néhány lépésben. Online fizetés után 28 nyelvű oldalunkon jelenik meg, kizárólagossági szerződés nélkül.',
       },
       hero: {
         eyebrow: `Alapítva 2013 · ${foundedInLabel('hu')}`,
         title: ['Hirdesse', 'ingatlanát', 'Európában'],
         emphasis: 1,
-        body: 'Töltse fel hirdetését néhány lépésben. Átnézzük, és online fizetés után megjelenik 21 nyelvű oldalunkon, kizárólagossági szerződés nélkül. Az érdeklődők közvetlenül Önhöz vagy hozzánk fordulhatnak.',
+        body: 'Töltse fel hirdetését néhány lépésben. Átnézzük, és online fizetés után megjelenik 28 nyelvű oldalunkon, kizárólagossági szerződés nélkül. Az érdeklődők közvetlenül Önhöz vagy hozzánk fordulhatnak.',
         primary: 'Ingatlanok',
         secondary: 'Hirdessen nálunk',
         featuredLabel: 'Kiemelt ingatlan',
@@ -324,13 +331,13 @@ const BASE = {
       meta: {
         title: 'FINDDOME Vastgoed | Adverteer uw vastgoed in Europa',
         description:
-          'Plaats uw advertentie in enkele stappen. Na online betaling staat ze op onze site in 21 talen, zonder exclusiviteitscontract.',
+          'Plaats uw advertentie in enkele stappen. Na online betaling staat ze op onze site in 28 talen, zonder exclusiviteitscontract.',
       },
       hero: {
         eyebrow: `Sinds 2013 · ${foundedInLabel('nl')}`,
         title: ['Adverteer', 'uw vastgoed', 'in Europa'],
         emphasis: 1,
-        body: 'Plaats uw advertentie in enkele stappen. Wij controleren haar en na online betaling staat ze op onze site in 21 talen, zonder exclusiviteitscontract. Geïnteresseerden nemen rechtstreeks contact op met u of via ons.',
+        body: 'Plaats uw advertentie in enkele stappen. Wij controleren haar en na online betaling staat ze op onze site in 28 talen, zonder exclusiviteitscontract. Geïnteresseerden nemen rechtstreeks contact op met u of via ons.',
         primary: 'Woningen bekijken',
         secondary: 'Gratis zoekopdracht',
         featuredLabel: 'Uitgelicht',
@@ -585,7 +592,7 @@ export type CopyShape = (typeof BASE)['hu'];
 /** Dutch is held to the same shape, so a key missing in either fails the build. */
 const NL: CopyShape = BASE.nl;
 
-export const COPY: Record<Locale, CopyShape> = { hu: BASE.hu, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK, it: IT, pt: PT, el: EL, cs: CS, sl: SL, sv: SV, da: DA, no: NO, fi: FI, et: ET, lv: LV, lt: LT };
+export const COPY: Record<Locale, CopyShape> = { hu: BASE.hu, nl: NL, en: EN, de: DE, fr: FR, es: ES, pl: PL, ro: RO, sk: SK, it: IT, pt: PT, el: EL, cs: CS, sl: SL, sv: SV, da: DA, no: NO, fi: FI, et: ET, lv: LV, lt: LT, sr: SR, uk: UK, tr: TR, he: HE, ar: AR, ru: RU, zh: ZH };
 
 export function copy(locale: Locale): CopyShape {
   return COPY[locale];

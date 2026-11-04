@@ -1,0 +1,18 @@
+---
+export const prerender = false;
+import ArticlePage from '~/components/pages/ArticlePage.astro';
+import { localizedPostBySlug } from '~/lib/blog';
+
+const { slug } = Astro.params;
+// Drafts, future-dated posts and unknown slugs come back null. The Dutch (or,
+// failing that, Hungarian) text stands in for a post with no version in this language.
+const found = slug ? await localizedPostBySlug('he', slug) : null;
+if (!found) {
+  Astro.response.status = 404;
+  return Astro.rewrite('/404');
+}
+// No stale-while-revalidate here: an unpublished post must stop being served within the minute.
+Astro.response.headers.set('Cache-Control', 's-maxage=60');
+---
+
+<ArticlePage locale="he" post={found.post} from={found.from} />

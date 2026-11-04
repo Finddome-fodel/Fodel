@@ -31,13 +31,13 @@ export const FR = {
     meta: {
       title: 'FINDDOME Immobilier | Annoncez votre bien en Europe',
       description:
-        'Déposez votre annonce en quelques étapes. Après paiement en ligne, elle est publiée en 21 langues, sans contrat d’exclusivité.',
+        'Déposez votre annonce en quelques étapes. Après paiement en ligne, elle est publiée en 28 langues, sans contrat d’exclusivité.',
     },
     hero: {
       eyebrow: `Depuis 2013 · ${foundedInLabel(L)}`,
       title: ['Annoncez', 'votre bien', 'en Europe'],
       emphasis: 1,
-      body: 'Déposez votre annonce en quelques étapes. Nous la relisons et, après paiement en ligne, elle est publiée sur notre site en 21 langues, sans contrat d’exclusivité. Les acheteurs vous contactent directement ou passent par nous.',
+      body: 'Déposez votre annonce en quelques étapes. Nous la relisons et, après paiement en ligne, elle est publiée sur notre site en 28 langues, sans contrat d’exclusivité. Les acheteurs vous contactent directement ou passent par nous.',
       primary: 'Voir les biens',
       secondary: 'Recherche gratuite',
       featuredLabel: 'À la une',

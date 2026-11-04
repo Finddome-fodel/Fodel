@@ -206,8 +206,8 @@ const specs = [
     position: absolute;
     z-index: 1;
     top: 14px;
-    left: 14px;
-    right: 110px;
+    inset-inline-start: 14px;
+    inset-inline-end: 110px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -240,7 +240,7 @@ const specs = [
     position: absolute;
     z-index: 1;
     top: 14px;
-    right: 14px;
+    inset-inline-end: 14px;
     background: var(--ink);
     color: var(--cream);
   }
@@ -249,7 +249,7 @@ const specs = [
   .card-img-wrap :global(.card-chip) {
     position: absolute;
     z-index: 1;
-    right: 14px;
+    inset-inline-end: 14px;
     bottom: 14px;
     --chip-bg: var(--cream);
     --chip-fg: var(--ink);

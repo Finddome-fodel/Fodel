@@ -9,9 +9,9 @@
  */
 import { test, expect } from '../support/fixtures';
 import type { Page } from '@playwright/test';
-import { LOCALE_META, type Locale } from '../../../src/i18n/ui';
+import { LOCALES, LOCALE_META, type Locale } from '../../../src/i18n/ui';
 
-const ROUTE = ['nl', 'en', 'hu', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt', 'nl'] as const;
+const ROUTE = ['nl', 'en', 'hu', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt', 'sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh', 'nl'] as const;
 
 /** The switcher the visitor can actually see on this page and viewport. */
 const visibleToggle = (page: Page) => page.locator('.switcher-toggle:visible').first();
@@ -28,7 +28,7 @@ async function pick(page: Page, code: string, how: 'pointer' | 'keyboard') {
     await page.keyboard.press('Enter');
     await expect(root).toHaveAttribute('data-open', '');
     // Arrow down through the rows until the wanted language has focus.
-    for (let i = 0; i < 21; i++) {
+    for (let i = 0; i < LOCALES.length; i++) {
       const focused = await page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.lang ?? '');
       if (focused === code) break;
       await page.keyboard.press('ArrowDown');
@@ -38,10 +38,11 @@ async function pick(page: Page, code: string, how: 'pointer' | 'keyboard') {
   }
   await page.waitForURL(new RegExp(`/${code}/$`));
   await expect(page.locator('html')).toHaveAttribute('lang', LOCALE_META[code as Locale].htmlLang);
+  await expect(page.locator('html')).toHaveAttribute('dir', LOCALE_META[code as Locale].dir);
 }
 
 for (const how of ['pointer', 'keyboard'] as const) {
-  test(`switches hu → nl → en → hu → de → fr → es → pl → ro → sk → it → pt → el → cs → sl → sv → da → no → fi → et → lv → lt → nl (${how})`, async ({ page, isMobile }) => {
+  test(`switches hu → nl → en → hu → de → … → lt → sr → uk → tr → he → ar → ru → zh → nl (${how})`, async ({ page, isMobile }) => {
     test.skip(how === 'keyboard' && isMobile, 'phones have no hardware keyboard');
     await page.goto('/hu/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'hu');
@@ -109,6 +110,8 @@ test('the root page sends each browser language to its own site', async ({ brows
     ['pl-PL', /\/pl\/$/], ['ro-RO', /\/ro\/$/], ['sk-SK', /\/sk\/$/], ['it-IT', /\/it\/$/], ['pt-PT', /\/pt\/$/], ['pt-BR', /\/pt\/$/], ['el-GR', /\/el\/$/], ['cs-CZ', /\/cs\/$/],
     ['sl-SI', /\/sl\/$/], ['sv-SE', /\/sv\/$/], ['da-DK', /\/da\/$/], ['nb-NO', /\/no\/$/], ['nn-NO', /\/no\/$/], ['fi-FI', /\/fi\/$/],
     ['et-EE', /\/et\/$/], ['lv-LV', /\/lv\/$/], ['lt-LT', /\/lt\/$/], ['ja-JP', /\/nl\/$/],
+    ['sr-Latn-RS', /\/sr\/$/], ['sr-RS', /\/sr\/$/], ['uk-UA', /\/uk\/$/], ['tr-TR', /\/tr\/$/], ['he-IL', /\/he\/$/], ['iw-IL', /\/he\/$/],
+    ['ar-EG', /\/ar\/$/], ['ar-AE', /\/ar\/$/], ['ru-RU', /\/ru\/$/], ['zh-CN', /\/zh\/$/], ['zh-Hans-CN', /\/zh\/$/],
   ];
   for (const [locale, expected] of cases) {
     const context = await browser.newContext({ locale });
@@ -120,7 +123,7 @@ test('the root page sends each browser language to its own site', async ({ brows
 });
 
 test('a language picked in the switcher beats the browser language, for every language', async ({ browser, baseURL }) => {
-  for (const code of ['en', 'de', 'fr', 'es', 'pl', 'ro', 'sk', 'it', 'pt', 'el', 'cs', 'sl', 'sv', 'da', 'no', 'fi', 'et', 'lv', 'lt', 'nl', 'hu'] as const) {
+  for (const code of LOCALES) {
     const context = await browser.newContext({ locale: 'hu-HU' });
     await context.addCookies([{ name: 'fodel_lang', value: code, url: baseURL! }]);
     const page = await context.newPage();
@@ -128,4 +131,41 @@ test('a language picked in the switcher beats the browser language, for every la
     await page.waitForURL(new RegExp(`/${code}/$`));
     await context.close();
   }
+});
+
+test('the switcher groups Europe and the rest of the world, and its search narrows the list', async ({ page, isMobile }) => {
+  await page.goto('/en/');
+  const toggle = visibleToggle(page);
+  const root = toggle.locator('xpath=..');
+  await toggle.click();
+  await expect(root).toHaveAttribute('data-open', '');
+  await expect(root.locator('a[data-lang]')).toHaveCount(LOCALES.length);
+  const search = root.locator('input[type="search"]');
+  await expect(search).toBeVisible();
+  // Native name, English name and code all find a language.
+  for (const [query, code] of [['עברית', 'he'], ['arabic', 'ar'], ['Türkçe', 'tr'], ['zh', 'zh'], ['srpski', 'sr']] as const) {
+    await search.fill(query);
+    await expect(root.locator(`a[data-lang="${code}"]:visible`)).toHaveCount(1);
+  }
+  await search.fill('qqqq');
+  await expect(root.locator('a[data-lang]:visible')).toHaveCount(0);
+  await expect(root.locator('[data-empty]')).toBeVisible();
+  await search.fill('ukr');
+  if (!isMobile) {
+    await search.press('Enter');
+    await page.waitForURL(/\/uk\/$/);
+  }
+});
+
+test('Hebrew and Arabic pages read right to left, with prices and phone fields left to right', async ({ page }) => {
+  for (const code of ['he', 'ar'] as const) {
+    await page.goto(`/${code}/`);
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await expect(page.locator('html')).toHaveAttribute('lang', code);
+    // Nothing spills sideways: a mirrored layout that overflows shows a horizontal scrollbar.
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(1);
+  }
+  await page.goto('/en/');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
 });

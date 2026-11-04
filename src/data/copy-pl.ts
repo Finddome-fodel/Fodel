@@ -27,13 +27,13 @@ export const PL = {
     meta: {
       title: 'FINDDOME Nieruchomości | Ogłoś swoją nieruchomość w Europie',
       description:
-        'Dodaj ogłoszenie w kilku krokach. Po płatności online pojawia się w 21 językach, bez umowy na wyłączność.',
+        'Dodaj ogłoszenie w kilku krokach. Po płatności online pojawia się w 28 językach, bez umowy na wyłączność.',
     },
     hero: {
       eyebrow: `Od 2013 roku · ${foundedInLabel(L)}`,
       title: ['Ogłoś', 'swoją nieruchomość', 'w Europie'],
       emphasis: 1,
-      body: 'Ogłoszenie dodaje się w kilku krokach. Sprawdzamy je, a po płatności online pojawia się na naszej stronie w 21 językach, bez umowy na wyłączność. Zainteresowani kontaktują się bezpośrednio z właścicielem lub z nami.',
+      body: 'Ogłoszenie dodaje się w kilku krokach. Sprawdzamy je, a po płatności online pojawia się na naszej stronie w 28 językach, bez umowy na wyłączność. Zainteresowani kontaktują się bezpośrednio z właścicielem lub z nami.',
       primary: 'Zobacz nieruchomości',
       secondary: 'Bezpłatne poszukiwanie',
       featuredLabel: 'Wyróżnione',

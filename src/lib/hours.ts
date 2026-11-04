@@ -47,6 +47,13 @@ export function officeHours(h: Hours, locale: L): string {
     et: `Esmaspäev–reede · ${range}`,
     lv: `Pirmdiena–piektdiena · ${range}`,
     lt: `Pirmadienis–penktadienis · ${range}`,
+    sr: `Ponedeljak–petak · ${range}`,
+    uk: `Понеділок–п’ятниця · ${range}`,
+    tr: `Pazartesi–Cuma · ${range}`,
+    he: `שני–שישי · ${range}`,
+    ar: `الاثنين–الجمعة · ${range}`,
+    ru: `Понедельник–пятница · ${range}`,
+    zh: `周一至周五 · ${range}`,
   }[locale];
 }
 
@@ -75,6 +82,13 @@ export function callbackHours(h: Hours, locale: L): string {
     et: weekend ? `Tagasihelistamine kuni kella ${to}-ni, ka nädalavahetusel.` : `Tagasihelistamine tööpäeviti kuni kella ${to}-ni.`,
     lv: weekend ? `Atzvanām līdz plkst. ${to}, arī nedēļas nogalēs.` : `Atzvanām darba dienās līdz plkst. ${to}.`,
     lt: weekend ? `Perskambiname iki ${to}, taip pat savaitgaliais.` : `Darbo dienomis perskambiname iki ${to}.`,
+    sr: weekend ? `Povratni pozivi do ${to}, i vikendom.` : `Povratni pozivi radnim danima do ${to}.`,
+    uk: weekend ? `Зворотні дзвінки до ${to}, також у вихідні.` : `Зворотні дзвінки в робочі дні до ${to}.`,
+    tr: weekend ? `Geri aramalar ${to} saatine kadar, hafta sonları da.` : `Geri aramalar hafta içi ${to} saatine kadar.`,
+    he: weekend ? `שיחות חוזרות עד ${to}, גם בסופי שבוע.` : `שיחות חוזרות בימי חול עד ${to}.`,
+    ar: weekend ? `معاودة الاتصال حتى ${to}، بما في ذلك عطلات نهاية الأسبوع.` : `معاودة الاتصال في أيام العمل حتى ${to}.`,
+    ru: weekend ? `Обратные звонки до ${to}, в том числе в выходные.` : `Обратные звонки в рабочие дни до ${to}.`,
+    zh: weekend ? `回电服务至 ${to}，周末亦然。` : `工作日回电服务至 ${to}。`,
   }[locale];
 }
 
@@ -105,6 +119,13 @@ export function hoursSentence(h: Hours, locale: L): string {
     et: `Helistage meile tööpäeviti kella ${from}–${to}; tagasi helistame kuni kella ${cb}-ni${weekend ? ', ka nädalavahetusel' : ''}.`,
     lv: `Zvaniet mums darba dienās no plkst. ${from} līdz ${to}; atzvanām līdz plkst. ${cb}${weekend ? ', arī nedēļas nogalēs' : ''}.`,
     lt: `Skambinkite mums darbo dienomis nuo ${from} iki ${to}; perskambiname iki ${cb}${weekend ? ', taip pat savaitgaliais' : ''}.`,
+    sr: `Pozovite nas radnim danima od ${from} do ${to}; povratne pozive obavljamo do ${cb}${weekend ? ', i vikendom' : ''}.`,
+    uk: `Телефонуйте нам у робочі дні з ${from} до ${to}; зворотні дзвінки — до ${cb}${weekend ? ', також у вихідні' : ''}.`,
+    tr: `Bizi hafta içi ${from}–${to} saatleri arasında arayın; geri aramalar ${cb} saatine kadar${weekend ? ', hafta sonları da' : ''}.`,
+    he: `התקשרו אלינו בימי חול בין ${from} ל־${to}; שיחות חוזרות עד ${cb}${weekend ? ', גם בסופי שבוע' : ''}.`,
+    ar: `اتصل بنا في أيام العمل بين ${from} و${to}؛ ونعاود الاتصال حتى ${cb}${weekend ? '، بما في ذلك عطلات نهاية الأسبوع' : ''}.`,
+    ru: `Звоните нам в рабочие дни с ${from} до ${to}; обратные звонки — до ${cb}${weekend ? ', в том числе в выходные' : ''}.`,
+    zh: `请在工作日 ${from} 至 ${to} 致电我们；回电服务至 ${cb}${weekend ? '，周末亦然' : ''}。`,
   }[locale];
 }
 

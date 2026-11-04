@@ -14,15 +14,18 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { activeProperties, url as propertyUrl } from '~/lib/properties';
-import { LOCALES } from '~/i18n/ui';
+import { LOCALE_META } from '~/i18n/ui';
+import { LISTING_TRANSLATION_LOCALES } from '~/lib/ai/translate-core';
 import { SITE_URL as SITE } from '~/config/site.mjs';
 
 export const GET: APIRoute = async () => {
   const properties = await activeProperties();
 
   const urls = properties.map((p) => {
-    const links = LOCALES.map(
-      (l) => `<xhtml:link rel="alternate" hreflang="${l}" href="${SITE}${propertyUrl(p, l)}" />`
+    // Only the languages listing text is translated into: a listing page in a
+    // later site language is a noindex stand-in (src/lib/page.ts).
+    const links = LISTING_TRANSLATION_LOCALES.map(
+      (l) => `<xhtml:link rel="alternate" hreflang="${LOCALE_META[l].hreflang}" href="${SITE}${propertyUrl(p, l)}" />`
     ).join('');
     // Hungarian is the canonical entry when both exist, matching the rest of
     // the site's hreflang graph (see src/lib/page.ts alternatesFor).

@@ -141,29 +141,36 @@ const phoneDisplay = contactPhone?.display ?? '';
 
     <noscript>
       <p class="noscript">
-        {x(
-          `Ha az űrlap nem működne, hívjon minket a ${phoneDisplay} számon vagy írjon az ${company.email.primary} címre.`,
-          `Werkt het formulier niet? Bel ons op ${phoneDisplay} of mail naar ${company.email.primary}.`,
-          `If the form does not work, call us on ${phoneDisplay} or email ${company.email.primary}.`,
-          `Funktioniert das Formular nicht? Rufen Sie uns an unter ${phoneDisplay} oder schreiben Sie an ${company.email.primary}.`,
-          `Si le formulaire ne fonctionne pas, appelez-nous au ${phoneDisplay} ou écrivez à ${company.email.primary}.`,
-          `Si el formulario no funciona, llámenos al ${phoneDisplay} o escriba a ${company.email.primary}.`,
-          `Jeśli formularz nie działa, prosimy zadzwonić pod numer ${phoneDisplay} lub napisać na adres ${company.email.primary}.`,
-          `Dacă formularul nu funcționează, sunați-ne la ${phoneDisplay} sau scrieți-ne la ${company.email.primary}.`,
-          `Ak formulár nefunguje, zavolajte nám na ${phoneDisplay} alebo napíšte na ${company.email.primary}.`,
-          `Se il modulo non funziona, ci chiami al ${phoneDisplay} o scriva a ${company.email.primary}.`,
-          `Se o formulário não funcionar, ligue-nos para o ${phoneDisplay} ou escreva para ${company.email.primary}.`,
-          `Αν η φόρμα δεν λειτουργεί, καλέστε μας στο ${phoneDisplay} ή γράψτε μας στο ${company.email.primary}.`,
-          `Pokud formulář nefunguje, zavolejte nám na ${phoneDisplay} nebo napište na ${company.email.primary}.`,
-          `Če obrazec ne deluje, nas pokličite na ${phoneDisplay} ali pišite na ${company.email.primary}.`,
-          `Om formuläret inte fungerar kan du ringa oss på ${phoneDisplay} eller mejla ${company.email.primary}.`,
-          `Hvis formularen ikke virker, kan du ringe til os på ${phoneDisplay} eller skrive til ${company.email.primary}.`,
-          `Hvis skjemaet ikke fungerer, kan du ringe oss på ${phoneDisplay} eller sende e-post til ${company.email.primary}.`,
-          `Jos lomake ei toimi, soita meille numeroon ${phoneDisplay} tai lähetä sähköpostia osoitteeseen ${company.email.primary}.`,
-          `Kui vorm ei tööta, helistage meile numbril ${phoneDisplay} või kirjutage aadressil ${company.email.primary}.`,
-          `Ja veidlapa nedarbojas, zvaniet mums pa tālruni ${phoneDisplay} vai rakstiet uz ${company.email.primary}.`,
-          `Jei forma neveikia, skambinkite mums ${phoneDisplay} arba rašykite ${company.email.primary}.`
-        )}
+        {x({
+          hu: `Ha az űrlap nem működne, hívjon minket a ${phoneDisplay} számon vagy írjon az ${company.email.primary} címre.`,
+          nl: `Werkt het formulier niet? Bel ons op ${phoneDisplay} of mail naar ${company.email.primary}.`,
+          en: `If the form does not work, call us on ${phoneDisplay} or email ${company.email.primary}.`,
+          de: `Funktioniert das Formular nicht? Rufen Sie uns an unter ${phoneDisplay} oder schreiben Sie an ${company.email.primary}.`,
+          fr: `Si le formulaire ne fonctionne pas, appelez-nous au ${phoneDisplay} ou écrivez à ${company.email.primary}.`,
+          es: `Si el formulario no funciona, llámenos al ${phoneDisplay} o escriba a ${company.email.primary}.`,
+          pl: `Jeśli formularz nie działa, prosimy zadzwonić pod numer ${phoneDisplay} lub napisać na adres ${company.email.primary}.`,
+          ro: `Dacă formularul nu funcționează, sunați-ne la ${phoneDisplay} sau scrieți-ne la ${company.email.primary}.`,
+          sk: `Ak formulár nefunguje, zavolajte nám na ${phoneDisplay} alebo napíšte na ${company.email.primary}.`,
+          it: `Se il modulo non funziona, ci chiami al ${phoneDisplay} o scriva a ${company.email.primary}.`,
+          pt: `Se o formulário não funcionar, ligue-nos para o ${phoneDisplay} ou escreva para ${company.email.primary}.`,
+          el: `Αν η φόρμα δεν λειτουργεί, καλέστε μας στο ${phoneDisplay} ή γράψτε μας στο ${company.email.primary}.`,
+          cs: `Pokud formulář nefunguje, zavolejte nám na ${phoneDisplay} nebo napište na ${company.email.primary}.`,
+          sl: `Če obrazec ne deluje, nas pokličite na ${phoneDisplay} ali pišite na ${company.email.primary}.`,
+          sv: `Om formuläret inte fungerar kan du ringa oss på ${phoneDisplay} eller mejla ${company.email.primary}.`,
+          da: `Hvis formularen ikke virker, kan du ringe til os på ${phoneDisplay} eller skrive til ${company.email.primary}.`,
+          no: `Hvis skjemaet ikke fungerer, kan du ringe oss på ${phoneDisplay} eller sende e-post til ${company.email.primary}.`,
+          fi: `Jos lomake ei toimi, soita meille numeroon ${phoneDisplay} tai lähetä sähköpostia osoitteeseen ${company.email.primary}.`,
+          et: `Kui vorm ei tööta, helistage meile numbril ${phoneDisplay} või kirjutage aadressil ${company.email.primary}.`,
+          lv: `Ja veidlapa nedarbojas, zvaniet mums pa tālruni ${phoneDisplay} vai rakstiet uz ${company.email.primary}.`,
+          lt: `Jei forma neveikia, skambinkite mums ${phoneDisplay} arba rašykite ${company.email.primary}.`,
+          sr: `Ako obrazac ne radi, pozovite nas na ${phoneDisplay} ili pišite na ${company.email.primary}.`,
+          uk: `Якщо форма не працює, зателефонуйте нам за номером ${phoneDisplay} або напишіть на ${company.email.primary}.`,
+          tr: `Form çalışmazsa bizi ${phoneDisplay} numarasından arayın veya ${company.email.primary} adresine e-posta gönderin.`,
+          he: `אם הטופס לא עובד, התקשרו אלינו למספר ${phoneDisplay} או כתבו ל־${company.email.primary}.`,
+          ar: `إذا لم يعمل النموذج، فاتصل بنا على ${phoneDisplay} أو راسلنا على ${company.email.primary}.`,
+          ru: `Если форма не работает, позвоните нам по номеру ${phoneDisplay} или напишите на ${company.email.primary}.`,
+          zh: `如果表单无法使用，请致电 ${phoneDisplay} 或发送邮件至 ${company.email.primary}。`,
+        })}
       </p>
     </noscript>
   </form>
@@ -456,7 +463,7 @@ const phoneDisplay = contactPhone?.display ?? '';
     width: 10px;
     height: 6px;
     margin-top: -3px;
-    border-left: 1.6px solid var(--cream);
+    border-inline-start: 1.6px solid var(--cream);
     border-bottom: 1.6px solid var(--cream);
     transform: rotate(-45deg) scale(0);
     transition: transform 0.3s var(--ease-out);
@@ -486,7 +493,7 @@ const phoneDisplay = contactPhone?.display ?? '';
   .consent a {
     text-decoration: underline;
     text-underline-offset: 3px;
-    margin-left: 4px;
+    margin-inline-start: 4px;
   }
   .consent .error {
     grid-column: 2;
@@ -515,7 +522,7 @@ const phoneDisplay = contactPhone?.display ?? '';
   .error-summary ul {
     display: grid;
     gap: 4px;
-    padding-left: 18px;
+    padding-inline-start: 18px;
     font-size: var(--fs-small);
     line-height: 1.5;
   }

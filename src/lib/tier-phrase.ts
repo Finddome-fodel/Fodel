@@ -31,6 +31,13 @@ const TIER_PHRASE: Record<Locale, TierPhrase> = {
   et: { above: (x) => `kinnisvara hinnaga üle ${x}`, upTo: (x) => `kinnisvara hinnaga kuni ${x}`, between: (a, b) => `kinnisvara hinnaga ${a}–${b}` },
   lv: { above: (x) => `īpašums virs ${x}`, upTo: (x) => `īpašums līdz ${x}`, between: (a, b) => `īpašums no ${a} līdz ${b}` },
   lt: { above: (x) => `turtas virš ${x}`, upTo: (x) => `turtas iki ${x}`, between: (a, b) => `turtas nuo ${a} iki ${b}` },
+  sr: { above: (x) => `nekretnina sa cenom iznad ${x}`, upTo: (x) => `nekretnina sa cenom do ${x}`, between: (a, b) => `nekretnina sa cenom ${a}–${b}` },
+  uk: { above: (x) => `нерухомість вартістю понад ${x}`, upTo: (x) => `нерухомість вартістю до ${x}`, between: (a, b) => `нерухомість вартістю ${a}–${b}` },
+  tr: { above: (x) => `fiyatı ${x} üzerinde olan mülk`, upTo: (x) => `fiyatı en fazla ${x} olan mülk`, between: (a, b) => `fiyatı ${a}–${b} arasında olan mülk` },
+  he: { above: (x) => `נכס במחיר של מעל ${x}`, upTo: (x) => `נכס במחיר של עד ${x}`, between: (a, b) => `נכס במחיר של ${a}–${b}` },
+  ar: { above: (x) => `عقار بسعر يزيد على ${x}`, upTo: (x) => `عقار بسعر يصل إلى ${x}`, between: (a, b) => `عقار بسعر ${a}–${b}` },
+  ru: { above: (x) => `недвижимость стоимостью свыше ${x}`, upTo: (x) => `недвижимость стоимостью до ${x}`, between: (a, b) => `недвижимость стоимостью ${a}–${b}` },
+  zh: { above: (x) => `价格高于 ${x} 的房产`, upTo: (x) => `价格不超过 ${x} 的房产`, between: (a, b) => `价格在 ${a}–${b} 之间的房产` },
 };
 
 /**

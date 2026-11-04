@@ -1,0 +1,50 @@
+{
+  "*": [
+    "FINDDOME",
+    "FINDDOME Tour",
+    "WhatsApp",
+    "Google",
+    "YouTube",
+    "Facebook",
+    "Instagram",
+    "LinkedIn",
+    "TikTok",
+    "Stripe",
+    "Visa",
+    "Mastercard",
+    "PDF",
+    "JPG",
+    "PNG",
+    "HEIC",
+    "IBAN",
+    "BIC",
+    "SWIFT",
+    "VAT",
+    "EUR",
+    "HUF",
+    "m²",
+    "km",
+    "Wi-Fi",
+    "FODEL VASTGOED",
+    "Födelmesi Gábor",
+    "info@finddome.com",
+    "fodel:consent",
+    "NL35 RABO 0360284973 (RABONL2U)"
+  ],
+  "sr": [
+    "Video",
+    "Blog",
+    "Region",
+    "Park",
+    "Panel",
+    "Gas"
+  ],
+  "tr": [
+    "Video",
+    "Blog",
+    "Park"
+  ],
+  "zh": [
+    "Cookie"
+  ]
+}

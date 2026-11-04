@@ -8,16 +8,26 @@
  * file directly in Node, where the `~/` alias is not registered yet.
  */
 import { createHash } from 'node:crypto';
-import { LOCALES } from '../../i18n/ui.ts';
+import { LOCALES, type Locale } from '../../i18n/ui.ts';
 import { TRANSLATION_GLOSSARY } from './translation-glossary.ts';
 
 /* ── Languages ─────────────────────────────────────────────────────────── */
 
-/** Every language the site is published in, Hungarian (the source of most listings) first. */
-export const ALL_LOCALES: readonly string[] = LOCALES;
+/**
+ * The languages listing text is translated into: the original twenty-one.
+ * The site itself also speaks sr, uk, tr, he, ar, ru and zh (November 2026),
+ * but listing translation into those is a separate job (CC-4 in
+ * claude-code-translations.md): until then they are not offered, enqueued or
+ * charged, and their pages show the English (or other fallback) listing text.
+ * Widen this list there, not LOCALES.
+ */
+export const LISTING_TRANSLATION_LOCALES = LOCALES.slice(0, 21) as readonly Locale[];
+
+/** Every language a listing can be translated into, Hungarian (the source of most listings) first. */
+export const ALL_LOCALES: readonly string[] = LISTING_TRANSLATION_LOCALES;
 
 /** What an owner can order: everything except Hungarian, which is what they write. */
-export const OWNER_TARGETS: readonly string[] = LOCALES.filter((code) => code !== 'hu');
+export const OWNER_TARGETS: readonly string[] = LISTING_TRANSLATION_LOCALES.filter((code) => code !== 'hu');
 
 /** The four the price list recommends first (FAQ Q7). Shown as one-tap chips. */
 export const RECOMMENDED_TARGETS: readonly string[] = ['nl', 'de', 'en', 'fr'];
@@ -28,6 +38,13 @@ const ENGLISH_NAME: Record<string, string> = {
   hu: 'Hungarian', nl: 'Dutch', en: 'British English', de: 'German', fr: 'French', es: 'Spanish', pl: 'Polish', ro: 'Romanian',
   sk: 'Slovak', it: 'Italian', pt: 'European Portuguese', el: 'Greek', cs: 'Czech', sl: 'Slovenian', sv: 'Swedish', da: 'Danish',
   no: 'Norwegian (Bokmål)', fi: 'Finnish', et: 'Estonian', lv: 'Latvian', lt: 'Lithuanian',
+  sr: 'Serbian (Latin script)',
+  uk: 'Ukrainian',
+  tr: 'Turkish',
+  he: 'Hebrew',
+  ar: 'Modern Standard Arabic',
+  ru: 'Russian',
+  zh: 'Simplified Chinese',
 };
 export const englishName = (code: string): string => ENGLISH_NAME[code] ?? code;
 
@@ -36,6 +53,13 @@ export const HU_NAME: Record<string, string> = {
   hu: 'magyar', nl: 'holland', en: 'angol', de: 'német', fr: 'francia', es: 'spanyol', pl: 'lengyel', ro: 'román', sk: 'szlovák',
   it: 'olasz', pt: 'portugál', el: 'görög', cs: 'cseh', sl: 'szlovén', sv: 'svéd', da: 'dán', no: 'norvég', fi: 'finn',
   et: 'észt', lv: 'lett', lt: 'litván',
+  sr: 'szerb',
+  uk: 'ukrán',
+  tr: 'török',
+  he: 'héber',
+  ar: 'arab',
+  ru: 'orosz',
+  zh: 'kínai',
 };
 
 /* ── The text being translated ─────────────────────────────────────────── */

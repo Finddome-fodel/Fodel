@@ -101,6 +101,22 @@ export function defaultPhoneCountry(locale: string): CountryCode {
       return 'LV';
     case 'lt':
       return 'LT';
+    case 'sr':
+      return 'RS';
+    case 'uk':
+      return 'UA';
+    case 'tr':
+      return 'TR';
+    case 'he':
+      return 'IL';
+    // Arabic is spoken in many countries; the Emirates are where most of
+    // FINDDOME's Arabic-speaking enquiries are expected to come from.
+    case 'ar':
+      return 'AE';
+    case 'ru':
+      return 'RU';
+    case 'zh':
+      return 'CN';
     default:
       return 'HU';
   }

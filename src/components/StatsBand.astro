@@ -49,10 +49,10 @@ const isYear = (value: string) => /^\d{4}$/.test(value);
     padding: 36px 32px 4px;
   }
   .stat:first-child {
-    padding-left: 0;
+    padding-inline-start: 0;
   }
   .stat + .stat {
-    border-left: 1px solid var(--stats-rule, var(--border));
+    border-inline-start: 1px solid var(--stats-rule, var(--border));
   }
   dt {
     font-size: var(--fs-eyebrow);
@@ -63,7 +63,7 @@ const isYear = (value: string) => /^\d{4}$/.test(value);
   }
   /* -0.05em takes out the numeral's side bearing (see NumberedColumns). */
   dd {
-    margin-left: -0.05em;
+    margin-inline-start: -0.05em;
     font-family: var(--serif);
     font-weight: var(--fw-light);
     font-size: clamp(56px, 6.4vw, 104px);
@@ -79,14 +79,14 @@ const isYear = (value: string) => /^\d{4}$/.test(value);
     }
     .stat,
     .stat:first-child {
-      padding: 28px 20px 28px 0;
+      padding-block: 28px; padding-inline: 0 20px;
     }
     .stat + .stat {
-      border-left: 0;
+      border-inline-start: 0;
     }
     .stat:nth-child(even) {
-      padding-left: 20px;
-      border-left: 1px solid var(--stats-rule, var(--border));
+      padding-inline-start: 20px;
+      border-inline-start: 1px solid var(--stats-rule, var(--border));
     }
     .stat:nth-child(n + 3) {
       border-top: 1px solid var(--stats-rule, var(--border));

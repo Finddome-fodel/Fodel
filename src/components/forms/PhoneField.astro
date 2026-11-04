@@ -82,13 +82,13 @@ const all = getCountries()
   .sort((a, b) => collator.compare(a.name, b.name));
 const current = entry(selected);
 
-const exampleLabel = x('Például:', 'Bijvoorbeeld:', 'For example:', 'Zum Beispiel:', 'Par exemple\u00a0:', 'Por ejemplo:', 'Na przykład:', 'De exemplu:', 'Napríklad:', 'Ad esempio:', 'Por exemplo:', 'Για παράδειγμα:', 'Například:', 'Na primer:', 'Till exempel:', 'For eksempel:', 'For eksempel:', 'Esimerkiksi:', 'Näiteks:', 'Piemēram:', 'Pavyzdžiui:');
+const exampleLabel = x({ hu: 'Például:', nl: 'Bijvoorbeeld:', en: 'For example:', de: 'Zum Beispiel:', fr: 'Par exemple\u00a0:', es: 'Por ejemplo:', pl: 'Na przykład:', ro: 'De exemplu:', sk: 'Napríklad:', it: 'Ad esempio:', pt: 'Por exemplo:', el: 'Για παράδειγμα:', cs: 'Například:', sl: 'Na primer:', sv: 'Till exempel:', da: 'For eksempel:', no: 'For eksempel:', fi: 'Esimerkiksi:', et: 'Näiteks:', lv: 'Piemēram:', lt: 'Pavyzdžiui:', sr: 'Na primer:', uk: 'Наприклад:', tr: 'Örneğin:', he: 'לדוגמה:', ar: 'مثال:', ru: 'Например:', zh: '例如：' });
 const t = {
-  country: x('Ország hívószáma', 'Landcode', 'Country dialling code', 'Ländervorwahl', 'Indicatif du pays', 'Prefijo telefónico del país', 'Numer kierunkowy kraju', 'Prefixul țării', 'Predvoľba krajiny', 'Prefisso internazionale', 'Indicativo do país', 'Κωδικός χώρας', 'Mezinárodní předvolba', 'Klicna koda države', 'Landsnummer', 'Landekode', 'Landskode', 'Maatunnus', 'Riigi suunakood', 'Valsts kods', 'Šalies kodas'),
-  common: x('Gyakori', 'Veelgekozen', 'Common', 'Häufig', 'Courants', 'Habituales', 'Najczęstsze', 'Frecvente', 'Najčastejšie', 'Più usati', 'Mais comuns', 'Συνηθέστερες', 'Nejčastější', 'Najpogostejše', 'Vanligast', 'Mest brugte', 'Mest brukte', 'Yleisimmät', 'Levinumad', 'Biežāk izmantotās', 'Dažniausios'),
-  all: x('Minden ország', 'Alle landen', 'All countries', 'Alle Länder', 'Tous les pays', 'Todos los países', 'Wszystkie kraje', 'Toate țările', 'Všetky krajiny', 'Tutti i paesi', 'Todos os países', 'Όλες οι χώρες', 'Všechny země', 'Vse države', 'Alla länder', 'Alle lande', 'Alle land', 'Kaikki maat', 'Kõik riigid', 'Visas valstis', 'Visos šalys'),
-  search: x('Ország keresése', 'Land zoeken', 'Search for a country', 'Land suchen', 'Rechercher un pays', 'Buscar un país', 'Wyszukaj kraj', 'Căutați o țară', 'Vyhľadať krajinu', 'Cerca un paese', 'Pesquisar um país', 'Αναζήτηση χώρας', 'Vyhledat zemi', 'Poiščite državo', 'Sök efter ett land', 'Søg efter et land', 'Søk etter et land', 'Hae maata', 'Otsige riiki', 'Meklēt valsti', 'Ieškoti šalies'),
-  none: x('Nincs találat', 'Geen resultaten', 'No results', 'Keine Treffer', 'Aucun résultat', 'Sin resultados', 'Brak wyników', 'Niciun rezultat', 'Žiadne výsledky', 'Nessun risultato', 'Sem resultados', 'Δεν βρέθηκαν αποτελέσματα', 'Žádné výsledky', 'Ni zadetkov', 'Inga träffar', 'Ingen resultater', 'Ingen treff', 'Ei tuloksia', 'Tulemusi ei leitud', 'Nekas netika atrasts', 'Rezultatų nėra'),
+  country: x({ hu: 'Ország hívószáma', nl: 'Landcode', en: 'Country dialling code', de: 'Ländervorwahl', fr: 'Indicatif du pays', es: 'Prefijo telefónico del país', pl: 'Numer kierunkowy kraju', ro: 'Prefixul țării', sk: 'Predvoľba krajiny', it: 'Prefisso internazionale', pt: 'Indicativo do país', el: 'Κωδικός χώρας', cs: 'Mezinárodní předvolba', sl: 'Klicna koda države', sv: 'Landsnummer', da: 'Landekode', no: 'Landskode', fi: 'Maatunnus', et: 'Riigi suunakood', lv: 'Valsts kods', lt: 'Šalies kodas', sr: 'Pozivni broj zemlje', uk: 'Код країни', tr: 'Ülke telefon kodu', he: 'קידומת מדינה', ar: 'رمز الدولة', ru: 'Код страны', zh: '国家/地区代码' }),
+  common: x({ hu: 'Gyakori', nl: 'Veelgekozen', en: 'Common', de: 'Häufig', fr: 'Courants', es: 'Habituales', pl: 'Najczęstsze', ro: 'Frecvente', sk: 'Najčastejšie', it: 'Più usati', pt: 'Mais comuns', el: 'Συνηθέστερες', cs: 'Nejčastější', sl: 'Najpogostejše', sv: 'Vanligast', da: 'Mest brugte', no: 'Mest brukte', fi: 'Yleisimmät', et: 'Levinumad', lv: 'Biežāk izmantotās', lt: 'Dažniausios', sr: 'Najčešće', uk: 'Найпоширеніші', tr: 'Sık kullanılanlar', he: 'נפוצות', ar: 'الأكثر استخدامًا', ru: 'Часто используемые', zh: '常用' }),
+  all: x({ hu: 'Minden ország', nl: 'Alle landen', en: 'All countries', de: 'Alle Länder', fr: 'Tous les pays', es: 'Todos los países', pl: 'Wszystkie kraje', ro: 'Toate țările', sk: 'Všetky krajiny', it: 'Tutti i paesi', pt: 'Todos os países', el: 'Όλες οι χώρες', cs: 'Všechny země', sl: 'Vse države', sv: 'Alla länder', da: 'Alle lande', no: 'Alle land', fi: 'Kaikki maat', et: 'Kõik riigid', lv: 'Visas valstis', lt: 'Visos šalys', sr: 'Sve zemlje', uk: 'Усі країни', tr: 'Tüm ülkeler', he: 'כל המדינות', ar: 'كل الدول', ru: 'Все страны', zh: '所有国家/地区' }),
+  search: x({ hu: 'Ország keresése', nl: 'Land zoeken', en: 'Search for a country', de: 'Land suchen', fr: 'Rechercher un pays', es: 'Buscar un país', pl: 'Wyszukaj kraj', ro: 'Căutați o țară', sk: 'Vyhľadať krajinu', it: 'Cerca un paese', pt: 'Pesquisar um país', el: 'Αναζήτηση χώρας', cs: 'Vyhledat zemi', sl: 'Poiščite državo', sv: 'Sök efter ett land', da: 'Søg efter et land', no: 'Søk etter et land', fi: 'Hae maata', et: 'Otsige riiki', lv: 'Meklēt valsti', lt: 'Ieškoti šalies', sr: 'Pretražite zemlju', uk: 'Пошук країни', tr: 'Ülke arayın', he: 'חיפוש מדינה', ar: 'ابحث عن دولة', ru: 'Поиск страны', zh: '搜索国家/地区' }),
+  none: x({ hu: 'Nincs találat', nl: 'Geen resultaten', en: 'No results', de: 'Keine Treffer', fr: 'Aucun résultat', es: 'Sin resultados', pl: 'Brak wyników', ro: 'Niciun rezultat', sk: 'Žiadne výsledky', it: 'Nessun risultato', pt: 'Sem resultados', el: 'Δεν βρέθηκαν αποτελέσματα', cs: 'Žádné výsledky', sl: 'Ni zadetkov', sv: 'Inga träffar', da: 'Ingen resultater', no: 'Ingen treff', fi: 'Ei tuloksia', et: 'Tulemusi ei leitud', lv: 'Nekas netika atrasts', lt: 'Rezultatų nėra', sr: 'Nema rezultata', uk: 'Нічого не знайдено', tr: 'Sonuç yok', he: 'אין תוצאות', ar: 'لا توجد نتائج', ru: 'Ничего не найдено', zh: '无结果' }),
   example: (ex: string) => `${exampleLabel} ${ex}`,
 };
 ---
@@ -102,7 +102,7 @@ const t = {
     {hint ?? t.example(current.example)}
   </p>
 
-  <div class="pf-row">
+  <div class="pf-row" dir="ltr">
     <div class="pf-country">
       <label class="sr-only" for={countryId}>{t.country}</label>
       <select id={countryId} name={`${name}Country`} class="pf-select" autocomplete="tel-country-code">
@@ -358,7 +358,7 @@ const t = {
     gap: 8px;
     height: 100%;
     min-height: 54px;
-    padding: 0 14px 0 16px;
+    padding-block: 0; padding-inline: 16px 14px;
     border: 1px solid rgba(16, 42, 67, 0.16);
     border-radius: var(--r-sm);
     background: var(--white);
@@ -385,7 +385,7 @@ const t = {
   .pf-country :global(.pf-pop) {
     position: absolute;
     top: calc(100% + 8px);
-    left: 0;
+    inset-inline-start: 0;
     z-index: 60;
     width: min(320px, calc(100vw - 48px));
     padding: 8px;

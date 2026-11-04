@@ -22,13 +22,13 @@ export const IT = {
     meta: {
       title: 'FINDDOME Real Estates | Pubblichi il suo immobile in Europa',
       description:
-        'Carichi il suo annuncio in pochi passaggi. Dopo il pagamento online è pubblicato in 21 lingue, senza contratto di esclusiva.',
+        'Carichi il suo annuncio in pochi passaggi. Dopo il pagamento online è pubblicato in 28 lingue, senza contratto di esclusiva.',
     },
     hero: {
       eyebrow: `Dal 2013 · ${foundedInLabel(L)}`,
       title: ['Pubblichi', 'il suo immobile', 'in Europa'],
       emphasis: 1,
-      body: 'Carichi il suo annuncio in pochi passaggi. Lo verifichiamo e, dopo il pagamento online, viene pubblicato sul nostro sito in 21 lingue, senza contratto di esclusiva. Gli interessati la contattano direttamente o tramite noi.',
+      body: 'Carichi il suo annuncio in pochi passaggi. Lo verifichiamo e, dopo il pagamento online, viene pubblicato sul nostro sito in 28 lingue, senza contratto di esclusiva. Gli interessati la contattano direttamente o tramite noi.',
       primary: 'Sfoglia gli immobili',
       secondary: 'Ricerca immobile gratuita',
       featuredLabel: 'In evidenza',

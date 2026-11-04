@@ -22,13 +22,13 @@ export const LV = {
     meta: {
       title: 'FINDDOME Real Estates | Sludiniet savu īpašumu Eiropā',
       description:
-        'Augšupielādējiet sludinājumu dažos soļos. Pēc maksājuma tiešsaistē tas tiek publicēts 21 valodā, bez ekskluzivitātes līguma.',
+        'Augšupielādējiet sludinājumu dažos soļos. Pēc maksājuma tiešsaistē tas tiek publicēts 28 valodās, bez ekskluzivitātes līguma.',
     },
     hero: {
       eyebrow: `Kopš 2013. gada · ${foundedInLabel(L)}`,
       title: ['Sludiniet', 'savu īpašumu', 'Eiropā'],
       emphasis: 1,
-      body: 'Augšupielādējiet sludinājumu dažos soļos. Mēs to pārbaudām, un pēc maksājuma tiešsaistē tas tiek publicēts mūsu vietnē 21 valodā, bez ekskluzivitātes līguma. Interesenti sazinās ar jums tieši vai caur mums.',
+      body: 'Augšupielādējiet sludinājumu dažos soļos. Mēs to pārbaudām, un pēc maksājuma tiešsaistē tas tiek publicēts mūsu vietnē 28 valodās, bez ekskluzivitātes līguma. Interesenti sazinās ar jums tieši vai caur mums.',
       primary: 'Skatīt īpašumus',
       secondary: 'Bezmaksas īpašuma meklēšana',
       featuredLabel: 'Izceltie',
