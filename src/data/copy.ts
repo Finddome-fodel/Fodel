@@ -159,7 +159,7 @@ const BASE = {
       meta: {
         title: 'Eladóknak | Hirdesse ingatlanát Nyugat-Európában',
         description:
-          'Hirdesse magyar ingatlanát holland, belga és német vevőknek. 69 €-tól, kizárólagosság nélkül. Jutalék csak akkor, ha mi hozzuk a vevőt: 4% + 21% holland áfa.',
+          'Hirdesse magyar ingatlanát holland, belga és német vevőknek, kizárólagosság nélkül. Jutalék csak akkor, ha mi hozzuk a vevőt: 4% + 21% holland áfa.',
       },
       hero: {
         eyebrow: 'Eladóknak',
@@ -422,7 +422,7 @@ const BASE = {
       meta: {
         title: 'Adverteren | Uw Hongaarse woning in West-Europa',
         description:
-          `Adverteer uw Hongaarse woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, vanaf € 69 en zonder exclusiviteit. Courtage alleen als FINDDOME de koper aanbrengt: 4% + 21% btw.`,
+          `Adverteer uw Hongaarse woning in ${REACH_LANGUAGES} talen in ${REACH_COUNTRIES} landen, zonder exclusiviteit. Courtage alleen als FINDDOME de koper aanbrengt: 4% + 21% btw.`,
       },
       hero: {
         eyebrow: 'Adverteren',
