@@ -5,8 +5,9 @@
  * included); model.listPriceCents() turns them into the right figure for the
  * invoice at hand.
  */
-import { listingCatalog } from '~/lib/listing-packages';
-import { catalogue as orderCatalogue, tierPhrase, type OrderLine } from '~/lib/orders';
+import { listingCatalog, type ListingCatalog } from '~/lib/listing-packages';
+import { isPackageKey } from '~/lib/listing-pricing';
+import { catalogue as orderCatalogue, tierPhrase, hasLegacyPackageLine, packageLineText, BASIC_INCLUDED_WORD, type OrderLine } from '~/lib/orders';
 import type { PriceTier } from '~/lib/price-tiers';
 import { valuationPackages, isPayable } from '~/lib/valuation/packages';
 import type { Services } from '~/lib/runtime-config';
@@ -87,15 +88,21 @@ export const TRANSLATION_PRICE_NOTE = {
  * in one line without a price, unless a bigger package was bought, which already names its languages.
  */
 export function basicIncludedLine(lines: OrderLine[]): InvoiceLine | null {
-  if (!lines.some((line) => line.kind === 'package') || lines.some((line) => line.id === 'translation-package')) return null;
+  // Only an order with one of the older packages: Basic, Europe and World lines name their languages themselves.
+  if (!hasLegacyPackageLine(lines)) return null;
   return {
-    description: 'Fordítás: Basic (angol, német) – benne van', descriptionNl: 'Vertaling: Basic (Engels, Duits) – inbegrepen',
+    description: BASIC_INCLUDED_WORD.hu, descriptionNl: BASIC_INCLUDED_WORD.nl,
     quantity: 1, unit: 'db', unitNl: 'stuk', unitCents: 0, catalogId: 'translation-basic', listCents: 0,
   };
 }
 
 /** A stored order line, carried onto an invoice in both languages. */
-export function invoiceLineFromOrder(line: OrderLine, items: CatalogueItem[]): InvoiceLine {
+export function invoiceLineFromOrder(line: OrderLine, items: CatalogueItem[], cat?: ListingCatalog): InvoiceLine {
+  // Basic, Europe and World: the line's own wording (package, term, value band), in both languages of the invoice.
+  const own = cat && isPackageKey(line.id) ? { hu: packageLineText(cat, line, 'hu'), nl: packageLineText(cat, line, 'nl') } : null;
+  if (own?.hu) {
+    return { description: own.hu, descriptionNl: own.nl ?? own.hu, quantity: line.quantity, unit: 'db', unitNl: 'stuk', unitCents: line.unitCents, catalogId: line.id, listCents: line.unitCents };
+  }
   // A tiered line names the tier it was charged at; older lines have no tier and match the plain id.
   const tierCount = line.tier ? items.filter((i) => i.id === line.id || i.id.startsWith(`${line.id}:`)).length : 1;
   const item = (line.tier && items.find((i) => i.id === tierItemId(line.id, line.tier!.index, tierCount))) || items.find((i) => i.id === line.id);

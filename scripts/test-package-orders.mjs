@@ -299,6 +299,39 @@ try {
     assert.deepEqual(written.services.priceRounding, stored.priceRounding);
   });
 
+  await test('3.7 the "Basic included" line: once, on an older-package order only; never on the new packages, an upgrade or a translation-only order', async () => {
+    const C = await server.ssrLoadModule('/src/lib/invoicing/catalogue.ts');
+    const legacyLines = O.buildOrderLines({ packageId: 'normal-12m', extras: [] }, 'hu', L.listingCatalog({}));
+    assert.equal(O.hasLegacyPackageLine(legacyLines), true);
+    const line = C.basicIncludedLine(legacyLines);
+    assert.match(line.description, /Basic \(angol, német\) – benne van/);
+    assert.match(line.descriptionNl, /Basic \(Engels, Duits\)/);
+    assert.equal(line.unitCents, 0);
+    assert.equal(C.basicIncludedLine(build({ packageId: 'world', months: 6, priceHuf: 48_000_000 })), null, 'a new package names its languages itself');
+    assert.equal(C.basicIncludedLine(build({ packageId: 'world', upgradeFrom: 'basic', months: 3, tierIndex: 1 })), null, 'an upgrade');
+    assert.equal(C.basicIncludedLine([{ kind: 'extra', id: 'translation-package', quantity: 1, unitCents: 1200, label: 'x', locales: ['fr'] }]), null, 'a translation-only order');
+    assert.equal(C.basicIncludedLine([]), null);
+    // The order e-mail says it once too, in hu, nl and en; nothing is added to a new-package order.
+    for (const [locale, word] of [['hu', /benne van/], ['nl', /inbegrepen/], ['en', /included/]]) {
+      const rows = O.linesForEmail(legacyLines, locale);
+      assert.equal(rows.filter((r) => word.test(r.label)).length, 1, locale);
+    }
+    assert.equal(O.linesForEmail(build({ packageId: 'europe', months: 3, priceHuf: 1 }), 'hu').length, 1);
+  });
+
+  await test('invoice lines of the new packages read like the order, in Hungarian and Dutch, with the frozen price', async () => {
+    const C = await server.ssrLoadModule('/src/lib/invoicing/catalogue.ts');
+    const items = C.invoiceCatalogue({ pricingLive: true });
+    const lines = build({ packageId: 'world', months: 6, priceHuf: 48_000_000 });
+    const out = C.invoiceLineFromOrder(lines[0], items, cat);
+    assert.equal(out.description, 'World csomag, 6 hónap (25–100 millió Ft)');
+    assert.match(out.descriptionNl, /^World pakket, 6 maanden/);
+    assert.equal(out.unitCents, 7690);
+    const up = C.invoiceLineFromOrder(build({ packageId: 'world', upgradeFrom: 'basic', months: 3, tierIndex: 1 })[0], items, cat);
+    assert.match(up.description, /^Basic → World csomag, 3 hónap/);
+    assert.equal(up.unitCents, 4990 - 2490);
+  });
+
   console.log(`\n${passed} package order checks passed.`);
 } catch (error) {
   console.error('✗ ' + (error.stack || error));

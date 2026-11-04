@@ -608,12 +608,36 @@ export function referralDiscountCents(lines: OrderLine[]): number {
   return percentOfCents(pkg.unitCents * pkg.quantity, REFERRAL_DISCOUNT_PERCENT);
 }
 
+/**
+ * An order with one of the two older listing packages: it carries no languages on its lines, so the paper says once that
+ * Basic (English, German) is included (fix 3.7). The new packages name their languages themselves; a translation-only or
+ * upgrade order has no older package line; a credit note is never built from this.
+ */
+export const hasLegacyPackageLine = (lines: readonly Pick<OrderLine, 'kind' | 'id'>[] | null | undefined): boolean =>
+  (lines ?? []).some((line) => line.kind === 'package' && (line.id === 'cheap-6m' || line.id === 'normal-12m')) && !(lines ?? []).some((line) => line.id === 'translation-package');
+
+export const BASIC_INCLUDED_WORD = {
+  hu: 'Fordítás: Basic (angol, német) – benne van',
+  nl: 'Vertaling: Basic (Engels, Duits) – inbegrepen',
+  en: 'Translation: Basic (English, German) – included',
+} as const;
+
+/** The wording of one package line in another language (the invoice is Hungarian and Dutch), from the frozen band index. */
+export function packageLineText(cat: ListingCatalog, line: OrderLine, locale: OrderLocale): string | null {
+  if (line.kind !== 'package' || !isPackageKey(line.id) || typeof line.months !== 'number') return null;
+  const base = packageLineLabel(cat, line.id, line.months, line.tier?.index ?? 0, locale);
+  if (line.upgradeFrom) return `${cat.packages.find((p) => p.id === line.upgradeFrom)?.names[locale] ?? line.upgradeFrom} → ${base}`;
+  return line.renewal ? `${RENEWAL_WORD[locale]}: ${base}` : base;
+}
+
 /** Order lines shaped for the email templates' itemised table. */
 export function linesForEmail(lines: OrderLine[], locale?: Locale): { label: string; amount: string }[] {
-  return lines.map((line) => ({
+  const rows = lines.map((line) => ({
     label: line.label,
     amount: formatCents(line.unitCents * line.quantity, locale),
   }));
+  if (hasLegacyPackageLine(lines)) rows.splice(1, 0, { label: BASIC_INCLUDED_WORD[locale === 'hu' ? 'hu' : locale === 'nl' ? 'nl' : 'en'], amount: formatCents(0, locale) });
+  return rows;
 }
 
 /**

@@ -12,6 +12,7 @@ import { logEvent } from '~/lib/activity';
 import { localeFrom, type Locale } from '~/i18n/ui';
 import { invoiceToBookkeeper, invoiceToCustomer } from './emails';
 import { basicIncludedLine, invoiceCatalogue, invoiceLineFromOrder } from './catalogue';
+import { listingCatalog } from '~/lib/listing-packages';
 import {
   addDays, computeTotals, emptyParty, isOverdue, listPriceCents, rateFor, suggestVat, today,
   type DocKind, type InvoiceDoc, type InvoiceLine, type Issuer, type Party, type PaymentMethod, type PriceMode, type VatTreatment,
@@ -348,7 +349,7 @@ export async function createDraftFromPayment(admin: any, paymentId: string, acto
   const catalogue = invoiceCatalogue((company as any).services);
 
   const mode: PriceMode = vat.rate === 0 ? 'net' : 'gross';
-  const lines = repriceLines(((payment.line_items ?? []) as any[]).map((l) => invoiceLineFromOrder(l, catalogue)), vat.rate, mode);
+  const lines = repriceLines(((payment.line_items ?? []) as any[]).map((l) => invoiceLineFromOrder(l, catalogue, listingCatalog((company as any).services))), vat.rate, mode);
   const go = basicIncludedLine((payment.line_items ?? []) as any[]);
   if (go) lines.push(go);
   if (payment.discount_cents > 0) {
