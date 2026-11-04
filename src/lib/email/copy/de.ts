@@ -85,6 +85,27 @@ export const DE = {
     cta: 'Inserat bearbeiten',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Wir haben Ihre neuen Fotos geprüft (#${ref})`,
+    preheader: 'Die freigegebenen Fotos sind bereits in Ihrem Inserat zu sehen.',
+    heading: 'Wir haben Ihre neuen Fotos geprüft',
+    body: (title: string, ref: string) =>
+      `Vielen Dank, dass Sie die Bildergalerie Ihres Inserats „${title}“ (#${ref}) aktualisiert haben. Unser Team hat die neuen Fotos geprüft.`,
+    approvedLabel: 'Freigegeben, jetzt sichtbar',
+    rejectedLabel: 'Nicht veröffentlicht',
+    reasonsTitle: 'Warum wurden einige Fotos nicht veröffentlicht?',
+    reasons: {
+      quality: 'Unscharfes, dunkles oder qualitativ schwaches Bild',
+      unrelated: 'Zeigt nicht diese Immobilie',
+      personal: 'Personenbezogene Daten sichtbar (Gesichter, Kennzeichen, Dokumente)',
+      branding: 'Enthält Text, ein Logo, ein Wasserzeichen oder Kontaktdaten',
+      duplicate: 'Dasselbe Bild ist bereits in der Galerie',
+      inappropriate: 'Für ein Inserat ungeeigneter Inhalt',
+    } as Record<string, string>,
+    after: 'Sie können weiterhin kostenlos neue Fotos hinzufügen. Jedes neue Bild erscheint nach einer kurzen Prüfung in Ihrem Inserat.',
+    cta: 'Fotos verwalten',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Freigegeben (#${ref}): nur die Zahlung fehlt noch`,
     preheader: 'Ihr Inserat ist freigegeben und geht online, sobald die Zahlung eingegangen ist.',

@@ -105,6 +105,27 @@ export const HU = {
     cta: 'Hirdetés javítása',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Átnéztük az új fotóit (#${ref})`,
+    preheader: 'Az új fotók közül a jóváhagyottak már láthatók a hirdetésben.',
+    heading: 'Átnéztük az új fotóit',
+    body: (title: string, ref: string) =>
+      `Köszönjük, hogy frissítette a(z) „${title}” (#${ref}) hirdetés galériáját. Munkatársunk átnézte az új fotókat.`,
+    approvedLabel: 'Jóváhagyva, már látható',
+    rejectedLabel: 'Nem került ki',
+    reasonsTitle: 'Miért nem kerültek ki egyes fotók?',
+    reasons: {
+      quality: 'Elmosódott, sötét vagy rossz minőségű kép',
+      unrelated: 'Nem ezt az ingatlant mutatja',
+      personal: 'Személyes adat látható rajta (arc, rendszám, irat)',
+      branding: 'Felirat, logó, vízjel vagy elérhetőség van rajta',
+      duplicate: 'Ugyanez a kép már szerepel a galériában',
+      inappropriate: 'Nem hirdetésbe illő tartalom',
+    } as Record<string, string>,
+    after: 'Új fotókat továbbra is díjmentesen tölthet fel. Minden új kép rövid jóváhagyás után jelenik meg a hirdetésben.',
+    cta: 'Fotók kezelése',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Jóváhagyva (#${ref}): már csak a díj rendezése van hátra`,
     preheader: 'A hirdetést jóváhagytuk. A díj beérkezése után azonnal élesedik.',
@@ -327,6 +348,19 @@ export const HU = {
     cta: 'Megnyitás a portálon',
   },
 
+  adminPhotosPending: {
+    subject: (ref: string) => `Új fotók várnak jóváhagyásra (#${ref})`,
+    preheader: 'Egy élő hirdetéshez új fotók érkeztek.',
+    heading: 'Új fotók várnak jóváhagyásra',
+    body: (title: string, ref: string) =>
+      `A hirdető új fotókat töltött fel a(z) „${title}” (#${ref}) élő hirdetéshez. A képek a jóváhagyásig nem látszanak az oldalon.`,
+    labels: {
+      listing: 'Hirdetés',
+      owner: 'Hirdető',
+    },
+    cta: 'Fotók moderálása',
+  },
+
   referralAdminNotice: {
     subject: (referrerName: string) => `Új ajánlás: ${referrerName}`,
     preheader: 'Új ajánlói lead érkezett a honlapról.',
@@ -345,7 +379,7 @@ export const HU = {
 // identical strings in both languages, which is the opposite of the point.
 
 /** The admin notices go to the office, which reads Hungarian in every case. */
-export const ADMIN_EMAIL_KEYS = ['adminNewSubmission', 'adminServiceRequested', 'referralAdminNotice'] as const;
+export const ADMIN_EMAIL_KEYS = ['adminNewSubmission', 'adminServiceRequested', 'referralAdminNotice', 'adminPhotosPending'] as const;
 
 /** What a recipient-facing language must provide: everything except the office notices. */
 export type PublicEmailCopy = Omit<typeof HU, (typeof ADMIN_EMAIL_KEYS)[number]>;

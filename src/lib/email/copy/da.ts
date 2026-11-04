@@ -85,6 +85,27 @@ export const DA = {
     cta: 'Rediger annonce',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Vi har gennemgået dine nye billeder (#${ref})`,
+    preheader: 'De godkendte billeder kan allerede ses i din annonce.',
+    heading: 'Vi har gennemgået dine nye billeder',
+    body: (title: string, ref: string) =>
+      `Tak, fordi du har opdateret billedgalleriet i din annonce ”${title}” (#${ref}). Vores team har gennemgået de nye billeder.`,
+    approvedLabel: 'Godkendt, nu synlige',
+    rejectedLabel: 'Ikke offentliggjort',
+    reasonsTitle: 'Hvorfor blev nogle billeder ikke offentliggjort?',
+    reasons: {
+      quality: 'Uskarpt, mørkt eller dårligt billede',
+      unrelated: 'Viser ikke denne bolig',
+      personal: 'Personoplysninger er synlige (ansigter, nummerplader, dokumenter)',
+      branding: 'Indeholder tekst, et logo, et vandmærke eller kontaktoplysninger',
+      duplicate: 'Det samme billede er allerede i galleriet',
+      inappropriate: 'Indhold, der ikke passer i en annonce',
+    } as Record<string, string>,
+    after: 'Du kan fortsat tilføje nye billeder gratis. Hvert nyt billede vises i annoncen efter en kort gennemgang.',
+    cta: 'Administrer billeder',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Godkendt (#${ref}): kun betalingen mangler`,
     preheader: 'Din annonce er godkendt og går online, så snart betalingen er modtaget.',

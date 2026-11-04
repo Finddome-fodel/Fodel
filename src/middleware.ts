@@ -56,6 +56,9 @@ const ADMIN_ONLY_PREFIXES = [
   '/portal/translations',
   '/api/portal/translations',
   '/api/portal/upload-link',
+  // Photo moderation queue (§4c part 2): the page and its decision API.
+  '/portal/photos',
+  '/api/portal/photos',
   // Each of these API prefixes is distinct from its /portal/... counterpart
   // above and would NOT be covered by it — the same easy-to-forget gap the
   // plan calls out for the database export route.

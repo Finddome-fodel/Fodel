@@ -90,6 +90,27 @@ export const FR = {
     cta: 'Modifier l’annonce',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Nous avons examiné vos nouvelles photos (#${ref})`,
+    preheader: 'Les photos approuvées sont déjà visibles dans votre annonce.',
+    heading: 'Nous avons examiné vos nouvelles photos',
+    body: (title: string, ref: string) =>
+      `Merci d’avoir mis à jour la galerie de votre annonce « ${title} » (#${ref}). Notre équipe a examiné les nouvelles photos.`,
+    approvedLabel: 'Approuvées, déjà en ligne',
+    rejectedLabel: 'Non publiées',
+    reasonsTitle: 'Pourquoi certaines photos n’ont-elles pas été publiées ?',
+    reasons: {
+      quality: 'Image floue, sombre ou de mauvaise qualité',
+      unrelated: 'Ne montre pas ce bien',
+      personal: 'Des données personnelles sont visibles (visages, plaques, documents)',
+      branding: 'Contient du texte, un logo, un filigrane ou des coordonnées',
+      duplicate: 'La même image figure déjà dans la galerie',
+      inappropriate: 'Contenu inadapté à une annonce',
+    } as Record<string, string>,
+    after: 'Vous pouvez continuer à ajouter gratuitement de nouvelles photos. Chaque nouvelle image apparaît dans votre annonce après une courte vérification.',
+    cta: 'Gérer les photos',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Validée (#${ref}) : il ne reste que le paiement`,
     preheader: 'Votre annonce est validée et sera mise en ligne dès réception du paiement.',

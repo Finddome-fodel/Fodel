@@ -798,6 +798,80 @@ export function adminServiceRequested(
   };
 }
 
+/* ── Later photos reviewed (§4c) ──────────────────────────────────────────── */
+// One letter per decision batch: how many went live, how many did not and why.
+
+export type PhotoRejection = { code: string; count: number; note?: string };
+
+export function photosReviewed(
+  locale: EmailLocale,
+  opts: { ref: string; title: string; approved: number; rejected: PhotoRejection[]; url: string }
+): BuiltEmail {
+  const c = copyFor(locale).photosReviewed;
+  const common = copyFor(locale).common;
+  const rejectedCount = opts.rejected.reduce((sum, r) => sum + r.count, 0);
+  const rows: [string, string][] = [];
+  if (opts.approved > 0) rows.push([c.approvedLabel, String(opts.approved)]);
+  if (rejectedCount > 0) rows.push([c.rejectedLabel, String(rejectedCount)]);
+  const reasonLines = opts.rejected.map((r) => {
+    const label = c.reasons[r.code];
+    const note = r.note?.trim();
+    const head = label ?? note ?? '';
+    const tail = label && note ? `: ${note}` : '';
+    return `${head}${tail}${r.count > 1 ? ` (${r.count})` : ''}`;
+  }).filter(Boolean);
+  return {
+    subject: c.subject(opts.ref),
+    html: shell({
+      locale,
+      preheader: c.preheader,
+      body:
+        h1(c.heading) +
+        lead(c.body(opts.title, opts.ref)) +
+        facts(rows) +
+        (reasonLines.length ? h2(c.reasonsTitle) + quote(reasonLines.join('\n')) : '') +
+        p(c.after) +
+        button(c.cta, opts.url) +
+        signOff(locale),
+    }),
+    text: textShell({
+      locale,
+      body: `${c.heading}
+
+${c.body(opts.title, opts.ref)}
+
+${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}
+${reasonLines.length ? `\n${c.reasonsTitle}\n${reasonLines.map((line) => `  - ${line}`).join('\n')}\n` : ''}
+${c.after}
+
+${textCta(c.cta, opts.url)}
+
+${common.signOff}`,
+    }),
+  };
+}
+
+/** Office notice: an owner added photos to a live listing (Hungarian, like every office notice). */
+export function adminPhotosPending(
+  locale: EmailLocale,
+  opts: { ref: string; title: string; owner: string; url: string }
+): BuiltEmail {
+  const c = office().adminPhotosPending;
+  const L = c.labels;
+  const rows: [string, string][] = [
+    [L.listing, `${opts.title} (#${opts.ref})`],
+    [L.owner, opts.owner || '—'],
+  ];
+  return {
+    subject: c.subject(opts.ref),
+    html: shell({ locale, preheader: c.preheader, body: h1(c.heading) + lead(c.body(opts.title, opts.ref)) + facts(rows) + button(c.cta, opts.url) }),
+    text: textShell({
+      locale,
+      body: `${c.heading}\n\n${c.body(opts.title, opts.ref)}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\n${textCta(c.cta, opts.url)}`,
+    }),
+  };
+}
+
 /* ── Listing rejected ─────────────────────────────────────────────────────── */
 // Terminal, unlike changesRequested: there is no edit link. Whether money goes
 // back is decided by a person — the email only promises contact about it.
@@ -1157,4 +1231,6 @@ export const templates = {
   judicialRequested,
   adminServiceRequested,
   rejected,
+  photosReviewed,
+  adminPhotosPending,
 };

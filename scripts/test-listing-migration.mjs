@@ -318,4 +318,74 @@ console.log('✓ 0049 locks free listings to FINDDOME contact (forged requests t
   await db.exec(`delete from property_translations where locale='ar';drop table newsletter_subscribers;`);
   console.log('✓ 0050 adds sr, uk, tr, he, ar, ru, zh (enum run on its own), widens the newsletter check to 28 languages, and is repeatable');
 }
+// 0053: free later photo upload with moderation. Storage is stubbed like Supabase's (bucket + foldername()).
+await db.exec(`reset role;set test.uid='';set test.admin='true';create schema if not exists storage;create table if not exists storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);create or replace function storage.foldername(name text) returns text[] language sql immutable as $$select (string_to_array(name,'/'))[1:array_length(string_to_array(name,'/'),1)-1]$$;alter table storage.objects enable row level security;create policy test_storage_read on storage.objects for select using(true);grant usage on schema storage to authenticated,anon;grant select,insert,delete on storage.objects to authenticated;alter table property_media enable row level security;grant insert,delete on property_media to authenticated;grant select on property_media to anon;grant select on profiles to authenticated;drop policy if exists test_public_signed_in on properties;create policy test_public_signed_in on properties for select to authenticated using(status in ('published','sold'));`);
+const live='10000000-0000-4000-8000-000000000053';
+await db.exec(`delete from property_media where property_id='${id}';insert into properties(id,ref,owner_id,status,category,country,settlement,county,region,lat,lng,price_eur,price_huf,price_asof,plot_m2)values('${live}','5300','${owner}','published','apartment','HU','Pécs','Baranya','',46.07,18.23,100000,40000000,'2026-10-23',1);insert into property_media(property_id,storage_path,is_hero,sort_order)values('${live}','${live}/approved-a.webp',true,0),('${live}','${live}/approved-b.webp',false,1);`);
+const sql53=fs.readFileSync(root+'/supabase/migrations/0053_photo_moderation.sql','utf8');
+try{await db.exec(sql53);await db.exec(sql53);}catch(e){console.error('MIGRATION 0053 FAILED',e.message,e.detail);process.exit(1);}
+assert.equal((await get(`select count(*)::int n from property_media where property_id='${live}' and pending`))[0].n,0,'existing photos stay approved');
+const asOwner=`set role authenticated;set test.admin='false';set test.uid='${owner}';`,asAdmin=`reset role;set test.uid='${other}';set test.admin='true';`;
+// The owner adds a photo to the live listing (file first, as the API does); it cannot sneak in as approved or as the cover.
+await db.exec(`${asOwner}insert into storage.objects(bucket_id,name)values('property-media','${live}/new-1.webp');insert into property_media(property_id,storage_path,is_hero,sort_order,pending)values('${live}','${live}/new-1.webp',true,2,false);`);
+let fresh=(await get(`select id,pending,is_hero,submitted_at from property_media where storage_path='${live}/new-1.webp'`))[0];
+assert.equal(fresh.pending,true,'a photo added to a live listing is pending, whatever the request said');
+assert.equal(fresh.is_hero,false,'a pending photo is never the cover');
+assert.ok(fresh.submitted_at,'the queue knows when it arrived');
+await assert.rejects(()=>db.exec(`update property_media set pending=false where id='${fresh.id}'`),/moderation-admin-only/,'the owner cannot approve their own photo');
+await assert.rejects(()=>db.exec(`update property_media set is_hero=true where id='${fresh.id}'`),/pending-cover/);
+const all53=(await get(`select id from property_media where property_id='${live}' order by sort_order`)).map(r=>r.id);
+await assert.rejects(()=>db.query('select reorder_property_media($1,$2,$3)',[live,all53,fresh.id]),/pending-cover/,'reorder cannot make a pending photo the cover');
+await db.query('select reorder_property_media($1,$2,$3)',[live,[...all53].reverse(),all53[1]]);
+assert.deepEqual((await get(`select id from property_media where property_id='${live}' order by sort_order`)).map(r=>r.id),[...all53].reverse(),'the owner may reorder a live listing');
+assert.equal((await get(`select id from property_media where property_id='${live}' and is_hero`))[0].id,all53[1],'and choose an approved cover');
+await db.exec(`update property_media set alt='{"hu":"Új felirat"}' where id='${fresh.id}'`);
+await assert.rejects(()=>db.exec(`update property_media set alt='{"hu":"x"}' where id='${all53[0]}'`),/approved-photo-locked/,'an approved caption on a live listing needs review');
+await assert.rejects(()=>db.exec(`update property_media set storage_path='${live}/swap.webp' where id='${all53[0]}'`),/approved-photo-locked/,'an approved photo cannot be swapped unseen');
+// The public never sees it; another user neither; the owner does.
+await db.exec(`reset role;set role anon;set test.uid='';set test.admin='false';`);
+assert.equal((await get(`select count(*)::int n from property_media where property_id='${live}'`))[0].n,2,'anonymous sees only the two approved photos');
+await db.exec(`reset role;set role authenticated;set test.admin='false';set test.uid='${other}';`);
+assert.equal((await get(`select count(*)::int n from property_media where property_id='${live}'`))[0].n,2,'another user sees only approved photos');
+await db.exec(`reset role;${asOwner}`);
+assert.equal((await get(`select count(*)::int n from property_media where property_id='${live}'`))[0].n,3,'the owner sees their pending photo');
+// Removing: pending ones freely, approved ones until one remains.
+await db.exec(`delete from property_media where id='${all53[0]}'`);
+await assert.rejects(()=>db.exec(`delete from property_media where id='${all53[1]}'`),/last-photo/,'a live listing keeps one approved photo');
+await db.exec(`delete from storage.objects where name='${live}/new-1.webp'`);
+assert.equal((await get(`select count(*)::int n from storage.objects where name='${live}/new-1.webp'`))[0].n,0,'the owner may remove their file on a live listing');
+await db.exec(`insert into storage.objects(bucket_id,name)values('property-media','${live}/new-1.webp')`);
+// Not on someone else's listing, nor on a sold or archived one.
+await db.exec(`reset role;set test.admin='true';update properties set status='sold' where id='${live}';`);
+await db.exec(`reset role;${asOwner}`);
+await assert.rejects(()=>db.exec(`insert into property_media(property_id,storage_path)values('${live}','${live}/sold.webp')`),'no uploads to a sold listing');
+await assert.rejects(()=>db.exec(`insert into storage.objects(bucket_id,name)values('property-media','${live}/sold.webp')`),'no files on a sold listing');
+await db.exec(`reset role;set test.admin='true';update properties set status='published' where id='${live}';`);
+await db.exec(`reset role;set role authenticated;set test.admin='false';set test.uid='${other}';`);
+await assert.rejects(()=>db.exec(`insert into property_media(property_id,storage_path)values('${live}','${live}/intruder.webp')`),'not on another owner\'s listing');
+await assert.rejects(()=>db.exec(`insert into storage.objects(bucket_id,name)values('property-media','${live}/intruder.webp')`),'no files in another owner\'s folder');
+// A draft stays as before: uploads are reviewed with the listing, never pending.
+await db.exec(`reset role;${asOwner}update properties set status='draft' where id='${id47b}';insert into property_media(property_id,storage_path)values('${id47b}','${id47b}/draft.webp');`);
+assert.equal((await get(`select pending from property_media where storage_path='${id47b}/draft.webp'`))[0].pending,false,'a draft photo is not queued');
+// The admin approves one and rejects with a reason; the owner reads the reason and can only dismiss it.
+await db.exec(`reset role;${asOwner}insert into property_media(property_id,storage_path)values('${live}','${live}/new-2.webp');`);
+await db.exec(`${asAdmin}set role authenticated;update property_media set pending=false,reviewed_at=now(),reviewed_by='${other}' where id='${fresh.id}';delete from property_media where storage_path='${live}/new-2.webp';insert into property_media_rejections(property_id,photo_count,reason,decided_by)values('${live}',1,'Elmosódott kép','${other}');`);
+await db.exec(`reset role;set role anon;set test.uid='';set test.admin='false';`);
+assert.equal((await get(`select count(*)::int n from property_media where property_id='${live}'`))[0].n,2,'an approved photo goes live');
+await assert.rejects(()=>get(`select * from property_media_rejections`),'anonymous never reads rejections');
+await db.exec(`reset role;${asOwner}`);
+const rej=await get(`select id,reason from property_media_rejections where property_id='${live}'`);
+assert.equal(rej[0]?.reason,'Elmosódott kép','the owner reads the reason');
+await assert.rejects(()=>db.exec(`insert into property_media_rejections(property_id,reason)values('${live}','fake')`),'the owner cannot write a rejection');
+await assert.rejects(()=>db.exec(`update property_media_rejections set reason='edited' where id='${rej[0].id}'`),/rejection-read-only/);
+await db.exec(`update property_media_rejections set dismissed_at=now() where id='${rej[0].id}'`);
+assert.ok((await get(`select dismissed_at from property_media_rejections where id='${rej[0].id}'`))[0].dismissed_at,'the owner can dismiss the notice');
+await db.exec(`reset role;set role authenticated;set test.admin='false';set test.uid='${other}';`);
+assert.equal((await get(`select count(*)::int n from property_media_rejections`))[0].n,0,'another user sees no rejections');
+// The package limit (0030) counts pending photos too.
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+for(let i=0;i<198;i++)await db.query('insert into property_media(property_id,storage_path,pending)values($1,$2,$3)',[live,`${live}/bulk-${i}.webp`,i%2===0]);
+await assert.rejects(()=>db.query('insert into property_media(property_id,storage_path,pending)values($1,$2,true)',[live,`${live}/over.webp`]),/photo-limit/,'pending photos count toward the limit');
+await db.exec(`reset role;set test.uid='';set test.admin='true';`);
+console.log('✓ 0053 queues live-listing photos as pending (never the cover, never self-approved), hides them from the public, keeps one approved photo, guards storage, keeps reasons owner-read-only, and is repeatable');
 await db.close();

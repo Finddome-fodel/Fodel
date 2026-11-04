@@ -85,6 +85,27 @@ export const FI = {
     cta: 'Muokkaa ilmoitusta',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Olemme tarkistaneet uudet kuvasi (#${ref})`,
+    preheader: 'Hyväksytyt kuvat näkyvät jo ilmoituksessasi.',
+    heading: 'Olemme tarkistaneet uudet kuvasi',
+    body: (title: string, ref: string) =>
+      `Kiitos, että päivitit ilmoituksesi ”${title}” (#${ref}) kuvagallerian. Tiimimme on tarkistanut uudet kuvat.`,
+    approvedLabel: 'Hyväksytty, näkyvissä',
+    rejectedLabel: 'Ei julkaistu',
+    reasonsTitle: 'Miksi osaa kuvista ei julkaistu?',
+    reasons: {
+      quality: 'Epätarkka, tumma tai heikkolaatuinen kuva',
+      unrelated: 'Ei esitä tätä kohdetta',
+      personal: 'Kuvassa näkyy henkilötietoja (kasvoja, rekisterikilpiä, asiakirjoja)',
+      branding: 'Sisältää tekstiä, logon, vesileiman tai yhteystietoja',
+      duplicate: 'Sama kuva on jo galleriassa',
+      inappropriate: 'Ilmoitukseen sopimaton sisältö',
+    } as Record<string, string>,
+    after: 'Voit edelleen lisätä uusia kuvia maksutta. Jokainen uusi kuva näkyy ilmoituksessa lyhyen tarkistuksen jälkeen.',
+    cta: 'Hallitse kuvia',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Hyväksytty (#${ref}): vain maksu puuttuu`,
     preheader: 'Ilmoituksesi on hyväksytty, ja se julkaistaan heti, kun maksu saapuu.',

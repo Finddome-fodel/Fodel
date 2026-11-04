@@ -266,6 +266,17 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
       note: say(l)('A fényképek nagy része sötét, kérjük napos időben készítse el őket újra.\n\nAz alapterület sem stimmel: a leírásban 140 m² szerepel, a mezőben 104 m².', 'Veel foto’s zijn donker. Maak ze alstublieft opnieuw bij zonnig weer.\n\nDe woonoppervlakte klopt ook niet: de omschrijving noemt 140 m², het veld 104 m².', 'Many of the photos are dark. Please retake them in sunny weather.\n\nThe floor area does not match either: the description says 140 m², the field says 104 m².', 'Viele Fotos sind dunkel. Bitte nehmen Sie sie bei sonnigem Wetter neu auf.\n\nAuch die Wohnfläche stimmt nicht: Die Beschreibung nennt 140 m², das Feld 104 m².', 'Beaucoup de photos sont sombres. Veuillez les reprendre par temps ensoleillé.\n\nLa surface habitable ne correspond pas non plus : la description indique 140 m², le champ 104 m².', 'Muchas fotos están oscuras. Vuelva a hacerlas en un día soleado.\n\nLa superficie habitable tampoco coincide: la descripción indica 140 m² y el campo, 104 m².', 'Wiele zdjęć jest ciemnych. Prosimy zrobić je ponownie w słoneczny dzień.\n\nNie zgadza się też powierzchnia użytkowa: w opisie jest 140 m², a w polu 104 m².', 'Multe fotografii sunt întunecate. Vă rugăm să le refaceți pe vreme însorită.\n\nNici suprafața utilă nu corespunde: descrierea indică 140 m², iar câmpul 104 m².', 'Mnohé fotografie sú tmavé. Nafoťte ich, prosím, znova za slnečného počasia.\n\nNezhoduje sa ani obytná plocha: v popise je 140 m², v poli 104 m².'),
       editUrl: `${SITE_URL}/portal/properties/sample`,
     }),
+  photosReviewed: (l) =>
+    templates.photosReviewed(l, {
+      ref: SAMPLE_REF,
+      title: TITLES[l],
+      approved: 4,
+      rejected: [
+        { code: 'quality', count: 2 },
+        { code: 'personal', count: 1, note: say(l)('Az autó rendszáma olvasható.', 'Het kenteken van de auto is leesbaar.', 'The car’s number plate is readable.', 'Das Kennzeichen des Autos ist lesbar.', 'La plaque d’immatriculation de la voiture est lisible.', 'La matrícula del coche es legible.', 'Tablica rejestracyjna samochodu jest czytelna.', 'Numărul de înmatriculare al mașinii se poate citi.', 'ŠPZ auta je čitateľná.') },
+      ],
+      url: `${SITE_URL}/portal/properties/sample#media`,
+    }),
   approvedAwaitingPayment: (l) =>
     templates.approvedAwaitingPayment(l, {
       ref: SAMPLE_REF,
@@ -407,6 +418,10 @@ export const CASES: Record<string, (locale: Locale) => BuiltEmail | null | Promi
     }),
   serviceRequested: (l) => templates.serviceRequested(l, { service: say(l)('Gábor helyszíni látogatása', 'Bezoek van Gábor', 'Visit by Gábor', 'Besuch durch Gábor', 'Visite de Gábor', 'Visita de Gábor', 'Wizyta Gábora', 'Vizita lui Gábor', 'Návšteva Gábora'), price: say(l)('200 €', '€ 200', '€200', '200 €', '200 €', '200 €', '200 €', '200 €', '200 €') }),
   judicialRequested: (l) => templates.judicialRequested(l),
+  adminPhotosPending: (l) => templates.adminPhotosPending(l, {
+    ref: SAMPLE_REF, title: SAMPLE_TITLE, owner: 'Kovács Anna (anna.kovacs@example.com)',
+    url: `${SITE_URL}/portal/photos`,
+  }),
   adminServiceRequested: (l) => templates.adminServiceRequested(l, {
     service: 'Helyszíni fotózás, videó és drónfelvétel', name: 'Kovács Anna',
     email: 'anna.kovacs@example.com', phone: '+36 20 123 4567',

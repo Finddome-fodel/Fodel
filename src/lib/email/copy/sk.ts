@@ -89,6 +89,27 @@ export const SK = {
     cta: 'Upraviť inzerát',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Skontrolovali sme Vaše nové fotografie (#${ref})`,
+    preheader: 'Schválené fotografie sú už viditeľné v inzeráte.',
+    heading: 'Skontrolovali sme Vaše nové fotografie',
+    body: (title: string, ref: string) =>
+      `Ďakujeme, že ste aktualizovali galériu inzerátu „${title}“ (#${ref}). Náš tím skontroloval nové fotografie.`,
+    approvedLabel: 'Schválené, už viditeľné',
+    rejectedLabel: 'Nezverejnené',
+    reasonsTitle: 'Prečo niektoré fotografie neboli zverejnené?',
+    reasons: {
+      quality: 'Rozmazaná, tmavá alebo nekvalitná fotografia',
+      unrelated: 'Nezobrazuje túto nehnuteľnosť',
+      personal: 'Sú na nej viditeľné osobné údaje (tváre, ŠPZ, doklady)',
+      branding: 'Obsahuje text, logo, vodoznak alebo kontaktné údaje',
+      duplicate: 'Rovnaká fotografia už je v galérii',
+      inappropriate: 'Obsah nevhodný do inzerátu',
+    } as Record<string, string>,
+    after: 'Nové fotografie môžete aj naďalej pridávať bezplatne. Každá nová fotografia sa v inzeráte zobrazí po krátkej kontrole.',
+    cta: 'Spravovať fotografie',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Schválené (#${ref}): zostáva už len platba`,
     preheader: 'Váš inzerát je schválený a zverejníme ho hneď po prijatí platby.',

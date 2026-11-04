@@ -87,6 +87,27 @@ export const ES = {
     cta: 'Modificar el anuncio',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Hemos revisado sus nuevas fotos (#${ref})`,
+    preheader: 'Las fotos aprobadas ya se ven en su anuncio.',
+    heading: 'Hemos revisado sus nuevas fotos',
+    body: (title: string, ref: string) =>
+      `Gracias por actualizar la galería de su anuncio «${title}» (#${ref}). Nuestro equipo ha revisado las nuevas fotos.`,
+    approvedLabel: 'Aprobadas, ya visibles',
+    rejectedLabel: 'No publicadas',
+    reasonsTitle: '¿Por qué no se publicaron algunas fotos?',
+    reasons: {
+      quality: 'Imagen borrosa, oscura o de baja calidad',
+      unrelated: 'No muestra este inmueble',
+      personal: 'Se ven datos personales (caras, matrículas, documentos)',
+      branding: 'Contiene texto, un logotipo, una marca de agua o datos de contacto',
+      duplicate: 'La misma imagen ya está en la galería',
+      inappropriate: 'Contenido no adecuado para un anuncio',
+    } as Record<string, string>,
+    after: 'Puede seguir añadiendo fotos nuevas sin coste. Cada imagen nueva aparece en su anuncio tras una breve revisión.',
+    cta: 'Gestionar fotos',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Aprobado (#${ref}): solo falta el pago`,
     preheader: 'Su anuncio está aprobado y se publicará en cuanto recibamos el pago.',

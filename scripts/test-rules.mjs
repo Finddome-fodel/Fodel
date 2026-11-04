@@ -889,4 +889,72 @@ console.log('AI translation: the rules around the model');
   })();
 }
 
+// ── Free later photo upload with moderation (§4c part 2, migration 0053) ──
+{
+  const pm = await import('../src/lib/portal/photo-moderation.ts');
+  const u = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
+  test('photo access: admin always full; owner full on a draft, live on a published listing, none otherwise', () => {
+    assert.equal(pm.photoAccess('published', { isAdmin: true, isOwner: false }), 'full');
+    assert.equal(pm.photoAccess('draft', { isAdmin: false, isOwner: true }), 'full');
+    assert.equal(pm.photoAccess('changes_requested', { isAdmin: false, isOwner: true }), 'full');
+    assert.equal(pm.photoAccess('published', { isAdmin: false, isOwner: true }), 'live');
+    for (const status of ['submitted', 'awaiting_payment', 'archived', 'sold', 'rejected']) {
+      assert.equal(pm.photoAccess(status, { isAdmin: false, isOwner: true }), 'none', status);
+    }
+    assert.equal(pm.photoAccess('published', { isAdmin: false, isOwner: false }), 'none');
+  });
+  test('photo decisions: approvals and reasoned rejections pass, notes are tidied', () => {
+    const r = pm.parseDecisions([
+      { id: u(1), action: 'approve' },
+      { id: u(2), action: 'reject', reason: 'quality', note: '  túl   sötét ' },
+      { id: u(3), action: 'reject', reason: 'other', note: 'Rossz ház' },
+    ]);
+    assert.ok(r.ok);
+    assert.deepEqual(r.decisions, [
+      { id: u(1), action: 'approve' },
+      { id: u(2), action: 'reject', reason: 'quality', note: 'túl sötét' },
+      { id: u(3), action: 'reject', reason: 'other', note: 'Rossz ház' },
+    ]);
+  });
+  test('photo decisions: every malformed batch is refused with its own code', () => {
+    const err = (input) => { const r = pm.parseDecisions(input); return r.ok ? 'ok' : r.error; };
+    assert.equal(err([]), 'no-decisions');
+    assert.equal(err(null), 'no-decisions');
+    assert.equal(err(Array.from({ length: 201 }, (_, i) => ({ id: u(i), action: 'approve' }))), 'too-many');
+    assert.equal(err([{ id: 'x', action: 'approve' }]), 'invalid-photo');
+    assert.equal(err([{ id: u(1), action: 'approve' }, { id: u(1), action: 'approve' }]), 'invalid-photo');
+    assert.equal(err([{ id: u(1), action: 'delete' }]), 'invalid-action');
+    assert.equal(err([{ id: u(1), action: 'reject' }]), 'reason-required');
+    assert.equal(err([{ id: u(1), action: 'reject', reason: 'ugly' }]), 'reason-required');
+    assert.equal(err([{ id: u(1), action: 'reject', reason: 'other', note: '   ' }]), 'note-required');
+    assert.equal(err([{ id: u(1), action: 'reject', reason: 'quality', note: 'x'.repeat(pm.NOTE_MAX + 1) }]), 'note-too-long');
+  });
+  test('photo rejections group by reason and note, in order; the stored sentence reads well', () => {
+    const grouped = pm.groupRejections([
+      { id: u(1), action: 'reject', reason: 'quality' },
+      { id: u(2), action: 'approve' },
+      { id: u(3), action: 'reject', reason: 'duplicate' },
+      { id: u(4), action: 'reject', reason: 'quality' },
+      { id: u(5), action: 'reject', reason: 'quality', note: 'sötét' },
+    ]);
+    assert.deepEqual(grouped, [
+      { code: 'quality', count: 2 },
+      { code: 'duplicate', count: 1 },
+      { code: 'quality', count: 1, note: 'sötét' },
+    ]);
+    assert.equal(pm.reasonText('quality'), 'Elmosódott, sötét vagy rossz minőségű');
+    assert.equal(pm.reasonText('quality', 'sötét'), 'Elmosódott, sötét vagy rossz minőségű: sötét');
+    assert.equal(pm.reasonText('other', 'Másik ház'), 'Másik ház');
+    assert.ok(pm.REASON_CODES.includes('other') && pm.REJECTION_REASONS.every((r) => r.label.length > 0));
+  });
+  test('the cover falls to the first approved photo by order, never to a pending one', () => {
+    const p = (id, sort_order, extra = {}) => ({ id, sort_order, pending: false, is_hero: false, ...extra });
+    assert.equal(pm.nextCover([p('a', 0, { is_hero: true }), p('b', 1)]), null);
+    assert.equal(pm.nextCover([p('a', 0, { pending: true }), p('b', 2), p('c', 1)]), 'c');
+    assert.equal(pm.nextCover([p('a', 0, { pending: true, is_hero: true }), p('b', 1)]), 'b');
+    assert.equal(pm.nextCover([p('a', 0, { pending: true })]), null);
+    assert.equal(pm.PENDING_PHOTOS_MAX, 30);
+  });
+}
+
 console.log(process.exitCode ? '\nFAILED' : `\nAll ${passed} checks passed.`);

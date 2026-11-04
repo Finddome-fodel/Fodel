@@ -85,6 +85,27 @@ export const SL = {
     cta: 'Uredi oglas',
   },
 
+  photosReviewed: {
+    subject: (ref: string) => `Pregledali smo vaše nove fotografije (#${ref})`,
+    preheader: 'Odobrene fotografije so v oglasu že vidne.',
+    heading: 'Pregledali smo vaše nove fotografije',
+    body: (title: string, ref: string) =>
+      `Hvala, ker ste posodobili galerijo oglasa »${title}« (#${ref}). Naša ekipa je pregledala nove fotografije.`,
+    approvedLabel: 'Odobreno, že vidno',
+    rejectedLabel: 'Ni objavljeno',
+    reasonsTitle: 'Zakaj nekatere fotografije niso bile objavljene?',
+    reasons: {
+      quality: 'Zamegljena, temna ali slabo kakovostna slika',
+      unrelated: 'Ne prikazuje te nepremičnine',
+      personal: 'Vidni so osebni podatki (obrazi, registrske tablice, dokumenti)',
+      branding: 'Vsebuje besedilo, logotip, vodni žig ali kontaktne podatke',
+      duplicate: 'Ista slika je že v galeriji',
+      inappropriate: 'Vsebina, ki ni primerna za oglas',
+    } as Record<string, string>,
+    after: 'Nove fotografije lahko še naprej dodajate brezplačno. Vsaka nova slika se v oglasu prikaže po kratkem pregledu.',
+    cta: 'Upravljanje fotografij',
+  },
+
   approvedAwaitingPayment: {
     subject: (ref: string) => `Odobreno (#${ref}): manjka le še plačilo`,
     preheader: 'Vaš oglas je odobren in bo objavljen, ko prispe plačilo.',
