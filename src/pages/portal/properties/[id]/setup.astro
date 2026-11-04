@@ -39,7 +39,10 @@ import PhotoUploader from '~/components/portal/PhotoUploader.astro';
 import BillingForm from '~/components/BillingForm.astro';
 import { getProperty, OWNER_EDITABLE } from '~/lib/portal/properties';
 import { getCompany, getTaxonomy, termLabel } from '~/lib/runtime-config';
-import { listingCatalog, packageCard, packageOf, priceEurFor, extraSoldIn } from '~/lib/listing-packages';
+import { listingCatalog, packageCard, packageOf, priceEurFor, extraSoldIn, sellingPackages } from '~/lib/listing-packages';
+import PackageChooser from '~/components/portal/PackageChooser.astro';
+import { chooserModel, CHOOSER_COPY } from '~/lib/portal/package-chooser';
+import { currentRate } from '~/lib/fx-store';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { ONSITE_SERVICES } from '~/config/company';
 import TranslationPackagePicker from '~/components/portal/TranslationPackagePicker.astro';
@@ -80,10 +83,11 @@ const [company, taxonomy, { data: billingRow }, serviceResult] = await Promise.a
 const catalog = listingCatalog(company.services);
 const requested = readRequestedExtras(property.requested_extras);
 // The package the seller chose here before; on a fresh draft, the recommended one.
-const chosenId = requested.source === 'listing_editor' ? property.package : (catalog.packages.find((p) => p.recommended) ?? catalog.packages[0]).id;
-const chosen = packageOf(catalog, chosenId);
+const selling = sellingPackages(catalog);
+const chosenId = requested.source === 'listing_editor' ? property.package : (selling.find((p) => p.recommended) ?? selling[0]).id;
+const chosen = selling.find((p) => p.id === chosenId) ?? selling.find((p) => p.recommended) ?? selling[0];
 const pkgAllowsPhone = Boolean(chosen.phone);
-const cards = catalog.packages.map((pkg) => ({ pkg, card: packageCard(pkg, catalog, lang) }));
+const cards = selling.map((pkg) => ({ pkg, card: packageCard(pkg, catalog, lang) }));
 const extra = (key: string) => catalog.extras.find((e) => e.id === key)!;
 const service = serviceResult.data?.service_id ?? requested.service ?? '';
 
@@ -101,6 +105,12 @@ const presentLocales = property.translations.filter((row) => row.title?.trim() &
 // The translation choice the seller made before, or a fresh one: Basic, which every listing has.
 const trSourceLocale = pickSource(property.translations)?.locale ?? 'hu';
 const trPackageId = requested.translationPackage ?? 'basic';
+// The new chooser (Basic / Europe / World, term, value band). Null before the pricing migrations: the older cards then show.
+const chooser = chooserModel({
+  catalog, lang, priceHuf: property.price_huf, fx: await currentRate().catch(() => null), sourceLocale: trSourceLocale, targets: ALL_LOCALES,
+  packageId: requested.source === 'listing_editor' ? (requested.package ?? property.package) : null, months: requested.months ?? null,
+  names: (code) => languageName(code, lang),
+});
 const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackageId), ALL_LOCALES));
 const trExtras = (free ? askedLocales : requested.translations ?? []).filter((code) => !trIncluded.has(code));
 const ALL_STEPS = ['package', 'property', 'description', 'photos', 'billing', 'review'] as const;
@@ -118,8 +128,9 @@ const billing = (billingRow as any)?.billing ?? null;
  * price with the same tierFor() checkout uses (src/lib/price-tiers.ts).
  */
 const pricing = {
+  live: Boolean(chooser),
   packages: Object.fromEntries(
-    catalog.packages.map((p) => [p.id, { name: p.names[lang], tiers: p.tiers, video: p.video, phone: p.phone }])
+    selling.map((p) => [p.id, { name: p.names[lang], tiers: p.tiers, video: p.video, phone: p.phone }])
   ),
   category: { tiers: extra('category-highlight').tiers, months: extra('category-highlight').minMonths ?? 1 },
   video: { tiers: extra('video').tiers, countries: extra('video').countries ?? null },
@@ -186,26 +197,30 @@ const strings = {
       <h1 id="h-package">{t.steps[0]}</h1>
       <p class="su-intro">{t.intros[0]}</p>
       <form data-step-form="package" id="su-package" novalidate>
-        <div class="su-packages">
-          {cards.map(({ pkg, card }) => (
-            <PackageCard
-              pkg={card}
-              mode="select"
-              radioName="package"
-              checked={pkg.id === chosen.id}
-              priceCents={card.priceCents}
-              recommendedLabel={t.recommended}
-            />
-          ))}
-        </div>
+        {chooser ? (
+          <PackageChooser model={chooser} lang={lang} excluded={requested.excludedLocales ?? []} />
+        ) : (
+          <div class="su-packages">
+            {cards.map(({ pkg, card }) => (
+              <PackageCard
+                pkg={card}
+                mode="select"
+                radioName="package"
+                checked={pkg.id === chosen.id}
+                priceCents={card.priceCents}
+                recommendedLabel={t.recommended}
+              />
+            ))}
+          </div>
+        )}
 
         <fieldset class="su-extras">
           <legend>{t.extrasHead}</legend>
           <p class="su-note">{t.extrasNote}</p>
-          <TranslationPackagePicker lang={lang} cfg={catalog.translation} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trPackageId} extras={trExtras} excluded={requested.excludedLocales ?? []} present={presentLocales} />
+          {!chooser && <TranslationPackagePicker lang={lang} cfg={catalog.translation} targets={ALL_LOCALES} sourceLocale={trSourceLocale} packageId={trPackageId} extras={trExtras} excluded={requested.excludedLocales ?? []} present={presentLocales} />}
           <div class="chips">
-            <label class="chip">
-              <input type="checkbox" name="categoryHighlight" value="yes" checked={requested.categoryHighlight} />
+            <label class="chip" data-category-chip hidden={chooser !== null && chooser.months < (extra('category-highlight').minMonths ?? 1)}>
+              <input type="checkbox" name="categoryHighlight" value="yes" checked={requested.categoryHighlight} disabled={chooser !== null && chooser.months < (extra('category-highlight').minMonths ?? 1)} />
               <span class="box" aria-hidden="true"></span>
               <span class="chip-name">{t.categoryHighlight}</span>
               <span class="chip-price">€ <span data-extra-price="category">{priceEurFor(extra('category-highlight'), priceNow)}</span> {t.perMonth} · {t.minMonths(extra('category-highlight').minMonths ?? 1)}</span>
@@ -218,6 +233,7 @@ const strings = {
               <span class="chip-price">€ <span data-extra-price="video">{priceEurFor(extra('video'), priceNow)}</span> {t.once}</span>
             </label>
           </div>
+          <p class="su-note su-category-note" data-category-note hidden={chooser === null || chooser.months >= (extra('category-highlight').minMonths ?? 1)}>{CHOOSER_COPY[lang].categoryTermNote}</p>
         </fieldset>
 
         <div class="su-onsite">
@@ -391,6 +407,7 @@ const strings = {
   import { priceEurFor, type PriceTier } from '~/lib/price-tiers';
 
   type Pricing = {
+    live: boolean;
     packages: Record<string, { name: string; tiers: PriceTier[]; video: string; phone: boolean }>;
     translation: PriceTier[];
     category: { tiers: PriceTier[]; months: number };
@@ -413,7 +430,8 @@ const strings = {
   const submitBtn = root.querySelector<HTMLButtonElement>('[data-submit]')!;
   const form = (step: string) => root.querySelector<HTMLFormElement>(`[data-step-form="${step}"]`);
   const nf = new Intl.NumberFormat({ hu: 'hu-HU', nl: 'nl-NL', en: 'en-GB' }[lang]);
-  const money = (cents: number) => `€ ${(cents / 100).toLocaleString('de-DE')}`;
+  // Whole euros stay whole (the extras); a package price has cents: always two decimals then (€ 59,90).
+  const money = (cents: number) => `€ ${(cents / 100).toLocaleString('de-DE', cents % 100 === 0 ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   let lib: typeof import('~/lib/validation') | null = null;
   const loadLib = async () => (lib ??= await import('~/lib/validation'));
@@ -673,6 +691,12 @@ const strings = {
   };
   const selectedPackage = () => (form('package')?.querySelector<HTMLInputElement>('input[name="package"]:checked')?.value ?? '');
 
+  /** A category highlight needs a package at least as long as its minimum (Q10): a 1-month package hides it. */
+  const categoryAllowed = () => {
+    const chooser = form('package')?.querySelector<HTMLElement>('[data-pch]');
+    return !pricing.live || !chooser || Number(chooser.dataset.months || 0) >= pricing.category.months;
+  };
+
   function estimate(): { cents: number; lines: string[] } {
     const f = form('package');
     const pkg = pricing.packages[selectedPackage()];
@@ -680,8 +704,10 @@ const strings = {
     // The same tier rule as checkout: a price on a bound belongs to the lower tier; no price yet → the first tier.
     const huf = priceHuf();
     const cents100 = (tiers: PriceTier[]) => priceEurFor({ tiers }, huf) * 100;
-    let cents = cents100(pkg.tiers);
-    const lines = [pkg.name];
+    // The new chooser knows the package's price for the chosen term in this property's value band (integer cents).
+    const chooser = f.querySelector<HTMLElement>('[data-pch]');
+    let cents = pricing.live && chooser ? Number(chooser.dataset.cents || 0) : cents100(pkg.tiers);
+    const lines = [pricing.live && chooser?.dataset.label ? chooser.dataset.label : pkg.name];
     // The translation picker keeps its own total (the package plus single languages), in cents.
     const picker = f.querySelector<HTMLElement>('[data-tpk]');
     const translationCents = Number(picker?.dataset.cents || 0);
@@ -695,7 +721,7 @@ const strings = {
       cents += amount;
       lines.push(label);
     };
-    add(flag('categoryHighlight'), cents100(pricing.category.tiers) * pricing.category.months, s.categoryHighlight);
+    add(flag('categoryHighlight') && categoryAllowed(), cents100(pricing.category.tiers) * pricing.category.months, s.categoryHighlight);
     add(videoOffered() && flag('video'), cents100(pricing.video.tiers), s.video);
     const service = f.querySelector<HTMLInputElement>('input[name="service"]:checked')?.value ?? '';
     add(Boolean(pricing.services[service]), pricing.services[service]?.cents ?? 0, pricing.services[service]?.name ?? '');
@@ -704,6 +730,7 @@ const strings = {
     return { cents, lines };
   }
 
+  let lastChooserHuf = priceHuf();
   function syncPackage() {
     const pkg = pricing.packages[selectedPackage()];
     // The video shoot follows the property's country (Hungary only), not the package.
@@ -716,6 +743,20 @@ const strings = {
     }
     // Tiered extras show the price for this listing's tier.
     const huf = priceHuf();
+    // The chooser follows a price typed in the next step (it can move the value band); only when it really changed.
+    if (huf !== lastChooserHuf) {
+      lastChooserHuf = huf;
+      form('package')?.querySelector('[data-pch]')?.dispatchEvent(new CustomEvent('pch:price', { detail: { huf } }));
+    }
+    const categoryChip = root.querySelector<HTMLElement>('[data-category-chip]');
+    if (categoryChip) {
+      const ok = categoryAllowed();
+      categoryChip.hidden = !ok;
+      const box = categoryChip.querySelector<HTMLInputElement>('input');
+      if (box) { box.disabled = !ok; if (!ok) box.checked = false; }
+      const note = root.querySelector<HTMLElement>('[data-category-note]');
+      if (note) note.hidden = ok;
+    }
     const show = (key: string, tiers: PriceTier[]) => root.querySelectorAll<HTMLElement>(`[data-extra-price="${key}"]`).forEach((el) => (el.textContent = String(priceEurFor({ tiers }, huf))));
     show('category', pricing.category.tiers);
     show('video', pricing.video.tiers);
@@ -732,6 +773,7 @@ const strings = {
   }
   form('package')?.addEventListener('change', syncPackage);
   form('package')?.addEventListener('tp:change', syncPackage);
+  form('package')?.addEventListener('pch:change', syncPackage);
   form('property')?.addEventListener('change', syncPackage);
   form('property')?.addEventListener('listing:price',syncPackage);
   syncPackage();

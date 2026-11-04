@@ -34,6 +34,7 @@
     "test:e2e:webkit": "playwright test --project=webkit --project=mobile-safari",
     "test:listing:migration": "node scripts/test-listing-migration.mjs",
     "test:migrations": "node scripts/test-migrations-sequence.mjs",
+    "test:chooser": "node --no-warnings scripts/test-package-chooser.mjs",
     "test:pricing": "node --no-warnings scripts/test-pricing.mjs && node --no-warnings scripts/test-package-orders.mjs && node --no-warnings scripts/test-fx.mjs",
     "test:listing": "node scripts/test-listing-input.mjs",
     "test:tiers": "node --no-warnings scripts/test-tiers.mjs",

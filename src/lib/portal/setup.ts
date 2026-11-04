@@ -19,7 +19,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { localeFrom } from '~/i18n/ui';
 import type { PortalLang } from '~/lib/portal/auth-copy';
 import { getCompany, getTaxonomy } from '~/lib/runtime-config';
-import { listingCatalog, packageOf, extraSoldIn, type ListingCatalog } from '~/lib/listing-packages';
+import { listingCatalog, packageOf, extraSoldIn, sellingPackages, type ListingCatalog } from '~/lib/listing-packages';
 import { TRANSLATION_LANGUAGES, isOnsiteServiceId } from '~/config/company';
 import { readRequestedExtras } from '~/lib/portal/requested-extras';
 import { createServiceRequest } from '~/lib/portal/service-requests';
@@ -33,7 +33,8 @@ import { HEARD_FROM_KEYS } from '~/lib/listing-details';
 import { contactDisplayPatch } from '~/lib/contact-display';
 import { syncFreeRequests } from '~/lib/ai/translation-jobs';
 import { guardContacts, type ContactActor } from '~/lib/portal/contact-guard';
-import { ALL_LOCALES } from '~/lib/ai/translate-core';
+import { ALL_LOCALES, pickSource } from '~/lib/ai/translate-core';
+import { chosenExclusions } from '~/lib/portal/package-chooser';
 import { packageById, packageLocales } from '~/lib/translation-packages';
 
 export const SETUP_STEPS = ['package', 'property', 'description'] as const;
@@ -71,18 +72,34 @@ export async function saveSetupStep(
 async function savePackage(supabase: SupabaseClient, existing: Existing, form: FormData): Promise<StepResult> {
   const company = await getCompany();
   const catalog = listingCatalog(company.services);
-  const chosen = catalog.packages.find((p) => p.id === str(form, 'package'));
+  // Only what is on sale: before the pricing migrations the two older packages, after them Basic, Europe and World.
+  const chosen = sellingPackages(catalog).find((p) => p.id === str(form, 'package'));
   if (!chosen) return { ok: false, error: 'invalid', errors: { package: { code: 'required' } } };
 
-  const translations = form
-    .getAll('translations')
-    .map(String)
-    .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && ALL_LOCALES.includes(code) && all.indexOf(code) === i);
-  // Package and single languages are only ids: the server prices them (src/lib/orders.ts). A package that is not
-  // on sale falls back to Basic, and a single the chosen package already includes is not a single.
-  const trPackage = catalog.translation.packages.find((p) => p.id === str(form, 'translation_package') && (p.active || p.id === 'basic'))?.id ?? 'basic';
-  const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackage), ALL_LOCALES));
-  const trSingles = translations.filter((code) => !trIncluded.has(code));
+  // A listing package is also the language package: its term and the languages the owner switched off are the whole
+  // choice (single languages are no longer sold). The server prices all of it from the matrix at approval.
+  let months: number | undefined;
+  let trPackage = 'basic';
+  let trSingles: string[] = [];
+  let excluded: string[] = [];
+  if (catalog.pricingLive) {
+    months = Number(str(form, 'months'));
+    if (!catalog.pricing.durations.includes(months)) return { ok: false, error: 'invalid', errors: { months: { code: 'required' } } };
+    trPackage = chosen.id;
+    const { data: rows } = await supabase.from('property_translations').select('locale, title, description, machine, translated_from, manual_override').eq('property_id', existing.id);
+    excluded = chosenExclusions(str(form, 'translation_excluded').split(','), chosen.id, catalog, pickSource((rows ?? []) as never[])?.locale ?? 'hu', ALL_LOCALES);
+  } else {
+    const translations = form
+      .getAll('translations')
+      .map(String)
+      .filter((code, i, all) => (TRANSLATION_LANGUAGES as readonly string[]).includes(code) && ALL_LOCALES.includes(code) && all.indexOf(code) === i);
+    // Package and single languages are only ids: the server prices them (src/lib/orders.ts). A package that is not
+    // on sale falls back to Basic, and a single the chosen package already includes is not a single.
+    trPackage = catalog.translation.packages.find((p) => p.id === str(form, 'translation_package') && (p.active || p.id === 'basic'))?.id ?? 'basic';
+    const trIncluded = new Set(packageLocales(packageById(catalog.translation, trPackage), ALL_LOCALES));
+    trSingles = translations.filter((code) => !trIncluded.has(code));
+    excluded = str(form, 'translation_excluded').split(',');
+  }
   const service = isOnsiteServiceId(str(form, 'service')) ? (str(form, 'service') as never) : null;
 
   const { error } = await supabase.from('properties').update({ package: chosen.id }).eq('id', existing.id);
@@ -94,10 +111,12 @@ async function savePackage(supabase: SupabaseClient, existing: Existing, form: F
     source: 'listing_editor',
     at: new Date().toISOString(),
     package: chosen.id,
+    ...(months ? { months } : {}),
     translations: trSingles,
     translationPackage: trPackage,
-    excludedLocales: str(form, 'translation_excluded').split(','),
-    categoryHighlight: form.get('categoryHighlight') === 'yes',
+    excludedLocales: excluded,
+    // A category highlight needs a package at least as long as its minimum (Q10): a 1-month package cannot carry it.
+    categoryHighlight: form.get('categoryHighlight') === 'yes' && (!months || months >= (catalog.extras.find((e) => e.id === 'category-highlight')?.minMonths ?? 1)),
     topicHighlight: form.get('topicHighlight') === 'yes',
     dutchAgent: form.get('dutchAgent') === 'yes',
     // The video shoot is sold in Hungary only (§4b). A draft whose country is not chosen yet keeps
