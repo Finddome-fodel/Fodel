@@ -21,13 +21,14 @@
 import { pluralForm } from '~/i18n/plural';
 import { ONSITE_SERVICES } from '~/config/company';
 import type { Locale } from '~/i18n/ui';
-import { eurCents, intlTag } from '~/lib/format';
+import { eurCents, huf, intlTag } from '~/lib/format';
 import type { RequestedExtras } from '~/lib/portal/requested-extras';
 import { ALL_LOCALES, OWNER_TARGETS } from '~/lib/ai/translate-core';
-import { cleanExclusions, translationLines, type TranslationLine } from '~/lib/translation-packages';
+import { cleanExclusions, entitledLocales, translationLines, type TranslationLine } from '~/lib/translation-packages';
 import { extraSoldIn, listingCatalog, packageOf, type ListingCatalog } from '~/lib/listing-packages';
 import { flatTiers, tierFor, tierRange, type PriceTier } from '~/lib/price-tiers';
 import { tierPhrase } from '~/lib/tier-phrase';
+import { isPackageKey, percentOfCents, priceFor, tierIndexFor, tierLabel, upgradeCents, type PackageKey } from '~/lib/listing-pricing';
 
 /**
  * Everything that can be a line after the package: the listing extras plus
@@ -67,11 +68,31 @@ export type OrderLine = {
   tier?: { index: number; fromHuf: number; toHuf: number | null };
   /** A translation package line: which package it buys, so paying is enough to know what to apply. */
   packageId?: string;
+  /**
+   * A listing package line (Basic, Europe, World): the term bought. With `tier` (the value band it was priced in)
+   * it is frozen here, so a later change of the price or of the matrix never moves an order, and an upgrade or a
+   * renewal prices inside the band the listing was bought in.
+   */
+  months?: number;
+  /** A listing package line: the languages the buyer switched off when ordering (never English, never the original). */
+  excludedLocales?: string[];
+  /** An upgrade line: the package the listing was on. The line charges only the difference up to `id`. */
+  upgradeFrom?: string;
+  /** A renewal line: more months of the same package, from the old expiry on. It publishes nothing and changes nothing else. */
+  renewal?: boolean;
 };
 
 /** What the admin's review form sends: ids and counts, never money. */
 export type OrderSelection = {
   packageId: string;
+  /** Basic, Europe and World: how many months are bought. Must be one of the configured durations. */
+  months?: number;
+  /** Renewals and upgrades price inside the value band the listing was first bought in, not the one its price is in now. */
+  tierIndex?: number;
+  /** An upgrade: the package the listing is on now. The line charges the difference to `packageId`, for the same term and band. */
+  upgradeFrom?: string;
+  /** A renewal: `packageId` for `months` more months, priced inside the band `tierIndex`, at today's matrix. */
+  renewal?: boolean;
   /**
    * The listing's forint price when the order is made; it picks the price tier
    * of the package and of every extra (src/lib/price-tiers.ts). Decided from
@@ -338,7 +359,18 @@ function priced(tiers: readonly PriceTier[], priceHuf: number, locale: OrderLoca
 }
 
 /** `retired-extra`: no longer sold (§4); `not-sold-here`: an extra sold only in other countries (§4b). */
-export type OrderErrorCode = 'unknown-package' | 'unknown-extra' | 'retired-extra' | 'not-sold-here' | 'bad-quantity' | 'exclusive' | 'bad-locale' | 'exclude-en';
+export type OrderErrorCode =
+  | 'unknown-package' | 'unknown-extra' | 'retired-extra' | 'not-sold-here' | 'bad-quantity' | 'exclusive' | 'bad-locale' | 'exclude-en'
+  /** The term is not one of the configured durations. */
+  | 'bad-duration'
+  /** The matrix has no price for that package, term and band. */
+  | 'no-price'
+  /** Single languages are not sold (Csomagok → Egyedi nyelvek is off). */
+  | 'singles-off'
+  /** Category highlighting needs a 3- or 6-month package and lasts at most as long as the package. */
+  | 'extra-term'
+  /** An upgrade must go to a bigger package, from a current one. */
+  | 'bad-upgrade';
 
 export class OrderError extends Error {
   code: OrderErrorCode;
@@ -355,6 +387,7 @@ export class OrderError extends Error {
  * drops a line the admin ticked is worse than one that refuses to save.
  */
 export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, cat: ListingCatalog = listingCatalog()): OrderLine[] {
+  if (isPackageKey(selection.packageId)) return buildPackageOrder(selection, locale, cat);
   const pkg = cat.packages.find((p) => p.id === selection.packageId);
   if (!pkg) throw new OrderError('unknown-package');
 
@@ -424,6 +457,114 @@ export function buildOrderLines(selection: OrderSelection, locale: OrderLocale, 
   return lines;
 }
 
+
+/* ── The listing package: Basic, Europe, World (November 2026) ───────────── */
+
+const PACKAGE_WORD: Record<OrderLocale, string> = {
+  hu: 'csomag', nl: 'pakket', en: 'package', de: 'Paket', fr: 'forfait', es: 'paquete', pl: 'pakiet', ro: 'pachet', sk: 'balík', it: 'pacchetto', pt: 'pacote',
+  el: 'πακέτο', cs: 'balíček', sl: 'paket', sv: 'paket', da: 'pakke', no: 'pakke', fi: 'paketti', et: 'pakett', lv: 'pakotne', lt: 'paketas', sr: 'paket',
+  uk: 'пакет', tr: 'paket', he: 'חבילה', ar: 'باقة', ru: 'пакет', zh: '套餐',
+};
+
+const RENEWAL_WORD: Record<OrderLocale, string> = {
+  hu: 'Hosszabbítás', nl: 'Verlenging', en: 'Renewal', de: 'Verlängerung', fr: 'Prolongation', es: 'Prórroga', pl: 'Przedłużenie', ro: 'Prelungire', sk: 'Predĺženie',
+  it: 'Proroga', pt: 'Prorrogação', el: 'Ανανέωση', cs: 'Prodloužení', sl: 'Podaljšanje', sv: 'Förlängning', da: 'Forlængelse', no: 'Forlengelse', fi: 'Jatko',
+  et: 'Pikendamine', lv: 'Pagarināšana', lt: 'Pratęsimas', sr: 'Produženje', uk: 'Продовження', tr: 'Uzatma', he: 'הארכה', ar: 'تجديد', ru: 'Продление', zh: '续期',
+};
+
+/** "6 hónap", "6 months", "6 Monate": every language's own plural rules, from Intl. */
+export function monthsText(months: number, locale: OrderLocale): string {
+  try {
+    return new Intl.NumberFormat(intlTag(locale), { style: 'unit', unit: 'month', unitDisplay: 'long' }).format(months);
+  } catch {
+    return `${months} ${months === 1 ? 'month' : 'months'}`;
+  }
+}
+
+/** The package line's wording: "World csomag, 6 hónap (25–100 millió Ft)". Written into the line, so it stays true on the paper. */
+export function packageLineLabel(cat: ListingCatalog, key: PackageKey, months: number, tierIndex: number, locale: OrderLocale): string {
+  const pkg = cat.packages.find((p) => p.id === key);
+  const name = pkg?.names[locale] ?? key;
+  const band = cat.pricing.valueTiers.length > 1 ? ` (${tierLabel(cat.pricing.valueTiers, tierIndex, locale, (n) => huf(n, locale))})` : '';
+  return `${name} ${PACKAGE_WORD[locale]}, ${monthsText(months, locale)}${band}`;
+}
+
+/** The languages a package line covers (minus the original and what the buyer switched off), and the cleaned exclusions. */
+function packageLanguages(cat: ListingCatalog, key: PackageKey, selection: OrderSelection) {
+  const sourceLocale = selection.translation?.sourceLocale ?? 'hu';
+  const cfg = cat.translation;
+  const listing = { translationPackage: key, extraLocales: [] as string[], sourceLocale };
+  const cleaned = cleanExclusions(selection.translation?.excludedLocales ?? [], listing, cfg, ALL_LOCALES);
+  if (cleaned.problem === 'exclude-en') throw new OrderError('exclude-en');
+  if (cleaned.problem) throw new OrderError('bad-locale');
+  return { locales: entitledLocales({ ...listing, excludedLocales: cleaned.excluded }, cfg, ALL_LOCALES), excluded: cleaned.excluded };
+}
+
+function buildPackageOrder(selection: OrderSelection, locale: OrderLocale, cat: ListingCatalog): OrderLine[] {
+  const key = selection.packageId as PackageKey;
+  const pkg = cat.packages.find((p) => p.id === key && !p.legacy);
+  // Not on sale before migrations 0055 and 0056 (cat.pricingLive), however the request got here.
+  if (!pkg || pkg.enabled === false || !cat.pricingLive) throw new OrderError('unknown-package');
+  const pricing = cat.pricing;
+  const months = selection.months;
+  if (typeof months !== 'number' || !pricing.durations.includes(months)) throw new OrderError('bad-duration');
+  const priceHuf = typeof selection.priceHuf === 'number' && Number.isFinite(selection.priceHuf) ? selection.priceHuf : 0;
+  const tierIndex = selection.tierIndex ?? tierIndexFor(pricing, priceHuf);
+  const price = priceFor({ packageId: key, months, tierIndex, pricing });
+  if (!price) throw new OrderError('no-price');
+
+  const range = tierRange(pricing.valueTiers.map((t) => ({ upToHuf: t.upToHuf, priceEur: 0 })), tierIndex);
+  const tier = pricing.valueTiers.length > 1 ? { tier: { index: tierIndex, ...range } } : {};
+  const { locales, excluded } = packageLanguages(cat, key, selection);
+  const lines: OrderLine[] = [];
+  if (selection.upgradeFrom !== undefined) {
+    const from = selection.upgradeFrom;
+    const rank = (id: string) => (isPackageKey(id) ? ['basic', 'europe', 'world'].indexOf(id) : -1);
+    if (rank(from) < 0 || rank(from) >= rank(key)) throw new OrderError('bad-upgrade');
+    const diff = upgradeCents({ from, to: key, months, tierIndex, pricing });
+    if (diff === null) throw new OrderError('no-price');
+    const fromName = cat.packages.find((p) => p.id === from)?.names[locale] ?? from;
+    lines.push({
+      kind: 'package', id: key, quantity: 1, unitCents: diff, months, packageId: key, upgradeFrom: from, locales, excludedLocales: excluded, ...tier,
+      label: `${fromName} → ${packageLineLabel(cat, key, months, tierIndex, locale)}`,
+    });
+    return lines;
+  }
+  lines.push({
+    kind: 'package', id: key, quantity: 1, unitCents: price.cents, months, packageId: key, locales, excludedLocales: excluded, ...tier,
+    ...(selection.renewal ? { renewal: true } : {}),
+    label: selection.renewal ? `${RENEWAL_WORD[locale]}: ${packageLineLabel(cat, key, months, tierIndex, locale)}` : packageLineLabel(cat, key, months, tierIndex, locale),
+  });
+
+  if (selection.extras.filter((chosen) => EXCLUSIVE.has(chosen.id)).length > 1) throw new OrderError('exclusive');
+  for (const chosen of selection.extras) {
+    const extra = orderExtras(cat).find((e) => e.id === chosen.id);
+    if (!extra) throw new OrderError('unknown-extra');
+    if (extra.retired) throw new OrderError('retired-extra');
+    if (extra.countries && selection.country !== undefined && !extra.countries.includes(String(selection.country ?? '').toUpperCase())) throw new OrderError('not-sold-here');
+    if (extra.id === 'translation') {
+      // The old per-language sale: only while the admin switch is on.
+      if (!pricing.singleLanguages.enabled) throw new OrderError('singles-off');
+      continue;
+    }
+    const quantity = Math.floor(chosen.quantity);
+    if (!Number.isFinite(quantity) || quantity < 1 || quantity > 60) throw new OrderError('bad-quantity');
+    // Category highlighting is sold by the month, at least three, and never longer than the package itself (Q10).
+    if (extra.id === 'category-highlight' && (months < (extra.minMonths ?? 1) || quantity > months)) throw new OrderError('extra-term');
+    const units = EXTRA_UNIT[extra.id]?.[locale];
+    const base = EXTRA_LABEL[extra.id]?.[locale] ?? extra.id;
+    const form = pluralForm(intlTag(locale), quantity);
+    const unit = form === 'one' ? units?.one : form === 'two' ? (units?.two ?? units?.few ?? units?.many) : form === 'few' ? (units?.few ?? units?.many) : units?.many;
+    const extraPrice = priced(extra.tiers, priceHuf, locale);
+    lines.push({
+      kind: 'extra', id: extra.id, quantity, unitCents: Math.round(extraPrice.priceEur * 100),
+      label: `${quantity > 1 && unit ? `${base}${locale === 'hu' || locale === 'nl' ? ' — ' : ': '}${quantity} ${unit}` : base}${extraPrice.suffix ?? ''}`,
+      ...(extraPrice.tier ? { tier: extraPrice.tier } : {}),
+    });
+  }
+  return lines;
+}
+
 /**
  * The translation lines of a selection: the package, then single languages, all priced from the catalogue.
  * Throws rather than quietly changing the choice: English can never be switched off, and a package that is not
@@ -464,7 +605,7 @@ export const REFERRAL_DISCOUNT_PERCENT = 10;
 export function referralDiscountCents(lines: OrderLine[]): number {
   const pkg = lines.find((line) => line.kind === 'package');
   if (!pkg) return 0;
-  return Math.round((pkg.unitCents * pkg.quantity * REFERRAL_DISCOUNT_PERCENT) / 100);
+  return percentOfCents(pkg.unitCents * pkg.quantity, REFERRAL_DISCOUNT_PERCENT);
 }
 
 /** Order lines shaped for the email templates' itemised table. */
@@ -482,6 +623,35 @@ export function linesForEmail(lines: OrderLine[], locale?: Locale): { label: str
 export function isAboveThreshold(priceHuf: number, cat: ListingCatalog = listingCatalog(), packageId?: string): boolean {
   const tiered = packageId ? packageOf(cat, packageId) : cat.packages.find((p) => p.tiers.length > 1);
   return tiered ? tierFor(tiered.tiers, priceHuf).index > 0 : false;
+}
+
+/**
+ * The default order once Basic, Europe and World are on sale: the package and term the owner chose in the wizard,
+ * else the recommended package for the longest term. The listing's own forint price decides the band when the
+ * order is built. Languages the owner switched off travel with it; nothing is charged on its own.
+ */
+function suggestPackageSelection(property: SuggestInput, requested: RequestedExtras, cat: ListingCatalog): OrderSelection {
+  const selling = cat.packages.filter((pkg) => !pkg.legacy && pkg.enabled !== false);
+  const wanted = [property.package, requested.package].find((id) => id && selling.some((pkg) => pkg.id === id));
+  const packageId = (wanted ?? selling.find((pkg) => pkg.recommended)?.id ?? selling[0]?.id ?? 'basic') as string;
+  const longest = Math.max(...cat.pricing.durations);
+  const months = requested.months && cat.pricing.durations.includes(requested.months) ? requested.months : longest;
+  const extras: { id: string; quantity: number }[] = [];
+  const shoot = cat.extras.find((extra) => extra.id === 'video');
+  if (requested.video && shoot && extraSoldIn(shoot, property.country)) extras.push({ id: 'video', quantity: 1 });
+  // Highlighting needs three months and cannot outlast the package (Q10): a one-month package gets none.
+  const highlight = cat.extras.find((extra) => extra.id === 'category-highlight');
+  const minMonths = highlight?.minMonths ?? 3;
+  if ((property.featured || requested.categoryHighlight) && highlight && !highlight.retired && months >= minMonths) extras.push({ id: 'category-highlight', quantity: Math.min(minMonths, months) });
+  if (requested.service) extras.push({ id: requested.service, quantity: 1 });
+  return {
+    packageId,
+    months,
+    priceHuf: property.price_huf,
+    ...(property.country !== undefined ? { country: property.country } : {}),
+    extras,
+    translation: { packageId, extraLocales: [], excludedLocales: [...(requested.excludedLocales ?? [])] },
+  };
 }
 
 /**
@@ -511,6 +681,7 @@ export type SuggestInput = {
 
 export function suggestSelection(property: SuggestInput, cat: ListingCatalog = listingCatalog()): OrderSelection {
   const requested = property.requested ?? {};
+  if (cat.pricingLive) return suggestPackageSelection(property, requested, cat);
   // The package and single languages the owner asked for. A language the listing already has text in (written by
   // the owner, or translated before) is not sold again; the AI translates only what is missing.
   const packageId = cat.translation.packages.some((p) => p.id === requested.translationPackage && p.active) ? String(requested.translationPackage) : 'basic';

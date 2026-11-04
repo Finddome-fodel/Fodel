@@ -474,13 +474,17 @@ await (async () => {
 })();
 test('the photo cap follows the saved package setting', () => {
   const caps = (services) => listingCatalog(services).packages.map((p) => p.maxImages);
-  assert.deepEqual(caps(undefined), [20, 20]);
+  assert.deepEqual(caps(undefined), [20, 20, 20, 20, 20], 'Basic, Europe, World and the two older packages');
   const only = (patch) => ({ listingPackages: { 'cheap-6m': patch } });
-  assert.equal(listingCatalog(only({ maxImages: 35 })).packages[0].maxImages, 35);
-  assert.equal(listingCatalog(only({ maxImages: null })).packages[0].maxImages, null);
-  assert.equal(listingCatalog(only({ maxImages: 0 })).packages[0].maxImages, 20, 'out of range → default');
-  assert.equal(listingCatalog(only({ maxImages: 9999 })).packages[0].maxImages, 20, 'out of range → default');
-  assert.equal(listingCatalog(only({ maxImages: 200 })).packages[0].maxImages, 200);
+  const cheap = (services) => listingCatalog(services).packages.find((p) => p.id === 'cheap-6m');
+  assert.equal(cheap(only({ maxImages: 35 })).maxImages, 35);
+  assert.equal(cheap(only({ maxImages: null })).maxImages, null);
+  assert.equal(cheap(only({ maxImages: 0 })).maxImages, 20, 'out of range → default');
+  assert.equal(cheap(only({ maxImages: 9999 })).maxImages, 20, 'out of range → default');
+  assert.equal(cheap(only({ maxImages: 200 })).maxImages, 200);
+  const current = (features) => listingCatalog({ listingPricing: { packages: { world: { features } } } }).packages.find((p) => p.id === 'world');
+  assert.equal(current({ maxImages: 50 }).maxImages, 50, 'the three current packages take their image cap from the price matrix settings');
+  assert.equal(current({ maxImages: null }).maxImages, null);
 });
 test('a €1 / 1 m² draft cannot be approved', () => {
   assert.ok(placeholderProblem({ price_eur: 1, floor_m2: 120 }));
@@ -1219,7 +1223,7 @@ console.log('AI translation: the rules around the model');
     assert.equal(line.locales.includes('de'), false);
     assert.equal(line.locales.includes('en'), true);
     assert.equal(line.locales.length, 21, 'Európa is 22 translation targets (28 languages, minus the five World-only ones and Hungarian), German switched off');
-    assert.deepEqual(paid.translationPurchaseOf(lines), { packageId: 'europe', singles: [], packageLocalesPaid: line.locales });
+    assert.deepEqual(paid.translationPurchaseOf(lines), { packageId: 'europe', singles: [], packageLocalesPaid: line.locales, excludedAtOrder: ['de'] });
     assert.deepEqual(paid.translationLocalesOf(lines), line.locales);
     assert.equal(paid.isTranslationOrder(lines.filter((l) => l.id === 'translation-package')), true);
     // The legal order total: the listing package plus Európa.

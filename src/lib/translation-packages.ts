@@ -168,6 +168,8 @@ export type TranslationLine = {
   kind: 'extra'; id: 'translation-package' | 'translation' | 'translation-world'; quantity: number; unitCents: number; label: string; locales: string[];
   /** The package a 'translation-package' line buys, so paying is enough to know what to apply. */
   packageId?: TranslationPackageId;
+  /** What the buyer switched off when they ordered (already cleaned), frozen on the line: applying the order never recomputes it. */
+  excludedLocales?: string[];
 };
 
 /** Every order line id that is a translation purchase. */
@@ -207,7 +209,7 @@ export function translationLines(
     const switchedOff = packageLocales(pkg, targets).filter((code) => code !== selection.sourceLocale && off.has(code)).length;
     const detail = `${languageCount(covered.length + 1, lang)}${switchedOff ? `, ${switchedOff} ${EXCLUDED_WORD[lang]}` : ''}`;
     lines.push({
-      kind: 'extra', id: 'translation-package', quantity: 1, unitCents: Math.round(priceEur * 100), packageId: pkg.id, locales: covered,
+      kind: 'extra', id: 'translation-package', quantity: 1, unitCents: Math.round(priceEur * 100), packageId: pkg.id, locales: covered, excludedLocales: [...off].sort(),
       label: `${translationLineLabel('translation-package', locale)}: ${name} (${detail}${opts.currentPackageId && opts.currentPackageId !== 'basic' ? `, ${UPGRADE_WORD[lang]}` : ''})`,
     });
   }

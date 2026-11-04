@@ -232,7 +232,7 @@ export function upgradeCents(input: { from: string; to: string; months: number; 
 }
 
 /** The referral discount: a whole-cent amount, half up. */
-export const percentOfCents = (cents: number, percent: number): number => Math.floor((cents * percent) / 100 + 0.5);
+export const percentOfCents = (cents: number, percent: number): number => Math.floor((cents * percent * 2 + 100) / 200);
 
 /* ── Wording ─────────────────────────────────────────────────────────────── */
 

@@ -13,7 +13,12 @@
  * yet; the handover lists each one.
  */
 
-export type PackageId = 'cheap-6m' | 'normal-12m';
+import { PACKAGE_KEYS, readPricing, type PackageKey } from './listing-pricing.ts';
+
+/** The two packages sold until November 2026. Old listings and unpaid orders still carry them. */
+export type LegacyPackageId = 'cheap-6m' | 'normal-12m';
+/** Every package a listing can be on: the three sold today and the two legacy ones. */
+export type PackageId = LegacyPackageId | PackageKey;
 
 export type ListingRules = {
   /** Phone number on the public page, per package. Default: Standard no, Kiemelt yes. */
@@ -25,7 +30,7 @@ export type ListingRules = {
 };
 
 export const LISTING_RULES_DEFAULT: ListingRules = {
-  packagePhone: { 'cheap-6m': false, 'normal-12m': true },
+  packagePhone: { 'cheap-6m': false, 'normal-12m': true, basic: true, europe: true, world: true },
   expiry: { firstReminderDays: 14, lastReminderDays: 3 },
   ownerRefresh: { enabled: true, intervalDays: 30, reminderAfterDays: 7, flagAfterDays: 14, linkDays: 30 },
 };
@@ -36,7 +41,7 @@ const int = (value: unknown, fallback: number, min: number, max: number): number
 };
 
 /** Stored settings (any shape, possibly missing) → complete, sane rules. */
-export function listingRules(stored?: Partial<{ packagePhone: unknown; expiry: unknown; ownerRefresh: unknown }> | null): ListingRules {
+export function listingRules(stored?: Partial<{ packagePhone: unknown; expiry: unknown; ownerRefresh: unknown; listingPricing: unknown }> | null): ListingRules {
   const d = LISTING_RULES_DEFAULT;
   const phone = (stored?.packagePhone ?? {}) as Partial<Record<PackageId, unknown>>;
   const expiry = (stored?.expiry ?? {}) as Partial<Record<keyof ListingRules['expiry'], unknown>>;
@@ -47,6 +52,8 @@ export function listingRules(stored?: Partial<{ packagePhone: unknown; expiry: u
     packagePhone: {
       'cheap-6m': typeof phone['cheap-6m'] === 'boolean' ? phone['cheap-6m'] : d.packagePhone['cheap-6m'],
       'normal-12m': typeof phone['normal-12m'] === 'boolean' ? phone['normal-12m'] : d.packagePhone['normal-12m'],
+      // The three current packages keep this switch in their own settings (Csomagok → Csomagok tartalma).
+      ...Object.fromEntries(PACKAGE_KEYS.map((key) => [key, readPricing(stored?.listingPricing).packages[key].features.phone])) as Record<PackageKey, boolean>,
     },
     // The first reminder is always the earlier one, whatever order they were typed in.
     expiry: { firstReminderDays: Math.max(first, last), lastReminderDays: Math.min(first, last) },

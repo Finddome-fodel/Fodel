@@ -22,7 +22,8 @@
  */
 import { LISTING_PACKAGES, LISTING_EXTRAS, TRANSLATION_PACKAGES } from '~/config/company';
 import { translationPricing, type TranslationPricing } from '~/lib/translation-packages';
-import { listingRules, type PackageId } from '~/lib/listing-rules';
+import { listingRules, type LegacyPackageId, type PackageId } from '~/lib/listing-rules';
+import { PACKAGE_KEYS, fromCents, readPricing, type ListingPricing } from '~/lib/listing-pricing';
 import { LOCALES, localizer, type L10n, type Locale } from '~/i18n/ui';
 import { eur } from '~/lib/format';
 import { nOf } from '~/i18n/plural';
@@ -67,6 +68,13 @@ export type ListingPackage = {
   editedText: boolean;
   /** The card marked "Ajánlott" and preselected on the submit form. */
   recommended: boolean;
+  /**
+   * `cheap-6m` and `normal-12m`, sold until November 2026: they stay so old listings and unpaid orders keep
+   * working, and no selling surface offers them (`sellingPackages`).
+   */
+  legacy?: boolean;
+  /** Basic, Europe and World only: switched off in Csomagok, a package is not offered. */
+  enabled?: boolean;
 };
 
 export type ExtraId = (typeof LISTING_EXTRAS)[number]['id'];
@@ -89,7 +97,20 @@ export type ListingExtra = {
   countries?: readonly string[];
 };
 
-export type ListingCatalog = { packages: ListingPackage[]; extras: ListingExtra[]; translation: TranslationPricing };
+export type ListingCatalog = {
+  /** Basic, Europe, World, then the two legacy packages (`legacy: true`). */
+  packages: ListingPackage[];
+  extras: ListingExtra[];
+  translation: TranslationPricing;
+  /** The price matrix: `priceFor()` (src/lib/listing-pricing.ts) is the only place a package price is computed. */
+  pricing: ListingPricing;
+  /**
+   * Whether Basic, Europe and World are on sale. Migration 0056 switches this on (`services.pricingLive`) once 0055 and
+   * 0056 have run; until then the site sells the two older packages exactly as it always did, so deploying before the
+   * migrations is safe.
+   */
+  pricingLive: boolean;
+};
 
 export type StoredListingPackage = Partial<Omit<ListingPackage, 'id' | 'names' | 'video' | 'tiers'>> & {
   names?: Partial<Record<'hu' | 'nl', string>>;
@@ -97,7 +118,11 @@ export type StoredListingPackage = Partial<Omit<ListingPackage, 'id' | 'names' |
   tiers?: unknown;
 };
 export type StoredServices = {
-  listingPackages?: Partial<Record<PackageId, StoredListingPackage>>;
+  listingPackages?: Partial<Record<LegacyPackageId, StoredListingPackage>>;
+  /** The price matrix and package settings (src/lib/listing-pricing.ts). */
+  listingPricing?: unknown;
+  /** Set by migration 0056: the three packages are on sale. */
+  pricingLive?: unknown;
   listingExtras?: Partial<Record<ExtraId, { priceEur?: number; tiers?: unknown }>>;
   packagePhone?: unknown;
   /** Translation packages and single-language prices (src/lib/translation-packages.ts). */
@@ -136,8 +161,40 @@ function defaults(): ListingPackage[] {
     phone: false,
     editedImages: pkg.editedImages,
     editedText: pkg.editedText,
-    recommended: pkg.id === 'normal-12m',
+    recommended: false,
+    legacy: true,
   }));
+}
+
+/**
+ * The packages on sale: Basic, Europe and World that are switched on; before the pricing migrations, the two older
+ * ones (so nothing changes until Marci has run them).
+ */
+export const sellingPackages = (cat: Pick<ListingCatalog, 'packages' | 'pricingLive'>): ListingPackage[] =>
+  cat.pricingLive ? cat.packages.filter((pkg) => !pkg.legacy && pkg.enabled !== false) : cat.packages.filter((pkg) => pkg.legacy);
+
+/** The current packages as catalog entries, from the price matrix. Their prices are not here: ask `priceFor`. */
+function currentPackages(pricing: ListingPricing): ListingPackage[] {
+  return PACKAGE_KEYS.map((key): ListingPackage => {
+    const setting = pricing.packages[key];
+    const from = (fromCents(pricing, key) ?? 0) / 100;
+    const names = Object.fromEntries(LOCALES.map((l) => [l, setting.names.en])) as L10n;
+    names.hu = setting.names.hu;
+    names.nl = setting.names.en;
+    return withAliases({
+      id: key,
+      names,
+      tiers: [{ upToHuf: null, priceEur: from }],
+      months: Math.max(...pricing.durations),
+      maxImages: setting.features.maxImages,
+      video: setting.features.video,
+      phone: setting.features.phone,
+      editedImages: setting.features.editedImages,
+      editedText: setting.features.editedText,
+      recommended: setting.recommended,
+      enabled: setting.enabled,
+    });
+  });
 }
 
 /**
@@ -157,8 +214,9 @@ function packageTiers(stored: StoredListingPackage, base: ListingPackage): Price
 /** Stored settings (any shape, possibly missing) → a complete, sane catalogue. */
 export function listingCatalog(services?: StoredServices): ListingCatalog {
   const phone = listingRules(services as any).packagePhone;
-  const packages = defaults().map((base): ListingPackage => {
-    const s = services?.listingPackages?.[base.id] ?? {};
+  const pricing = readPricing(services?.listingPricing);
+  const legacy = defaults().map((base): ListingPackage => {
+    const s = services?.listingPackages?.[base.id as LegacyPackageId] ?? {};
     return withAliases({
       id: base.id,
       names: { ...base.names, hu: s.names?.hu?.trim() || base.names.hu, nl: s.names?.nl?.trim() || base.names.nl },
@@ -170,13 +228,14 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
       phone: phone[base.id],
       editedImages: bool(s.editedImages, base.editedImages),
       editedText: bool(s.editedText, base.editedText),
-      recommended: bool(s.recommended, base.recommended),
+      recommended: false,
+      legacy: true,
     });
   });
-  // Exactly one card is recommended.
-  if (packages.filter((p) => p.recommended).length !== 1) {
-    packages.forEach((p, i) => (p.recommended = i === packages.length - 1));
-  }
+  const pricingLive = services?.pricingLive === true;
+  // Until the migrations have run, the older "Prémium" is the recommended card, as it always was.
+  if (!pricingLive) legacy.forEach((p) => (p.recommended = p.id === 'normal-12m'));
+  const packages = [...currentPackages(pricing), ...legacy];
   const translation = translationPricing(services?.translationPackages, TRANSLATION_PACKAGES, LOCALES);
   const extras = LISTING_EXTRAS.map((extra): ListingExtra => {
     const stored = services?.listingExtras?.[extra.id];
@@ -195,7 +254,7 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
       ...('countries' in extra ? { countries: extra.countries } : {}),
     };
   });
-  return { packages, extras, translation };
+  return { packages, extras, translation, pricing, pricingLive };
 }
 
 /**
@@ -207,7 +266,9 @@ export function listingCatalog(services?: StoredServices): ListingCatalog {
  */
 export function storedPackages(catalog: ListingCatalog): Record<string, StoredListingPackage> {
   return Object.fromEntries(
-    catalog.packages.map(({ id, phone: _phone, ...pkg }) => [id, { ...pkg, names: { hu: pkg.names.hu, nl: pkg.names.nl }, tiers: pkg.tiers.map((tier) => ({ ...tier })) }])
+    catalog.packages
+      .filter((pkg) => pkg.legacy)
+      .map(({ id, phone: _phone, legacy: _legacy, enabled: _enabled, ...pkg }) => [id, { ...pkg, names: { hu: pkg.names.hu, nl: pkg.names.nl }, tiers: pkg.tiers.map((tier) => ({ ...tier })) }])
   );
 }
 
@@ -218,7 +279,7 @@ export function storedExtras(catalog: ListingCatalog): Record<string, { priceEur
 
 /** The per-package phone switch, stored next to the packages (listing-rules reads it). */
 export function storedPackagePhone(catalog: ListingCatalog): Record<string, boolean> {
-  return Object.fromEntries(catalog.packages.map((pkg) => [pkg.id, pkg.phone]));
+  return Object.fromEntries(catalog.packages.filter((pkg) => pkg.legacy).map((pkg) => [pkg.id, pkg.phone]));
 }
 
 export function packageOf(catalog: ListingCatalog, id: string | null | undefined): ListingPackage {
