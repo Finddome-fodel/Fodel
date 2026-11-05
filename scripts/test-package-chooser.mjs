@@ -88,11 +88,11 @@ try {
     assert.equal(junk.months, 6);
   });
 
-  await test('languages: Basic hu en de, Europe without the five World-only, World all 28; the original first; the page can be in any original language', () => {
+  await test('languages: Basic hu en de, Europe without the six World-only, World all 28; the original first; the page can be in any original language', () => {
     const m = model();
     assert.deepEqual(m.packages[0].languages, ['hu', 'en', 'de'], 'Basic: the original (Hungarian), English, German');
-    assert.equal(m.packages[1].languages.includes('sr') && m.packages[1].languages.includes('uk'), true);
-    assert.equal(['tr', 'he', 'ar', 'zh', 'ru'].some((c) => m.packages[1].languages.includes(c)), false);
+    assert.equal(m.packages[1].languages.includes('sr') && !m.packages[1].languages.includes('uk'), true, 'sr is European, uk is World-only');
+    assert.equal(['uk', 'tr', 'he', 'ar', 'zh', 'ru'].some((c) => m.packages[1].languages.includes(c)), false);
     assert.equal(m.packages[2].languages.length, 28);
     const german = model({ sourceLocale: 'de' });
     assert.deepEqual(german.packages[0].languages, ['de', 'hu', 'en'], 'a German owner: German is the original; Basic adds Hungarian and English');

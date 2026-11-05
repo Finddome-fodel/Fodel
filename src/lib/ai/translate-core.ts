@@ -24,7 +24,7 @@ export const OWNER_TARGETS: readonly string[] = LOCALES.filter((code) => code !=
 export const RECOMMENDED_TARGETS: readonly string[] = ['nl', 'de', 'en', 'fr'];
 
 /** The languages outside Europe: sold in the World package, or one by one at the higher single price. */
-export const WORLD_ONLY_LOCALES: readonly string[] = ['tr', 'he', 'ar', 'zh', 'ru'];
+export const WORLD_ONLY_LOCALES: readonly string[] = ['uk', 'tr', 'he', 'ar', 'zh', 'ru'];
 
 /** The language switcher's two groups: Hungarian first among Europe, the rest as ordered. */
 export function localeGroups(locales: readonly string[]): { europe: string[]; world: string[] } {

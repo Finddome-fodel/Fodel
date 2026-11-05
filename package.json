@@ -32,7 +32,7 @@
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "test:e2e": "playwright test",
     "test:e2e:webkit": "playwright test --project=webkit --project=mobile-safari",
-    "test:e2e:listing": "E2E_LISTING_FIXTURE=1 playwright test tests/e2e/public/share.spec.ts && E2E_LISTING_FIXTURE=1 playwright test tests/e2e/public/pages.spec.ts -g \"the map starts\"",
+    "test:e2e:listing": "E2E_LISTING_FIXTURE=1 playwright test tests/e2e/public/share.spec.ts && E2E_LISTING_FIXTURE=1 playwright test tests/e2e/public/pages.spec.ts -g \"the map starts\" && E2E_LISTING_FIXTURE=1 FX_LONG_TITLE=1 playwright test tests/e2e/public/hero-title.spec.ts",
     "test:listing:migration": "node scripts/test-listing-migration.mjs",
     "test:migrations": "node scripts/test-migrations-sequence.mjs",
     "test:field-rules": "node --no-warnings scripts/test-field-rules.mjs",
@@ -42,7 +42,9 @@
     "test:tiers": "node --no-warnings scripts/test-tiers.mjs",
     "test:contacts": "node --no-warnings scripts/test-contact-detect.mjs",
     "local:prepare": "python3 scripts/local-workspace.py",
-    "test:share": "node --no-warnings scripts/test-share.mjs"
+    "test:share": "node --no-warnings scripts/test-share.mjs",
+    "test:autosave": "node --no-warnings scripts/test-autosave.mjs",
+    "test:title-fit": "node --no-warnings scripts/test-title-fit.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

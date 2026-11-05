@@ -38,11 +38,18 @@ const media = [
 ];
 
 const translation = (locale, title, description, body) => ({ property_id: ID, locale, title, subtitle: null, description, body, condition: null, heating: null, tag: null });
+// FX_LONG_TITLE=1: the title a seller once wrote as a whole sentence (the hero must hold it, see hero-title.spec.ts).
+const LONG = {
+  hu: 'Több száz hektáros erdőben, szomszédmentes, 2024-ben teljeskörűen felújított, 2 lakóházas lovasfarm sok melléképülettel eladó',
+  en: 'Horse farm of several hundred hectares inside a forest, no neighbours, two houses fully renovated in 2024, with many outbuildings, for sale',
+  ar: 'مزرعة خيول على مئات الهكتارات داخل الغابة، بلا جيران، فيها منزلان جُدّدا بالكامل في عام 2024 مع مبانٍ ملحقة كثيرة، للبيع',
+};
+const titleOf = (locale, normal) => (process.env.FX_LONG_TITLE === '1' && LONG[locale]) || normal;
 const translations = [
-  translation('hu', 'Birtok a Balaton-felvidék csendjében', 'Kőfalú otthon, saját kút és tágas gazdasági épületek, négy hektárnyi zöld környezetben.', 'Gondosan felújított lakóház természetközeli környezetben.'),
-  translation('en', 'Estate in the quiet of the Balaton Uplands', 'A stone house with its own well and spacious outbuildings, set in four hectares of green.', 'A carefully renovated house in natural surroundings.'),
+  translation('hu', titleOf('hu', 'Birtok a Balaton-felvidék csendjében'), 'Kőfalú otthon, saját kút és tágas gazdasági épületek, négy hektárnyi zöld környezetben.', 'Gondosan felújított lakóház természetközeli környezetben.'),
+  translation('en', titleOf('en', 'Estate in the quiet of the Balaton Uplands'), 'A stone house with its own well and spacious outbuildings, set in four hectares of green.', 'A carefully renovated house in natural surroundings.'),
   translation('de', 'Anwesen in der Stille des Balaton-Hochlands', 'Ein Steinhaus mit eigenem Brunnen und großen Nebengebäuden auf vier Hektar Grün.', 'Ein sorgfältig renoviertes Haus in natürlicher Umgebung.'),
-  translation('ar', 'عقار هادئ في مرتفعات بحيرة بالاتون', 'منزل حجري مع بئر خاصة ومبانٍ ملحقة واسعة على أربعة هكتارات من الخضرة.', 'منزل مجدد بعناية في بيئة طبيعية.'),
+  translation('ar', titleOf('ar', 'عقار هادئ في مرتفعات بحيرة بالاتون'), 'منزل حجري مع بئر خاصة ومبانٍ ملحقة واسعة على أربعة هكتارات من الخضرة.', 'منزل مجدد بعناية في بيئة طبيعية.'),
   translation('he', 'אחוזה בשקט של רמות באלטון', 'בית אבן עם באר פרטית ומבני עזר מרווחים על ארבעה דונמים של ירוק.', 'בית שחודש בקפידה בסביבה טבעית.'),
 ];
 

@@ -410,20 +410,20 @@ export const TRANSLATION_LANGUAGES = ['nl', 'de', 'en', 'fr', 'es', 'pl', 'ro', 
  */
 export const TRANSLATION_PACKAGES = {
   singleEur: { european: 1, world: 5 },
-  worldOnly: ['tr', 'he', 'ar', 'zh', 'ru'],
+  worldOnly: ['uk', 'tr', 'he', 'ar', 'zh', 'ru'],
   packages: [
     {
       id: 'basic', priceEur: 0, rule: { include: ['hu', 'en', 'de'] }, recommended: false, active: true,
       names: { hu: 'Basic', en: 'Basic', nl: 'Basic' },
       badge: { hu: '', en: '', nl: '' },
       pitch: {
-        hu: 'Hirdetése magyarul, angolul és németül is megjelenik, automatikusan, felár nélkül. További európai nyelvek nyelvenként {singleEuropean} €-ért, a török, héber, arab, kínai és orosz nyelv nyelvenként {singleWorld} €-ért.',
-        en: 'Your listing appears in Hungarian, English and German automatically, at no extra cost. Add any other European language for €{singleEuropean} each, or Turkish, Hebrew, Arabic, Chinese or Russian for €{singleWorld} each.',
-        nl: 'Uw advertentie verschijnt automatisch in het Hongaars, Engels en Duits, zonder extra kosten. Elke andere Europese taal kost € {singleEuropean}; Turks, Hebreeuws, Arabisch, Chinees en Russisch kosten € {singleWorld} per taal.',
+        hu: 'Hirdetése magyarul, angolul és németül is megjelenik, automatikusan, felár nélkül. További európai nyelvek nyelvenként {singleEuropean} €-ért, az ukrán, török, héber, arab, kínai és orosz nyelv nyelvenként {singleWorld} €-ért.',
+        en: 'Your listing appears in Hungarian, English and German automatically, at no extra cost. Add any other European language for €{singleEuropean} each, or Ukrainian, Turkish, Hebrew, Arabic, Chinese or Russian for €{singleWorld} each.',
+        nl: 'Uw advertentie verschijnt automatisch in het Hongaars, Engels en Duits, zonder extra kosten. Elke andere Europese taal kost € {singleEuropean}; Oekraïens, Turks, Hebreeuws, Arabisch, Chinees en Russisch kosten € {singleWorld} per taal.',
       },
     },
     {
-      id: 'europe', priceEur: 12, rule: { excludeFromAll: ['tr', 'he', 'ar', 'zh', 'ru'] }, recommended: true, active: true,
+      id: 'europe', priceEur: 12, rule: { excludeFromAll: ['uk', 'tr', 'he', 'ar', 'zh', 'ru'] }, recommended: true, active: true,
       names: { hu: 'Európa', en: 'Europe', nl: 'Europa' },
       badge: { hu: 'Legnépszerűbb', en: 'Most popular', nl: 'Meest gekozen' },
       pitch: {
@@ -437,9 +437,9 @@ export const TRANSLATION_PACKAGES = {
       names: { hu: 'World', en: 'World', nl: 'World' },
       badge: { hu: 'Maximális elérés', en: 'Widest reach', nl: 'Maximaal bereik' },
       pitch: {
-        hu: 'A teljes világ, egyetlen döntéssel. Mind a {count} nyelven, köztük törökül, oroszul, arabul, héberül és kínaiul is, így az Európán kívüli vevők is elsőként az Ön ingatlanát látják. Egyenként a török, héber, arab, kínai és orosz nyelv önmagában {worldOnlySum} €, az Európa csomaggal együtt {europePlus} € lenne. A World mindezt és még az összes európai nyelvet {world} €-ért adja: a legnagyobb elérés, a legjobb ár nyelvenként, és nem kell nyelvenként döntenie.',
-        en: 'The whole world, in one decision. All {count} languages, including Turkish, Russian, Arabic, Hebrew and Chinese, so buyers from beyond Europe see your property first. Bought one by one, those five languages alone would cost €{worldOnlySum}, and €{europePlus} together with the Europe package; World gives you all of them plus every European language for €{world}. The widest reach, the lowest price per language, and nothing to decide language by language.',
-        nl: 'De hele wereld, in één beslissing. Alle {count} talen, ook Turks, Russisch, Arabisch, Hebreeuws en Chinees, zodat ook kopers van buiten Europa uw woning als eerste zien. Die vijf talen apart zouden € {worldOnlySum} kosten, samen met het pakket Europa € {europePlus}; World geeft u ze allemaal plus alle Europese talen voor € {world}. Het grootste bereik, de laagste prijs per taal en u hoeft niet per taal te kiezen.',
+        hu: 'A teljes világ, egyetlen döntéssel. Mind a {count} nyelven, köztük ukránul, törökül, oroszul, arabul, héberül és kínaiul is, így az Európán kívüli vevők is elsőként az Ön ingatlanát látják. Egyenként az ukrán, török, héber, arab, kínai és orosz nyelv önmagában {worldOnlySum} €, az Európa csomaggal együtt {europePlus} € lenne. A World mindezt és még az összes európai nyelvet {world} €-ért adja: a legnagyobb elérés, a legjobb ár nyelvenként, és nem kell nyelvenként döntenie.',
+        en: 'The whole world, in one decision. All {count} languages, including Ukrainian, Turkish, Russian, Arabic, Hebrew and Chinese, so buyers from beyond Europe see your property first. Bought one by one, those six languages alone would cost €{worldOnlySum}, and €{europePlus} together with the Europe package; World gives you all of them plus every European language for €{world}. The widest reach, the lowest price per language, and nothing to decide language by language.',
+        nl: 'De hele wereld, in één beslissing. Alle {count} talen, ook Oekraïens, Turks, Russisch, Arabisch, Hebreeuws en Chinees, zodat ook kopers van buiten Europa uw woning als eerste zien. Die zes talen apart zouden € {worldOnlySum} kosten, samen met het pakket Europa € {europePlus}; World geeft u ze allemaal plus alle Europese talen voor € {world}. Het grootste bereik, de laagste prijs per taal en u hoeft niet per taal te kiezen.',
       },
     },
   ],

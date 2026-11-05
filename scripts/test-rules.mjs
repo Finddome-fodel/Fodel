@@ -996,38 +996,51 @@ console.log('AI translation: the rules around the model');
   const tp = await import('../src/lib/translation-packages.ts');
   const ll = await import('../src/lib/listing-languages.ts');
   const companyCfg = await import('../src/config/company.ts');
-  const WORLD_ONLY = ['tr', 'he', 'ar', 'zh', 'ru'];
+  const WORLD_ONLY = ['uk', 'tr', 'he', 'ar', 'zh', 'ru'];
   // The site as it will be once the seven new languages are added: 28 in all.
   const T28 = [...LOCALES];
-  const T21 = LOCALES.filter((code) => !['sr', 'uk', ...WORLD_ONLY].includes(code));
+  const T21 = LOCALES.filter((code) => !['sr', ...WORLD_ONLY].includes(code));
   const pcfg = (stored) => tp.translationPricing(stored, companyCfg.TRANSLATION_PACKAGES, T28);
   const cfg0 = pcfg(undefined);
   const sel = (packageId, extraLocales = [], excludedLocales = []) => ({ packageId, extraLocales, excludedLocales, sourceLocale: 'hu' });
   const cents = (lines) => tp.translationTotalCents(lines);
 
+  test('one list of the languages outside Europe: the package rules, the single-language prices, the translator and the language switcher agree', async () => {
+    const core = await import('../src/lib/ai/translate-core.ts');
+    const fs = await import('node:fs');
+    const switcher = fs.readFileSync(new URL('../src/components/LanguageSwitcher.astro', import.meta.url), 'utf8');
+    const listed = (/const WORLD: readonly Locale\[\] = \[([^\]]*)\]/.exec(switcher)?.[1] ?? '').split(',').map((code) => code.trim().replace(/'/g, '')).filter(Boolean);
+    assert.deepEqual([...listed].sort(), [...WORLD_ONLY].sort(), 'LanguageSwitcher.astro WORLD');
+    assert.deepEqual([...core.WORLD_ONLY_LOCALES].sort(), [...WORLD_ONLY].sort(), 'translate-core WORLD_ONLY_LOCALES');
+    assert.deepEqual([...companyCfg.TRANSLATION_PACKAGES.worldOnly].sort(), [...WORLD_ONLY].sort(), 'company.ts worldOnly');
+    assert.deepEqual([...companyCfg.TRANSLATION_PACKAGES.packages.find((p) => p.id === 'europe').rule.excludeFromAll].sort(), [...WORLD_ONLY].sort(), 'Európa rule');
+    assert.deepEqual(core.localeGroups(LOCALES).world.slice().sort(), [...WORLD_ONLY].sort());
+    assert.equal(core.localeGroups(LOCALES).europe.includes('uk'), false, 'Ukrainian is in the World group');
+  });
+
   test('the packages are rules: Go is English and German, Európa is everything but the World-only languages, World is everything', () => {
     const [go, europe, world] = ['basic', 'europe', 'world'].map((id) => tp.packageById(cfg0, id));
     assert.deepEqual(tp.packageLocales(go, T28), ['hu', 'en', 'de'], 'Basic: Hungarian, English, German (Q3); the original is taken off per listing');
-    assert.equal(tp.packageLocales(europe, T28).length, 23, 'Európa: 28 languages minus the five World-only ones, the original included');
+    assert.equal(tp.packageLocales(europe, T28).length, 22, 'Európa: 28 languages minus the six World-only ones, the original included');
     assert.equal(WORLD_ONLY.some((code) => tp.packageLocales(europe, T28).includes(code)), false);
     assert.equal(tp.packageLocales(world, T28).length, 28);
     // The count a card shows is the original language included, and counts it once.
-    assert.deepEqual([go, europe, world].map((p) => tp.packageLanguageCount(p, T28)), [3, 23, 28]);
+    assert.deepEqual([go, europe, world].map((p) => tp.packageLanguageCount(p, T28)), [3, 22, 28]);
     // Without the new languages the same rules still hold: a language added later joins by itself.
     assert.deepEqual([go, europe, world].map((p) => tp.packageLanguageCount(p, T21)), [3, 21, 21]);
-    assert.equal(tp.packageLocales(europe, T28).includes('sr') && tp.packageLocales(europe, T28).includes('uk'), true, 'sr and uk are in Európa by the rule (open question 1)');
+    assert.equal(tp.packageLocales(europe, T28).includes('sr') && !tp.packageLocales(europe, T28).includes('uk'), true, 'sr is in Európa, uk is World-only (Ukrainian moved to World, 2026-11-05)');
   });
 
-  test('with all 28 languages a World listing is entitled to 27 targets, an Európa one to 22 (sr and uk among them), the original never', () => {
+  test('with all 28 languages a World listing is entitled to 27 targets, an Európa one to 21 (sr among them, uk not), the original never', () => {
     const own = (translationPackage) => ({ translationPackage, sourceLocale: 'hu' });
     const world27 = tp.entitledLocales(own('world'), cfg0, T28);
     const europe22 = tp.entitledLocales(own('europe'), cfg0, T28);
     assert.equal(world27.length, 27);
     assert.equal(world27.includes('hu'), false);
     for (const code of ['sr', 'uk', 'tr', 'he', 'ar', 'ru', 'zh']) assert.ok(world27.includes(code), `World has ${code}`);
-    assert.equal(europe22.length, 22);
-    assert.ok(europe22.includes('sr') && europe22.includes('uk'));
-    for (const code of ['tr', 'he', 'ar', 'ru', 'zh']) assert.equal(europe22.includes(code), false, `Európa has no ${code}`);
+    assert.equal(europe22.length, 21);
+    assert.ok(europe22.includes('sr'));
+    for (const code of ['uk', 'tr', 'he', 'ar', 'ru', 'zh']) assert.equal(europe22.includes(code), false, `Európa has no ${code}`);
   });
 
   test('English is in every package, even a hand-made list without it, and can never be switched off', () => {
@@ -1054,11 +1067,11 @@ console.log('AI translation: the rules around the model');
     assert.deepEqual(tp.packageLocales(tp.packageById(cfg0, 'europe'), T28).includes('hu'), true, 'for a Dutch seller Hungarian is a target');
   });
 
-  test('prices: Go + fr + es + ar = €7, Európa + tr + ru = €22, five World-only singles = €25, Európa + five = €37', () => {
+  test('prices: Go + fr + es + ar = €7, Európa + tr + ru = €22, six World-only singles = €30, Európa + six = €42', () => {
     assert.equal(cents(tp.translationLines(sel('basic', ['fr', 'es', 'ar']), cfg0, 'hu', T28)), 700);
     assert.equal(cents(tp.translationLines(sel('europe', ['tr', 'ru']), cfg0, 'hu', T28)), 2200);
-    assert.equal(cents(tp.translationLines(sel('basic', WORLD_ONLY), cfg0, 'hu', T28)), 2500);
-    assert.equal(cents(tp.translationLines(sel('europe', WORLD_ONLY), cfg0, 'hu', T28)), 3700);
+    assert.equal(cents(tp.translationLines(sel('basic', WORLD_ONLY), cfg0, 'hu', T28)), 3000);
+    assert.equal(cents(tp.translationLines(sel('europe', WORLD_ONLY), cfg0, 'hu', T28)), 4200);
     assert.equal(cents(tp.translationLines(sel('world'), cfg0, 'hu', T28)), 2500);
     assert.equal(cents(tp.translationLines(sel('basic'), cfg0, 'hu', T28)), 0);
     assert.deepEqual(tp.translationLines(sel('basic'), cfg0, 'hu', T28), [], 'Go has no line');
@@ -1074,7 +1087,7 @@ console.log('AI translation: the rules around the model');
     assert.equal(pkg.locales.includes('de') || pkg.locales.includes('sr'), false, 'the line lists what stays on');
     assert.equal(pkg.locales.includes('en'), true);
     assert.equal(pkg.locales.includes('hu'), false, 'the original is not a translation');
-    assert.match(pkg.label, /Európa \(21 nyelv, 2 kizárva\)/);
+    assert.match(pkg.label, /Európa \(20 nyelv, 2 kizárva\)/);
     assert.equal(cents(lines), cents(tp.translationLines(sel('europe', ['tr', 'ru']), cfg0, 'hu', T28)), 'the same total as with nothing switched off');
     assert.deepEqual(lines[1].locales, ['tr', 'ru']);
     assert.equal(tp.translationLines(sel('basic', ['fr', 'ar']), cfg0, 'en', T28).map((l) => l.id).join(), 'translation,translation-world');
@@ -1095,7 +1108,7 @@ console.log('AI translation: the rules around the model');
     const hint = (packageId, extras) => tp.cheaperPackageHint(sel(packageId, extras), cfg0, T28);
     assert.equal(hint('europe', ['tr', 'ru', 'ar']), 'world', 'Európa + three World-only = €27 > World €25');
     assert.equal(hint('basic', ['fr', 'es', 'it', 'pt', 'pl', 'ro', 'sk', 'el', 'cs', 'sl', 'sv', 'da']), 'europe', 'Go + 12 European singles = €12 = Európa');
-    assert.equal(hint('basic', WORLD_ONLY), 'world', 'Go + five World-only = €25 = World, which adds every European language');
+    assert.equal(hint('basic', WORLD_ONLY), 'world', 'Go + six World-only = €30 > World €25, which adds every European language');
     assert.equal(hint('basic', ['tr', 'ru']), null);
     assert.equal(hint('europe', ['tr', 'ru']), null, 'Európa + two = €22 < World');
     assert.equal(hint('basic', ['fr']), null);
@@ -1104,8 +1117,8 @@ console.log('AI translation: the rules around the model');
   });
 
   test('the World deal is checked: it stays obvious only while World costs no more than Európa plus every World-only language', () => {
-    assert.deepEqual(tp.worldDeal(cfg0), { ok: true, europePlusSingles: 37, worldOnlySum: 25, world: 25, europe: 12 });
-    assert.equal(tp.worldDeal(pcfg({ packages: [{ id: 'world', priceEur: 40 }] })).ok, false);
+    assert.deepEqual(tp.worldDeal(cfg0), { ok: true, europePlusSingles: 42, worldOnlySum: 30, world: 25, europe: 12 });
+    assert.equal(tp.worldDeal(pcfg({ packages: [{ id: 'world', priceEur: 50 }] })).ok, false);
     assert.equal(tp.worldDeal(pcfg({ singleEur: { world: 1 } })).ok, false, 'cheap World-only singles make Európa + singles cheaper');
   });
 
@@ -1133,10 +1146,11 @@ console.log('AI translation: the rules around the model');
     const text = tp.renderPitch(world, 'hu', cfg0, T28);
     assert.match(text, /28 nyelven/);
     assert.match(text, /25 €/);
-    assert.match(text, /37 €/);
+    assert.match(text, /30 €/);
+    assert.match(text, /42 €/);
     assert.doesNotMatch(text, /\{\w+\}/);
     const dearer = pcfg({ packages: [{ id: 'europe', priceEur: 15 }], singleEur: { world: 6 } });
-    assert.match(tp.renderPitch(tp.packageById(dearer, 'world'), 'hu', dearer, T28), /45 €/, 'Európa 15 + five at 6 = 45');
+    assert.match(tp.renderPitch(tp.packageById(dearer, 'world'), 'hu', dearer, T28), /51 €/, 'Európa 15 + six at 6 = 51');
     assert.match(tp.renderPitch(tp.packageById(cfg0, 'basic'), 'en', cfg0, T28), /€1 each.*€5 each/);
   });
 
@@ -1205,7 +1219,7 @@ console.log('AI translation: the rules around the model');
     const items = inv.invoiceCatalogue();
     const lines = orders.buildOrderLines({ packageId: 'normal-12m', extras: [], translation: { packageId: 'europe', excludedLocales: ['pl'] } }, 'hu');
     const pkgInvoice = inv.invoiceLineFromOrder(lines.find((l) => l.id === 'translation-package'), items);
-    assert.match(pkgInvoice.description, /Európa \(22 nyelv, 1 kizárva\)/);
+    assert.match(pkgInvoice.description, /Európa \(21 nyelv, 1 kizárva\)/);
     assert.match(pkgInvoice.description, /A csomag ára nem változik, ha egyes nyelveket kizár\./);
     assert.match(pkgInvoice.descriptionNl, /De prijs van het pakket blijft gelijk/);
     assert.equal(pkgInvoice.unitCents, 1200);
@@ -1225,7 +1239,7 @@ console.log('AI translation: the rules around the model');
     assert.equal(line.unitCents, 1200);
     assert.equal(line.locales.includes('de'), false);
     assert.equal(line.locales.includes('en'), true);
-    assert.equal(line.locales.length, 21, 'Európa is 22 translation targets (28 languages, minus the five World-only ones and Hungarian), German switched off');
+    assert.equal(line.locales.length, 20, 'Európa is 21 translation targets (28 languages, minus the six World-only ones and Hungarian), German switched off');
     assert.deepEqual(paid.translationPurchaseOf(lines), { packageId: 'europe', singles: [], packageLocalesPaid: line.locales, excludedAtOrder: ['de'] });
     assert.deepEqual(paid.translationLocalesOf(lines), line.locales);
     assert.equal(paid.isTranslationOrder(lines.filter((l) => l.id === 'translation-package')), true);

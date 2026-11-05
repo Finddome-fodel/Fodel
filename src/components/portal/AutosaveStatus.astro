@@ -1,0 +1,89 @@
+---
+/**
+ * The line that says whether what a person typed is safe. Calm in every state: a green check when the server
+ * holds everything, a quiet ring while saving, amber (never red) when the connection is down and the browser is
+ * keeping the text. src/lib/portal/autosave-client.ts drives it; without script it simply says "saved".
+ */
+interface Props {
+  /** The words for the resting state, in the page's language. */
+  saved: string;
+  /** The page's own hook, so a page can place it and style its surroundings. */
+  hook?: string;
+  retry: string;
+}
+const { saved, hook = 'autosave', retry } = Astro.props;
+---
+
+<div class="as" data-autosave-status data-hook={hook} data-state="saved">
+  <span class="as-icon" aria-hidden="true">
+    <svg class="as-check" viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3.2 8.4 6.6 11.6 12.8 4.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    <span class="as-ring"></span>
+    <span class="as-dot"></span>
+  </span>
+  <span class="as-text" aria-hidden="true">
+    <span class="as-main" data-as-main>{saved}</span>
+    <span class="as-detail" data-as-detail hidden></span>
+  </span>
+  <button type="button" class="as-retry" data-as-retry hidden>{retry}</button>
+  <span class="sr-only" role="status" aria-live="polite" data-as-live></span>
+</div>
+
+<style>
+  .as {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--ink-quiet);
+  }
+  .as-icon {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(31, 111, 74, 0.12);
+    color: var(--pt-green);
+    transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+  }
+  .as-check, .as-ring, .as-dot { grid-area: 1 / 1; transition: opacity 0.2s var(--ease-out); }
+  .as-ring, .as-dot { opacity: 0; }
+  .as-ring { width: 12px; height: 12px; border-radius: 50%; border: 2px solid currentColor; border-inline-end-color: transparent; }
+  .as-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .as-text { display: grid; min-width: 0; }
+  .as-main { color: var(--ink); }
+  .as-detail { font-size: 12.5px; color: var(--ink-quiet); }
+  .as-retry {
+    flex: none;
+    min-height: 32px;
+    padding: 0 14px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--pt-hair);
+    background: var(--paper, #fff);
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .as-retry:hover { border-color: var(--ink); }
+  .as-retry:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .as[data-state='dirty'] .as-icon { background: rgba(16, 42, 67, 0.07); color: var(--ink-quiet); }
+  .as[data-state='dirty'] .as-check, .as[data-state='saving'] .as-check, .as[data-state='retrying'] .as-check, .as[data-state='rejected'] .as-check { opacity: 0; }
+  .as[data-state='dirty'] .as-dot { opacity: 1; }
+  .as[data-state='saving'] .as-icon { background: rgba(16, 42, 67, 0.07); color: var(--ink); }
+  .as[data-state='saving'] .as-ring { opacity: 1; animation: as-spin 0.9s linear infinite; }
+  .as[data-state='retrying'] .as-icon, .as[data-state='rejected'] .as-icon { background: var(--pt-amber-bg); color: var(--pt-amber); }
+  .as[data-state='retrying'] .as-dot, .as[data-state='rejected'] .as-dot { opacity: 1; }
+  .as[data-state='retrying'], .as[data-state='rejected'] { align-items: flex-start; }
+  .as[data-state='retrying'] .as-icon, .as[data-state='rejected'] .as-icon { margin-top: 1px; }
+
+  @keyframes as-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .as[data-state='saving'] .as-ring { animation: none; border-inline-end-color: currentColor; opacity: 0.6; }
+  }
+</style>

@@ -644,7 +644,7 @@ console.log('✓ 0053: repeatable; the backfill keeps every language; English ca
   const { listedIn } = await import('../src/lib/listing-languages.ts');
   const { packageLocales } = await import('../src/lib/translation-packages.ts');
   const { LOCALES } = await import('../src/i18n/ui.ts');
-  const worldOnly = ['tr', 'he', 'ar', 'zh', 'ru'];
+  const worldOnly = ['uk', 'tr', 'he', 'ar', 'zh', 'ru'];
   const cfg = { worldOnly, singleEur: { european: 1, world: 5 }, packages: [
     { id: 'basic', rule: { include: ['hu', 'en', 'de'] }, active: true }, { id: 'europe', rule: { excludeFromAll: worldOnly }, active: true }, { id: 'world', rule: {}, active: true } ] };
   const packagesFor = (locale) => cfg.packages.filter((pkg) => packageLocales(pkg, LOCALES).includes(locale)).map((pkg) => pkg.id);
