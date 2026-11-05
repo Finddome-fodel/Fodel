@@ -142,6 +142,11 @@ test('the switcher groups Europe and the rest of the world, and its search narro
   await toggle.click();
   await expect(root).toHaveAttribute('data-open', '');
   await expect(root.locator('a[data-lang]')).toHaveCount(LOCALES.length);
+  // The six languages outside Europe (Ukrainian among them) sit in the World group, everything else in Europe.
+  const inWorld = await root.locator('[data-group="world"] a[data-lang]').evaluateAll((links) => links.map((link) => link.getAttribute('data-lang')).sort());
+  expect(inWorld).toEqual(['ar', 'he', 'ru', 'tr', 'uk', 'zh']);
+  await expect(root.locator('[data-group="europe"] a[data-lang="uk"]')).toHaveCount(0);
+  await expect(root.locator('[data-group="europe"] a[data-lang="sr"]')).toHaveCount(1);
   const search = root.locator('input[type="search"]');
   await expect(search).toBeVisible();
   // Native name, English name and code all find a language.

@@ -40,7 +40,7 @@ const x = localizer(locale);
 const switchLabel = UI[locale].a11y.langSwitch;
 
 /** Languages outside Europe: shown as their own group, in their own scripts. */
-const WORLD: readonly Locale[] = ['tr', 'he', 'ar', 'ru', 'zh'];
+const WORLD: readonly Locale[] = ['uk', 'tr', 'he', 'ar', 'ru', 'zh'];
 const byName = new Intl.Collator('en', { sensitivity: 'base' });
 const sorted = (codes: Locale[]) => codes.sort((a, b) => byName.compare(LOCALE_META[a].label, LOCALE_META[b].label));
 const codes = SWITCHER_LOCALES.map(({ code }) => code).filter((code) => !available || available.includes(code));

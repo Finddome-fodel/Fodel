@@ -119,8 +119,8 @@ try {
     assert.equal(off.locales.includes('fr'), false);
     assert.equal(off.locales.includes('hu'), false, 'the original language is not a translation');
     assert.equal(off.locales.includes('en'), true);
-    assert.equal(off.locales.includes('sr') && off.locales.includes('uk'), true, 'Europe includes sr and uk (Q3)');
-    assert.equal(off.locales.includes('ar') || off.locales.includes('zh'), false, 'Europe does not include the World-only languages');
+    assert.equal(off.locales.includes('sr') && !off.locales.includes('uk'), true, 'Europe includes sr; uk moved to World');
+    assert.equal(off.locales.includes('ar') || off.locales.includes('zh') || off.locales.includes('uk'), false, 'Europe does not include the World-only languages');
     const world = pkgLine(build({ packageId: 'world', months: 6, priceHuf: 1 }));
     assert.equal(world.locales.length, 27);
     const basic = pkgLine(build({ packageId: 'basic', months: 6, priceHuf: 1 }));
