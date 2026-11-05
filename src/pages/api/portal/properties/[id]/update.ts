@@ -12,7 +12,12 @@
  * too, one step at a time — a form carrying `step` updates only that step's
  * fields and answers in JSON, so "Continue" and autosave-on-blur can never
  * blank a field from another step. Without `step` this is the full editor's
- * save, unchanged.
+ * save: a normal form post answers with a redirect.
+ *
+ * `autosave=yes` is the full editor saving by itself while the person works (src/lib/portal/autosave.ts): the same
+ * rules and the same write, but answered in JSON, tolerant of a form that is not finished yet (a draft keeps what
+ * was there, like the guided setup's partial save), and only for a listing still in the owner's hands. A refusal
+ * is a 422 with a sentence; nothing is half-written because the rpc below is one transaction.
  */
 import type { APIRoute } from 'astro';
 import { portalLang } from '~/lib/portal/auth-copy';
@@ -21,7 +26,7 @@ import { LIMITS, TARGET_LIMITS, pickSource } from '~/lib/ai/translate-core';
 import { getProperty } from '~/lib/portal/properties';
 import { readPriceRounding } from '~/lib/exchange-rates';
 import { listingInput, ListingInputError, contactLanguages } from '~/lib/portal/listing-input';
-import { HEARD_FROM_KEYS } from '~/lib/listing-details';
+import { HEARD_FROM_KEYS, GAP_LABELS } from '~/lib/listing-details';
 import { logEvent } from '~/lib/activity';
 import { normalizePhone, isPhoneCountry } from '~/lib/validation';
 import { contactDisplayPatch } from '~/lib/contact-display';
@@ -33,6 +38,14 @@ import { guardContacts } from '~/lib/portal/contact-guard';
 import { errorMessage } from '~/lib/validation-server';
 
 import { saveSetupStep, SETUP_STEPS, type SetupStep } from '~/lib/portal/setup';
+import { canAutosave } from '~/lib/portal/autosave-rules';
+
+/** Field names as a person knows them, for the autosave's refusals (the form's own error line keeps the raw names). */
+const FIELD_HU: Record<string, string> = {
+  country: 'Ország', county: 'Megye', lat: 'Szélesség', lng: 'Hosszúság', original_price: 'Ár', original_currency: 'Pénznem',
+  property_group: 'Az ingatlan típusa', property_subtype: 'Altípus', renovated_in: 'Felújítás éve', video_url: 'Videó linkje',
+  features: 'Jellemzők', settings: 'Környezet', heating: 'Fűtés', walls: 'Falazat',
+};
 
 /** Field names in the editor's error line (free listings' contact check). */
 const CONTACT_FIELD_HU: Record<string, string> = { title: 'Hirdetés címe', description: 'Rövid leírás', body: 'Részletes leírás', street: 'Az ingatlan címe', region: 'További területi egység' };
@@ -59,21 +72,27 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
 
   const back = (query: string) => redirect(`/portal/properties/${id}?${query}`);
   const step = String(form.get('step') ?? '');
+  const autosave = !step && form.get('autosave') === 'yes';
+  /** A refusal: the editor's redirect with the sentence, or (autosave) the same sentence in JSON. */
+  const refuse = (message: string) => (autosave ? Response.json({ ok: false, message }, { status: 422 }) : back('error=' + encodeURIComponent(message)));
 
   const { data: existing, error: fetchError } = await supabase
     .from('properties')
     .select('id, owner_id, status, package, free_listing, country')
     .eq('id', id)
     .maybeSingle();
-  if (fetchError || !existing) return back('error=not-found');
+  if (fetchError || !existing) return autosave ? Response.json({ ok: false, error: 'not-found' }, { status: 404 }) : back('error=not-found');
 
   const isAdmin = profile?.role === 'admin';
   const isOwner = existing.owner_id === user?.id;
-  if (!isAdmin && !isOwner) return back('error=forbidden');
+  if (!isAdmin && !isOwner) return autosave ? Response.json({ ok: false, error: 'forbidden' }, { status: 403 }) : back('error=forbidden');
   if (!isAdmin && !['draft', 'changes_requested'].includes(existing.status)) {
-    if (step) return Response.json({ ok: false, error: 'not-editable' }, { status: 409 });
+    if (step || autosave) return Response.json({ ok: false, error: 'not-editable' }, { status: 409 });
     return back('error=' + encodeURIComponent('ez a hirdetés jelenleg nem szerkeszthető'));
   }
+
+  // A listing that is live, waiting or paid for is changed only by a deliberate save, never in the background.
+  if (autosave && !canAutosave(existing.status)) return Response.json({ ok: false, error: 'not-autosaved' }, { status: 409 });
 
   // One step of the guided setup: only that step's fields, answered in JSON.
   if (step) {
@@ -95,15 +114,15 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   }
 
   const current = await getProperty(supabase,id!);
-  if (!current) return back('error=not-found');
+  if (!current) return autosave ? Response.json({ ok: false, error: 'not-found' }, { status: 404 }) : back('error=not-found');
   const taxonomy = await getTaxonomy();
   let values: Awaited<ReturnType<typeof listingInput>>;
-  try { values = await listingInput(form,current,taxonomy,{rounding:readPriceRounding((await getCompany()).services.priceRounding)}); }
+  try { values = await listingInput(form,current,taxonomy,{allowIncomplete:autosave,rounding:readPriceRounding((await getCompany()).services.priceRounding)}); }
   catch(error) {
     const message = error instanceof ListingInputError && error.message === 'rates-unavailable'
       ? 'Az árfolyam most nem érhető el. Próbálja újra később; a korábbi adatok változatlanul megmaradtak.'
-      : error instanceof ListingInputError ? 'Ellenőrizze ezeket a mezőket: ' + Object.keys(error.errors).join(', ') : 'Nem sikerült menteni.';
-    return back('error=' + encodeURIComponent(message));
+      : error instanceof ListingInputError ? 'Ellenőrizze ezeket a mezőket: ' + Object.keys(error.errors).map((key) => (autosave ? FIELD_HU[key] ?? (GAP_LABELS.hu as Record<string, string>)?.[key] ?? key : key)).join(', ') + (autosave ? '.' : '') : 'Nem sikerült menteni.';
+    return refuse(message);
   }
   const withoutHomepage=(value:unknown)=>{const {homepageHighlight:_drop,...rest}=(value&&typeof value==='object'?value:{}) as Record<string,unknown>;return rest;};
   const patch: Record<string,unknown> = {...values.patch,
@@ -116,7 +135,7 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     topic_highlight_requested:form.get('topic_highlight_requested')==='yes',
     ...(isAdmin?{featured:form.get('featured')==='yes',homepage_featured:form.get('homepage_featured')==='yes',topic_featured:form.get('topic_featured')==='yes',...contactDisplayPatch(form)}:{}),
   };
-  if(!isAdmin && values.patch.video_url && packageOf(listingCatalog((await getCompany()).services),existing.package).video==='none') return back('error='+encodeURIComponent('A választott csomag nem tartalmaz videót.'));
+  if(!isAdmin && values.patch.video_url && packageOf(listingCatalog((await getCompany()).services),existing.package).video==='none') return refuse('A választott csomag nem tartalmaz videót.');
   // Free listings: no contact details in any public text (§5.2). Paid listings are not checked.
   const textFields:Record<string,string>={};
   for(const {value:locale} of LOCALE_OPTIONS)for(const field of ['title','description','body'])if(form.has(`${field}_${locale}`))textFields[`${field}_${locale}`]=prose(form,`${field}_${locale}`);
@@ -124,16 +143,17 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
   const contacts=await guardContacts(form,textFields,{free:existing.free_listing,isAdmin,propertyId:id!,actor:{id:user?.id??null,email:profile?.email??null},source:'portal'});
   if(!contacts.ok){
     const [field,error]=Object.entries(contacts.errors)[0];
-    return back('error='+encodeURIComponent(`${CONTACT_FIELD_HU[field.replace(/_[a-z]{2}$/,'')]??field}${/_[a-z]{2}$/.test(field)?` (${field.slice(-2).toUpperCase()})`:''}: ${errorMessage(error,'hu')}${isAdmin?' Ha szándékosan hagyja benne, jelölje be: „Tudatosan benne hagyom”.':''}`)+'&contact_field='+encodeURIComponent(field));
+    const contactMessage=`${CONTACT_FIELD_HU[field.replace(/_[a-z]{2}$/,'')]??field}${/_[a-z]{2}$/.test(field)?` (${field.slice(-2).toUpperCase()})`:''}: ${errorMessage(error,'hu')}${isAdmin?' Ha szándékosan hagyja benne, jelölje be: „Tudatosan benne hagyom”.':''}`;
+    return autosave?refuse(contactMessage):back('error='+encodeURIComponent(contactMessage)+'&contact_field='+encodeURIComponent(field));
   }
   const translations=[];
   // The text a person wrote holds to LIMITS.title; a translation may be longer (translate-core.ts TARGET_LIMITS).
   const sourceLocale=pickSource(current.translations)?.locale??'hu';
   for(const {value:locale,label} of LOCALE_OPTIONS){
     const title=prose(form,`title_${locale}`),description=prose(form,`description_${locale}`);
-    if(locale==='hu'&&(!title||!description))return back('error='+encodeURIComponent('A magyar cím és rövid leírás kötelező.'));
+    if(locale==='hu'&&(!title||!description)&&!autosave)return refuse('A magyar cím és rövid leírás kötelező.');
     const titleLimit=locale===sourceLocale?LIMITS.title:TARGET_LIMITS.title;
-    if(title.length>titleLimit)return back('error='+encodeURIComponent(`A cím legfeljebb ${titleLimit} karakter lehet (${label.replace(/ \(kötelező\)$/,'')}: ${title.length} karakter). Rövidítse a címet; a mentés most nem történt meg.`));
+    if(title.length>titleLimit)return refuse(`A cím legfeljebb ${titleLimit} karakter lehet (${label.replace(/ \(kötelező\)$/,'')}: ${title.length} karakter). Rövidítse a címet; a mentés most nem történt meg.`);
     // Existing translations and legacy optional copy survive an empty/unoffered locale.
     if(title||description)translations.push({locale,title:title||description.slice(0,60),description:description.slice(0,6000),body:prose(form,`body_${locale}`).slice(0,30000)});
   }
@@ -141,8 +161,8 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     p_id:id,p_patch:patch,p_private:{...values.privateData,internal_note:str(form,'internal_note').slice(0,10000),...(form.has('heard_from')?{heard_from:HEARD_FROM_KEYS.includes(str(form,'heard_from'))?str(form,'heard_from'):''}:{})},p_translations:translations,
   });
   if(updateError){console.error('[update] save_listing_editor failed',id,updateError.message);}
-  if(updateError)return back('error='+encodeURIComponent(friendlyError(updateError.message)));
-  if(!(await syncDutchAgent(supabase,{id:id!,owner_id:existing.owner_id,status:existing.status},form.get('dutch_agent_requested')==='yes')))return back('error='+encodeURIComponent('Nem sikerült menteni.'));
+  if(updateError)return refuse(friendlyError(updateError.message));
+  if(!(await syncDutchAgent(supabase,{id:id!,owner_id:existing.owner_id,status:existing.status},form.get('dutch_agent_requested')==='yes')))return refuse('Nem sikerült menteni.');
 
   await logEvent({
     kind: 'listing.edited',
@@ -153,6 +173,12 @@ export const POST: APIRoute = async ({ request, params, locals, redirect }) => {
     propertyId: id ?? null,
     source: 'portal',
   }).catch(() => {});
+
+  // The autosave answers with the listing's new last-change time: the base the next browser backup starts from.
+  if (autosave) {
+    const { data: changed } = await supabase.from('properties').select('updated_at').eq('id', id).maybeSingle();
+    return Response.json({ ok: true, updatedAt: (changed as { updated_at?: string } | null)?.updated_at ?? null });
+  }
 
   // "Continue to the review page" saves first; the editor then moves on by itself.
   return back(form.get('next') === 'review' ? 'saved=1&next=review' : 'saved=1');

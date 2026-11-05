@@ -43,6 +43,7 @@
     "test:contacts": "node --no-warnings scripts/test-contact-detect.mjs",
     "local:prepare": "python3 scripts/local-workspace.py",
     "test:share": "node --no-warnings scripts/test-share.mjs",
+    "test:autosave": "node --no-warnings scripts/test-autosave.mjs",
     "test:title-fit": "node --no-warnings scripts/test-title-fit.mjs"
   },
   "dependencies": {

@@ -46,6 +46,8 @@ export type PortalMedia = {
 
 export type PortalProperty = {
   id: string;
+  /** The listing's last change (the base of an autosave backup). */
+  updated_at?: string;
   ref: string;
   owner_id: string | null;
   status: string;

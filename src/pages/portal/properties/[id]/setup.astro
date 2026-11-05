@@ -26,6 +26,8 @@ export const prerender = false;
 import Portal from '~/layouts/Portal.astro';
 import Logo from '~/components/Logo.astro';
 import ArrowChip from '~/components/ArrowChip.astro';
+import AutosaveStatus from '~/components/portal/AutosaveStatus.astro';
+import { AUTOSAVE_COPY } from '~/lib/portal/autosave-client';
 import PackageCard from '~/components/PackageCard.astro';
 import OnsiteServiceChoice from '~/components/OnsiteServiceChoice.astro';
 import DutchAgentChoice from '~/components/DutchAgentChoice.astro';
@@ -154,6 +156,7 @@ const strings = {
     data-setup
     data-property-id={property.id}
     data-lang={lang}
+    data-updated-at={property.updated_at ?? undefined}
     data-steps={STEPS.join(',')}
     data-free={free ? 'yes' : undefined}
     data-country={property.country ?? ''}
@@ -389,7 +392,10 @@ const strings = {
 
     <nav class="su-nav" aria-label={t.title}>
       <button type="button" class="su-back" data-back>{t.back}</button>
-      <p class="su-saved" role="status" data-save-status></p>
+      <div class="su-savewrap">
+        <AutosaveStatus saved={AUTOSAVE_COPY[lang].saved} retry={AUTOSAVE_COPY[lang].retry} />
+        <p class="su-saved" role="status" data-save-status></p>
+      </div>
       <button type="button" class="su-btn" data-next>
         <span data-next-label>{t.next}</span>
         <ArrowChip size={32} />
@@ -404,6 +410,7 @@ const strings = {
 
 <script>
   import { formGaps, gapControl } from '~/lib/listing-details';
+  import { AUTOSAVE_COPY, bindForm, postSnapshot, snapshotOf, statusLine } from '~/lib/portal/autosave-client';
   import { priceEurFor, type PriceTier } from '~/lib/price-tiers';
 
   type Pricing = {
@@ -570,42 +577,63 @@ const strings = {
 
   /* ── Saving ────────────────────────────────────────────────────────── */
 
+  /** The explicit save („Tovább”): strict, with the server's reasons shown on the fields. The quiet kind is the autosave's. */
   async function saveNow(step: string, quiet = false): Promise<boolean> {
     const f = form(step);
     if (!f) return true;
+    const sent = snapshotOf(f);
     const body = new FormData(f);
     body.set('step', step);
     if(quiet)body.set('partial','yes');
-    if (!quiet) saveStatus.textContent = s.saving;
+    if (!quiet) saveStatus.textContent = '';
     try {
       const res = await fetch(`/api/portal/properties/${id}/update`, { method: 'POST', headers: { Accept: 'application/json' }, body });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) {
         if (!quiet && json.errors) await showServerErrors(f, json.errors);
-        saveStatus.textContent = s.saveFailed;
+        if (!quiet) saveStatus.textContent = s.saveFailed;
         return false;
       }
-      saveStatus.textContent = s.saved;
+      saveStatus.textContent = '';
+      // The server now holds exactly what was sent: the autosave need not send it again.
+      controllers.get(step)?.autosave.adopt(() => sent);
       return true;
     } catch {
-      saveStatus.textContent = s.saveFailed;
+      if (!quiet) saveStatus.textContent = s.saveFailed;
       return false;
     }
   }
 
-  const queuedSaves=new Map<string,Promise<boolean>>();
-  const save=(step:string,quiet=false)=>{const previous=queuedSaves.get(step)||Promise.resolve(true);const next=previous.then(()=>saveNow(step,quiet),()=>saveNow(step,quiet));queuedSaves.set(step,next);return next;};
+  /** One request at a time per step, whoever asks (the explicit save or the autosave): a later save never overtakes an earlier one. */
+  const queuedSaves = new Map<string, Promise<unknown>>();
+  const enqueue = <T,>(step: string, job: () => Promise<T>): Promise<T> => {
+    const next = (queuedSaves.get(step) ?? Promise.resolve()).then(job, job);
+    queuedSaves.set(step, next);
+    return next;
+  };
+  const save = (step: string, quiet = false) => enqueue(step, () => saveNow(step, quiet));
 
-  // Autosave when a field is left — quietly, and only once something changed.
-  let pending: number | undefined;
+  // Autosave: shortly after typing stops, when a field is left, when the tab is hidden, again by itself if the
+  // connection drops; the browser keeps a copy meanwhile (src/lib/portal/autosave.ts).
+  const copy = AUTOSAVE_COPY[lang];
+  const line = statusLine(root.querySelector<HTMLElement>('[data-autosave-status]')!, copy, lang, () => controllers.forEach((c) => c.autosave.retryNow()));
+  const controllers = new Map<string, ReturnType<typeof bindForm>>();
   root.querySelectorAll<HTMLFormElement>('[data-step-form]').forEach((f) => {
+    const step = f.dataset.stepForm!;
     f.addEventListener('input', () => void revalidateShown(f));
-    f.addEventListener('change', () => {
-      void revalidateShown(f);
-      window.clearTimeout(pending);
-      pending = window.setTimeout(() => void save(f.dataset.stepForm!, true), 400);
-    });
+    f.addEventListener('change', () => void revalidateShown(f));
     f.addEventListener('submit', (e) => e.preventDefault());
+    controllers.set(step, bindForm({
+      form: f,
+      storageKey: `fodel:autosave:setup:${id}:${step}`,
+      // Each step writes only its own fields, so a save from another step never conflicts with this step's backup.
+      base: root.dataset.updatedAt ?? null,
+      disjoint: true,
+      copy,
+      report: (state) => line.report(step, state),
+      notice: (element) => f.prepend(element),
+      send: (snapshot, keepalive) => enqueue(step, () => postSnapshot(`/api/portal/properties/${id}/update`, snapshot, { step, partial: 'yes' }, keepalive, copy.signedOut)),
+    }));
   });
 
   // Free listings: contact details are pointed out while typing (300 ms after the last key), not only on „Tovább”.
@@ -650,7 +678,6 @@ const strings = {
   nextBtn.addEventListener('click', async () => {
     const current = root.dataset.active!;
     const scope = root.querySelector<HTMLElement>(`[data-step="${current}"]`)!;
-    window.clearTimeout(pending);
     nextBtn.disabled = true;
     try {
       const invalid = await validate(scope);
@@ -1043,7 +1070,18 @@ const strings = {
   .su-back[hidden] { display: none; }
   .su-back:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
   @media (hover: hover) { .su-back:hover { background: var(--linen); } }
-  .su-saved { flex: 1; font-size: 13.5px; color: var(--ink-quiet); text-align: center; }
+  .su-savewrap { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .su-saved { font-size: 13.5px; color: var(--ink-quiet); text-align: center; }
+  .su-saved:empty { display: none; }
+  /* On a phone the bar is narrow: the quiet states drop the time; a problem gets its own full-width row above the buttons. */
+  @media (max-width: 560px) {
+    .su-savewrap :global(.as-detail) { display: none; }
+    .su-nav { flex-wrap: wrap; border-radius: 28px; }
+    .su-nav:has([data-autosave-status][data-state='retrying']) .su-savewrap,
+    .su-nav:has([data-autosave-status][data-state='rejected']) .su-savewrap { order: -1; flex-basis: 100%; padding: 6px 8px 2px; }
+    .su-nav:has([data-autosave-status][data-state='rejected']) .su-savewrap :global(.as-detail) { display: block; }
+    .su-nav:has([data-autosave-status][data-state='retrying']) .su-back, .su-nav:has([data-autosave-status][data-state='rejected']) .su-back { margin-inline-end: auto; }
+  }
   .su-btn { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; margin-left: auto; padding: 0 6px 0 22px; border-radius: var(--r-pill); background: var(--ink); color: var(--cream); font-size: 15.5px; font-weight: var(--fw-medium); text-decoration: none; --chip-bg: var(--cream); --chip-fg: var(--ink); transition: background-color 0.3s var(--ease-out); }
   .su-btn[hidden] { display: none; }
   .su-btn:disabled { opacity: 0.55; cursor: not-allowed; }
