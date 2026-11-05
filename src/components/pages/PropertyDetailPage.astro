@@ -22,6 +22,7 @@ import { COMPANY } from '~/config/company';
 import { featureLabel } from '~/data/features';
 import { activeProperties, publishedLocalesOf, servingFor, similarTo, switcherLocalesOf, text, translationConfig, resolveText, url as propUrl, type Property } from '~/lib/properties';
 import { propertyAlternates, crumbs } from '~/lib/page';
+import { titleFit } from '~/lib/title-fit';
 import { propertySchema, breadcrumbSchema, videoObjectSchema } from '~/lib/seo';
 import { eur, huf, area, floorArea, epcLabel, formatDate, placeLabel } from '~/lib/format';
 import { copy } from '~/data/copy';
@@ -58,6 +59,8 @@ const resolvedDescription = resolveText(d.description, locale);
 // the text under it are never in two different languages.
 const title = d.title[locale] || d.title[resolvedDescription.from] || text(d.title, locale);
 const description = resolvedDescription.text;
+// A long title is set smaller in the photograph (three lines at most); the whole title is the heading below.
+const heroFit = titleFit(title);
 const languageNote = sourceNote(locale, resolvedDescription.from, 'description')
   ?? (showMachineTranslationNote() && d.listing.machineLanguages?.includes(resolvedDescription.from) ? machineNote(resolvedDescription.from) : null);
 const category = d.categoryLabels[locale] ?? d.categoryLabels.nl ?? d.categoryLabels.hu;
@@ -241,7 +244,7 @@ const whatsappMessage = x({
       {
         trail.map((c, i) => (
           <li>
-            {i < trail.length - 1 ? <a href={c.url}>{c.name}</a> : <span aria-current="page">{c.name}</span>}
+            {i < trail.length - 1 ? <a href={c.url}>{c.name}</a> : <span aria-current="page" class="crumb-here" title={c.name}>{c.name}</span>}
           </li>
         ))
       }
@@ -282,7 +285,7 @@ const whatsappMessage = x({
       <div class="hero-title">
         {tag && <span class="hero-tag">{tag}</span>}
         <span class="hero-kicker">{d.location.region} · {category}</span>
-        <span class="hero-name">{title}</span>
+        <span class="hero-name" data-fit={heroFit}>{title}</span>
       </div>
 
       {
@@ -708,7 +711,7 @@ const whatsappMessage = x({
     top: 20px;
     inset-inline-start: 20px;
     z-index: 4;
-    max-width: calc(100% - 40px);
+    max-width: min(calc(100% - 40px), 880px);
     padding: 9px 18px;
     border-radius: var(--r-pill);
     background: rgba(10, 29, 48, 0.32);
@@ -719,7 +722,7 @@ const whatsappMessage = x({
   }
   .crumbs ol {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 4px 10px;
     list-style: none;
@@ -730,7 +733,19 @@ const whatsappMessage = x({
   .crumbs li {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
     gap: 10px;
+    white-space: nowrap;
+  }
+  /* The page's own name comes last and gives way: one line, an ellipsis, the whole title in the heading. */
+  .crumbs li:last-child {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .crumb-here {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .crumbs li + li::before {
     content: '';
@@ -840,10 +855,32 @@ const whatsappMessage = x({
     font-weight: var(--fw-hero);
     font-size: clamp(34px, 5.2vw, 88px);
     letter-spacing: var(--ls-display);
-    line-height: 0.98;
+    line-height: 1.02;
     max-width: 14ch;
     text-wrap: balance;
     text-shadow: 0 2px 30px rgba(10, 29, 48, 0.25);
+    /* Three lines at most; the bottom padding keeps the descenders of the last line from being cut. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    padding-bottom: 0.1em;
+    overflow-wrap: anywhere;
+  }
+  .hero-name[data-fit='m'] {
+    font-size: clamp(30px, 3.6vw, 58px);
+    max-width: 22ch;
+  }
+  .hero-name[data-fit='l'] {
+    font-size: clamp(26px, 2.8vw, 44px);
+    line-height: 1.08;
+    max-width: 30ch;
+  }
+  .hero-name[data-fit='xl'] {
+    font-size: clamp(24px, 2.3vw, 36px);
+    line-height: 1.1;
+    max-width: 36ch;
   }
   .hero-gallery {
     display: flex;
